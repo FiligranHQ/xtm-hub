@@ -1,0 +1,32 @@
+{
+  "name": "portal-api",
+  "version": "1.0.0",
+  "description": "Portal API",
+  "main": "src/index.js",
+  "repository": "https://github.com/FiligranHQ/cloud-portal",
+  "author": "Filigran",
+  "license": "Filigran",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "compile": "tsc",
+    "generate": "graphql-codegen-esm --config codegen.yml",
+    "start": "yarn compile && node ./dist/index.js"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.9.2",
+    "@graphql-tools/load-files": "^7.0.0",
+    "@graphql-tools/merge": "^9.0.0",
+    "@graphql-tools/schema": "^10.0.0",
+    "glob": "^10.3.3",
+    "graphql": "^16.8.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/typescript-resolvers": "^4.0.1",
+    "@types/node": "^20.5.6",
+    "typescript": "^5.2.2"
+  },
+  "packageManager": "yarn@3.6.3"
+}
