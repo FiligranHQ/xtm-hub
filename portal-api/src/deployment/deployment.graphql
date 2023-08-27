@@ -1,9 +1,0 @@
-type Deployment {
-    id: ID
-    name: String
-    description: String
-}
-
-type Query {
-    deployments: [Deployment]
-}

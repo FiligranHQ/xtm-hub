@@ -1,0 +1,26 @@
+type Organization implements Node {
+    id: ID!
+    name: String
+}
+
+type User implements Node {
+    id: ID!
+    email: String!
+    first_name: String
+    last_name: String
+    organization: Organization
+}
+
+type Query {
+    users: [User]
+    organizations: [Organization]
+}
+
+type Mutation {
+    # Organization
+    addUser(email: String!, password: String!, organization_id: String!): User
+    addOrganization(name: String!): Organization
+    # Login
+    login(email: String!, password: String): User
+    logout: ID!
+}

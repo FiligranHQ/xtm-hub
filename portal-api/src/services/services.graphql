@@ -1,0 +1,9 @@
+type Service implements Node {
+    id: ID!
+    name: String!
+    description: String
+}
+
+type Query {
+    services: [Service]
+}

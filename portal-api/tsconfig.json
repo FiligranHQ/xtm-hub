@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+    "sourceMap": true,
     "moduleResolution": "node16",
     "module": "node16",
     "outDir": "dist",
-    "rootDirs": ["src"]
+    "rootDirs": ["src"],
   }
 }
