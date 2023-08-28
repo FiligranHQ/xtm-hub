@@ -12,7 +12,7 @@ import express from 'express';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import createSchema from "./server/graphl-schema.js";
-import { database } from "../knexfile.js";
+import { dbMigration } from "../knexfile.js";
 // import { GraphQLError } from "graphql/error/index.js";
 import CookieSessionObject = CookieSessionInterfaces.CookieSessionObject;
 
@@ -96,8 +96,8 @@ app.use(PORTAL_GRAPHQL_PATH, cors<cors.CorsRequest>(), json(), middlewareExpress
 // endregion
 
 // Ensure migrate the schema
-await database.migrate.latest();
-console.log('[Migration] Database version is now ' + await database.migrate.currentVersion());
+await dbMigration.migrate();
+console.log('[Migration] Database version is now ' + await dbMigration.version());
 
 // Modified server startup
 await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));

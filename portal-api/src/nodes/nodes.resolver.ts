@@ -5,11 +5,11 @@ import {fromGlobalId} from "graphql-relay/node/node.js";
 
 const resolvers: Resolvers = {
     Query: {
-        node: async (_, { id }, { user }) => {
+        node: async (_, { id }, context) => {
             // This method only accessible for authenticated user
-            if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
+            if (!context.user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
             const { type, id: databaseId } = fromGlobalId(id);
-            return dbFrom<Node>(type).where('id', databaseId).first();
+            return dbFrom<Node>(context, type).where('id', databaseId).first();
         },
     },
     Node: {

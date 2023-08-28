@@ -1,7 +1,8 @@
-import portalConfig from "./src/config.js";
-import pkg, { Knex } from "knex";
-import {toGlobalId} from "graphql-relay/node/node.js";
-const { knex } = pkg;
+import portalConfig from "./src/config.js"
+import pkg, { Knex } from "knex"
+import {fromGlobalId, toGlobalId} from "graphql-relay/node/node.js"
+import { PortalContext } from "./src/index.js"
+const { knex } = pkg
 
 const config: Knex.Config = {
     client: 'pg',
@@ -30,13 +31,44 @@ const config: Knex.Config = {
             return { ...result, id: toGlobalId(__typename, result.id), __typename };
         }
     }
-};
-
-export const database = knex(config);
-
-export const dbFrom = <T>(type: string) => {
-    return database<T>(type).queryContext({ __typename: type })
 }
+
+const database = knex(config)
+
+interface QueryOpts {
+    unsecured?: boolean
+}
+
+export const dbRaw = database.raw
+
+export const dbFrom = <T>(context: PortalContext, type: string, opts: QueryOpts = {}) => {
+    const { unsecured = false } = opts;
+    const queryContext = database<T>(type).queryContext({ __typename: type })
+    // If user have bypass do not apply security layer
+    if (unsecured || context.user?.id === 'root') {
+        return queryContext
+    }
+    // Each type must describe how the element must be filtered regarding of the user.
+    if (type === 'User') {
+        const { id: userId } = fromGlobalId(context.user.id);
+        queryContext.where('User.id', userId)
+        return queryContext;
+    }
+    if (type === 'Organization') {
+        queryContext.rightJoin('User as security', 'security.organization_id', '=', 'Organization.id')
+        return queryContext;
+    }
+    if (type === 'Service') {
+        // Services are always available to all users
+        return queryContext;
+    }
+    throw new Error('Security behavior must be defined for type ' + type)
+}
+
+export const dbMigration = {
+    migrate: () => database.migrate.latest(),
+    version: () => database.migrate.currentVersion()
+};
 
 // noinspection JSUnusedGlobalSymbols
 export default config;

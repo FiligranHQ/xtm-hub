@@ -3,8 +3,8 @@ import {dbFrom} from "../../knexfile.js";
 
 const resolvers: Resolvers = {
     Query: {
-        services: () => {
-            return dbFrom<Service>('Service').select('*');
+        services: (_, __, context) => {
+            return dbFrom<Service>(context, 'Service').select('*');
         },
     },
 };

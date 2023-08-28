@@ -1,5 +1,5 @@
 import { Organization, Resolvers, User } from "../__generated__/resolvers-types.js";
-import { dbFrom, database } from "../../knexfile.js";
+import { dbFrom, dbRaw } from "../../knexfile.js";
 import { UserWithAuthentication } from "./users.js";
 import { GraphQLError } from "graphql/error/index.js";
 import { v4 as uuidv4 } from 'uuid';
@@ -18,37 +18,38 @@ const validPassword = (user: UserWithAuthentication, password: string): boolean 
 
 const resolvers: Resolvers = {
     Query: {
-        users: async (_, __, { user }) => {
+        users: async (_, __, context) => {
             // This method only accessible for authenticated user
-            if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
+            if (!context.user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
             // Inspiration from https://github.com/knex/knex/issues/882
-            return dbFrom<User>('User')
+            return dbFrom<User>(context, 'User')
                 .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
-                .select(['User.*', database.raw('(json_agg(org.*) ->> 0)::json')])
+                .select(['User.*', dbRaw('(json_agg(org.*) ->> 0)::json')])
                 .groupBy(['User.id', 'org.id']);
         },
-        organizations: async () => {
-            return dbFrom<Organization>('Organization').select('*');
+        organizations: async (_, __, context) => {
+            return dbFrom<Organization>(context, 'Organization').select('*');
         },
     },
     Mutation: {
-        addUser: async (_, { email, password, organization_id }) => {
+        addUser: async (_, { email, password, organization_id }, context) => {
             const { salt, hash } = hashPassword(password);
             const { id: databaseId } = fromGlobalId(organization_id);
             const data = { id: uuidv4(), email, salt, password: hash, organization_id: databaseId };
-            const [addedUser] = await dbFrom<UserWithAuthentication>('User').insert(data).returning('*');
+            const [addedUser] = await dbFrom<UserWithAuthentication>(context, 'User').insert(data).returning('*');
             return addedUser;
         },
-        addOrganization: async (_, { name }) => {
+        addOrganization: async (_, { name }, context) => {
             const data = { id: uuidv4(), name };
-            const [addOrganization] = await dbFrom<Organization>('Organization').insert(data).returning('*');
+            const [addOrganization] = await dbFrom<Organization>(context, 'Organization').insert(data).returning('*');
             return addOrganization;
         },
         // Login / Logout
-        login: async (_, { email, password }, { user, session }) => {
+        login: async (_, { email, password }, context) => {
+            const { user, session } = context;
             // This method only accessible for unauthenticated user
             if (user) throw new GraphQLError("You must be anonymous", { extensions: { code: 'UNAUTHENTICATED' } });
-            const logged = await dbFrom<UserWithAuthentication>('User').where('email', email).first();
+            const logged = await dbFrom<UserWithAuthentication>(context, 'User', { unsecured: true }).where('email', email).first();
             if (validPassword(logged, password)) {
                 session.user = logged;
                 return logged;
@@ -56,7 +57,7 @@ const resolvers: Resolvers = {
             return undefined;
         },
         logout: (_, __, { user, session }) => {
-            session.destroy();
+            session.user = null;
             return user.id;
         }
     }
