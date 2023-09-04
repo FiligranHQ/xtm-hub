@@ -1,0 +1,77 @@
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String
+}
+
+type User implements Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  organization: Organization
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization
+}
+
+type OrganizationConnection {
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Query {
+  me: User
+  users: [User]
+  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  services(first: Int = 10, after: ID, orderBy: ServiceOrdering = name, orderMode: OrderingMode = asc): ServiceConnection!
+  node(id: ID!): Node
+}
+
+type Mutation {
+  addUser(email: String!, password: String!, organization_id: String!): User
+  addOrganization(name: String!): Organization
+  login(email: String!, password: String): User
+  logout: ID!
+}
+
+enum ServiceOrdering {
+  name
+}
+
+type Service implements Node {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type ServiceEdge {
+  cursor: String!
+  node: Service
+}
+
+type ServiceConnection {
+  edges: [ServiceEdge!]!
+  pageInfo: PageInfo!
+}
+
+interface Node {
+  id: ID!
+}
+
+enum OrderingMode {
+  asc
+  desc
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}

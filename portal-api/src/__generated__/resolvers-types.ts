@@ -47,11 +47,32 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
+export enum OrderingMode {
+  Asc = 'asc',
+  Desc = 'desc'
+}
+
 export type Organization = Node & {
   __typename?: 'Organization';
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
 };
+
+export type OrganizationConnection = {
+  __typename?: 'OrganizationConnection';
+  edges: Array<OrganizationEdge>;
+  pageInfo: PageInfo;
+};
+
+export type OrganizationEdge = {
+  __typename?: 'OrganizationEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<Organization>;
+};
+
+export enum OrganizationOrdering {
+  Name = 'name'
+}
 
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -63,9 +84,10 @@ export type PageInfo = {
 
 export type Query = {
   __typename?: 'Query';
+  me?: Maybe<User>;
   node?: Maybe<Node>;
-  organizations?: Maybe<Array<Maybe<Organization>>>;
-  services?: Maybe<Array<Maybe<Service>>>;
+  organizations: OrganizationConnection;
+  services: ServiceConnection;
   users?: Maybe<Array<Maybe<User>>>;
 };
 
@@ -74,12 +96,44 @@ export type QueryNodeArgs = {
   id: Scalars['ID']['input'];
 };
 
+
+export type QueryOrganizationsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<OrganizationOrdering>;
+  orderMode?: InputMaybe<OrderingMode>;
+};
+
+
+export type QueryServicesArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<ServiceOrdering>;
+  orderMode?: InputMaybe<OrderingMode>;
+};
+
 export type Service = Node & {
   __typename?: 'Service';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
 };
+
+export type ServiceConnection = {
+  __typename?: 'ServiceConnection';
+  edges: Array<ServiceEdge>;
+  pageInfo: PageInfo;
+};
+
+export type ServiceEdge = {
+  __typename?: 'ServiceEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<Service>;
+};
+
+export enum ServiceOrdering {
+  Name = 'name'
+}
 
 export type User = Node & {
   __typename?: 'User';
@@ -168,12 +222,20 @@ export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = R
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
+  OrderingMode: OrderingMode;
   Organization: ResolverTypeWrapper<Organization>;
+  OrganizationConnection: ResolverTypeWrapper<OrganizationConnection>;
+  OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
+  OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   Service: ResolverTypeWrapper<Service>;
+  ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
+  ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
+  ServiceOrdering: ServiceOrdering;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   User: ResolverTypeWrapper<User>;
 }>;
@@ -182,12 +244,17 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   Organization: Organization;
+  OrganizationConnection: OrganizationConnection;
+  OrganizationEdge: OrganizationEdge;
   PageInfo: PageInfo;
   Query: {};
   Service: Service;
+  ServiceConnection: ServiceConnection;
+  ServiceEdge: ServiceEdge;
   String: Scalars['String']['output'];
   User: User;
 }>;
@@ -210,6 +277,18 @@ export type OrganizationResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type OrganizationConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationConnection'] = ResolversParentTypes['OrganizationConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['OrganizationEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type OrganizationEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationEdge'] = ResolversParentTypes['OrganizationEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PageInfoResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = ResolversObject<{
   endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -219,9 +298,10 @@ export type PageInfoResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
-  organizations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organization']>>>, ParentType, ContextType>;
-  services?: Resolver<Maybe<Array<Maybe<ResolversTypes['Service']>>>, ParentType, ContextType>;
+  organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  services?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServicesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
 }>;
 
@@ -229,6 +309,18 @@ export type ServiceResolvers<ContextType = PortalContext, ParentType extends Res
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServiceConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceConnection'] = ResolversParentTypes['ServiceConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['ServiceEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServiceEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceEdge'] = ResolversParentTypes['ServiceEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -245,9 +337,13 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
+  OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
+  OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Service?: ServiceResolvers<ContextType>;
+  ServiceConnection?: ServiceConnectionResolvers<ContextType>;
+  ServiceEdge?: ServiceEdgeResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 }>;
 

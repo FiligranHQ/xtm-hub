@@ -1,4 +1,5 @@
-import cookieSession from 'cookie-session';
+import expressSession from 'express-session';
+import cookieParser from 'cookie-parser';
 import { ApolloServer } from '@apollo/server';
 import { createServer } from 'http';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -13,10 +14,13 @@ import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import createSchema from "./server/graphl-schema.js";
 import { dbMigration } from "../knexfile.js";
-// import { GraphQLError } from "graphql/error/index.js";
-import CookieSessionObject = CookieSessionInterfaces.CookieSessionObject;
+import portalConfig from "./config.js";
+import {printSchema} from "graphql/utilities/index.js";
+import fs from "node:fs";
 
 // region GraphQL server initialization
+export const PORTAL_COOKIE_NAME = 'cloud-portal';
+export const PORTAL_COOKIE_SECRET = 'cloud-portal-cookie-key';
 const PORTAL_GRAPHQL_PATH = '/graphql';
 
 interface User {
@@ -26,18 +30,30 @@ interface User {
 
 export interface PortalContext {
     user: User
-    session: CookieSessionObject
+    req: express.Request
+    res: express.Response
 }
 
 const app = express();
-app.use(cookieSession({
-    name: 'cloud-portal',
-    keys: ['cloud-portal-cookie-key'],
-    maxAge: 60 * 60 * 1000 // 1 hour
+app.use(expressSession({
+    name: PORTAL_COOKIE_NAME,
+    secret: PORTAL_COOKIE_SECRET,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: false,
+        sameSite: 'lax',
+        secure: false,
+        maxAge: 60 * 60 * 1000 // 1 hour
+    }
 }))
+app.use(cookieParser());
 
 const httpServer = createServer(app);
 const schema = createSchema();
+
+// TODO Execute only in dev mode
+const printedSchema = printSchema(schema);
+fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
 
 // Creating the WebSocket server
 const wsServer = new WebSocketServer({
@@ -85,11 +101,11 @@ declare module 'express-session' {
 }
 
 const middlewareExpress = expressMiddleware(server, {
-    context: async ({ req }) => {
+    context: async ({ req, res }) => {
         const { user } = req.session;
         // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
         // TODO Add build session from request authorization
-        return { user, session: req.session }
+        return { user, req, res }
     }
 });
 app.use(PORTAL_GRAPHQL_PATH, cors<cors.CorsRequest>(), json(), middlewareExpress);
@@ -100,5 +116,5 @@ await dbMigration.migrate();
 console.log('[Migration] Database version is now ' + await dbMigration.version());
 
 // Modified server startup
-await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
-console.log(`🚀 Server ready at http://localhost:4000/`);
+await new Promise<void>((resolve) => httpServer.listen({ port: portalConfig.port }, resolve));
+console.log(`🚀 Server ready at http://localhost:` + portalConfig.port);

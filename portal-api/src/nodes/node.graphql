@@ -2,6 +2,11 @@ interface Node {
     id: ID!
 }
 
+enum OrderingMode {
+    asc
+    desc
+}
+
 type PageInfo {
     hasNextPage: Boolean!
     hasPreviousPage: Boolean!
