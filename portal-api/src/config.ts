@@ -2,6 +2,7 @@
 import config from 'config';
 
 interface PortalConfig {
+    port: number,
     database: {
         host: string
         port: number
@@ -11,6 +12,7 @@ interface PortalConfig {
     };
 }
 const portalConfig: PortalConfig = {
+    port: config.get<number>('port'),
     database: {
         host: config.get<string>('database.host'),
         port: config.get<number>('database.port'),

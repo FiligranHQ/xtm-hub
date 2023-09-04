@@ -1,9 +1,24 @@
+enum ServiceOrdering {
+    name
+}
+
 type Service implements Node {
     id: ID!
     name: String!
     description: String
 }
 
+type ServiceEdge {
+    cursor: String!
+    node: Service
+}
+
+type ServiceConnection {
+    edges: [ServiceEdge!]!
+    pageInfo: PageInfo!
+}
+
+
 type Query {
-    services: [Service]
+    services(first: Int = 10, after: ID, orderBy: ServiceOrdering = name, orderMode: OrderingMode = asc): ServiceConnection!
 }

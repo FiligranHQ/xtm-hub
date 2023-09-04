@@ -1,0 +1,19 @@
+{
+  "root": ".",
+  "sources": {
+    "src": "portal-front",
+    "app": "portal-front"
+  },
+  "projects": {
+    "portal-front": {
+      "language": "typescript",
+      "schema": "schema.graphql",
+      "output": "__generated__",
+      "useImportTypeSyntax": true,
+      "featureFlags": {
+        "enable_relay_resolver_transform": true
+      },
+      "eagerEsModules": true
+    }
+  }
+}
