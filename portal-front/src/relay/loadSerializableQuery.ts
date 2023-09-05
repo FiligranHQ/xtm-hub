@@ -1,11 +1,6 @@
-import {
-    GraphQLResponse,
-    OperationType,
-    RequestParameters,
-    VariablesOf,
-} from "relay-runtime";
+import {GraphQLResponse, OperationType, VariablesOf,} from "relay-runtime";
 import {ConcreteRequest} from "relay-runtime/lib/util/RelayConcreteNode";
-import {IS_SERVER, networkFetch} from "./environment";
+import {networkFetch} from "./environment";
 import {cookies} from "next/headers";
 
 export interface SerializablePreloadedQuery<

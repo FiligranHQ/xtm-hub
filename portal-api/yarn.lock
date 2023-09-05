@@ -68,7 +68,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/server@npm:^4.9.2":
+"@apollo/server@npm:4.9.2":
   version: 4.9.2
   resolution: "@apollo/server@npm:4.9.2"
   dependencies:
@@ -944,7 +944,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/cli@npm:^5.0.0":
+"@graphql-codegen/cli@npm:5.0.0":
   version: 5.0.0
   resolution: "@graphql-codegen/cli@npm:5.0.0"
   dependencies:
@@ -1040,7 +1040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript-resolvers@npm:^4.0.1":
+"@graphql-codegen/typescript-resolvers@npm:4.0.1":
   version: 4.0.1
   resolution: "@graphql-codegen/typescript-resolvers@npm:4.0.1"
   dependencies:
@@ -1056,7 +1056,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript@npm:^4.0.1":
+"@graphql-codegen/typescript@npm:4.0.1, @graphql-codegen/typescript@npm:^4.0.1":
   version: 4.0.1
   resolution: "@graphql-codegen/typescript@npm:4.0.1"
   dependencies:
@@ -1305,7 +1305,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/load-files@npm:^7.0.0":
+"@graphql-tools/load-files@npm:7.0.0":
   version: 7.0.0
   resolution: "@graphql-tools/load-files@npm:7.0.0"
   dependencies:
@@ -1332,6 +1332,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphql-tools/merge@npm:9.0.0, @graphql-tools/merge@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@graphql-tools/merge@npm:9.0.0"
+  dependencies:
+    "@graphql-tools/utils": ^10.0.0
+    tslib: ^2.4.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: e93794260faa477979bdc22f05da26c0eff02bd82c11565a1197152b70b5ab1c73dc6f8a05caf06737bcb18cb244bd19ee99d62bfc41af3bffb3c17eddb70edf
+  languageName: node
+  linkType: hard
+
 "@graphql-tools/merge@npm:^8.4.1":
   version: 8.4.2
   resolution: "@graphql-tools/merge@npm:8.4.2"
@@ -1341,18 +1353,6 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 96d57a3e810055a2883bf9d3450e88082da207ffb1406222c9fa954e47bac4a328696785fdb7eec95a030d5f75504f7b4c6484c94f248cee13e6ad25aca70c75
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/merge@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "@graphql-tools/merge@npm:9.0.0"
-  dependencies:
-    "@graphql-tools/utils": ^10.0.0
-    tslib: ^2.4.0
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: e93794260faa477979bdc22f05da26c0eff02bd82c11565a1197152b70b5ab1c73dc6f8a05caf06737bcb18cb244bd19ee99d62bfc41af3bffb3c17eddb70edf
   languageName: node
   linkType: hard
 
@@ -1823,7 +1823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core@npm:^1.3.80":
+"@swc/core@npm:1.3.80":
   version: 1.3.80
   resolution: "@swc/core@npm:1.3.80"
   dependencies:
@@ -1913,7 +1913,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/config@npm:^3.3.0":
+"@types/config@npm:3.3.0":
   version: 3.3.0
   resolution: "@types/config@npm:3.3.0"
   checksum: d9485041cfa05864d3b8095cf7b44fae910887f6782dc43ab1ba4ea78d9cdf4a8c9d697557318ede2b4b63a05b7f91e8571b8dbe048ad024e709d9e51e0487d8
@@ -1929,7 +1929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cookie-parser@npm:^1.4.3":
+"@types/cookie-parser@npm:1.4.3":
   version: 1.4.3
   resolution: "@types/cookie-parser@npm:1.4.3"
   dependencies:
@@ -1938,7 +1938,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cors@npm:^2.8.13":
+"@types/cors@npm:2.8.13":
   version: 2.8.13
   resolution: "@types/cors@npm:2.8.13"
   dependencies:
@@ -1959,7 +1959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-session@npm:^1.17.7":
+"@types/express-session@npm:1.17.7":
   version: 1.17.7
   resolution: "@types/express-session@npm:1.17.7"
   dependencies:
@@ -1968,7 +1968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.13, @types/express@npm:^4.17.17":
+"@types/express@npm:*, @types/express@npm:4.17.17, @types/express@npm:^4.17.13":
   version: 4.17.17
   resolution: "@types/express@npm:4.17.17"
   dependencies:
@@ -2039,7 +2039,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^20.5.6":
+"@types/node@npm:*, @types/node@npm:20.5.6":
   version: 20.5.6
   resolution: "@types/node@npm:20.5.6"
   checksum: d2ce44f1cfa3fd00fe7426f7cf9a46d680cd57802b874ed5618e7d9101a9c6b8de37f08c0e7185ee06fb363ad492549c3ea69665c7e8e31c7813210ed8e89005
@@ -2088,7 +2088,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^9.0.2":
+"@types/uuid@npm:9.0.2":
   version: 9.0.2
   resolution: "@types/uuid@npm:9.0.2"
   checksum: 1754bcf3444e1e3aeadd6e774fc328eb53bc956665e2e8fb6ec127aa8e1f43d9a224c3d22a9a6233dca8dd81a12dc7fed4d84b8876dd5ec82d40f574f7ff8b68
@@ -2104,7 +2104,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^6.4.1":
+"@typescript-eslint/eslint-plugin@npm:6.4.1":
   version: 6.4.1
   resolution: "@typescript-eslint/eslint-plugin@npm:6.4.1"
   dependencies:
@@ -2129,7 +2129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^6.4.1":
+"@typescript-eslint/parser@npm:6.4.1":
   version: 6.4.1
   resolution: "@typescript-eslint/parser@npm:6.4.1"
   dependencies:
@@ -2568,7 +2568,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-parser@npm:^1.20.0, body-parser@npm:^1.20.2":
+"body-parser@npm:1.20.2, body-parser@npm:^1.20.0":
   version: 1.20.2
   resolution: "body-parser@npm:1.20.2"
   dependencies:
@@ -2935,7 +2935,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"config@npm:^3.3.9":
+"config@npm:3.3.9":
   version: 3.3.9
   resolution: "config@npm:3.3.9"
   dependencies:
@@ -2978,7 +2978,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie-parser@npm:^1.4.6":
+"cookie-parser@npm:1.4.6":
   version: 1.4.6
   resolution: "cookie-parser@npm:1.4.6"
   dependencies:
@@ -3016,7 +3016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cors@npm:^2.8.5":
+"cors@npm:2.8.5, cors@npm:^2.8.5":
   version: 2.8.5
   resolution: "cors@npm:2.8.5"
   dependencies:
@@ -3303,7 +3303,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.48.0":
+"eslint@npm:8.48.0":
   version: 8.48.0
   resolution: "eslint@npm:8.48.0"
   dependencies:
@@ -3407,7 +3407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-session@npm:^1.17.3":
+"express-session@npm:1.17.3":
   version: 1.17.3
   resolution: "express-session@npm:1.17.3"
   dependencies:
@@ -3423,7 +3423,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.17.1, express@npm:^4.18.2":
+"express@npm:4.18.2, express@npm:^4.17.1":
   version: 4.18.2
   resolution: "express@npm:4.18.2"
   dependencies:
@@ -3766,7 +3766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.3.3":
+"glob@npm:10.3.3":
   version: 10.3.3
   resolution: "glob@npm:10.3.3"
   dependencies:
@@ -3857,7 +3857,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-relay@npm:^0.10.0":
+"graphql-relay@npm:0.10.0":
   version: 0.10.0
   resolution: "graphql-relay@npm:0.10.0"
   peerDependencies:
@@ -3875,6 +3875,17 @@ __metadata:
   peerDependencies:
     graphql: 14 - 16
   checksum: 6d62630a0169574442320651c1f7626c0c602025c3c46b19e09417c9579bb209306ee63de9793a03be2e1701bb7f13971f8545d99bc6573e340f823af0ad35b2
+  languageName: node
+  linkType: hard
+
+"graphql-subscriptions@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "graphql-subscriptions@npm:2.0.0"
+  dependencies:
+    iterall: ^1.3.0
+  peerDependencies:
+    graphql: ^15.7.2 || ^16.0.0
+  checksum: 4735ef86462967bca2f549c5e5e30ca63fb6ddde19a81d8601f38fb12f8bda2b5f1203b33df8fd8d1154ffa3eadc2820d407e64b8fda73e319559256c508af21
   languageName: node
   linkType: hard
 
@@ -3898,7 +3909,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.8.0":
+"graphql@npm:16.8.0":
   version: 16.8.0
   resolution: "graphql@npm:16.8.0"
   checksum: d853d4085b0c911a7e2a926c3b0d379934ec61cd4329e70cdf281763102f024fd80a97db7a505b8b04fed9050cb4875f8f518150ea854557a500a0b41dcd7f4e
@@ -4245,6 +4256,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iterall@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "iterall@npm:1.3.0"
+  checksum: c78b99678f8c99be488cca7f33e4acca9b72c1326e050afbaf023f086e55619ee466af0464af94a0cb3f292e60cb5bac53a8fd86bd4249ecad26e09f17bb158b
+  languageName: node
+  linkType: hard
+
 "jackspeak@npm:^2.0.3":
   version: 2.3.0
   resolution: "jackspeak@npm:2.3.0"
@@ -4373,7 +4391,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.5.1":
+"knex@npm:2.5.1":
   version: 2.5.1
   resolution: "knex@npm:2.5.1"
   dependencies:
@@ -5158,7 +5176,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.11.3":
+"pg@npm:8.11.3":
   version: 8.11.3
   resolution: "pg@npm:8.11.3"
   dependencies:
@@ -5209,39 +5227,41 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "portal-api@workspace:."
   dependencies:
-    "@apollo/server": ^4.9.2
-    "@graphql-codegen/cli": ^5.0.0
-    "@graphql-codegen/typescript": ^4.0.1
-    "@graphql-codegen/typescript-resolvers": ^4.0.1
-    "@graphql-tools/load-files": ^7.0.0
-    "@graphql-tools/merge": ^9.0.0
+    "@apollo/server": 4.9.2
+    "@graphql-codegen/cli": 5.0.0
+    "@graphql-codegen/typescript": 4.0.1
+    "@graphql-codegen/typescript-resolvers": 4.0.1
+    "@graphql-tools/load-files": 7.0.0
+    "@graphql-tools/merge": 9.0.0
     "@graphql-tools/schema": ^10.0.0
-    "@swc/core": ^1.3.80
-    "@types/config": ^3.3.0
-    "@types/cookie-parser": ^1.4.3
-    "@types/cors": ^2.8.13
-    "@types/express": ^4.17.17
-    "@types/express-session": ^1.17.7
-    "@types/node": ^20.5.6
-    "@types/uuid": ^9.0.2
-    "@typescript-eslint/eslint-plugin": ^6.4.1
-    "@typescript-eslint/parser": ^6.4.1
-    body-parser: ^1.20.2
-    config: ^3.3.9
-    cookie-parser: ^1.4.6
-    cors: ^2.8.5
-    eslint: ^8.48.0
-    express: ^4.18.2
-    express-session: ^1.17.3
-    glob: ^10.3.3
-    graphql: ^16.8.0
-    graphql-relay: ^0.10.0
+    "@swc/core": 1.3.80
+    "@types/config": 3.3.0
+    "@types/cookie-parser": 1.4.3
+    "@types/cors": 2.8.13
+    "@types/express": 4.17.17
+    "@types/express-session": 1.17.7
+    "@types/node": 20.5.6
+    "@types/uuid": 9.0.2
+    "@typescript-eslint/eslint-plugin": 6.4.1
+    "@typescript-eslint/parser": 6.4.1
+    body-parser: 1.20.2
+    config: 3.3.9
+    cookie-parser: 1.4.6
+    cors: 2.8.5
+    eslint: 8.48.0
+    express: 4.18.2
+    express-session: 1.17.3
+    glob: 10.3.3
+    graphql: 16.8.0
+    graphql-relay: 0.10.0
+    graphql-subscriptions: ^2.0.0
     graphql-ws: ^5.14.0
-    knex: ^2.5.1
-    pg: ^8.11.3
-    ts-node: ^10.9.1
-    typescript: ^5.2.2
-    uuid: ^9.0.0
+    knex: 2.5.1
+    pg: 8.11.3
+    ts-node: 10.9.1
+    typescript: 5.2.2
+    uuid: 9.0.0
+    ws: ^8.13.0
   languageName: unknown
   linkType: soft
 
@@ -5996,7 +6016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.1":
+"ts-node@npm:10.9.1":
   version: 10.9.1
   resolution: "ts-node@npm:10.9.1"
   dependencies:
@@ -6081,7 +6101,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.2.2":
+"typescript@npm:5.2.2":
   version: 5.2.2
   resolution: "typescript@npm:5.2.2"
   bin:
@@ -6091,7 +6111,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
+"typescript@patch:typescript@5.2.2#~builtin<compat/typescript>":
   version: 5.2.2
   resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"
   bin:
@@ -6209,7 +6229,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^9.0.0":
+"uuid@npm:9.0.0, uuid@npm:^9.0.0":
   version: 9.0.0
   resolution: "uuid@npm:9.0.0"
   bin:

@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import styles from "styles/layout.module.css";
-import ClientComponent from "../../app/client";
+import {environment} from "@/relay/environment";
+import {RelayEnvironmentProvider} from "react-relay";
 
 const Layout = ({children}: { children: React.ReactNode }) => {
     return <html>
@@ -10,9 +11,9 @@ const Layout = ({children}: { children: React.ReactNode }) => {
             <title>Filigran Cloud Portal</title>
         </head>
         <body className={styles.layout}>
-            <ClientComponent>
+            <RelayEnvironmentProvider environment={environment}>
                 {children}
-            </ClientComponent>
+            </RelayEnvironmentProvider>
         </body>
     </html>;
 }

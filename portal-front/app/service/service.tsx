@@ -8,15 +8,8 @@ import {graphql} from "react-relay";
 import ServiceComponent from "./service-component";
 
 export const ServiceQuery = graphql`
-    query serviceQuery {
-        organizations {
-            edges {
-                node {
-                    id
-                    name
-                }
-            }
-        }
+    query serviceQuery($count: Int!, $cursor: ID, $orderBy: ServiceOrdering!, $orderMode: OrderingMode!) {
+        ...serviceComponent_services
     }
 `;
 

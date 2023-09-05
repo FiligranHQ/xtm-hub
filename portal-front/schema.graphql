@@ -29,7 +29,7 @@ type Query {
   me: User
   users: [User]
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
-  services(first: Int = 10, after: ID, orderBy: ServiceOrdering = name, orderMode: OrderingMode = asc): ServiceConnection!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   node(id: ID!): Node
 }
 
@@ -38,6 +38,7 @@ type Mutation {
   addOrganization(name: String!): Organization
   login(email: String!, password: String): User
   logout: ID!
+  addService(name: String!): Service
 }
 
 enum ServiceOrdering {
@@ -58,6 +59,10 @@ type ServiceEdge {
 type ServiceConnection {
   edges: [ServiceEdge!]!
   pageInfo: PageInfo!
+}
+
+type Subscription {
+  serviceCreated: Service
 }
 
 interface Node {
