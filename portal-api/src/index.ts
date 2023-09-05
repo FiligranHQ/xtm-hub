@@ -1,19 +1,19 @@
 import expressSession from 'express-session';
 import cookieParser from 'cookie-parser';
-import { ApolloServer } from '@apollo/server';
-import { createServer } from 'http';
-import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import {ApolloServer} from '@apollo/server';
+import {createServer} from 'http';
+import {expressMiddleware} from '@apollo/server/express4';
+import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer';
+import {ApolloServerPluginLandingPageLocalDefault} from '@apollo/server/plugin/landingPage/default';
 import cors from 'cors';
 import pkg from 'body-parser';
 /* eslint-disable @typescript-eslint/unbound-method */
-const { json } = pkg;
+const {json} = pkg;
 import express from 'express';
-import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/lib/use/ws';
+import {WebSocketServer} from 'ws';
+import {useServer} from 'graphql-ws/lib/use/ws';
 import createSchema from "./server/graphl-schema.js";
-import { dbMigration } from "../knexfile.js";
+import {dbMigration} from "../knexfile.js";
 import portalConfig from "./config.js";
 import {printSchema} from "graphql/utilities/index.js";
 import fs from "node:fs";
@@ -35,7 +35,7 @@ export interface PortalContext {
 }
 
 const app = express();
-app.use(expressSession({
+const sessionMiddleware = expressSession({
     name: PORTAL_COOKIE_NAME,
     secret: PORTAL_COOKIE_SECRET,
     saveUninitialized: true,
@@ -45,7 +45,8 @@ app.use(expressSession({
         secure: false,
         maxAge: 60 * 60 * 1000 // 1 hour
     }
-}))
+});
+app.use(sessionMiddleware)
 app.use(cookieParser());
 
 const httpServer = createServer(app);
@@ -66,7 +67,17 @@ const wsServer = new WebSocketServer({
 
 // Hand in the schema we just created and have the
 // WebSocketServer start listening.
-const serverCleanup = useServer({ schema }, wsServer);
+const serverCleanup = useServer({
+    schema,
+    context: async (ctx) => {
+        const req = ctx.extra.request as express.Request
+        // noinspection UnnecessaryLocalVariableJS
+        const session = await new Promise((resolve) => {
+            sessionMiddleware(req, {} as express.Response, () => resolve(req.session));
+        });
+        return session;
+    }
+}, wsServer);
 
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
@@ -82,9 +93,9 @@ const drainPlugin = {
 const server = new ApolloServer<PortalContext>({
     schema,
     plugins: [
-        ApolloServerPluginDrainHttpServer({ httpServer }),
+        ApolloServerPluginDrainHttpServer({httpServer}),
         drainPlugin,
-        ApolloServerPluginLandingPageLocalDefault({ includeCookies: true })
+        ApolloServerPluginLandingPageLocalDefault({includeCookies: true})
     ]
 });
 
@@ -101,11 +112,11 @@ declare module 'express-session' {
 }
 
 const middlewareExpress = expressMiddleware(server, {
-    context: async ({ req, res }) => {
-        const { user } = req.session;
+    context: async ({req, res}) => {
+        const {user} = req.session;
         // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
         // TODO Add build session from request authorization
-        return { user, req, res }
+        return {user, req, res}
     }
 });
 app.use(PORTAL_GRAPHQL_PATH, cors<cors.CorsRequest>(), json(), middlewareExpress);
@@ -116,5 +127,5 @@ await dbMigration.migrate();
 console.log('[Migration] Database version is now ' + await dbMigration.version());
 
 // Modified server startup
-await new Promise<void>((resolve) => httpServer.listen({ port: portalConfig.port }, resolve));
+await new Promise<void>((resolve) => httpServer.listen({port: portalConfig.port}, resolve));
 console.log(`🚀 Server ready at http://localhost:` + portalConfig.port);

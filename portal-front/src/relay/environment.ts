@@ -1,28 +1,27 @@
 import {
-    CacheConfig,
     Environment,
     GraphQLResponse,
     Network,
-    QueryResponseCache,
+    Observable,
     RecordSource,
     RequestParameters,
     Store,
     Variables,
 } from "relay-runtime";
+import {createClient} from 'graphql-ws';
 import {RequestCookie} from "next/dist/compiled/@edge-runtime/cookies";
 
-export const IS_SERVER = typeof window === typeof undefined;
-const CACHE_TTL = 5 * 1000; // 5 seconds, to resolve preloaded results
+const uri = 'localhost:3001/graphql';
 
 export async function networkFetch(request: RequestParameters, variables: Variables, portalCookie?: RequestCookie): Promise<GraphQLResponse> {
-    const headers: {[k: string]: string } = {
+    const headers: { [k: string]: string } = {
         Accept: "application/json",
         "Content-Type": "application/json",
     };
-    if (IS_SERVER && portalCookie) {
+    if (portalCookie) {
         headers.cookie = portalCookie.name + '=' + portalCookie.value;
     }
-    const resp = await fetch('http://localhost:3001/graphql', {
+    const resp = await fetch('http://' + uri, {
         method: "POST",
         credentials: "same-origin",
         headers,
@@ -44,46 +43,37 @@ export async function networkFetch(request: RequestParameters, variables: Variab
     return json;
 }
 
-export const responseCache: QueryResponseCache | null = IS_SERVER
-    ? null
-    : new QueryResponseCache({
-        size: 100,
-        ttl: CACHE_TTL,
+const subscriptionsClient = createClient({url: 'ws://' + uri});
+
+function fetchOrSubscribe(operation: RequestParameters, variables: Variables): Observable<any> {
+    return Observable.create((sink) => {
+        if (!operation.text) {
+            return sink.error(new Error('Operation text cannot be empty'));
+        }
+        return subscriptionsClient.subscribe(
+            {
+                operationName: operation.name,
+                query: operation.text,
+                variables,
+            },
+            sink,
+        );
     });
+}
 
 function createNetwork() {
-    async function fetchResponse(params: RequestParameters, variables: Variables, cacheConfig: CacheConfig) {
-        const isQuery = params.operationKind === "query";
-        const cacheKey = params.id ?? params.cacheID;
-        const forceFetch = cacheConfig && cacheConfig.force;
-        if (responseCache != null && isQuery && !forceFetch) {
-            const fromCache = responseCache.get(cacheKey, variables);
-            console.log('Find responseCache in cache', cacheKey);
-            if (fromCache != null) {
-                console.log('fetchResponse IN CACHE')
-                return Promise.resolve(fromCache);
-            }
-        }
-        console.log('fetchResponse NO CACHE')
+    async function fetchResponse(params: RequestParameters, variables: Variables) {
         return networkFetch(params, variables);
     }
-    return Network.create(fetchResponse);
+
+    return Network.create(fetchResponse, fetchOrSubscribe);
 }
 
 function createEnvironment() {
     return new Environment({
         network: createNetwork(),
         store: new Store(RecordSource.create()),
-        isServer: IS_SERVER,
     });
 }
 
 export const environment = createEnvironment();
-
-export function getCurrentEnvironment() {
-    if (IS_SERVER) {
-        return createEnvironment();
-    }
-
-    return environment;
-}

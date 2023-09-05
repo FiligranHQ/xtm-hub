@@ -18,7 +18,14 @@ type ServiceConnection {
     pageInfo: PageInfo!
 }
 
+type Subscription {
+    serviceCreated: Service
+}
+
+type Mutation {
+    addService(name: String!): Service
+}
 
 type Query {
-    services(first: Int = 10, after: ID, orderBy: ServiceOrdering = name, orderMode: OrderingMode = asc): ServiceConnection!
+    services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
 }

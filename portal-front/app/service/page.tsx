@@ -5,8 +5,11 @@ import ServicePage from "./service";
 import loadSerializableQuery from "@/relay/loadSerializableQuery";
 
 const Page: React.FunctionComponent = async () => {
-    console.log('SERVICE PAGE QUERY')
-    const preloadedQuery = await loadSerializableQuery<typeof serviceQueryNode, serviceQuery>(serviceQueryNode, {})
+    const preloadedQuery = await loadSerializableQuery<typeof serviceQueryNode, serviceQuery>(serviceQueryNode, {
+        count: 2,
+        orderBy: "name",
+        orderMode: "asc"
+    })
     return <>
         <div><b>SERVICE</b></div>
         <ServicePage preloadedQuery={preloadedQuery}/>

@@ -20,19 +20,4 @@ export default function useSerializablePreloadedQuery<TRequest extends ConcreteR
     const descriptor = createOperationDescriptor(preloadQuery.request, preloadQuery.variables);
     environment.commitPayload(descriptor, (preloadQuery.response as GraphQLSingularResponse).data!);
     return loadQuery(environment, descriptor.request.node, descriptor.request.variables, { fetchPolicy });
-    // const fetchKey = preloadQuery.request.params.id ?? preloadQuery.request.params.cacheID;
-    // return {
-    //     kind: "PreloadedQuery",
-    //     environment,
-    //     fetchKey,
-    //     fetchPolicy,
-    //     get isDisposed() {
-    //         return true;
-    //     },
-    //     name: preloadQuery.request.params.name,
-    //     variables: preloadQuery.variables,
-    //     dispose: () => {
-    //         return;
-    //     },
-    // };
 }
