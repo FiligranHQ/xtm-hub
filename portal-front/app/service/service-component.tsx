@@ -2,24 +2,43 @@
 
 import {serviceQuery} from "../../__generated__/serviceQuery.graphql";
 import * as React from "react";
-import {graphql, PreloadedQuery, usePaginationFragment, usePreloadedQuery, useSubscription} from "react-relay";
+import {useMemo} from "react";
+import {
+    graphql,
+    PreloadedQuery,
+    useFragment,
+    usePaginationFragment,
+    usePreloadedQuery,
+    useSubscription
+} from "react-relay";
 import Box from "@mui/material/Box";
 import {ServiceQuery} from "./service";
 import {serviceComponent_services$key} from "../../__generated__/serviceComponent_services.graphql";
 import Button from "@mui/material/Button";
 import {aboutSubmit} from "../about/aboutSubmit";
 import {useRouter} from "next/navigation";
-import {useMemo} from "react";
+import {serviceComponent_fragment$key} from "../../__generated__/serviceComponent_fragment.graphql";
 
-interface ServiceProps {
-    queryRef: PreloadedQuery<serviceQuery>
-}
+
+const serviceComponentFragment = graphql`
+    fragment serviceComponent_fragment on Service {
+        id
+        name
+    }
+`;
 
 const subscription = graphql`
     subscription serviceComponentSubscription($connections: [ID!]!) {
-        serviceCreated @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
-            id
-            name
+        Service {
+            add @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
+                ...serviceComponent_fragment
+            }
+            edit {
+                ...serviceComponent_fragment
+            }
+            delete {
+                id @deleteRecord
+            }
         }
     }
 `;
@@ -32,13 +51,24 @@ const servicesFragment = graphql`
             edges {
                 node {
                     id
-                    name
+                    ...serviceComponent_fragment
                 }
             }
         }
     }
 `;
 
+interface ServiceItemProps {
+    node: serviceComponent_fragment$key;
+}
+const ServiceItem: React.FunctionComponent<ServiceItemProps> = ({node}) => {
+    const data = useFragment<serviceComponent_fragment$key>(serviceComponentFragment, node);
+    return <li key={data?.id}>{data?.name}</li>;
+}
+
+interface ServiceProps {
+    queryRef: PreloadedQuery<serviceQuery>
+}
 const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const router = useRouter();
     const handleRefresh = () => {
@@ -64,7 +94,7 @@ const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => 
 
     return <React.Suspense fallback="Loading...">
         <Box sx={{bgcolor: '#e9cffc'}}>
-            <ul>{data.services?.edges.map(({node}) => <li key={node?.id}>{node?.name}</li>)}</ul>
+            <ul>{data.services?.edges.map(({node}) => <ServiceItem key={node?.id} node={node}/>)}</ul>
             { isLoadingNext && <span>... next loading ...</span>}
             { isLoadingPrevious && <span>... previous loading ...</span>}
             <Button onClick={() => loadNext(1)}>Load more</Button>

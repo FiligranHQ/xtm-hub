@@ -22,6 +22,8 @@ export type Mutation = {
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Service>;
   addUser?: Maybe<User>;
+  deleteService?: Maybe<Service>;
+  editService?: Maybe<Service>;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
 };
@@ -41,6 +43,17 @@ export type MutationAddUserArgs = {
   email: Scalars['String']['input'];
   organization_id: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteServiceArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationEditServiceArgs = {
+  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
 };
 
 
@@ -134,16 +147,23 @@ export type ServiceConnection = {
 export type ServiceEdge = {
   __typename?: 'ServiceEdge';
   cursor: Scalars['String']['output'];
-  node?: Maybe<Service>;
+  node: Service;
 };
 
 export enum ServiceOrdering {
   Name = 'name'
 }
 
+export type ServiceSubscription = {
+  __typename?: 'ServiceSubscription';
+  add?: Maybe<Service>;
+  delete?: Maybe<Service>;
+  edit?: Maybe<Service>;
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
-  serviceCreated?: Maybe<Service>;
+  Service?: Maybe<ServiceSubscription>;
 };
 
 export type User = Node & {
@@ -247,6 +267,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
   ServiceOrdering: ServiceOrdering;
+  ServiceSubscription: ResolverTypeWrapper<ServiceSubscription>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
@@ -267,6 +288,7 @@ export type ResolversParentTypes = ResolversObject<{
   Service: Service;
   ServiceConnection: ServiceConnection;
   ServiceEdge: ServiceEdge;
+  ServiceSubscription: ServiceSubscription;
   String: Scalars['String']['output'];
   Subscription: {};
   User: User;
@@ -276,6 +298,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
   addService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationAddServiceArgs, 'name'>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'email' | 'organization_id' | 'password'>>;
+  deleteService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationDeleteServiceArgs, 'id'>>;
+  editService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationEditServiceArgs, 'id' | 'name'>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
@@ -334,12 +358,19 @@ export type ServiceConnectionResolvers<ContextType = PortalContext, ParentType e
 
 export type ServiceEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceEdge'] = ResolversParentTypes['ServiceEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Service'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServiceSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceSubscription'] = ResolversParentTypes['ServiceSubscription']> = ResolversObject<{
+  add?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
+  delete?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
+  edit?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  serviceCreated?: SubscriptionResolver<Maybe<ResolversTypes['Service']>, "serviceCreated", ParentType, ContextType>;
+  Service?: SubscriptionResolver<Maybe<ResolversTypes['ServiceSubscription']>, "Service", ParentType, ContextType>;
 }>;
 
 export type UserResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
@@ -362,6 +393,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Service?: ServiceResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceEdge?: ServiceEdgeResolvers<ContextType>;
+  ServiceSubscription?: ServiceSubscriptionResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 }>;

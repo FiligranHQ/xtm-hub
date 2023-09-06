@@ -38,7 +38,9 @@ type Mutation {
   addOrganization(name: String!): Organization
   login(email: String!, password: String): User
   logout: ID!
+  editService(id: ID!, name: String!): Service
   addService(name: String!): Service
+  deleteService(id: ID!): Service
 }
 
 enum ServiceOrdering {
@@ -53,7 +55,7 @@ type Service implements Node {
 
 type ServiceEdge {
   cursor: String!
-  node: Service
+  node: Service!
 }
 
 type ServiceConnection {
@@ -61,8 +63,14 @@ type ServiceConnection {
   pageInfo: PageInfo!
 }
 
+type ServiceSubscription {
+  add: Service
+  edit: Service
+  delete: Service
+}
+
 type Subscription {
-  serviceCreated: Service
+  Service: ServiceSubscription
 }
 
 interface Node {
