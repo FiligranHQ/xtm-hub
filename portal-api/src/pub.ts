@@ -1,7 +1,7 @@
 import {PubSub, withFilter} from 'graphql-subscriptions';
 import {Node} from "./__generated__/resolvers-types.js";
 import {PortalContext} from "./index.js";
-import {DatabaseType, isNodeAccessible} from "../knexfile.js";
+import {ActionType, DatabaseType, isNodeAccessible} from "../knexfile.js";
 
 export interface TypedNode extends Node  {
     __typename: DatabaseType
@@ -9,11 +9,12 @@ export interface TypedNode extends Node  {
 
 const pubsub = new PubSub();
 
-export const dispatch = async (type: DatabaseType, topic: string, data: Node) => {
-    await pubsub.publish(topic, {[topic]: {...data, __typename: type}});
+export const dispatch = async (type: DatabaseType, action: ActionType, data: Node) => {
+    const node = { [action]: {...data, __typename: type} }
+    await pubsub.publish(type, {[type]: node});
 }
 
-export const listen = (context: PortalContext, topic: string) => {
+export const listen = (context: PortalContext, topic: DatabaseType) => {
     const iteratorFn = () => pubsub.asyncIterator([topic]);
     const filterFn = (payload: TypedNode) => isNodeAccessible(context.user, payload[topic]);
     return withFilter(iteratorFn, filterFn)();

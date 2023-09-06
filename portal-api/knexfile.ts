@@ -7,6 +7,7 @@ import {PageInfo} from "graphql-relay/connection/connection.js";
 import {TypedNode} from "./src/pub.js";
 
 export type DatabaseType = 'User' | 'Organization' | 'Service'
+export type ActionType = 'add' | 'edit' | 'delete'
 
 interface Pagination {
     first: number
@@ -61,7 +62,6 @@ export const db = <T>(context: PortalContext, type: DatabaseType, opts: QueryOpt
     if (unsecured || context.user?.id === 'root') {
         return queryContext
     }
-    // Each type must describe how the element must be filtered regarding of the user.
     if (type === 'User') {
         const {id: userId} = fromGlobalId(context.user.id);
         queryContext.where('User.id', userId)
@@ -78,7 +78,14 @@ export const db = <T>(context: PortalContext, type: DatabaseType, opts: QueryOpt
     throw new Error('Security behavior must be defined for type ' + type)
 }
 
-export const isNodeAccessible = (user: User, node: TypedNode) => {
+export const isNodeAccessible = (user: User, data: { [action: string]: TypedNode }) => {
+    const isInvalidActionSize = Object.keys(data).length !== 1;
+    if (isInvalidActionSize) {
+        // Event can only be setup to one action
+        throw new Error('Invalid action size', data)
+    }
+    // Getting the node, we don't really care about the action to check the visibility
+    const node = Object.values(data)[0];
     const type = node.__typename;
     // If user have bypass do not apply security layer
     if (user.id === 'root') {
