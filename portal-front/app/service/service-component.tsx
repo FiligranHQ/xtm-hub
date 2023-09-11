@@ -15,10 +15,9 @@ import Box from "@mui/material/Box";
 import {ServiceQuery} from "./service";
 import {serviceComponent_services$key} from "../../__generated__/serviceComponent_services.graphql";
 import Button from "@mui/material/Button";
-import {aboutSubmit} from "../about/aboutSubmit";
 import {useRouter} from "next/navigation";
 import {serviceComponent_fragment$key} from "../../__generated__/serviceComponent_fragment.graphql";
-
+import {RecordSourceSelectorProxy} from "relay-runtime";
 
 const serviceComponentFragment = graphql`
     fragment serviceComponent_fragment on Service {
@@ -75,7 +74,6 @@ const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => 
         router.refresh();
     };
     const queryData = usePreloadedQuery<serviceQuery>(ServiceQuery, queryRef);
-    console.log('SERVICE COMPONENT', queryRef)
     const {
         data,
         loadNext,
@@ -88,10 +86,12 @@ const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => 
     const config = useMemo(() => ({
         variables: { connections: [connectionID]},
         subscription,
-    }), [subscription]);
+        updater: (store: RecordSourceSelectorProxy<unknown>) => {
+            // router.refresh();
+        }
+    }), [connectionID]);
 
     useSubscription(config);
-
     return <React.Suspense fallback="Loading...">
         <Box sx={{bgcolor: '#e9cffc'}}>
             <ul>{data.services?.edges.map(({node}) => <ServiceItem key={node?.id} node={node}/>)}</ul>
@@ -99,9 +99,6 @@ const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => 
             { isLoadingPrevious && <span>... previous loading ...</span>}
             <Button onClick={() => loadNext(1)}>Load more</Button>
         </Box>
-        <form action={aboutSubmit}>
-            <button type="submit"># Invalidate path #</button>
-        </form>
         <div>
             <button onClick={handleRefresh}># Router refresh #</button>
         </div>
@@ -111,4 +108,4 @@ const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => 
     </React.Suspense>
 };
 
-export default ServiceComponent;
+export default React.memo(ServiceComponent);

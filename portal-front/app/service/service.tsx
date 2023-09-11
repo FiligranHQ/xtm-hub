@@ -14,7 +14,6 @@ export const ServiceQuery = graphql`
 `;
 
 const ServicePage = (props: { preloadedQuery: SerializablePreloadedQuery<typeof serviceQueryNode, serviceQuery> }) => {
-    console.log('SERVICE PAGE useSerializablePreloadedQuery', props.preloadedQuery.response);
     const queryRef = useSerializablePreloadedQuery(props.preloadedQuery);
     return <>
         <div><b>ServiceComponent</b></div>

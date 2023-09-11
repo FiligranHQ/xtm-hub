@@ -28,12 +28,10 @@ export async function networkFetch(request: RequestParameters, variables: Variab
         body: JSON.stringify({query: request.text, variables}),
     });
     const json = await resp.json();
-    console.log('>>>>>>>>>>>>>>>>>>>> networkFetch (' + portalCookie?.name + ')', request.name, JSON.stringify(json))
     // GraphQL returns exceptions (for example, a missing required variable) in the "errors"
     // property of the response. If any exceptions occurred when processing the request,
     // throw an error to indicate to the developer what went wrong.
     if (Array.isArray(json.errors)) {
-        // console.log(json.errors)
         const containsAuthenticationFailure = json.errors.find((e: any) => e.extensions.code === 'UNAUTHENTICATED') !== undefined;
         if (containsAuthenticationFailure) {
             throw new Error('UNAUTHENTICATED');

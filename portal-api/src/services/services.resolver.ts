@@ -4,38 +4,36 @@ import {v4 as uuidv4} from "uuid";
 import {dispatch, listen} from "../pub.js";
 import {fromGlobalId} from "graphql-relay/node/node.js";
 
-const type: DatabaseType = 'Service';
-
 const resolvers: Resolvers = {
     Query: {
         services: async (_, { first, after, orderMode, orderBy }, context) => {
-            return paginate<Service>(context, type, { first, after, orderMode, orderBy }).select('*');
+            return paginate<Service>(context, 'Service', { first, after, orderMode, orderBy }).select('*');
         },
     },
     Mutation: {
         deleteService: async (_, {id}, context) => {
             const {  id: databaseId } = fromGlobalId(id) as { type: DatabaseType, id: string };
-            const [deletedService] =  await db<Service>(context, type).where({ id: databaseId }).delete('*');
-            await dispatch(type, 'delete', deletedService);
+            const [deletedService] =  await db<Service>(context, 'Service').where({ id: databaseId }).delete('*');
+            await dispatch('Service', 'delete', deletedService);
             return deletedService;
         },
         editService: async (_, {id, name}, context) => {
             const {  id: databaseId } = fromGlobalId(id) as { type: DatabaseType, id: string };
-            const [updatedService] =  await db<Service>(context, type).where({ id: databaseId }).update({ name }).returning('*');
-            await dispatch(type, 'edit', updatedService);
+            const [updatedService] =  await db<Service>(context, 'Service').where({ id: databaseId }).update({ name }).returning('*');
+            await dispatch('Service', 'edit', updatedService);
             return updatedService;
         },
         addService: async (_, {name}, context) => {
             const data = {id: uuidv4(), name};
-            const [addedService] = await db<Service>(context, type).insert(data).returning('*');
-            await dispatch(type, 'add', addedService);
+            const [addedService] = await db<Service>(context, 'Service').insert(data).returning('*');
+            await dispatch('Service', 'add', addedService);
             return addedService;
         },
     },
     Subscription: {
         Service: {
             subscribe: (_, __, context) => ({
-                [Symbol.asyncIterator]: () => listen(context, type),
+                [Symbol.asyncIterator]: () => listen(context, 'Service'),
             }),
         },
     },

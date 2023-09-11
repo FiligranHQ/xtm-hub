@@ -29,7 +29,6 @@ const Home: React.FunctionComponent<HomeProps> = ({queryRef}) => {
         router.refresh();
     };
     const data = usePreloadedQuery<homeQuery>(HomeQuery, queryRef);
-    console.log('Home organizations', data)
     return <React.Suspense fallback="Loading...">
         <Box sx={{bgcolor: '#e9cffc'}}>
             <ul>{data.organizations?.edges.map(({ node }) => <li key={node?.id}>{node?.name}</li>)}</ul>

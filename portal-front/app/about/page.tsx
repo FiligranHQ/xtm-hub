@@ -11,7 +11,7 @@ const Page = () => {
         <form action={aboutSubmit}>
             <button type="submit"># Invalidate path #</button>
         </form>
-        <Link prefetch={false} href="/">Home</Link>
+        <Link prefetch={true} href="/">Home</Link>
     </>
 }
 
