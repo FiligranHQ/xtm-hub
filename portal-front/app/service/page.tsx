@@ -6,7 +6,7 @@ import loadSerializableQuery from "@/relay/loadSerializableQuery";
 
 const Page: React.FunctionComponent = async () => {
     const preloadedQuery = await loadSerializableQuery<typeof serviceQueryNode, serviceQuery>(serviceQueryNode, {
-        count: 2,
+        count: 10,
         orderBy: "name",
         orderMode: "asc"
     })
@@ -18,3 +18,6 @@ const Page: React.FunctionComponent = async () => {
 }
 
 export default Page;
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;

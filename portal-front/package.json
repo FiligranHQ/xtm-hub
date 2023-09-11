@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "concurrently \"relay-compiler\" \"next dev -p 3001\"",
     "build": "relay-compiler --validate && next build",
+    "check-ts": "tsc --noEmit",
     "start": "next start",
     "lint": "next lint",
     "relay": "relay-compiler"
@@ -19,8 +20,8 @@
     "autoprefixer": "10.4.15",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
-    "graphql": "^16.8.0",
-    "graphql-ws": "^5.14.0",
+    "graphql": "16.8.0",
+    "graphql-ws": "5.14.0",
     "next": "13.4.19",
     "postcss": "8.4.28",
     "react": "18.2.0",
@@ -33,5 +34,9 @@
     "@types/react-relay": "14.1.5",
     "concurrently": "8.2.1",
     "relay-compiler": "15.0.0"
-  }
+  },
+  "resolutions": {
+    "@typescript-eslint/typescript-estree": "6.6.0"
+  },
+  "packageManager": "yarn@3.6.3"
 }

@@ -33,8 +33,8 @@ const HeaderComponent: React.FunctionComponent<OrganizationsProps> = ({ queryRef
     return <React.Suspense fallback="Loading...">
         <Box sx={{ bgcolor: '#cfe8fc' }}>
             <ul>
-                <li><RouterLink prefetch={false} href="/about">About Us</RouterLink></li>
-                <li><RouterLink prefetch={false} href="/service">Services</RouterLink></li>
+                <li><RouterLink prefetch={true} href="/about">About Us</RouterLink></li>
+                <li><RouterLink prefetch={true} href="/service">Services</RouterLink></li>
             </ul>
             <div>{fragment?.email}</div>
             <HeaderLogout/>
