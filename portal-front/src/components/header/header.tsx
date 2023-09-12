@@ -31,14 +31,7 @@ const HeaderComponent: React.FunctionComponent<OrganizationsProps> = ({ queryRef
     const data = usePreloadedQuery<headerQuery>(homeUserQuery, queryRef);
     const fragment = useFragment<header_fragment$key>(homeFragment, data.me);
     return <React.Suspense fallback="Loading...">
-        <Box sx={{ bgcolor: '#cfe8fc' }}>
-            <ul>
-                <li><RouterLink prefetch={true} href="/about">About Us</RouterLink></li>
-                <li><RouterLink prefetch={true} href="/service">Services</RouterLink></li>
-            </ul>
-            <div>{fragment?.email}</div>
-            <HeaderLogout/>
-        </Box>
+        <span>({fragment?.email})</span>
     </React.Suspense>
 }
 export default HeaderComponent;
