@@ -7,6 +7,15 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from "@mui/material/TextField";
+import Avatar from '@mui/material/Avatar';
+import Image from 'next/image'
+import CssBaseline from '@mui/material/CssBaseline';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Container from '@mui/material/Container';
 
 const LoginMutation = graphql`
     mutation loginMutation($email: String!, $password: String!) {
@@ -35,15 +44,55 @@ const Login = () => {
         })
     }
     return (
-        <Box component="form" onSubmit={handleSubmit}>
-            <Typography variant="h2">Cloud portal login</Typography>
-            <br/>
-            <TextField required id="email" name="email" label="Email" variant="outlined"/>
-            <br/><br/>
-            <TextField required id="password" name="password" label="Password" variant="outlined" type="password"/>
-            <br/><br/>
-            <Button variant="outlined" type="submit">Login</Button>
-        </Box>
+        <>
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Box sx={{
+                        marginTop: 8,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}>
+                    <Image
+                        src="/static/filigran_text_vertical.svg"
+                        width={500}
+                        height={500}
+                        alt="Picture of the author"
+                    />
+                    <Typography style={{ marginTop: 20 }} component="h1" variant="h5">
+                        - Cloud portal sign in -
+                    </Typography>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                        />
+                        <Button type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}>
+                            Sign In
+                        </Button>
+                    </Box>
+                </Box>
+            </Container>
+        </>
     )
 }
 
