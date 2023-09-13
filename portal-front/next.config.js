@@ -14,10 +14,7 @@ const nextConfig = {
             source: '/graphql',
             destination: 'http://localhost:4001/graphql' // Proxy to Backend
         }]
-    },
-    experimental: {
-        serverActions: true
-    },
+    }
 };
 
 module.exports = nextConfig;
