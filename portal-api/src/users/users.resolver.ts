@@ -66,7 +66,7 @@ const resolvers: Resolvers = {
             return new Promise((resolve) => {
                 res.clearCookie(PORTAL_COOKIE_NAME);
                 req.session.regenerate(() => {
-                    resolve(user.id);
+                    resolve(user ? user.id : 'anonymous');
                 });
             });
         }

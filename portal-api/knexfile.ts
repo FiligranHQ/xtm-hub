@@ -59,7 +59,7 @@ export const db = <T>(context: PortalContext, type: DatabaseType, opts: QueryOpt
     const {unsecured = false} = opts;
     const queryContext = database<T>(type).queryContext({__typename: type})
     // If user have bypass do not apply security layer
-    if (unsecured || context.user?.id === 'root') {
+    if (unsecured || context?.user?.id === 'root') {
         return queryContext
     }
     if (type === 'User') {
