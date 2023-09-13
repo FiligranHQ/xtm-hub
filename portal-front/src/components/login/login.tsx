@@ -48,12 +48,12 @@ const Login = () => {
                         alignItems: 'center',
                     }}>
                     <Image
-                        src="/static/filigran_text_vertical.svg"
+                        src="/static/filigran_scred.svg"
                         width={500}
                         height={500}
                         alt="Picture of the author"
                     />
-                    <Typography style={{ marginTop: 20 }} component="h1" variant="h5">
+                    <Typography style={{ marginTop: 40 }} component="h1" variant="h5">
                         - Cloud portal sign in -
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>

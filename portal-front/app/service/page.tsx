@@ -1,4 +1,3 @@
-import Link from "next/link";
 import * as React from "react";
 import serviceQueryNode, {serviceQuery} from "../../__generated__/serviceQuery.graphql";
 import ServicePage from "./service";
@@ -13,7 +12,6 @@ const Page: React.FunctionComponent = async () => {
     return <>
         <div><b>SERVICE</b></div>
         <ServicePage preloadedQuery={preloadedQuery}/>
-        <Link prefetch={false} href="/">Home</Link>
     </>
 }
 
