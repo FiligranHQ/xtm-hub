@@ -3,9 +3,11 @@ import serviceQueryNode, {serviceQuery} from "../../__generated__/serviceQuery.g
 import ServicePage from "./service";
 import loadSerializableQuery from "@/relay/loadSerializableQuery";
 
+const DEFAULT_COUNT = 10;
+
 const Page: React.FunctionComponent = async () => {
     const preloadedQuery = await loadSerializableQuery<typeof serviceQueryNode, serviceQuery>(serviceQueryNode, {
-        count: 10,
+        count: DEFAULT_COUNT,
         orderBy: "name",
         orderMode: "asc"
     })
@@ -17,5 +19,5 @@ const Page: React.FunctionComponent = async () => {
 
 export default Page;
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// export const dynamic = 'force-dynamic';
+// export const revalidate = 0;

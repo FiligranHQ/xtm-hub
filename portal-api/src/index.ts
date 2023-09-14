@@ -17,6 +17,7 @@ import {dbMigration} from "../knexfile.js";
 import portalConfig from "./config.js";
 import {printSchema} from "graphql/utilities/index.js";
 import fs from "node:fs";
+import platformInit from "./server/initialize.js";
 
 // region GraphQL server initialization
 export const PORTAL_COOKIE_NAME = 'cloud-portal';
@@ -26,6 +27,7 @@ const PORTAL_GRAPHQL_PATH = '/graphql';
 interface User {
     id: string
     email: string
+    capabilities: {id: string, name: string}[]
 }
 
 export interface PortalContext {
@@ -124,6 +126,7 @@ app.use(PORTAL_GRAPHQL_PATH, cors<cors.CorsRequest>(), json(), middlewareExpress
 
 // Ensure migrate the schema
 await dbMigration.migrate();
+await platformInit();
 console.log('[Migration] Database version is now ' + await dbMigration.version());
 
 // Modified server startup

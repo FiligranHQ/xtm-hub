@@ -6,7 +6,8 @@ import {useMemo} from "react";
 import {
     graphql,
     PreloadedQuery,
-    useFragment, useMutation,
+    useFragment,
+    useMutation,
     usePaginationFragment,
     usePreloadedQuery,
     useSubscription
@@ -33,11 +34,16 @@ const ServiceCreateMutation = graphql`
         }
     }
 `;
-interface FormData { name: string }
+
+interface FormData {
+    name: string
+}
+
 interface ServiceCreateFormProps {
     connectionID: string;
 }
-const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({ connectionID }) => {
+
+const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({connectionID}) => {
     const [commitServiceMutation] = useMutation<serviceComponentMutation>(ServiceCreateMutation);
     const schema = Yup.object().shape({
         name: Yup.string().ensure().required("Field is required")
@@ -46,7 +52,7 @@ const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({ co
         resolver: yupResolver(schema),
     });
     const onSubmit = (variables: FormData) => {
-        commitServiceMutation({ variables: { connections: [connectionID], ...variables }})
+        commitServiceMutation({variables: {connections: [connectionID], ...variables}})
     };
     return <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{mt: 1}}>
         <Controller control={control} name="name"
@@ -107,9 +113,11 @@ const servicesFragment = graphql`
         }
     }
 `;
+
 interface ServiceItemProps {
     node: serviceComponent_fragment$key;
 }
+
 const ServiceItem: React.FunctionComponent<ServiceItemProps> = ({node}) => {
     const data = useFragment<serviceComponent_fragment$key>(serviceComponentFragment, node);
     return <li key={data?.id}>{data?.name}</li>;
@@ -118,6 +126,7 @@ const ServiceItem: React.FunctionComponent<ServiceItemProps> = ({node}) => {
 interface ServiceProps {
     queryRef: PreloadedQuery<serviceQuery>
 }
+
 const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const router = useRouter();
     const handleRefresh = () => {
@@ -165,4 +174,4 @@ const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => 
 };
 // endregion
 
-export default React.memo(ServiceComponent);
+export default ServiceComponent;

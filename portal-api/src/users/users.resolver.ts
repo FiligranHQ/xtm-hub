@@ -1,17 +1,21 @@
-import {Organization, Resolvers, User} from "../__generated__/resolvers-types.js";
-import {db, dbRaw, paginate} from "../../knexfile.js";
+import {
+    Organization,
+    OrganizationConnection,
+    Resolvers,
+    User,
+    UserConnection
+} from "../__generated__/resolvers-types.js";
+import {db, dbConnections, dbRaw, paginate} from "../../knexfile.js";
 import {UserWithAuthentication} from "./users.js";
 import {GraphQLError} from "graphql/error/index.js";
 import {v4 as uuidv4} from 'uuid';
 import crypto from "node:crypto";
 import {fromGlobalId} from "graphql-relay/node/node.js";
 import {PORTAL_COOKIE_NAME} from "../index.js";
+import {hashPassword} from "../server/initialize.js";
+import {loadUserByEmail, loadUsers} from "./users.domain.js";
 
-const hashPassword = (password: string) => {
-    const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);
-    return {salt, hash};
-}
+
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
     const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
     return user.password === hash;
@@ -20,21 +24,16 @@ const validPassword = (user: UserWithAuthentication, password: string): boolean 
 const resolvers: Resolvers = {
     Query: {
         me: async (_, __, context) => {
-            // This method only accessible for authenticated user
             if (!context.user) throw new GraphQLError("You must be logged in", {extensions: {code: 'UNAUTHENTICATED'}});
             return context.user
         },
-        users: async (_, __, context) => {
-            // This method only accessible for authenticated user
+        users: async (_, {first, after, orderMode, orderBy}, context) => {
             if (!context.user) throw new GraphQLError("You must be logged in", {extensions: {code: 'UNAUTHENTICATED'}});
-            // Inspiration from https://github.com/knex/knex/issues/882
-            return db<User>(context, 'User')
-                .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
-                .select(['User.*', dbRaw('(json_agg(org.*) ->> 0)::json')])
-                .groupBy(['User.id', 'org.id']);
+            return loadUsers(context, {first, after, orderMode, orderBy});
         },
-        organizations: async (_, { first, after, orderMode, orderBy }, context) => {
-            return paginate<Organization>(context, 'Organization', { first, after, orderMode, orderBy }).select('*');
+        organizations: async (_, {first, after, orderMode, orderBy}, context) => {
+            return paginate<Organization>(context, 'Organization', {first, after, orderMode, orderBy})
+                .select('*').asConnection<OrganizationConnection>()
         },
     },
     Mutation: {
@@ -50,12 +49,9 @@ const resolvers: Resolvers = {
             const [addOrganization] = await db<Organization>(context, 'Organization').insert(data).returning('*');
             return addOrganization;
         },
-        // Login / Logout
         login: async (_, {email, password}, context) => {
-            const {user, req} = context;
-            // This method only accessible for unauthenticated user
-            if (user) throw new GraphQLError("You must be anonymous", {extensions: {code: 'UNAUTHENTICATED'}});
-            const logged = await db<UserWithAuthentication>(context, 'User', {unsecured: true}).where('email', email).first();
+            const {req} = context;
+            const logged = await loadUserByEmail(email);
             if (validPassword(logged, password)) {
                 req.session.user = logged;
                 return logged;
