@@ -2,9 +2,18 @@ enum OrganizationOrdering {
   name
 }
 
+enum UserOrdering {
+  email
+}
+
 type Organization implements Node {
   id: ID!
   name: String
+}
+
+type Capability implements Node {
+  id: ID!
+  name: String!
 }
 
 type User implements Node {
@@ -13,6 +22,17 @@ type User implements Node {
   first_name: String
   last_name: String
   organization: Organization
+  capabilities: [Capability]!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
 }
 
 type OrganizationEdge {
@@ -27,7 +47,7 @@ type OrganizationConnection {
 
 type Query {
   me: User
-  users: [User]
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   node(id: ID!): Node

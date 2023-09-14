@@ -1,5 +1,9 @@
 {
   "port": 4001,
+  "admin": {
+    "email": "julien.richard@filigran.io",
+    "password": "julien"
+  },
   "database": {
     "host": "192.168.2.36",
     "port": 5432,

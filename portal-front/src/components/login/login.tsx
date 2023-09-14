@@ -14,7 +14,7 @@ import Container from '@mui/material/Container';
 const LoginMutation = graphql`
     mutation loginMutation($email: String!, $password: String!) {
         login(email: $email, password: $password) {
-            ...header_fragment
+            ...context_fragment
         }
     }
 `;
@@ -54,7 +54,7 @@ const Login = () => {
                         alt="Picture of the author"
                     />
                     <Typography style={{ marginTop: 40 }} component="h1" variant="h5">
-                        - Cloud portal sign in -
+                        - Sign in -
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField

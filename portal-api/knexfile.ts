@@ -1,10 +1,12 @@
 import portalConfig from "./src/config.js"
 import pkg, {Knex} from "knex"
-import {User} from "./src/__generated__/resolvers-types.js";
+import {Capability, User} from "./src/__generated__/resolvers-types.js";
 import {fromGlobalId, toGlobalId} from "graphql-relay/node/node.js"
 import {PortalContext} from "./src/index.js"
 import {PageInfo} from "graphql-relay/connection/connection.js";
 import {TypedNode} from "./src/pub.js";
+
+export const CAPABILITY_BYPASS = {id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09', name: 'BYPASS'};
 
 export type DatabaseType = 'User' | 'Organization' | 'Service'
 export type ActionType = 'add' | 'edit' | 'delete'
@@ -53,13 +55,21 @@ interface QueryOpts {
     unsecured?: boolean
 }
 
-export const dbRaw = database.raw
+const isUserGranted = (user: User, capability: Capability) => {
+    if (!user) return false;
+    const ids = user.capabilities.map((c) => c.id);
+    return ids.includes(CAPABILITY_BYPASS.id) || ids.includes(capability.id);
+}
+
+export const dbRaw = (statement: string) => database.raw(statement)
+
+export const dbTx = () => database.transaction()
 
 export const db = <T>(context: PortalContext, type: DatabaseType, opts: QueryOpts = {}) => {
     const {unsecured = false} = opts;
     const queryContext = database<T>(type).queryContext({__typename: type})
     // If user have bypass do not apply security layer
-    if (unsecured || context?.user?.id === 'root') {
+    if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
         return queryContext
     }
     if (type === 'User') {
@@ -78,6 +88,11 @@ export const db = <T>(context: PortalContext, type: DatabaseType, opts: QueryOpt
     throw new Error('Security behavior must be defined for type ' + type)
 }
 
+export const dbUnsecure = <T>(type: DatabaseType) => {
+    const context = {user: null, req: null, res: null};
+    return db<T>(context, type, {unsecured: true});
+}
+
 export const isNodeAccessible = (user: User, data: { [action: string]: TypedNode }) => {
     const isInvalidActionSize = Object.keys(data).length !== 1;
     if (isInvalidActionSize) {
@@ -88,7 +103,7 @@ export const isNodeAccessible = (user: User, data: { [action: string]: TypedNode
     const node = Object.values(data)[0];
     const type = node.__typename;
     // If user have bypass do not apply security layer
-    if (user.id === 'root') {
+    if (isUserGranted(user, CAPABILITY_BYPASS)) {
         return true;
     }
     if (type === 'User') {
@@ -130,10 +145,8 @@ export const paginate = <T>(context: PortalContext, type: DatabaseType, paginati
     const queryContext = db<T>(context, type, opts);
     queryContext.queryContext({...queryContext.queryContext(), ...pagination, connection: true});
     queryContext.orderBy([{column: orderBy, order: orderMode}]).offset(currentOffset).limit(first)
-    return {
-        ...queryContext,
-        select: (columnName: string | string[]) => queryContext.select(columnName).then(rows => dbConnections(rows, after, first))
-    };
+    queryContext.asConnection = <U>() => queryContext.then(rows => dbConnections(rows, after, first)) as U
+    return queryContext;
 }
 
 export const dbMigration = {
