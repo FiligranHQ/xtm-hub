@@ -11,7 +11,6 @@ import Toolbar from "@mui/material/Toolbar";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Container from '@mui/material/Container';
 import LayoutMenu from "@/components/menu";
 import Context from "./context";
 import HeaderComponent from "@/components/header/header";
@@ -22,7 +21,7 @@ const RootLayout = async ({children}: { children: React.ReactNode }) => {
         const preloadedQuery = await loadSerializableQuery<typeof contextQueryNode, contextQuery>(contextQueryNode, {})
         return <Layout>
             <Context preloadedQuery={preloadedQuery}>
-                <AppBar position="fixed" sx={{zIndex: 2000}}>
+                <AppBar position="fixed">
                     <Toolbar sx={{backgroundColor: 'background.paper'}}>
                         <DashboardIcon sx={{color: '#444', mr: 2, transform: 'translateY(-2px)'}}/>
                         <Typography variant="h6" noWrap component="div" color="black">
@@ -32,14 +31,14 @@ const RootLayout = async ({children}: { children: React.ReactNode }) => {
                 </AppBar>
                 <LayoutMenu/>
                 <Box component="main" sx={{
+                    pr: '24px',
+                    pl: '24px',
                     flexGrow: 1,
                     bgcolor: 'background.default',
                     ml: `${DRAWER_WIDTH}px`,
                     mt: ['68px', '76px', '84px']
                 }}>
-                    <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
-                        {children}
-                    </Container>
+                    {children}
                 </Box>
             </Context>
         </Layout>;

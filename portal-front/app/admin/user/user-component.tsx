@@ -10,25 +10,49 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import UserCreate from "./user-create";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Typography from "@mui/material/Typography";
+import Link from "next/link";
 
 interface ServiceProps {
     queryRef: PreloadedQuery<userPreloaderQuery>
 }
 
+const fabStyle = {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+};
+
 const UserComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
+    const [openCreateDialog, setOpenCreateDialog] = React.useState(false)
     const queryData = usePreloadedQuery<userPreloaderQuery>(UserQuery, queryRef);
     const {data} = usePaginationFragment<serviceQuery, userPreloader_users$key>(usersFragment, queryData);
-    return <TableContainer component={Paper}>
-        <Table sx={{minWidth: 650}} aria-label="custom pagination table">
-            <TableBody>
-                {data.users.edges.map((user) => (
-                    <TableRow key={user.node?.email} sx={{'&:last-child td, &:last-child th': {border: 0}}}>
-                        <TableCell component="th" scope="row">{user.node?.email}</TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-    </TableContainer>
+    return <>
+        <Breadcrumbs aria-label="breadcrumb" sx={{pb: '14px'}}>
+            <Typography variant="body2"><Link href="/">Home</Link></Typography>
+            <Typography variant="subtitle2">Users</Typography>
+        </Breadcrumbs>
+        <TableContainer component={Paper}>
+            <Table sx={{minWidth: 650}} aria-label="custom pagination table">
+                <TableBody>
+                    {data.users.edges.map((user) => (
+                        <TableRow key={user.node?.id} sx={{'&:last-child td, &:last-child th': {border: 0}}}>
+                            <TableCell component="th" scope="row">{user.node?.email}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+        {openCreateDialog &&
+            <UserCreate connectionID={data?.users?.__id} handleClose={() => setOpenCreateDialog(false)}/>}
+        <Fab onClick={() => setOpenCreateDialog(true)} sx={fabStyle} variant="extended" color="primary">
+            <AddIcon sx={{mr: 1}}/> user
+        </Fab>
+    </>
 }
 
 export default UserComponent;
