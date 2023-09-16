@@ -5,16 +5,14 @@ import UserPreloader from "./user-preloader";
 
 const DEFAULT_COUNT = 10;
 
+
 const Page = async () => {
     const preloadedQuery = await loadSerializableQuery<typeof userPreloaderQueryNode,userPreloaderQuery>(userPreloaderQueryNode, {
         count: DEFAULT_COUNT,
         orderBy: "email",
         orderMode: "asc"
     })
-    return <>
-        <div><b>USERS</b></div>
-        <UserPreloader preloadedQuery={preloadedQuery}/>
-    </>
+    return <UserPreloader preloadedQuery={preloadedQuery}/>
 }
 
 export default Page;

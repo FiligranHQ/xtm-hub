@@ -18,7 +18,6 @@ import {serviceComponent_services$key} from "../../__generated__/serviceComponen
 import Button from "@mui/material/Button";
 import {useRouter} from "next/navigation";
 import {serviceComponent_fragment$key} from "../../__generated__/serviceComponent_fragment.graphql";
-import {RecordSourceSelectorProxy} from "relay-runtime";
 import Typography from "@mui/material/Typography";
 import {Controller, useForm} from "react-hook-form";
 import TextField from "@mui/material/TextField";
@@ -145,9 +144,6 @@ const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => 
     const config = useMemo(() => ({
         variables: {connections: [connectionID]},
         subscription,
-        updater: (store: RecordSourceSelectorProxy<unknown>) => {
-            // router.refresh();
-        }
     }), [connectionID]);
 
     useSubscription(config);

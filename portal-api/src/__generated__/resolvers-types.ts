@@ -92,7 +92,7 @@ export type OrganizationConnection = {
 export type OrganizationEdge = {
   __typename?: 'OrganizationEdge';
   cursor: Scalars['String']['output'];
-  node?: Maybe<Organization>;
+  node: Organization;
 };
 
 export enum OrganizationOrdering {
@@ -182,12 +182,12 @@ export type Subscription = {
 
 export type User = Node & {
   __typename?: 'User';
-  capabilities: Array<Maybe<Capability>>;
+  capabilities: Array<Capability>;
   email: Scalars['String']['output'];
   first_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   last_name?: Maybe<Scalars['String']['output']>;
-  organization?: Maybe<Organization>;
+  organization: Organization;
 };
 
 export type UserConnection = {
@@ -367,7 +367,7 @@ export type OrganizationConnectionResolvers<ContextType = PortalContext, ParentT
 
 export type OrganizationEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationEdge'] = ResolversParentTypes['OrganizationEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -418,12 +418,12 @@ export type SubscriptionResolvers<ContextType = PortalContext, ParentType extend
 }>;
 
 export type UserResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
-  capabilities?: Resolver<Array<Maybe<ResolversTypes['Capability']>>, ParentType, ContextType>;
+  capabilities?: Resolver<Array<ResolversTypes['Capability']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
+  organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

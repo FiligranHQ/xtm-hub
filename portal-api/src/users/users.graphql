@@ -21,8 +21,8 @@ type User implements Node {
     email: String!
     first_name: String
     last_name: String
-    organization: Organization
-    capabilities: [Capability]!
+    organization: Organization!
+    capabilities: [Capability!]!
 }
 
 type UserEdge {
@@ -37,7 +37,7 @@ type UserConnection {
 
 type OrganizationEdge {
     cursor: String!
-    node: Organization
+    node: Organization!
 }
 
 type OrganizationConnection {

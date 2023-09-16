@@ -28,6 +28,7 @@ interface User {
     id: string
     email: string
     capabilities: {id: string, name: string}[]
+    organization: {id: string, name?: string}
 }
 
 export interface PortalContext {

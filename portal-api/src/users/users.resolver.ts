@@ -1,11 +1,5 @@
-import {
-    Organization,
-    OrganizationConnection,
-    Resolvers,
-    User,
-    UserConnection
-} from "../__generated__/resolvers-types.js";
-import {db, dbConnections, dbRaw, paginate} from "../../knexfile.js";
+import {Organization, OrganizationConnection, Resolvers} from "../__generated__/resolvers-types.js";
+import {db, paginate} from "../../knexfile.js";
 import {UserWithAuthentication} from "./users.js";
 import {GraphQLError} from "graphql/error/index.js";
 import {v4 as uuidv4} from 'uuid';
