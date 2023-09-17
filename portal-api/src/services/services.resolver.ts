@@ -34,7 +34,7 @@ const resolvers: Resolvers = {
     Subscription: {
         Service: {
             subscribe: (_, __, context) => ({
-                [Symbol.asyncIterator]: () => listen(context, 'Service'),
+                [Symbol.asyncIterator]: () => listen(context, ['Service']),
             }),
         },
     },

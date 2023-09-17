@@ -14,7 +14,7 @@ interface ComponentAutoCompleteProps {
     open: boolean
     loading: boolean
     setOpen: (open: boolean) => void
-    choices: { id: string, label: string }[]
+    choices: { id: string, name: string }[]
     control: Control
 }
 
@@ -31,9 +31,9 @@ const ComponentAutoComplete: React.FunctionComponent<ComponentAutoCompleteProps>
                 onClose={() => setOpen(false)}
                 loading={loading}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
-                getOptionLabel={(option) => option.label}
+                getOptionLabel={(option) => option.name}
                 options={choices}
-                onChange={(_, selection) => onChange(selection.id)}
+                onChange={(_, selection) => onChange(selection)}
                 onBlur={onBlur}
                 value={value}
                 renderInput={(params) => (
@@ -63,7 +63,7 @@ interface ComponentAutoCompleteLoaderProps<T> {
     label: string,
     query: GraphQLTaggedNode,
     queryReference: PreloadedQuery<any>
-    transformer: (data: T) => { id: string, label: string }[]
+    transformer: (data: T) => { id: string, name: string }[]
     control: Control
 }
 
@@ -80,7 +80,7 @@ interface AutoCompleteSelectProps<U> {
     name: string,
     label: string,
     query: GraphQLTaggedNode,
-    transformer: (data: U) => { id: string, label: string }[]
+    transformer: (data: U) => { id: string, name: string }[]
     control: Control
 }
 

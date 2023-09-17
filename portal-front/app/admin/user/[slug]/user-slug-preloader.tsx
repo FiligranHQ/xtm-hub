@@ -9,13 +9,8 @@ import userSlugPreloaderQueryNode, {userSlugPreloaderQuery} from "../../../../__
 
 export const userSlugQuery = graphql`
     query userSlugPreloaderQuery($id: ID!){
-        node(id: $id) {
-            id
-            ...on User {
-                email
-                first_name
-                last_name
-            }
+        user(id: $id) {
+            ...userSlug_fragment
         }
     }
 `;

@@ -1,5 +1,5 @@
-import {Organization, OrganizationConnection, Resolvers} from "../__generated__/resolvers-types.js";
-import {db, paginate} from "../../knexfile.js";
+import {Resolvers, User} from "../__generated__/resolvers-types.js";
+import {DatabaseType, db} from "../../knexfile.js";
 import {UserWithAuthentication} from "./users.js";
 import {GraphQLError} from "graphql/error/index.js";
 import {v4 as uuidv4} from 'uuid';
@@ -7,8 +7,10 @@ import crypto from "node:crypto";
 import {fromGlobalId} from "graphql-relay/node/node.js";
 import {PORTAL_COOKIE_NAME} from "../index.js";
 import {hashPassword} from "../server/initialize.js";
-import {loadUserByEmail, loadUsers} from "./users.domain.js";
-
+import {loadUserBy, loadUsers} from "./users.domain.js";
+import {dispatch, listen} from "../pub.js";
+import {extractId} from "../utils.js";
+import {loadOrganizationBy} from "../organizations/organizations.domain.js";
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
     const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
@@ -21,31 +23,49 @@ const resolvers: Resolvers = {
             if (!context.user) throw new GraphQLError("You must be logged in", {extensions: {code: 'UNAUTHENTICATED'}});
             return context.user
         },
+        user: async (_, {id}, context) => {
+            if (!context.user) throw new GraphQLError("You must be logged in", {extensions: {code: 'UNAUTHENTICATED'}});
+            const {id: databaseId} = fromGlobalId(id) as { type: DatabaseType, id: string };
+            return loadUserBy('User.id', databaseId);
+        },
         users: async (_, {first, after, orderMode, orderBy}, context) => {
             if (!context.user) throw new GraphQLError("You must be logged in", {extensions: {code: 'UNAUTHENTICATED'}});
             return loadUsers(context, {first, after, orderMode, orderBy});
         },
-        organizations: async (_, {first, after, orderMode, orderBy}, context) => {
-            return paginate<Organization>(context, 'Organization', {first, after, orderMode, orderBy})
-                .select('*').asConnection<OrganizationConnection>()
-        },
+    },
+    User: {
+        organization: (user, __, context) => {
+            const id = extractId(user.organization_id);
+            return user.organization ? user.organization : loadOrganizationBy(context, "Organization.id", id);
+        }
     },
     Mutation: {
+        // Management
         addUser: async (_, {email, password, organization_id}, context) => {
             const {salt, hash} = hashPassword(password);
-            const {id: databaseId} = fromGlobalId(organization_id);
-            const data = {id: uuidv4(), email, salt, password: hash, organization_id: databaseId};
+            const data = {id: uuidv4(), email, salt, password: hash, organization_id: extractId(organization_id)};
             const [addedUser] = await db<UserWithAuthentication>(context, 'User').insert(data).returning('*');
             return addedUser;
         },
-        addOrganization: async (_, {name}, context) => {
-            const data = {id: uuidv4(), name};
-            const [addOrganization] = await db<Organization>(context, 'Organization').insert(data).returning('*');
-            return addOrganization;
+        editUser: async (_, {id, input}, context) => {
+            const {id: databaseId} = fromGlobalId(id);
+            const organization_id = extractId(input.organization_id);
+            const update = {...input, organization_id}
+            const [updatedUser] = await db<User>(context, 'User').where({id: databaseId}).update(update).returning('*');
+            updatedUser.organization = await loadOrganizationBy(context, "Organization.id", organization_id);
+            await dispatch('User', 'edit', updatedUser);
+            return updatedUser;
         },
+        deleteUser: async (_, {id}, context) => {
+            const {id: databaseId} = fromGlobalId(id) as { type: DatabaseType, id: string };
+            const [deletedUser] = await db<User>(context, 'User').where({id: databaseId}).delete('*');
+            await dispatch('User', 'delete', deletedUser);
+            return deletedUser;
+        },
+        // Login / logout
         login: async (_, {email, password}, context) => {
             const {req} = context;
-            const logged = await loadUserByEmail(email);
+            const logged = await loadUserBy('User.email', email);
             if (validPassword(logged, password)) {
                 req.session.user = logged;
                 return logged;
@@ -60,7 +80,14 @@ const resolvers: Resolvers = {
                 });
             });
         }
-    }
+    },
+    Subscription: {
+        User: {
+            subscribe: (_, __, context) => ({
+                [Symbol.asyncIterator]: () => listen(context, ['User']),
+            }),
+        },
+    },
 };
 
 export default resolvers;

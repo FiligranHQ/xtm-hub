@@ -36,6 +36,7 @@ export async function networkFetch(request: RequestParameters, variables: Variab
         if (containsAuthenticationFailure) {
             throw new Error('UNAUTHENTICATED');
         }
+        console.log(json.errors);
         throw new Error('TECHNICAL');
     }
     return json;

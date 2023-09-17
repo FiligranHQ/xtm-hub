@@ -1,7 +1,7 @@
 import portalConfig from "./src/config.js"
 import pkg, {Knex} from "knex"
 import {Capability, User} from "./src/__generated__/resolvers-types.js";
-import {fromGlobalId, toGlobalId} from "graphql-relay/node/node.js"
+import {fromGlobalId} from "graphql-relay/node/node.js"
 import {PortalContext} from "./src/index.js"
 import {PageInfo} from "graphql-relay/connection/connection.js";
 import {TypedNode} from "./src/pub.js";
@@ -42,9 +42,9 @@ const config: Knex.Config = {
         if (!queryContext?.__typename) return result;
         const __typename = queryContext.__typename;
         if (Array.isArray(result)) {
-            return result.map(row => ({...row, id: toGlobalId(__typename, row.id), __typename}));
+            return result.map(row => ({...row, __typename}));
         } else {
-            return {...result, id: toGlobalId(__typename, result.id), __typename};
+            return {...result, __typename};
         }
     }
 }
@@ -93,11 +93,11 @@ export const dbUnsecure = <T>(type: DatabaseType) => {
     return db<T>(context, type, {unsecured: true});
 }
 
-export const isNodeAccessible = (user: User, data: { [action: string]: TypedNode }) => {
+export const isNodeAccessible = (user: User, data: { [action in ActionType]: TypedNode }) => {
     const isInvalidActionSize = Object.keys(data).length !== 1;
     if (isInvalidActionSize) {
         // Event can only be setup to one action
-        throw new Error('Invalid action size', data)
+        throw new Error('Invalid action size', {cause: data})
     }
     // Getting the node, we don't really care about the action to check the visibility
     const node = Object.values(data)[0];

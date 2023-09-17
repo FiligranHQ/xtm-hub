@@ -1,68 +1,3 @@
-enum OrganizationOrdering {
-  name
-}
-
-enum UserOrdering {
-  email
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String
-}
-
-type Capability implements Node {
-  id: ID!
-  name: String!
-}
-
-type User implements Node {
-  id: ID!
-  email: String!
-  first_name: String
-  last_name: String
-  organization: Organization!
-  capabilities: [Capability!]!
-}
-
-type UserEdge {
-  cursor: String!
-  node: User
-}
-
-type UserConnection {
-  edges: [UserEdge!]!
-  pageInfo: PageInfo!
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-type Query {
-  me: User
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  node(id: ID!): Node
-}
-
-type Mutation {
-  addUser(email: String!, password: String!, organization_id: String!): User
-  addOrganization(name: String!): Organization
-  login(email: String!, password: String): User
-  logout: ID!
-  editService(id: ID!, name: String!): Service
-  addService(name: String!): Service
-  deleteService(id: ID!): Service
-}
-
 enum ServiceOrdering {
   name
 }
@@ -91,6 +26,90 @@ type ServiceSubscription {
 
 type Subscription {
   Service: ServiceSubscription
+  User: UserSubscription
+}
+
+type Mutation {
+  editService(id: ID!, name: String!): Service
+  addService(name: String!): Service
+  deleteService(id: ID!): Service
+  addUser(email: String!, password: String!, organization_id: String!): User
+  editUser(id: ID!, input: EditUserInput!): User
+  deleteUser(id: ID!): User
+  login(email: String!, password: String): User
+  logout: ID!
+  addOrganization(name: String!): Organization
+}
+
+type Query {
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  me: User
+  user(id: ID!): User
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  organization(id: ID!): Organization
+  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  node(id: ID!): Node
+}
+
+enum UserOrdering {
+  email
+}
+
+type Capability implements Node {
+  id: ID!
+  name: String!
+}
+
+type User implements Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  organization_id: ID!
+  organization: Organization!
+  capabilities: [Capability!]!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserSubscription {
+  add: User
+  edit: User
+  delete: User
+}
+
+input EditUserInput {
+  email: String!
+  first_name: String
+  last_name: String
+  organization_id: String!
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
 }
 
 interface Node {

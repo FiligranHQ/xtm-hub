@@ -28,6 +28,7 @@ interface User {
     id: string
     email: string
     capabilities: {id: string, name: string}[]
+    organization_id: string
     organization: {id: string, name?: string}
 }
 

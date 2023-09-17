@@ -1,14 +1,5 @@
-enum OrganizationOrdering {
-    name
-}
-
 enum UserOrdering {
     email
-}
-
-type Organization implements Node {
-    id: ID!
-    name: String
 }
 
 type Capability implements Node {
@@ -21,6 +12,7 @@ type User implements Node {
     email: String!
     first_name: String
     last_name: String
+    organization_id: ID!
     organization: Organization!
     capabilities: [Capability!]!
 }
@@ -35,26 +27,34 @@ type UserConnection {
     pageInfo: PageInfo!
 }
 
-type OrganizationEdge {
-    cursor: String!
-    node: Organization!
+type UserSubscription {
+    add: User
+    edit: User
+    delete: User
 }
 
-type OrganizationConnection {
-    edges: [OrganizationEdge!]!
-    pageInfo: PageInfo!
+type Subscription {
+    User: UserSubscription
 }
 
 type Query {
     me: User
+    user(id: ID!): User
     users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-    organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+}
+
+input EditUserInput {
+    email: String!
+    first_name: String
+    last_name: String
+    organization_id: String!
 }
 
 type Mutation {
-    # Organization
+    # Management
     addUser(email: String!, password: String!, organization_id: String!): User
-    addOrganization(name: String!): Organization
+    editUser(id: ID!, input: EditUserInput!): User
+    deleteUser(id: ID!): User
     # Login
     login(email: String!, password: String): User
     logout: ID!
