@@ -17,6 +17,12 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type AddUserInput = {
+  email: Scalars['String']['input'];
+  organization_id: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 export type Capability = Node & {
   __typename?: 'Capability';
   id: Scalars['ID']['output'];
@@ -55,9 +61,7 @@ export type MutationAddServiceArgs = {
 
 
 export type MutationAddUserArgs = {
-  email: Scalars['String']['input'];
-  organization_id: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  input: AddUserInput;
 };
 
 
@@ -323,6 +327,7 @@ export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = R
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  AddUserInput: AddUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Capability: ResolverTypeWrapper<Capability>;
   EditUserInput: EditUserInput;
@@ -353,6 +358,7 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  AddUserInput: AddUserInput;
   Boolean: Scalars['Boolean']['output'];
   Capability: Capability;
   EditUserInput: EditUserInput;
@@ -386,7 +392,7 @@ export type CapabilityResolvers<ContextType = PortalContext, ParentType extends 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
   addService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationAddServiceArgs, 'name'>>;
-  addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'email' | 'organization_id' | 'password'>>;
+  addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   deleteService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationDeleteServiceArgs, 'id'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   editService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationEditServiceArgs, 'id' | 'name'>>;
