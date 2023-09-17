@@ -23,13 +23,22 @@ export type Capability = Node & {
   name: Scalars['String']['output'];
 };
 
+export type EditUserInput = {
+  email: Scalars['String']['input'];
+  first_name?: InputMaybe<Scalars['String']['input']>;
+  last_name?: InputMaybe<Scalars['String']['input']>;
+  organization_id: Scalars['String']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Service>;
   addUser?: Maybe<User>;
   deleteService?: Maybe<Service>;
+  deleteUser?: Maybe<User>;
   editService?: Maybe<Service>;
+  editUser?: Maybe<User>;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
 };
@@ -57,9 +66,20 @@ export type MutationDeleteServiceArgs = {
 };
 
 
+export type MutationDeleteUserArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationEditServiceArgs = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
+};
+
+
+export type MutationEditUserArgs = {
+  id: Scalars['ID']['input'];
+  input: EditUserInput;
 };
 
 
@@ -111,13 +131,20 @@ export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
   node?: Maybe<Node>;
+  organization?: Maybe<Organization>;
   organizations: OrganizationConnection;
   services: ServiceConnection;
+  user?: Maybe<User>;
   users: UserConnection;
 };
 
 
 export type QueryNodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryOrganizationArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -135,6 +162,11 @@ export type QueryServicesArgs = {
   first: Scalars['Int']['input'];
   orderBy: ServiceOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -178,6 +210,7 @@ export type ServiceSubscription = {
 export type Subscription = {
   __typename?: 'Subscription';
   Service?: Maybe<ServiceSubscription>;
+  User?: Maybe<UserSubscription>;
 };
 
 export type User = Node & {
@@ -188,6 +221,7 @@ export type User = Node & {
   id: Scalars['ID']['output'];
   last_name?: Maybe<Scalars['String']['output']>;
   organization: Organization;
+  organization_id: Scalars['ID']['output'];
 };
 
 export type UserConnection = {
@@ -205,6 +239,13 @@ export type UserEdge = {
 export enum UserOrdering {
   Email = 'email'
 }
+
+export type UserSubscription = {
+  __typename?: 'UserSubscription';
+  add?: Maybe<User>;
+  delete?: Maybe<User>;
+  edit?: Maybe<User>;
+};
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -284,6 +325,7 @@ export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = R
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Capability: ResolverTypeWrapper<Capability>;
+  EditUserInput: EditUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -306,12 +348,14 @@ export type ResolversTypes = ResolversObject<{
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
   UserOrdering: UserOrdering;
+  UserSubscription: ResolverTypeWrapper<UserSubscription>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   Capability: Capability;
+  EditUserInput: EditUserInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Mutation: {};
@@ -330,6 +374,7 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
+  UserSubscription: UserSubscription;
 }>;
 
 export type CapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
@@ -343,7 +388,9 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationAddServiceArgs, 'name'>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'email' | 'organization_id' | 'password'>>;
   deleteService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationDeleteServiceArgs, 'id'>>;
+  deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   editService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationEditServiceArgs, 'id' | 'name'>>;
+  editUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationEditUserArgs, 'id' | 'input'>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
@@ -382,8 +429,10 @@ export type PageInfoResolvers<ContextType = PortalContext, ParentType extends Re
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+  organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   services?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServicesArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
 }>;
 
@@ -415,6 +464,7 @@ export type ServiceSubscriptionResolvers<ContextType = PortalContext, ParentType
 
 export type SubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
   Service?: SubscriptionResolver<Maybe<ResolversTypes['ServiceSubscription']>, "Service", ParentType, ContextType>;
+  User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType>;
 }>;
 
 export type UserResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
@@ -424,6 +474,7 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
+  organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -436,6 +487,13 @@ export type UserConnectionResolvers<ContextType = PortalContext, ParentType exte
 export type UserEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserEdge'] = ResolversParentTypes['UserEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserSubscription'] = ResolversParentTypes['UserSubscription']> = ResolversObject<{
+  add?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  edit?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -456,5 +514,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;
+  UserSubscription?: UserSubscriptionResolvers<ContextType>;
 }>;
 

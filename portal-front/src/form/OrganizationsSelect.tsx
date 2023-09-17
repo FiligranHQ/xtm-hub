@@ -22,6 +22,6 @@ const organizationFetch = graphql`
 export const OrganizationsSelect = ({name, label, control}: { name: string, label: string, control: Control<any> }) => {
     return <AutoCompleteSelect<OrganizationsSelectQuery, OrganizationsSelectQuery$data>
         name={name} label={label} query={organizationFetch} control={control}
-        transformer={(data) => data.organizations.edges.map((e) => ({id: e.node.id, label: e.node.name ?? e.node.id}))}
+        transformer={(data) => data.organizations.edges.map((e) => ({id: e.node.id, name: e.node.name ?? e.node.id}))}
     />
 }

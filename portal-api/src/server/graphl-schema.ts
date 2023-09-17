@@ -5,6 +5,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import nodesResolver from "../nodes/nodes.resolver.js";
 import servicesResolver from "../services/services.resolver.js";
 import usersResolver from "../users/users.resolver.js";
+import organizationsResolver from "../organizations/organizations.resolver.js";
 
 const getGlobContent = async (pattern: string) => {
     const globFiles = await glob(pattern);
@@ -14,7 +15,7 @@ const getGlobContent = async (pattern: string) => {
 const typeDefFiles = await getGlobContent("src/**/*.graphql");
 const typeDefs = mergeTypeDefs(typeDefFiles);
 
-const resolvers = mergeResolvers([nodesResolver, servicesResolver, usersResolver]);
+const resolvers = mergeResolvers([nodesResolver, servicesResolver, organizationsResolver, usersResolver]);
 
 const createSchema = () => makeExecutableSchema({ typeDefs, resolvers, inheritResolversFromInterfaces: true });
 

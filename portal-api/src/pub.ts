@@ -7,6 +7,13 @@ export interface TypedNode extends Node  {
     __typename: DatabaseType
 }
 
+type PubEvent = {
+    [k in DatabaseType]: {
+        [action in ActionType]: TypedNode;
+    };
+};
+
+
 const pubsub = new PubSub();
 
 export const dispatch = async (type: DatabaseType, action: ActionType, data: Node) => {
@@ -14,8 +21,11 @@ export const dispatch = async (type: DatabaseType, action: ActionType, data: Nod
     await pubsub.publish(type, {[type]: node});
 }
 
-export const listen = (context: PortalContext, topic: DatabaseType) => {
-    const iteratorFn = () => pubsub.asyncIterator([topic]);
-    const filterFn = (payload: TypedNode) => isNodeAccessible(context.user, payload[topic]);
+export const listen = (context: PortalContext, topics: (DatabaseType)[]) => {
+    const iteratorFn = () => pubsub.asyncIterator(topics);
+    const filterFn = (event: PubEvent) => {
+        const values = Object.values(event);
+        return isNodeAccessible(context.user, values[0]);
+    }
     return withFilter(iteratorFn, filterFn)();
 }
