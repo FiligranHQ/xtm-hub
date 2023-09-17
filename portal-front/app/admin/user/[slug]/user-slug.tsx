@@ -11,7 +11,7 @@ import {userSlugDeletionMutation} from "../../../../__generated__/userSlugDeleti
 import Button from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import EditIcon from "@mui/icons-material/Edit";
-import UserEdit from "./user-edit";
+import UserSlugEdit from "./user-slug-edit";
 import {fabStyle} from "@/constant";
 
 const userSlugSubscription = graphql`
@@ -76,7 +76,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({queryRef}) => {
             </div>
             <Button variant="contained" sx={{mt: 3, mb: 2}}
                     onClick={() => deleteUserMutation({variables: {id: user.id}})}>Delete</Button>
-            {openEditDialog && <UserEdit user={user} handleClose={() => setOpenEditDialog(false)}/>}
+            {openEditDialog && <UserSlugEdit user={user} handleClose={() => setOpenEditDialog(false)}/>}
             <Fab onClick={() => setOpenEditDialog(true)} sx={fabStyle} variant="extended" color="primary">
                 <EditIcon sx={{mr: 1}}/> user
             </Fab>

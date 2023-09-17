@@ -1,24 +1,23 @@
-import * as React from "react";
-import PaperDialog from "@/form/PaperDialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import Box from "@mui/material/Box";
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import {useForm} from "react-hook-form";
-import {OrganizationsSelect} from "@/form/OrganizationsSelect";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import {userSlug_fragment$data} from "../../../../__generated__/userSlug_fragment.graphql";
+import Box from "@mui/material/Box";
 import * as Yup from "yup";
-import {yupResolver} from "@hookform/resolvers/yup";
-import ControlledTextField from "@/form/ControlledTextField";
 import {graphql, useMutation} from "react-relay";
-import {EditUserInput, userEditMutation} from "../../../../__generated__/userEditMutation.graphql";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {OrganizationsSelect} from "@/form/OrganizationsSelect";
+import {AddUserInput, userCreateMutation} from "../../../__generated__/userCreateMutation.graphql";
+import PaperDialog from "@/form/PaperDialog";
+import ControlledTextField from "@/form/ControlledTextField";
 
-const UserEditMutation = graphql`
-    mutation userEditMutation($id: ID!, $input: EditUserInput!) {
-        editUser(id: $id, input: $input) {
-            ...userSlug_fragment
+const UserCreateMutation = graphql`
+    mutation userCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
+        addUser(input: $input) @prependNode(connections: $connections, edgeTypeName: "UsersEdge") {
+            email
         }
     }
 `;
@@ -27,48 +26,42 @@ interface FormData {
     email: string
     first_name?: string | null
     last_name?: string | null
+    password: string
     organization: { id: string, name?: string | null }
 }
 
-interface UserEditProps {
-    user: userSlug_fragment$data
+interface UserCreateProps {
+    connectionID: string
     handleClose: () => void
 }
 
-const UserEdit: React.FunctionComponent<UserEditProps> = ({user, handleClose}) => {
-    const [commitUserMutation] = useMutation<userEditMutation>(UserEditMutation);
+const UserListCreate: React.FunctionComponent<UserCreateProps> = ({connectionID, handleClose}) => {
     const schema = Yup.object().shape({
         email: Yup.string().email().ensure().required("Field is required"),
         first_name: Yup.string().nullable(),
         last_name: Yup.string().nullable(),
+        password: Yup.string().ensure().required("Field is required"),
         organization: Yup.object().shape({
             id: Yup.string().ensure().required("Field is required"),
             name: Yup.string().nullable(),
         }).required("Field is required"),
     });
-    const defaultValues: FormData = {
-        email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        organization: user.organization
-    }
-    const {handleSubmit, control, formState: {isDirty}} = useForm<FormData>({
-        defaultValues,
+    const {handleSubmit, control} = useForm<FormData>({
         resolver: yupResolver(schema),
     });
+    const [commitUserMutation] = useMutation<userCreateMutation>(UserCreateMutation);
     const onSubmit = (variables: FormData) => {
-        const input: EditUserInput = {
+        const input: AddUserInput = {
             email: variables.email,
-            first_name: variables.first_name,
-            last_name: variables.last_name,
+            password: variables.password,
             organization_id: variables.organization.id
         }
         commitUserMutation({
-            variables: {id: user.id, input}, onCompleted: () => handleClose()
+            variables: {input, connections: [connectionID]}, onCompleted: () => handleClose()
         })
     };
     return <PaperDialog handleClose={handleClose}>
-        <DialogTitle>Edit user</DialogTitle>
+        <DialogTitle>Create a new user</DialogTitle>
         <hr/>
         <DialogContent>
             <DialogContentText>
@@ -79,6 +72,8 @@ const UserEdit: React.FunctionComponent<UserEditProps> = ({user, handleClose}) =
                         name="first_name" label="First name" control={control}/>
                     <ControlledTextField<FormData, "last_name">
                         name="last_name" label="Last name" control={control}/>
+                    <ControlledTextField<FormData, "password">
+                        name="password" label="Password" type="password" control={control}/>
                     <OrganizationsSelect
                         name="organization" control={control} label={"User organization"}/>
                 </Box>
@@ -86,9 +81,9 @@ const UserEdit: React.FunctionComponent<UserEditProps> = ({user, handleClose}) =
         </DialogContent>
         <DialogActions sx={{mr: 2}}>
             <Button variant="outlined" sx={{mt: 3, mb: 2}} onClick={handleClose}>Cancel</Button>
-            <Button disabled={!isDirty} variant="contained" sx={{mt: 3, mb: 2}} onClick={handleSubmit(onSubmit)}>Save</Button>
+            <Button variant="contained" sx={{mt: 3, mb: 2}} onClick={handleSubmit(onSubmit)}>Create a user</Button>
         </DialogActions>
     </PaperDialog>
 }
 
-export default UserEdit;
+export default UserListCreate;
