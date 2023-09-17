@@ -50,9 +50,15 @@ input EditUserInput {
     organization_id: String!
 }
 
+input AddUserInput {
+    email: String!
+    password: String!
+    organization_id: String!
+}
+
 type Mutation {
     # Management
-    addUser(email: String!, password: String!, organization_id: String!): User
+    addUser(input: AddUserInput!): User
     editUser(id: ID!, input: EditUserInput!): User
     deleteUser(id: ID!): User
     # Login

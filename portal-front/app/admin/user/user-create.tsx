@@ -10,13 +10,13 @@ import * as Yup from "yup";
 import {graphql, useMutation} from "react-relay";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {OrganizationsSelect} from "@/form/OrganizationsSelect";
-import {userCreateMutation} from "../../../__generated__/userCreateMutation.graphql";
+import {AddUserInput, userCreateMutation} from "../../../__generated__/userCreateMutation.graphql";
 import PaperDialog from "@/form/PaperDialog";
 import ControlledTextField from "@/form/ControlledTextField";
 
 const UserCreateMutation = graphql`
-    mutation userCreateMutation($email: String!, $password: String!, $organization_id: String! $connections: [ID!]!) {
-        addUser(email: $email, password: $password, organization_id: $organization_id) @prependNode(connections: $connections, edgeTypeName: "UsersEdge") {
+    mutation userCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
+        addUser(input: $input) @prependNode(connections: $connections, edgeTypeName: "UsersEdge") {
             email
         }
     }
@@ -51,12 +51,13 @@ const UserCreate: React.FunctionComponent<UserCreateProps> = ({connectionID, han
     });
     const [commitUserMutation] = useMutation<userCreateMutation>(UserCreateMutation);
     const onSubmit = (variables: FormData) => {
+        const input: AddUserInput = {
+            email: variables.email,
+            password: variables.password,
+            organization_id: variables.organization.id
+        }
         commitUserMutation({
-            variables: {
-                ...variables,
-                connections: [connectionID],
-                organization_id: variables.organization.id
-            }, onCompleted: () => handleClose()
+            variables: {input, connections: [connectionID]}, onCompleted: () => handleClose()
         })
     };
     return <PaperDialog handleClose={handleClose}>

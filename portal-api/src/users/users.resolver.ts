@@ -41,9 +41,9 @@ const resolvers: Resolvers = {
     },
     Mutation: {
         // Management
-        addUser: async (_, {email, password, organization_id}, context) => {
-            const {salt, hash} = hashPassword(password);
-            const data = {id: uuidv4(), email, salt, password: hash, organization_id: extractId(organization_id)};
+        addUser: async (_, {input}, context) => {
+            const {salt, hash} = hashPassword(input.password);
+            const data = {id: uuidv4(), email: input.email, salt, password: hash, organization_id: extractId(input.organization_id)};
             const [addedUser] = await db<UserWithAuthentication>(context, 'User').insert(data).returning('*');
             return addedUser;
         },
