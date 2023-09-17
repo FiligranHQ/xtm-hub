@@ -67,7 +67,7 @@ const LayoutMenu = () => {
                 </ListItemButton>
             </ListItem>
             <Divider sx={{mt: 'auto'}}/>
-            <ListItem key={'/admin'} disablePadding>
+            {isAdmin && <><ListItem key={'/admin'} disablePadding>
                 <ListItemButton onClick={() => setOpen(!open)}>
                     <ListItemIcon>
                         <Settings/>
@@ -76,32 +76,32 @@ const LayoutMenu = () => {
                     {open ? <ExpandLess/> : <ExpandMore/>}
                 </ListItemButton>
             </ListItem>
-            <Collapse hidden={!isAdmin} in={open} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                    <ListItemButton component={Link} href={'/admin/user'} sx={{pl: 4}}>
-                        <ListItemIcon>
-                            <PeopleAlt/>
-                        </ListItemIcon>
-                        <ListItemText primary="Users"/>
-                    </ListItemButton>
-                </List>
-                <List component="div" disablePadding>
-                    <ListItemButton component={Link} href={'/admin/service'} sx={{pl: 4}}>
-                        <ListItemIcon>
-                            <DryCleaning/>
-                        </ListItemIcon>
-                        <ListItemText primary="Services"/>
-                    </ListItemButton>
-                </List>
-                <List component="div" disablePadding>
-                    <ListItemButton component={Link} href={'/admin/community'} sx={{pl: 4}}>
-                        <ListItemIcon>
-                            <ConnectWithoutContact/>
-                        </ListItemIcon>
-                        <ListItemText primary="Communities"/>
-                    </ListItemButton>
-                </List>
-            </Collapse>
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItemButton component={Link} href={'/admin/user'} sx={{pl: 4}}>
+                            <ListItemIcon>
+                                <PeopleAlt/>
+                            </ListItemIcon>
+                            <ListItemText primary="Users"/>
+                        </ListItemButton>
+                    </List>
+                    <List component="div" disablePadding>
+                        <ListItemButton component={Link} href={'/admin/service'} sx={{pl: 4}}>
+                            <ListItemIcon>
+                                <DryCleaning/>
+                            </ListItemIcon>
+                            <ListItemText primary="Services"/>
+                        </ListItemButton>
+                    </List>
+                    <List component="div" disablePadding>
+                        <ListItemButton component={Link} href={'/admin/community'} sx={{pl: 4}}>
+                            <ListItemIcon>
+                                <ConnectWithoutContact/>
+                            </ListItemIcon>
+                            <ListItemText primary="Communities"/>
+                        </ListItemButton>
+                    </List>
+                </Collapse></>}
         </List>
         <Divider sx={{mt: 'auto'}}/>
         <List>
