@@ -2,7 +2,7 @@ import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from "react-re
 import {userPreloaderQuery} from "../../../__generated__/userPreloaderQuery.graphql";
 import * as React from "react";
 import {serviceQuery} from "../../../__generated__/serviceQuery.graphql";
-import {UserQuery, usersFragment} from "./user-preloader";
+import {UserQuery, usersFragment} from "./user-list-preloader";
 import {userPreloader_users$key} from "../../../__generated__/userPreloader_users.graphql";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,7 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
-import UserCreate from "./user-create";
+import UserListCreate from "./user-list-create";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
@@ -23,7 +23,7 @@ interface ServiceProps {
     queryRef: PreloadedQuery<userPreloaderQuery>
 }
 
-const UserComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
+const UserList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const [openCreateDialog, setOpenCreateDialog] = React.useState(false)
     const router = useRouter()
     const queryData = usePreloadedQuery<userPreloaderQuery>(UserQuery, queryRef);
@@ -46,11 +46,11 @@ const UserComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
             </Table>
         </TableContainer>
         {openCreateDialog &&
-            <UserCreate connectionID={data?.users?.__id} handleClose={() => setOpenCreateDialog(false)}/>}
+            <UserListCreate connectionID={data?.users?.__id} handleClose={() => setOpenCreateDialog(false)}/>}
         <Fab onClick={() => setOpenCreateDialog(true)} sx={fabStyle} variant="extended" color="primary">
             <AddIcon sx={{mr: 1}}/> user
         </Fab>
     </>
 }
 
-export default UserComponent;
+export default UserList;

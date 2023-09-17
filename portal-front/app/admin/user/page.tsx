@@ -1,7 +1,7 @@
 import * as React from "react";
 import loadSerializableQuery from "@/relay/loadSerializableQuery";
 import userPreloaderQueryNode, {userPreloaderQuery} from "../../../__generated__/userPreloaderQuery.graphql";
-import UserPreloader from "./user-preloader";
+import UserListPreloader from "./user-list-preloader";
 
 const DEFAULT_COUNT = 10;
 
@@ -12,7 +12,7 @@ const Page = async () => {
         orderBy: "email",
         orderMode: "asc"
     })
-    return <UserPreloader preloadedQuery={preloadedQuery}/>
+    return <UserListPreloader preloadedQuery={preloadedQuery}/>
 }
 
 export default Page;

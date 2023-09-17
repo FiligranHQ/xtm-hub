@@ -5,7 +5,7 @@ import userPreloaderQueryNode, {userPreloaderQuery} from "../../../__generated__
 import * as React from "react";
 import useSerializablePreloadedQuery from "@/hooks/useSerializablePreloadedQuery";
 import {graphql} from "react-relay";
-import UserComponent from "./user-component";
+import UserList from "./user-list";
 
 // region queries and fragments
 export const usersFragment = graphql`
@@ -29,9 +29,9 @@ export const UserQuery = graphql`
 `;
 // endregion
 
-const UserPreloader = (props: { preloadedQuery: SerializablePreloadedQuery<typeof userPreloaderQueryNode, userPreloaderQuery> }) => {
+const UserListPreloader = (props: { preloadedQuery: SerializablePreloadedQuery<typeof userPreloaderQueryNode, userPreloaderQuery> }) => {
     const queryRef = useSerializablePreloadedQuery(props.preloadedQuery);
-    return <UserComponent queryRef={queryRef}/>
+    return <UserList queryRef={queryRef}/>
 };
 
-export default UserPreloader;
+export default UserListPreloader;
