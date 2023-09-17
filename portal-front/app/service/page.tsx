@@ -1,19 +1,19 @@
 import * as React from "react";
-import serviceQueryNode, {serviceQuery} from "../../__generated__/serviceQuery.graphql";
-import ServicePage from "./service";
+import serviceListQueryNode, {serviceListPreloaderQuery} from "../../__generated__/serviceListPreloaderQuery.graphql";
+import ServiceListPreloader from "./service-list-preloader";
 import loadSerializableQuery from "@/relay/loadSerializableQuery";
 
 const DEFAULT_COUNT = 10;
 
 const Page: React.FunctionComponent = async () => {
-    const preloadedQuery = await loadSerializableQuery<typeof serviceQueryNode, serviceQuery>(serviceQueryNode, {
+    const preloadedQuery = await loadSerializableQuery<typeof serviceListQueryNode, serviceListPreloaderQuery>(serviceListQueryNode, {
         count: DEFAULT_COUNT,
         orderBy: "name",
         orderMode: "asc"
     })
     return <>
         <div><b>SERVICE</b></div>
-        <ServicePage preloadedQuery={preloadedQuery}/>
+        <ServiceListPreloader preloadedQuery={preloadedQuery}/>
     </>
 }
 
