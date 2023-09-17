@@ -17,16 +17,11 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
+import {fabStyle} from "@/constant";
 
 interface ServiceProps {
     queryRef: PreloadedQuery<userPreloaderQuery>
 }
-
-const fabStyle = {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-};
 
 const UserComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const [openCreateDialog, setOpenCreateDialog] = React.useState(false)
@@ -42,7 +37,8 @@ const UserComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
             <Table sx={{minWidth: 650}} aria-label="custom pagination table">
                 <TableBody>
                     {data.users.edges.map((user) => (
-                        <TableRow key={user.node?.id} onClick={() => router.push(`/admin/user/${user.node?.id}`)} sx={{'&:last-child td, &:last-child th': {border: 0}}}>
+                        <TableRow key={user.node?.id} onClick={() => router.push(`/admin/user/${user.node?.id}`)}
+                                  sx={{'&:last-child td, &:last-child th': {border: 0}}}>
                             <TableCell component="th" scope="row">{user.node?.email}</TableCell>
                         </TableRow>
                     ))}
