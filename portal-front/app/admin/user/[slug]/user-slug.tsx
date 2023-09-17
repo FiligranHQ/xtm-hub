@@ -12,12 +12,7 @@ import Button from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import EditIcon from "@mui/icons-material/Edit";
 import UserEdit from "./user-edit";
-
-const fabStyle = {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-};
+import {fabStyle} from "@/constant";
 
 const userSlugSubscription = graphql`
     subscription userSlugSubscription {
