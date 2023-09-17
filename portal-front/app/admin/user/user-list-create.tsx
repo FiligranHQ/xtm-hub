@@ -10,12 +10,12 @@ import * as Yup from "yup";
 import {graphql, useMutation} from "react-relay";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {OrganizationsSelect} from "@/form/OrganizationsSelect";
-import {AddUserInput, userCreateMutation} from "../../../__generated__/userCreateMutation.graphql";
+import {AddUserInput, userListCreateMutation} from "../../../__generated__/userListCreateMutation.graphql";
 import PaperDialog from "@/form/PaperDialog";
 import ControlledTextField from "@/form/ControlledTextField";
 
-const UserCreateMutation = graphql`
-    mutation userCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
+const UserListCreateMutation = graphql`
+    mutation userListCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
         addUser(input: $input) @prependNode(connections: $connections, edgeTypeName: "UsersEdge") {
             email
         }
@@ -49,7 +49,7 @@ const UserListCreate: React.FunctionComponent<UserCreateProps> = ({connectionID,
     const {handleSubmit, control} = useForm<FormData>({
         resolver: yupResolver(schema),
     });
-    const [commitUserMutation] = useMutation<userCreateMutation>(UserCreateMutation);
+    const [commitUserMutation] = useMutation<userListCreateMutation>(UserListCreateMutation);
     const onSubmit = (variables: FormData) => {
         const input: AddUserInput = {
             email: variables.email,

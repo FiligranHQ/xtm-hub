@@ -1,6 +1,6 @@
 "use client";
 
-import {serviceQuery} from "../../__generated__/serviceQuery.graphql";
+import {serviceListPreloaderQuery} from "../../__generated__/serviceListPreloaderQuery.graphql";
 import * as React from "react";
 import {useMemo} from "react";
 import {
@@ -13,23 +13,23 @@ import {
     useSubscription
 } from "react-relay";
 import Box from "@mui/material/Box";
-import {ServiceQuery} from "./service";
-import {serviceComponent_services$key} from "../../__generated__/serviceComponent_services.graphql";
+import {ServiceListQuery} from "./service-list-preloader";
+import {serviceList_services$key} from "../../__generated__/serviceList_services.graphql";
 import Button from "@mui/material/Button";
 import {useRouter} from "next/navigation";
-import {serviceComponent_fragment$key} from "../../__generated__/serviceComponent_fragment.graphql";
+import {serviceList_fragment$key} from "../../__generated__/serviceList_fragment.graphql";
 import Typography from "@mui/material/Typography";
 import {Controller, useForm} from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import {serviceComponentMutation} from "../../__generated__/serviceComponentMutation.graphql";
+import {serviceListMutation} from "../../__generated__/serviceListMutation.graphql";
 
 // region create form
-const ServiceCreateMutation = graphql`
-    mutation serviceComponentMutation($name: String!, $connections: [ID!]!) {
+const ServiceListCreateMutation = graphql`
+    mutation serviceListMutation($name: String!, $connections: [ID!]!) {
         addService(name: $name) @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
-            ...serviceComponent_fragment
+            ...serviceList_fragment
         }
     }
 `;
@@ -43,7 +43,7 @@ interface ServiceCreateFormProps {
 }
 
 const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({connectionID}) => {
-    const [commitServiceMutation] = useMutation<serviceComponentMutation>(ServiceCreateMutation);
+    const [commitServiceMutation] = useMutation<serviceListMutation>(ServiceListCreateMutation);
     const schema = Yup.object().shape({
         name: Yup.string().ensure().required("Field is required")
     });
@@ -77,20 +77,20 @@ const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({con
 // endregion
 
 // region list
-const serviceComponentFragment = graphql`
-    fragment serviceComponent_fragment on Service {
+const serviceListFragment = graphql`
+    fragment serviceList_fragment on Service {
         id
         name
     }
 `;
 const subscription = graphql`
-    subscription serviceComponentSubscription($connections: [ID!]!) {
+    subscription serviceListSubscription($connections: [ID!]!) {
         Service {
             add @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
-                ...serviceComponent_fragment
+                ...serviceList_fragment
             }
             edit {
-                ...serviceComponent_fragment
+                ...serviceList_fragment
             }
             delete {
                 id @deleteRecord
@@ -98,15 +98,15 @@ const subscription = graphql`
         }
     }
 `;
-const servicesFragment = graphql`
-    fragment serviceComponent_services on Query
+const servicesListFragment = graphql`
+    fragment serviceList_services on Query
     @refetchable(queryName: "ServicesPaginationQuery") {
         services(first: $count, after: $cursor, orderBy: $orderBy, orderMode: $orderMode) @connection(key: "Home_services") {
             __id # See https://relay.dev/docs/guided-tour/list-data/updating-connections/#using-declarative-directives
             edges {
                 node {
                     id
-                    ...serviceComponent_fragment
+                    ...serviceList_fragment
                 }
             }
         }
@@ -114,31 +114,31 @@ const servicesFragment = graphql`
 `;
 
 interface ServiceItemProps {
-    node: serviceComponent_fragment$key;
+    node: serviceList_fragment$key;
 }
 
 const ServiceItem: React.FunctionComponent<ServiceItemProps> = ({node}) => {
-    const data = useFragment<serviceComponent_fragment$key>(serviceComponentFragment, node);
+    const data = useFragment<serviceList_fragment$key>(serviceListFragment, node);
     return <li key={data?.id}>{data?.name}</li>;
 }
 
 interface ServiceProps {
-    queryRef: PreloadedQuery<serviceQuery>
+    queryRef: PreloadedQuery<serviceListPreloaderQuery>
 }
 
-const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
+const ServiceList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const router = useRouter();
     const handleRefresh = () => {
         router.refresh();
     };
-    const queryData = usePreloadedQuery<serviceQuery>(ServiceQuery, queryRef);
+    const queryData = usePreloadedQuery<serviceListPreloaderQuery>(ServiceListQuery, queryRef);
     const {
         data,
         loadNext,
         isLoadingNext,
         isLoadingPrevious,
         refetch,
-    } = usePaginationFragment<serviceQuery, serviceComponent_services$key>(servicesFragment, queryData);
+    } = usePaginationFragment<serviceListPreloaderQuery, serviceList_services$key>(servicesListFragment, queryData);
 
     const connectionID = data?.services?.__id;
     const config = useMemo(() => ({
@@ -170,4 +170,4 @@ const ServiceComponent: React.FunctionComponent<ServiceProps> = ({queryRef}) => 
 };
 // endregion
 
-export default ServiceComponent;
+export default ServiceList;

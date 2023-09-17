@@ -13,10 +13,10 @@ import * as Yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup";
 import ControlledTextField from "@/form/ControlledTextField";
 import {graphql, useMutation} from "react-relay";
-import {EditUserInput, userEditMutation} from "../../../../__generated__/userEditMutation.graphql";
+import {EditUserInput, userSlugEditMutation} from "../../../../__generated__/userSlugEditMutation.graphql";
 
-const UserEditMutation = graphql`
-    mutation userEditMutation($id: ID!, $input: EditUserInput!) {
+const UserSlugEditMutation = graphql`
+    mutation userSlugEditMutation($id: ID!, $input: EditUserInput!) {
         editUser(id: $id, input: $input) {
             ...userSlug_fragment
         }
@@ -36,7 +36,7 @@ interface UserEditProps {
 }
 
 const UserSlugEdit: React.FunctionComponent<UserEditProps> = ({user, handleClose}) => {
-    const [commitUserMutation] = useMutation<userEditMutation>(UserEditMutation);
+    const [commitUserMutation] = useMutation<userSlugEditMutation>(UserSlugEditMutation);
     const schema = Yup.object().shape({
         email: Yup.string().email().ensure().required("Field is required"),
         first_name: Yup.string().nullable(),

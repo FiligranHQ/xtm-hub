@@ -1,9 +1,8 @@
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from "react-relay";
-import {userPreloaderQuery} from "../../../__generated__/userPreloaderQuery.graphql";
+import {userListPreloaderQuery} from "../../../__generated__/userListPreloaderQuery.graphql";
 import * as React from "react";
-import {serviceQuery} from "../../../__generated__/serviceQuery.graphql";
-import {UserQuery, usersFragment} from "./user-list-preloader";
-import {userPreloader_users$key} from "../../../__generated__/userPreloader_users.graphql";
+import {UserListQuery, usersFragment} from "./user-list-preloader";
+import {userListPreloader_users$key} from "../../../__generated__/userListPreloader_users.graphql";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -20,14 +19,14 @@ import {useRouter} from "next/navigation";
 import {fabStyle} from "@/constant";
 
 interface ServiceProps {
-    queryRef: PreloadedQuery<userPreloaderQuery>
+    queryRef: PreloadedQuery<userListPreloaderQuery>
 }
 
 const UserList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const [openCreateDialog, setOpenCreateDialog] = React.useState(false)
     const router = useRouter()
-    const queryData = usePreloadedQuery<userPreloaderQuery>(UserQuery, queryRef);
-    const {data} = usePaginationFragment<serviceQuery, userPreloader_users$key>(usersFragment, queryData);
+    const queryData = usePreloadedQuery<userListPreloaderQuery>(UserListQuery, queryRef);
+    const {data} = usePaginationFragment<userListPreloaderQuery, userListPreloader_users$key>(usersFragment, queryData);
     return <>
         <Breadcrumbs aria-label="breadcrumb" sx={{pb: '14px'}}>
             <Typography variant="body2"><Link href="/">Home</Link></Typography>
