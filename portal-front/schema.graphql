@@ -31,6 +31,7 @@ type UserSubscription {
   add: User
   edit: User
   delete: User
+  merge: MergeEvent
 }
 
 type Subscription {
@@ -62,6 +63,7 @@ input AddUserInput {
 }
 
 type Mutation {
+  mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User
   deleteUser(id: ID!): User
@@ -132,4 +134,10 @@ type PageInfo {
   hasPreviousPage: Boolean!
   startCursor: String
   endCursor: String
+}
+
+type MergeEvent implements Node {
+  id: ID!
+  from: ID!
+  target: ID!
 }

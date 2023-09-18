@@ -7,7 +7,7 @@ import * as React from "react";
 import {createContext} from "react";
 import {graphql, useFragment, usePreloadedQuery} from "react-relay";
 import {context_fragment$data, context_fragment$key} from "../__generated__/context_fragment.graphql";
-import {CAPABILITY_BYPASS} from "@/constant";
+import {CAPABILITY_BYPASS} from "@/utils/constant";
 
 export interface Portal {
     me?: context_fragment$data | null

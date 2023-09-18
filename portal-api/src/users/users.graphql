@@ -31,6 +31,7 @@ type UserSubscription {
     add: User
     edit: User
     delete: User
+    merge: MergeEvent
 }
 
 type Subscription {
@@ -58,6 +59,7 @@ input AddUserInput {
 
 type Mutation {
     # Management
+    mergeTest(from: ID!, target: ID!): ID!
     addUser(input: AddUserInput!): User
     editUser(id: ID!, input: EditUserInput!): User
     deleteUser(id: ID!): User

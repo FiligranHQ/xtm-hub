@@ -9,7 +9,7 @@ import {TypedNode} from "./src/pub.js";
 export const CAPABILITY_BYPASS = {id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09', name: 'BYPASS'};
 
 export type DatabaseType = 'User' | 'Organization' | 'Service'
-export type ActionType = 'add' | 'edit' | 'delete'
+export type ActionType = 'add' | 'edit' | 'delete' | 'merge'
 
 interface Pagination {
     first: number

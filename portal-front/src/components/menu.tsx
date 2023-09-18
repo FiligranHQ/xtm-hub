@@ -21,7 +21,7 @@ import Collapse from "@mui/material/Collapse";
 import HeaderLogout from "@/components/header/header-logout";
 import * as React from "react";
 import useGranted from "@/hooks/useGranted";
-import {CAPABILITY_ADMIN, DRAWER_WIDTH} from "@/constant";
+import {CAPABILITY_ADMIN, DRAWER_WIDTH} from "@/utils/constant";
 
 const LayoutMenu = () => {
     const [open, setOpen] = React.useState(true);

@@ -14,7 +14,7 @@ import Box from "@mui/material/Box";
 import LayoutMenu from "@/components/menu";
 import Context from "./context";
 import HeaderComponent from "@/components/header/header";
-import {DRAWER_WIDTH} from "@/constant";
+import {DRAWER_WIDTH} from "@/utils/constant";
 
 const RootLayout = async ({children}: { children: React.ReactNode }) => {
     try {
