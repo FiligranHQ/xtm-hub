@@ -51,7 +51,7 @@ const Login = () => {
                         src="/static/filigran_scred.svg"
                         width={500}
                         height={500}
-                        alt="Picture of the author"
+                        alt="Scred logo"
                     />
                     <Typography style={{ marginTop: 40 }} component="h1" variant="h5">
                         - Sign in -

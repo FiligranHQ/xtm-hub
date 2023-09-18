@@ -1,4 +1,4 @@
-import {Resolvers, User} from "../__generated__/resolvers-types.js";
+import {MergeEvent, Resolvers, User} from "../__generated__/resolvers-types.js";
 import {DatabaseType, db} from "../../knexfile.js";
 import {UserWithAuthentication} from "./users.js";
 import {GraphQLError} from "graphql/error/index.js";
@@ -40,10 +40,22 @@ const resolvers: Resolvers = {
         }
     },
     Mutation: {
+        // Api for testing merge event behavior
+        mergeTest: async (_, {from, target}) => {
+            const test: MergeEvent = {id: 'merge', from, target};
+            await dispatch('User', 'merge', test);
+            return from;
+        },
         // Management
         addUser: async (_, {input}, context) => {
             const {salt, hash} = hashPassword(input.password);
-            const data = {id: uuidv4(), email: input.email, salt, password: hash, organization_id: extractId(input.organization_id)};
+            const data = {
+                id: uuidv4(),
+                email: input.email,
+                salt,
+                password: hash,
+                organization_id: extractId(input.organization_id)
+            };
             const [addedUser] = await db<UserWithAuthentication>(context, 'User').insert(data).returning('*');
             return addedUser;
         },

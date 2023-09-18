@@ -36,6 +36,13 @@ export type EditUserInput = {
   organization_id: Scalars['String']['input'];
 };
 
+export type MergeEvent = Node & {
+  __typename?: 'MergeEvent';
+  from: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  target: Scalars['ID']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addOrganization?: Maybe<Organization>;
@@ -47,6 +54,7 @@ export type Mutation = {
   editUser?: Maybe<User>;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
+  mergeTest: Scalars['ID']['output'];
 };
 
 
@@ -90,6 +98,12 @@ export type MutationEditUserArgs = {
 export type MutationLoginArgs = {
   email: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationMergeTestArgs = {
+  from: Scalars['ID']['input'];
+  target: Scalars['ID']['input'];
 };
 
 export type Node = {
@@ -249,6 +263,7 @@ export type UserSubscription = {
   add?: Maybe<User>;
   delete?: Maybe<User>;
   edit?: Maybe<User>;
+  merge?: Maybe<MergeEvent>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -322,7 +337,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( Capability ) | ( Organization ) | ( Service ) | ( User );
+  Node: ( Capability ) | ( MergeEvent ) | ( Organization ) | ( Service ) | ( User );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -333,6 +348,7 @@ export type ResolversTypes = ResolversObject<{
   EditUserInput: EditUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OrderingMode: OrderingMode;
@@ -364,6 +380,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditUserInput: EditUserInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  MergeEvent: MergeEvent;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   Organization: Organization;
@@ -389,6 +406,13 @@ export type CapabilityResolvers<ContextType = PortalContext, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type MergeEventResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['MergeEvent'] = ResolversParentTypes['MergeEvent']> = ResolversObject<{
+  from?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  target?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
   addService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationAddServiceArgs, 'name'>>;
@@ -399,10 +423,11 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationEditUserArgs, 'id' | 'input'>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Organization' | 'Service' | 'User', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'MergeEvent' | 'Organization' | 'Service' | 'User', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -500,11 +525,13 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
   add?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   edit?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  merge?: Resolver<Maybe<ResolversTypes['MergeEvent']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Capability?: CapabilityResolvers<ContextType>;
+  MergeEvent?: MergeEventResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;

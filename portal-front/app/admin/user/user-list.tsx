@@ -16,7 +16,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {fabStyle} from "@/constant";
+import {fabStyle} from "@/utils/constant";
 
 interface ServiceProps {
     queryRef: PreloadedQuery<userListPreloaderQuery>

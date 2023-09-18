@@ -12,13 +12,18 @@ import Button from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import EditIcon from "@mui/icons-material/Edit";
 import UserSlugEdit from "./user-slug-edit";
-import {fabStyle} from "@/constant";
+import {fabStyle} from "@/utils/constant";
+import {userSlugSubscription} from "../../../../__generated__/userSlugSubscription.graphql";
 
 const userSlugSubscription = graphql`
     subscription userSlugSubscription {
         User {
             edit {
                 ...userSlug_fragment
+            }
+            merge {
+                from
+                target
             }
             delete {
                 id @deleteRecord
@@ -58,7 +63,16 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({queryRef}) => {
     const data = usePreloadedQuery<userSlugPreloaderQuery>(userSlugQuery, queryRef);
     const [deleteUserMutation] = useMutation<userSlugDeletionMutation>(userSlugDeletion);
     const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
-    useSubscription({variables: {}, subscription: userSlugSubscription});
+    useSubscription<userSlugSubscription>({
+        variables: {},
+        subscription: userSlugSubscription,
+        onNext: (response) => {
+            // In case of merge, redirect to the target merged user
+            if (response?.User?.merge && response?.User?.merge.from === user?.id) {
+                router.replace(`/admin/user/${response?.User?.merge?.target}`);
+            }
+        },
+    },);
     if (!user) { // If user not found, redirect to admin list
         router.replace('/admin/user');
     } else {
