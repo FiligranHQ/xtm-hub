@@ -23,7 +23,12 @@ import * as React from "react";
 import useGranted from "@/hooks/useGranted";
 import {CAPABILITY_ADMIN, DRAWER_WIDTH} from "@/utils/constant";
 
-const LayoutMenu = () => {
+// Component interface
+interface LayoutMenuProps {
+}
+
+// Component
+const LayoutMenu: React.FunctionComponent<LayoutMenuProps> = () => {
     const [open, setOpen] = React.useState(true);
     const isAdmin = useGranted(CAPABILITY_ADMIN)
     return <Drawer
@@ -110,4 +115,5 @@ const LayoutMenu = () => {
     </Drawer>
 }
 
+// Component export
 export default LayoutMenu;

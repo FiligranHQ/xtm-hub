@@ -6,20 +6,27 @@ import {environment} from "@/relay/environment";
 import {RelayEnvironmentProvider} from "react-relay";
 import ThemeRegistry from '@/theme/theme-registry';
 
-const App = ({children}: { children: React.ReactNode }) => {
+// Component interface
+interface AppProps {
+    children: React.ReactNode
+}
+
+// Component
+const App: React.FunctionComponent<AppProps> = ({children}) => {
     return <html lang="en">
-        <Head>
-            <title>Filigran Cloud Portal</title>
-            <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        </Head>
-        <body>
-            <ThemeRegistry>
-                <RelayEnvironmentProvider environment={environment}>
-                    {children}
-                </RelayEnvironmentProvider>
-            </ThemeRegistry>
-        </body>
+    <Head>
+        <title>Filigran Cloud Portal</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
+    </Head>
+    <body>
+    <ThemeRegistry>
+        <RelayEnvironmentProvider environment={environment}>
+            {children}
+        </RelayEnvironmentProvider>
+    </ThemeRegistry>
+    </body>
     </html>
 }
 
+// Component export
 export default App;

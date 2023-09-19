@@ -8,6 +8,7 @@ import {context_fragment$data, context_fragment$key} from "../../__generated__/c
 import {CAPABILITY_BYPASS} from "@/utils/constant";
 import {PreloaderQuery} from "../../app/preloader";
 
+// Context
 export interface Portal {
     me?: context_fragment$data | null
     hasCapability?: (capability: string) => boolean
@@ -25,6 +26,7 @@ const generatePortalContext = (me: context_fragment$data | null): Portal => {
     }
 }
 
+// Relay
 const ContextFragment = graphql`
     fragment context_fragment on User {
         id
@@ -35,15 +37,18 @@ const ContextFragment = graphql`
     }
 `;
 
+// Component interface
 interface PortalContextProps {
     queryRef: PreloadedQuery<preloaderLayoutQuery>
     children: React.ReactNode
 }
 
+// Component
 const PortalContext: React.FunctionComponent<PortalContextProps> = ({queryRef, children}) => {
     const data = usePreloadedQuery<preloaderLayoutQuery>(PreloaderQuery, queryRef);
     const me = useFragment<context_fragment$key>(ContextFragment, data.me);
     return <portalContext.Provider value={generatePortalContext(me)}>{children}</portalContext.Provider>
 };
 
+// Component export
 export default PortalContext;

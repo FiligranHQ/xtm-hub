@@ -18,6 +18,7 @@ import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {fabStyle} from "@/utils/constant";
 
+// Relay
 export const usersFragment = graphql`
     fragment userList_users on Query
     @refetchable(queryName: "UsersPaginationQuery") {
@@ -33,10 +34,12 @@ export const usersFragment = graphql`
     }
 `;
 
+// Component interface
 interface ServiceProps {
     queryRef: PreloadedQuery<preloaderUserQuery>
 }
 
+// Component
 const UserList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const [openCreateDialog, setOpenCreateDialog] = React.useState(false)
     const router = useRouter()
@@ -67,4 +70,5 @@ const UserList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     </>
 }
 
+// Component export
 export default UserList;

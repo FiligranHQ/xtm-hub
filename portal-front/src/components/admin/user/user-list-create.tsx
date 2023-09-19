@@ -14,6 +14,7 @@ import {AddUserInput, userListCreateMutation} from "../../../../__generated__/us
 import PaperDialog from "@/form/PaperDialog";
 import ControlledTextField from "@/form/ControlledTextField";
 
+// Relay
 const UserListCreateMutation = graphql`
     mutation userListCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
         addUser(input: $input) @prependNode(connections: $connections, edgeTypeName: "UsersEdge") {
@@ -22,19 +23,22 @@ const UserListCreateMutation = graphql`
     }
 `;
 
+// Create form definition
 interface FormData {
     email: string
     first_name?: string | null
     last_name?: string | null
     password: string
-    organization: { id: string, name?: string | null }
+    organization: SelectChoice
 }
 
+// Component interface
 interface UserCreateProps {
     connectionID: string
     handleClose: () => void
 }
 
+// Component
 const UserListCreate: React.FunctionComponent<UserCreateProps> = ({connectionID, handleClose}) => {
     const schema = Yup.object().shape({
         email: Yup.string().email().ensure().required("Field is required"),
@@ -86,4 +90,5 @@ const UserListCreate: React.FunctionComponent<UserCreateProps> = ({connectionID,
     </PaperDialog>
 }
 
+// Component export
 export default UserListCreate;
