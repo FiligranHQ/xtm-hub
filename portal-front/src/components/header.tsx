@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import {useContext} from "react";
-import {Portal, portalContext} from "../../../app/context";
+import {Portal, portalContext} from "./context";
 
 const HeaderComponent: React.FunctionComponent = () => {
     const { me } = useContext<Portal>(portalContext);

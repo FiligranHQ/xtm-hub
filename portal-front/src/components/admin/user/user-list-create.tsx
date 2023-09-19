@@ -10,7 +10,7 @@ import * as Yup from "yup";
 import {graphql, useMutation} from "react-relay";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {OrganizationsSelect} from "@/form/OrganizationsSelect";
-import {AddUserInput, userListCreateMutation} from "../../../__generated__/userListCreateMutation.graphql";
+import {AddUserInput, userListCreateMutation} from "../../../../__generated__/userListCreateMutation.graphql";
 import PaperDialog from "@/form/PaperDialog";
 import ControlledTextField from "@/form/ControlledTextField";
 

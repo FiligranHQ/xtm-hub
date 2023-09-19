@@ -5,7 +5,7 @@ import serviceListQueryNode, {serviceListPreloaderQuery} from "../../__generated
 import * as React from "react";
 import useSerializablePreloadedQuery from "@/hooks/useSerializablePreloadedQuery";
 import {graphql} from "react-relay";
-import ServiceList from "./service-list";
+import ServiceList from "@/components/service/service-list";
 
 export const ServiceListQuery = graphql`
     query serviceListPreloaderQuery($count: Int!, $cursor: ID, $orderBy: ServiceOrdering!, $orderMode: OrderingMode!) {
@@ -13,10 +13,12 @@ export const ServiceListQuery = graphql`
     }
 `;
 
-const ServiceListPreloader = (props: {
+interface ServiceListPreloaderProps {
     preloadedQuery: SerializablePreloadedQuery<typeof serviceListQueryNode, serviceListPreloaderQuery>
-}) => {
-    const queryRef = useSerializablePreloadedQuery(props.preloadedQuery);
+}
+
+const ServiceListPreloader: React.FunctionComponent<ServiceListPreloaderProps> = ({preloadedQuery}) => {
+    const queryRef = useSerializablePreloadedQuery(preloadedQuery);
     return <>
         <div><b>ServiceComponent</b></div>
         <ServiceList queryRef={queryRef}/>

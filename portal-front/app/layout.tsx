@@ -4,23 +4,23 @@ import "styles/globals.css";
 
 import loadSerializableQuery from "@/relay/loadSerializableQuery";
 import contextQueryNode, {contextQuery} from "../__generated__/contextQuery.graphql";
-import Login from "@/components/login/login";
-import Layout from "@/components/layout";
+import Login from "@/components/login";
+import App from "@/components/app";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import LayoutMenu from "@/components/menu";
-import Context from "./context";
-import HeaderComponent from "@/components/header/header";
+import HeaderComponent from "@/components/header";
 import {DRAWER_WIDTH} from "@/utils/constant";
+import LayoutPreloader from "./layout-preloader";
 
 const RootLayout = async ({children}: { children: React.ReactNode }) => {
     try {
         const preloadedQuery = await loadSerializableQuery<typeof contextQueryNode, contextQuery>(contextQueryNode, {})
-        return <Layout>
-            <Context preloadedQuery={preloadedQuery}>
+        return <App>
+            <LayoutPreloader preloadedQuery={preloadedQuery}>
                 <AppBar position="fixed">
                     <Toolbar sx={{backgroundColor: 'background.paper'}}>
                         <DashboardIcon sx={{color: '#444', mr: 2, transform: 'translateY(-2px)'}}/>
@@ -40,12 +40,12 @@ const RootLayout = async ({children}: { children: React.ReactNode }) => {
                 }}>
                     {children}
                 </Box>
-            </Context>
-        </Layout>;
+            </LayoutPreloader>
+        </App>;
     } catch (e) {
-        return <Layout>
+        return <App>
             <Login/>
-        </Layout>
+        </App>
     }
 }
 

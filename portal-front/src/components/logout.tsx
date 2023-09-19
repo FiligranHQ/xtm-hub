@@ -9,15 +9,15 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ListItemText from "@mui/material/ListItemText";
 
-const logoutMutation = graphql`
-    mutation headerLogoutMutation {
+const LogoutMutation = graphql`
+    mutation logoutMutation {
         logout
     }
 `;
 
-const HeaderLogout: React.FunctionComponent = () => {
+const Logout: React.FunctionComponent = () => {
     const router = useRouter()
-    const [commitLogoutMutation] = useMutation(logoutMutation);
+    const [commitLogoutMutation] = useMutation(LogoutMutation);
     const logout = () => {
         commitLogoutMutation({
             variables: {},
@@ -33,4 +33,4 @@ const HeaderLogout: React.FunctionComponent = () => {
         <ListItemText primary={'Logout'} />
     </ListItemButton>
 }
-export default HeaderLogout;
+export default Logout;

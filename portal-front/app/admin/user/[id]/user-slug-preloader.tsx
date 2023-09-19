@@ -4,7 +4,7 @@ import {SerializablePreloadedQuery} from "@/relay/loadSerializableQuery";
 import * as React from "react";
 import useSerializablePreloadedQuery from "@/hooks/useSerializablePreloadedQuery";
 import {graphql} from "react-relay";
-import UserSlug from "./user-slug";
+import UserSlug from "@/components/admin/user/[id]/user-slug";
 import userSlugPreloaderQueryNode, {userSlugPreloaderQuery} from "../../../../__generated__/userSlugPreloaderQuery.graphql";
 
 export const userSlugQuery = graphql`

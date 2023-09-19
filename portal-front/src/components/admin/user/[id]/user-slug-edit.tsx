@@ -8,12 +8,12 @@ import {useForm} from "react-hook-form";
 import {OrganizationsSelect} from "@/form/OrganizationsSelect";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import {userSlug_fragment$data} from "../../../../__generated__/userSlug_fragment.graphql";
+import {userSlug_fragment$data} from "../../../../../__generated__/userSlug_fragment.graphql";
 import * as Yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup";
 import ControlledTextField from "@/form/ControlledTextField";
 import {graphql, useMutation} from "react-relay";
-import {EditUserInput, userSlugEditMutation} from "../../../../__generated__/userSlugEditMutation.graphql";
+import {EditUserInput, userSlugEditMutation} from "../../../../../__generated__/userSlugEditMutation.graphql";
 
 const UserSlugEditMutation = graphql`
     mutation userSlugEditMutation($id: ID!, $input: EditUserInput!) {

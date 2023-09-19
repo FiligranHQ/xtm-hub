@@ -3,17 +3,17 @@ import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import * as React from "react";
 import {graphql, PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription} from "react-relay";
-import {userSlugPreloaderQuery} from "../../../../__generated__/userSlugPreloaderQuery.graphql";
-import {userSlugQuery} from "./user-slug-preloader";
-import {userSlug_fragment$key} from "../../../../__generated__/userSlug_fragment.graphql";
+import {userSlugPreloaderQuery} from "../../../../../__generated__/userSlugPreloaderQuery.graphql";
+import {userSlugQuery} from "../../../../../app/admin/user/[id]/user-slug-preloader";
+import {userSlug_fragment$key} from "../../../../../__generated__/userSlug_fragment.graphql";
 import {useRouter} from "next/navigation";
-import {userSlugDeletionMutation} from "../../../../__generated__/userSlugDeletionMutation.graphql";
+import {userSlugDeletionMutation} from "../../../../../__generated__/userSlugDeletionMutation.graphql";
 import Button from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import EditIcon from "@mui/icons-material/Edit";
 import UserSlugEdit from "./user-slug-edit";
 import {fabStyle} from "@/utils/constant";
-import {userSlugSubscription} from "../../../../__generated__/userSlugSubscription.graphql";
+import {userSlugSubscription} from "../../../../../__generated__/userSlugSubscription.graphql";
 
 const userSlugSubscription = graphql`
     subscription userSlugSubscription {

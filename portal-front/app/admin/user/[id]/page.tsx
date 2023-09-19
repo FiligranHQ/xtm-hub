@@ -6,8 +6,8 @@ import userSlugPreloaderQueryGraphql, {
     userSlugPreloaderQuery
 } from "../../../../__generated__/userSlugPreloaderQuery.graphql";
 
-const Page = async ({params}: { params: { slug: string } }) => {
-    const id = decodeURIComponent(params.slug);
+const Page = async ({params}: { params: { id: string } }) => {
+    const id = decodeURIComponent(params.id);
     try {
         const preloadedQuery = await loadSerializableQuery<typeof userSlugPreloaderQueryGraphql, userSlugPreloaderQuery>(userSlugPreloaderQueryGraphql, {id})
         return <UserSlugPreloader preloadedQuery={preloadedQuery}/>
