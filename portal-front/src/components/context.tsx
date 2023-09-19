@@ -1,11 +1,12 @@
 "use client";
 
-import {contextQuery} from "../../__generated__/contextQuery.graphql";
+import {preloaderLayoutQuery} from "../../__generated__/preloaderLayoutQuery.graphql";
 import * as React from "react";
 import {createContext} from "react";
 import {graphql, PreloadedQuery, useFragment, usePreloadedQuery} from "react-relay";
 import {context_fragment$data, context_fragment$key} from "../../__generated__/context_fragment.graphql";
 import {CAPABILITY_BYPASS} from "@/utils/constant";
+import {PreloaderQuery} from "../../app/preloader";
 
 export interface Portal {
     me?: context_fragment$data | null
@@ -24,7 +25,7 @@ const generatePortalContext = (me: context_fragment$data | null): Portal => {
     }
 }
 
-const homeFragment = graphql`
+const ContextFragment = graphql`
     fragment context_fragment on User {
         id
         email
@@ -33,22 +34,15 @@ const homeFragment = graphql`
         }
     }
 `;
-const homeUserQuery = graphql`
-    query contextQuery {
-        me {
-            ...context_fragment
-        }
-    }
-`;
 
 interface PortalContextProps {
-    queryRef: PreloadedQuery<contextQuery>
+    queryRef: PreloadedQuery<preloaderLayoutQuery>
     children: React.ReactNode
 }
 
 const PortalContext: React.FunctionComponent<PortalContextProps> = ({queryRef, children}) => {
-    const data = usePreloadedQuery<contextQuery>(homeUserQuery, queryRef);
-    const me = useFragment<context_fragment$key>(homeFragment, data.me);
+    const data = usePreloadedQuery<preloaderLayoutQuery>(PreloaderQuery, queryRef);
+    const me = useFragment<context_fragment$key>(ContextFragment, data.me);
     return <portalContext.Provider value={generatePortalContext(me)}>{children}</portalContext.Provider>
 };
 

@@ -1,7 +1,7 @@
 import {graphql, PreloadedQuery, usePaginationFragment, usePreloadedQuery} from "react-relay";
-import {userListPreloaderQuery} from "../../../../__generated__/userListPreloaderQuery.graphql";
+import {preloaderUserQuery} from "../../../../__generated__/preloaderUserQuery.graphql";
 import * as React from "react";
-import {UserListQuery} from "../../../../app/admin/user/user-list-preloader";
+import {PreloaderQuery} from "../../../../app/admin/user/preloader";
 import {userList_users$key} from "../../../../__generated__/userList_users.graphql";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -34,14 +34,14 @@ export const usersFragment = graphql`
 `;
 
 interface ServiceProps {
-    queryRef: PreloadedQuery<userListPreloaderQuery>
+    queryRef: PreloadedQuery<preloaderUserQuery>
 }
 
 const UserList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const [openCreateDialog, setOpenCreateDialog] = React.useState(false)
     const router = useRouter()
-    const queryData = usePreloadedQuery<userListPreloaderQuery>(UserListQuery, queryRef);
-    const {data} = usePaginationFragment<userListPreloaderQuery, userList_users$key>(usersFragment, queryData);
+    const queryData = usePreloadedQuery<preloaderUserQuery>(PreloaderQuery, queryRef);
+    const {data} = usePaginationFragment<preloaderUserQuery, userList_users$key>(usersFragment, queryData);
     return <>
         <Breadcrumbs aria-label="breadcrumb" sx={{pb: '14px'}}>
             <Typography variant="body2"><Link href="/">Home</Link></Typography>

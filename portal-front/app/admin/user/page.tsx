@@ -1,19 +1,24 @@
 import * as React from "react";
 import loadSerializableQuery from "@/relay/loadSerializableQuery";
-import userListPreloaderQueryNode, {
-    userListPreloaderQuery
-} from "../../../__generated__/userListPreloaderQuery.graphql";
-import UserListPreloader from "./user-list-preloader";
+import preloaderUserQueryNode, {preloaderUserQuery} from "../../../__generated__/preloaderUserQuery.graphql";
+import Preloader from "./preloader";
 
+// Configuration or Preloader Query
 const DEFAULT_COUNT = 10;
 
-const Page = async () => {
-    const preloadedQuery = await loadSerializableQuery<typeof userListPreloaderQueryNode, userListPreloaderQuery>(userListPreloaderQueryNode, {
+// Component interface
+interface PageProps {
+}
+
+// Component
+const Page: React.FunctionComponent<PageProps> = async () => {
+    const preloadedQuery = await loadSerializableQuery<typeof preloaderUserQueryNode, preloaderUserQuery>(preloaderUserQueryNode, {
         count: DEFAULT_COUNT,
         orderBy: "email",
         orderMode: "asc"
     })
-    return <UserListPreloader preloadedQuery={preloadedQuery}/>
+    return <Preloader preloadedQuery={preloadedQuery}/>
 }
 
+// Component export
 export default Page;

@@ -3,7 +3,7 @@ import * as React from "react";
 import "styles/globals.css";
 
 import loadSerializableQuery from "@/relay/loadSerializableQuery";
-import contextQueryNode, {contextQuery} from "../__generated__/contextQuery.graphql";
+import preloaderLayoutQueryNode, {preloaderLayoutQuery} from "../__generated__/preloaderLayoutQuery.graphql";
 import Login from "@/components/login";
 import App from "@/components/app";
 import AppBar from "@mui/material/AppBar";
@@ -14,13 +14,21 @@ import Box from "@mui/material/Box";
 import LayoutMenu from "@/components/menu";
 import HeaderComponent from "@/components/header";
 import {DRAWER_WIDTH} from "@/utils/constant";
-import LayoutPreloader from "./layout-preloader";
+import Preloader from "./preloader";
 
-const RootLayout = async ({children}: { children: React.ReactNode }) => {
+// Configuration or Preloader Query
+
+// Component interface
+interface RootLayoutProps {
+    children: React.ReactNode
+}
+
+// Component
+const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({children}) => {
     try {
-        const preloadedQuery = await loadSerializableQuery<typeof contextQueryNode, contextQuery>(contextQueryNode, {})
+        const preloadedQuery = await loadSerializableQuery<typeof preloaderLayoutQueryNode, preloaderLayoutQuery>(preloaderLayoutQueryNode, {})
         return <App>
-            <LayoutPreloader preloadedQuery={preloadedQuery}>
+            <Preloader preloadedQuery={preloadedQuery}>
                 <AppBar position="fixed">
                     <Toolbar sx={{backgroundColor: 'background.paper'}}>
                         <DashboardIcon sx={{color: '#444', mr: 2, transform: 'translateY(-2px)'}}/>
@@ -40,7 +48,7 @@ const RootLayout = async ({children}: { children: React.ReactNode }) => {
                 }}>
                     {children}
                 </Box>
-            </LayoutPreloader>
+            </Preloader>
         </App>;
     } catch (e) {
         return <App>
@@ -49,4 +57,5 @@ const RootLayout = async ({children}: { children: React.ReactNode }) => {
     }
 }
 
+// Component export
 export default RootLayout;
