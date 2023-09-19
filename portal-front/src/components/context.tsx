@@ -1,12 +1,10 @@
 "use client";
 
-import {SerializablePreloadedQuery} from "@/relay/loadSerializableQuery";
-import contextQueryNode, {contextQuery} from "../__generated__/contextQuery.graphql";
-import useSerializablePreloadedQuery from "@/hooks/useSerializablePreloadedQuery";
+import {contextQuery} from "../../__generated__/contextQuery.graphql";
 import * as React from "react";
 import {createContext} from "react";
-import {graphql, useFragment, usePreloadedQuery} from "react-relay";
-import {context_fragment$data, context_fragment$key} from "../__generated__/context_fragment.graphql";
+import {graphql, PreloadedQuery, useFragment, usePreloadedQuery} from "react-relay";
+import {context_fragment$data, context_fragment$key} from "../../__generated__/context_fragment.graphql";
 import {CAPABILITY_BYPASS} from "@/utils/constant";
 
 export interface Portal {
@@ -43,14 +41,15 @@ const homeUserQuery = graphql`
     }
 `;
 
-const PortalContext = (props: {
-    preloadedQuery: SerializablePreloadedQuery<typeof contextQueryNode, contextQuery>,
+interface PortalContextProps {
+    queryRef: PreloadedQuery<contextQuery>
     children: React.ReactNode
-}) => {
-    const queryRef = useSerializablePreloadedQuery(props.preloadedQuery);
+}
+
+const PortalContext: React.FunctionComponent<PortalContextProps> = ({queryRef, children}) => {
     const data = usePreloadedQuery<contextQuery>(homeUserQuery, queryRef);
     const me = useFragment<context_fragment$key>(homeFragment, data.me);
-    return <portalContext.Provider value={generatePortalContext(me)}>{props.children}</portalContext.Provider>
+    return <portalContext.Provider value={generatePortalContext(me)}>{children}</portalContext.Provider>
 };
 
 export default PortalContext;

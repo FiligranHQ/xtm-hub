@@ -1,8 +1,8 @@
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from "react-relay";
-import {userListPreloaderQuery} from "../../../__generated__/userListPreloaderQuery.graphql";
+import {userListPreloaderQuery} from "../../../../__generated__/userListPreloaderQuery.graphql";
 import * as React from "react";
-import {UserListQuery, usersFragment} from "./user-list-preloader";
-import {userListPreloader_users$key} from "../../../__generated__/userListPreloader_users.graphql";
+import {UserListQuery, usersFragment} from "../../../../app/admin/user/user-list-preloader";
+import {userListPreloader_users$key} from "../../../../__generated__/userListPreloader_users.graphql";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';

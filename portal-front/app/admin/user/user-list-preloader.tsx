@@ -5,7 +5,7 @@ import userListPreloaderQueryNode, {userListPreloaderQuery} from "../../../__gen
 import * as React from "react";
 import useSerializablePreloadedQuery from "@/hooks/useSerializablePreloadedQuery";
 import {graphql} from "react-relay";
-import UserList from "./user-list";
+import UserList from "@/components/admin/user/user-list";
 
 // region queries and fragments
 export const usersFragment = graphql`

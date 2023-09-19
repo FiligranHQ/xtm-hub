@@ -4,9 +4,9 @@ import * as React from "react";
 import Head from 'next/head'
 import {environment} from "@/relay/environment";
 import {RelayEnvironmentProvider} from "react-relay";
-import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry';
+import ThemeRegistry from '@/theme/theme-registry';
 
-const Layout = ({children}: { children: React.ReactNode }) => {
+const App = ({children}: { children: React.ReactNode }) => {
     return <html lang="en">
         <Head>
             <title>Filigran Cloud Portal</title>
@@ -22,4 +22,4 @@ const Layout = ({children}: { children: React.ReactNode }) => {
     </html>
 }
 
-export default Layout;
+export default App;

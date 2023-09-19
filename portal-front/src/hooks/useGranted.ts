@@ -1,5 +1,5 @@
 import {useContext} from "react";
-import {Portal, portalContext} from "../../app/context";
+import {Portal, portalContext} from "../components/context";
 
 const useGranted = (capability: string) => {
     const { hasCapability } = useContext<Portal>(portalContext);

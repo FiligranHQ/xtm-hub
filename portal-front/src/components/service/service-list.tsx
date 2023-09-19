@@ -1,6 +1,6 @@
 "use client";
 
-import {serviceListPreloaderQuery} from "../../__generated__/serviceListPreloaderQuery.graphql";
+import {serviceListPreloaderQuery} from "../../../__generated__/serviceListPreloaderQuery.graphql";
 import * as React from "react";
 import {useMemo} from "react";
 import {
@@ -13,17 +13,17 @@ import {
     useSubscription
 } from "react-relay";
 import Box from "@mui/material/Box";
-import {ServiceListQuery} from "./service-list-preloader";
-import {serviceList_services$key} from "../../__generated__/serviceList_services.graphql";
+import {ServiceListQuery} from "../../../app/service/service-list-preloader";
+import {serviceList_services$key} from "../../../__generated__/serviceList_services.graphql";
 import Button from "@mui/material/Button";
 import {useRouter} from "next/navigation";
-import {serviceList_fragment$key} from "../../__generated__/serviceList_fragment.graphql";
+import {serviceList_fragment$key} from "../../../__generated__/serviceList_fragment.graphql";
 import Typography from "@mui/material/Typography";
 import {Controller, useForm} from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import {serviceListMutation} from "../../__generated__/serviceListMutation.graphql";
+import {serviceListMutation} from "../../../__generated__/serviceListMutation.graphql";
 
 // region create form
 const ServiceListCreateMutation = graphql`

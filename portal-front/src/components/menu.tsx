@@ -18,7 +18,7 @@ import ChecklistIcon from "@mui/icons-material/Checklist";
 import Settings from "@mui/icons-material/Settings";
 import PeopleAlt from "@mui/icons-material/PeopleAlt";
 import Collapse from "@mui/material/Collapse";
-import HeaderLogout from "@/components/header/header-logout";
+import Logout from "@/components/logout";
 import * as React from "react";
 import useGranted from "@/hooks/useGranted";
 import {CAPABILITY_ADMIN, DRAWER_WIDTH} from "@/utils/constant";
@@ -105,7 +105,7 @@ const LayoutMenu = () => {
         </List>
         <Divider sx={{mt: 'auto'}}/>
         <List>
-            <HeaderLogout/>
+            <Logout/>
         </List>
     </Drawer>
 }
