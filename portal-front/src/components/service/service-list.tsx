@@ -1,6 +1,6 @@
 "use client";
 
-import {serviceListPreloaderQuery} from "../../../__generated__/serviceListPreloaderQuery.graphql";
+import {preloaderServiceQuery} from "../../../__generated__/preloaderServiceQuery.graphql";
 import * as React from "react";
 import {useMemo} from "react";
 import {
@@ -13,7 +13,7 @@ import {
     useSubscription
 } from "react-relay";
 import Box from "@mui/material/Box";
-import {ServiceListQuery} from "../../../app/service/service-list-preloader";
+import {PreloaderQuery} from "../../../app/service/preloader";
 import {serviceList_services$key} from "../../../__generated__/serviceList_services.graphql";
 import Button from "@mui/material/Button";
 import {useRouter} from "next/navigation";
@@ -123,7 +123,7 @@ const ServiceItem: React.FunctionComponent<ServiceItemProps> = ({node}) => {
 }
 
 interface ServiceProps {
-    queryRef: PreloadedQuery<serviceListPreloaderQuery>
+    queryRef: PreloadedQuery<preloaderServiceQuery>
 }
 
 const ServiceList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
@@ -131,14 +131,14 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const handleRefresh = () => {
         router.refresh();
     };
-    const queryData = usePreloadedQuery<serviceListPreloaderQuery>(ServiceListQuery, queryRef);
+    const queryData = usePreloadedQuery<preloaderServiceQuery>(PreloaderQuery, queryRef);
     const {
         data,
         loadNext,
         isLoadingNext,
         isLoadingPrevious,
         refetch,
-    } = usePaginationFragment<serviceListPreloaderQuery, serviceList_services$key>(servicesListFragment, queryData);
+    } = usePaginationFragment<preloaderServiceQuery, serviceList_services$key>(servicesListFragment, queryData);
 
     const connectionID = data?.services?.__id;
     const config = useMemo(() => ({

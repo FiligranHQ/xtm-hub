@@ -3,8 +3,8 @@ import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import * as React from "react";
 import {graphql, PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription} from "react-relay";
-import {userSlugPreloaderQuery} from "../../../../../__generated__/userSlugPreloaderQuery.graphql";
-import {userSlugQuery} from "../../../../../app/admin/user/[id]/user-slug-preloader";
+import {preloaderUserSlugQuery} from "../../../../../__generated__/preloaderUserSlugQuery.graphql";
+import {PreloaderQuery} from "../../../../../app/admin/user/[slug]/preloader";
 import {userSlug_fragment$key} from "../../../../../__generated__/userSlug_fragment.graphql";
 import {useRouter} from "next/navigation";
 import {userSlugDeletionMutation} from "../../../../../__generated__/userSlugDeletionMutation.graphql";
@@ -54,13 +54,13 @@ const userSlugDeletion = graphql`
 `;
 
 interface UserSlugProps {
-    queryRef: PreloadedQuery<userSlugPreloaderQuery>
+    queryRef: PreloadedQuery<preloaderUserSlugQuery>
 }
 
 const UserSlug: React.FunctionComponent<UserSlugProps> = ({queryRef}) => {
     const router = useRouter()
     const [openEditDialog, setOpenEditDialog] = React.useState(false)
-    const data = usePreloadedQuery<userSlugPreloaderQuery>(userSlugQuery, queryRef);
+    const data = usePreloadedQuery<preloaderUserSlugQuery>(PreloaderQuery, queryRef);
     const [deleteUserMutation] = useMutation<userSlugDeletionMutation>(userSlugDeletion);
     const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
     useSubscription<userSlugSubscription>({
