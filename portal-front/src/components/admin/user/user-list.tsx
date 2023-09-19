@@ -1,8 +1,8 @@
-import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from "react-relay";
+import {graphql, PreloadedQuery, usePaginationFragment, usePreloadedQuery} from "react-relay";
 import {userListPreloaderQuery} from "../../../../__generated__/userListPreloaderQuery.graphql";
 import * as React from "react";
-import {UserListQuery, usersFragment} from "../../../../app/admin/user/user-list-preloader";
-import {userListPreloader_users$key} from "../../../../__generated__/userListPreloader_users.graphql";
+import {UserListQuery} from "../../../../app/admin/user/user-list-preloader";
+import {userList_users$key} from "../../../../__generated__/userList_users.graphql";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -18,6 +18,21 @@ import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {fabStyle} from "@/utils/constant";
 
+export const usersFragment = graphql`
+    fragment userList_users on Query
+    @refetchable(queryName: "UsersPaginationQuery") {
+        users(first: $count, after: $cursor, orderBy: $orderBy, orderMode: $orderMode) @connection(key: "Admin_users") {
+            __id # See https://relay.dev/docs/guided-tour/list-data/updating-connections/#using-declarative-directives
+            edges {
+                node {
+                    id
+                    email
+                }
+            }
+        }
+    }
+`;
+
 interface ServiceProps {
     queryRef: PreloadedQuery<userListPreloaderQuery>
 }
@@ -26,7 +41,7 @@ const UserList: React.FunctionComponent<ServiceProps> = ({queryRef}) => {
     const [openCreateDialog, setOpenCreateDialog] = React.useState(false)
     const router = useRouter()
     const queryData = usePreloadedQuery<userListPreloaderQuery>(UserListQuery, queryRef);
-    const {data} = usePaginationFragment<userListPreloaderQuery, userListPreloader_users$key>(usersFragment, queryData);
+    const {data} = usePaginationFragment<userListPreloaderQuery, userList_users$key>(usersFragment, queryData);
     return <>
         <Breadcrumbs aria-label="breadcrumb" sx={{pb: '14px'}}>
             <Typography variant="body2"><Link href="/">Home</Link></Typography>
