@@ -15,6 +15,26 @@ import UserSlugEdit from "./user-slug-edit";
 import {fabStyle} from "@/utils/constant";
 import {userSlugSubscription} from "../../../../../__generated__/userSlugSubscription.graphql";
 
+// Relay
+const userSlugDeletion = graphql`
+    mutation userSlugDeletionMutation($id: ID!)  {
+        deleteUser(id: $id) {
+            id
+        }
+    }
+`;
+const userSlugFragment = graphql`
+    fragment userSlug_fragment on User {
+        id
+        email
+        last_name
+        first_name
+        organization {
+            id
+            name
+        }
+    }
+`;
 const userSlugSubscription = graphql`
     subscription userSlugSubscription {
         User {
@@ -32,31 +52,12 @@ const userSlugSubscription = graphql`
     }
 `;
 
-const userSlugFragment = graphql`
-    fragment userSlug_fragment on User {
-        id
-        email
-        last_name
-        first_name
-        organization {
-            id
-            name
-        }
-    }
-`;
-
-const userSlugDeletion = graphql`
-    mutation userSlugDeletionMutation($id: ID!)  {
-        deleteUser(id: $id) {
-            id
-        }
-    }
-`;
-
+// Component interface
 interface UserSlugProps {
     queryRef: PreloadedQuery<preloaderUserSlugQuery>
 }
 
+// Component
 const UserSlug: React.FunctionComponent<UserSlugProps> = ({queryRef}) => {
     const router = useRouter()
     const [openEditDialog, setOpenEditDialog] = React.useState(false)
@@ -98,4 +99,5 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({queryRef}) => {
     }
 }
 
+// Component export
 export default UserSlug;

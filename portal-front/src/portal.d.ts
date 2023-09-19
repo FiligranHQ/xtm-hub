@@ -1,0 +1,1 @@
+type SelectChoice = { id: string, name?: string | null }

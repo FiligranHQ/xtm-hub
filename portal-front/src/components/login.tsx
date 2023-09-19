@@ -11,6 +11,7 @@ import Image from 'next/image'
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 
+// Relay
 const LoginMutation = graphql`
     mutation loginMutation($email: String!, $password: String!) {
         login(email: $email, password: $password) {
@@ -19,7 +20,12 @@ const LoginMutation = graphql`
     }
 `;
 
-const Login = () => {
+// Component interface
+interface LoginProps {
+}
+
+// Component
+const Login: React.FunctionComponent<LoginProps> = () => {
     const router = useRouter()
     const [commitLoginMutation] = useMutation(LoginMutation);
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -40,23 +46,23 @@ const Login = () => {
     return (
         <>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
+                <CssBaseline/>
                 <Box sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}>
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}>
                     <Image
                         src="/static/filigran_scred.svg"
                         width={500}
                         height={500}
                         alt="Scred logo"
                     />
-                    <Typography style={{ marginTop: 40 }} component="h1" variant="h5">
+                    <Typography style={{marginTop: 40}} component="h1" variant="h5">
                         - Sign in -
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                         <TextField
                             margin="normal"
                             required
@@ -78,9 +84,9 @@ const Login = () => {
                             autoComplete="current-password"
                         />
                         <Button type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}>
+                                fullWidth
+                                variant="contained"
+                                sx={{mt: 3, mb: 2}}>
                             Sign In
                         </Button>
                     </Box>
@@ -90,4 +96,5 @@ const Login = () => {
     )
 }
 
+// Component export
 export default Login;

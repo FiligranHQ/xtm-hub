@@ -15,6 +15,7 @@ import ControlledTextField from "@/form/ControlledTextField";
 import {graphql, useMutation} from "react-relay";
 import {EditUserInput, userSlugEditMutation} from "../../../../../__generated__/userSlugEditMutation.graphql";
 
+// Relay
 const UserSlugEditMutation = graphql`
     mutation userSlugEditMutation($id: ID!, $input: EditUserInput!) {
         editUser(id: $id, input: $input) {
@@ -23,18 +24,21 @@ const UserSlugEditMutation = graphql`
     }
 `;
 
+// Edit form definition
 interface FormData {
     email: string
     first_name?: string | null
     last_name?: string | null
-    organization: { id: string, name?: string | null }
+    organization: SelectChoice
 }
 
+// Component interface
 interface UserEditProps {
     user: userSlug_fragment$data
     handleClose: () => void
 }
 
+// Component
 const UserSlugEdit: React.FunctionComponent<UserEditProps> = ({user, handleClose}) => {
     const [commitUserMutation] = useMutation<userSlugEditMutation>(UserSlugEditMutation);
     const schema = Yup.object().shape({
@@ -91,4 +95,5 @@ const UserSlugEdit: React.FunctionComponent<UserEditProps> = ({user, handleClose
     </PaperDialog>
 }
 
+// Component export
 export default UserSlugEdit;
