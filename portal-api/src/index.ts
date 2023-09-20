@@ -24,7 +24,7 @@ export const PORTAL_COOKIE_NAME = 'cloud-portal';
 export const PORTAL_COOKIE_SECRET = 'cloud-portal-cookie-key';
 const PORTAL_GRAPHQL_PATH = '/graphql';
 
-interface User {
+export interface User {
     id: string
     email: string
     capabilities: {id: string, name: string}[]
