@@ -1,3 +1,7 @@
+directive @authenticated repeatable on OBJECT | FIELD_DEFINITION
+
+directive @hasRole(requires: [Role] = [BYPASS]) on OBJECT | FIELD_DEFINITION
+
 enum UserOrdering {
   email
 }
@@ -118,6 +122,12 @@ type OrganizationEdge {
 type OrganizationConnection {
   edges: [OrganizationEdge!]!
   pageInfo: PageInfo!
+}
+
+enum Role {
+  BYPASS
+  ADMIN
+  USER
 }
 
 interface Node {

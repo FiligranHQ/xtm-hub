@@ -1,11 +1,12 @@
 import fs from 'node:fs';
-import { mergeTypeDefs, mergeResolvers } from '@graphql-tools/merge';
-import { glob } from 'glob';
-import { makeExecutableSchema } from "@graphql-tools/schema";
+import {mergeResolvers, mergeTypeDefs} from '@graphql-tools/merge';
+import {glob} from 'glob';
+import {makeExecutableSchema} from "@graphql-tools/schema";
 import nodesResolver from "../nodes/nodes.resolver.js";
 import servicesResolver from "../services/services.resolver.js";
 import usersResolver from "../users/users.resolver.js";
 import organizationsResolver from "../organizations/organizations.resolver.js";
+import {authDirectiveTransformer} from "../directives/auth.js";
 
 const getGlobContent = async (pattern: string) => {
     const globFiles = await glob(pattern);
@@ -17,6 +18,9 @@ const typeDefs = mergeTypeDefs(typeDefFiles);
 
 const resolvers = mergeResolvers([nodesResolver, servicesResolver, organizationsResolver, usersResolver]);
 
-const createSchema = () => makeExecutableSchema({ typeDefs, resolvers, inheritResolversFromInterfaces: true });
+const createSchema = () => {
+    const graphQLSchema = makeExecutableSchema({typeDefs, resolvers, inheritResolversFromInterfaces: true});
+    return authDirectiveTransformer(graphQLSchema);
+}
 
 export default createSchema;
