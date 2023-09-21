@@ -1,9 +1,10 @@
 import {PubSub, withFilter} from 'graphql-subscriptions';
 import {Node} from "./__generated__/resolvers-types.js";
 import {PortalContext} from "./index.js";
-import {ActionType, DatabaseType, isNodeAccessible} from "../knexfile.js";
+import {ActionType, DatabaseType} from "../knexfile.js";
+import {isNodeAccessible} from "./security/access.js";
 
-export interface TypedNode extends Node  {
+export interface TypedNode extends Node {
     __typename: DatabaseType
 }
 
@@ -13,11 +14,10 @@ type PubEvent = {
     };
 };
 
-
 const pubsub = new PubSub();
 
 export const dispatch = async (type: DatabaseType, action: ActionType, data: Node) => {
-    const node = { [action]: {...data, __typename: type} }
+    const node = {[action]: {...data, __typename: type}}
     await pubsub.publish(type, {[type]: node});
 }
 

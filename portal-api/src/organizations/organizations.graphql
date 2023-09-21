@@ -17,10 +17,10 @@ type OrganizationConnection {
 }
 
 type Query {
-    organization(id: ID!): Organization
-    organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+    organization(id: ID!): Organization @auth
+    organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection! @auth
 }
 
 type Mutation {
-    addOrganization(name: String!): Organization
+    addOrganization(name: String!): Organization @auth(requires: [ADMIN])
 }

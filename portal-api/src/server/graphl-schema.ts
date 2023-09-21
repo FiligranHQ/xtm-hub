@@ -6,7 +6,7 @@ import nodesResolver from "../nodes/nodes.resolver.js";
 import servicesResolver from "../services/services.resolver.js";
 import usersResolver from "../users/users.resolver.js";
 import organizationsResolver from "../organizations/organizations.resolver.js";
-import {authDirectiveTransformer} from "../directives/auth.js";
+import {authDirectiveTransformer} from "../security/directive-auth.js";
 
 const getGlobContent = async (pattern: string) => {
     const globFiles = await glob(pattern);
