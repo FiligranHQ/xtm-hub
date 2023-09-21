@@ -1,5 +1,4 @@
-directive @authenticated repeatable on OBJECT | FIELD_DEFINITION
-directive @hasRole(requires: [Role] = [BYPASS]) on OBJECT | FIELD_DEFINITION
+directive @auth(requires: [Role] = [BYPASS]) repeatable on OBJECT | FIELD_DEFINITION
 
 enum Role {
     BYPASS
@@ -30,5 +29,5 @@ type MergeEvent implements Node {
 }
 
 type Query {
-    node(id: ID!): Node @authenticated
+    node(id: ID!): Node @auth
 }

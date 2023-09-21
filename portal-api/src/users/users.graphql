@@ -39,9 +39,9 @@ type Subscription {
 }
 
 type Query {
-    me: User @authenticated
-    user(id: ID!): User @authenticated
-    users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection! @authenticated
+    me: User @auth
+    user(id: ID!): User @auth
+    users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection! @auth
 }
 
 input EditUserInput {
@@ -59,11 +59,11 @@ input AddUserInput {
 
 type Mutation {
     # Management
-    mergeTest(from: ID!, target: ID!): ID! @hasRole(requires: [ADMIN])
-    addUser(input: AddUserInput!): User @hasRole(requires: [ADMIN])
-    editUser(id: ID!, input: EditUserInput!): User @hasRole(requires: [ADMIN])
-    deleteUser(id: ID!): User @hasRole(requires: [ADMIN])
+    mergeTest(from: ID!, target: ID!): ID! @auth(requires: [ADMIN])
+    addUser(input: AddUserInput!): User @auth(requires: [ADMIN])
+    editUser(id: ID!, input: EditUserInput!): User @auth(requires: [ADMIN])
+    deleteUser(id: ID!): User @auth(requires: [ADMIN])
     # Login
     login(email: String!, password: String): User
-    logout: ID! @authenticated
+    logout: ID! @auth
 }
