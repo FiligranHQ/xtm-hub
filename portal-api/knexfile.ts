@@ -1,12 +1,11 @@
 import portalConfig from "./src/config.js"
 import pkg, {Knex} from "knex"
-import {Capability, User} from "./src/__generated__/resolvers-types.js";
-import {fromGlobalId} from "graphql-relay/node/node.js"
 import {PortalContext} from "./src/index.js"
 import {PageInfo} from "graphql-relay/connection/connection.js";
-import {TypedNode} from "./src/pub.js";
+import {applyDbSecurity} from "./src/security/access.js";
 
 export const CAPABILITY_BYPASS = {id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09', name: 'BYPASS'};
+export const CAPABILITY_ADMIN = {id: 'e0e32277-6530-49aa-9df6-22211f2651ff', name: 'ADMIN'};
 
 export type DatabaseType = 'User' | 'Organization' | 'Service'
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge'
@@ -51,14 +50,8 @@ const config: Knex.Config = {
 
 const database = knex(config)
 
-interface QueryOpts {
+export interface QueryOpts {
     unsecured?: boolean
-}
-
-const isUserGranted = (user: User, capability: Capability) => {
-    if (!user) return false;
-    const ids = user.capabilities.map((c) => c.id);
-    return ids.includes(CAPABILITY_BYPASS.id) || ids.includes(capability.id);
 }
 
 export const dbRaw = (statement: string) => database.raw(statement)
@@ -66,59 +59,13 @@ export const dbRaw = (statement: string) => database.raw(statement)
 export const dbTx = () => database.transaction()
 
 export const db = <T>(context: PortalContext, type: DatabaseType, opts: QueryOpts = {}) => {
-    const {unsecured = false} = opts;
     const queryContext = database<T>(type).queryContext({__typename: type})
-    // If user have bypass do not apply security layer
-    if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
-        return queryContext
-    }
-    if (type === 'User') {
-        const {id: userId} = fromGlobalId(context.user.id);
-        queryContext.where('User.id', userId)
-        return queryContext;
-    }
-    if (type === 'Organization') {
-        queryContext.rightJoin('User as security', 'security.organization_id', '=', 'Organization.id')
-        return queryContext;
-    }
-    if (type === 'Service') {
-        // Services are always available to all users
-        return queryContext;
-    }
-    throw new Error('Security behavior must be defined for type ' + type)
+    return applyDbSecurity<T>(context, type, queryContext, opts);
 }
 
 export const dbUnsecure = <T>(type: DatabaseType) => {
     const context = {user: null, req: null, res: null};
     return db<T>(context, type, {unsecured: true});
-}
-
-export const isNodeAccessible = (user: User, data: { [action in ActionType]: TypedNode }) => {
-    const isInvalidActionSize = Object.keys(data).length !== 1;
-    if (isInvalidActionSize) {
-        // Event can only be setup to one action
-        throw new Error('Invalid action size', {cause: data})
-    }
-    // Getting the node, we don't really care about the action to check the visibility
-    const node = Object.values(data)[0];
-    const type = node.__typename;
-    // If user have bypass do not apply security layer
-    if (isUserGranted(user, CAPABILITY_BYPASS)) {
-        return true;
-    }
-    if (type === 'User') {
-        // TODO Users can only be dispatched to admin
-        return true;
-    }
-    if (type === 'Organization') {
-        // TODO Organization can be dispatched to admin or if user is part of
-        return true;
-    }
-    if (type === 'Service') {
-        // Services are always available to all users
-        return true;
-    }
-    throw new Error('Security behavior must be defined for type ' + type)
 }
 
 export const dbConnections = <T>(nodes: T[], offset: string | undefined, limit: number) => {
@@ -154,5 +101,4 @@ export const dbMigration = {
     version: () => database.migrate.currentVersion()
 };
 
-// noinspection JSUnusedGlobalSymbols
 export default config;
