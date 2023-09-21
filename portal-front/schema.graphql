@@ -1,6 +1,4 @@
-directive @authenticated repeatable on OBJECT | FIELD_DEFINITION
-
-directive @hasRole(requires: [Role] = [BYPASS]) on OBJECT | FIELD_DEFINITION
+directive @auth(requires: [Role] = [BYPASS]) repeatable on OBJECT | FIELD_DEFINITION
 
 enum UserOrdering {
   email
