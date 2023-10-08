@@ -26,7 +26,7 @@ export type AddUserInput = {
 export type Capability = Node & {
   __typename?: 'Capability';
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  name: Restriction;
 };
 
 export type EditUserInput = {
@@ -195,6 +195,12 @@ export type QueryUsersArgs = {
   orderMode: OrderingMode;
 };
 
+export enum Restriction {
+  Admin = 'ADMIN',
+  Bypass = 'BYPASS',
+  User = 'USER'
+}
+
 export type Service = Node & {
   __typename?: 'Service';
   description?: Maybe<Scalars['String']['output']>;
@@ -358,6 +364,7 @@ export type ResolversTypes = ResolversObject<{
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
+  Restriction: Restriction;
   Service: ResolverTypeWrapper<Service>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
@@ -400,9 +407,15 @@ export type ResolversParentTypes = ResolversObject<{
   UserSubscription: UserSubscription;
 }>;
 
+export type AuthDirectiveArgs = {
+  requires?: Maybe<Array<Maybe<Restriction>>>;
+};
+
+export type AuthDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type CapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['Restriction'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -550,3 +563,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserSubscription?: UserSubscriptionResolvers<ContextType>;
 }>;
 
+export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{
+  auth?: AuthDirectiveResolver<any, any, ContextType>;
+}>;
