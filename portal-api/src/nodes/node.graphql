@@ -1,6 +1,6 @@
-directive @auth(requires: [Role] = [BYPASS]) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(requires: [Restriction] = [BYPASS]) repeatable on OBJECT | FIELD_DEFINITION
 
-enum Role {
+enum Restriction {
     BYPASS
     ADMIN
     USER

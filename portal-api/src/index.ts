@@ -18,6 +18,7 @@ import portalConfig from "./config.js";
 import {printSchema} from "graphql/utilities/index.js";
 import fs from "node:fs";
 import platformInit from "./server/initialize.js";
+import {Restriction} from "./__generated__/resolvers-types.js";
 
 // region GraphQL server initialization
 export const PORTAL_COOKIE_NAME = 'cloud-portal';
@@ -27,7 +28,7 @@ const PORTAL_GRAPHQL_PATH = '/graphql';
 export interface User {
     id: string
     email: string
-    capabilities: {id: string, name: string}[]
+    capabilities: {id: string, name: Restriction}[]
     organization_id: string
     organization: {id: string, name?: string}
 }

@@ -1,7 +1,7 @@
-import {Capability, User} from "../__generated__/resolvers-types.js";
+import {Capability} from "../__generated__/resolvers-types.js";
 import {TypedNode} from "../pub.js";
 import {ActionType, CAPABILITY_ADMIN, CAPABILITY_BYPASS, DatabaseType, QueryOpts} from "../../knexfile.js";
-import {PortalContext} from "../index.js";
+import {PortalContext, User} from "../index.js";
 import {Knex} from "knex";
 
 export const isUserGranted = (user: User, capability: Capability) => {
