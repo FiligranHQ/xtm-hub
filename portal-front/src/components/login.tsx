@@ -54,7 +54,7 @@ const Login: React.FunctionComponent<LoginProps> = () => {
                     alignItems: 'center',
                 }}>
                     <Image
-                        src="/static/filigran_scred.svg"
+                        src="/filigran_scred.svg"
                         width={500}
                         height={500}
                         alt="Scred logo"

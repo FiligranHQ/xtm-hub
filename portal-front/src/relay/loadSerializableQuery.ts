@@ -20,6 +20,7 @@ export default async function loadSerializableQuery<TRequest extends ConcreteReq
     variables: VariablesOf<TQuery>
 ): Promise<SerializablePreloadedQuery<TRequest, TQuery>> {
     const portalCookie = cookies().get('cloud-portal');
-    const response = await networkFetch(request.params, variables, portalCookie);
+    const apiDestination = process.env.SERVER_HTTP_API + '/graphql-api';
+    const response = await networkFetch(apiDestination, request.params, variables, portalCookie);
     return {request, variables, response};
 }

@@ -20,8 +20,9 @@ const App: React.FunctionComponent<AppProps> = ({children}) => {
     </Head>
     <body>
     <ThemeRegistry>
+        { /** @ts-ignore */ }
         <RelayEnvironmentProvider environment={environment}>
-            {children}
+            <>{children}</>
         </RelayEnvironmentProvider>
     </ThemeRegistry>
     </body>

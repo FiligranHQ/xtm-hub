@@ -1,4 +1,4 @@
-import expressSession from 'express-session';
+import expressSession, {SessionData} from 'express-session';
 import cookieParser from 'cookie-parser';
 import {ApolloServer} from '@apollo/server';
 import {createServer} from 'http';
@@ -10,8 +10,7 @@ import pkg from 'body-parser';
 /* eslint-disable @typescript-eslint/unbound-method */
 const {json} = pkg;
 import express from 'express';
-import {WebSocketServer} from 'ws';
-import {useServer} from 'graphql-ws/lib/use/ws';
+import { createHandler } from 'graphql-sse/lib/use/express';
 import createSchema from "./server/graphl-schema.js";
 import {dbMigration} from "../knexfile.js";
 import portalConfig from "./config.js";
@@ -23,7 +22,8 @@ import {Restriction} from "./__generated__/resolvers-types.js";
 // region GraphQL server initialization
 export const PORTAL_COOKIE_NAME = 'cloud-portal';
 export const PORTAL_COOKIE_SECRET = 'cloud-portal-cookie-key';
-const PORTAL_GRAPHQL_PATH = '/graphql';
+const PORTAL_GRAPHQL_PATH = '/graphql-api';
+const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
 export interface User {
     id: string
@@ -51,7 +51,6 @@ const sessionMiddleware = expressSession({
         maxAge: 60 * 60 * 1000 // 1 hour
     }
 });
-app.use(sessionMiddleware)
 app.use(cookieParser());
 
 const httpServer = createServer(app);
@@ -61,46 +60,22 @@ const schema = createSchema();
 const printedSchema = printSchema(schema);
 fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
 
-// Creating the WebSocket server
-const wsServer = new WebSocketServer({
-    // This is the `httpServer` we created in a previous step.
-    server: httpServer,
-    // Pass a different path here if app.use
-    // serves expressMiddleware at a different path
-    path: PORTAL_GRAPHQL_PATH,
-});
-
-// Hand in the schema we just created and have the
-// WebSocketServer start listening.
-const serverCleanup = useServer({
-    schema,
-    context: async (ctx) => {
-        const req = ctx.extra.request as express.Request
-        // noinspection UnnecessaryLocalVariableJS
-        const session = await new Promise((resolve) => {
-            sessionMiddleware(req, {} as express.Response, () => resolve(req.session));
-        });
-        return session;
-    }
-}, wsServer);
-
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
-const drainPlugin = {
-    async serverWillStart() {
-        return Promise.resolve({
-            async drainServer() {
-                await serverCleanup.dispose();
-            },
-        });
-    },
-}
+// const drainPlugin = {
+//     async serverWillStart() {
+//         return Promise.resolve({
+//             async drainServer() {
+//                 await serverCleanup.dispose();
+//             },
+//         });
+//     },
+// }
 const server = new ApolloServer<PortalContext>({
     schema,
     plugins: [
         ApolloServerPluginDrainHttpServer({httpServer}),
-        drainPlugin,
-        ApolloServerPluginLandingPageLocalDefault({includeCookies: true})
+        ApolloServerPluginLandingPageLocalDefault({includeCookies: true, variables: {}})
     ]
 });
 
@@ -118,13 +93,27 @@ declare module 'express-session' {
 
 const middlewareExpress = expressMiddleware(server, {
     context: async ({req, res}) => {
+        // console.log('middlewareExpress req.url', req.baseUrl)
         const {user} = req.session;
         // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
         // TODO Add build session from request authorization
         return {user, req, res}
     }
 });
-app.use(PORTAL_GRAPHQL_PATH, cors<cors.CorsRequest>(), json(), middlewareExpress);
+const handler = createHandler({
+    schema,
+    context: async (_req) => {
+        const session = await new Promise((resolve) => {
+            sessionMiddleware(_req.raw, {} as express.Response, () => resolve(_req.raw.session));
+        });
+        const {user} = session as SessionData;
+        // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
+        // TODO Add build session from request authorization
+        return {user, req: _req}
+    }
+});
+app.use(PORTAL_WEBSOCKET_PATH, cors<cors.CorsRequest>(), json(), handler);
+app.use(PORTAL_GRAPHQL_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
 // endregion
 
 // Ensure migrate the schema
