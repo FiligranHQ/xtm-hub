@@ -4,14 +4,14 @@ import {preloaderLayoutQuery} from "../../__generated__/preloaderLayoutQuery.gra
 import * as React from "react";
 import {createContext} from "react";
 import {graphql, PreloadedQuery, useFragment, usePreloadedQuery} from "react-relay";
-import {context_fragment$data, context_fragment$key} from "../../__generated__/context_fragment.graphql";
+import {context_fragment$data, context_fragment$key, Restriction} from "../../__generated__/context_fragment.graphql";
 import {CAPABILITY_BYPASS} from "@/utils/constant";
 import {PreloaderQuery} from "../../app/preloader";
 
 // Context
 export interface Portal {
     me?: context_fragment$data | null
-    hasCapability?: (capability: string) => boolean
+    hasCapability?: (capability: Restriction) => boolean
 }
 
 export const portalContext = createContext<Portal>({});
@@ -19,7 +19,7 @@ export const portalContext = createContext<Portal>({});
 const generatePortalContext = (me: context_fragment$data | null): Portal => {
     return {
         me,
-        hasCapability: (capability: string) => {
+        hasCapability: (capability: Restriction) => {
             const userCapabilities = (me?.capabilities ?? []).map((c) => c?.name);
             return userCapabilities.includes(CAPABILITY_BYPASS) || userCapabilities.includes(capability);
         }

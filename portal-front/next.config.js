@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
+    output: 'standalone',
+    reactStrictMode: false,
     swcMinify: true,
     compiler: {
         relay: {
@@ -10,10 +11,18 @@ const nextConfig = {
         },
     },
     async rewrites() {
-        return [{
-            source: '/graphql',
-            destination: 'http://localhost:4001/graphql' // Proxy to Backend
-        }]
+        const apiDestination = process.env.SERVER_HTTP_API + '/graphql-api';
+        console.log('apiDestination', apiDestination);
+        return [
+            {
+                source: '/graphql-api',
+                destination: apiDestination
+            },
+            {
+                source: '/graphql-sse',
+                destination: process.env.SERVER_HTTP_API + '/graphql-sse'
+            }
+        ]
     }
 };
 

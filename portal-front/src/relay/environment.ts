@@ -8,12 +8,10 @@ import {
     Store,
     Variables,
 } from "relay-runtime";
-import {createClient} from 'graphql-ws';
+import {createClient} from 'graphql-sse';
 import {RequestCookie} from "next/dist/compiled/@edge-runtime/cookies";
 
-const uri = 'localhost:3001/graphql';
-
-export async function networkFetch(request: RequestParameters, variables: Variables, portalCookie?: RequestCookie): Promise<GraphQLResponse> {
+export async function networkFetch(apiUri: string, request: RequestParameters, variables: Variables, portalCookie?: RequestCookie): Promise<GraphQLResponse> {
     const headers: { [k: string]: string } = {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -21,7 +19,7 @@ export async function networkFetch(request: RequestParameters, variables: Variab
     if (portalCookie) {
         headers.cookie = portalCookie.name + '=' + portalCookie.value;
     }
-    const resp = await fetch('http://' + uri, {
+    const resp = await fetch(apiUri, {
         method: "POST",
         credentials: "same-origin",
         headers,
@@ -42,15 +40,14 @@ export async function networkFetch(request: RequestParameters, variables: Variab
     return json;
 }
 
-const subscriptionsClient = createClient({url: 'ws://' + uri});
+const subscriptionsClient = createClient({url: '/graphql-sse', onMessage: console.log });
 
 function fetchOrSubscribe(operation: RequestParameters, variables: Variables): Observable<any> {
     return Observable.create((sink) => {
         if (!operation.text) {
             return sink.error(new Error('Operation text cannot be empty'));
         }
-        return subscriptionsClient.subscribe(
-            {
+        return subscriptionsClient.subscribe({
                 operationName: operation.name,
                 query: operation.text,
                 variables,
@@ -62,9 +59,8 @@ function fetchOrSubscribe(operation: RequestParameters, variables: Variables): O
 
 function createNetwork() {
     async function fetchResponse(params: RequestParameters, variables: Variables) {
-        return networkFetch(params, variables);
+        return networkFetch('/graphql-api', params, variables);
     }
-
     return Network.create(fetchResponse, fetchOrSubscribe);
 }
 
