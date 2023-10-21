@@ -43,9 +43,11 @@ const config: Knex.Config = {
         const __typename = queryContext.__typename;
         if (Array.isArray(result)) {
             return result.map(row => ({...row, __typename}));
-        } else {
+        } else if(result && Object.keys(result).length > 0) {
             return {...result, __typename};
         }
+        // Nothing found
+        return undefined;
     }
 }
 

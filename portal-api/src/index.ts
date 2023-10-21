@@ -44,11 +44,13 @@ const sessionMiddleware = expressSession({
     name: PORTAL_COOKIE_NAME,
     secret: PORTAL_COOKIE_SECRET,
     saveUninitialized: true,
+    proxy: true,
+    rolling: true,
     cookie: {
-        httpOnly: false,
+        httpOnly: true,
         sameSite: 'lax',
         secure: false,
-        maxAge: 60 * 60 * 1000 // 1 hour
+        // maxAge: 60 * 60 * 1000 // 1 hour
     }
 });
 app.use(cookieParser());
@@ -56,9 +58,10 @@ app.use(cookieParser());
 const httpServer = createServer(app);
 const schema = createSchema();
 
-// TODO Execute only in dev mode
-const printedSchema = printSchema(schema);
-fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
+if (process.env.NODE_ENV !== 'production') {
+    const printedSchema = printSchema(schema);
+    fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
+}
 
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
@@ -93,7 +96,6 @@ declare module 'express-session' {
 
 const middlewareExpress = expressMiddleware(server, {
     context: async ({req, res}) => {
-        // console.log('middlewareExpress req.url', req.baseUrl)
         const {user} = req.session;
         // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
         // TODO Add build session from request authorization
