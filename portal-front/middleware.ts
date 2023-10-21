@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const GRAPHQL_API = '/graphql-api';
-const GRAPHQL_SSE = '/graphql-see';
+const GRAPHQL_SSE = '/graphql-sse';
 
 export function middleware(request: NextRequest) {
     const serverHttpApi = process.env.SERVER_HTTP_API ?? 'http://localhost:4001';
@@ -17,5 +17,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/graphql-*'],
+    matcher: ['/graphql-api', '/graphql-sse'],
 }
