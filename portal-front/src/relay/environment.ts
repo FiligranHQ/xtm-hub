@@ -8,8 +8,26 @@ import {
     Store,
     Variables,
 } from "relay-runtime";
+import getConfig from 'next/config';
 import {createClient} from 'graphql-sse';
 import {RequestCookie} from "next/dist/compiled/@edge-runtime/cookies";
+
+function prepareUri(uri: string | undefined) {
+    if (uri) {
+        return uri.endsWith('/') ? uri : (uri + '/');
+    } else {
+        // Default for dev
+        return 'http://localhost:4001/';
+    }
+}
+
+export function getGraphqlApi(serverSide: boolean, type: 'sse' | 'api') {
+    if (serverSide) {
+        return prepareUri(process.env.SERVER_HTTP_API) + ('graphql-' + type);
+    } else {
+        return prepareUri(process.env.NEXT_PUBLIC_CLIENT_HTTP_API) + ('graphql-' + type);
+    }
+}
 
 export async function networkFetch(apiUri: string, request: RequestParameters, variables: Variables, portalCookie?: RequestCookie): Promise<GraphQLResponse> {
     const headers: { [k: string]: string } = {
@@ -40,7 +58,7 @@ export async function networkFetch(apiUri: string, request: RequestParameters, v
     return json;
 }
 
-const subscriptionsClient = createClient({url: '/graphql-sse', onMessage: console.log });
+const subscriptionsClient = createClient({url: '/graphql-sse', onMessage: console.log});
 
 function fetchOrSubscribe(operation: RequestParameters, variables: Variables): Observable<any> {
     return Observable.create((sink) => {
@@ -61,6 +79,7 @@ function createNetwork() {
     async function fetchResponse(params: RequestParameters, variables: Variables) {
         return networkFetch('/graphql-api', params, variables);
     }
+
     return Network.create(fetchResponse, fetchOrSubscribe);
 }
 

@@ -1,6 +1,6 @@
 import {GraphQLResponse, OperationType, VariablesOf,} from "relay-runtime";
 import {ConcreteRequest} from "relay-runtime/lib/util/RelayConcreteNode";
-import {networkFetch} from "./environment";
+import {getGraphqlApi, networkFetch} from "./environment";
 import {cookies} from "next/headers";
 
 export interface SerializablePreloadedQuery<
@@ -20,7 +20,7 @@ export default async function loadSerializableQuery<TRequest extends ConcreteReq
     variables: VariablesOf<TQuery>
 ): Promise<SerializablePreloadedQuery<TRequest, TQuery>> {
     const portalCookie = cookies().get('cloud-portal');
-    const apiDestination = process.env.SERVER_HTTP_API + '/graphql-api';
+    const apiDestination = getGraphqlApi(true, 'api');
     const response = await networkFetch(apiDestination, request.params, variables, portalCookie);
     return {request, variables, response};
 }
