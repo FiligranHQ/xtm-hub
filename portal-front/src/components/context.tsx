@@ -16,7 +16,7 @@ export interface Portal {
 
 export const portalContext = createContext<Portal>({});
 
-const generatePortalContext = (me: context_fragment$data | null): Portal => {
+const generatePortalContext = (me: context_fragment$data | null | undefined): Portal => {
     return {
         me,
         hasCapability: (capability: Restriction) => {

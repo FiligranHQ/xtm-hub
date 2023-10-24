@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"relay-compiler\" \"next dev -p 3001\"",
-    "build": "relay-compiler --validate && next build",
+    "build": "relay-compiler && next build",
     "check-ts": "tsc --noEmit",
     "start": "next start",
     "lint": "next lint",
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/config": "3.3.2",
-    "@types/react-relay": "14.1.7",
+    "@types/react-relay": "16.0.0",
     "concurrently": "8.2.2",
     "eslint": "8.52.0",
     "eslint-config-next": "13.5.6",
