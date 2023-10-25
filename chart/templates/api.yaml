@@ -39,7 +39,7 @@ spec:
         - name: portal-api-config
           mountPath: /app/config/
           readOnly: true
-    volumes:
-    - name: portal-api-config
-      secret:
-        name: portal-api-config
+      volumes:
+      - name: portal-api-config
+        secret:
+          secretName: portal-api-config

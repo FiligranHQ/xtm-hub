@@ -7,8 +7,6 @@ metadata:
     external-dns.alpha.kubernetes.io/hostname: {{ tpl .Values.cloudportal.host . }}
     external-dns.alpha.kubernetes.io/ttl: "120"
     prometheus.io/probe: "true"
-    ingress.cilium.io/websocket: "enabled"
-    {{- end }}
     {{- if eq .Values.ingressClass "nginx" }}
     nginx.ingress.kubernetes.io/proxy-body-size: 256m
     nginx.ingress.kubernetes.io/retry-non-idempotent: "true"
@@ -28,7 +26,7 @@ spec:
       paths:
       - backend:
           service:
-            name: cloudportal
+            name: portal-front
             port:
               number: 3000
         path: /
