@@ -1,0 +1,18 @@
+tls_issuer: le-staging
+ingressClass: nginx
+cloudportal:
+  api:
+    resources: {}
+    replicas: 1
+  front:
+    resources: {}
+    replicas: 1
+  imagePullSecrets: []
+  labels:
+    environment: dev
+  version: master
+  host: localhost
+postgres:
+  storage:
+    size: 10Gi
+  resources: {}

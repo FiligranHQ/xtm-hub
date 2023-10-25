@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-api
+spec:
+  replicas: {{ .Values.cloudportal.api.replicas }}
+  selector:
+    matchLabels:
+      app: portal-api
+  template:
+    metadata:
+      labels:
+        app: portal-api
+    spec:
+    {{- with .Values.cloudportal.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.cloudportal.nodeSelector }}
+      nodeSelector:
+          {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+      - name: portal-api
+        image: filigran/portal-api:{{ .Values.cloudportal.version }}
+        {{- if eq .Values.cloudportal.version "master" }}
+        imagePullPolicy: "Always"
+        {{- else }}
+        imagePullPolicy: "IfNotPresent"
+        {{- end }}
+        resources:
+          {{- toYaml .Values.cloudportal.api.resources | nindent 12 }}
+        ports:
+        - containerPort: 4001
+        env:
+        - name: NODE_ENV
+          value: production
+        volumeMounts:
+        - name: portal-api-config
+          mountPath: /app/config/
+          readOnly: true
+    volumes:
+    - name: portal-api-config
+      secret:
+        name: portal-api-config
