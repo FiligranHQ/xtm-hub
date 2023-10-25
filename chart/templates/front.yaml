@@ -1,0 +1,39 @@
+frontVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-front
+spec:
+  replicas: {{ .Values.cloudportal.front.replicas }}
+  selector:
+    matchLabels:
+      app: portal-front
+  template:
+    metadata:
+      labels:
+        app: portal-front
+    spec:
+    {{- with .Values.cloudportal.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.cloudportal.nodeSelector }}
+      nodeSelector:
+          {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+      - name: portal-front
+        image: filigran/portal-front:{{ .Values.cloudportal.version }}
+        {{- if eq .Values.cloudportal.version "master" }}
+        imagePullPolicy: "Always"
+        {{- else }}
+        imagePullPolicy: "IfNotPresent"
+        {{- end }}
+        resources:
+          {{- toYaml .Values.cloudportal.front.resources | nindent 12 }}
+        ports:
+        - containerPort: 4001
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: SERVER_HTTP_API
+          value: "http://$(PORTAL_API_SERVICE_HOST):$(PORTAL_API_SERVICE_PORT)"

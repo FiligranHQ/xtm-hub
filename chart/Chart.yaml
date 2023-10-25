@@ -1,0 +1,5 @@
+apiVersion: v2
+name: cloudportal
+description: A Helm chart for Cloud-Portal
+type: application
+version: 0.1.0
