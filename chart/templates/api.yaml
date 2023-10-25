@@ -23,7 +23,7 @@ spec:
       containers:
       - name: portal-api
         image: filigran/portal-api:{{ .Values.cloudportal.version }}
-        {{- if eq .Values.cloudportal.version "master" }}
+        {{- if eq .Values.cloudportal.version "main" }}
         imagePullPolicy: "Always"
         {{- else }}
         imagePullPolicy: "IfNotPresent"
