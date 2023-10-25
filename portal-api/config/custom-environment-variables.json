@@ -1,0 +1,14 @@
+{
+  "port": "APP_PORT",
+  "admin": {
+    "email": "ADMIN_EMAIL",
+    "password": "ADMIN_PASSWORD"
+  },
+  "database": {
+    "host": "DATABASE_HOST",
+    "port": "DATABASE_PORT",
+    "user": "DATABASE_USER",
+    "password": "DATABASE_PASSWORD",
+    "database": "DATABASE_BASE"
+  }
+}
