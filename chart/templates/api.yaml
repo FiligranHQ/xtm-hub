@@ -34,12 +34,36 @@ spec:
         - containerPort: 4001
         env:
         - name: NODE_ENV
-          value: production
-        volumeMounts:
-        - name: portal-api-config
-          mountPath: /app/config/
-          readOnly: true
-      volumes:
-      - name: portal-api-config
-        secret:
-          secretName: portal-api-config
+          value: "production"
+        - name: APP_PORT
+          value: "4001"
+        - name: ADMIN_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: portal-api-config
+              key: ADMIN_EMAIL
+              optional: false
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: portal-api-config
+              key: ADMIN_PASSWORD
+              optional: false
+        - name: DATABASE_HOST
+          value: "$(POSTGRESQL_RW_SERVICE_HOST)"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-app
+              key: username
+              optional: false
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-app
+              key: password
+              optional: false
+        - name: DATABASE_BASE
+          value: "cloudportal"
