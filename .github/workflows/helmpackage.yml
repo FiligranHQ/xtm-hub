@@ -3,6 +3,8 @@ name: Helm lint, test, package and publish
 on:
   push:
     branches: ["main"]
+    paths:
+    - 'chart/**'
 
 jobs:
   helm-suite:
