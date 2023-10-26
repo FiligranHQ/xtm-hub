@@ -4,11 +4,17 @@ on:
   push:
     branches:
       - 'main'
+    paths:
+    - 'portal-api/**'
+    - 'portal-front/**'
     tags:
       - 'v*'
   pull_request:
     branches:
       - 'main'
+    paths:
+    - 'portal-api/**'
+    - 'portal-front/**'
 
 jobs:
   docker:
