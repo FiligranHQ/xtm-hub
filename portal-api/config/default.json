@@ -1,14 +1,14 @@
 {
   "port": 4001,
   "admin": {
-    "email": "julien.richard@filigran.io",
-    "password": "julien"
+    "email": "admin@filigran.io",
+    "password": "admin"
   },
   "database": {
-    "host": "192.168.2.36",
+    "host": "127.0.0.1",
     "port": 5432,
-    "user": "postgres",
-    "password": "admin",
+    "user": "portal",
+    "password": "portal-password",
     "database": "cloud-portal"
   }
 }
