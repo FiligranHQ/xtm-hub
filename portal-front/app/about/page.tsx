@@ -1,19 +1,22 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
 // Configuration or Preloader Query
 
 // Component interface
-interface PageProps {
-}
+interface PageProps {}
 
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {
-    return <>
-        <div><b>ABOUT</b></div>
+  return (
+    <>
+      <div>
+        <b>ABOUT</b>
+      </div>
     </>
-}
+  );
+};
 
 // Component export
 export default Page;

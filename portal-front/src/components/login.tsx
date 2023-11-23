@@ -1,100 +1,114 @@
-"use client";
+'use client';
 
-import React, {FormEvent} from "react"
-import {graphql, useMutation} from "react-relay";
-import {useRouter} from "next/navigation";
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import TextField from "@mui/material/TextField";
-import Image from 'next/image'
-import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
+import React from 'react';
+import { graphql, useMutation } from 'react-relay';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
+const formSchema = z.object({
+  email: z.string().email('This is not a valid email.'),
+  password: z.string(),
+});
 // Relay
 const LoginMutation = graphql`
-    mutation loginMutation($email: String!, $password: String!) {
-        login(email: $email, password: $password) {
-            ...context_fragment
-        }
+  mutation loginMutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      ...context_fragment
     }
+  }
 `;
 
-// Component interface
-interface LoginProps {
-}
-
 // Component
-const Login: React.FunctionComponent<LoginProps> = () => {
-    const router = useRouter()
-    const [commitLoginMutation] = useMutation(LoginMutation);
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        const formData = new FormData(event.currentTarget)
-        const variables = {
-            email: formData.get('email'),
-            password: formData.get('password')
-        };
-        commitLoginMutation({
-            variables,
-            onCompleted() {
-                // If login succeed, refresh the page
-                router.refresh();
-            }
-        })
-    }
-    return (
-        <>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline/>
-                <Box sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}>
-                    <Image
-                        src="/filigran_scred.svg"
-                        width={500}
-                        height={500}
-                        alt="Scred logo"
-                    />
-                    <Typography style={{marginTop: 40}} component="h1" variant="h5">
-                        - Sign in -
-                    </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                        />
-                        <Button type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{mt: 3, mb: 2}}>
-                            Sign In
-                        </Button>
-                    </Box>
-                </Box>
-            </Container>
-        </>
-    )
-}
+const Login: React.FunctionComponent = () => {
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+  const [commitLoginMutation] = useMutation(LoginMutation);
+
+  function onSubmit(variables: z.infer<typeof formSchema>) {
+    commitLoginMutation({
+      variables,
+      onCompleted() {
+        // If login succeed, refresh the page
+        router.refresh();
+      },
+    });
+  }
+  return (
+    <>
+      <main className="m-auto max-w-[450px]">
+        <div className="mt-2 flex flex-col items-center">
+          <Image
+            src="/filigran_scred.svg"
+            width={500}
+            height={500}
+            alt="Scred logo"
+          />
+          <h1 className="pt-10 text-2xl">- Sign in -</h1>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="email"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="password"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button
+                className="w-full"
+                type="submit">
+                Submit
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </main>
+    </>
+  );
+};
 
 // Component export
 export default Login;

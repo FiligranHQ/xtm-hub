@@ -1,1 +1,1 @@
-type SelectChoice = { id: string, name?: string | null }
+type SelectChoice = { id: string; name?: string | null };
