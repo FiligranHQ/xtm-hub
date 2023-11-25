@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import {revalidatePath} from "next/cache";
 
 const GRAPHQL_API = '/graphql-api';
 const GRAPHQL_SSE = '/graphql-sse';

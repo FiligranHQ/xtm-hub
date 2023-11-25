@@ -10,7 +10,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "copy": "copyfiles ./**/*.graphql dist/ && copyfiles ./src/migrations/*.js dist/",
+    "copy": "copyfiles ./src/**/*.graphql dist/ && copyfiles ./src/migrations/*.js dist/",
     "build": "tsc && yarn copy",
     "check-ts": "tsc --noEmit",
     "generate:ts": "graphql-codegen-esm --config codegen.yml",

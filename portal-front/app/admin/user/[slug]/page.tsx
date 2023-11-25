@@ -1,10 +1,6 @@
 import * as React from 'react';
-import loadSerializableQuery from '@/relay/loadSerializableQuery';
-import Preloader from './preloader';
-import { redirect } from 'next/navigation';
-import preloaderUserSlugQueryNode, {
-  preloaderUserSlugQuery,
-} from '../../../../__generated__/preloaderUserSlugQuery.graphql';
+import PageLoader from './page-loader';
+import {redirect} from 'next/navigation';
 
 // Configuration or Preloader Query
 
@@ -17,11 +13,7 @@ interface PageProps {
 const Page: React.FunctionComponent<PageProps> = async ({ params }) => {
   const id = decodeURIComponent(params.slug);
   try {
-    const preloadedQuery = await loadSerializableQuery<
-      typeof preloaderUserSlugQueryNode,
-      preloaderUserSlugQuery
-    >(preloaderUserSlugQueryNode, { id });
-    return <Preloader preloadedQuery={preloadedQuery} />;
+    return <PageLoader id={id} />;
   } catch (e) {
     // If error at user loading, redirect to the list
     redirect('/admin/user');

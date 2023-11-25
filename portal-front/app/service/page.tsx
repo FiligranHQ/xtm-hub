@@ -1,9 +1,5 @@
 import * as React from 'react';
-import preloaderServiceQueryNode, {
-  preloaderServiceQuery,
-} from '../../__generated__/preloaderServiceQuery.graphql';
-import Preloader from './preloader';
-import loadSerializableQuery from '@/relay/loadSerializableQuery';
+import PageLoader from './page-loader';
 
 // Configuration or Preloader Query
 const DEFAULT_COUNT = 10;
@@ -13,20 +9,10 @@ interface PageProps {}
 
 // Component
 const Page: React.FunctionComponent<PageProps> = async () => {
-  const preloadedQuery = await loadSerializableQuery<
-    typeof preloaderServiceQueryNode,
-    preloaderServiceQuery
-  >(preloaderServiceQueryNode, {
-    count: DEFAULT_COUNT,
-    orderBy: 'name',
-    orderMode: 'asc',
-  });
   return (
     <>
-      <div>
-        <b>SERVICE</b>
-      </div>
-      <Preloader preloadedQuery={preloadedQuery} />
+      <h1>SERVICE</h1>
+      <PageLoader/>
     </>
   );
 };

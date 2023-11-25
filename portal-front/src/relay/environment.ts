@@ -48,6 +48,7 @@ export async function networkFetch(
     method: 'POST',
     credentials: 'same-origin',
     headers,
+    cache: portalCookie ? 'no-store' : undefined,
     body: JSON.stringify({ query: request.text, variables }),
   });
   const json = await resp.json();
