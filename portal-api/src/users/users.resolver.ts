@@ -87,7 +87,7 @@ const resolvers: Resolvers = {
         logout: async (_, __, {user, req, res}) => {
             return new Promise((resolve) => {
                 res.clearCookie(PORTAL_COOKIE_NAME);
-                req.session.regenerate(() => {
+                req.session.destroy(() => {
                     resolve(user ? user.id : 'anonymous');
                 });
             });

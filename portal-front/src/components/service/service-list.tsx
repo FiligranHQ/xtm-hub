@@ -1,33 +1,22 @@
 'use client';
 
-import { preloaderServiceQuery } from '../../../__generated__/preloaderServiceQuery.graphql';
+import {pageLoaderServiceQuery} from '../../../__generated__/pageLoaderServiceQuery.graphql';
 import * as React from 'react';
-import { useMemo } from 'react';
-import {
-  PreloadedQuery,
-  useFragment,
-  usePaginationFragment,
-  usePreloadedQuery,
-  useSubscription,
-} from 'react-relay';
-import { PreloaderQuery } from '../../../app/service/preloader';
-import { serviceList_services$key } from '../../../__generated__/serviceList_services.graphql';
-import { useRouter } from 'next/navigation';
-import { serviceList_fragment$key } from '../../../__generated__/serviceList_fragment.graphql';
-import {
-  serviceListFragment,
-  servicesListFragment,
-  subscription,
-} from '@/components/service/service.graphql';
+import {useMemo} from 'react';
+import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery, useSubscription,} from 'react-relay';
+import {ServiceListQuery} from '../../../app/service/page-loader';
+import {serviceList_services$key} from '../../../__generated__/serviceList_services.graphql';
+import {serviceList_fragment$key} from '../../../__generated__/serviceList_fragment.graphql';
+import {serviceListFragment, servicesListFragment, subscription,} from '@/components/service/service.graphql';
 import ServiceCreateForm from '@/components/service/service-create-form';
-import { Button } from '@/components/ui/button';
+import {Button} from '@/components/ui/button';
 
 interface ServiceItemProps {
   node: serviceList_fragment$key;
 }
 
 interface ServiceProps {
-  queryRef: PreloadedQuery<preloaderServiceQuery>;
+  queryRef: PreloadedQuery<pageLoaderServiceQuery>;
 }
 
 const ServiceItem: React.FunctionComponent<ServiceItemProps> = ({ node }) => {
@@ -36,16 +25,12 @@ const ServiceItem: React.FunctionComponent<ServiceItemProps> = ({ node }) => {
 };
 
 const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
-  const router = useRouter();
-  const handleRefresh = () => {
-    router.refresh();
-  };
-  const queryData = usePreloadedQuery<preloaderServiceQuery>(
-    PreloaderQuery,
+  const queryData = usePreloadedQuery<pageLoaderServiceQuery>(
+    ServiceListQuery,
     queryRef
   );
   const { data, loadNext, isLoadingNext, isLoadingPrevious, refetch } =
-    usePaginationFragment<preloaderServiceQuery, serviceList_services$key>(
+    usePaginationFragment<pageLoaderServiceQuery, serviceList_services$key>(
       servicesListFragment,
       queryData
     );
@@ -78,13 +63,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
             variant="ghost"
             onClick={() => loadNext(1)}>
             Load more
-          </Button>
-        </div>
-        <div>
-          <Button
-            variant="ghost"
-            onClick={handleRefresh}>
-            # Router refresh #
           </Button>
         </div>
         <div>

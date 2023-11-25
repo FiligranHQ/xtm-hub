@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription } from 'react-relay';
-import { preloaderUserSlugQuery } from '../../../../../__generated__/preloaderUserSlugQuery.graphql';
-import { PreloaderQuery } from '../../../../../app/admin/user/[slug]/preloader';
+import { pageLoaderUserSlugQuery } from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
+import { UserSlugQuery } from '../../../../../app/admin/user/[slug]/page-loader';
 import { userSlug_fragment$key } from '../../../../../__generated__/userSlug_fragment.graphql';
 import { useRouter } from 'next/navigation';
 import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
@@ -15,15 +15,15 @@ import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 
 // Component interface
 interface UserSlugProps {
-  queryRef: PreloadedQuery<preloaderUserSlugQuery>;
+  queryRef: PreloadedQuery<pageLoaderUserSlugQuery>;
 }
 
 // Component
 const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const router = useRouter();
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
-  const data = usePreloadedQuery<preloaderUserSlugQuery>(
-    PreloaderQuery,
+  const data = usePreloadedQuery<pageLoaderUserSlugQuery>(
+    UserSlugQuery,
     queryRef
   );
   const [deleteUserMutation] =
