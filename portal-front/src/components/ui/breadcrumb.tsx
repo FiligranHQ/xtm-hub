@@ -111,7 +111,6 @@ export const BreadcrumbLink = React.forwardRef<
   HTMLAnchorElement,
   BreadcrumbLinkProps
 >(({ className, as: asComp, isCurrentPage, ...props }, forwardedRef) => {
-  console.log(isCurrentPage);
   const Comp = (isCurrentPage ? 'span' : asComp || 'a') as 'a';
 
   return (
