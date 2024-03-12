@@ -1,11 +1,9 @@
 import * as React from 'react';
 
-import 'styles/globals.css';
+import '../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
-import pageLoaderMeQueryNode, {
-  pageLoaderMeQuery, pageLoaderMeQuery$data,
-} from '../__generated__/pageLoaderMeQuery.graphql';
+import pageLoaderMeQueryNode, { pageLoaderMeQuery } from '../__generated__/pageLoaderMeQuery.graphql';
 import Login from '@/components/login';
 import AppContext from '@/components/app-context';
 import HeaderComponent from '@/components/header';
