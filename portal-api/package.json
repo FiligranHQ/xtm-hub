@@ -25,6 +25,7 @@
     "@graphql-tools/load-files": "7.0.0",
     "@graphql-tools/merge": "9.0.3",
     "@graphql-tools/schema": "10.0.3",
+    "apollo-errors": "^1.9.0",
     "body-parser": "1.20.2",
     "config": "3.3.11",
     "cookie-parser": "1.4.6",
@@ -38,6 +39,8 @@
     "graphql-sse": "2.5.2",
     "graphql-subscriptions": "2.0.0",
     "knex": "3.1.0",
+    "openid-client": "^5.6.5",
+    "passport": "^0.7.0",
     "pg": "8.11.3",
     "uuid": "9.0.1",
     "ws": "8.16.0"

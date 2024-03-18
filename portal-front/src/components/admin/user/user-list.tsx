@@ -1,7 +1,7 @@
 import { graphql, PreloadedQuery, usePaginationFragment, usePreloadedQuery } from 'react-relay';
 import { pageLoaderUserQuery } from '../../../../__generated__/pageLoaderUserQuery.graphql';
 import * as React from 'react';
-import { UserListQuery } from '../../../../app/admin/user/page-loader';
+import { UserListQuery } from '../../../../app/(application)/admin/user/page-loader';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
@@ -42,7 +42,7 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   );
 
   const { data } = usePaginationFragment<
-      pageLoaderUserQuery,
+    pageLoaderUserQuery,
     userList_users$key
   >(usersFragment, queryData);
   return (

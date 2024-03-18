@@ -16,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email('This is not a valid email.'),
@@ -51,6 +52,7 @@ const Login: React.FunctionComponent = () => {
       },
     });
   }
+
   return (
     <>
       <main className="m-auto max-w-[450px]">
@@ -104,6 +106,15 @@ const Login: React.FunctionComponent = () => {
               </Button>
             </form>
           </Form>
+        </div>
+        <div className="mt-2">
+          <Button asChild>
+            <Link
+              type="submit"
+              href={'http://localhost:4001/auth/oidc'}>
+              OpenId Connect
+            </Link>
+          </Button>
         </div>
       </main>
     </>
