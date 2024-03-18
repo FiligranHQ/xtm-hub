@@ -52,14 +52,15 @@ export const loadUsers = async (context: PortalContext, opts): Promise<UserConne
   return userConnection;
 };
 
-export const createUser = async (email: string) => {
-  const { salt, hash } = hashPassword('temporary');
+export const createUser = async (email: string, organization_id = 'ba091095-418f-4b4f-b150-6c9295e232c4', role_portal_id = '6b632cf2-9105-46ec-a463-ad59ab58c770') => {
+  const { salt, hash } = hashPassword('');
   const data = {
     id: uuidv4(),
     email: email,
     salt,
     password: hash,
-    organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+    organization_id,
+    external: true,
   };
 
   // Use insert with returning to get the newly created user
@@ -67,5 +68,13 @@ export const createUser = async (email: string) => {
     .insert(data)
     .returning('*');
 
+  await createUserRolePortal(addedUser.id, role_portal_id);
+
   return addedUser;
+};
+
+export const createUserRolePortal = async (user_id, role_portal_id = '6b632cf2-9105-46ec-a463-ad59ab58c770') => {
+  const addedUserRole = await dbUnsecure('User_RolePortal')
+    .insert({ user_id, role_portal_id });
+  return addedUserRole;
 };

@@ -8,7 +8,7 @@ import { PortalContext } from './src/model/portal-context.js';
 export const CAPABILITY_BYPASS: Capability = { id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09', name: Restriction.Bypass };
 export const CAPABILITY_ADMIN: Capability = { id: 'e0e32277-6530-49aa-9df6-22211f2651ff', name: Restriction.Admin };
 
-export type DatabaseType = 'User'|'Organization'|'Service'
+export type DatabaseType = 'User'|'Organization'|'Service'|'User_RolePortal'
 export type ActionType = 'add'|'edit'|'delete'|'merge'
 
 interface Pagination {
