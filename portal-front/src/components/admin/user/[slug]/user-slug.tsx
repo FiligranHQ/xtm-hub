@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription } from 'react-relay';
 import { pageLoaderUserSlugQuery } from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
-import { UserSlugQuery } from '../../../../../app/admin/user/[slug]/page-loader';
+import { UserSlugQuery } from '../../../../../app/(application)/admin/user/[slug]/page-loader';
 import { userSlug_fragment$key } from '../../../../../__generated__/userSlug_fragment.graphql';
 import { useRouter } from 'next/navigation';
 import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
