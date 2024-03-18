@@ -1,46 +1,33 @@
 import { isEmptyField, now } from '../utils/utils.js';
 import { ForbiddenAccess } from '../utils/error.js';
-import { loadUserBy } from '../users/users.domain.js';
+import { createUser, loadUserBy } from '../users/users.domain.js';
 
 export const loginFromProvider = async (userInfo, opts = {}) => {
   // region test the groups existence and eventually auto create groups
   // endregion
+  console.log('loginFromProvider', userInfo);
   const { email, name: providedName, firstname, lastname } = userInfo;
   if (isEmptyField(email)) {
     throw ForbiddenAccess('User email not provided');
   }
-  console.log({ userInfo });
-  const name = isEmptyField(providedName) ? email : providedName;
   const user = await loadUserBy('User.email', email);
   console.log('loadUserBy', user);
-  // if (!user) {
-  //   // If user doesn't exist, create it. Providers are trusted
-  //   const newUser = { name, firstname, lastname, user_email: email.toLowerCase(), external: true };
-  //   return addUser(context, SYSTEM_USER, newUser).then(() => {
-  //     // After user creation, reapply login to manage roles and groups
-  //     return loginFromProvider(userInfo, opts);
-  //   });
-  // }
-  // Update the basic information
-  // const patch = { name, firstname, lastname, external: true };
-  // await patchAttribute(context, SYSTEM_USER, user.id, ENTITY_TYPE_USER, patch);
-  // region Update the groups
-  // endregion
-  // region Update the organizations
-  // If organizations are specified here, that overwrite the default assignation
-  // endregion
+  if (!user) {
+    // const name = providedName ?? email;
+    const newUser = await createUser(email);
+    console.log({ newUser });
+    return { provider_metadata: userInfo.provider_metadata, ...newUser };
+  }
   return { ...user, provider_metadata: userInfo.provider_metadata };
 };
 
 export const authenticateUser = async (req, user, provider) => {
+  console.log('authenticateUser');
   const logged = await loadUserBy('User.email', user.email);
-  const sessionUser = buildSessionUser(logged, provider);
   // req.session.user = sessionUser;
-  req.session.user = sessionUser;
-  req.session.session_provider = { provider };
-  req.session.session_refresh = false;
+  req.session.user = logged;
   req.session.save();
-  return sessionUser;
+  return logged;
 };
 
 const buildSessionUser = (user, provider) => {
