@@ -1,7 +1,7 @@
-import {Organization} from "../__generated__/resolvers-types.js";
-import {db} from "../../knexfile.js";
-import {PortalContext} from "../index.js";
+import { Organization } from '../__generated__/resolvers-types.js';
+import { db } from '../../knexfile.js';
+import { PortalContext } from '../model/portal-context.js';
 
 export const loadOrganizationBy = async (context: PortalContext, field: string, value: string): Promise<Organization> => {
-    return db<Organization>(context, 'Organization').where({[field]: value}).select('*').first();
-}
+  return db<Organization>(context, 'Organization').where({ [field]: value }).select('*').first();
+};

@@ -7,7 +7,6 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import cors from 'cors';
 import pkg from 'body-parser';
-import bodyParser from 'body-parser';
 import express from 'express';
 import { createHandler } from 'graphql-sse/lib/use/express';
 import createSchema from './server/graphl-schema.js';
@@ -16,11 +15,10 @@ import portalConfig from './config.js';
 import { printSchema } from 'graphql/utilities/index.js';
 import fs from 'node:fs';
 import platformInit from './server/initialize.js';
-import { Restriction } from './__generated__/resolvers-types.js';
-import passport from './config/providers.js';
-import { setCookieError } from './utils/set-cookies.util.js';
-import { authenticateUser } from './domain/user.js';
-/* eslint-disable @typescript-eslint/unbound-method */
+import { initAuthPlatform } from './auth/auth-platform.js';
+import { User } from './model/user.js';
+import { PortalContext } from './model/portal-context.js';
+
 const { json } = pkg;
 
 // region GraphQL server initialization
@@ -29,20 +27,6 @@ export const PORTAL_COOKIE_SECRET = 'cloud-portal-cookie-key';
 const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
-export interface User {
-  id: string;
-  email: string;
-  capabilities: { id: string, name: Restriction }[];
-  organization_id: string;
-  organization: { id: string, name?: string };
-}
-
-export interface PortalContext {
-  user: User;
-  referer?: string;
-  req: express.Request;
-  res: express.Response;
-}
 
 const app = express();
 const sessionMiddleware = expressSession({
@@ -125,46 +109,7 @@ app.use(PORTAL_WEBSOCKET_PATH, cors<cors.CorsRequest>(), json(), handler);
 app.use(PORTAL_GRAPHQL_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
 // endregion
 
-
-app.get(`/auth/:provider`, (req, res, next) => {
-  try {
-    const { provider } = req.params;
-    // const strategy = passport._strategy(provider);
-    req.session.referer = req.get('Referrer');
-    passport.authenticate(provider, {}, (err) => {
-      setCookieError(res, err?.message);
-      next(err);
-    })(req, res, next);
-  } catch (e) {
-    setCookieError(res, e?.message);
-    next(e);
-  }
-});
-
-const urlencodedParser = bodyParser.urlencoded({ extended: true });
-app.all(`/auth/:provider/callback`, urlencodedParser, async (req, res, next) => {
-  const { provider } = req.params;
-
-  const referer = req.session.referer;
-  const callbackLogin = () => new Promise((accept, reject) => {
-    passport.authenticate(provider, {}, (err, user) => {
-      if (err || !user) {
-        reject(err);
-      } else {
-        accept(user);
-      }
-    })(req, res, next);
-  });
-  try {
-    const logged = await callbackLogin();
-    await authenticateUser(req, logged, provider);
-  } catch (err) {
-    console.error(err, { provider });
-    setCookieError(res, 'Invalid authentication, please ask your administrator');
-  } finally {
-    res.redirect(referer ?? '/');
-  }
-});
+initAuthPlatform(app);
 
 // Ensure migrate the schema
 await dbMigration.migrate();

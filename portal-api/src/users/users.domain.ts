@@ -1,9 +1,9 @@
 import { CAPABILITY_BYPASS, dbRaw, dbUnsecure, paginate } from '../../knexfile.js';
 import { Capability, User, UserConnection } from '../__generated__/resolvers-types.js';
-import { PortalContext } from '../index.js';
 import { ADMIN_UUID, hashPassword } from '../server/initialize.js';
 import { UserWithAuthentication } from './users.js';
 import { v4 as uuidv4 } from 'uuid';
+import { PortalContext } from '../model/portal-context.js';
 
 const completeUserCapability = (user: User): User => {
   if (user && user.id === ADMIN_UUID) {
