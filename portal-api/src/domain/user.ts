@@ -1,4 +1,4 @@
-import { isEmptyField, now } from '../utils/utils.js';
+import { isEmptyField } from '../utils/utils.js';
 import { ForbiddenAccess } from '../utils/error.js';
 import { createUser, loadUserBy } from '../users/users.domain.js';
 
@@ -13,6 +13,9 @@ export const loginFromProvider = async (userInfo, opts = {}) => {
   if (!user) {
     const newUser = await createUser(email);
     return { ...newUser, provider_metadata: userInfo.provider_metadata };
+  } else {
+    // Update user role
+    // createUserRolePortal(user.id);
   }
   return { ...user, provider_metadata: userInfo.provider_metadata };
 };
@@ -24,30 +27,3 @@ export const authenticateUser = async (req, user, provider) => {
   return logged;
 };
 
-const buildSessionUser = (user, provider) => {
-  return {
-    id: user.id,
-    individual_id: user.individual_id,
-    session_creation: now(),
-    session_password: user.password,
-    api_token: user.api_token,
-    internal_id: user.internal_id,
-    user_email: user.user_email,
-    otp_secret: user.otp_secret,
-    name: user.name,
-    external: user.external,
-    login_provider: provider,
-    account_status: user.account_status,
-    account_lock_after_date: user.account_lock_after_date,
-    unit_system: user.unit_system,
-    groups: user.groups,
-    roles: user.roles,
-    default_hidden_types: user.default_hidden_types,
-    group_ids: user.groups?.map((g) => g.internal_id) ?? [],
-    organizations: user.organizations ?? [],
-    allowed_organizations: user.allowed_organizations,
-    administrated_organizations: user.administrated_organizations ?? [],
-    inside_platform_organization: user.inside_platform_organization,
-    ...user.provider_metadata,
-  };
-};
