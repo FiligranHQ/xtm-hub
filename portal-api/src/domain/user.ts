@@ -5,26 +5,20 @@ import { createUser, loadUserBy } from '../users/users.domain.js';
 export const loginFromProvider = async (userInfo, opts = {}) => {
   // region test the groups existence and eventually auto create groups
   // endregion
-  console.log('loginFromProvider', userInfo);
   const { email, name: providedName, firstname, lastname } = userInfo;
   if (isEmptyField(email)) {
     throw ForbiddenAccess('User email not provided');
   }
   const user = await loadUserBy('User.email', email);
-  console.log('loadUserBy', user);
   if (!user) {
-    // const name = providedName ?? email;
     const newUser = await createUser(email);
-    console.log({ newUser });
-    return { provider_metadata: userInfo.provider_metadata, ...newUser };
+    return { ...newUser, provider_metadata: userInfo.provider_metadata };
   }
   return { ...user, provider_metadata: userInfo.provider_metadata };
 };
 
 export const authenticateUser = async (req, user, provider) => {
-  console.log('authenticateUser');
   const logged = await loadUserBy('User.email', user.email);
-  // req.session.user = sessionUser;
   req.session.user = logged;
   req.session.save();
   return logged;
