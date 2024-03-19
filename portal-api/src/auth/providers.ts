@@ -1,27 +1,26 @@
 import passport from 'passport/lib/index.js';
-import { custom as OpenIDCustom, Issuer as OpenIDIssuer, Strategy as OpenIDStrategy } from 'openid-client';
+import {
+  ClientMetadata,
+  custom as OpenIDCustom,
+  Issuer as OpenIDIssuer,
+  Strategy as OpenIDStrategy,
+} from 'openid-client';
 import { providerLoginHandler } from './login-handle.js';
+import config from 'config';
 
 const AUTH_SSO = 'SSO';
 const STRATEGY_OPENID = 'OpenIDConnectStrategy';
 const providers = [];
 
-const config = {
-  issuer: 'http://localhost:8080/realms/keycloak-express',
-  client_id: 'keycloak-express',
-  client_secret: 'long_secret-here',
-  redirect_uris: ['http://localhost:3001/auth/oidc/callback'],
-  logout_callback_url: ['http://localhost:3001/oidc/callback'],
-  response_types: ['code'],
-};
+const oidcConfig = config.get('oidc_provider') as ClientMetadata&{ issuer: string };
 const providerRef = 'oidc';
 // Here we use directly the config and not the mapped one.
 // All config of openid lib use snake case.
 const openIdClient = undefined;
 OpenIDCustom.setHttpOptionsDefaults({ timeout: 0, agent: openIdClient });
-OpenIDIssuer.discover(config.issuer).then((issuer) => {
+OpenIDIssuer.discover(oidcConfig.issuer).then((issuer) => {
   const { Client } = issuer;
-  const client = new Client(config);
+  const client = new Client(oidcConfig);
   // region scopes generation
   const openIdScopes = ['openid', 'email', 'profile'];
   // endregion
