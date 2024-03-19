@@ -78,3 +78,16 @@ export const createUserRolePortal = async (user_id, role_portal_id = '6b632cf2-9
     .insert({ user_id, role_portal_id });
   return addedUserRole;
 };
+
+export const loadRolePortal = async () => {
+  const roles = await dbUnsecure('RolePortal');
+  return roles;
+};
+
+export const loadRolePortalByUserId = async (user_id) => {
+  const userRole = await dbUnsecure('User_RolePortal')
+    .where({ user_id })
+    .join('RolePortal', 'role_portal_id', '=', 'RolePortal.id')
+    .returning('*');
+  return userRole;
+};
