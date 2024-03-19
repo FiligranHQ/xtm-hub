@@ -4,11 +4,21 @@ import { PageInfo } from 'graphql-relay/connection/connection.js';
 import { applyDbSecurity } from './src/security/access.js';
 import { Capability, Restriction } from './src/__generated__/resolvers-types.js';
 import { PortalContext } from './src/model/portal-context.js';
+import { Role } from './src/model/role.js';
 
 export const CAPABILITY_BYPASS: Capability = { id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09', name: Restriction.Bypass };
 export const CAPABILITY_ADMIN: Capability = { id: 'e0e32277-6530-49aa-9df6-22211f2651ff', name: Restriction.Admin };
+export const ROLE_ADMIN: Role = { id: '6b632cf2-9105-46ec-a463-ad59ab58c770', name: 'ADMIN' };
+export const ROLE_USER: Role = { id: '40cfe630-c272-42f9-8fcf-f219e2f4277b', name: 'USER' };
 
-export type DatabaseType = 'User'|'Organization'|'Service'|'User_RolePortal'|'RolePortal'
+export type DatabaseType =
+  'User'
+  |'Organization'
+  |'Service'
+  |'User_RolePortal'
+  |'RolePortal'
+  |'CapabilityPortal'
+  |'RolePortal_CapabilityPortal'
 export type ActionType = 'add'|'edit'|'delete'|'merge'
 
 interface Pagination {
