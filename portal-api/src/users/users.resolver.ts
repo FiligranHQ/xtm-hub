@@ -6,11 +6,11 @@ import { v4 as uuidv4 } from 'uuid';
 import crypto from 'node:crypto';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { PORTAL_COOKIE_NAME } from '../index.js';
-import { hashPassword } from '../server/initialize.js';
 import { loadUserBy, loadUsers } from './users.domain.js';
 import { dispatch, listen } from '../pub.js';
 import { extractId } from '../utils/utils.js';
 import { loadOrganizationBy } from '../organizations/organizations.domain.js';
+import { hashPassword } from '../utils/hash-password.util.js';
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
   const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
