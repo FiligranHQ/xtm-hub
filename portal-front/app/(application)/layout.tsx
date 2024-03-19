@@ -18,9 +18,14 @@ interface RootLayoutProps {
 }
 
 // Component
-const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({ children }) => {
+const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
+  children,
+}) => {
   try {
-    await serverPortalApiFetch<typeof pageLoaderMeQueryNode, pageLoaderMeQuery>(pageLoaderMeQueryNode, {});
+    await serverPortalApiFetch<typeof pageLoaderMeQueryNode, pageLoaderMeQuery>(
+      pageLoaderMeQueryNode,
+      {}
+    ).then(console.log);
     return (
       <AppContext>
         <PageLoader>
