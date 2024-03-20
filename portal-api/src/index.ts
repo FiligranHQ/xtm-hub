@@ -1,5 +1,4 @@
 import expressSession, { SessionData } from 'express-session';
-import cookieParser from 'cookie-parser';
 import { ApolloServer } from '@apollo/server';
 import { createServer } from 'http';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -42,7 +41,6 @@ const sessionMiddleware = expressSession({
     // maxAge: 60 * 60 * 1000 // 1 hour
   },
 });
-app.use(cookieParser());
 app.use(sessionMiddleware);
 
 const httpServer = createServer(app);
@@ -105,11 +103,12 @@ const handler = createHandler({
     return { user, req: _req };
   },
 });
-app.use(PORTAL_WEBSOCKET_PATH, cors<cors.CorsRequest>(), json(), handler);
+
+app.use(PORTAL_WEBSOCKET_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
 app.use(PORTAL_GRAPHQL_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
 // endregion
 
-initAuthPlatform(app);
+await initAuthPlatform(app);
 
 // Ensure migrate the schema
 await dbMigration.migrate();
