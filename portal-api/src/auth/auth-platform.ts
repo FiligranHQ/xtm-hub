@@ -35,7 +35,7 @@ export const initAuthPlatform = async (app) => {
     });
     try {
       const logged = await callbackLogin();
-      await authenticateUser(req, logged, provider);
+      await authenticateUser(req, logged);
     } catch (err) {
       console.error(err, { provider });
       setCookieError(res, 'Invalid authentication, please ask your administrator');
