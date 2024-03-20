@@ -1,4 +1,4 @@
-import expressSession, { SessionData } from 'express-session';
+import expressSession from 'express-session';
 import { ApolloServer } from '@apollo/server';
 import { createServer } from 'http';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -7,7 +7,6 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import cors from 'cors';
 import pkg from 'body-parser';
 import express from 'express';
-import { createHandler } from 'graphql-sse/lib/use/express';
 import createSchema from './server/graphl-schema.js';
 import { dbMigration } from '../knexfile.js';
 import portalConfig from './config.js';
@@ -89,18 +88,6 @@ const middlewareExpress = expressMiddleware(server, {
     // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
     // TODO Add build session from request authorization
     return { user, req, res };
-  },
-});
-const handler = createHandler({
-  schema,
-  context: async (_req) => {
-    const session = await new Promise((resolve) => {
-      sessionMiddleware(_req.raw, {} as express.Response, () => resolve(_req.raw.session));
-    });
-    const { user } = session as SessionData;
-    // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
-    // TODO Add build session from request authorization
-    return { user, req: _req };
   },
 });
 

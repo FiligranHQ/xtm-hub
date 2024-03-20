@@ -2,10 +2,10 @@ import { isEmptyField } from '../utils/utils.js';
 import { ForbiddenAccess } from '../utils/error.js';
 import { createUser, loadRolePortal, loadRolePortalByUserId, loadUserBy } from '../users/users.domain.js';
 
-export const loginFromProvider = async (userInfo, opts = {}) => {
+export const loginFromProvider = async (userInfo) => {
   // region test the groups existence and eventually auto create groups
   // endregion
-  const { email, name: providedName, firstname, lastname } = userInfo;
+  const { email } = userInfo;
   if (isEmptyField(email)) {
     throw ForbiddenAccess('User email not provided');
   }
@@ -27,7 +27,7 @@ export const loginFromProvider = async (userInfo, opts = {}) => {
   return { ...user, provider_metadata: userInfo.provider_metadata };
 };
 
-export const authenticateUser = async (req, user, provider) => {
+export const authenticateUser = async (req, user) => {
   const logged = await loadUserBy('User.email', user.email);
   req.session.user = logged;
   req.session.save();
