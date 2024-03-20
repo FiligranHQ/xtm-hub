@@ -1,14 +1,16 @@
 'use client';
 
-import {pageLoaderMeQuery, pageLoaderMeQuery$data} from '../../__generated__/pageLoaderMeQuery.graphql';
+import { pageLoaderMeQuery } from '../../__generated__/pageLoaderMeQuery.graphql';
 import * as React from 'react';
-import {createContext} from 'react';
-import {graphql, PreloadedQuery, useFragment, usePreloadedQuery,} from 'react-relay';
-import {context_fragment$data, context_fragment$key, Restriction,} from '../../__generated__/context_fragment.graphql';
-import {CAPABILITY_BYPASS} from '@/utils/constant';
-import {pageLoaderServiceQuery} from "../../__generated__/pageLoaderServiceQuery.graphql";
-import {ServiceListQuery} from "../../app/service/page-loader";
-import {MeQuery} from "../../app/page-loader";
+import { createContext } from 'react';
+import { graphql, PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
+import {
+  context_fragment$data,
+  context_fragment$key,
+  Restriction,
+} from '../../__generated__/context_fragment.graphql';
+import { CAPABILITY_BYPASS } from '@/utils/constant';
+import { MeQuery } from '../../app/(application)/page-loader';
 
 // Context
 export interface Portal {
@@ -51,7 +53,10 @@ interface PortalContextProps {
 }
 
 // Component
-const PortalContext: React.FunctionComponent<PortalContextProps> = ({ queryRef, children }) => {
+const PortalContext: React.FunctionComponent<PortalContextProps> = ({
+  queryRef,
+  children,
+}) => {
   const data = usePreloadedQuery<pageLoaderMeQuery>(MeQuery, queryRef);
   const me = useFragment<context_fragment$key>(ContextFragment, data.me);
   return (

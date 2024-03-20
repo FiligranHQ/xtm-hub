@@ -1,59 +1,5 @@
 directive @auth(requires: [Restriction] = [BYPASS]) repeatable on OBJECT | FIELD_DEFINITION
 
-enum ServiceOrdering {
-  name
-}
-
-type Service implements Node {
-  id: ID!
-  name: String!
-  description: String
-}
-
-type ServiceEdge {
-  cursor: String!
-  node: Service!
-}
-
-type ServiceConnection {
-  edges: [ServiceEdge!]!
-  pageInfo: PageInfo!
-}
-
-type ServiceSubscription {
-  add: Service
-  edit: Service
-  delete: Service
-}
-
-type Subscription {
-  Service: ServiceSubscription
-  User: UserSubscription
-}
-
-type Mutation {
-  editService(id: ID!, name: String!): Service
-  addService(name: String!): Service
-  deleteService(id: ID!): Service
-  mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
-  editUser(id: ID!, input: EditUserInput!): User
-  deleteUser(id: ID!): User
-  login(email: String!, password: String): User
-  logout: ID!
-  addOrganization(name: String!): Organization
-}
-
-type Query {
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  me: User
-  user(id: ID!): User
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  organization(id: ID!): Organization
-  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
-  node(id: ID!): Node
-}
-
 enum UserOrdering {
   email
 }
@@ -90,6 +36,21 @@ type UserSubscription {
   merge: MergeEvent
 }
 
+type Subscription {
+  User: UserSubscription
+  Service: ServiceSubscription
+}
+
+type Query {
+  me: User
+  user(id: ID!): User
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  organization(id: ID!): Organization
+  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  node(id: ID!): Node
+}
+
 input EditUserInput {
   email: String!
   first_name: String
@@ -101,6 +62,45 @@ input AddUserInput {
   email: String!
   password: String!
   organization_id: String!
+}
+
+type Mutation {
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
+  editUser(id: ID!, input: EditUserInput!): User
+  deleteUser(id: ID!): User
+  login(email: String!, password: String): User
+  logout: ID!
+  editService(id: ID!, name: String!): Service
+  addService(name: String!): Service
+  deleteService(id: ID!): Service
+  addOrganization(name: String!): Organization
+}
+
+enum ServiceOrdering {
+  name
+}
+
+type Service implements Node {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type ServiceEdge {
+  cursor: String!
+  node: Service!
+}
+
+type ServiceConnection {
+  edges: [ServiceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ServiceSubscription {
+  add: Service
+  edit: Service
+  delete: Service
 }
 
 enum OrganizationOrdering {
