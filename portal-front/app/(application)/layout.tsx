@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import '../styles/globals.css';
+import '../../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
-import pageLoaderMeQueryNode, { pageLoaderMeQuery } from '../__generated__/pageLoaderMeQuery.graphql';
+import pageLoaderMeQueryNode, { pageLoaderMeQuery } from '../../__generated__/pageLoaderMeQuery.graphql';
 import Login from '@/components/login';
 import AppContext from '@/components/app-context';
 import HeaderComponent from '@/components/header';
@@ -18,9 +18,14 @@ interface RootLayoutProps {
 }
 
 // Component
-const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({ children }) => {
+const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
+  children,
+}) => {
   try {
-    await serverPortalApiFetch<typeof pageLoaderMeQueryNode, pageLoaderMeQuery>(pageLoaderMeQueryNode, {});
+    await serverPortalApiFetch<typeof pageLoaderMeQueryNode, pageLoaderMeQuery>(
+      pageLoaderMeQueryNode,
+      {}
+    ).then(console.log);
     return (
       <AppContext>
         <PageLoader>
