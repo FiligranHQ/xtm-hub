@@ -1,15 +1,25 @@
 'use client';
 
-import {pageLoaderServiceQuery} from '../../../__generated__/pageLoaderServiceQuery.graphql';
+import { pageLoaderServiceQuery } from '../../../__generated__/pageLoaderServiceQuery.graphql';
 import * as React from 'react';
-import {useMemo} from 'react';
-import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery, useSubscription,} from 'react-relay';
-import {ServiceListQuery} from '../../../app/service/page-loader';
-import {serviceList_services$key} from '../../../__generated__/serviceList_services.graphql';
-import {serviceList_fragment$key} from '../../../__generated__/serviceList_fragment.graphql';
-import {serviceListFragment, servicesListFragment, subscription,} from '@/components/service/service.graphql';
+import { useMemo } from 'react';
+import {
+  PreloadedQuery,
+  useFragment,
+  usePaginationFragment,
+  usePreloadedQuery,
+  useSubscription,
+} from 'react-relay';
+import { serviceList_services$key } from '../../../__generated__/serviceList_services.graphql';
+import { serviceList_fragment$key } from '../../../__generated__/serviceList_fragment.graphql';
+import {
+  serviceListFragment,
+  servicesListFragment,
+  subscription,
+} from '@/components/service/service.graphql';
 import ServiceCreateForm from '@/components/service/service-create-form';
-import {Button} from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { ServiceListQuery } from '../../../app/(application)/service/page-loader';
 
 interface ServiceItemProps {
   node: serviceList_fragment$key;
