@@ -17,7 +17,7 @@ const completeUserCapability = (user: User): User => {
 };
 
 export const loadUserBy = async (field: string, value: string): Promise<UserWithAuthentication> => {
-  const user = await dbUnsecure<User>('User').where(field, value)
+  const userQuery = dbUnsecure<User>('User').where(field, value)
     .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
     .leftJoin('User_RolePortal as user_RolePortal', 'User.id', '=', 'user_RolePortal.user_id')
     .leftJoin('RolePortal_CapabilityPortal as rolePortal_CapabilityPortal', 'user_RolePortal.role_portal_id', '=', 'rolePortal_CapabilityPortal.role_portal_id')
@@ -26,11 +26,13 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
     .select([
       'User.*',
       dbRaw('(json_agg(json_build_object(\'id\', org.id, \'name\', org.name, \'__typename\', \'Organization\')) ->> 0)::json as organization'),
-      dbRaw('case when count(capability) = 0 then \'[]\' else json_agg(capability.*) end as capabilities'),
+      dbRaw('case when count(distinct capability.id) = 0 then \'[]\' else json_agg(distinct capability.*) end as capabilities'),
     ])
+    .whereNotNull('capability')
     .groupBy(['User.id'])
     .first();
 
+  const user = await userQuery;
   // Complete admin user with bypass if needed
   return completeUserCapability(user) as UserWithAuthentication;
 };
