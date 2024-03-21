@@ -4,7 +4,7 @@ import '../../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import pageLoaderMeQueryNode, { pageLoaderMeQuery } from '../../__generated__/pageLoaderMeQuery.graphql';
-import Login from '@/components/login';
+import Login from '@/components/login/login';
 import AppContext from '@/components/app-context';
 import HeaderComponent from '@/components/header';
 import PageLoader from './page-loader';
@@ -25,7 +25,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
     await serverPortalApiFetch<typeof pageLoaderMeQueryNode, pageLoaderMeQuery>(
       pageLoaderMeQueryNode,
       {}
-    ).then(console.log);
+    );
     return (
       <AppContext>
         <PageLoader>

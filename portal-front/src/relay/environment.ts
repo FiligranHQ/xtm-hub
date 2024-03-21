@@ -8,7 +8,6 @@ import {
   Store,
   Variables,
 } from 'relay-runtime';
-import getConfig from 'next/config';
 import { createClient } from 'graphql-sse';
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
