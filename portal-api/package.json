@@ -22,8 +22,8 @@
     "start": "node dist/index.js",
     "dev:tsc": "tsc --watch --preserveWatchOutput",
     "dev:node": "yarn start --watch",
-    "dev:esbuild": "yarn build --watch",
-    "start-dev": "concurrently \"yarn dev:tsc\" \"yarn dev:node\" \"yarn dev:esbuild\""
+    "dev:esbuild": "yarn copy && node builder/dev/dev.js --watch",
+    "start-dev": "concurrently \"yarn dev:tsc\" \"yarn dev:esbuild\" \"yarn dev:node\""
   },
   "dependencies": {
     "@apollo/server": "4.10.1",
