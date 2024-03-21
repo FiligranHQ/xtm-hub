@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { graphql, useMutation } from 'react-relay';
+import { graphql, useMutation, useQueryLoader } from 'react-relay';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
@@ -17,6 +17,18 @@ import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+
+const settingsQuery = graphql`
+  query SettingsQuery {
+    settings {
+      platform_providers {
+        name
+        provider
+        type
+      }
+    }
+  }
+`;
 
 const formSchema = z.object({
   email: z.string().email('This is not a valid email.'),
@@ -42,8 +54,8 @@ const Login: React.FunctionComponent = () => {
     },
   });
   const [commitLoginMutation] = useMutation(LoginMutation);
-
-  function onSubmit(variables: z.infer<typeof formSchema>) {
+  const [queryRef, loadQuery] = useQueryLoader(settingsQuery);
+  const onSubmit = (variables: z.infer<typeof formSchema>) => {
     commitLoginMutation({
       variables,
       onCompleted() {
@@ -51,7 +63,7 @@ const Login: React.FunctionComponent = () => {
         router.refresh();
       },
     });
-  }
+  };
 
   return (
     <>
