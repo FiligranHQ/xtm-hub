@@ -101,7 +101,6 @@ await initAuthPlatform(app);
 await dbMigration.migrate();
 await platformInit();
 console.log('[Migration] Database version is now ' + await dbMigration.version());
-
 // Modified server startup
 await new Promise<void>((resolve) => httpServer.listen({ port: portalConfig.port }, resolve));
 console.log(`🚀 Server ready at http://localhost:` + portalConfig.port);

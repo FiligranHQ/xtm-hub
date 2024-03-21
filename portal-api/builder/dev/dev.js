@@ -1,6 +1,6 @@
 import * as esbuild from 'esbuild';
 
-await esbuild.build({
+let ctx = await esbuild.context({
   logLevel: 'info',
   entryPoints: [
     'src/index.ts',
@@ -12,3 +12,4 @@ await esbuild.build({
   format: 'esm',
   packages: 'external',
 });
+await ctx.watch();
