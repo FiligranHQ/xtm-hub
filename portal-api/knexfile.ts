@@ -1,9 +1,9 @@
-import portalConfig from './src/config.js';
+import portalConfig from './src/config';
 import pkg, { Knex } from 'knex';
-import { PageInfo } from 'graphql-relay/connection/connection.js';
-import { applyDbSecurity } from './src/security/access.js';
-import { Capability, Restriction } from './src/__generated__/resolvers-types.js';
-import { PortalContext } from './src/model/portal-context.js';
+import { PageInfo } from 'graphql-relay/connection/connection';
+import { applyDbSecurity } from './src/security/access';
+import { Capability, Restriction } from './src/__generated__/resolvers-types';
+import { PortalContext } from './src/model/portal-context';
 import RolePortal, { RolePortalId } from './src/model/kanel/public/RolePortal';
 
 export const CAPABILITY_BYPASS: Capability = { id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09', name: Restriction.Bypass };

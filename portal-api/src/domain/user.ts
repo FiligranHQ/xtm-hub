@@ -1,6 +1,6 @@
-import { isEmptyField } from '../utils/utils.js';
-import { ForbiddenAccess } from '../utils/error.js';
-import { createUser, loadRolePortal, loadRolePortalByUserId, loadUserBy } from '../users/users.domain.js';
+import { isEmptyField } from '../utils/utils';
+import { ForbiddenAccess } from '../utils/error';
+import { createUser, loadRolePortal, loadRolePortalByUserId, loadUserBy } from '../users/users.domain';
 
 export const loginFromProvider = async (userInfo) => {
   // region test the groups existence and eventually auto create groups

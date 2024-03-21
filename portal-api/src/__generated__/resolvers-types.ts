@@ -1,5 +1,5 @@
 import type { GraphQLResolveInfo } from 'graphql';
-import { PortalContext } from '../model/portal-context.js';
+import { PortalContext } from '../model/portal-context';
 
 export type Maybe<T> = T|null|undefined;
 export type InputMaybe<T> = T|null;

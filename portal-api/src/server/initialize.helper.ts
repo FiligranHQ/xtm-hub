@@ -1,7 +1,7 @@
-import { dbUnsecure } from '../../knexfile.js';
-import { Capability, Organization } from '../__generated__/resolvers-types.js';
-import { UserWithAuthentication } from '../users/users.js';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from './initialize.js';
+import { dbUnsecure } from '../../knexfile';
+import { Capability, Organization } from '../__generated__/resolvers-types';
+import { UserWithAuthentication } from '../users/users';
+import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from './initialize';
 import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
 

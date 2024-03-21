@@ -7,15 +7,15 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import cors from 'cors';
 import pkg from 'body-parser';
 import express from 'express';
-import createSchema from './server/graphl-schema.js';
-import { dbMigration } from '../knexfile.js';
-import portalConfig from './config.js';
+import createSchema from './server/graphl-schema';
+import { dbMigration } from '../knexfile';
+import portalConfig from './config';
 import { printSchema } from 'graphql/utilities/index.js';
 import fs from 'node:fs';
-import platformInit from './server/initialize.js';
-import { initAuthPlatform } from './auth/auth-platform.js';
-import { User } from './model/user.js';
-import { PortalContext } from './model/portal-context.js';
+import platformInit from './server/initialize';
+import { initAuthPlatform } from './auth/auth-platform';
+import { User } from './model/user';
+import { PortalContext } from './model/portal-context';
 
 const { json } = pkg;
 
