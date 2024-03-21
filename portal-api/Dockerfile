@@ -9,7 +9,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY .yarn ./.yarn
 COPY .yarnrc.yml package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 # Rebuild the source code only when needed
 FROM base AS builder
