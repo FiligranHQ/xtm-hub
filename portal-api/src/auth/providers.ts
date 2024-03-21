@@ -5,7 +5,7 @@ import {
   Issuer as OpenIDIssuer,
   Strategy as OpenIDStrategy,
 } from 'openid-client';
-import { providerLoginHandler } from './login-handle.js';
+import { providerLoginHandler } from './login-handle';
 import config from 'config';
 
 const AUTH_SSO = 'SSO';

@@ -1,4 +1,4 @@
-import { Restriction } from '../__generated__/resolvers-types.js';
+import { Restriction } from '../__generated__/resolvers-types';
 
 export interface User {
   id: string;

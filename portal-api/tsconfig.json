@@ -7,6 +7,16 @@
     "outDir": "dist",
     "rootDirs": [
       "src"
+    ],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "lib": [
+      "es2022"
     ]
   }
 }
