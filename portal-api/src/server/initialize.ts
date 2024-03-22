@@ -5,6 +5,7 @@ import {
   ensureCapabilityExists,
   ensureRoleExists,
   ensureRoleHasCapability,
+  ensureUserRoleExist,
   insertAdminUser,
   insertPlatformOrganization,
   updateUserPassword,
@@ -26,6 +27,7 @@ const initAdminUser = async () => {
     // User not yet exist, need a complete init
     await completeUserInitialization(email, data);
   }
+  ensureUserRoleExist(ADMIN_UUID, ROLE_ADMIN.id);
 };
 
 const completeUserInitialization = async (email, data) => {
@@ -72,10 +74,10 @@ const initCapabilityAndRole = async () => {
 };
 
 const initializeBuiltInAdministrator = async () => {
-  // Initialize default admin user
-  await initAdminUser();
   // Initialize default Role and Capability
   await initCapabilityAndRole();
+  // Initialize default admin user
+  await initAdminUser();
 };
 
 const platformInit = async () => {

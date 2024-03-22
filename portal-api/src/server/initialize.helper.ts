@@ -11,6 +11,15 @@ export const ensureCapabilityExists = async (capability, trx) => {
   }
 };
 
+export const ensureUserRoleExist = async (user_id, role_portal_id) => {
+  const userRole = await dbUnsecure('User_RolePortal')
+    .where({ user_id })
+    .where({ role_portal_id }).first();
+  if (!userRole) {
+    await dbUnsecure('User_RolePortal').insert({ user_id, role_portal_id });
+  }
+};
+
 export const ensureRoleExists = async (role, trx) => {
   const rolePortal = await dbUnsecure('RolePortal');
   if (!rolePortal.find((r) => r.id === role.id)) {
