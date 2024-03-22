@@ -1,8 +1,9 @@
-import { dbUnsecure } from '../../knexfile.js';
-import { Capability, Organization } from '../__generated__/resolvers-types.js';
-import { Role, RoleCapability } from '../model/role.js';
-import { UserWithAuthentication } from '../users/users.js';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from './initialize.js';
+import { dbUnsecure } from '../../knexfile';
+import { Capability, Organization } from '../__generated__/resolvers-types';
+import { UserWithAuthentication } from '../users/users';
+import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from './initialize';
+import RolePortal from '../model/kanel/public/RolePortal';
+import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
 
 export const ensureCapabilityExists = async (capability, trx) => {
   const capabilityPortal = await dbUnsecure('CapabilityPortal');
@@ -23,18 +24,18 @@ export const ensureUserRoleExist = async (user_id, role_portal_id) => {
 export const ensureRoleExists = async (role, trx) => {
   const rolePortal = await dbUnsecure('RolePortal');
   if (!rolePortal.find((r) => r.id === role.id)) {
-    await dbUnsecure<Role>('RolePortal').insert(role).transacting(trx);
+    await dbUnsecure<RolePortal>('RolePortal').insert(role).transacting(trx);
   }
 };
 
 export const ensureRoleHasCapability = async (role, capability, trx) => {
-  const roleCapability = await dbUnsecure<RoleCapability>('RolePortal_CapabilityPortal')
+  const roleCapability = await dbUnsecure<RolePortalCapabilityPortal>('RolePortal_CapabilityPortal')
     .where({ capability_portal_id: capability.id })
     .where({ role_portal_id: role.id })
     .first();
 
   if (!roleCapability) {
-    await dbUnsecure<RoleCapability>('RolePortal_CapabilityPortal').insert({
+    await dbUnsecure<RolePortalCapabilityPortal>('RolePortal_CapabilityPortal').insert({
       capability_portal_id: capability.id,
       role_portal_id: role.id,
     }).transacting(trx);

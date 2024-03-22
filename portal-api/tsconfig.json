@@ -2,9 +2,21 @@
   "compilerOptions": {
     "target": "ES2022",
     "sourceMap": true,
-    "moduleResolution": "nodenext",
-    "module": "NodeNext",
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
     "outDir": "dist",
-    "rootDirs": ["src"],
+    "rootDirs": [
+      "src"
+    ],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "lib": [
+      "es2022"
+    ]
   }
 }

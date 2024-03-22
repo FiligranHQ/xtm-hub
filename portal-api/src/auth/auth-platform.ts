@@ -1,7 +1,7 @@
-import passport from './providers.js';
-import { setCookieError } from '../utils/set-cookies.util.js';
+import passport from './providers';
+import { setCookieError } from '../utils/set-cookies.util';
 import bodyParser from 'body-parser';
-import { authenticateUser } from '../domain/user.js';
+import { authenticateUser } from '../domain/user';
 
 export const initAuthPlatform = async (app) => {
   app.get(`/auth/:provider`, (req, res, next) => {
@@ -35,7 +35,7 @@ export const initAuthPlatform = async (app) => {
     });
     try {
       const logged = await callbackLogin();
-      await authenticateUser(req, logged, provider);
+      await authenticateUser(req, logged);
     } catch (err) {
       console.error(err, { provider });
       setCookieError(res, 'Invalid authentication, please ask your administrator');

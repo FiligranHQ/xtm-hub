@@ -1,7 +1,7 @@
-import { loginFromProvider } from '../domain/user.js';
+import { loginFromProvider } from '../domain/user';
 
-export const providerLoginHandler = (userInfo, done, opts = {}) => {
-  loginFromProvider(userInfo, opts)
+export const providerLoginHandler = (userInfo, done) => {
+  loginFromProvider(userInfo)
     .then((user) => {
       done(null, user);
     })

@@ -11,4 +11,4 @@ generates:
       useIndexSignature: true
       maybeValue: T | null | undefined
       inputMaybeValue: T | null
-      contextType: "../index.js#PortalContext"
+      contextType: "../model/portal-context.js#PortalContext"
