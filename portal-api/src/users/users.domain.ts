@@ -5,6 +5,7 @@ import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import { PortalContext } from '../model/portal-context';
 import { hashPassword } from '../utils/hash-password.util';
+import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
 
 const completeUserCapability = (user: User): User => {
   if (user && user.id === ADMIN_UUID) {
@@ -28,13 +29,19 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
       dbRaw('(json_agg(json_build_object(\'id\', org.id, \'name\', org.name, \'__typename\', \'Organization\')) ->> 0)::json as organization'),
       dbRaw('case when count(distinct capability.id) = 0 then \'[]\' else json_agg(distinct capability.*) end as capabilities'),
     ])
-    .whereNotNull('capability')
     .groupBy(['User.id'])
     .first();
 
   const user = await userQuery;
+
+  // Remove capability null from query
+  const cleanUser = {
+    ...user,
+    capabilities: user.capabilities.filter((capability: CapabilityPortal) => !!capability),
+  };
+
   // Complete admin user with bypass if needed
-  return completeUserCapability(user) as UserWithAuthentication;
+  return completeUserCapability(cleanUser) as UserWithAuthentication;
 };
 
 export const loadUsers = async (context: PortalContext, opts): Promise<UserConnection> => {
