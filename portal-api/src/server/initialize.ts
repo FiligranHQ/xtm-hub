@@ -1,6 +1,6 @@
-import portalConfig from '../config.js';
-import { CAPABILITY_ADMIN, CAPABILITY_BYPASS, dbTx, dbUnsecure, ROLE_ADMIN, ROLE_USER } from '../../knexfile.js';
-import { Organization, User } from '../__generated__/resolvers-types.js';
+import portalConfig from '../config';
+import { CAPABILITY_ADMIN, CAPABILITY_BYPASS, dbTx, dbUnsecure, ROLE_ADMIN, ROLE_USER } from '../../knexfile';
+import { Organization, User } from '../__generated__/resolvers-types';
 import {
   ensureCapabilityExists,
   ensureRoleExists,
@@ -9,8 +9,8 @@ import {
   insertAdminUser,
   insertPlatformOrganization,
   updateUserPassword,
-} from './initialize.helper.js';
-import { hashPassword } from '../utils/hash-password.util.js';
+} from './initialize.helper';
+import { hashPassword } from '../utils/hash-password.util';
 
 export const ADMIN_UUID = 'ba091095-418f-4b4f-b150-6c9295e232c3';
 export const PLATFORM_ORGANIZATION_UUID = 'ba091095-418f-4b4f-b150-6c9295e232c4';

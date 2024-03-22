@@ -1,9 +1,9 @@
-import { Capability } from '../__generated__/resolvers-types.js';
-import { TypedNode } from '../pub.js';
-import { ActionType, CAPABILITY_ADMIN, CAPABILITY_BYPASS, DatabaseType, QueryOpts } from '../../knexfile.js';
+import { Capability } from '../__generated__/resolvers-types';
+import { TypedNode } from '../pub';
+import { ActionType, CAPABILITY_ADMIN, CAPABILITY_BYPASS, DatabaseType, QueryOpts } from '../../knexfile';
 import { Knex } from 'knex';
-import { User } from '../model/user.js';
-import { PortalContext } from '../model/portal-context.js';
+import { User } from '../model/user';
+import { PortalContext } from '../model/portal-context';
 
 export const isUserGranted = (user: User, capability: Capability) => {
   if (!user) return false;

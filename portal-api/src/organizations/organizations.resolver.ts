@@ -1,8 +1,8 @@
-import { Organization, OrganizationConnection, Resolvers } from '../__generated__/resolvers-types.js';
-import { db, paginate } from '../../knexfile.js';
+import { Organization, OrganizationConnection, Resolvers } from '../__generated__/resolvers-types';
+import { db, paginate } from '../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
-import { loadOrganizationBy } from './organizations.domain.js';
-import { extractId } from '../utils/utils.js';
+import { loadOrganizationBy } from './organizations.domain';
+import { extractId } from '../utils/utils';
 
 const resolvers: Resolvers = {
   Query: {

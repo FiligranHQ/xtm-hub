@@ -1,0 +1,13 @@
+type PlatformProvider {
+    name: String!
+    type: String!
+    provider: String!
+}
+
+type Settings {
+    platform_providers: [PlatformProvider!]!
+}
+
+type Query {
+    settings: Settings!
+}

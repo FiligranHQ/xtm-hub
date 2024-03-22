@@ -1,8 +1,8 @@
 import { PubSub, withFilter } from 'graphql-subscriptions';
-import { Node } from './__generated__/resolvers-types.js';
-import { ActionType, DatabaseType } from '../knexfile.js';
-import { isNodeAccessible } from './security/access.js';
-import { PortalContext } from './model/portal-context.js';
+import { Node } from './__generated__/resolvers-types';
+import { ActionType, DatabaseType } from '../knexfile';
+import { isNodeAccessible } from './security/access';
+import { PortalContext } from './model/portal-context';
 
 export interface TypedNode extends Node {
   __typename: DatabaseType;

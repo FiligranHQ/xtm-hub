@@ -1,4 +1,4 @@
-import expressSession, { SessionData } from 'express-session';
+import expressSession from 'express-session';
 import { ApolloServer } from '@apollo/server';
 import { createServer } from 'http';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -7,16 +7,15 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import cors from 'cors';
 import pkg from 'body-parser';
 import express from 'express';
-import { createHandler } from 'graphql-sse/lib/use/express';
-import createSchema from './server/graphl-schema.js';
-import { dbMigration } from '../knexfile.js';
-import portalConfig from './config.js';
+import createSchema from './server/graphl-schema';
+import { dbMigration } from '../knexfile';
+import portalConfig from './config';
 import { printSchema } from 'graphql/utilities/index.js';
 import fs from 'node:fs';
-import platformInit from './server/initialize.js';
-import { initAuthPlatform } from './auth/auth-platform.js';
-import { User } from './model/user.js';
-import { PortalContext } from './model/portal-context.js';
+import platformInit from './server/initialize';
+import { initAuthPlatform } from './auth/auth-platform';
+import { User } from './model/user';
+import { PortalContext } from './model/portal-context';
 
 const { json } = pkg;
 
@@ -91,18 +90,6 @@ const middlewareExpress = expressMiddleware(server, {
     return { user, req, res };
   },
 });
-const handler = createHandler({
-  schema,
-  context: async (_req) => {
-    const session = await new Promise((resolve) => {
-      sessionMiddleware(_req.raw, {} as express.Response, () => resolve(_req.raw.session));
-    });
-    const { user } = session as SessionData;
-    // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
-    // TODO Add build session from request authorization
-    return { user, req: _req };
-  },
-});
 
 app.use(PORTAL_WEBSOCKET_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
 app.use(PORTAL_GRAPHQL_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
@@ -114,7 +101,6 @@ await initAuthPlatform(app);
 await dbMigration.migrate();
 await platformInit();
 console.log('[Migration] Database version is now ' + await dbMigration.version());
-
 // Modified server startup
 await new Promise<void>((resolve) => httpServer.listen({ port: portalConfig.port }, resolve));
 console.log(`🚀 Server ready at http://localhost:` + portalConfig.port);

@@ -1,5 +1,5 @@
 import { URL } from 'node:url';
-import { isNotEmptyField } from './utils.js';
+import { isNotEmptyField } from './utils';
 
 export const extractRefererPathFromReq = (req) => {
   if (isNotEmptyField(req.headers.referer)) {
