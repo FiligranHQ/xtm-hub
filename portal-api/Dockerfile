@@ -46,4 +46,4 @@ ENV PORT 4001
 # set hostname to localhost
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "./src/index.js"]
+CMD ["node", "./index.js"]
