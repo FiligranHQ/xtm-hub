@@ -1,5 +1,44 @@
 directive @auth(requires: [Restriction] = [BYPASS]) repeatable on OBJECT | FIELD_DEFINITION
 
+enum Restriction {
+  BYPASS
+  ADMIN
+  USER
+}
+
+interface Node {
+  id: ID!
+}
+
+enum OrderingMode {
+  asc
+  desc
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type MergeEvent implements Node {
+  id: ID!
+  from: ID!
+  target: ID!
+}
+
+type Query {
+  node(id: ID!): Node
+  me: User
+  user(id: ID!): User
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  settings: Settings!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  organization(id: ID!): Organization
+  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+}
+
 enum UserOrdering {
   email
 }
@@ -41,17 +80,6 @@ type Subscription {
   Service: ServiceSubscription
 }
 
-type Query {
-  me: User
-  user(id: ID!): User
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  settings: Settings!
-  organization(id: ID!): Organization
-  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
-  node(id: ID!): Node
-}
-
 input EditUserInput {
   email: String!
   first_name: String
@@ -76,6 +104,16 @@ type Mutation {
   addService(name: String!): Service
   deleteService(id: ID!): Service
   addOrganization(name: String!): Organization
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
 }
 
 enum ServiceOrdering {
@@ -104,16 +142,6 @@ type ServiceSubscription {
   delete: Service
 }
 
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -131,32 +159,4 @@ type OrganizationEdge {
 type OrganizationConnection {
   edges: [OrganizationEdge!]!
   pageInfo: PageInfo!
-}
-
-enum Restriction {
-  BYPASS
-  ADMIN
-  USER
-}
-
-interface Node {
-  id: ID!
-}
-
-enum OrderingMode {
-  asc
-  desc
-}
-
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
-}
-
-type MergeEvent implements Node {
-  id: ID!
-  from: ID!
-  target: ID!
 }
