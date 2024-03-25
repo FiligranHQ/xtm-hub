@@ -1,4 +1,4 @@
-import { User } from '../__generated__/resolvers-types';
+import { User } from '../../__generated__/resolvers-types';
 
 type UserPassword = {
   password: string
