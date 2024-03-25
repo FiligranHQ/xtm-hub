@@ -1,6 +1,6 @@
 import { isEmptyField } from '../utils/utils';
 import { ForbiddenAccess } from '../utils/error';
-import { createUser, loadRolePortal, loadRolePortalByUserId, loadUserBy } from '../users/users.domain';
+import { createUser, loadRolePortal, loadRolePortalByUserId, loadUserBy } from '../graphql/users/users.domain';
 
 export const loginFromProvider = async (userInfo) => {
   // region test the groups existence and eventually auto create groups

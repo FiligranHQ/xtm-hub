@@ -1,7 +1,7 @@
-import { Resolvers, Service, ServiceConnection } from '../__generated__/resolvers-types';
-import { DatabaseType, db, paginate } from '../../knexfile';
+import { Resolvers, Service, ServiceConnection } from '../../__generated__/resolvers-types';
+import { DatabaseType, db, paginate } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
-import { dispatch, listen } from '../pub';
+import { dispatch, listen } from '../../pub';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 
 const resolvers: Resolvers = {

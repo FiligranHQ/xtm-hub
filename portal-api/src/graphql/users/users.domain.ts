@@ -1,11 +1,11 @@
-import { CAPABILITY_BYPASS, dbRaw, dbUnsecure, paginate } from '../../knexfile';
-import { Capability, User, UserConnection } from '../__generated__/resolvers-types';
-import { ADMIN_UUID } from '../server/initialize';
+import { CAPABILITY_BYPASS, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { Capability, User, UserConnection } from '../../__generated__/resolvers-types';
+import { ADMIN_UUID } from '../../server/initialize';
 import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
-import { PortalContext } from '../model/portal-context';
-import { hashPassword } from '../utils/hash-password.util';
-import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
+import { PortalContext } from '../../model/portal-context';
+import { hashPassword } from '../../utils/hash-password.util';
+import CapabilityPortal from '../../model/kanel/public/CapabilityPortal';
 
 const completeUserCapability = (user: User): User => {
   if (user && user.id === ADMIN_UUID) {

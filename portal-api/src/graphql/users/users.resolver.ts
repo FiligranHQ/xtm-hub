@@ -1,15 +1,15 @@
-import { MergeEvent, Resolvers, User } from '../__generated__/resolvers-types';
-import { DatabaseType, db } from '../../knexfile';
+import { MergeEvent, Resolvers, User } from '../../__generated__/resolvers-types';
+import { DatabaseType, db } from '../../../knexfile';
 import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import crypto from 'node:crypto';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { PORTAL_COOKIE_NAME } from '../index';
+import { PORTAL_COOKIE_NAME } from '../../index';
 import { loadUserBy, loadUsers } from './users.domain';
-import { dispatch, listen } from '../pub';
-import { extractId } from '../utils/utils';
+import { dispatch, listen } from '../../pub';
+import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
-import { hashPassword } from '../utils/hash-password.util';
+import { hashPassword } from '../../utils/hash-password.util';
 import { GraphQLError } from 'graphql/error/index.js';
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
