@@ -69,13 +69,13 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
 
   return (
     <>
-      <main className="m-auto max-w-[450px]">
+      <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
         <div className="mt-2 flex flex-col items-center">
           <Image
-            src="/filigran_scred.svg"
+            src="/filigran_logo.svg"
             width={500}
             height={500}
-            alt="Scred logo"
+            alt="Filigran logo"
           />
           <h1 className="pt-10 text-2xl">- Sign in -</h1>
           <Form {...form}>
