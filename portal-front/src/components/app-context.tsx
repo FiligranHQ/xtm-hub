@@ -4,6 +4,7 @@ import * as React from 'react';
 import Head from 'next/head';
 import { environment } from '@/relay/environment';
 import { RelayEnvironmentProvider } from 'react-relay';
+import { geologica, ibmPlexSans } from '../../app/font';
 
 // Component interface
 interface AppProps {
@@ -13,7 +14,7 @@ interface AppProps {
 // Component
 const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
   return (
-    <html lang='en'>
+    <html lang='en' className={`${geologica.variable} ${ibmPlexSans.variable}`}>
     <Head>
       <title>Filigran Cloud Portal</title>
       <meta
