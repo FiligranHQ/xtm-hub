@@ -11,6 +11,7 @@ import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { hashPassword } from '../../utils/hash-password.util';
 import { GraphQLError } from 'graphql/error/index.js';
+import { AWXAddUserInput, awxRunCreateUserWorkflow } from '../../managers/awx/awx-configuration';
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
   const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
@@ -54,9 +55,23 @@ const resolvers: Resolvers = {
         email: input.email,
         salt,
         password: hash,
+        first_name: input.first_name,
+        last_name: input.last_name,
         organization_id: extractId(input.organization_id),
       };
       const [addedUser] = await db<UserWithAuthentication>(context, 'User').insert(data).returning('*');
+
+      const orgInfo = await loadOrganizationBy(context, 'Organization.id', data.organization_id);
+
+      const awxAddUserInput: AWXAddUserInput = {
+        awx_client_request_id: uuidv4(),
+        organization_name: orgInfo.name,
+        user_email_address: input.email,
+        user_firstname: input.first_name,
+        user_lastname: input.last_name,
+        user_role: 'admin',
+      };
+      await awxRunCreateUserWorkflow(awxAddUserInput);
       return addedUser;
     },
     editUser: async (_, { id, input }, context) => {
