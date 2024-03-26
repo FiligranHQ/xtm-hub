@@ -5,16 +5,16 @@
     "password": "admin"
   },
   "database": {
-    "host": "127.0.0.1",
+    "host": "thales-dev-vm-2",
     "port": 5432,
     "user": "portal",
     "password": "portal-password",
     "database": "cloud-portal"
   },
   "oidc_provider": {
-    "issuer": "http://localhost:8080/realms/keycloak-express",
-    "client_id": "keycloak-express",
-    "client_secret": "long_secret-here",
+    "issuer": "https://auth.dev.scredplatform.io/realms/ctishape",
+    "client_id": "scred-portal-dev",
+    "client_secret": "gsi2WQ9J53Op8OOhh0HPHvOUlNPLuGf3",
     "redirect_uris": [
       "http://localhost:3001/auth/oidc/callback"
     ],
