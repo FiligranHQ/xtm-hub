@@ -25,3 +25,4 @@ __pycache__
 !.yarn/versions
 .pnp.*
 
+/config/local.json
