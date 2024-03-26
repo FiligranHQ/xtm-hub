@@ -19,6 +19,8 @@ export type Scalars = {
 
 export type AddUserInput = {
   email: Scalars['String']['input'];
+  first_name: Scalars['String']['input'];
+  last_name: Scalars['String']['input'];
   organization_id: Scalars['String']['input'];
   password: Scalars['String']['input'];
 };
