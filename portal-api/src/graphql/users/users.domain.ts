@@ -35,13 +35,16 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
   const user = await userQuery;
 
   // Remove capability null from query
-  const cleanUser = {
-    ...user,
-    capabilities: user.capabilities.filter((capability: CapabilityPortal) => !!capability),
-  };
+  if (user) {
+    const cleanUser = {
+      ...user,
+      capabilities: user.capabilities.filter((capability: CapabilityPortal) => !!capability),
+    };
+    return completeUserCapability(cleanUser) as UserWithAuthentication;
+  }
 
   // Complete admin user with bypass if needed
-  return completeUserCapability(cleanUser) as UserWithAuthentication;
+  return completeUserCapability(user) as UserWithAuthentication;
 };
 
 export const loadUsers = async (context: PortalContext, opts): Promise<UserConnection> => {
@@ -71,7 +74,6 @@ export const createUser = async (email: string, organization_id = 'ba091095-418f
     salt,
     password: hash,
     organization_id,
-    external: true,
   };
 
   // Use insert with returning to get the newly created user
@@ -81,7 +83,7 @@ export const createUser = async (email: string, organization_id = 'ba091095-418f
 
   await createUserRolePortal(addedUser.id, role_portal_id);
 
-  return addedUser;
+  return await loadUserBy('User.email', email);
 };
 
 export const createUserRolePortal = async (user_id, role_portal_id = '6b632cf2-9105-46ec-a463-ad59ab58c770') => {
