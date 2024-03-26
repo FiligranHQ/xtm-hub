@@ -16,6 +16,7 @@ import platformInit from './server/initialize';
 import { initAuthPlatform } from './auth/auth-platform';
 import { User } from './model/user';
 import { PortalContext } from './model/portal-context';
+import { initAWXEndpoint } from './managers/awx/initAWXEndpoint';
 
 const { json } = pkg;
 
@@ -96,6 +97,7 @@ app.use(PORTAL_GRAPHQL_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json()
 // endregion
 
 await initAuthPlatform(app);
+initAWXEndpoint(app);
 
 // Ensure migrate the schema
 await dbMigration.migrate();

@@ -73,8 +73,16 @@ export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
     email,
     password,
     organization_id,
+    first_name,
+    last_name,
   }: z.infer<typeof userFormSchema>) {
-    const input: AddUserInput = { email, password, organization_id };
+    const input: AddUserInput = {
+      email,
+      password,
+      organization_id,
+      first_name,
+      last_name,
+    };
     commitUserMutation({
       variables: { input, connections: [connectionID] },
       onCompleted: () => setOpen(false),
