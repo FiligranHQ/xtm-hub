@@ -1,7 +1,6 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { DatabaseType } from '../../knexfile';
 
-
 export const extractId = (id: string) => {
   const { id: databaseId } = fromGlobalId(id) as { type: DatabaseType, id: string };
   return databaseId;
@@ -29,3 +28,7 @@ export const isEmptyField = (field: unknown): boolean => {
 };
 
 export const now = () => new Date().getUTCDate();
+
+export const getNestedPropertyValue = (obj: object, paths: string) => {
+  return paths.split('.').reduce((acc, path) => acc && acc[path], obj) ?? [];
+};
