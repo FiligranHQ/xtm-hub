@@ -1,13 +1,20 @@
 import { CAPABILITY_BYPASS, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
-import { Capability, User, UserConnection } from '../../__generated__/resolvers-types';
+import { Capability, User as UserGenerated, UserConnection } from '../../__generated__/resolvers-types';
 import { ADMIN_UUID } from '../../server/initialize';
 import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import { PortalContext } from '../../model/portal-context';
 import { hashPassword } from '../../utils/hash-password.util';
 import CapabilityPortal from '../../model/kanel/public/CapabilityPortal';
+import User, { UserId } from '../../model/kanel/public/User';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { UserInfo } from '../../model/user';
+import { mapOIDCUserRole } from '../../auth/mapping-roles/oidc-role';
+import { addRolesToUser, deleteUserRolePortalByUserId } from '../../datamappers/user-role-portal';
+import { addNewUser } from '../../datamappers/user';
 
-const completeUserCapability = (user: User): User => {
+
+const completeUserCapability = (user: UserGenerated): UserGenerated => {
   if (user && user.id === ADMIN_UUID) {
     const capabilityIds = user.capabilities.map((c: Capability) => c.id);
     if (!capabilityIds.includes(CAPABILITY_BYPASS.id)) {
@@ -48,7 +55,7 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
 };
 
 export const loadUsers = async (context: PortalContext, opts): Promise<UserConnection> => {
-  const userConnection = await paginate<User>(context, 'User', opts)
+  const userConnection = await paginate<UserGenerated>(context, 'User', opts)
     .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
     .leftJoin('User_RolePortal as user_RolePortal', 'User.id', '=', 'user_RolePortal.user_id')
     .leftJoin('RolePortal_CapabilityPortal as rolePortal_CapabilityPortal', 'user_RolePortal.role_portal_id', '=', 'rolePortal_CapabilityPortal.role_portal_id')
@@ -66,41 +73,35 @@ export const loadUsers = async (context: PortalContext, opts): Promise<UserConne
   return userConnection;
 };
 
-export const createUser = async (email: string, organization_id = 'ba091095-418f-4b4f-b150-6c9295e232c4', role_portal_id = '6b632cf2-9105-46ec-a463-ad59ab58c770') => {
+export const createUser = async (userInfo: UserInfo, organization_id: OrganizationId = 'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId) => {
+  const { email, first_name, last_name, roles } = userInfo;
   const { salt, hash } = hashPassword('');
-  const data = {
-    id: uuidv4(),
-    email: email,
+  const data: User = {
+    id: uuidv4() as UserId,
     salt,
     password: hash,
     organization_id,
+    email,
+    first_name,
+    last_name,
   };
-
   // Use insert with returning to get the newly created user
-  const [addedUser] = await dbUnsecure('User')
-    .insert(data)
-    .returning('*');
-
-  await createUserRolePortal(addedUser.id, role_portal_id);
+  const [addedUser] = await addNewUser(data);
+  const mappedRoles = roles.map((role) => mapOIDCUserRole(role));
+  await addRolesToUser(addedUser.id, mappedRoles);
 
   return await loadUserBy('User.email', email);
 };
 
-export const createUserRolePortal = async (user_id, role_portal_id = '6b632cf2-9105-46ec-a463-ad59ab58c770') => {
-  const addedUserRole = await dbUnsecure('User_RolePortal')
-    .insert({ user_id, role_portal_id });
-  return addedUserRole;
+export const updateUserRoles = async (userInfo: UserInfo, userId: UserId) => {
+  const { email, roles } = userInfo;
+
+  // Remove all the role of the User
+  await deleteUserRolePortalByUserId(userId);
+
+  const mappedRoles = roles.map((role) => mapOIDCUserRole(role));
+  await addRolesToUser(userId, mappedRoles);
+
+  return await loadUserBy('User.email', email);
 };
 
-export const loadRolePortal = async () => {
-  const roles = await dbUnsecure('RolePortal');
-  return roles;
-};
-
-export const loadRolePortalByUserId = async (user_id) => {
-  const userRole = await dbUnsecure('User_RolePortal')
-    .where({ user_id })
-    .join('RolePortal', 'role_portal_id', '=', 'RolePortal.id')
-    .returning('*');
-  return userRole;
-};
