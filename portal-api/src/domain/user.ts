@@ -1,30 +1,22 @@
 import { isEmptyField } from '../utils/utils';
 import { ForbiddenAccess } from '../utils/error';
-import { createUser, loadRolePortal, loadRolePortalByUserId, loadUserBy } from '../graphql/users/users.domain';
+import { createUser, loadUserBy, updateUserRoles } from '../graphql/users/users.domain';
+import { UserInfo } from '../model/user';
+import { UserId } from '../model/kanel/public/User';
 
-export const loginFromProvider = async (userInfo) => {
+export const loginFromProvider = async (userInfo: UserInfo) => {
   // region test the groups existence and eventually auto create groups
   // endregion
   const { email } = userInfo;
   if (isEmptyField(email)) {
     throw ForbiddenAccess('User email not provided');
   }
+  // TODO rewrite the correct loadUSerBy typing
   const user = await loadUserBy('User.email', email);
   if (!user) {
-    const newUser = await createUser(email);
-    return { ...newUser, provider_metadata: userInfo.provider_metadata };
-  } else {
-    // Update user role
-    // createUserRolePortal(user.id);
-
-    // Get All Role define in the portal
-    const rolePortal = await loadRolePortal();
-    // Get User roles in portal
-    const userRole = await loadRolePortalByUserId(user.id);
-    console.log(rolePortal);
-    console.log(userRole);
+    return await createUser(userInfo);
   }
-  return { ...user, provider_metadata: userInfo.provider_metadata };
+  return await updateUserRoles(userInfo, user.id as UserId);
 };
 
 export const authenticateUser = async (req, user) => {

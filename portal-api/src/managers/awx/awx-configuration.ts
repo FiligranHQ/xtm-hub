@@ -19,8 +19,6 @@ export interface AWXAddUserInput {
 
 
 export const awxGetWorkflow = async (workflowName: string): Promise<AwxResponse> => {
-  console.log({ AWX_URL });
-  console.log({ AWX_TOKEN });
   const url = AWX_URL + '/api/v2/workflow_job_templates/?name=' + workflowName;
   const response = await fetch(url, { headers: AWX_HEADERS });
   return await response.json() as AwxResponse;
@@ -39,7 +37,6 @@ export const awxLaunchWorkflowId = async (workflowId: number, body: object) => {
     },
   );
   const response = await workflow.json();
-  console.log(response);
   return response;
 };
 

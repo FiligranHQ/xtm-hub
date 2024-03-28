@@ -1,4 +1,4 @@
-import passport from './providers';
+import passport from './providers/providers';
 import { setCookieError } from '../utils/set-cookies.util';
 import bodyParser from 'body-parser';
 import { authenticateUser } from '../domain/user';
@@ -22,20 +22,20 @@ export const initAuthPlatform = async (app) => {
   const urlencodedParser = bodyParser.urlencoded({ extended: true });
   app.all(`/auth/:provider/callback`, urlencodedParser, async (req, res, next) => {
     const { provider } = req.params;
-
     const referer = req.session.referer;
-    const callbackLogin = () => new Promise((accept, reject) => {
-      passport.authenticate(provider, {}, (err, user) => {
-        if (err || !user) {
-          reject(err);
-        } else {
-          accept(user);
-        }
-      })(req, res, next);
-    });
+
     try {
-      const logged = await callbackLogin();
-      await authenticateUser(req, logged);
+      const user = await new Promise((resolve, reject) => {
+        passport.authenticate(provider, {}, (err, user) => {
+          if (err || !user) {
+            reject(err || new Error('Invalid authentication'));
+          } else {
+            resolve(user);
+          }
+        })(req, res, next);
+      });
+
+      await authenticateUser(req, user);
     } catch (err) {
       console.error(err, { provider });
       setCookieError(res, 'Invalid authentication, please ask your administrator');
