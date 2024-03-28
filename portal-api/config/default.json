@@ -24,5 +24,14 @@
     "response_types": [
       "code"
     ]
+  },
+  "user_management": {
+    "token_reference": "access_token",
+    "read_userinfo": false,
+    "roles_path": "resource_access.scred-portal-dev.roles"
+  },
+  "awx": {
+    "url": "awx_url",
+    "token": "awx_token"
   }
 }
