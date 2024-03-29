@@ -8,7 +8,6 @@ import CapabilityPortal from '../../model/kanel/public/CapabilityPortal';
 import User, { UserId } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserInfo } from '../../model/user';
-import { mapOIDCUserRole } from '../../auth/mapping-roles/oidc-role';
 import { addRolesToUser, deleteUserRolePortalByUserId } from '../../datamappers/user-role-portal';
 import { addNewUser } from '../../datamappers/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
@@ -87,9 +86,7 @@ export const createUser = async (userInfo: UserInfo, organization_id: Organizati
   };
   // Use insert with returning to get the newly created user
   const [addedUser] = await addNewUser(data);
-  const mappedRoles = roles.map((role) => mapOIDCUserRole(role));
-  await addRolesToUser(addedUser.id, mappedRoles);
-
+  await addRolesToUser(addedUser.id, roles);
   return await loadUserBy('User.email', email);
 };
 
@@ -98,9 +95,7 @@ export const updateUserRoles = async (userInfo: UserInfo, userId: UserId) => {
 
   // Remove all the role of the User
   await deleteUserRolePortalByUserId(userId);
-
-  const mappedRoles = roles.map((role) => mapOIDCUserRole(role));
-  await addRolesToUser(userId, mappedRoles);
+  await addRolesToUser(userId, roles);
 
   return await loadUserBy('User.email', email);
 };
