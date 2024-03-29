@@ -1,4 +1,4 @@
-directive @auth(requires: [Restriction] = [BYPASS]) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 enum Restriction {
     BYPASS
