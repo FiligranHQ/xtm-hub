@@ -30,18 +30,17 @@ export const addOIDCStrategy = (passport) => {
 
     console.log('OIDC Strategy');
     const openIDStrategy = new OpenIDStrategy(options, async (_, tokenSet, userinfo, done) => {
-      console.log(userinfo);
       const decodedUser = config.get('user_management.read_userinfo') ? userinfo : jwtDecode(tokenSet.access_token);
-      const addRoleUserInLocal = {
-        ...decodedUser,
-        resource_access: {
-          'scred-portal-dev': {
-            roles: [
-              'user',
-            ],
-          },
-        },
-      };
+      // const addRoleUserInLocal = {
+      //   ...decodedUser,
+      //   resource_access: {
+      //     'scred-portal-dev': {
+      //       roles: [
+      //         'user',
+      //       ],
+      //     },
+      //   },
+      // };
       const roles = getNestedPropertyValue(decodedUser, config.get('user_management.roles_path') as string);
 
       console.info('[OPENID] Successfully logged', { decodedUser });
