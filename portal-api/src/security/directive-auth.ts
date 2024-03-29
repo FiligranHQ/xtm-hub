@@ -8,7 +8,7 @@ export const AUTH_DIRECTIVE_NAME = 'auth';
 
 type AuthFn = (user: User) => boolean;
 type RoleFn = (user: User, roleRequiredInSchema: string[]) => boolean;
-const getSchemaTransformer = (isAuthenticatedFn: AuthFn, hasRoleFn: RoleFn) => {
+const getSchemaTransformer = (isAuthenticatedFn: AuthFn, hasCapabilityFn: RoleFn) => {
   const typeDirectiveArgumentMaps = {};
   return {
     authDirectiveTransformer: (schema: GraphQLSchema): GraphQLSchema =>
@@ -25,13 +25,13 @@ const getSchemaTransformer = (isAuthenticatedFn: AuthFn, hasRoleFn: RoleFn) => {
           const { resolve = defaultFieldResolver } = fieldConfig;
           fieldConfig.resolve = function(source, args, context: PortalContext, info) {
             const { user } = context;
-            const rolesRequired = authDirective?.requires;
+            const capabilitiesRequired = authDirective?.requires;
             // Check if the field requires authentication
             if (authDirective && !isAuthenticatedFn(user)) {
               throw new Error(`Not authenticated.`);
             }
             // Get the required authorization role for the requested field
-            if (authDirective && !hasRoleFn(user, rolesRequired)) {
+            if (authDirective && !hasCapabilityFn(user, capabilitiesRequired)) {
               throw new Error(`Not authorized. The provided role does not meet schema requirements`);
             }
             // Else, run the resolvers as normal
@@ -47,13 +47,17 @@ const isAuthenticated = (user: User) => {
   return !!user;
 };
 
-const hasRole = (user: User, rolesRequired: string[]) => {
+const hasCapability = (user: User, capabilitiesRequired: string[]) => {
   const { capabilities } = user;
   const capabilityNames = capabilities.map((c) => c.name);
   if (capabilityNames.includes(CAPABILITY_BYPASS.name)) {
     return true;
   }
-  return capabilityNames.some((id) => rolesRequired.includes(id));
+  // In case the user has some capability but there is not requiredRole
+  if (capabilityNames.length > 0 && capabilitiesRequired.length === 0) {
+    return true;
+  }
+  return capabilityNames.some((id) => capabilitiesRequired.includes(id));
 };
 
-export const { authDirectiveTransformer } = getSchemaTransformer(isAuthenticated, hasRole);
+export const { authDirectiveTransformer } = getSchemaTransformer(isAuthenticated, hasCapability);

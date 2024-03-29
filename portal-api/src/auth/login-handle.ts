@@ -1,4 +1,4 @@
-import { loginFromProvider } from '../domain/user';
+import { loginFromProvider } from './auth-user';
 import { UserInfo } from '../model/user';
 
 export const providerLoginHandler = async (userInfo: UserInfo, done) => {
