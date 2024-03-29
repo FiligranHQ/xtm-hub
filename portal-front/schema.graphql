@@ -1,4 +1,4 @@
-directive @auth(requires: [Restriction] = [BYPASS]) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 enum Restriction {
   BYPASS
@@ -30,13 +30,23 @@ type MergeEvent implements Node {
 
 type Query {
   node(id: ID!): Node
+  settings: Settings!
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  settings: Settings!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
 }
 
 enum UserOrdering {
@@ -106,16 +116,6 @@ type Mutation {
   addService(name: String!): Service
   deleteService(id: ID!): Service
   addOrganization(name: String!): Organization
-}
-
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
 }
 
 enum ServiceOrdering {
