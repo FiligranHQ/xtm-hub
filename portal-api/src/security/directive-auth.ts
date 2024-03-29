@@ -1,8 +1,8 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
-import { CAPABILITY_BYPASS } from '../../knexfile';
 import { User } from '../model/user';
 import { PortalContext } from '../model/portal-context';
+import { CAPABILITY_BYPASS } from '../portal.const';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
 

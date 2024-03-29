@@ -1,6 +1,5 @@
-import { CAPABILITY_BYPASS, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { Capability, User as UserGenerated, UserConnection } from '../../__generated__/resolvers-types';
-import { ADMIN_UUID } from '../../server/initialize';
 import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import { PortalContext } from '../../model/portal-context';
@@ -12,6 +11,7 @@ import { UserInfo } from '../../model/user';
 import { mapOIDCUserRole } from '../../auth/mapping-roles/oidc-role';
 import { addRolesToUser, deleteUserRolePortalByUserId } from '../../datamappers/user-role-portal';
 import { addNewUser } from '../../datamappers/user';
+import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 
 
 const completeUserCapability = (user: UserGenerated): UserGenerated => {
