@@ -1,5 +1,5 @@
 import portalConfig from '../config';
-import { CAPABILITY_ADMIN, CAPABILITY_BYPASS, dbTx, dbUnsecure, ROLE_ADMIN, ROLE_USER } from '../../knexfile';
+import { dbTx, dbUnsecure } from '../../knexfile';
 import { Organization, User } from '../__generated__/resolvers-types';
 import {
   ensureCapabilityExists,
@@ -11,9 +11,15 @@ import {
   updateUserPassword,
 } from './initialize.helper';
 import { hashPassword } from '../utils/hash-password.util';
-
-export const ADMIN_UUID = 'ba091095-418f-4b4f-b150-6c9295e232c3';
-export const PLATFORM_ORGANIZATION_UUID = 'ba091095-418f-4b4f-b150-6c9295e232c4';
+import {
+  ADMIN_UUID,
+  CAPABILITY_ADMIN,
+  CAPABILITY_BYPASS,
+  CAPABILITY_USER,
+  PLATFORM_ORGANIZATION_UUID,
+  ROLE_ADMIN,
+  ROLE_USER,
+} from '../portal.const';
 
 const initAdminUser = async () => {
   const { email, password } = portalConfig.admin;
@@ -55,9 +61,9 @@ const initCapabilityAndRole = async () => {
   const trx = await dbTx();
   try {
 
-    // Ensure CAPABILITY_BYPASS and CAPABILITY_ADMIN exist in CapabilityPortal
     await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
     await ensureCapabilityExists(CAPABILITY_ADMIN, trx);
+    await ensureCapabilityExists(CAPABILITY_USER, trx);
 
     // Ensure ROLE_ADMIN and ROLE_USER exist in RolePortal
     await ensureRoleExists(ROLE_ADMIN, trx);
@@ -65,6 +71,7 @@ const initCapabilityAndRole = async () => {
 
     // Ensure ROLE_ADMIN has CAPABILITY_BYPASS
     await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS, trx);
+    await ensureRoleHasCapability(ROLE_USER, CAPABILITY_USER, trx);
 
     await trx.commit();
   } catch (error) {
