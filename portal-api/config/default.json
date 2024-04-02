@@ -28,14 +28,14 @@
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,
-    "roles_path": "resource_access.scred-portal-dev.roles"
+    "roles_path": "resource_access.scred-portal-dev.roles",
+    "role_mappings": [
+      "admin:ADMIN",
+      "user:USER"
+    ]
   },
   "awx": {
     "url": "awx_url",
     "token": "awx_token"
-  },
-  "role_mappings": [
-    "admin:ADMIN",
-    "user:USER"
-  ]
+  }
 }
