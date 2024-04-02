@@ -10,7 +10,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
   return (
     <>
       <div>
-        <b>DEFAULT</b>
+        <b>Welcome to the platform</b>
       </div>
     </>
   );
