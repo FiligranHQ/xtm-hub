@@ -4,7 +4,7 @@ import * as React from 'react';
 import { graphql, useQueryLoader } from 'react-relay';
 import UserSlug from '@/components/admin/user/[slug]/user-slug';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { pageLoaderUserSlugQuery } from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
+import { pageLoaderUserSlugQuery } from '../../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
 
 // Configuration or Preloader Query
 export const UserSlugQuery = graphql`

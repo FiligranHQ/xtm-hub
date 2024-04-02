@@ -4,7 +4,7 @@ import * as React from 'react';
 import { graphql, useQueryLoader } from 'react-relay';
 import UserList from '@/components/admin/user/user-list';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { pageLoaderUserQuery } from '../../../../__generated__/pageLoaderUserQuery.graphql';
+import { pageLoaderUserQuery } from '../../../../../__generated__/pageLoaderUserQuery.graphql';
 import { useSearchParams } from 'next/navigation';
 
 // Configuration or Preloader Query

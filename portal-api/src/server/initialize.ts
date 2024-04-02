@@ -70,7 +70,7 @@ const initCapabilityAndRole = async () => {
     await ensureRoleExists(ROLE_USER, trx);
 
     // Ensure ROLE_ADMIN has CAPABILITY_BYPASS
-    await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS, trx);
+    await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_ADMIN, trx);
     await ensureRoleHasCapability(ROLE_USER, CAPABILITY_USER, trx);
 
     await trx.commit();
