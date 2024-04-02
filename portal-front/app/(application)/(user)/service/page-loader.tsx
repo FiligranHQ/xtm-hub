@@ -5,7 +5,7 @@ import { graphql, useQueryLoader } from 'react-relay';
 import ServiceList from '@/components/service/service-list';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { useSearchParams } from 'next/navigation';
-import { pageLoaderServiceQuery } from '../../../__generated__/pageLoaderServiceQuery.graphql';
+import { pageLoaderServiceQuery } from '../../../../__generated__/pageLoaderServiceQuery.graphql';
 
 // Query Configuration
 export const ServiceListQuery = graphql`
