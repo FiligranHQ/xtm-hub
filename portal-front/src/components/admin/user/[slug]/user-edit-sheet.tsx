@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import { Button } from 'filigran-ui/servers';
 import { Pencil } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';

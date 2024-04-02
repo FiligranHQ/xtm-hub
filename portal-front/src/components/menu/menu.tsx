@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from 'filigran-ui/servers';
 import { ChevronLeft, Home } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';

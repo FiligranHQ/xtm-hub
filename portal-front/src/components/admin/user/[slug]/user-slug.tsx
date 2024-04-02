@@ -10,7 +10,7 @@ import {
 } from '../../../../../__generated__/userSlugSubscription.graphql';
 import { userSlugDeletion, userSlugFragment, userSlugSubscription } from '@/components/admin/user/user.graphql';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
+import { Button } from 'filigran-ui/servers';
 import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 
 // Component interface
