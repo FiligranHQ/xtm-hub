@@ -25,7 +25,7 @@ export const addOIDCStrategy = (passport) => {
     const { Client } = issuer;
     const client = new Client(oidcConfig);
     // region scopes generation
-    const openIdScopes = ['openid', 'email', 'profile', 'roles'];
+    const openIdScopes = ['openid', 'email', 'profile'];
     // endregion
     const options = { client, passReqToCallback: true, params: { scope: openIdScopes.join(' ') } };
 
@@ -36,9 +36,7 @@ export const addOIDCStrategy = (passport) => {
       //   ...decodedUser,
       //   resource_access: {
       //     'scred-portal-dev': {
-      //       roles: [
-      //         'user', 'admin',
-      //       ],
+      //       roles: ['admin'],
       //     },
       //   },
       // };

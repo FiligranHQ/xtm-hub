@@ -19,7 +19,7 @@ import {
 } from '@/components/service/service.graphql';
 import ServiceCreateForm from '@/components/service/service-create-form';
 import { Button } from '@/components/ui/button';
-import { ServiceListQuery } from '../../../app/(application)/service/page-loader';
+import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 
 interface ServiceItemProps {
   node: serviceList_fragment$key;
