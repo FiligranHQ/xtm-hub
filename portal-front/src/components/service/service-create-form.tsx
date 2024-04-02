@@ -3,7 +3,7 @@ import { useMutation } from 'react-relay';
 import { serviceListMutation } from '../../../__generated__/serviceListMutation.graphql';
 import { ServiceListCreateMutation } from '@/components/service/service.graphql';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
+import { Button } from 'filigran-ui/servers';
 import { Input } from '@/components/ui/input';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';

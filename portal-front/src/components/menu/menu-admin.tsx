@@ -7,7 +7,7 @@ import {
 import { MessagesSquare, Settings, Star, Users } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from 'filigran-ui/servers';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import useGranted from '@/hooks/useGranted';

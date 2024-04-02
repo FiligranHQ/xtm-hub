@@ -18,7 +18,7 @@ import {
   subscription,
 } from '@/components/service/service.graphql';
 import ServiceCreateForm from '@/components/service/service-create-form';
-import { Button } from '@/components/ui/button';
+import { Button } from 'filigran-ui/servers';
 import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 
 interface ServiceItemProps {
