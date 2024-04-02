@@ -3,7 +3,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
+} from 'filigran-ui/clients';
 import { MessagesSquare, Settings, Star, Users } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
