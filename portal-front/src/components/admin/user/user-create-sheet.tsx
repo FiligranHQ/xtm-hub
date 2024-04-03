@@ -1,4 +1,9 @@
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Sheet,
   SheetClose,
   SheetContent,
@@ -7,30 +12,23 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from 'filigran-ui/servers';
-import { Pencil } from 'lucide-react';
-import * as React from 'react';
-import { FunctionComponent, useState } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+} from 'filigran-ui/clients';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Input,
+} from 'filigran-ui/servers';
+import { Pencil } from 'lucide-react';
+import * as React from 'react';
+import { FunctionComponent, useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { organizationSelectQuery } from '../../../../__generated__/organizationSelectQuery.graphql';
 import {
