@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from 'filigran-ui/servers';
 import { ChevronLeft, Home } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from 'filigran-ui/clients';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
