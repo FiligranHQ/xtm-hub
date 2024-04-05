@@ -19,7 +19,11 @@ export interface AWXAddUserInput {
 
 
 export const awxGetWorkflow = async (workflowName: string): Promise<AwxResponse> => {
-  const url = AWX_URL + '/api/v2/workflow_job_templates/?name=' + workflowName;
+  const apiURL = config.get(`awx.action_mapping.${workflowName}`);
+  if (!apiURL) {
+    throw new Error(`awx.action_mapping.${workflowName} is not defined`);
+  }
+  const url = `${AWX_URL}${apiURL}`;
   const response = await fetch(url, { headers: AWX_HEADERS });
   return await response.json() as AwxResponse;
 };
@@ -41,8 +45,7 @@ export const awxLaunchWorkflowId = async (workflowId: number, body: object) => {
 };
 
 export const awxRunCreateUserWorkflow = async (createUser: AWXAddUserInput) => {
-  const workflowName = 'api_create-user';
-  const workflow = await awxGetWorkflow(workflowName);
+  const workflow = await awxGetWorkflow('API_CREATE_USER');
   const body = {
     'extra_vars': createUser,
   };

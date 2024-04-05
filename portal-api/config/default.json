@@ -36,6 +36,14 @@
   },
   "awx": {
     "url": "awx_url",
-    "token": "awx_token"
+    "token": "awx_token",
+    "action_mapping": {
+      "API_CREATE_USER": "/api/v2/workflow_job_templates/?name=api_create-user",
+      "API_DISABLE_USER": "/api/v2/workflow_job_templates/?name=api_disable-user",
+      "API_CREATE_COMMUNITY_USER": "/api/v2/workflow_job_templates/?name=api_create-community",
+      "API_DELETE_COMMUNITY_USER": "/api/v2/workflow_job_templates/?name=api_delete-community",
+      "API_COMMUNITY_ADD_USER": "/api/v2/workflow_job_templates/?name=api_community-add-user",
+      "API_COMMUNITY_REMOVE_USER": "/api/v2/workflow_job_templates/?name=api_community-remove-user"
+    }
   }
 }
