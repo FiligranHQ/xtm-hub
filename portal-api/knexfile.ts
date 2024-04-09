@@ -21,6 +21,7 @@ export type DatabaseType =
   |'RolePortal'
   |'CapabilityPortal'
   |'RolePortal_CapabilityPortal'
+  |'ActionTracking'
 export type ActionType = 'add'|'edit'|'delete'|'merge'
 
 interface Pagination {
