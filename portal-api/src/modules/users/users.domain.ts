@@ -8,8 +8,8 @@ import CapabilityPortal from '../../model/kanel/public/CapabilityPortal';
 import User, { UserId } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserInfo } from '../../model/user';
-import { addRolesToUser, deleteUserRolePortalByUserId } from '../../datamappers/user-role-portal';
-import { addNewUser } from '../../datamappers/user';
+import { addRolesToUser, deleteUserRolePortalByUserId } from '../common/user-role-portal';
+import { addNewUser } from './user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 
 
