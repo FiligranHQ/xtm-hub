@@ -3,11 +3,11 @@ import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
 import { glob } from 'glob';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import nodesResolver from '../nodes/nodes.resolver';
-import servicesResolver from '../graphql/services/services.resolver';
-import usersResolver from '../graphql/users/users.resolver';
-import organizationsResolver from '../graphql/organizations/organizations.resolver';
+import servicesResolver from '../modules/services/services.resolver';
+import usersResolver from '../modules/users/users.resolver';
+import organizationsResolver from '../modules/organizations/organizations.resolver';
 import { authDirectiveTransformer } from '../security/directive-auth';
-import settingsResolver from '../graphql/settings/settings.resolver';
+import settingsResolver from '../modules/settings/settings.resolver';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);

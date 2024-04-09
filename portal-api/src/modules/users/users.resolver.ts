@@ -1,4 +1,4 @@
-import { MergeEvent, Resolvers, User } from '../../__generated__/resolvers-types';
+import { MergeEvent, Resolvers, User as GeneratedUser } from '../../__generated__/resolvers-types';
 import { DatabaseType, db } from '../../../knexfile';
 import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,7 +11,9 @@ import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { hashPassword } from '../../utils/hash-password.util';
 import { GraphQLError } from 'graphql/error/index.js';
-import { AWXAddUserInput, awxRunCreateUserWorkflow } from '../../managers/awx/awx-configuration';
+import { AWXAction, launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import User, { UserId } from '../../model/kanel/public/User';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
   const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
@@ -50,42 +52,35 @@ const resolvers: Resolvers = {
     // Management
     addUser: async (_, { input }, context) => {
       const { salt, hash } = hashPassword(input.password);
-      const data = {
-        id: uuidv4(),
+      const data: User = {
+        id: uuidv4() as UserId,
         email: input.email,
         salt,
         password: hash,
         first_name: input.first_name,
         last_name: input.last_name,
-        organization_id: extractId(input.organization_id),
+        organization_id: extractId(input.organization_id) as OrganizationId,
       };
-      const [addedUser] = await db<UserWithAuthentication>(context, 'User').insert(data).returning('*');
-
-      const orgInfo = await loadOrganizationBy(context, 'Organization.id', data.organization_id);
-
-      const awxAddUserInput: AWXAddUserInput = {
-        awx_client_request_id: uuidv4(),
-        organization_name: orgInfo.name,
-        user_email_address: input.email,
-        user_firstname: input.first_name,
-        user_lastname: input.last_name,
-        user_role: 'admin',
-      };
-      await awxRunCreateUserWorkflow(awxAddUserInput);
+      // TODO check how to make it work between Kanel and Graphql
+      const [addedUser] = await db<GeneratedUser>(context, 'User').insert(data).returning('*');
+      await launchAWXWorkflow({
+        type: AWXAction.CREATE_USER,
+        input: data,
+      });
       return addedUser;
     },
     editUser: async (_, { id, input }, context) => {
       const { id: databaseId } = fromGlobalId(id);
       const organization_id = extractId(input.organization_id);
       const update = { ...input, organization_id };
-      const [updatedUser] = await db<User>(context, 'User').where({ id: databaseId }).update(update).returning('*');
+      const [updatedUser] = await db<GeneratedUser>(context, 'User').where({ id: databaseId }).update(update).returning('*');
       updatedUser.organization = await loadOrganizationBy(context, 'Organization.id', organization_id);
       await dispatch('User', 'edit', updatedUser);
       return updatedUser;
     },
     deleteUser: async (_, { id }, context) => {
       const { id: databaseId } = fromGlobalId(id) as { type: DatabaseType, id: string };
-      const [deletedUser] = await db<User>(context, 'User').where({ id: databaseId }).delete('*');
+      const [deletedUser] = await db<GeneratedUser>(context, 'User').where({ id: databaseId }).delete('*');
       await dispatch('User', 'delete', deletedUser);
       return deletedUser;
     },
