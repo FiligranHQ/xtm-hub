@@ -45,7 +45,7 @@ export const awxLaunchWorkflowId = async (workflowId: number, body: object) => {
 };
 
 export const awxRunCreateUserWorkflow = async (createUser: AWXAddUserInput) => {
-  const workflow = await awxGetWorkflow('API_CREATE_USER');
+  const workflow = await awxGetWorkflow('CREATE_USER');
   const body = {
     'extra_vars': createUser,
   };
