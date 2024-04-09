@@ -65,8 +65,11 @@ const resolvers: Resolvers = {
       const [addedUser] = await db<GeneratedUser>(context, 'User').insert(data).returning('*');
       await launchAWXWorkflow({
         type: AWXAction.CREATE_USER,
-        input: data,
-      });
+        input: {
+          ...data,
+          password: input.password,
+        },
+      }).then((finalResponse) => console.log({ finalResponse }));
       return addedUser;
     },
     editUser: async (_, { id, input }, context) => {
