@@ -1,6 +1,6 @@
 import { isEmptyField } from '../utils/utils';
 import { ForbiddenAccess } from '../utils/error.util';
-import { createUser, loadUserBy, updateUserRoles } from '../graphql/users/users.domain';
+import { createUser, loadUserBy, updateUserRoles } from '../modules/users/users.domain';
 import { UserInfo } from '../model/user';
 import { UserId } from '../model/kanel/public/User';
 

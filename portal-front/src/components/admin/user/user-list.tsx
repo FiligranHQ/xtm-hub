@@ -5,7 +5,7 @@ import { UserListQuery } from '../../../../app/(application)/(admin)/admin/user/
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from 'filigran-ui/servers';
 import { UserCreateSheet } from '@/components/admin/user/user-create-sheet';
 
 // Relay

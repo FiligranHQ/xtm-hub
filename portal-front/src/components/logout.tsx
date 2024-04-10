@@ -3,7 +3,7 @@
 import { graphql, useMutation } from 'react-relay';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { Button } from 'filigran-ui/servers';
 import { LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
