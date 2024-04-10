@@ -10,17 +10,17 @@ import {
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
+  Input,
+} from 'filigran-ui/servers';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
 import { SettingsQuery } from '@/components/login/settings.graphql';

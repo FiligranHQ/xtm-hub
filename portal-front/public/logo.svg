@@ -1,0 +1,14 @@
+<svg viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M14.5 29C22.5081 29 29 22.5081 29 14.5C29 6.49187 22.5081 0 14.5 0C6.49187 0 0 6.49187 0 14.5C0 22.5081 6.49187 29 14.5 29ZM14.5 27.2245C21.5275 27.2245 27.2245 21.5275 27.2245 14.5C27.2245 7.47246 21.5275 1.77551 14.5 1.77551C7.47246 1.77551 1.77551 7.47246 1.77551 14.5C1.77551 21.5275 7.47246 27.2245 14.5 27.2245Z"
+          fill="currentColor"/>
+    <rect x="4.48454" y="4.18558" width="1.79381" height="20.6289" fill="currentColor"/>
+    <rect x="8.96907" y="1.79382" width="1.79381" height="25.4124" fill="currentColor"/>
+    <rect x="13.4536" y="0.597931" width="1.79381" height="26.9072" fill="currentColor"/>
+    <rect x="18.2371" y="18.2371" width="1.79381" height="9.26804" fill="currentColor"/>
+    <rect x="18.2371" y="18.2371" width="9.26804" height="1.79381" fill="currentColor"/>
+    <rect x="18.2371" y="21.5258" width="3.58763" height="1.79381" fill="currentColor"/>
+    <rect x="13.4536" y="13.7526" width="14.6495" height="1.79381" fill="currentColor"/>
+    <rect x="13.4536" y="9.26804" width="13.4536" height="1.79381" fill="currentColor"/>
+    <rect x="13.4536" y="4.48453" width="11.06" height="1.79381" fill="currentColor"/>
+</svg>

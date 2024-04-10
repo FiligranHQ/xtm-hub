@@ -1,8 +1,17 @@
+import 'knex';
 import portalConfig from './src/config';
-import pkg, { Knex } from 'knex';
+import pkg, { type Knex } from 'knex';
 import { PageInfo } from 'graphql-relay/connection/connection';
 import { applyDbSecurity } from './src/security/access';
 import { PortalContext } from './src/model/portal-context';
+
+declare module 'knex' {
+  namespace Knex {
+    interface QueryBuilder {
+      asConnection<T>(): Promise<T>;
+    }
+  }
+}
 
 export type DatabaseType =
   'User'
@@ -12,6 +21,7 @@ export type DatabaseType =
   |'RolePortal'
   |'CapabilityPortal'
   |'RolePortal_CapabilityPortal'
+  |'ActionTracking'
 export type ActionType = 'add'|'edit'|'delete'|'merge'
 
 interface Pagination {

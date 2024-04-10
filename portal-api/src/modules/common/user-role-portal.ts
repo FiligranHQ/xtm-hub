@@ -1,5 +1,5 @@
-import { dbUnsecure } from '../../knexfile';
-import { UserId } from '../model/kanel/public/User';
+import { dbUnsecure } from '../../../knexfile';
+import { UserId } from '../../model/kanel/public/User';
 import { getRolePortalByName } from './role-portal';
 
 export const createUserRolePortal = (user_id, role_portal_id = '6b632cf2-9105-46ec-a463-ad59ab58c770') => {
