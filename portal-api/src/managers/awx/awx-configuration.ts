@@ -2,17 +2,30 @@ import config from 'config';
 import { AWXAction, AWXActionFunctionMap, AwxResponse, AWXWorkflowAction, AWXWorkflowConfig } from './awx.model';
 import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
 import { buildCreateUserInput } from './awx-user-mapping';
+import { v4 as uuidv4 } from 'uuid';
+import { addNewActionTracking, updateActionTracking } from '../../modules/common/action-tracking';
+import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
   const awxWorkflow: AWXWorkflowConfig = config.get(`awx.action_mapping.${action.type}`);
   if (!awxWorkflow) {
     throw new Error(`awx.action_mapping.${action.type} is not defined`);
   }
-
+  const awxUUID = initActionTracking(action);
   const workflow = await awxGetWorkflow(awxWorkflow.path);
+  updateActionTracking(awxUUID, {
+    status: 'GET_WORKFLOW_REQUEST',
+    output: workflow,
+  });
 
   return await awxLaunchWorkflowId(workflow, {
-    'extra_vars': await buildWorkflowInput(action, awxWorkflow.keys),
+    'extra_vars': await buildWorkflowInput(action, awxUUID, awxWorkflow.keys),
+  }).then((response) => {
+    updateActionTracking(awxUUID, {
+      status: 'EXECUTE_REQUEST',
+      output: response,
+    });
+    return response;
   });
 };
 
@@ -41,7 +54,7 @@ export const awxLaunchWorkflowId = async (workflow: AwxResponse, body: object) =
   return await awxWorkflow.json();
 };
 
-const buildWorkflowInput = async (action: AWXWorkflowAction, keys: string[]) => {
+const buildWorkflowInput = async (action: AWXWorkflowAction, awxUUID: ActionTrackingId, keys: string[]) => {
   const workflowInput: AWXActionFunctionMap = {
     [AWXAction.CREATE_USER]: buildCreateUserInput,
     [AWXAction.DISABLE_USER]: buildCreateUserInput,
@@ -50,5 +63,15 @@ const buildWorkflowInput = async (action: AWXWorkflowAction, keys: string[]) => 
   if (!selectedFunction) {
     throw new Error(`Unsupported action type: ${action.type}`);
   }
-  return await selectedFunction(action.input, keys);
+  return await selectedFunction(action.input, awxUUID, keys);
+};
+
+const initActionTracking = (action: AWXWorkflowAction) => {
+  const id = uuidv4() as ActionTrackingId;
+  addNewActionTracking({
+    id,
+    type: action.type,
+    contextual_id: action.input.id,
+  });
+  return id;
 };
