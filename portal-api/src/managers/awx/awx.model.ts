@@ -1,13 +1,18 @@
 import User from '../../model/kanel/public/User';
+import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 
 export interface AWXAddUserInput {
-  awx_client_request_id: string,
+  awx_client_request_id: ActionTrackingId,
   organization_name: string,
   user_email_address: string,
   user_firstname: string,
   user_lastname: string,
   user_role: string,
   user_reset_password: string
+}
+
+export interface AWUserInput extends User {
+  awx_client_request_id: ActionTrackingId,
 }
 
 export enum AWXAction {

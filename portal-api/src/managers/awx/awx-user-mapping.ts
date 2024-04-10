@@ -1,28 +1,30 @@
 import User from '../../model/kanel/public/User';
 import { loadOrganizationBy } from '../../modules/organizations/organizations';
-import { AWXAddUserInput } from './awx.model';
-import { v4 as uuidv4 } from 'uuid';
+import { AWUserInput, AWXAddUserInput } from './awx.model';
+import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 
-export const buildCreateUserInput = async (input: User, keys: string[] = []) => {
-  const orgInfo = await loadOrganizationBy('id', input.organization_id);
+export const buildCreateUserInput = async (user: User, awxUUID: ActionTrackingId, keys: string[] = []) => {
+  const orgInfo = await loadOrganizationBy('id', user.organization_id);
   // Here add a reducer which add the corresponding
-  console.log(await completeUserInput(input, keys));
+  console.log(await completeUserInput({
+    ...user,
+    awx_client_request_id: awxUUID,
+  }, keys));
   const awxAddUserInput: AWXAddUserInput = {
-    awx_client_request_id: uuidv4(),
+    awx_client_request_id: awxUUID,
     organization_name: orgInfo.name,
-    user_email_address: input.email,
-    user_firstname: input.first_name,
-    user_lastname: input.last_name,
-    user_reset_password: input.password,
+    user_email_address: user.email,
+    user_firstname: user.first_name,
+    user_lastname: user.last_name,
+    user_reset_password: user.password,
     user_role: 'admin',
   };
   return awxAddUserInput;
 };
 
-export const completeUserInput = async (input: User, keys: string[] = []) => {
+export const completeUserInput = async (user: AWUserInput, keys: string[] = []) => {
   let completeUser = {
-    ...input,
-    awx_client_request_id: uuidv4(),
+    ...user,
   };
   for (const key of keys) {
     completeUser = await addProperty(key, completeUser);
@@ -42,14 +44,14 @@ const addProperty = async (key: string, user: User) => {
   return user;
 };
 
-const getUserOrganization = async (user: User) => {
+const getUserOrganization = async (user: AWUserInput) => {
   const orgInfo = await loadOrganizationBy('id', user.organization_id);
   return {
     ...user,
     ...orgInfo,
   };
 };
-const getUserRole = async (user: User) => {
+const getUserRole = async (user: AWUserInput) => {
   // TODO Need to implement roles in the form
   return {
     ...user,
