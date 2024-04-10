@@ -45,3 +45,8 @@ interface AwxResult {
   name: string;
   description: string;
 }
+
+export interface AWXWorkflowConfig {
+  path: string;
+  keys: string[];
+}

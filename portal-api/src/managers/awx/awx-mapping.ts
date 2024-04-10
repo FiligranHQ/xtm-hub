@@ -3,9 +3,10 @@ import { loadOrganizationBy } from '../../modules/organizations/organizations';
 import { AWXAddUserInput } from './awx.model';
 import { v4 as uuidv4 } from 'uuid';
 
-export const buildCreateUserInput = async (input: User) => {
+export const buildCreateUserInput = async (input: User, keys: string[] = []) => {
   // Here add a reducer which add the corresponding
   const orgInfo = await loadOrganizationBy('id', input.organization_id);
+  console.log(keys);
   const awxAddUserInput: AWXAddUserInput = {
     awx_client_request_id: uuidv4(),
     organization_name: orgInfo.name,
