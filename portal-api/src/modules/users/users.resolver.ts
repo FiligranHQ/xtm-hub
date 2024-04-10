@@ -11,9 +11,10 @@ import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { hashPassword } from '../../utils/hash-password.util';
 import { GraphQLError } from 'graphql/error/index.js';
-import { AWXAction, launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
 import User, { UserId } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { AWXAction } from '../../managers/awx/awx.model';
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
   const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);

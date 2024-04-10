@@ -1,7 +1,7 @@
 import config from 'config';
 import { AWXAction, AWXActionFunctionMap, AwxResponse, AWXWorkflowAction, AWXWorkflowConfig } from './awx.model';
 import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
-import { buildCreateUserInput } from './awx-mapping';
+import { buildCreateUserInput } from './awx-user-mapping';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
   const awxWorkflow: AWXWorkflowConfig = config.get(`awx.action_mapping.${action.type}`);
@@ -46,5 +46,9 @@ const buildWorkflowInput = async (action: AWXWorkflowAction, keys: string[]) => 
     [AWXAction.CREATE_USER]: buildCreateUserInput,
     [AWXAction.DISABLE_USER]: buildCreateUserInput,
   };
-  return await workflowInput[action.type](action.input, keys);
+  const selectedFunction = workflowInput[action.type];
+  if (!selectedFunction) {
+    throw new Error(`Unsupported action type: ${action.type}`);
+  }
+  return await selectedFunction(action.input, keys);
 };
