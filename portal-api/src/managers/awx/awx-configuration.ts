@@ -1,71 +1,47 @@
 import config from 'config';
-import { AwxResponse } from '../../model/awx-response';
+import { AWXAction, AWXActionFunctionMap, AwxResponse, AWXWorkflowAction, AWXWorkflowConfig } from './awx.model';
+import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
+import { buildCreateUserInput } from './awx-user-mapping';
 import { v4 as uuidv4 } from 'uuid';
-import User from '../../model/kanel/public/User';
-import { loadOrganizationBy } from '../../modules/organizations/organizations';
-
-const AWX_URL: string = config.get('awx.url');
-const AWX_TOKEN: string = config.get('awx.token');
-const AWX_WORKFLOW_URL: string = config.get(`awx.workflow`);
-const AWX_HEADERS = {
-  'Authorization': 'Bearer ' + AWX_TOKEN,
-  'Content-Type': 'application/json',
-};
-
-type AWXActionFunctionMap = {
-  [key in AWXAction]: any;
-};
-
-export interface AWXAddUserInput {
-  awx_client_request_id: string,
-  organization_name: string,
-  user_email_address: string,
-  user_firstname: string,
-  user_lastname: string,
-  user_role: string,
-  user_reset_password: string
-}
-
-export enum AWXAction {
-  CREATE_USER = 'CREATE_USER',
-  DISABLE_USER = 'DISABLE_USER'
-}
-
-interface AwxCreateUserAction {
-  type: AWXAction.CREATE_USER,
-  input: User
-}
-
-interface AwxDisableUserAction {
-  type: AWXAction.DISABLE_USER,
-  input: User
-}
-
-type AWXWorkflowAction = AwxCreateUserAction|AwxDisableUserAction;
+import { addNewActionTracking, updateActionTracking } from '../../modules/common/action-tracking';
+import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
-  const workflow = await awxGetWorkflow(action.type);
-  if (workflow.count > 0) {
-    const workflowId = workflow.results[0].id;
-    return await awxLaunchWorkflowId(workflowId, {
-      'extra_vars': await buildWorkflowInput(action),
+  const awxWorkflow: AWXWorkflowConfig = config.get(`awx.action_mapping.${action.type}`);
+  if (!awxWorkflow) {
+    throw new Error(`awx.action_mapping.${action.type} is not defined`);
+  }
+  const awxUUID = await initActionTracking(action);
+  const workflow = await awxGetWorkflow(awxWorkflow.path);
+  await updateActionTracking(awxUUID, {
+    status: 'GET_WORKFLOW_REQUEST',
+    output: workflow,
+  });
+
+  return await awxLaunchWorkflowId(workflow, {
+    'extra_vars': await buildWorkflowInput(action, awxUUID, awxWorkflow.keys),
+  }).then(async (response) => {
+    await updateActionTracking(awxUUID, {
+      status: 'EXECUTE_REQUEST',
+      output: response,
     });
-  }
-  throw new Error(`awx.action_mapping.${action.type} is not defined`);
+    return response;
+  });
 };
-export const awxGetWorkflow = async (workflowName: AWXAction): Promise<AwxResponse> => {
-  const apiURL = config.get(`awx.action_mapping.${workflowName}`);
-  if (!apiURL) {
-    throw new Error(`awx.action_mapping.${workflowName} is not defined`);
-  }
+
+export const awxGetWorkflow = async (apiURL: string): Promise<AwxResponse> => {
   const url = `${AWX_URL}${apiURL}`;
   const response = await fetch(url, { headers: AWX_HEADERS });
   return await response.json() as AwxResponse;
 };
 
-export const awxLaunchWorkflowId = async (workflowId: number, body: object) => {
+export const awxLaunchWorkflowId = async (workflow: AwxResponse, body: object) => {
+  if (workflow.count === 0) {
+    throw new Error(`Error we did not find any result`);
+  }
+  const workflowId = workflow.results[0].id;
   const url = AWX_URL + AWX_WORKFLOW_URL.replace('${workflowId}', workflowId.toString(10));
-  const workflow = await fetch(url, {
+  const awxWorkflow = await fetch(url, {
     headers: AWX_HEADERS,
     body: JSON.stringify(body),
     method: 'POST',
@@ -75,27 +51,27 @@ export const awxLaunchWorkflowId = async (workflowId: number, body: object) => {
       return Promise.reject(error);
     },
   );
-  return await workflow.json();
-};
-const buildCreateUserInput = async (input: User) => {
-  // Here add a reducer which add the corresponding
-  const orgInfo = await loadOrganizationBy('id', input.organization_id);
-  const awxAddUserInput: AWXAddUserInput = {
-    awx_client_request_id: uuidv4(),
-    organization_name: orgInfo.name,
-    user_email_address: input.email,
-    user_firstname: input.first_name,
-    user_lastname: input.last_name,
-    user_reset_password: input.password,
-    user_role: 'admin',
-  };
-  return awxAddUserInput;
+  return await awxWorkflow.json();
 };
 
-const buildWorkflowInput = async (action: AWXWorkflowAction) => {
+const buildWorkflowInput = async (action: AWXWorkflowAction, awxUUID: ActionTrackingId, keys: string[]) => {
   const workflowInput: AWXActionFunctionMap = {
     [AWXAction.CREATE_USER]: buildCreateUserInput,
     [AWXAction.DISABLE_USER]: buildCreateUserInput,
   };
-  return await workflowInput[action.type](action.input);
+  const selectedFunction = workflowInput[action.type];
+  if (!selectedFunction) {
+    throw new Error(`Unsupported action type: ${action.type}`);
+  }
+  return await selectedFunction(action.input, awxUUID, keys);
+};
+
+const initActionTracking = async (action: AWXWorkflowAction) => {
+  const id = uuidv4() as ActionTrackingId;
+  await addNewActionTracking({
+    id,
+    type: action.type,
+    contextual_id: action.input.id,
+  });
+  return id;
 };

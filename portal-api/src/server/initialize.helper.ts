@@ -1,9 +1,9 @@
 import { dbUnsecure } from '../../knexfile';
 import { Capability, Organization } from '../__generated__/resolvers-types';
-import { UserWithAuthentication } from '../graphql/users/users';
 import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
+import { UserWithAuthentication } from '../modules/users/users';
 
 export const ensureCapabilityExists = async (capability, trx) => {
   const capabilityPortal = await dbUnsecure('CapabilityPortal');
