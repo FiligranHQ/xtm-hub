@@ -13,5 +13,5 @@ export const addNewActionTracking = (data: PartialBy<ActionTracking, 'status'|'o
 export const updateActionTracking = (id: ActionTrackingId, data: Partial<ActionTracking>) => {
   return dbUnsecure<ActionTracking>('ActionTracking')
     .where({ id })
-    .insert(data);
+    .update(data);
 };

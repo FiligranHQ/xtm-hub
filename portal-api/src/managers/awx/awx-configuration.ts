@@ -11,17 +11,17 @@ export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
   if (!awxWorkflow) {
     throw new Error(`awx.action_mapping.${action.type} is not defined`);
   }
-  const awxUUID = initActionTracking(action);
+  const awxUUID = await initActionTracking(action);
   const workflow = await awxGetWorkflow(awxWorkflow.path);
-  updateActionTracking(awxUUID, {
+  await updateActionTracking(awxUUID, {
     status: 'GET_WORKFLOW_REQUEST',
     output: workflow,
   });
 
   return await awxLaunchWorkflowId(workflow, {
     'extra_vars': await buildWorkflowInput(action, awxUUID, awxWorkflow.keys),
-  }).then((response) => {
-    updateActionTracking(awxUUID, {
+  }).then(async (response) => {
+    await updateActionTracking(awxUUID, {
       status: 'EXECUTE_REQUEST',
       output: response,
     });
@@ -66,9 +66,9 @@ const buildWorkflowInput = async (action: AWXWorkflowAction, awxUUID: ActionTrac
   return await selectedFunction(action.input, awxUUID, keys);
 };
 
-const initActionTracking = (action: AWXWorkflowAction) => {
+const initActionTracking = async (action: AWXWorkflowAction) => {
   const id = uuidv4() as ActionTrackingId;
-  addNewActionTracking({
+  await addNewActionTracking({
     id,
     type: action.type,
     contextual_id: action.input.id,
