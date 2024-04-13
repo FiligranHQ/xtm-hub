@@ -1,3 +1,4 @@
+'use client';
 import { Button, buttonVariants } from 'filigran-ui/servers';
 import { ChevronLeft, Home } from 'lucide-react';
 import { Separator } from 'filigran-ui/clients';

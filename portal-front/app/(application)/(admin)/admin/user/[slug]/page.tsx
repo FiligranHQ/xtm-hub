@@ -1,6 +1,8 @@
 import * as React from 'react';
 import PageLoader from './page-loader';
-import {redirect} from 'next/navigation';
+import { redirect } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 
 // Configuration or Preloader Query
 

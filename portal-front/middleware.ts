@@ -1,25 +1,14 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { guardRoute } from '@/utils/middleware/guardRoute.util';
+import { manageGraphQLRequest } from '@/utils/middleware/graphqlRequest.util';
 
-const GRAPHQL_API = '/graphql-api';
-const GRAPHQL_SSE = '/graphql-sse';
-
-export function middleware(request: NextRequest) {
-  const serverHttpApi = process.env.SERVER_HTTP_API ?? 'http://localhost:4001';
-  if (request.nextUrl.pathname.startsWith(GRAPHQL_API)) {
-    return NextResponse.rewrite(
-      new URL(serverHttpApi + GRAPHQL_API, request.url)
-    );
-  }
-  if (request.nextUrl.pathname.startsWith(GRAPHQL_SSE)) {
-    return NextResponse.rewrite(
-      new URL(serverHttpApi + GRAPHQL_SSE, request.url)
-    );
-  }
-  // Nothing to do
-  return NextResponse.next();
+export async function middleware(request: NextRequest) {
+  return (
+    manageGraphQLRequest(request) || guardRoute(request) || NextResponse.next()
+  );
 }
 
 export const config = {
-  matcher: ['/graphql-api', '/graphql-sse'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|auth).*)'],
 };
