@@ -1,6 +1,6 @@
-'use client';
-
 import * as React from 'react';
+
+export const dynamic = 'force-dynamic';
 
 // Component interface
 interface PageProps {}

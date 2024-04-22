@@ -26,7 +26,7 @@ interface PreloaderProps {
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
   const searchParams = useSearchParams();
-  const count = Number(searchParams.get('count') ?? 2);
+  const count = Number(searchParams.get('count') ?? 10);
   const orderMode = searchParams.get('orderMode') ?? 'asc';
   const orderBy = searchParams.get('orderBy') ?? 'email';
   const [queryRef, loadQuery] = useQueryLoader<pageLoaderUserQuery>(UserListQuery);

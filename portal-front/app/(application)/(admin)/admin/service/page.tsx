@@ -5,7 +5,8 @@ import * as React from 'react';
 // Configuration or Preloader Query
 
 // Component interface
-interface PageProps {}
+interface PageProps {
+}
 
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {

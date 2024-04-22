@@ -1,4 +1,3 @@
-'use client';
 import * as React from 'react';
 import { FunctionComponent, ReactNode } from 'react';
 import Menu from '@/components/menu/menu';
