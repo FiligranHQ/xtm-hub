@@ -23,10 +23,12 @@ export const ServiceListQuery = graphql`
 interface ServiceListPreloaderProps {
 }
 
+// Configuration or Preloader Query
+
 // Component
 const PageLoader: React.FunctionComponent<ServiceListPreloaderProps> = () => {
   const searchParams = useSearchParams();
-  const count = Number(searchParams.get('count') ?? 2);
+  const count = Number(searchParams.get('count') ?? 10);
   const orderMode = searchParams.get('orderMode') ?? 'asc';
   const orderBy = searchParams.get('orderBy') ?? 'name';
   const [queryRef, loadQuery] = useQueryLoader<pageLoaderServiceQuery>(ServiceListQuery);

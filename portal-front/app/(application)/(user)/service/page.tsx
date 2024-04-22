@@ -1,18 +1,19 @@
 import * as React from 'react';
 import PageLoader from './page-loader';
 
-// Configuration or Preloader Query
-const DEFAULT_COUNT = 10;
+export const dynamic = 'force-dynamic';
+
 
 // Component interface
-interface PageProps {}
+interface PageProps {
+}
 
 // Component
 const Page: React.FunctionComponent<PageProps> = async () => {
   return (
     <>
       <h1>SERVICE</h1>
-      <PageLoader/>
+      <PageLoader />
     </>
   );
 };

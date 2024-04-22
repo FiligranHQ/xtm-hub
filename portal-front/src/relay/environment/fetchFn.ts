@@ -1,11 +1,7 @@
 import {
-  Environment,
   GraphQLResponse,
-  Network,
   Observable,
-  RecordSource,
   RequestParameters,
-  Store,
   Variables,
 } from 'relay-runtime';
 import { createClient } from 'graphql-sse';
@@ -72,7 +68,7 @@ const subscriptionsClient = createClient({
   onMessage: console.log,
 });
 
-function fetchOrSubscribe(
+export function fetchOrSubscribe(
   operation: RequestParameters,
   variables: Variables
 ): Observable<any> {
@@ -91,22 +87,9 @@ function fetchOrSubscribe(
   });
 }
 
-function createNetwork() {
-  async function fetchResponse(
-    params: RequestParameters,
-    variables: Variables
-  ) {
-    return networkFetch('/graphql-api', params, variables);
-  }
-
-  return Network.create(fetchResponse, fetchOrSubscribe);
+export async function fetchResponse(
+  params: RequestParameters,
+  variables: Variables
+) {
+  return networkFetch('/graphql-api', params, variables);
 }
-
-function createEnvironment() {
-  return new Environment({
-    network: createNetwork(),
-    store: new Store(RecordSource.create()),
-  });
-}
-
-export const environment = createEnvironment();
