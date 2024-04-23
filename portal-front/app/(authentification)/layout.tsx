@@ -1,4 +1,5 @@
-import { geologica, ibmPlexSans } from '../font';
+import AppContext from '@/components/app-context';
+import * as React from 'react';
 
 export const metadata = {
   title: 'Next.js',
@@ -10,11 +11,5 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html
-      lang="en"
-      className={`${geologica.variable} ${ibmPlexSans.variable}`}>
-      <body>{children}</body>
-    </html>
-  );
+  return <AppContext>{children}</AppContext>;
 }
