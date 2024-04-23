@@ -17,7 +17,7 @@ export type QueryResponsePayload = {
 };
 
 /**
- * Creates a Relay envirionment, while also re-publishing all the responses
+ * Creates a Relay environment, while also re-publishing all the responses
  * received from the network layer to the provided observer.
  *
  * @param observer An observer that receives the incremental GraphQL responses.
@@ -26,8 +26,6 @@ export type QueryResponsePayload = {
 export function createServerSideRelayEnvironment(
   observer: Observer<QueryResponsePayload>
 ) {
-  console.log('create server-side helper');
-
   const curriedFetchFn: FetchFunction = (request, variables, ...rest) => {
     const observable = networkFetch('/graphql-api', request, variables);
 
