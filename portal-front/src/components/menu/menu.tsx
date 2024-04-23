@@ -34,13 +34,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
         })
       )}>
       <Icon className="mr-2 h-4 w-4 flex-auto flex-shrink-0 flex-grow-0" />
-      <span
-        className={cn(
-          'duration-300 ease-in-out',
-          open ? 'opacity-100' : 'opacity-0'
-        )}>
-        {text}
-      </span>
+      <span className={cn(open ? 'opacity-100' : 'opacity-0')}>{text}</span>
     </Link>
   );
 };
@@ -50,7 +44,7 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'mt-2 flex flex-col justify-between overflow-y-auto overflow-x-hidden border bg-background p-2 pt-16 duration-300 ease-in-out',
+        'mt-2 flex flex-col border bg-background p-2 pt-16 duration-300 ease-in-out',
         open ? 'w-72' : 'w-16'
       )}>
       <nav>
@@ -76,10 +70,8 @@ const Menu = () => {
             />
           </li>
           <MenuUser open={open} />
-          <Separator className="my-4" />
-          <li>
-            <MenuAdmin open={open} />
-          </li>
+          <Separator className="my-2" />
+          <MenuAdmin open={open} />
         </ul>
       </nav>
       <div>
