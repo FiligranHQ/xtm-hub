@@ -1,11 +1,15 @@
 import { dbUnsecure } from '../../../knexfile';
-import ActionTracking, { ActionTrackingId, ActionTrackingMutator } from '../../model/kanel/public/ActionTracking';
+import ActionTracking, {
+  ActionTrackingId,
+  ActionTrackingInitializer,
+  ActionTrackingMutator,
+} from '../../model/kanel/public/ActionTracking';
 
 export const getAllActionTracking = (): Promise<ActionTracking[]> => {
   return dbUnsecure<ActionTracking>('ActionTracking');
 };
 
-export const addNewActionTracking = (data: ActionTrackingMutator) => {
+export const addNewActionTracking = (data: ActionTrackingInitializer) => {
   return dbUnsecure<ActionTracking>('ActionTracking')
     .insert(data);
 };
