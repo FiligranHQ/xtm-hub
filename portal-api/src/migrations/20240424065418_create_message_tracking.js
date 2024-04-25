@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 /**
  * @param { import('knex').Knex } knex
  * @returns { Promise<void> }
@@ -7,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export async function up(knex) {
   // Create action tracking table
   await knex.schema.createTable('MessageTracking', (table) => {
-    table.uuid('id', { primaryKey: true }).notNullable().defaultTo(uuidv4());
+    table.uuid('id', { primaryKey: true }).defaultTo(knex.fn.uuid());
     table.uuid('tracking_id').references('id').inTable('ActionTracking')
       .onDelete('CASCADE');
     table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());

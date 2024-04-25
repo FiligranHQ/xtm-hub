@@ -70,7 +70,7 @@ const resolvers: Resolvers = {
           ...data,
           password: input.password,
         },
-      }).then((finalResponse) => console.log({ finalResponse }));
+      });
       return addedUser;
     },
     editUser: async (_, { id, input }, context) => {
