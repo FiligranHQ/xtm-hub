@@ -57,8 +57,7 @@ export async function networkFetch(
     if (containsAuthenticationFailure) {
       throw new Error('UNAUTHENTICATED');
     }
-    console.log(json.errors);
-    throw new Error('TECHNICAL');
+    throw new Error(json.errors[0].message);
   }
   return json;
 }

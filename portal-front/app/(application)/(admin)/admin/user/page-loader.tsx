@@ -6,6 +6,7 @@ import UserList from '@/components/admin/user/user-list';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { pageLoaderUserQuery } from '../../../../../__generated__/pageLoaderUserQuery.graphql';
 import { useSearchParams } from 'next/navigation';
+import Loader from '@/components/loader';
 
 // Configuration or Preloader Query
 export const UserListQuery = graphql`
@@ -31,7 +32,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
   const orderBy = searchParams.get('orderBy') ?? 'email';
   const [queryRef, loadQuery] = useQueryLoader<pageLoaderUserQuery>(UserListQuery);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
-  return queryRef ? <UserList queryRef={queryRef} /> : <div>SPINNER</div>;
+  return queryRef ? <UserList queryRef={queryRef} /> : <Loader />;
 };
 
 // Component export

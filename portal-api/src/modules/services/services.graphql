@@ -35,5 +35,5 @@ type Mutation {
 }
 
 type Query {
-    services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection! @auth
+    services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection! @auth(requires: [USER])
 }

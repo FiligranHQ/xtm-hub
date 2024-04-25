@@ -28,8 +28,6 @@ export function createClientSideRelayEnvironment() {
     return clientSideRelayEnvironment;
   }
 
-  console.log('create client-side helper');
-
   const curriedFetchFn: FetchFunction = (request, variables, ...rest) => {
     if (hasHydrationResponses()) {
       const queryId = buildQueryId(request, variables);
