@@ -25,7 +25,7 @@ export const initTracking = async (action: AWXWorkflowAction) => {
 export const endTracking = async (awxId: ActionTrackingId, status: string, output: unknown) => {
   const ended_at = new Date();
   await updateActionTracking(awxId, {
-    status,
+    status: status ?? 'FINISHED',
     ended_at,
   });
   await addNewMessageTracking({

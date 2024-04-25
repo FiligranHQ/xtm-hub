@@ -40,6 +40,7 @@ export const addOIDCStrategy = (passport) => {
       //     },
       //   },
       // };
+      console.log(JSON.stringify(decodedUser));
       const roles = extractRole(decodedUser);
       console.info('[OPENID] Successfully logged', { decodedUser });
       console.info('[OPENID] User role', { roles });
