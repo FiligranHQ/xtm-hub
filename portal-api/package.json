@@ -16,6 +16,7 @@
     "knex:run": "NODE_OPTIONS='--loader ts-node/esm' yarn run knex --knexfile knexfile.ts",
     "migrate:make": "yarn knex:run migrate:make",
     "migrate:latest": "yarn knex:run migrate:latest",
+    "migrate:down": "yarn knex:run migrate:down",
     "seed:make": "yarn knex:run seed:make",
     "generate-pg-to-ts": "npx kanel",
     "build": "yarn copy && node builder/prod/prod.js",
