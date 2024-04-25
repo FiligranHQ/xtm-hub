@@ -8,38 +8,39 @@ export type ActionTrackingId = string & { __brand: 'ActionTrackingId' };
 export default interface ActionTracking {
   id: ActionTrackingId;
 
-  type: string;
-
   contextual_id: string;
 
   status: string | null;
 
-  output: unknown | null;
+  created_at: Date;
+
+  ended_at: Date | null;
 }
 
 /** Represents the initializer for the table public.ActionTracking */
 export interface ActionTrackingInitializer {
   id: ActionTrackingId;
 
-  type: string;
-
   contextual_id: string;
 
   /** Default value: 'INITIALISE'::character varying */
   status?: string | null;
 
-  output?: unknown | null;
+  /** Default value: CURRENT_TIMESTAMP */
+  created_at?: Date;
+
+  ended_at?: Date | null;
 }
 
 /** Represents the mutator for the table public.ActionTracking */
 export interface ActionTrackingMutator {
   id?: ActionTrackingId;
 
-  type?: string;
-
   contextual_id?: string;
 
   status?: string | null;
 
-  output?: unknown | null;
+  created_at?: Date;
+
+  ended_at?: Date | null;
 }

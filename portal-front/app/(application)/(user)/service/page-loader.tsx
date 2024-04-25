@@ -6,6 +6,7 @@ import ServiceList from '@/components/service/service-list';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { useSearchParams } from 'next/navigation';
 import { pageLoaderServiceQuery } from '../../../../__generated__/pageLoaderServiceQuery.graphql';
+import Loader from '@/components/loader';
 
 // Query Configuration
 export const ServiceListQuery = graphql`
@@ -36,7 +37,7 @@ const PageLoader: React.FunctionComponent<ServiceListPreloaderProps> = () => {
   return (
     <>
       <h2>ServiceComponent</h2>
-      {queryRef ? <ServiceList queryRef={queryRef} /> : <div>SPINNER</div>}
+      {queryRef ? <ServiceList queryRef={queryRef} /> : <Loader />}
     </>
   );
 };
