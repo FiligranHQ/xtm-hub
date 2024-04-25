@@ -32,15 +32,15 @@ export const addOIDCStrategy = (passport) => {
     console.log('OIDC Strategy');
     const openIDStrategy = new OpenIDStrategy(options, async (_, tokenSet, userinfo, done) => {
       const decodedUser = config.get('user_management.read_userinfo') ? userinfo : jwtDecode(tokenSet.access_token);
-      const addRoleUserInLocal = {
-        ...decodedUser,
-        resource_access: {
-          'scred-portal-dev': {
-            roles: ['admin'],
-          },
-        },
-      };
-      const roles = extractRole(addRoleUserInLocal);
+      // const addRoleUserInLocal = {
+      //   ...decodedUser,
+      //   resource_access: {
+      //     'scred-portal-dev': {
+      //       roles: ['admin'],
+      //     },
+      //   },
+      // };
+      const roles = extractRole(decodedUser);
       console.info('[OPENID] Successfully logged', { decodedUser });
       console.info('[OPENID] User role', { roles });
       const { email, name, given_name: first_name, family_name: last_name } = userinfo;

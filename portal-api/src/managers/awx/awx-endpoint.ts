@@ -1,14 +1,12 @@
-import { updateActionTracking } from '../../modules/common/action-tracking';
+import { endTracking } from '../../modules/tracking/tracking.domain';
 
 export const awxEndpoint = (app) => {
   app.post(`/awx/callback`, async (req, res, next) => {
     console.log('AWX req', req.body);
     if (req.body) {
       const { id: awxUUID, status, output } = req.body;
-      await updateActionTracking(awxUUID, {
-        status,
-        output,
-      });
+      await endTracking(awxUUID, status, output);
+
     }
     res.send(200);
   });
