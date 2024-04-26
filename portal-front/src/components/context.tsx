@@ -2,7 +2,7 @@
 
 import { pageLoaderMeQuery } from '../../__generated__/pageLoaderMeQuery.graphql';
 import * as React from 'react';
-import { createContext, useEffect } from 'react';
+import { createContext } from 'react';
 import { graphql, PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
 import {
   context_fragment$data,
@@ -11,7 +11,6 @@ import {
 } from '../../__generated__/context_fragment.graphql';
 import { CAPABILITY_BYPASS } from '@/utils/constant';
 import { MeQuery } from '../../app/(application)/page-loader';
-import { setUserCookies } from '@/actions/setUserCookies';
 
 // Context
 export interface Portal {
@@ -60,10 +59,6 @@ const PortalContext: React.FunctionComponent<PortalContextProps> = ({
 }) => {
   const data = usePreloadedQuery<pageLoaderMeQuery>(MeQuery, queryRef);
   const me = useFragment<context_fragment$key>(ContextFragment, data.me);
-  
-  useEffect(() => {
-    setUserCookies(JSON.stringify(me));
-  }, []);
 
   return (
     <portalContext.Provider value={generatePortalContext(me)}>
