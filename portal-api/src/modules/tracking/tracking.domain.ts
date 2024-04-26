@@ -22,7 +22,7 @@ export const initTracking = async (action: AWXWorkflowAction) => {
   return id;
 };
 
-export const endTracking = async (awxId: ActionTrackingId, status: string, output: unknown) => {
+export const endAWXTracking = async (awxId: ActionTrackingId, status: string, output: unknown) => {
   const ended_at = new Date();
   await updateActionTracking(awxId, {
     status: status ?? 'FINISHED',
@@ -30,6 +30,20 @@ export const endTracking = async (awxId: ActionTrackingId, status: string, outpu
   });
   await addNewMessageTracking({
     ...TrackingConst.END_AWX_PROCESS,
+    tracking_id: awxId,
+    tracking_info: output,
+    created_at: ended_at,
+  });
+};
+
+export const endTracking = async (awxId: ActionTrackingId, output?: unknown) => {
+  const ended_at = new Date();
+  await updateActionTracking(awxId, {
+    status: 'FINISHED',
+    ended_at,
+  });
+  await addNewMessageTracking({
+    ...TrackingConst.END_PROCESS,
     tracking_id: awxId,
     tracking_info: output,
     created_at: ended_at,

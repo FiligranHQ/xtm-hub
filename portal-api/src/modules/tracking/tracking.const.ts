@@ -7,8 +7,16 @@ export const TrackingConst = {
     type: 'EXECUTE_AWX_REQUEST',
     technical: true,
   },
+  'NO_AWX_PROCESS': {
+    type: 'NO_AWX_PROCESS',
+    technical: false,
+  },
   'END_AWX_PROCESS': {
     type: 'END_AWX_PROCESS',
+    technical: false,
+  },
+  'END_TRACKING': {
+    type: 'END_TRACKING',
     technical: false,
   },
 
