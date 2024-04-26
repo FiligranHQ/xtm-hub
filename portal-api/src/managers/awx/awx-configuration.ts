@@ -9,13 +9,13 @@ import { TrackingConst } from '../../modules/tracking/tracking.const';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
   const awxUUID = await initTracking(action);
-  const awxWorkflow: AWXWorkflowConfig = config.get(`awx.action_mapping.${action.type}`);
+  const awx = config.get('awx.activate');
 
-  if (!awxWorkflow) {
+  if (!awx) {
     await handleUndefinedAWXWorkflow(action, awxUUID);
     return;
   }
-
+  const awxWorkflow: AWXWorkflowConfig = config.get(`awx.action_mapping.${action.type}`);
   const workflow = await fetchAWXWorkflow(awxWorkflow.path, awxUUID);
   return await executeAWXWorkflow(workflow, action, awxUUID, awxWorkflow.keys);
 };
@@ -63,7 +63,7 @@ const handleUndefinedAWXWorkflow = async (action: AWXWorkflowAction, awxUUID: Ac
   await addNewMessageTracking({
     ...TrackingConst.NO_AWX_PROCESS,
     tracking_id: awxUUID,
-    tracking_info: message,
+    tracking_info: JSON.stringify(message),
   });
   await endTracking(awxUUID);
 };
