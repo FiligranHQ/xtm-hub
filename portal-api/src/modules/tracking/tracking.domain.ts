@@ -43,7 +43,7 @@ export const endTracking = async (awxId: ActionTrackingId, output?: unknown) => 
     ended_at,
   });
   await addNewMessageTracking({
-    ...TrackingConst.END_PROCESS,
+    ...TrackingConst.END_AWX_PROCESS,
     tracking_id: awxId,
     tracking_info: output,
     created_at: ended_at,
