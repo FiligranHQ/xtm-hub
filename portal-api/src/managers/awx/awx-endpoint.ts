@@ -1,11 +1,18 @@
-import { endAWXTracking } from '../../modules/tracking/tracking.domain';
+import { endTracking } from '../../modules/tracking/tracking.domain';
+import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
+import { TrackingConst } from '../../modules/tracking/tracking.const';
 
 export const awxEndpoint = (app) => {
   app.post(`/awx/callback`, async (req, res, next) => {
     console.log('AWX req', req.body);
     if (req.body) {
       const { id: awxUUID, status, output } = req.body;
-      await endAWXTracking(awxUUID, status, output);
+      await addNewMessageTracking({
+        ...TrackingConst.END_AWX_PROCESS,
+        tracking_id: awxUUID,
+        tracking_info: output,
+      });
+      await endTracking(awxUUID);
 
     }
     res.send(200);

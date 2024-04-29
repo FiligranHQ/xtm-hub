@@ -2,7 +2,7 @@ import * as React from 'react';
 import { PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription } from 'react-relay';
 import { pageLoaderUserSlugQuery } from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
 import { UserSlugQuery } from '../../../../../app/(application)/(admin)/admin/user/[slug]/page-loader';
-import { userSlug_fragment$key } from '../../../../../__generated__/userSlug_fragment.graphql';
+import { userSlug_fragment$data, userSlug_fragment$key } from '../../../../../__generated__/userSlug_fragment.graphql';
 import { useRouter } from 'next/navigation';
 import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
 import {
@@ -21,7 +21,6 @@ interface UserSlugProps {
 // Component
 const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const router = useRouter();
-  const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const data = usePreloadedQuery<pageLoaderUserSlugQuery>(
     UserSlugQuery,
     queryRef
@@ -29,6 +28,16 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const [deleteUserMutation] =
     useMutation<userSlugDeletionMutation>(userSlugDeletion);
   const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
+
+  const onDeleteUser = (user: userSlug_fragment$data) => {
+    deleteUserMutation({
+      variables: { id: user.id },
+      onCompleted: () => {
+        router.replace('/admin/user');
+      },
+    });
+  };
+
   useSubscription<generatedUserSlugSubscription>({
     variables: {},
     subscription: userSlugSubscription,
@@ -71,10 +80,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             <b>Organization</b> {user.organization.name}
           </div>
         </div>
-        <Button
-          onClick={() => deleteUserMutation({ variables: { id: user.id } })}>
-          Delete
-        </Button>
+        <Button onClick={() => onDeleteUser(user)}>Delete</Button>
         <UserEditSheet user={user} />
       </>
     );

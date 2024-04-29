@@ -4,6 +4,7 @@ import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { addNewActionTracking, updateActionTracking } from './action-tracking';
 import { addNewMessageTracking } from './message-tracking';
 import { TrackingConst } from './tracking.const';
+import { MessageTrackingInitializer } from '../../model/kanel/public/MessageTracking';
 
 export const initTracking = async (action: AWXWorkflowAction) => {
   const id = uuidv4() as ActionTrackingId;
@@ -22,30 +23,22 @@ export const initTracking = async (action: AWXWorkflowAction) => {
   return id;
 };
 
-export const endAWXTracking = async (awxId: ActionTrackingId, status: string, output: unknown) => {
-  const ended_at = new Date();
-  await updateActionTracking(awxId, {
-    status: status ?? 'FINISHED',
-    ended_at,
-  });
-  await addNewMessageTracking({
-    ...TrackingConst.END_AWX_PROCESS,
-    tracking_id: awxId,
-    tracking_info: output,
-    created_at: ended_at,
-  });
-};
-
 export const endTracking = async (awxId: ActionTrackingId, output?: unknown) => {
   const ended_at = new Date();
   await updateActionTracking(awxId, {
     status: 'FINISHED',
     ended_at,
   });
-  await addNewMessageTracking({
-    ...TrackingConst.END_AWX_PROCESS,
+  const messageTrackingData: MessageTrackingInitializer = {
+    ...TrackingConst.END_PROCESS,
     tracking_id: awxId,
-    tracking_info: output,
     created_at: ended_at,
-  });
+  };
+
+  if (output) {
+    messageTrackingData.tracking_info = output;
+  }
+
+  await addNewMessageTracking(messageTrackingData);
+
 };
