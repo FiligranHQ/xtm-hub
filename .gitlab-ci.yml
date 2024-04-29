@@ -1,6 +1,6 @@
 include:
   project: ci/ci-templates
-  ref: feature/templates-v2
+  ref: main
   file: templates/Docker.ci.yml
 
 variables:
