@@ -28,18 +28,19 @@ const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
 
 const app = express();
+app.use(express.json());
 const sessionMiddleware = expressSession({
-  name: PORTAL_COOKIE_NAME,
-  secret: PORTAL_COOKIE_SECRET,
-  saveUninitialized: true,
-  proxy: true,
-  rolling: true,
-  cookie: {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: false,
-    // maxAge: 60 * 60 * 1000 // 1 hour
-  },
+    name: PORTAL_COOKIE_NAME,
+    secret: PORTAL_COOKIE_SECRET,
+    saveUninitialized: true,
+    proxy: true,
+    rolling: true,
+    cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        // maxAge: 60 * 60 * 1000 // 1 hour
+    },
 });
 app.use(sessionMiddleware);
 
@@ -47,8 +48,8 @@ const httpServer = createServer(app);
 const schema = createSchema();
 
 if (process.env.NODE_ENV !== 'production') {
-  const printedSchema = printSchema(schema);
-  fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
+    const printedSchema = printSchema(schema);
+    fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
 }
 
 // The ApolloServer constructor requires two parameters: your schema
@@ -63,11 +64,11 @@ if (process.env.NODE_ENV !== 'production') {
 //     },
 // }
 const server = new ApolloServer<PortalContext>({
-  schema,
-  plugins: [
-    ApolloServerPluginDrainHttpServer({ httpServer }),
-    ApolloServerPluginLandingPageLocalDefault({ includeCookies: true, variables: {} }),
-  ],
+    schema,
+    plugins: [
+        ApolloServerPluginDrainHttpServer({ httpServer }),
+        ApolloServerPluginLandingPageLocalDefault({ includeCookies: true, variables: {} }),
+    ],
 });
 
 // Note you must call `start()` on the `ApolloServer`
@@ -76,20 +77,20 @@ await server.start();
 
 // Specify the path where we'd like to mount our server
 declare module 'express-session' {
-  // noinspection JSUnusedGlobalSymbols
-  interface SessionData {
-    user: User;
-    referer: string;
-  }
+    // noinspection JSUnusedGlobalSymbols
+    interface SessionData {
+        user: User;
+        referer: string;
+    }
 }
 
 const middlewareExpress = expressMiddleware(server, {
-  context: async ({ req, res }) => {
-    const { user } = req.session;
-    // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
-    // TODO Add build session from request authorization
-    return { user, req, res };
-  },
+    context: async ({ req, res }) => {
+        const { user } = req.session;
+        // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
+        // TODO Add build session from request authorization
+        return { user, req, res };
+    },
 });
 
 app.use(PORTAL_WEBSOCKET_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
