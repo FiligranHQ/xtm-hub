@@ -3,25 +3,18 @@ include:
   ref: main
   file: templates/Docker.ci.yml
 
-.build-portal-component:
-  extends: .use-docker-in-docker
-  only:
-    - main
-  variables:
-    DOCKER_IMAGE_NAME: apps/lot5/scred-portal/${SCRED_PORTAL_COMPONENT_NAME}
-    DOCKER_IMAGE_VERSION: ${SCRED_PORTAL_VERSION}
-    DOCKER_IMAGE_ADDITIONAL_TAGS: latest
-    DOCKER_BUILD_DIR: ${SCRED_PORTAL_COMPONENT_NAME}/
-
 variables:
-  SCRED_PORTAL_VERSION: 1.0.0
+  DOCKER_APP_RELEASE_VERSION: 1.0.0
+  DOCKER_APP_VERSION_BETA_NUMBER: 0
 
 build-portal-api:
-  extends: .build-portal-component
+  extends: .docker-build-tag-and-publish-component
   variables:
-    SCRED_PORTAL_COMPONENT_NAME: portal-api
+    DOCKER_APP_COMPONENT_NAME: portal-api
+    DOCKER_BUILD_DIR: ./portal-api
 
 build-portal-front:
-  extends: .build-portal-component
+  extends: .docker-build-tag-and-publish-component
   variables:
-    SCRED_PORTAL_COMPONENT_NAME: portal-front
+    DOCKER_APP_COMPONENT_NAME: portal-front
+    DOCKER_BUILD_DIR: ./portal-front
