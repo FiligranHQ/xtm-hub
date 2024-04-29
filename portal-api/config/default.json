@@ -35,52 +35,10 @@
     ]
   },
   "awx": {
-    "url": "awx_url",
-    "token": "awx_token",
-    "workflow": "/api/v2/workflow_job_templates/${workflowId}/launch/",
-    "action_mapping": {
-      "CREATE_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_create-user",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
-      },
-      "DISABLE_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_disable-user",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
-      },
-      "CREATE_COMMUNITY_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_create-community",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
-      },
-      "DELETE_COMMUNITY_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_delete-community",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
-      },
-      "COMMUNITY_ADD_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_community-add-user",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
-      },
-      "COMMUNITY_REMOVE_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_community-remove-user",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
-      }
-    }
+    "activate": false,
+    "url": null,
+    "token": null,
+    "workflow": null,
+    "action_mapping": null
   }
 }

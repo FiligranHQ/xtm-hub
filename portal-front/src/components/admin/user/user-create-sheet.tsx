@@ -83,7 +83,10 @@ export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
     };
     commitUserMutation({
       variables: { input, connections: [connectionID] },
-      onCompleted: () => setOpen(false),
+      onCompleted: (response) => {
+        console.log(response);
+        setOpen(false);
+      },
     });
   }
 

@@ -37,7 +37,9 @@ const ClosedMenuAdmin = () => {
         })}>
         <Settings className="h-4 w-4" />
       </PopoverTrigger>
-      <PopoverContent side="right">
+      <PopoverContent
+        side="right"
+        align="start">
         <AdminLinks />
       </PopoverContent>
     </Popover>

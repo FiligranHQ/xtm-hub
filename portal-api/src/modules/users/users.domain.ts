@@ -14,89 +14,96 @@ import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 
 
 const completeUserCapability = (user: UserGenerated): UserGenerated => {
-  if (user && user.id === ADMIN_UUID) {
-    const capabilityIds = user.capabilities.map((c: Capability) => c.id);
-    if (!capabilityIds.includes(CAPABILITY_BYPASS.id)) {
-      user.capabilities.push(CAPABILITY_BYPASS);
+    if (user && user.id === ADMIN_UUID) {
+        const capabilityIds = user.capabilities.map((c: Capability) => c.id);
+        if (!capabilityIds.includes(CAPABILITY_BYPASS.id)) {
+            user.capabilities.push(CAPABILITY_BYPASS);
+        }
     }
-  }
-  return user;
+    return user;
 };
 
 export const loadUserBy = async (field: string, value: string): Promise<UserWithAuthentication> => {
-  const userQuery = dbUnsecure<User>('User').where(field, value)
-    .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
-    .leftJoin('User_RolePortal as user_RolePortal', 'User.id', '=', 'user_RolePortal.user_id')
-    .leftJoin('RolePortal_CapabilityPortal as rolePortal_CapabilityPortal', 'user_RolePortal.role_portal_id', '=', 'rolePortal_CapabilityPortal.role_portal_id')
-    .leftJoin('CapabilityPortal as capability', 'capability.id', '=', 'rolePortal_CapabilityPortal.capability_portal_id')
-    // Inspiration from https://github.com/knex/knex/issues/882
-    .select([
-      'User.*',
-      dbRaw('(json_agg(json_build_object(\'id\', org.id, \'name\', org.name, \'__typename\', \'Organization\')) ->> 0)::json as organization'),
-      dbRaw('case when count(distinct capability.id) = 0 then \'[]\' else json_agg(distinct capability.*) end as capabilities'),
-    ])
-    .groupBy(['User.id'])
-    .first();
+    const userQuery = dbUnsecure<User>('User').where(field, value)
+        .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
+        .leftJoin('User_RolePortal as user_RolePortal', 'User.id', '=', 'user_RolePortal.user_id')
+        .leftJoin('RolePortal_CapabilityPortal as rolePortal_CapabilityPortal', 'user_RolePortal.role_portal_id', '=', 'rolePortal_CapabilityPortal.role_portal_id')
+        .leftJoin('CapabilityPortal as capability', 'capability.id', '=', 'rolePortal_CapabilityPortal.capability_portal_id')
+        .leftJoin('ActionTracking', 'ActionTracking.contextual_id', '=', 'User.id')
+        .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
+        // Inspiration from https://github.com/knex/knex/issues/882
+        .select([
+            'User.*',
+            dbRaw('(json_agg(json_build_object(\'id\', org.id, \'name\', org.name, \'__typename\', \'Organization\')) ->> 0)::json as organization'),
+            dbRaw(`json_build_object(
+            'action_tracking', json_agg(json_build_object('id', "ActionTracking"."id")),
+            'message_tracking', json_agg(json_build_object('id', "MessageTracking"."id"))) 
+            AS tracking_data`),
+            dbRaw('case when count(distinct capability.id) = 0 then \'[]\' else json_agg(distinct capability.*) end as capabilities'),
+        ])
+        .groupBy(['User.id'])
+        .first();
 
-  const user = await userQuery;
+    const user = await userQuery;
 
-  // Remove capability null from query
-  if (user) {
-    const cleanUser = {
-      ...user,
-      capabilities: user.capabilities.filter((capability: CapabilityPortal) => !!capability),
-    };
-    return completeUserCapability(cleanUser) as UserWithAuthentication;
-  }
+    console.log(user);
+    // Remove capability null from query
+    if (user) {
+        const cleanUser = {
+            ...user,
+            capabilities: user.capabilities.filter((capability: CapabilityPortal) => !!capability),
+        };
+        return completeUserCapability(cleanUser) as UserWithAuthentication;
+    }
 
-  // Complete admin user with bypass if needed
-  return completeUserCapability(user) as UserWithAuthentication;
+    // Complete admin user with bypass if needed
+    return completeUserCapability(user) as UserWithAuthentication;
 };
 
 export const loadUsers = async (context: PortalContext, opts): Promise<UserConnection> => {
-  const userConnection = await paginate<UserGenerated>(context, 'User', opts)
-    .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
-    .leftJoin('User_RolePortal as user_RolePortal', 'User.id', '=', 'user_RolePortal.user_id')
-    .leftJoin('RolePortal_CapabilityPortal as rolePortal_CapabilityPortal', 'user_RolePortal.role_portal_id', '=', 'rolePortal_CapabilityPortal.role_portal_id')
-    .leftJoin('CapabilityPortal as capability', 'capability.id', '=', 'rolePortal_CapabilityPortal.capability_portal_id')
-    // Inspiration from https://github.com/knex/knex/issues/882
-    .select(['User.*', dbRaw('(json_agg(org.*) ->> 0)::json as organization'), dbRaw('case when count(capability) = 0 then \'[]\' else json_agg(capability.*) end as capabilities')])
-    .groupBy(['User.id']).asConnection<UserConnection>();
-  // Complete admin user with bypass if needed
-  userConnection.edges = userConnection.edges.map((edge) => {
-    return {
-      cursor: edge.cursor,
-      node: completeUserCapability(edge.node),
-    };
-  });
-  return userConnection;
+    const userConnection = await paginate<UserGenerated>(context, 'User', opts)
+        .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
+        .leftJoin('User_RolePortal as user_RolePortal', 'User.id', '=', 'user_RolePortal.user_id')
+        .leftJoin('RolePortal_CapabilityPortal as rolePortal_CapabilityPortal', 'user_RolePortal.role_portal_id', '=', 'rolePortal_CapabilityPortal.role_portal_id')
+        .leftJoin('CapabilityPortal as capability', 'capability.id', '=', 'rolePortal_CapabilityPortal.capability_portal_id')
+        // Inspiration from https://github.com/knex/knex/issues/882
+        .select(['User.*', dbRaw('(json_agg(org.*) ->> 0)::json as organization'), dbRaw('case when count(capability) = 0 then \'[]\' else json_agg(capability.*) end as capabilities')])
+        .groupBy(['User.id']).asConnection<UserConnection>();
+    // Complete admin user with bypass if needed
+    userConnection.edges = userConnection.edges.map((edge) => {
+        return {
+            cursor: edge.cursor,
+            node: completeUserCapability(edge.node),
+        };
+    });
+    return userConnection;
 };
 
 export const createUser = async (userInfo: UserInfo, organization_id: OrganizationId = 'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId) => {
-  const { email, first_name, last_name, roles } = userInfo;
-  const { salt, hash } = hashPassword('');
-  const data: User = {
-    id: uuidv4() as UserId,
-    salt,
-    password: hash,
-    organization_id,
-    email,
-    first_name,
-    last_name,
-  };
-  // Use insert with returning to get the newly created user
-  const [addedUser] = await addNewUser(data);
-  await addRolesToUser(addedUser.id, roles);
-  return await loadUserBy('User.email', email);
+    const { email, first_name, last_name, roles } = userInfo;
+    const { salt, hash } = hashPassword('');
+    const data: User = {
+        id: uuidv4() as UserId,
+        salt,
+        password: hash,
+        organization_id,
+        email,
+        first_name,
+        last_name,
+    };
+    // Use insert with returning to get the newly created user
+    const [addedUser] = await addNewUser(data);
+    await addRolesToUser(addedUser.id, roles);
+    return await loadUserBy('User.email', email);
 };
 
 export const updateUserRoles = async (userInfo: UserInfo, userId: UserId) => {
-  const { email, roles } = userInfo;
+    const { email, roles } = userInfo;
 
-  // Remove all the role of the User
-  await deleteUserRolePortalByUserId(userId);
-  await addRolesToUser(userId, roles);
+    // Remove all the role of the User
+    await deleteUserRolePortalByUserId(userId);
+    await addRolesToUser(userId, roles);
 
-  return await loadUserBy('User.email', email);
+    return await loadUserBy('User.email', email);
 };
 
