@@ -29,24 +29,16 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
         .leftJoin('User_RolePortal as user_RolePortal', 'User.id', '=', 'user_RolePortal.user_id')
         .leftJoin('RolePortal_CapabilityPortal as rolePortal_CapabilityPortal', 'user_RolePortal.role_portal_id', '=', 'rolePortal_CapabilityPortal.role_portal_id')
         .leftJoin('CapabilityPortal as capability', 'capability.id', '=', 'rolePortal_CapabilityPortal.capability_portal_id')
-        .leftJoin('ActionTracking', 'ActionTracking.contextual_id', '=', 'User.id')
-        .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
         // Inspiration from https://github.com/knex/knex/issues/882
         .select([
             'User.*',
             dbRaw('(json_agg(json_build_object(\'id\', org.id, \'name\', org.name, \'__typename\', \'Organization\')) ->> 0)::json as organization'),
-            dbRaw(`json_build_object(
-            'action_tracking', json_agg(json_build_object('id', "ActionTracking"."id")),
-            'message_tracking', json_agg(json_build_object('id', "MessageTracking"."id"))) 
-            AS tracking_data`),
             dbRaw('case when count(distinct capability.id) = 0 then \'[]\' else json_agg(distinct capability.*) end as capabilities'),
         ])
         .groupBy(['User.id'])
         .first();
 
     const user = await userQuery;
-
-    console.log(user);
     // Remove capability null from query
     if (user) {
         const cleanUser = {

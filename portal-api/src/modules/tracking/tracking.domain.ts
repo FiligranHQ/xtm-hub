@@ -1,10 +1,12 @@
 import { AWXWorkflowAction } from '../../managers/awx/awx.model';
 import { v4 as uuidv4 } from 'uuid';
-import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
+import ActionTracking, { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { addNewActionTracking, updateActionTracking } from './action-tracking';
 import { addNewMessageTracking } from './message-tracking';
 import { TrackingConst } from './tracking.const';
 import { MessageTrackingInitializer } from '../../model/kanel/public/MessageTracking';
+import { PortalContext } from '../../model/portal-context';
+import { db, dbRaw } from '../../../knexfile';
 
 export const initTracking = async (action: AWXWorkflowAction) => {
     const id = uuidv4() as ActionTrackingId;
@@ -42,3 +44,13 @@ export const endTracking = async (awxId: ActionTrackingId, output?: unknown) => 
     await addNewMessageTracking(messageTrackingData);
 
 };
+
+export const loadTrackingDataBy = (context: PortalContext, field: string, value: string) => {
+    return db<ActionTracking>(context, 'ActionTracking')
+        .select(['ActionTracking.*',
+            dbRaw('json_agg("MessageTracking".*) AS message_tracking')])
+        .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
+        .where({ [field]: value })
+        .groupBy('ActionTracking.id');
+};
+

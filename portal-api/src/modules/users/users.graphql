@@ -15,6 +15,7 @@ type User implements Node {
     organization_id: ID!
     organization: Organization!
     capabilities: [Capability!]!
+    tracking_data: [ActionTracking]
 }
 
 type UserEdge {

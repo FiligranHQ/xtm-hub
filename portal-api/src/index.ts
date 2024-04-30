@@ -93,6 +93,19 @@ const middlewareExpress = expressMiddleware(server, {
     },
 });
 
+// const handler = createHandler({
+//     schema,
+//     context: async (_req) => {
+//         const session = await new Promise((resolve) => {
+//             sessionMiddleware(_req.raw, {} as express.Response, () => resolve(_req.raw.session));
+//         });
+//         const { user } = session as SessionData;
+//         // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
+//         // TODO Add build session from request authorization
+//         return { user, req: _req };
+//     },
+// });
+
 app.use(PORTAL_WEBSOCKET_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
 app.use(PORTAL_GRAPHQL_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
 // endregion

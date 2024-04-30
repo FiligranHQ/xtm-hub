@@ -8,11 +8,14 @@ import { pageLoaderUserSlugQuery } from '../../../../../../__generated__/pageLoa
 
 // Configuration or Preloader Query
 export const UserSlugQuery = graphql`
-    query pageLoaderUserSlugQuery($id: ID!) {
-        user(id: $id) {
-            ...userSlug_fragment
-        }
+  query pageLoaderUserSlugQuery($id: ID!) {
+    user(id: $id) {
+      ...userSlug_fragment
+      tracking_data {
+        ...userActionTracking_fragment
+      }
     }
+  }
 `;
 
 // Component interface
@@ -22,7 +25,8 @@ interface PreloaderProps {
 
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
-  const [queryRef, loadQuery] = useQueryLoader<pageLoaderUserSlugQuery>(UserSlugQuery);
+  const [queryRef, loadQuery] =
+    useQueryLoader<pageLoaderUserSlugQuery>(UserSlugQuery);
   useMountingLoader(loadQuery, { id });
   return queryRef ? <UserSlug queryRef={queryRef} /> : <div>SPINNER</div>;
 };

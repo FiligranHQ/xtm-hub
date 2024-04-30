@@ -23,6 +23,11 @@ export const usersFragment = graphql`
         node {
           id
           email
+          first_name
+          last_name
+          organization {
+            name
+          }
         }
       }
     }

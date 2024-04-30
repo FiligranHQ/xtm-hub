@@ -38,6 +38,29 @@ export const userSlugFragment = graphql`
   }
 `;
 
+export const userActionTrackingFragment = graphql`
+  fragment userActionTracking_fragment on ActionTracking {
+    id
+    contextual_id
+    created_at
+    ended_at
+    status
+    message_tracking {
+      ...userMessageTracking_fragment
+    }
+  }
+`;
+
+export const userMessageTrackingFragment = graphql`
+  fragment userMessageTracking_fragment on MessageTracking {
+    id
+    created_at
+    type
+    technical
+    tracking_info
+  }
+`;
+
 export const userSlugSubscription = graphql`
   subscription userSlugSubscription {
     User {
