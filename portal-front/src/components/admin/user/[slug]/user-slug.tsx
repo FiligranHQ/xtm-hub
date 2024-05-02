@@ -48,6 +48,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       }
     },
   });
+  console.log(user);
   if (!user) {
     // If user not found, redirect to admin list
     router.replace('/admin/user');
