@@ -48,7 +48,7 @@ export interface UserData {
   last_name?: string | null | undefined;
 }
 
-export const columns: ColumnDef<UserData>[] = [
+const columns: ColumnDef<UserData>[] = [
   {
     accessorKey: 'first_name',
     header: 'First name',

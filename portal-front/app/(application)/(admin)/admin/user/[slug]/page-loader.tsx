@@ -12,7 +12,7 @@ export const UserSlugQuery = graphql`
     user(id: $id) {
       ...userSlug_fragment
       tracking_data {
-        ...userActionTracking_fragment
+        ...dataTracking_fragment
       }
     }
   }
