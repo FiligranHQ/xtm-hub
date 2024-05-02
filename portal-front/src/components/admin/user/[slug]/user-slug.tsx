@@ -12,6 +12,7 @@ import { userSlugDeletion, userSlugFragment, userSlugSubscription } from '@/comp
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb';
 import { Button } from 'filigran-ui/servers';
 import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
+import { DataTracking } from '@/components/data-tracking/data-tracking';
 
 // Component interface
 interface UserSlugProps {
@@ -48,7 +49,6 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       }
     },
   });
-  console.log(user);
   if (!user) {
     // If user not found, redirect to admin list
     router.replace('/admin/user');
@@ -82,6 +82,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           </div>
         </div>
         <Button onClick={() => onDeleteUser(user)}>Delete</Button>
+        <div>
+          {data.user?.tracking_data?.map((data) => (
+            <DataTracking data={data} />
+          ))}
+        </div>
         <UserEditSheet user={user} />
       </>
     );
