@@ -13,6 +13,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/brea
 import { Button } from 'filigran-ui/servers';
 import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 import { DataTracking } from '@/components/data-tracking/data-tracking';
+import { dataTracking_fragment$key } from '../../../../../__generated__/dataTracking_fragment.graphql';
 
 // Component interface
 interface UserSlugProps {
@@ -82,10 +83,10 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           </div>
         </div>
         <Button onClick={() => onDeleteUser(user)}>Delete</Button>
-        <div>
-          {data.user?.tracking_data?.map((data) => (
-            <DataTracking data={data} />
-          ))}
+        <div className="container mx-auto py-10">
+          <DataTracking
+            data={data.user?.tracking_data as dataTracking_fragment$key}
+          />
         </div>
         <UserEditSheet user={user} />
       </>
