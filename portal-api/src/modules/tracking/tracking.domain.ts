@@ -9,48 +9,48 @@ import { PortalContext } from '../../model/portal-context';
 import { db, dbRaw } from '../../../knexfile';
 
 export const initTracking = async (action: AWXWorkflowAction) => {
-    const id = uuidv4() as ActionTrackingId;
-    const created_at = new Date();
-    await addNewActionTracking({
-        id,
-        created_at,
-        contextual_id: action.input.id,
-    });
-    await addNewMessageTracking({
-        tracking_id: id,
-        created_at,
-        type: action.type,
-        technical: false,
-    });
-    return id;
+  const id = uuidv4() as ActionTrackingId;
+  const created_at = new Date();
+  await addNewActionTracking({
+    id,
+    created_at,
+    contextual_id: action.input.id,
+  });
+  await addNewMessageTracking({
+    tracking_id: id,
+    created_at,
+    type: action.type,
+    technical: false,
+  });
+  return id;
 };
 
-export const endTracking = async (awxId: ActionTrackingId, output?: unknown) => {
-    const ended_at = new Date();
-    await updateActionTracking(awxId, {
-        status: 'FINISHED',
-        ended_at,
-    });
-    const messageTrackingData: MessageTrackingInitializer = {
-        ...TrackingConst.END_PROCESS,
-        tracking_id: awxId,
-        created_at: ended_at,
-    };
+export const endTracking = async (awxId: ActionTrackingId, status: string, output?: unknown) => {
+  const ended_at = new Date();
+  await updateActionTracking(awxId, {
+    status,
+    ended_at,
+  });
+  const messageTrackingData: MessageTrackingInitializer = {
+    ...TrackingConst.END_AWX_PROCESS,
+    tracking_id: awxId,
+    tracking_info: output,
+    created_at: ended_at,
+  };
+  if (output) {
+    messageTrackingData.tracking_info = output;
+  }
 
-    if (output) {
-        messageTrackingData.tracking_info = output;
-    }
-
-    await addNewMessageTracking(messageTrackingData);
+  await addNewMessageTracking(messageTrackingData);
 
 };
 
 export const loadTrackingDataBy = (context: PortalContext, field: string, value: string) => {
-    return db<ActionTracking>(context, 'ActionTracking')
-        .select(['ActionTracking.*',
-            dbRaw('json_agg("MessageTracking".*) AS message_tracking')])
-        .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
-        .where({ [field]: value })
-        .groupBy('ActionTracking.id');
+  return db<ActionTracking>(context, 'ActionTracking')
+    .select(['ActionTracking.*',
+      dbRaw('json_agg("MessageTracking".*) AS message_tracking')])
+    .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
+    .where({ [field]: value })
+    .groupBy('ActionTracking.id');
 };
 
