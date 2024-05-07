@@ -1,5 +1,8 @@
 import { graphql, useFragment } from 'react-relay';
-import { messageTracking_fragment$key } from '../../../__generated__/messageTracking_fragment.graphql';
+import {
+  messageTracking_fragment$data,
+  messageTracking_fragment$key,
+} from '../../../__generated__/messageTracking_fragment.graphql';
 import { FunctionComponent } from 'react';
 import {
   Accordion,
@@ -26,18 +29,21 @@ interface MessageTrackingProps {
 export const MessageTracking: FunctionComponent<MessageTrackingProps> = ({
   data,
 }) => {
-  const messageTracking = useFragment<messageTracking_fragment$key>(
-    messageTrackingFragment,
-    data
+  const messageTracking: messageTracking_fragment$data =
+    useFragment<messageTracking_fragment$key>(messageTrackingFragment, data);
+  const sortedMessageTracking = [...messageTracking].sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
   return (
     <div>
       <Accordion
         type="single"
+        defaultValue={sortedMessageTracking[0]?.id}
         collapsible
         className="w-full">
-        {messageTracking.map((message) => {
+        {sortedMessageTracking.map((message) => {
           const { id, tracking_info, type, created_at } = message;
           return (
             <AccordionItem

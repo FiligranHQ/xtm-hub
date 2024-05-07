@@ -163,10 +163,6 @@ type ServiceSubscription {
   delete: Service
 }
 
-scalar JSON
-
-scalar Date
-
 enum OrganizationOrdering {
   name
 }
@@ -185,3 +181,7 @@ type OrganizationConnection {
   edges: [OrganizationEdge!]!
   pageInfo: PageInfo!
 }
+
+scalar JSON
+
+scalar Date

@@ -28,10 +28,15 @@ interface DataTrackingObject {
   readonly ended_at: any | null | undefined;
   readonly id: string;
   readonly status: string | null | undefined;
+  readonly type: string;
   readonly message_tracking: messageTracking_fragment$key;
 }
 
 const columns: ColumnDef<DataTrackingObject>[] = [
+  {
+    accessorKey: 'type',
+    header: 'Type',
+  },
   {
     accessorKey: 'created_at',
     header: 'Created at',
@@ -69,12 +74,12 @@ export const DataTracking: FunctionComponent<DataTrackingProps> = ({
     dataTrackingFragment,
     data
   );
-  console.log(dataTracking);
   const formattedData: DataTrackingObject[] =
     dataTracking?.map((t) => ({
       ...t,
       created_at: FormatDate(t.created_at),
       ended_at: FormatDate(t.ended_at),
+      type: 'CREATE_USER', // Need to add in the env in postgres table
       message_tracking:
         t.message_tracking as unknown as messageTracking_fragment$key,
     })) ?? [];
