@@ -1,0 +1,87 @@
+{
+  "port": 4001,
+  "admin": {
+    "email": "admin@filigran.io",
+    "password": "admin"
+  },
+  "database": {
+    "host": "thales-dev-vm-2",
+    "port": 5432,
+    "user": "portal",
+    "password": "portal-password",
+    "database": "cloud-portal"
+  },
+  "oidc_provider": {
+    "issuer": "changeme",
+    "client_id": "changeme",
+    "client_secret": "changeme",
+    "redirect_uris": [
+      "http://localhost:3000/auth/oidc/callback"
+    ],
+    "logout_callback_url": [
+      "http://localhost:3000/oidc/callback"
+    ],
+    "response_types": [
+      "code"
+    ]
+  },
+  "user_management": {
+    "token_reference": "access_token",
+    "read_userinfo": false,
+    "roles_path": "resource_access.realm_access.roles.roles",
+    "role_mappings": [
+      "admin:ADMIN",
+      "user:USER"
+    ]
+  },
+  "awx": {
+    "activate": true,
+    "url": "changeme",
+    "token": "changeme",
+    "workflow": "/api/v2/workflow_job_templates/${workflowId}/launch/",
+    "action_mapping": {
+      "CREATE_USER": {
+        "path": "/api/v2/workflow_job_templates/?name=api_create-user",
+        "keys": [
+          "roles",
+          "organization_name"
+        ]
+      },
+      "DISABLE_USER": {
+        "path": "/api/v2/workflow_job_templates/?name=api_disable-user",
+        "keys": [
+          "roles",
+          "organization_name"
+        ]
+      },
+      "CREATE_COMMUNITY_USER": {
+        "path": "/api/v2/workflow_job_templates/?name=api_create-community",
+        "keys": [
+          "roles",
+          "organization_name"
+        ]
+      },
+      "DELETE_COMMUNITY_USER": {
+        "path": "/api/v2/workflow_job_templates/?name=api_delete-community",
+        "keys": [
+          "roles",
+          "organization_name"
+        ]
+      },
+      "COMMUNITY_ADD_USER": {
+        "path": "/api/v2/workflow_job_templates/?name=api_community-add-user",
+        "keys": [
+          "roles",
+          "organization_name"
+        ]
+      },
+      "COMMUNITY_REMOVE_USER": {
+        "path": "/api/v2/workflow_job_templates/?name=api_community-remove-user",
+        "keys": [
+          "roles",
+          "organization_name"
+        ]
+      }
+    }
+  }
+}

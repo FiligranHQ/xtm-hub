@@ -40,13 +40,14 @@ export const MessageTracking: FunctionComponent<MessageTrackingProps> = ({
     <div>
       <Accordion
         type="single"
-        defaultValue={sortedMessageTracking[0]?.id}
+        defaultValue={messageTracking[0]?.id}
         collapsible
         className="w-full">
-        {sortedMessageTracking.map((message) => {
+        {messageTracking.map((message) => {
           const { id, tracking_info, type, created_at } = message;
           return (
             <AccordionItem
+              key={id}
               value={id}
               className=" border-b">
               <AccordionTrigger>
@@ -55,8 +56,8 @@ export const MessageTracking: FunctionComponent<MessageTrackingProps> = ({
                 </h2>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="bg-gray-900 p-4 text-gray-200">
-                  {tracking_info}
+                <div className="max-h-96 overflow-auto bg-gray-900 p-4 text-gray-200">
+                  {JSON.stringify(tracking_info, null, 2)}
                 </div>
               </AccordionContent>
             </AccordionItem>
