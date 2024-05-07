@@ -14,6 +14,7 @@ export const initTracking = async (action: AWXWorkflowAction) => {
   await addNewActionTracking({
     id,
     created_at,
+    status: 'IN_PROGRESS',
     contextual_id: action.input.id,
   });
   await addNewMessageTracking({
