@@ -28,7 +28,7 @@
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,
-    "roles_path": "resource_access.realm_access.roles.roles",
+    "roles_path": "resource_access.scred-portal-dev.roles",
     "role_mappings": [
       "admin:ADMIN",
       "user:USER"
