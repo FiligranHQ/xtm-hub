@@ -5,8 +5,10 @@ import { UserListQuery } from '../../../../app/(application)/(admin)/admin/user/
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
-import { buttonVariants } from 'filigran-ui/servers';
 import { UserCreateSheet } from '@/components/admin/user/user-create-sheet';
+import { Button } from 'filigran-ui/servers';
+import { ColumnDef } from '@tanstack/react-table';
+import { DataTable } from '@/components/ui/data-table';
 
 // Relay
 export const usersFragment = graphql`
@@ -23,6 +25,11 @@ export const usersFragment = graphql`
         node {
           id
           email
+          first_name
+          last_name
+          organization {
+            name
+          }
         }
       }
     }
@@ -34,6 +41,39 @@ interface ServiceProps {
   queryRef: PreloadedQuery<pageLoaderUserQuery>;
 }
 
+export interface UserData {
+  email?: string;
+  first_name?: string | null | undefined;
+  id: string;
+  last_name?: string | null | undefined;
+}
+
+const columns: ColumnDef<UserData>[] = [
+  {
+    accessorKey: 'first_name',
+    header: 'First name',
+  },
+  {
+    accessorKey: 'last_name',
+    header: 'Last name',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      return (
+        <Button
+          asChild
+          variant="ghost">
+          <Link href={`/admin/user/${row.original.id}`}>Details</Link>
+        </Button>
+      );
+    },
+  },
+];
 // Component
 const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   const queryData = usePreloadedQuery<pageLoaderUserQuery>(
@@ -45,6 +85,11 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     pageLoaderUserQuery,
     userList_users$key
   >(usersFragment, queryData);
+
+  const userData = data.users.edges.map(({ node }) => ({
+    ...node,
+  })) as UserData[];
+
   return (
     <>
       <Breadcrumb className="pb-2">
@@ -56,17 +101,12 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
         </BreadcrumbItem>
       </Breadcrumb>
 
-      <ul>
-        {data.users.edges.map((user) => (
-          <li key={user.node?.id}>
-            <Link
-              className={buttonVariants({ variant: 'outline' })}
-              href={`/admin/user/${user.node?.id}`}>
-              {user.node?.email}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className="container mx-auto py-10">
+        <DataTable
+          columns={columns}
+          data={userData}
+        />
+      </div>
 
       <UserCreateSheet connectionID={data?.users?.__id} />
     </>

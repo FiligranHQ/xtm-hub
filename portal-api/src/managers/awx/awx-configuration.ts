@@ -3,18 +3,17 @@ import { AWXAction, AWXActionFunctionMap, AwxResponse, AWXWorkflowAction, AWXWor
 import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
 import { buildCreateUserInput } from './awx-user-mapping';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
-import { endTracking, initTracking } from '../../modules/tracking/tracking.domain';
+import { initTracking } from '../../modules/tracking/tracking.domain';
 import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
 import { TrackingConst } from '../../modules/tracking/tracking.const';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
-  const awxUUID = await initTracking(action);
   const awx = config.get('awx.activate');
 
   if (!awx) {
-    await handleUndefinedAWXWorkflow(action, awxUUID);
     return;
   }
+  const awxUUID = await initTracking(action);
   const awxWorkflow: AWXWorkflowConfig = config.get(`awx.action_mapping.${action.type}`);
   const workflow = await fetchAWXWorkflow(awxWorkflow.path, awxUUID);
   return await executeAWXWorkflow(workflow, action, awxUUID, awxWorkflow.keys);
@@ -56,16 +55,6 @@ const buildWorkflowInput = async (action: AWXWorkflowAction, awxUUID: ActionTrac
     throw new Error(`Unsupported action type: ${action.type}`);
   }
   return await selectedFunction(action.input, awxUUID, keys);
-};
-
-const handleUndefinedAWXWorkflow = async (action: AWXWorkflowAction, awxUUID: ActionTrackingId) => {
-  const message = `awx.action_mapping.${action.type} is not defined`;
-  await addNewMessageTracking({
-    ...TrackingConst.NO_AWX_PROCESS,
-    tracking_id: awxUUID,
-    tracking_info: JSON.stringify(message),
-  });
-  await endTracking(awxUUID);
 };
 
 const fetchAWXWorkflow = async (path: string, awxUUID: ActionTrackingId) => {
