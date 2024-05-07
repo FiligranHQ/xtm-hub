@@ -1,7 +1,25 @@
 version: '3'
 services:
-  portal-dev-postgres:
-    container_name: portal-dev-postgres
+  portal-front:
+    container_name: portal-front
+    build: ../portal-front/.
+    ports:
+      - "3000:3000"
+    depends_on:
+      - portal-api
+    environment:
+      - SERVER_HTTP_API=http://portal-api:4001
+
+  portal-api:
+    container_name: portal-api
+    build: ../portal-api/.
+    ports:
+      - "4001:4001"
+    depends_on:
+      - portal-postgres
+
+  portal-postgres:
+    container_name: portal-postgres
     image: postgres:16.0
     volumes:
       - pgdata:/data/postgres
@@ -12,7 +30,7 @@ services:
       - PGDATA=/data/postgres
     restart: unless-stopped
     ports:
-      - 5432:5432
+      - "5432:5432"
 
 volumes:
   pgdata:

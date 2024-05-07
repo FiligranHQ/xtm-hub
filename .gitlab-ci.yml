@@ -1,0 +1,20 @@
+include:
+  project: ci/ci-templates
+  ref: main
+  file: templates/Docker.ci.yml
+
+variables:
+  DOCKER_APP_RELEASE_VERSION: 1.0.0
+  DOCKER_APP_VERSION_BETA_NUMBER: 0
+
+build-portal-api:
+  extends: .docker-build-tag-and-publish-component
+  variables:
+    DOCKER_APP_COMPONENT_NAME: portal-api
+    DOCKER_BUILD_DIR: ./portal-api
+
+build-portal-front:
+  extends: .docker-build-tag-and-publish-component
+  variables:
+    DOCKER_APP_COMPONENT_NAME: portal-front
+    DOCKER_BUILD_DIR: ./portal-front
