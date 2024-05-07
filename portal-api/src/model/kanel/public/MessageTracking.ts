@@ -23,7 +23,7 @@ export default interface MessageTracking {
 
 /** Represents the initializer for the table public.MessageTracking */
 export interface MessageTrackingInitializer {
-  /** Default value: 'e4e7cafb-88ee-408e-ae5f-f06d2fdc3c58'::uuid */
+  /** Default value: gen_random_uuid() */
   id?: MessageTrackingId;
 
   tracking_id?: ActionTrackingId | null;

@@ -15,6 +15,7 @@ import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
 import User, { UserId } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { AWXAction } from '../../managers/awx/awx.model';
+import { loadTrackingDataBy } from '../tracking/tracking.domain';
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
   const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
@@ -41,6 +42,9 @@ const resolvers: Resolvers = {
     organization: (user, __, context) => {
       const id = extractId(user.organization_id);
       return user.organization ? user.organization : loadOrganizationBy(context, 'Organization.id', id);
+    },
+    tracking_data: async (user, __, context) => {
+      return user?.tracking_data ? user?.tracking_data : await loadTrackingDataBy(context, 'ActionTracking.contextual_id', user.id);
     },
   },
   Mutation: {

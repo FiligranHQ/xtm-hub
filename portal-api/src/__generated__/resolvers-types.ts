@@ -1,4 +1,4 @@
-import type { GraphQLResolveInfo } from 'graphql';
+import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { PortalContext } from '../model/portal-context.js';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null;
@@ -15,6 +15,18 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  Date: { input: any; output: any; }
+  JSON: { input: any; output: any; }
+};
+
+export type ActionTracking = Node & {
+  __typename?: 'ActionTracking';
+  contextual_id: Scalars['String']['output'];
+  created_at: Scalars['Date']['output'];
+  ended_at?: Maybe<Scalars['Date']['output']>;
+  id: Scalars['ID']['output'];
+  message_tracking: Array<MessageTracking>;
+  status?: Maybe<Scalars['String']['output']>;
 };
 
 export type AddUserInput = {
@@ -43,6 +55,16 @@ export type MergeEvent = Node & {
   from: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   target: Scalars['ID']['output'];
+};
+
+export type MessageTracking = Node & {
+  __typename?: 'MessageTracking';
+  created_at: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  technical?: Maybe<Scalars['Boolean']['output']>;
+  tracking_id?: Maybe<Scalars['ID']['output']>;
+  tracking_info?: Maybe<Scalars['JSON']['output']>;
+  type: Scalars['String']['output'];
 };
 
 export type Mutation = {
@@ -261,6 +283,7 @@ export type User = Node & {
   last_name?: Maybe<Scalars['String']['output']>;
   organization: Organization;
   organization_id: Scalars['ID']['output'];
+  tracking_data?: Maybe<Array<Maybe<ActionTracking>>>;
 };
 
 export type UserConnection = {
@@ -358,18 +381,22 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( Capability ) | ( MergeEvent ) | ( Organization ) | ( Service ) | ( User );
+  Node: ( ActionTracking ) | ( Capability ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( Service ) | ( User );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  ActionTracking: ResolverTypeWrapper<ActionTracking>;
   AddUserInput: AddUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Capability: ResolverTypeWrapper<Capability>;
+  Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   EditUserInput: EditUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
+  MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OrderingMode: OrderingMode;
@@ -398,13 +425,17 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  ActionTracking: ActionTracking;
   AddUserInput: AddUserInput;
   Boolean: Scalars['Boolean']['output'];
   Capability: Capability;
+  Date: Scalars['Date']['output'];
   EditUserInput: EditUserInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  JSON: Scalars['JSON']['output'];
   MergeEvent: MergeEvent;
+  MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   Organization: Organization;
@@ -432,16 +463,44 @@ export type AuthDirectiveArgs = {
 
 export type AuthDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type ActionTrackingResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ActionTracking'] = ResolversParentTypes['ActionTracking']> = ResolversObject<{
+  contextual_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  ended_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  message_tracking?: Resolver<Array<ResolversTypes['MessageTracking']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type CapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['Restriction'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
+
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+  name: 'JSON';
+}
+
 export type MergeEventResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['MergeEvent'] = ResolversParentTypes['MergeEvent']> = ResolversObject<{
   from?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   target?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MessageTrackingResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['MessageTracking'] = ResolversParentTypes['MessageTracking']> = ResolversObject<{
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  technical?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  tracking_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  tracking_info?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -459,7 +518,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'MergeEvent' | 'Organization' | 'Service' | 'User', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'Service' | 'User', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -551,6 +610,7 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  tracking_data?: Resolver<Maybe<Array<Maybe<ResolversTypes['ActionTracking']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -575,8 +635,12 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
+  ActionTracking?: ActionTrackingResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
+  Date?: GraphQLScalarType;
+  JSON?: GraphQLScalarType;
   MergeEvent?: MergeEventResolvers<ContextType>;
+  MessageTracking?: MessageTrackingResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;

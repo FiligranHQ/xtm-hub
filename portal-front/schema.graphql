@@ -34,9 +34,9 @@ type Query {
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
   settings: Settings!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
 }
 
 enum UserOrdering {
@@ -56,6 +56,7 @@ type User implements Node {
   organization_id: ID!
   organization: Organization!
   capabilities: [Capability!]!
+  tracking_data: [ActionTracking]
 }
 
 type UserEdge {
@@ -102,10 +103,28 @@ type Mutation {
   deleteUser(id: ID!): User
   login(email: String!, password: String): User
   logout: ID!
-  addOrganization(name: String!): Organization
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
   deleteService(id: ID!): Service
+  addOrganization(name: String!): Organization
+}
+
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
 }
 
 type PlatformProvider {
@@ -116,25 +135,6 @@ type PlatformProvider {
 
 type Settings {
   platform_providers: [PlatformProvider!]!
-}
-
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
 }
 
 enum ServiceOrdering {
@@ -162,3 +162,26 @@ type ServiceSubscription {
   edit: Service
   delete: Service
 }
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+scalar JSON
+
+scalar Date
