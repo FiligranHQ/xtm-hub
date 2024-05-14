@@ -3,7 +3,7 @@
     <defs>
         <style>
             * {
-            color: #0fbcff;
+            color: white;
             --animation-logo: 2.5s linear infinite;
             }
             .cls-1 {
