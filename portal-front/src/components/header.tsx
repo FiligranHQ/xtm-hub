@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 import { useContext } from 'react';
-import { Portal, portalContext } from './context';
 import { Skeleton } from 'filigran-ui/servers';
 import Logo from '../../public/logo.svg';
+import { Portal, portalContext } from '@/components/portal-context';
 
 // Component interface
 interface HeaderComponentProps {}

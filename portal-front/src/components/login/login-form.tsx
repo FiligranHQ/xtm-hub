@@ -36,7 +36,7 @@ const formSchema = z.object({
 const LoginFormMutation = graphql`
   mutation loginFormMutation($email: String!, $password: String!) {
     login(email: $email, password: $password) {
-      ...context_fragment
+      ...meContext_fragment
     }
   }
 `;

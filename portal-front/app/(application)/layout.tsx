@@ -4,9 +4,7 @@ import 'filigran-ui/theme.css';
 import '../../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
-import pageLoaderMeQueryNode, {
-  pageLoaderMeQuery,
-} from '../../__generated__/pageLoaderMeQuery.graphql';
+import pageLoaderMeQueryNode, { pageLoaderMeQuery } from '../../__generated__/pageLoaderMeQuery.graphql';
 import Login from '@/components/login/login';
 import AppContext from '@/components/app-context';
 import HeaderComponent from '@/components/header';
