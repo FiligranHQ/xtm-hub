@@ -1,0 +1,15 @@
+{
+  "cookies": [
+    {
+      "name": "cloud-portal",
+      "value": "s%3Am2gcsLNPIa9AKU2o6wCEgQfkDIESMbsV.ZRpoCugeJFJ85lwXIyhTdHl9sx3TcoCiRpsc13wqeR0",
+      "domain": "127.0.0.1",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}
