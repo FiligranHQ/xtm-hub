@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "relay": "relay-compiler",
-    "prettier": "prettier . --write"
+    "prettier": "prettier . --write",
+    "test": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "3.3.4",
@@ -37,14 +38,18 @@
     "zod": "3.23.4"
   },
   "devDependencies": {
+    "@testing-library/react": "^15.0.7",
     "@types/config": "3.3.4",
     "@types/react-relay": "16.0.6",
+    "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "8.2.2",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.3",
+    "jsdom": "^24.0.0",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.5.14",
-    "relay-compiler": "16.2.0"
+    "relay-compiler": "16.2.0",
+    "vitest": "^1.6.0"
   },
   "packageManager": "yarn@3.6.3",
   "prettier": {
