@@ -14,6 +14,7 @@ import { Button } from 'filigran-ui/servers';
 import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 import { DataTracking } from '@/components/data-tracking/data-tracking';
 import { dataTracking_fragment$key } from '../../../../../__generated__/dataTracking_fragment.graphql';
+import { Trash2 } from 'lucide-react';
 
 // Component interface
 interface UserSlugProps {
@@ -68,21 +69,20 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           </BreadcrumbItem>
         </Breadcrumb>
 
-        <div>
-          <div>
-            <b>Email</b> {user.email}
-          </div>
-          <div>
-            <b>First name</b> {user.first_name}
-          </div>
-          <div>
-            <b>Last name</b> {user.last_name}
-          </div>
-          <div>
-            <b>Organization</b> {user.organization.name}
-          </div>
+        <div className="m-2 flex justify-between">
+          <h2 className="text-xl">
+            {user.first_name} {user.last_name} ({user.organization.name}) -{' '}
+            {user.email}
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Delete User"
+            onClick={() => onDeleteUser(user)}>
+            <Trash2 />
+          </Button>
         </div>
-        <Button onClick={() => onDeleteUser(user)}>Delete</Button>
+
         <div className="container mx-auto py-10">
           <DataTracking
             data={data.user?.tracking_data as dataTracking_fragment$key}
