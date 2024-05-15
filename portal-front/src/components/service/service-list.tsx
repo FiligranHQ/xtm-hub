@@ -20,6 +20,7 @@ import {
 import ServiceCreateForm from '@/components/service/service-create-form';
 import { Button } from 'filigran-ui/servers';
 import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
+import Loader from '@/components/loader';
 
 interface ServiceItemProps {
   node: serviceList_fragment$key;
@@ -57,7 +58,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   useSubscription(config);
   return (
     <>
-      <React.Suspense fallback="Loading...">
+      <React.Suspense fallback={<Loader />}>
         <div className="bg-[#e9cffc]">
           <ul>
             {data.services?.edges.map(({ node }) => (

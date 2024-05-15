@@ -3,6 +3,9 @@ export const FormatDate = (date?: string) => {
     return null;
   }
   const dateObject = new Date(date);
+  if (isNaN(dateObject.getTime())) {
+    return null;
+  }
   // Extract date components
   const day = dateObject.getUTCDate();
   const month = dateObject.getUTCMonth() + 1; // Months are zero-based
