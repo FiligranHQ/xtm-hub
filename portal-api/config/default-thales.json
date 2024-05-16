@@ -28,10 +28,11 @@
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,
-    "roles_path": "resource_access.scred-portal-dev.roles",
+    "roles_path": "realm_access.roles",
     "role_mappings": [
-      "admin:ADMIN",
-      "user:USER"
+      "portal-admin:ADMIN",
+      "organization-admin:ADMIN",
+      "default-roles-ctishape:USER"
     ]
   },
   "awx": {
