@@ -4,7 +4,8 @@ import { getNestedPropertyValue, parseKeyValueArrayToObject } from '../utils/uti
 export const extractRole = (decodedUser) => {
   const roleMapping = getRoleMapping();
   const roles = getUserRoles(decodedUser);
-  return roles.map((role) => roleMapping[role]);
+  return roles.map((role) => roleMapping[role])
+    .filter((role) => !!role);
 };
 
 const getRoleMapping = () => {
