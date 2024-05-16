@@ -78,6 +78,7 @@ type UserSubscription {
 
 type Subscription {
   User: UserSubscription
+  ActionTracking: TrackingSubscription
   Service: ServiceSubscription
 }
 
@@ -125,6 +126,12 @@ type MessageTracking implements Node {
   technical: Boolean
   type: String!
   tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
 }
 
 type PlatformProvider {

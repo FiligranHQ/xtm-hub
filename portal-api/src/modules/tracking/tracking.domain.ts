@@ -6,7 +6,7 @@ import { addNewMessageTracking } from './message-tracking';
 import { TrackingConst } from './tracking.const';
 import { MessageTrackingInitializer } from '../../model/kanel/public/MessageTracking';
 import { PortalContext } from '../../model/portal-context';
-import { db, dbRaw } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 
 export const initTracking = async (action: AWXWorkflowAction) => {
   const id = uuidv4() as ActionTrackingId;
@@ -49,7 +49,16 @@ export const endTracking = async (awxId: ActionTrackingId, status: string, outpu
 export const loadTrackingDataBy = (context: PortalContext, field: string, value: string) => {
   return db<ActionTracking>(context, 'ActionTracking')
     .select(['ActionTracking.*',
-      dbRaw('json_agg("MessageTracking".*) AS message_tracking')])
+      dbRaw('case when count(distinct "MessageTracking".id) = 0 then \'[]\' else json_agg("MessageTracking".*) end as message_tracking')])
+    .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
+    .where({ [field]: value })
+    .groupBy('ActionTracking.id');
+};
+
+export const unsecureLoadTrackingDataBy = (field: string, value: string) => {
+  return dbUnsecure<ActionTracking>('ActionTracking')
+    .select(['ActionTracking.*',
+      dbRaw('case when count(distinct "MessageTracking".id) = 0 then \'[]\' else json_agg("MessageTracking".*) end as message_tracking')])
     .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
     .where({ [field]: value })
     .groupBy('ActionTracking.id');

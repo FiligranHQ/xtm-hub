@@ -270,8 +270,16 @@ export type Settings = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  ActionTracking?: Maybe<TrackingSubscription>;
   Service?: Maybe<ServiceSubscription>;
   User?: Maybe<UserSubscription>;
+};
+
+export type TrackingSubscription = {
+  __typename?: 'TrackingSubscription';
+  add?: Maybe<ActionTracking>;
+  delete?: Maybe<ActionTracking>;
+  edit?: Maybe<ActionTracking>;
 };
 
 export type User = Node & {
@@ -416,6 +424,7 @@ export type ResolversTypes = ResolversObject<{
   Settings: ResolverTypeWrapper<Settings>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
+  TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
@@ -451,6 +460,7 @@ export type ResolversParentTypes = ResolversObject<{
   Settings: Settings;
   String: Scalars['String']['output'];
   Subscription: {};
+  TrackingSubscription: TrackingSubscription;
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
@@ -598,8 +608,16 @@ export type SettingsResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type SubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  ActionTracking?: SubscriptionResolver<Maybe<ResolversTypes['TrackingSubscription']>, "ActionTracking", ParentType, ContextType>;
   Service?: SubscriptionResolver<Maybe<ResolversTypes['ServiceSubscription']>, "Service", ParentType, ContextType>;
   User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType>;
+}>;
+
+export type TrackingSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TrackingSubscription'] = ResolversParentTypes['TrackingSubscription']> = ResolversObject<{
+  add?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
+  delete?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
+  edit?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type UserResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
@@ -655,6 +673,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceSubscription?: ServiceSubscriptionResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  TrackingSubscription?: TrackingSubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;

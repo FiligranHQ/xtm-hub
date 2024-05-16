@@ -15,6 +15,7 @@ import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 import { DataTracking } from '@/components/data-tracking/data-tracking';
 import { dataTracking_fragment$key } from '../../../../../__generated__/dataTracking_fragment.graphql';
 import { Trash2 } from 'lucide-react';
+import { trackingSubscription } from '@/components/data-tracking/tracking.graphql';
 
 // Component interface
 interface UserSlugProps {
@@ -51,6 +52,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       }
     },
   });
+  useSubscription<generatedUserSlugSubscription>({
+    variables: {},
+    subscription: trackingSubscription,
+  });
+
   if (!user) {
     // If user not found, redirect to admin list
     router.replace('/admin/user');

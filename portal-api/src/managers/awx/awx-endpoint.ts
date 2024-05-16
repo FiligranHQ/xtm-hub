@@ -1,4 +1,5 @@
-import { endTracking } from '../../modules/tracking/tracking.domain';
+import { endTracking, unsecureLoadTrackingDataBy } from '../../modules/tracking/tracking.domain';
+import { dispatch } from '../../pub';
 
 export const awxEndpoint = (app) => {
   app.post(`/awx/callback`, async (req, res) => {
@@ -6,7 +7,9 @@ export const awxEndpoint = (app) => {
     if (req.body) {
       const { id: awxUUID, status, output } = req.body;
       await endTracking(awxUUID, status, output);
+      const [tracking] = await unsecureLoadTrackingDataBy('ActionTracking.id', awxUUID);
+      await dispatch('ActionTracking', 'edit', tracking);
     }
-    res.send(200);
+    res.sendStatus(200);
   });
 };
