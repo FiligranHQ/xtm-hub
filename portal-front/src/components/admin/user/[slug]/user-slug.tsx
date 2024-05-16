@@ -1,21 +1,37 @@
 import * as React from 'react';
-import { PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription } from 'react-relay';
+import {
+  PreloadedQuery,
+  useFragment,
+  useMutation,
+  usePreloadedQuery,
+  useSubscription,
+} from 'react-relay';
 import { pageLoaderUserSlugQuery } from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
 import { UserSlugQuery } from '../../../../../app/(application)/(admin)/admin/user/[slug]/page-loader';
-import { userSlug_fragment$data, userSlug_fragment$key } from '../../../../../__generated__/userSlug_fragment.graphql';
+import {
+  userSlug_fragment$data,
+  userSlug_fragment$key,
+} from '../../../../../__generated__/userSlug_fragment.graphql';
 import { useRouter } from 'next/navigation';
 import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
+import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 import {
-  userSlugSubscription as generatedUserSlugSubscription,
-} from '../../../../../__generated__/userSlugSubscription.graphql';
-import { userSlugDeletion, userSlugFragment, userSlugSubscription } from '@/components/admin/user/user.graphql';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb';
+  userSlugDeletion,
+  userSlugFragment,
+  userSlugSubscription,
+} from '@/components/admin/user/user.graphql';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+} from '@/components/ui/breadcrumb';
 import { Button } from 'filigran-ui/servers';
 import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 import { DataTracking } from '@/components/data-tracking/data-tracking';
 import { dataTracking_fragment$key } from '../../../../../__generated__/dataTracking_fragment.graphql';
 import { Trash2 } from 'lucide-react';
 import { trackingSubscription } from '@/components/data-tracking/tracking.graphql';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 
 // Component interface
 interface UserSlugProps {
@@ -33,7 +49,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
     useMutation<userSlugDeletionMutation>(userSlugDeletion);
   const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
 
-  const onDeleteUser = (user: userSlug_fragment$data) => {
+  const onDeleteUser = (user: userSlug_fragment$data): void => {
     deleteUserMutation({
       variables: { id: user.id },
       onCompleted: () => {
@@ -80,13 +96,21 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             {user.first_name} {user.last_name} ({user.organization.name}) -{' '}
             {user.email}
           </h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Delete User"
-            onClick={() => onDeleteUser(user)}>
-            <Trash2 />
-          </Button>
+
+          <AlertDialogComponent
+            AlertTitle={'Delete user'}
+            triggerElement={
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Delete User">
+                <Trash2 />
+              </Button>
+            }
+            onClickContinue={() => onDeleteUser(user)}>
+            Are you sure you want to delete this user {user.first_name}{' '}
+            {user.last_name} ?
+          </AlertDialogComponent>
         </div>
 
         <div className="container mx-auto py-10">
