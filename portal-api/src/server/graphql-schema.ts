@@ -8,6 +8,7 @@ import usersResolver from '../modules/users/users.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import { authDirectiveTransformer } from '../security/directive-auth';
 import settingsResolver from '../modules/settings/settings.resolver';
+import trackingResolver from '../modules/tracking/tracking.resolver';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
@@ -17,7 +18,7 @@ const getGlobContent = async (pattern: string) => {
 const typeDefFiles = await getGlobContent('src/**/*.graphql');
 const typeDefs = mergeTypeDefs(typeDefFiles);
 
-const resolvers = mergeResolvers([nodesResolver, servicesResolver, organizationsResolver, usersResolver, settingsResolver]);
+const resolvers = mergeResolvers([nodesResolver, servicesResolver, organizationsResolver, usersResolver, settingsResolver, trackingResolver]);
 
 const createSchema = () => {
   const graphQLSchema = makeExecutableSchema({ typeDefs, resolvers, inheritResolversFromInterfaces: true });

@@ -7,7 +7,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import cors from 'cors';
 import pkg from 'body-parser';
 import express from 'express';
-import createSchema from './server/graphl-schema';
+import createSchema from './server/graphql-schema';
 import { dbMigration } from '../knexfile';
 import portalConfig from './config';
 import { printSchema } from 'graphql/utilities/index.js';

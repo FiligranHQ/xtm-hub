@@ -14,3 +14,12 @@ type MessageTracking implements Node {
     type: String!
     tracking_info: JSON
 }
+type TrackingSubscription {
+    add: ActionTracking
+    edit: ActionTracking
+    delete: ActionTracking
+}
+
+type Subscription {
+    ActionTracking: TrackingSubscription @auth
+}
