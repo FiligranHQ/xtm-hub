@@ -1,0 +1,9 @@
+type RolePortal implements Node {
+    id: ID!
+    name: String
+}
+
+type Query {
+    rolePortal(id: ID!): RolePortal @auth
+    rolesPortal: [RolePortal!]! @auth
+}

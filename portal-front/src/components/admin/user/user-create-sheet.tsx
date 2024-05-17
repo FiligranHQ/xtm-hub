@@ -35,12 +35,14 @@ import {
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { organizationFetch } from '@/components/organization/organization.graphql';
+import { rolePortalSelectQuery } from '../../../../__generated__/rolePortalSelectQuery.graphql';
+import { rolePortalFetch } from '@/components/organization/role.graphql';
 
-interface TwUserListCreateProps {
+interface UserListCreateProps {
   connectionID: string;
 }
 
-export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
+export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
   connectionID,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -48,6 +50,14 @@ export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
     organizationFetch,
     {}
   );
+
+  const queryRolePortalData = useLazyLoadQuery<rolePortalSelectQuery>(
+    rolePortalFetch,
+    {}
+  );
+
+  const rolePortalData = queryRolePortalData.rolesPortal;
+
   const organizationData = queryOrganizationData.organizations.edges;
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
@@ -57,6 +67,7 @@ export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
       last_name: '',
       password: '',
       organization_id: '',
+      role: '',
     },
   });
 
@@ -70,6 +81,7 @@ export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
     organization_id,
     first_name,
     last_name,
+    role,
   }: z.infer<typeof userFormSchema>) {
     const input: AddUserInput = {
       email,
@@ -77,7 +89,9 @@ export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
       organization_id,
       first_name,
       last_name,
+      role,
     };
+    console.log('input', input);
     commitUserMutation({
       variables: { input, connections: [connectionID] },
       onCompleted: (response) => {
@@ -175,6 +189,36 @@ export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue="USER">
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      {rolePortalData.map(({ id, name }) => (
+                        <SelectItem
+                          key={id}
+                          value={id}>
+                          {name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="organization_id"
