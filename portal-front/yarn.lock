@@ -4445,10 +4445,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-icon@npm:0.4.0":
-  version: 0.4.0
-  resolution: "filigran-icon@npm:0.4.0"
-  checksum: 56a9914b9a06d616eee7280c89fae19f8f3733b2566db816695ffb6f42669b8e4b4c8d4ce2283b4d77bd3d88f69365c503fb7cdc2229d5c5155be740e480924a
+"filigran-icon@npm:0.4.1":
+  version: 0.4.1
+  resolution: "filigran-icon@npm:0.4.1"
+  checksum: bf07156e74beda5196b5e03446351a9dd660ce6163ef4762a0cddccf2ba5d02d9333ac9c5d1fdfba0cbfbfe789653f49d4a0ef80534a5b86a28e2e5dcc382be8
   languageName: node
   linkType: hard
 
@@ -6177,7 +6177,7 @@ __metadata:
     concurrently: 8.2.2
     eslint: 8.57.0
     eslint-config-next: 14.2.3
-    filigran-icon: 0.4.0
+    filigran-icon: 0.4.1
     filigran-ui: 0.3.0
     graphql: 16.8.1
     graphql-sse: 2.5.3
