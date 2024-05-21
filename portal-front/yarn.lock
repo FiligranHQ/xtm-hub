@@ -4452,9 +4452,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.3.0":
-  version: 0.3.0
-  resolution: "filigran-ui@npm:0.3.0"
+"filigran-ui@npm:0.4.0":
+  version: 0.4.0
+  resolution: "filigran-ui@npm:0.4.0"
   dependencies:
     "@hookform/resolvers": ^3.3.4
     "@radix-ui/react-accordion": 1.1.2
@@ -4475,7 +4475,7 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 0ac2e1a684e2b8d24031c116345ffe449b5fe42c0f402c6be4685c9de78818d9920ec44196618229c9425a00fdd3fb10ed592cda1088e1b68e65eee899406d78
+  checksum: 1a50807428cd122e56630a79ddd4fc83f9bb35a9057a52e7d6bbd79421891f2aa92b22644e519f6b84e999102aca22ac46203c8c670a296bcdb33bbeb8ea73a4
   languageName: node
   linkType: hard
 
@@ -6178,7 +6178,7 @@ __metadata:
     eslint: 8.57.0
     eslint-config-next: 14.2.3
     filigran-icon: 0.4.1
-    filigran-ui: 0.3.0
+    filigran-ui: 0.4.0
     graphql: 16.8.1
     graphql-sse: 2.5.3
     lucide-react: 0.368.0
