@@ -16,6 +16,7 @@ import User, { UserId } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { AWXAction } from '../../managers/awx/awx.model';
 import { loadTrackingDataBy } from '../tracking/tracking.domain';
+import {createUserRolePortal} from "../common/user-role-portal";
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
   const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
@@ -68,6 +69,10 @@ const resolvers: Resolvers = {
       };
       // TODO check how to make it work between Kanel and Graphql
       const [addedUser] = await db<GeneratedUser>(context, 'User').insert(data).returning('*');
+
+      const extracted_role_id = extractId(input.role_id);
+      await createUserRolePortal(addedUser.id, extracted_role_id)
+
       await launchAWXWorkflow({
         type: AWXAction.CREATE_USER,
         input: {
@@ -75,6 +80,7 @@ const resolvers: Resolvers = {
           password: input.password,
         },
       });
+
       return addedUser;
     },
     editUser: async (_, { id, input }, context) => {
