@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { UserCreateSheet } from '@/components/admin/user/user-create-sheet';
 import { Button } from 'filigran-ui/servers';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from 'filigran-ui/clients';
 
 // Relay
 export const usersFragment = graphql`
@@ -51,18 +51,26 @@ export interface UserData {
 const columns: ColumnDef<UserData>[] = [
   {
     accessorKey: 'first_name',
+    id: 'first_name',
     header: 'First name',
   },
   {
     accessorKey: 'last_name',
+    id: 'last_name',
     header: 'Last name',
   },
   {
     accessorKey: 'email',
+    id: 'email',
     header: 'Email',
+    enableSorting: false,
   },
   {
     id: 'actions',
+    size: 100,
+    enableHiding: false,
+    enableSorting: false,
+    enableResizing: false,
     cell: ({ row }) => {
       return (
         <Button
@@ -107,7 +115,6 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
           data={userData}
         />
       </div>
-
       <UserCreateSheet connectionID={data?.users?.__id} />
     </>
   );

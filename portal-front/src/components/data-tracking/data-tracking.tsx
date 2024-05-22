@@ -2,7 +2,7 @@ import { graphql, useFragment } from 'react-relay';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { dataTracking_fragment$key } from '../../../__generated__/dataTracking_fragment.graphql';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from 'filigran-ui/clients';
 import { ColumnDef } from '@tanstack/react-table';
 import { FormatDate } from '@/utils/date';
 import { MessageTracking } from '@/components/data-tracking/message-tracking';
@@ -35,18 +35,22 @@ interface DataTrackingObject {
 const columns: ColumnDef<DataTrackingObject>[] = [
   {
     accessorKey: 'type',
+    id: 'type',
     header: 'Type',
   },
   {
     accessorKey: 'created_at',
+    id: 'created_at',
     header: 'Created at',
   },
   {
     accessorKey: 'ended_at',
+    id: 'ended_at',
     header: 'Ended at',
   },
   {
     accessorKey: 'status',
+    id: 'status',
     header: 'Status',
   },
   {

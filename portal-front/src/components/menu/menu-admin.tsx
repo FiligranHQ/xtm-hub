@@ -3,6 +3,9 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from 'filigran-ui/clients';
 import { MessagesSquare, Settings, Star, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -11,11 +14,6 @@ import { buttonVariants } from 'filigran-ui/servers';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import useGranted from '@/hooks/useGranted';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 
 export interface MenuAdminProps {
   open: boolean;

@@ -9,15 +9,14 @@ import {
 } from 'react-relay';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Button, Input } from 'filigran-ui/servers';
 import {
-  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  Input,
-} from 'filigran-ui/servers';
+} from 'filigran-ui/clients';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
