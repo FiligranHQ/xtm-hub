@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from 'filigran-ui/clients';
 import { FunctionComponent, ReactNode } from 'react';
 import { Button } from 'filigran-ui/servers';
 

@@ -1,4 +1,10 @@
 import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   Select,
   SelectContent,
   SelectItem,
@@ -13,17 +19,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from 'filigran-ui/clients';
-import {
-  Button,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-} from 'filigran-ui/servers';
-import { Pencil } from 'lucide-react';
+import { Button, Input } from 'filigran-ui/servers';
+import { Plus } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
@@ -97,7 +94,7 @@ export const UserCreateSheet: FunctionComponent<TwUserListCreateProps> = ({
       onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <Pencil className="mr-1 h-4 w-4" />
+          <Plus className="mr-1 h-4 w-4" />
           User
         </Button>
       </SheetTrigger>

@@ -4,17 +4,16 @@ import { serviceListMutation } from '../../../__generated__/serviceListMutation.
 import { ServiceListCreateMutation } from '@/components/service/service.graphql';
 import { useForm } from 'react-hook-form';
 import {
-  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
-} from 'filigran-ui/servers';
+} from 'filigran-ui/clients';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, Input } from 'filigran-ui/servers';
 
 interface ServiceCreateFormProps {
   connectionID: string;
