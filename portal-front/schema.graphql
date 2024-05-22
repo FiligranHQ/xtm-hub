@@ -114,7 +114,7 @@ input AddUserInput {
   organization_id: String!
   first_name: String!
   last_name: String!
-  role: String!
+  role_id: String!
 }
 
 type Mutation {
@@ -124,39 +124,10 @@ type Mutation {
   deleteUser(id: ID!): User
   login(email: String!, password: String): User
   logout: ID!
-  addOrganization(name: String!): Organization
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
   deleteService(id: ID!): Service
-}
-
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
+  addOrganization(name: String!): Organization
 }
 
 type ActionTracking implements Node {
@@ -181,6 +152,16 @@ type TrackingSubscription {
   add: ActionTracking
   edit: ActionTracking
   delete: ActionTracking
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
 }
 
 enum ServiceOrdering {
@@ -212,6 +193,25 @@ type ServiceSubscription {
 type RolePortal implements Node {
   id: ID!
   name: String
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
 }
 
 scalar JSON

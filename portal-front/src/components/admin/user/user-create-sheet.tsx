@@ -67,7 +67,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       last_name: '',
       password: '',
       organization_id: '',
-      role: '',
+      role_id: '',
     },
   });
 
@@ -81,7 +81,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     organization_id,
     first_name,
     last_name,
-    role,
+    role_id,
   }: z.infer<typeof userFormSchema>) {
     const input: AddUserInput = {
       email,
@@ -89,7 +89,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       organization_id,
       first_name,
       last_name,
-      role,
+      role_id,
     };
     console.log('input', input);
     commitUserMutation({
@@ -191,7 +191,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
             />
             <FormField
               control={form.control}
-              name="role"
+              name="role_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
