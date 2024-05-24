@@ -29,6 +29,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { organizationSelectQuery } from '../../../../../__generated__/organizationSelectQuery.graphql';
+import { rolePortalSelectQuery } from '../../../../../__generated__/rolePortalSelectQuery.graphql';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
 import {
@@ -36,6 +37,7 @@ import {
   userSlugEditMutation,
 } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { organizationFetch } from '@/components/organization/organization.graphql';
+import { rolePortalFetch } from '@/components/organization/role.graphql';
 
 interface UserEditCreateProps {
   user: userSlug_fragment$data;
@@ -50,6 +52,12 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
     {}
   );
   const organizationData = queryOrganizationData.organizations.edges;
+  const queryRolePortalData = useLazyLoadQuery<rolePortalSelectQuery>(
+    rolePortalFetch,
+    {}
+  );
+
+  const rolePortalData = queryRolePortalData.rolesPortal;
   const form = useForm<z.infer<typeof userEditFormSchema>>({
     resolver: zodResolver(userEditFormSchema),
     defaultValues: {
@@ -58,6 +66,7 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
       last_name: user.last_name ?? '',
       password: '',
       organization_id: user?.organization.id ?? '',
+      role_portal_id: user?.role_portal[0]?.__id,
     },
   });
 
@@ -68,12 +77,14 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
     email,
     first_name,
     last_name,
+    role_portal_id,
     organization_id,
   }: z.infer<typeof userEditFormSchema>) {
     const input: EditUserInput = {
       email,
       first_name,
       last_name,
+      role_portal_id,
       organization_id,
     };
     commitUserMutation({
@@ -166,6 +177,36 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="role_portal_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      {rolePortalData.map(({ id, name }) => (
+                        <SelectItem
+                          key={id}
+                          value={id}>
+                          {name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

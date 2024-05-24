@@ -17,6 +17,7 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { AWXAction } from '../../managers/awx/awx.model';
 import { loadTrackingDataBy } from '../tracking/tracking.domain';
 import {createUserRolePortal} from "../common/user-role-portal";
+import {loadRolePortalBy} from "../role-portal/role-portal.domain";
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
   const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
@@ -44,9 +45,14 @@ const resolvers: Resolvers = {
       const id = extractId(user.organization_id);
       return user.organization ? user.organization : loadOrganizationBy(context, 'Organization.id', id);
     },
+    role_portal: async (user, __, context) => {
+      const id = (user.role_portal_id);
+      return user.role_portal ? user.role_portal : await loadRolePortalBy(context, 'RolePortal.id', id)
+    },
     tracking_data: async (user, __, context) => {
       return user?.tracking_data ? user?.tracking_data : await loadTrackingDataBy(context, 'ActionTracking.contextual_id', user.id);
     },
+
   },
   Mutation: {
     // Api for testing merge event behavior

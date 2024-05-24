@@ -69,5 +69,8 @@ export const applyDbSecurity = <T>(context: PortalContext, type: DatabaseType, q
   if (type === 'Service') {
     return queryContext;
   }
+  if (type === 'RolePortal') {
+    return queryContext;
+  }
   throw new Error('Security behavior must be defined for type ' + type);
 };

@@ -16,6 +16,8 @@ type User implements Node {
     organization: Organization!
     capabilities: [Capability!]!
     tracking_data: [ActionTracking]
+    role_portal_id: ID!
+    role_portal: [RolePortal]
 }
 
 type UserEdge {
