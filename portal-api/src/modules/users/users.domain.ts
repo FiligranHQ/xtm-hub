@@ -12,7 +12,6 @@ import { addRolesToUser, deleteUserRolePortalByUserId } from '../common/user-rol
 import { addNewUser } from './user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 
-
 const completeUserCapability = (user: UserGenerated): UserGenerated => {
     if (user && user.id === ADMIN_UUID) {
         const capabilityIds = user.capabilities.map((c: Capability) => c.id);
@@ -32,11 +31,13 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
         // Inspiration from https://github.com/knex/knex/issues/882
         .select([
             'User.*',
+            'user_RolePortal.role_portal_id',
             dbRaw('(json_agg(json_build_object(\'id\', org.id, \'name\', org.name, \'__typename\', \'Organization\')) ->> 0)::json as organization'),
             dbRaw('case when count(distinct capability.id) = 0 then \'[]\' else json_agg(distinct capability.*) end as capabilities'),
         ])
-        .groupBy(['User.id'])
+        .groupBy(['User.id', 'user_RolePortal.role_portal_id'])
         .first();
+
 
     const user = await userQuery;
     // Remove capability null from query
@@ -44,6 +45,7 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
         const cleanUser = {
             ...user,
             capabilities: user.capabilities.filter((capability: CapabilityPortal) => !!capability),
+            role_portal_id: user.role_portal_id
         };
         return completeUserCapability(cleanUser) as UserWithAuthentication;
     }

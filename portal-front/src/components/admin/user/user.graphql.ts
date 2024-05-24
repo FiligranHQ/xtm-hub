@@ -25,6 +25,13 @@ export const userSlugDeletion = graphql`
   }
 `;
 
+export const rolePortalFragment = graphql`
+  fragment user_rolePortal_fragment on RolePortal {
+    id
+    name
+  }
+`;
+
 export const userSlugFragment = graphql`
   fragment userSlug_fragment on User {
     id
@@ -34,6 +41,9 @@ export const userSlugFragment = graphql`
     organization {
       id
       name
+    }
+    role_portal {
+      ...user_rolePortal_fragment
     }
   }
 `;

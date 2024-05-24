@@ -48,6 +48,10 @@ const ContextFragment = graphql`
     capabilities {
       name
     }
+    role_portal {
+      id
+      name
+    }
   }
 `;
 
