@@ -108,7 +108,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       last_name,
       roles_id,
     };
-    console.log('input', input);
+
     commitUserMutation({
       variables: { input, connections: [connectionID] },
       onCompleted: (response) => {

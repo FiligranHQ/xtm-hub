@@ -45,6 +45,11 @@ interface UserEditCreateProps {
   user: userSlug_fragment$data;
 }
 
+interface RolePortal {
+  name: string;
+  id: string;
+}
+
 export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
   user,
 }) => {
@@ -59,7 +64,15 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
     {}
   );
 
-  const rolePortalData = queryRolePortalData.rolesPortal;
+  const rolePortalData = queryRolePortalData.rolesPortal.map(
+    (rolePortal: RolePortal) => {
+      return {
+        label: rolePortal.name,
+        value: rolePortal.id,
+      };
+    }
+  );
+
   const form = useForm<z.infer<typeof userEditFormSchema>>({
     resolver: zodResolver(userEditFormSchema),
     defaultValues: {
@@ -68,7 +81,9 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
       last_name: user.last_name ?? '',
       password: '',
       organization_id: user?.organization.id ?? '',
-      role_portal_id: user?.role_portal[0]?.__id,
+      roles_portal_id: user.roles_portal_id
+        ? user.roles_portal_id.concat([])
+        : [],
     },
   });
 
@@ -79,14 +94,14 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
     email,
     first_name,
     last_name,
-    role_portal_id,
+    roles_portal_id,
     organization_id,
   }: z.infer<typeof userEditFormSchema>) {
     const input: EditUserInput = {
       email,
       first_name,
       last_name,
-      role_portal_id,
+      roles_portal_id,
       organization_id,
     };
     commitUserMutation({
@@ -186,56 +201,20 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
 
             <FormField
               control={form.control}
-              name="role_portal_id"
+              name="roles_portal_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a role" />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      {rolePortalData.map(({ id, name }) => (
-                        <SelectItem
-                          key={id}
-                          value={id}>
-                          {name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="frameworks"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Frameworks</FormLabel>
+                  <FormLabel>Roles</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
-                      options={[
-                        { label: 'coucou', value: '1' },
-                        { label: 'essai', value: '2' },
-                        { label: 'hello', value: '3' },
-                      ]}
+                      options={rolePortalData}
                       defaultValue={field.value}
                       onValueChange={field.onChange}
-                      placeholder="Select options"
+                      placeholder="Select roles"
                       variant="inverted"
                     />
                   </FormControl>
-                  <FormDescription>
-                    Choose the frameworks you are interested in.
-                  </FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}

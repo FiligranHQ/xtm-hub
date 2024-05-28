@@ -16,8 +16,7 @@ type User implements Node {
     organization: Organization!
     capabilities: [Capability!]!
     tracking_data: [ActionTracking]
-    role_portal_id: ID!
-    role_portal: [RolePortal]
+    roles_portal_id: [String!]!
 }
 
 type UserEdge {
@@ -52,7 +51,7 @@ input EditUserInput {
     first_name: String
     last_name: String
     organization_id: String!
-    role_portal_id: String!
+    roles_portal_id: [String]!
 }
 
 input AddUserInput {

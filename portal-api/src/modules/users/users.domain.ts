@@ -11,6 +11,7 @@ import { UserInfo } from '../../model/user';
 import { addRolesToUser, deleteUserRolePortalByUserId } from '../common/user-role-portal';
 import { addNewUser } from './user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 
 const completeUserCapability = (user: UserGenerated): UserGenerated => {
     if (user && user.id === ADMIN_UUID) {
@@ -31,21 +32,23 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
         // Inspiration from https://github.com/knex/knex/issues/882
         .select([
             'User.*',
-            'user_RolePortal.role_portal_id',
             dbRaw('(json_agg(json_build_object(\'id\', org.id, \'name\', org.name, \'__typename\', \'Organization\')) ->> 0)::json as organization'),
             dbRaw('case when count(distinct capability.id) = 0 then \'[]\' else json_agg(distinct capability.*) end as capabilities'),
+            dbRaw('case when count(distinct "user_RolePortal".role_portal_id) = 0 then \'[]\' else json_agg(distinct "user_RolePortal".role_portal_id) end as roles_id'),
         ])
-        .groupBy(['User.id', 'user_RolePortal.role_portal_id'])
+        .groupBy(['User.id'])
         .first();
 
 
     const user = await userQuery;
     // Remove capability null from query
     if (user) {
+        // Transform roles_id into encryptedId before inserting it
+        user.roles_id = user.roles_id.map((role) => toGlobalId("RolePortal", role))
         const cleanUser = {
             ...user,
             capabilities: user.capabilities.filter((capability: CapabilityPortal) => !!capability),
-            role_portal_id: user.role_portal_id
+            roles_portal_id: user.roles_id.filter((role_id: string) => !!role_id)
         };
         return completeUserCapability(cleanUser) as UserWithAuthentication;
     }
