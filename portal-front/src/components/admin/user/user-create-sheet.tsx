@@ -19,8 +19,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
-import { Plus } from 'lucide-react';
+import { MultiSelectFormField } from 'filigran-ui/servers';
+
+import {
+  Button,
+  Input,
+} from 'filigran-ui';
+import { Pencil } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
@@ -42,6 +47,11 @@ interface UserListCreateProps {
   connectionID: string;
 }
 
+interface RolePortal {
+  name: string;
+  id: string;
+}
+
 export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
   connectionID,
 }) => {
@@ -56,7 +66,14 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     {}
   );
 
-  const rolePortalData = queryRolePortalData.rolesPortal;
+  const rolePortalData = queryRolePortalData.rolesPortal.map(
+    (rolePortal: RolePortal) => {
+      return {
+        label: rolePortal.name,
+        value: rolePortal.id,
+      };
+    }
+  );
 
   const organizationData = queryOrganizationData.organizations.edges;
   const form = useForm<z.infer<typeof userFormSchema>>({
@@ -67,7 +84,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       last_name: '',
       password: '',
       organization_id: '',
-      role_id: '',
+      roles_id: [],
     },
   });
 
@@ -81,7 +98,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     organization_id,
     first_name,
     last_name,
-    role_id,
+    roles_id,
   }: z.infer<typeof userFormSchema>) {
     const input: AddUserInput = {
       email,
@@ -89,7 +106,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       organization_id,
       first_name,
       last_name,
-      role_id,
+      roles_id,
     };
     console.log('input', input);
     commitUserMutation({
@@ -189,31 +206,23 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
-              name="role_id"
+              name="roles_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue="USER">
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a role" />
-                      </SelectTrigger>
-                    </FormControl>
+                  <FormLabel>Roles</FormLabel>
+                  <FormControl>
+                    <MultiSelectFormField
+                      options={rolePortalData}
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Select roles"
+                      variant="inverted"
+                    />
+                  </FormControl>
 
-                    <SelectContent>
-                      {rolePortalData.map(({ id, name }) => (
-                        <SelectItem
-                          key={id}
-                          value={id}>
-                          {name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

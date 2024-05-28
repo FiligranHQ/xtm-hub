@@ -35,7 +35,7 @@ export type AddUserInput = {
   last_name: Scalars['String']['input'];
   organization_id: Scalars['String']['input'];
   password: Scalars['String']['input'];
-  role_id: Scalars['String']['input'];
+  roles_id: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
 export type Capability = Node & {
@@ -49,6 +49,7 @@ export type EditUserInput = {
   first_name?: InputMaybe<Scalars['String']['input']>;
   last_name?: InputMaybe<Scalars['String']['input']>;
   organization_id: Scalars['String']['input'];
+  role_portal_id: Scalars['String']['input'];
 };
 
 export type MergeEvent = Node & {
