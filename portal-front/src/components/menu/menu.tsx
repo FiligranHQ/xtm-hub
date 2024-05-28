@@ -70,7 +70,7 @@ const Menu = () => {
             />
           </li>
           <MenuUser open={open} />
-          <Separator className="my-2" />
+
           <MenuAdmin open={open} />
         </ul>
       </nav>
