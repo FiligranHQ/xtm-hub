@@ -52,6 +52,7 @@ input EditUserInput {
     first_name: String
     last_name: String
     organization_id: String!
+    role_portal_id: String!
 }
 
 input AddUserInput {

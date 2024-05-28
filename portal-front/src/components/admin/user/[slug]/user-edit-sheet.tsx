@@ -20,6 +20,8 @@ import {
   SheetTrigger,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
+import { MultiSelectFormField } from 'filigran-ui/servers';
+
 import { Pencil } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
@@ -207,6 +209,33 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="frameworks"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Frameworks</FormLabel>
+                  <FormControl>
+                    <MultiSelectFormField
+                      options={[
+                        { label: 'coucou', value: '1' },
+                        { label: 'essai', value: '2' },
+                        { label: 'hello', value: '3' },
+                      ]}
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Select options"
+                      variant="inverted"
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Choose the frameworks you are interested in.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
