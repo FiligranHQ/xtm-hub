@@ -11,6 +11,7 @@ import { MessagesSquare, Settings, Star, Users } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from 'filigran-ui/servers';
+import { Separator } from 'filigran-ui/clients';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import useGranted from '@/hooks/useGranted';
@@ -23,7 +24,12 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   if (!useGranted('ADMIN')) {
     return null;
   }
-  return <li>{open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}</li>;
+  return (
+    <li>
+      <Separator className="my-2" />{' '}
+      {open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}
+    </li>
+  );
 };
 
 const ClosedMenuAdmin = () => {
