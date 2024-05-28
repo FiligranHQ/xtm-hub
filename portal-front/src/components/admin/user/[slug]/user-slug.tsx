@@ -1,30 +1,14 @@
 import * as React from 'react';
-import {
-  PreloadedQuery,
-  useFragment,
-  useMutation,
-  usePreloadedQuery,
-  useSubscription,
-} from 'react-relay';
+import { PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription } from 'react-relay';
 import { pageLoaderUserSlugQuery } from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
 import { UserSlugQuery } from '../../../../../app/(application)/(admin)/admin/user/[slug]/page-loader';
-import {
-  userSlug_fragment$data,
-  userSlug_fragment$key,
-} from '../../../../../__generated__/userSlug_fragment.graphql';
+import { userSlug_fragment$data, userSlug_fragment$key } from '../../../../../__generated__/userSlug_fragment.graphql';
 import { useRouter } from 'next/navigation';
 import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
-import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 import {
-  userSlugDeletion,
-  userSlugFragment,
-  userSlugSubscription,
-} from '@/components/admin/user/user.graphql';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-} from '@/components/ui/breadcrumb';
+  userSlugSubscription as generatedUserSlugSubscription,
+} from '../../../../../__generated__/userSlugSubscription.graphql';
+import { userSlugDeletion, userSlugFragment, userSlugSubscription } from '@/components/admin/user/user.graphql';
 import { Button } from 'filigran-ui/servers';
 import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 import { DataTracking } from '@/components/data-tracking/data-tracking';
@@ -32,6 +16,7 @@ import { dataTracking_fragment$key } from '../../../../../__generated__/dataTrac
 import { Trash2 } from 'lucide-react';
 import { trackingSubscription } from '@/components/data-tracking/tracking.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 
 // Component interface
 interface UserSlugProps {
@@ -77,19 +62,22 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
     // If user not found, redirect to admin list
     router.replace('/admin/user');
   } else {
+    const breadcrumbValue = [
+      {
+        href: '/',
+        label: 'Home',
+      },
+      {
+        href: '/admin/user',
+        label: 'Users',
+      },
+      {
+        label: user.email,
+      },
+    ];
     return (
       <>
-        <Breadcrumb className="pb-2">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/admin/user">Users</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink>{user.email}</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
+        <BreadcrumbNav value={breadcrumbValue} />
 
         <div className="m-2 flex justify-between">
           <h2 className="text-xl">

@@ -8,11 +8,11 @@ import useMountingLoader from '@/hooks/useMountingLoader';
 
 // Configuration or Preloader Query
 export const MeQuery = graphql`
-    query pageLoaderMeQuery {
-        me {
-            ...context_fragment
-        }
+  query pageLoaderMeQuery {
+    me {
+      ...context_fragment
     }
+  }
 `;
 
 // Component interface
@@ -21,7 +21,9 @@ interface LayoutPreloaderProps {
 }
 
 // Component
-const PageLoader: React.FunctionComponent<LayoutPreloaderProps> = ({ children }) => {
+const PageLoader: React.FunctionComponent<LayoutPreloaderProps> = ({
+  children,
+}) => {
   const [queryRef, loadQuery] = useQueryLoader<pageLoaderMeQuery>(MeQuery);
   useMountingLoader(loadQuery, {});
   if (queryRef) {

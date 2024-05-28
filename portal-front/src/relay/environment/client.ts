@@ -1,5 +1,9 @@
 import { networkFetch } from './fetchFn';
-import { buildQueryId, hasHydrationResponses, RELAY_WINDOW_KEY } from './helpers';
+import {
+  buildQueryId,
+  hasHydrationResponses,
+  RELAY_WINDOW_KEY,
+} from './helpers';
 import {
   Environment,
   FetchFunction,

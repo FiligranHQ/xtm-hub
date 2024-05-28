@@ -3,12 +3,12 @@ import { pageLoaderUserQuery } from '../../../../__generated__/pageLoaderUserQue
 import * as React from 'react';
 import { UserListQuery } from '../../../../app/(application)/(admin)/admin/user/page-loader';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb';
+import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
 import { UserCreateSheet } from '@/components/admin/user/user-create-sheet';
-import { Button } from 'filigran-ui/servers';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 
 // Relay
 export const usersFragment = graphql`
@@ -98,16 +98,18 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     ...node,
   })) as UserData[];
 
+  const breadcrumbValue = [
+    {
+      href: '/',
+      label: 'Home',
+    },
+    {
+      label: 'Users',
+    },
+  ];
   return (
     <>
-      <Breadcrumb className="pb-2">
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbItem isCurrentPage>
-          <BreadcrumbLink href="/admin/user">Users</BreadcrumbLink>
-        </BreadcrumbItem>
-      </Breadcrumb>
+      <BreadcrumbNav value={breadcrumbValue} />
 
       <div className="container mx-auto py-10">
         <DataTable

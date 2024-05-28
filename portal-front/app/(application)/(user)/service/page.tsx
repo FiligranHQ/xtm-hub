@@ -3,10 +3,8 @@ import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
 
-
 // Component interface
-interface PageProps {
-}
+interface PageProps {}
 
 // Component
 const Page: React.FunctionComponent<PageProps> = async () => {

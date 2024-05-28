@@ -8,12 +8,16 @@
     font-family: var(--font-ibm-plex-sans), system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-geologica), system-ui, sans-serif;
   }
 
   body {
     @apply bg-background text-foreground;
   }
-
 }
