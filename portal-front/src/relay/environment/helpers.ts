@@ -3,7 +3,7 @@ import {
   Variables,
   Observable,
   GraphQLResponse,
-} from "relay-runtime";
+} from 'relay-runtime';
 
 export function buildQueryId(request: RequestParameters, variables: Variables) {
   const queryId = request.id ?? request.name;

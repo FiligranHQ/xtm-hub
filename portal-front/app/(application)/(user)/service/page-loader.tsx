@@ -10,19 +10,18 @@ import Loader from '@/components/loader';
 
 // Query Configuration
 export const ServiceListQuery = graphql`
-    query pageLoaderServiceQuery(
-        $count: Int!
-        $cursor: ID
-        $orderBy: ServiceOrdering!
-        $orderMode: OrderingMode!
-    ) {
-        ...serviceList_services
-    }
+  query pageLoaderServiceQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: ServiceOrdering!
+    $orderMode: OrderingMode!
+  ) {
+    ...serviceList_services
+  }
 `;
 
 // Component interface
-interface ServiceListPreloaderProps {
-}
+interface ServiceListPreloaderProps {}
 
 // Configuration or Preloader Query
 
@@ -32,7 +31,8 @@ const PageLoader: React.FunctionComponent<ServiceListPreloaderProps> = () => {
   const count = Number(searchParams.get('count') ?? 10);
   const orderMode = searchParams.get('orderMode') ?? 'asc';
   const orderBy = searchParams.get('orderBy') ?? 'name';
-  const [queryRef, loadQuery] = useQueryLoader<pageLoaderServiceQuery>(ServiceListQuery);
+  const [queryRef, loadQuery] =
+    useQueryLoader<pageLoaderServiceQuery>(ServiceListQuery);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
   return (
     <>

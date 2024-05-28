@@ -10,19 +10,18 @@ import Loader from '@/components/loader';
 
 // Configuration or Preloader Query
 export const UserListQuery = graphql`
-    query pageLoaderUserQuery(
-        $count: Int!
-        $cursor: ID
-        $orderBy: UserOrdering!
-        $orderMode: OrderingMode!
-    ) {
-        ...userList_users
-    }
+  query pageLoaderUserQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: UserOrdering!
+    $orderMode: OrderingMode!
+  ) {
+    ...userList_users
+  }
 `;
 
 // Component interface
-interface PreloaderProps {
-}
+interface PreloaderProps {}
 
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
@@ -30,7 +29,8 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
   const count = Number(searchParams.get('count') ?? 10);
   const orderMode = searchParams.get('orderMode') ?? 'asc';
   const orderBy = searchParams.get('orderBy') ?? 'email';
-  const [queryRef, loadQuery] = useQueryLoader<pageLoaderUserQuery>(UserListQuery);
+  const [queryRef, loadQuery] =
+    useQueryLoader<pageLoaderUserQuery>(UserListQuery);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
   return queryRef ? <UserList queryRef={queryRef} /> : <Loader />;
 };
