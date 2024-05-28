@@ -76,8 +76,13 @@ const resolvers: Resolvers = {
       // TODO check how to make it work between Kanel and Graphql
       const [addedUser] = await db<GeneratedUser>(context, 'User').insert(data).returning('*');
 
-      const extracted_role_id = extractId(input.role_id);
-      await createUserRolePortal(addedUser.id, extracted_role_id)
+      // const extracted_role_id = extractId(input.roles_id);
+      console.log("-----input.roles_id", input.roles_id)
+      input.roles_id.map(async (role_id) => {
+        const extracted_role_id = extractId(role_id);
+        await createUserRolePortal(addedUser.id, extracted_role_id)
+      })
+      // await createUserRolePortal(addedUser.id, extracted_role_id)
 
       await launchAWXWorkflow({
         type: AWXAction.CREATE_USER,

@@ -61,7 +61,7 @@ input AddUserInput {
     organization_id: String!
     first_name: String!
     last_name: String!
-    role_id: String!
+    roles_id: [String]!
 }
 
 type Mutation {

@@ -17,7 +17,9 @@ export const userFormSchema = z.object({
   organization_id: z.string().min(2, {
     message: 'Choose an organisation',
   }),
-  role_id: z.string().min(1, { message: 'Choose a role for the user' }),
+  roles_id: z
+    .array(z.string())
+    .min(1, { message: 'Choose a role for the user' }),
 });
 
 export const userEditFormSchema = z.object({
@@ -35,5 +37,7 @@ export const userEditFormSchema = z.object({
   organization_id: z.string().min(2, {
     message: 'Choose an organisation',
   }),
-  role_portal_id: z.string().min(1, { message: 'Choose a role for the user' }),
+  roles_portal_id: z
+    .array(z.string())
+    .min(1, { message: 'Choose a role for the user' }),
 });
