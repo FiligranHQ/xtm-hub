@@ -21,11 +21,8 @@ import {
 } from 'filigran-ui/clients';
 import { MultiSelectFormField } from 'filigran-ui/servers';
 
-import {
-  Button,
-  Input,
-} from 'filigran-ui';
-import { Pencil } from 'lucide-react';
+import { Button, Input } from 'filigran-ui';
+import { Plus } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
