@@ -32,7 +32,6 @@ type MergeEvent implements Node {
 
 type Query {
   node(id: ID!): Node
-  settings: Settings!
   me: User
   user(id: ID!): User
   users(
@@ -59,6 +58,80 @@ type Query {
   rolesPortal: [RolePortal!]!
 }
 
+enum UserOrdering {
+  email
+}
+
+type Capability implements Node {
+  id: ID!
+  name: Restriction!
+}
+
+type User implements Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  organization_id: ID!
+  organization: Organization!
+  capabilities: [Capability!]!
+  tracking_data: [ActionTracking]
+  roles_portal_id: [String!]!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserSubscription {
+  add: User
+  edit: User
+  delete: User
+  merge: MergeEvent
+}
+
+type Subscription {
+  User: UserSubscription
+  ActionTracking: TrackingSubscription
+  Service: ServiceSubscription
+}
+
+input EditUserInput {
+  email: String!
+  first_name: String
+  last_name: String
+  organization_id: String!
+  roles_portal_id: [String]!
+}
+
+input AddUserInput {
+  email: String!
+  password: String!
+  organization_id: String!
+  first_name: String!
+  last_name: String!
+  roles_id: [String]!
+}
+
+type Mutation {
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
+  editUser(id: ID!, input: EditUserInput!): User
+  deleteUser(id: ID!): User
+  login(email: String!, password: String): User
+  logout: ID!
+  addOrganization(name: String!): Organization
+  editService(id: ID!, name: String!): Service
+  addService(name: String!): Service
+  deleteService(id: ID!): Service
+}
+
 type ActionTracking implements Node {
   id: ID!
   contextual_id: String!
@@ -83,12 +156,6 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-type Subscription {
-  ActionTracking: TrackingSubscription
-  User: UserSubscription
-  Service: ServiceSubscription
-}
-
 type PlatformProvider {
   name: String!
   type: String!
@@ -99,73 +166,23 @@ type Settings {
   platform_providers: [PlatformProvider!]!
 }
 
-enum UserOrdering {
-  email
+enum OrganizationOrdering {
+  name
 }
 
-type Capability implements Node {
+type Organization implements Node {
   id: ID!
-  name: Restriction!
+  name: String
 }
 
-type User implements Node {
-  id: ID!
-  email: String!
-  first_name: String
-  last_name: String
-  organization_id: ID!
-  organization: Organization!
-  capabilities: [Capability!]!
-  tracking_data: [ActionTracking]
-  role_portal_id: ID!
-  role_portal: [RolePortal]
-}
-
-type UserEdge {
+type OrganizationEdge {
   cursor: String!
-  node: User
+  node: Organization!
 }
 
-type UserConnection {
-  edges: [UserEdge!]!
+type OrganizationConnection {
+  edges: [OrganizationEdge!]!
   pageInfo: PageInfo!
-}
-
-type UserSubscription {
-  add: User
-  edit: User
-  delete: User
-  merge: MergeEvent
-}
-
-input EditUserInput {
-  email: String!
-  first_name: String
-  last_name: String
-  organization_id: String!
-  role_portal_id: String!
-}
-
-input AddUserInput {
-  email: String!
-  password: String!
-  organization_id: String!
-  first_name: String!
-  last_name: String!
-  roles_id: [String]!
-}
-
-type Mutation {
-  mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
-  editUser(id: ID!, input: EditUserInput!): User
-  deleteUser(id: ID!): User
-  login(email: String!, password: String): User
-  logout: ID!
-  editService(id: ID!, name: String!): Service
-  addService(name: String!): Service
-  deleteService(id: ID!): Service
-  addOrganization(name: String!): Organization
 }
 
 enum ServiceOrdering {
@@ -192,25 +209,6 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
-}
-
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
 }
 
 type RolePortal implements Node {

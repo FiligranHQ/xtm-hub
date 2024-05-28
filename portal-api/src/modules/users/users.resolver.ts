@@ -16,8 +16,8 @@ import User, { UserId } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { AWXAction } from '../../managers/awx/awx.model';
 import { loadTrackingDataBy } from '../tracking/tracking.domain';
-import {createUserRolePortal} from "../common/user-role-portal";
-import {loadRolePortalBy} from "../role-portal/role-portal.domain";
+import { createUserRolePortal, deleteUserRolePortalByUserId } from "../common/user-role-portal";
+
 
 const validPassword = (user: UserWithAuthentication, password: string): boolean => {
   const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
@@ -44,10 +44,6 @@ const resolvers: Resolvers = {
     organization: (user, __, context) => {
       const id = extractId(user.organization_id);
       return user.organization ? user.organization : loadOrganizationBy(context, 'Organization.id', id);
-    },
-    role_portal: async (user, __, context) => {
-      const id = (user.role_portal_id);
-      return user.role_portal ? user.role_portal : await loadRolePortalBy(context, 'RolePortal.id', id)
     },
     tracking_data: async (user, __, context) => {
       return user?.tracking_data ? user?.tracking_data : await loadTrackingDataBy(context, 'ActionTracking.contextual_id', user.id);
@@ -76,13 +72,10 @@ const resolvers: Resolvers = {
       // TODO check how to make it work between Kanel and Graphql
       const [addedUser] = await db<GeneratedUser>(context, 'User').insert(data).returning('*');
 
-      // const extracted_role_id = extractId(input.roles_id);
-      console.log("-----input.roles_id", input.roles_id)
       input.roles_id.map(async (role_id) => {
         const extracted_role_id = extractId(role_id);
         await createUserRolePortal(addedUser.id, extracted_role_id)
       })
-      // await createUserRolePortal(addedUser.id, extracted_role_id)
 
       await launchAWXWorkflow({
         type: AWXAction.CREATE_USER,
@@ -97,9 +90,18 @@ const resolvers: Resolvers = {
     editUser: async (_, { id, input }, context) => {
       const { id: databaseId } = fromGlobalId(id);
       const organization_id = extractId(input.organization_id);
-      const update = { ...input, organization_id };
+      const {roles_portal_id, ... inputWithoutRoles} = input;
+      const extracted_roles_portal_id = roles_portal_id.map(role_portal_id => extractId(role_portal_id))
+
+      const update = { ...inputWithoutRoles, organization_id };
       const [updatedUser] = await db<GeneratedUser>(context, 'User').where({ id: databaseId }).update(update).returning('*');
+      await deleteUserRolePortalByUserId(updatedUser.id)
+
+      extracted_roles_portal_id.map(async (role_id) => {
+        await createUserRolePortal(updatedUser.id, role_id);
+      })
       updatedUser.organization = await loadOrganizationBy(context, 'Organization.id', organization_id);
+      updatedUser.roles_portal_id = extracted_roles_portal_id;
       await dispatch('User', 'edit', updatedUser);
       return updatedUser;
     },
