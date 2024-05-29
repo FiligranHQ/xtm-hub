@@ -6,7 +6,12 @@ export interface User {
   capabilities: { id: string, name: Restriction }[];
   organization_id: string;
   organization: { id: string, name?: string };
-  roles_portal_id: string[];
+  roles_portal_id: RolePortal[];
+}
+
+export interface RolePortal {
+  id: string;
+  name?: string;
 }
 
 export interface UserInfo {

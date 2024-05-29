@@ -306,7 +306,7 @@ export type User = Node & {
   last_name?: Maybe<Scalars['String']['output']>;
   organization: Organization;
   organization_id: Scalars['ID']['output'];
-  roles_portal_id: Array<Scalars['String']['output']>;
+  roles_portal_id: Array<RolePortal>;
   tracking_data?: Maybe<Array<Maybe<ActionTracking>>>;
 };
 
@@ -654,7 +654,7 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  roles_portal_id?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  roles_portal_id?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
   tracking_data?: Resolver<Maybe<Array<Maybe<ResolversTypes['ActionTracking']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

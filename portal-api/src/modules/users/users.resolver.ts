@@ -104,16 +104,22 @@ const resolvers: Resolvers = {
       const organization_id = extractId(input.organization_id);
       const {roles_portal_id, ... inputWithoutRoles} = input;
       const extracted_roles_portal_id = roles_portal_id.map(role_portal_id => extractId(role_portal_id))
-
       const update = { ...inputWithoutRoles, organization_id };
       const [updatedUser] = await db<GeneratedUser>(context, 'User').where({ id: databaseId }).update(update).returning('*');
       await deleteUserRolePortalByUserId(updatedUser.id)
-
-      extracted_roles_portal_id.map(async (role_id) => {
+       extracted_roles_portal_id.map(async (role_id) => {
         await createUserRolePortal(updatedUser.id, role_id);
+        return {
+          id: role_id
+        }
       })
+        const roles_id = extracted_roles_portal_id.map((role_id) => {
+          return {
+            id: role_id
+          }
+        })
       updatedUser.organization = await loadOrganizationBy(context, 'Organization.id', organization_id);
-      updatedUser.roles_portal_id = extracted_roles_portal_id;
+      updatedUser.roles_portal_id = roles_id;
       await dispatch('User', 'edit', updatedUser);
       return updatedUser;}
       catch (error) {

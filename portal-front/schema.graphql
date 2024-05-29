@@ -33,12 +33,12 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  settings: Settings!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  settings: Settings!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
 }
 
 enum UserOrdering {
@@ -59,7 +59,7 @@ type User implements Node {
   organization: Organization!
   capabilities: [Capability!]!
   tracking_data: [ActionTracking]
-  roles_portal_id: [String!]!
+  roles_portal_id: [RolePortal!]!
 }
 
 type UserEdge {
@@ -139,16 +139,6 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -166,6 +156,21 @@ type OrganizationEdge {
 type OrganizationConnection {
   edges: [OrganizationEdge!]!
   pageInfo: PageInfo!
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
 }
 
 enum ServiceOrdering {
@@ -192,11 +197,6 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String
 }
 
 scalar JSON
