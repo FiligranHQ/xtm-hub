@@ -33,12 +33,12 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  settings: Settings!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  settings: Settings!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
 }
 
 enum UserOrdering {
@@ -109,10 +109,10 @@ type Mutation {
   deleteUser(id: ID!): User
   login(email: String!, password: String): User
   logout: ID!
-  addOrganization(name: String!): Organization
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
   deleteService(id: ID!): Service
+  addOrganization(name: String!): Organization
 }
 
 type ActionTracking implements Node {
@@ -139,40 +139,6 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String
-}
-
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
 enum ServiceOrdering {
   name
 }
@@ -197,6 +163,40 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String
 }
 
 scalar JSON
