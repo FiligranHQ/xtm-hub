@@ -19,8 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
-import { MultiSelectFormField } from 'filigran-ui/servers';
+import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 
 import { Pencil } from 'lucide-react';
 import * as React from 'react';
@@ -31,7 +30,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { organizationSelectQuery } from '../../../../../__generated__/organizationSelectQuery.graphql';
-import { rolePortalSelectQuery } from '../../../../../__generated__/rolePortalSelectQuery.graphql';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
 import {
@@ -40,14 +38,10 @@ import {
 } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { organizationFetch } from '@/components/organization/organization.graphql';
 import { rolePortalFetch } from '@/components/organization/role.graphql';
+import { rolePortalQuery } from '../../../../../__generated__/rolePortalQuery.graphql';
 
 interface UserEditCreateProps {
   user: userSlug_fragment$data;
-}
-
-interface RolePortal {
-  name: string;
-  id: string;
 }
 
 export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
@@ -59,18 +53,16 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
     {}
   );
   const organizationData = queryOrganizationData.organizations.edges;
-  const queryRolePortalData = useLazyLoadQuery<rolePortalSelectQuery>(
+  const queryRolePortalData = useLazyLoadQuery<rolePortalQuery>(
     rolePortalFetch,
     {}
   );
 
   const rolePortalData = queryRolePortalData.rolesPortal.map(
-    (rolePortal: RolePortal) => {
-      return {
-        label: rolePortal.name,
-        value: rolePortal.id,
-      };
-    }
+    ({ name, id }) => ({
+      label: name ?? '',
+      value: id,
+    })
   );
 
   const currentRolesPortal = user.roles_portal_id.map(

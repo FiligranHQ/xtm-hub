@@ -37,16 +37,11 @@ import {
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { organizationFetch } from '@/components/organization/organization.graphql';
-import { rolePortalSelectQuery } from '../../../../__generated__/rolePortalSelectQuery.graphql';
 import { rolePortalFetch } from '@/components/organization/role.graphql';
+import { rolePortalQuery } from '../../../../__generated__/rolePortalQuery.graphql';
 
 interface UserListCreateProps {
   connectionID: string;
-}
-
-interface RolePortal {
-  name: string;
-  id: string;
 }
 
 export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
@@ -58,20 +53,17 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     {}
   );
 
-  const queryRolePortalData = useLazyLoadQuery<rolePortalSelectQuery>(
+  const queryRolePortalData = useLazyLoadQuery<rolePortalQuery>(
     rolePortalFetch,
     {}
   );
 
   const rolePortalData = queryRolePortalData.rolesPortal.map(
-    (rolePortal: RolePortal) => {
-      return {
-        label: rolePortal.name,
-        value: rolePortal.id,
-      };
-    }
+    ({ name, id }) => ({
+      label: name ?? '',
+      value: id,
+    })
   );
-
   const organizationData = queryOrganizationData.organizations.edges;
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
