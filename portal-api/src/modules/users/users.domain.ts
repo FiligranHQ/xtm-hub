@@ -11,7 +11,6 @@ import { UserInfo } from '../../model/user';
 import { addRolesToUser, deleteUserRolePortalByUserId } from '../common/user-role-portal';
 import { addNewUser } from './user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
-import { toGlobalId } from 'graphql-relay/node/node.js';
 
 const completeUserCapability = (user: UserGenerated): UserGenerated => {
     if (user && user.id === ADMIN_UUID) {
@@ -34,7 +33,7 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
             'User.*',
             dbRaw('(json_agg(json_build_object(\'id\', org.id, \'name\', org.name, \'__typename\', \'Organization\')) ->> 0)::json as organization'),
             dbRaw('case when count(distinct capability.id) = 0 then \'[]\' else json_agg(distinct capability.*) end as capabilities'),
-            dbRaw('case when count(distinct "user_RolePortal".role_portal_id) = 0 then \'[]\' else json_agg(distinct "user_RolePortal".role_portal_id) end as roles_id'),
+            dbRaw('case when count(distinct "user_RolePortal".role_portal_id) = 0 then \'[]\' else json_agg(json_build_object( \'id\', "user_RolePortal".role_portal_id, \'__typename\', \'RolePortal\')) end as roles_portal_id'),
         ])
         .groupBy(['User.id'])
         .first();
@@ -43,12 +42,10 @@ export const loadUserBy = async (field: string, value: string): Promise<UserWith
     const user = await userQuery;
     // Remove capability null from query
     if (user) {
-        // Transform roles_id into encryptedId before inserting it
-        user.roles_id = user.roles_id.map((role) => toGlobalId("RolePortal", role))
         const cleanUser = {
             ...user,
             capabilities: user.capabilities.filter((capability: CapabilityPortal) => !!capability),
-            roles_portal_id: user.roles_id.filter((role_id: string) => !!role_id)
+            roles_portal_id: user.roles_portal_id.filter((role_id: string) => !!role_id)
         };
         return completeUserCapability(cleanUser) as UserWithAuthentication;
     }

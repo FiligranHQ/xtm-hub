@@ -73,6 +73,10 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
     }
   );
 
+  const currentRolesPortal = user.roles_portal_id.map(
+    (rolePortalData) => rolePortalData.id
+  );
+
   const form = useForm<z.infer<typeof userEditFormSchema>>({
     resolver: zodResolver(userEditFormSchema),
     defaultValues: {
@@ -81,9 +85,7 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
       last_name: user.last_name ?? '',
       password: '',
       organization_id: user?.organization.id ?? '',
-      roles_portal_id: user.roles_portal_id
-        ? user.roles_portal_id.concat([])
-        : [],
+      roles_portal_id: currentRolesPortal ? currentRolesPortal : [],
     },
   });
 
