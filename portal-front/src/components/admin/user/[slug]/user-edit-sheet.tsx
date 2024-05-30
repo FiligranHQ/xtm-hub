@@ -20,8 +20,6 @@ import {
   SheetTrigger,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
-
-import { Pencil } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
@@ -39,6 +37,7 @@ import {
 import { organizationFetch } from '@/components/organization/organization.graphql';
 import { rolePortalFetch } from '@/components/organization/role.graphql';
 import { rolePortalQuery } from '../../../../../__generated__/rolePortalQuery.graphql';
+import { EditIcon } from 'filigran-icon';
 
 interface UserEditCreateProps {
   user: userSlug_fragment$data;
@@ -110,9 +109,10 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
       open={open}
       onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <Pencil className="mr-1 h-4 w-4" />
-          User
+        <Button
+          size="icon"
+          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
+          <EditIcon className="h-4 w-4" />
         </Button>
       </SheetTrigger>
       <SheetContent side={'right'}>

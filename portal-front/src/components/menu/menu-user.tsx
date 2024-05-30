@@ -1,8 +1,8 @@
-import { ListChecks, Star } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { LinkMenu } from '@/components/menu/menu';
 import useGranted from '@/hooks/useGranted';
+import { ChecklistRtlIcon, GradeIcon } from 'filigran-icon';
 
 export interface MenuUserProps {
   open: boolean;
@@ -18,7 +18,7 @@ const MenuUser: FunctionComponent<MenuUserProps> = ({ open }) => {
         <LinkMenu
           open={open}
           href={'/service'}
-          icon={Star}
+          icon={GradeIcon}
           text={'Services'}
         />
       </li>
@@ -26,7 +26,7 @@ const MenuUser: FunctionComponent<MenuUserProps> = ({ open }) => {
         <LinkMenu
           open={open}
           href={'/about'}
-          icon={ListChecks}
+          icon={ChecklistRtlIcon}
           text={'About'}
         />
       </li>

@@ -7,7 +7,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from 'filigran-ui/clients';
-import { MessagesSquare, Settings, Star, Users } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from 'filigran-ui/servers';
@@ -15,6 +14,7 @@ import { Separator } from 'filigran-ui/clients';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import useGranted from '@/hooks/useGranted';
+import { ForumIcon, GradeIcon, GroupIcon, SettingsIcon } from 'filigran-icon';
 
 export interface MenuAdminProps {
   open: boolean;
@@ -39,7 +39,7 @@ const ClosedMenuAdmin = () => {
         className={buttonVariants({
           variant: 'ghost',
         })}>
-        <Settings className="h-4 w-4" />
+        <SettingsIcon className="h-4 w-4" />
       </PopoverTrigger>
       <PopoverContent
         side="right"
@@ -59,7 +59,7 @@ const OpenedMenuAdmin = () => {
         className="border-none"
         value="item-1">
         <AccordionTrigger className="justify-normal px-4 py-2">
-          <Settings className="h-4 w-4" />
+          <SettingsIcon className="h-4 w-4" />
           <span className="flex-1 px-2 text-left">Settings</span>
         </AccordionTrigger>
         <AccordionContent>
@@ -80,7 +80,7 @@ const AdminLinks = () => {
             className: 'w-full justify-start border-none text-base',
           })
         )}>
-        <Users className="mr-2 h-4 w-4" /> User
+        <GroupIcon className="mr-2 h-4 w-4" /> User
       </Link>
       <Link
         href={'/admin/service'}
@@ -90,7 +90,7 @@ const AdminLinks = () => {
             className: 'w-full justify-start border-none text-base',
           })
         )}>
-        <Star className="mr-2 h-4 w-4" /> Services
+        <GradeIcon className="mr-2 h-4 w-4" /> Services
       </Link>
       <Link
         href={'/admin/community'}
@@ -100,7 +100,7 @@ const AdminLinks = () => {
             className: 'w-full justify-start border-none text-base',
           })
         )}>
-        <MessagesSquare className="mr-2 h-4 w-4" /> Communities
+        <ForumIcon className="mr-2 h-4 w-4" /> Communities
       </Link>
     </>
   );

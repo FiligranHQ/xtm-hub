@@ -4,7 +4,7 @@ import { graphql, useMutation } from 'react-relay';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from 'filigran-ui/servers';
-import { LogOut } from 'lucide-react';
+import { LogoutIcon } from 'filigran-icon';
 import { cn } from '@/lib/utils';
 
 // Relay
@@ -36,7 +36,7 @@ const Logout: React.FunctionComponent<LogoutProps> = ({ open }) => {
       onClick={logout}
       variant="ghost"
       className="w-full justify-start border-none">
-      <LogOut className="mr-2 h-4 w-4 flex-auto flex-shrink-0 flex-grow-0" />
+      <LogoutIcon className="mr-2 h-4 w-4 flex-auto flex-shrink-0 flex-grow-0" />
       <span className={cn(open ? 'opacity-100' : 'opacity-0')}>Logout</span>
     </Button>
   );

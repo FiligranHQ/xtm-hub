@@ -13,10 +13,10 @@ import { Button } from 'filigran-ui/servers';
 import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 import { DataTracking } from '@/components/data-tracking/data-tracking';
 import { dataTracking_fragment$key } from '../../../../../__generated__/dataTracking_fragment.graphql';
-import { Trash2 } from 'lucide-react';
 import { trackingSubscription } from '@/components/data-tracking/tracking.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { DeleteIcon } from 'filigran-icon';
 
 // Component interface
 interface UserSlugProps {
@@ -92,7 +92,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
                 variant="ghost"
                 size="icon"
                 aria-label="Delete User">
-                <Trash2 />
+                <DeleteIcon className="h-4 w-4" />
               </Button>
             }
             onClickContinue={() => onDeleteUser(user)}>
