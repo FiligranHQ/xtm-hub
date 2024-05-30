@@ -102,6 +102,16 @@ const AdminLinks = () => {
         )}>
         <ForumIcon className="mr-2 h-4 w-4" /> Communities
       </Link>
+      <Link
+        href={'/admin/organizations'}
+        className={cn(
+          buttonVariants({
+            variant: 'ghost',
+            className: 'w-full justify-start border-none text-base',
+          })
+        )}>
+        <MessagesSquare className="mr-2 h-4 w-4" /> Organizations
+      </Link>
     </>
   );
 };
