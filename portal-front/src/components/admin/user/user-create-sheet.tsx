@@ -23,7 +23,7 @@ import { MultiSelectFormField } from 'filigran-ui/servers';
 
 import { Button, Input } from 'filigran-ui/servers';
 import * as React from 'react';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,9 +36,8 @@ import {
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { organizationFetch } from '@/components/organization/organization.graphql';
-import { rolePortalFetch } from '@/components/organization/role.graphql';
-import { rolePortalQuery } from '../../../../__generated__/rolePortalQuery.graphql';
 import { AddIcon } from 'filigran-icon';
+import { Portal, portalContext } from '@/components/context';
 
 interface UserListCreateProps {
   connectionID: string;
@@ -53,17 +52,13 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     {}
   );
 
-  const queryRolePortalData = useLazyLoadQuery<rolePortalQuery>(
-    rolePortalFetch,
-    {}
-  );
+  const { rolePortal } = useContext<Portal>(portalContext);
 
-  const rolePortalData = queryRolePortalData.rolesPortal.map(
-    ({ name, id }) => ({
+  const rolePortalData =
+    rolePortal?.rolesPortal.map(({ name, id }) => ({
       label: name ?? '',
       value: id,
-    })
-  );
+    })) ?? [];
   const organizationData = queryOrganizationData.organizations.edges;
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
@@ -101,7 +96,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     commitUserMutation({
       variables: { input, connections: [connectionID] },
       onCompleted: (response) => {
-        console.log(response);
+        console.log('response', response);
         setOpen(false);
       },
     });

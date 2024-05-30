@@ -21,7 +21,7 @@ import {
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import * as React from 'react';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,9 +35,8 @@ import {
   userSlugEditMutation,
 } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { organizationFetch } from '@/components/organization/organization.graphql';
-import { rolePortalFetch } from '@/components/organization/role.graphql';
-import { rolePortalQuery } from '../../../../../__generated__/rolePortalQuery.graphql';
 import { EditIcon } from 'filigran-icon';
+import { Portal, portalContext } from '@/components/context';
 
 interface UserEditCreateProps {
   user: userSlug_fragment$data;
@@ -52,17 +51,14 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
     {}
   );
   const organizationData = queryOrganizationData.organizations.edges;
-  const queryRolePortalData = useLazyLoadQuery<rolePortalQuery>(
-    rolePortalFetch,
-    {}
-  );
 
-  const rolePortalData = queryRolePortalData.rolesPortal.map(
-    ({ name, id }) => ({
+  const { rolePortal } = useContext<Portal>(portalContext);
+
+  const rolePortalData: { label: string; value: string }[] =
+    rolePortal?.rolesPortal?.map(({ name, id }) => ({
       label: name ?? '',
       value: id,
-    })
-  );
+    })) ?? [];
 
   const currentRolesPortal = user.roles_portal_id.map(
     (rolePortalData) => rolePortalData.id
