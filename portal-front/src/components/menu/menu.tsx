@@ -1,6 +1,5 @@
 'use client';
 import { Button, buttonVariants } from 'filigran-ui/servers';
-import { ChevronLeft, Home } from 'lucide-react';
 import { Separator } from 'filigran-ui/clients';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -9,6 +8,7 @@ import { ElementType, FunctionComponent, useState } from 'react';
 import Logout from '@/components/logout';
 import MenuUser from '@/components/menu/menu-user';
 import MenuAdmin from '@/components/menu/menu-admin';
+import { HomeIcon, KeyboardArrowLeftIcon } from 'filigran-icon';
 
 interface LinkMenuProps {
   open: boolean;
@@ -53,9 +53,9 @@ const Menu = () => {
             <Button
               variant="ghost"
               onClick={() => setOpen(!open)}>
-              <ChevronLeft
+              <KeyboardArrowLeftIcon
                 className={cn(
-                  'h-4 w-4 flex-shrink-0 flex-grow-0 duration-300 ease-in-out',
+                  'h-4 w-4 flex-shrink-0 flex-grow-0 p-1 duration-300 ease-in-out',
                   open ? 'rotate-0' : 'rotate-180'
                 )}
               />
@@ -65,7 +65,7 @@ const Menu = () => {
             <LinkMenu
               open={open}
               href={'/'}
-              icon={Home}
+              icon={HomeIcon}
               text={'Home'}
             />
           </li>

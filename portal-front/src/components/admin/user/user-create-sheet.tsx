@@ -21,8 +21,7 @@ import {
 } from 'filigran-ui/clients';
 import { MultiSelectFormField } from 'filigran-ui/servers';
 
-import { Button, Input } from 'filigran-ui';
-import { Plus } from 'lucide-react';
+import { Button, Input } from 'filigran-ui/servers';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
@@ -39,6 +38,7 @@ import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { organizationFetch } from '@/components/organization/organization.graphql';
 import { rolePortalFetch } from '@/components/organization/role.graphql';
 import { rolePortalQuery } from '../../../../__generated__/rolePortalQuery.graphql';
+import { AddIcon } from 'filigran-icon';
 
 interface UserListCreateProps {
   connectionID: string;
@@ -113,9 +113,10 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       open={open}
       onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <Plus className="mr-1 h-4 w-4" />
-          User
+        <Button
+          size="icon"
+          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
+          <AddIcon className="h-4 w-4" />
         </Button>
       </SheetTrigger>
       <SheetContent side={'right'}>
