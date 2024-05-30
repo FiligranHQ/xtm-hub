@@ -23,11 +23,17 @@ import {
   rolePortalQuery$data,
 } from '../../__generated__/rolePortalQuery.graphql';
 import { rolePortalFetch } from '@/components/organization/role.graphql';
+import {
+  organizationSelectQuery,
+  organizationSelectQuery$data,
+} from '../../__generated__/organizationSelectQuery.graphql';
+import { organizationFetch } from '@/components/organization/organization.graphql';
 
 // Context
 export interface Portal {
   me?: context_fragment$data | null;
   rolePortal?: rolePortalQuery$data | null;
+  organizations?: organizationSelectQuery$data | null;
   hasCapability?: (capability: Restriction) => boolean;
 }
 
@@ -35,11 +41,13 @@ export const portalContext = createContext<Portal>({});
 
 const generatePortalContext = (
   me: context_fragment$data | null | undefined,
-  rolePortal?: rolePortalQuery$data | null | undefined
+  rolePortal?: rolePortalQuery$data | null | undefined,
+  organizations?: organizationSelectQuery$data | null | undefined
 ): Portal => {
   return {
     me,
     rolePortal,
+    organizations,
     hasCapability: (capability: Restriction) => {
       const userCapabilities = (me?.capabilities ?? []).map((c) => c?.name);
       return (
@@ -78,8 +86,13 @@ const PortalContext: React.FunctionComponent<PortalContextProps> = ({
   const data = usePreloadedQuery<pageLoaderMeQuery>(MeQuery, queryRef);
   const me = useFragment<context_fragment$key>(ContextFragment, data.me);
   const rolePortalData = useLazyLoadQuery<rolePortalQuery>(rolePortalFetch, {});
+  const organizationsData = useLazyLoadQuery<organizationSelectQuery>(
+    organizationFetch,
+    {}
+  );
   return (
-    <portalContext.Provider value={generatePortalContext(me, rolePortalData)}>
+    <portalContext.Provider
+      value={generatePortalContext(me, rolePortalData, organizationsData)}>
       {children}
     </portalContext.Provider>
   );
