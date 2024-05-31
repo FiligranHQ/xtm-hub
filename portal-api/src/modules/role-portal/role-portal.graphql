@@ -1,6 +1,10 @@
 type RolePortal implements Node {
     id: ID!
-    name: String
+    name: String!
+}
+
+type RolePortalID implements Node {
+    id: ID!
 }
 
 type Query {

@@ -33,12 +33,42 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   settings: Settings!
-  organization(id: ID!): Organization
-  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  organization(id: ID!): Organization
+  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+}
+
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
+}
+
+type Subscription {
+  ActionTracking: TrackingSubscription
+  User: UserSubscription
+  Service: ServiceSubscription
 }
 
 enum UserOrdering {
@@ -59,7 +89,7 @@ type User implements Node {
   organization: Organization!
   capabilities: [Capability!]!
   tracking_data: [ActionTracking]
-  roles_portal_id: [RolePortal!]!
+  roles_portal_id: [RolePortalID!]!
 }
 
 type UserEdge {
@@ -77,12 +107,6 @@ type UserSubscription {
   edit: User
   delete: User
   merge: MergeEvent
-}
-
-type Subscription {
-  User: UserSubscription
-  ActionTracking: TrackingSubscription
-  Service: ServiceSubscription
 }
 
 input EditUserInput {
@@ -115,28 +139,14 @@ type Mutation {
   addOrganization(name: String!): Organization
 }
 
-type ActionTracking implements Node {
-  id: ID!
-  contextual_id: String!
-  status: String
-  created_at: Date!
-  ended_at: Date
-  message_tracking: [MessageTracking!]!
-}
-
-type MessageTracking implements Node {
-  id: ID!
-  tracking_id: ID
-  created_at: Date!
-  technical: Boolean
+type PlatformProvider {
+  name: String!
   type: String!
-  tracking_info: JSON
+  provider: String!
 }
 
-type TrackingSubscription {
-  add: ActionTracking
-  edit: ActionTracking
-  delete: ActionTracking
+type Settings {
+  platform_providers: [PlatformProvider!]!
 }
 
 enum ServiceOrdering {
@@ -165,14 +175,13 @@ type ServiceSubscription {
   delete: Service
 }
 
-type PlatformProvider {
+type RolePortal implements Node {
+  id: ID!
   name: String!
-  type: String!
-  provider: String!
 }
 
-type Settings {
-  platform_providers: [PlatformProvider!]!
+type RolePortalID implements Node {
+  id: ID!
 }
 
 enum OrganizationOrdering {
@@ -181,7 +190,7 @@ enum OrganizationOrdering {
 
 type Organization implements Node {
   id: ID!
-  name: String
+  name: String!
 }
 
 type OrganizationEdge {
@@ -192,11 +201,6 @@ type OrganizationEdge {
 type OrganizationConnection {
   edges: [OrganizationEdge!]!
   pageInfo: PageInfo!
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String
 }
 
 scalar JSON
