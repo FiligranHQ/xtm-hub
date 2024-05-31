@@ -14,7 +14,13 @@ import { Separator } from 'filigran-ui/clients';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import useGranted from '@/hooks/useGranted';
-import { ForumIcon, GradeIcon, GroupIcon, SettingsIcon } from 'filigran-icon';
+import {
+  OrganizationIcon,
+  ForumIcon,
+  GradeIcon,
+  GroupIcon,
+  SettingsIcon,
+} from 'filigran-icon';
 
 export interface MenuAdminProps {
   open: boolean;
@@ -110,7 +116,7 @@ const AdminLinks = () => {
             className: 'w-full justify-start border-none text-base',
           })
         )}>
-        <MessagesSquare className="mr-2 h-4 w-4" /> Organizations
+        <OrganizationIcon className="mr-2 h-4 w-4" /> Organizations
       </Link>
     </>
   );

@@ -12,3 +12,10 @@ export const organizationFetch = graphql`
     }
   }
 `;
+
+export const organizationFragment = graphql`
+  fragment organization_fragment on Organization {
+    id
+    name
+  }
+`;

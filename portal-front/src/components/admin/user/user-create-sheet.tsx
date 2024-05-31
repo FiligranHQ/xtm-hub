@@ -96,7 +96,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     commitUserMutation({
       variables: { input, connections: [connectionID] },
       onCompleted: (response) => {
-        console.log('response', response);
+        console.log(response);
         setOpen(false);
       },
     });
