@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { GetOrganizations } from '@/components/organization/organization.service';
 
 interface OrganizationsProps {}
@@ -21,15 +20,6 @@ const columns: ColumnDef<OrganizationData>[] = [
   },
 ];
 const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({}) => {
-  const breadcrumbValue = [
-    {
-      href: '/',
-      label: 'Home',
-    },
-    {
-      label: 'Organizations',
-    },
-  ];
   const organizationData = GetOrganizations();
   const organizationsTab: OrganizationData[] =
     organizationData.map((edge) => ({
@@ -39,7 +29,6 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({}) => {
 
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue} />
       <div className="container mx-auto py-10">
         <DataTable
           columns={columns}
