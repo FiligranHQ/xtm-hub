@@ -33,8 +33,8 @@ import {
   userSlugEditMutation,
 } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { EditIcon } from 'filigran-icon';
-import { GetRolesPortal } from '@/components/role-portal/role-portal.service';
-import { GetOrganizations } from '@/components/organization/organization.service';
+import { getRolesPortal } from '@/components/role-portal/role-portal.service';
+import { getOrganizations } from '@/components/organization/organization.service';
 import { useMutation } from 'react-relay';
 
 interface UserEditCreateProps {
@@ -46,9 +46,9 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const organizationData = GetOrganizations();
+  const organizationData = getOrganizations();
 
-  const rolePortal = GetRolesPortal();
+  const rolePortal = getRolesPortal();
 
   const rolePortalData: { label: string; value: string }[] =
     rolePortal?.rolesPortal?.map(({ name, id }) => ({

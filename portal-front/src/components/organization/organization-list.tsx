@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
-import { GetOrganizations } from '@/components/organization/organization.service';
+import { getOrganizations } from '@/components/organization/organization.service';
 
 interface OrganizationsProps {}
 
@@ -20,7 +20,7 @@ const columns: ColumnDef<OrganizationData>[] = [
   },
 ];
 const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({}) => {
-  const organizationData = GetOrganizations();
+  const organizationData = getOrganizations();
   const organizationsTab: OrganizationData[] =
     organizationData.map((edge) => ({
       id: edge.node.id ?? '',
