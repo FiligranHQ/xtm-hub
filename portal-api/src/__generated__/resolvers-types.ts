@@ -144,7 +144,7 @@ export enum OrderingMode {
 export type Organization = Node & {
   __typename?: 'Organization';
   id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type OrganizationConnection = {
@@ -245,7 +245,12 @@ export enum Restriction {
 export type RolePortal = Node & {
   __typename?: 'RolePortal';
   id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+};
+
+export type RolePortalId = Node & {
+  __typename?: 'RolePortalID';
+  id: Scalars['ID']['output'];
 };
 
 export type Service = Node & {
@@ -306,7 +311,7 @@ export type User = Node & {
   last_name?: Maybe<Scalars['String']['output']>;
   organization: Organization;
   organization_id: Scalars['ID']['output'];
-  roles_portal_id: Array<RolePortal>;
+  roles_portal_id: Array<RolePortalId>;
   tracking_data?: Maybe<Array<Maybe<ActionTracking>>>;
 };
 
@@ -405,7 +410,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( Service ) | ( User );
+  Node: ( ActionTracking ) | ( Capability ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( RolePortalId ) | ( Service ) | ( User );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -433,6 +438,7 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
+  RolePortalID: ResolverTypeWrapper<RolePortalId>;
   Service: ResolverTypeWrapper<Service>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
@@ -471,6 +477,7 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformProvider: PlatformProvider;
   Query: {};
   RolePortal: RolePortal;
+  RolePortalID: RolePortalId;
   Service: Service;
   ServiceConnection: ServiceConnection;
   ServiceEdge: ServiceEdge;
@@ -546,13 +553,13 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'Service' | 'User', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'RolePortalID' | 'Service' | 'User', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
 export type OrganizationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -598,7 +605,12 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
 
 export type RolePortalResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RolePortal'] = ResolversParentTypes['RolePortal']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RolePortalIdResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RolePortalID'] = ResolversParentTypes['RolePortalID']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -654,7 +666,7 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  roles_portal_id?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
+  roles_portal_id?: Resolver<Array<ResolversTypes['RolePortalID']>, ParentType, ContextType>;
   tracking_data?: Resolver<Maybe<Array<Maybe<ResolversTypes['ActionTracking']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -695,6 +707,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
+  RolePortalID?: RolePortalIdResolvers<ContextType>;
   Service?: ServiceResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceEdge?: ServiceEdgeResolvers<ContextType>;

@@ -7,12 +7,7 @@ import { getOrganizations } from '@/components/organization/organization.service
 
 interface OrganizationsProps {}
 
-export interface OrganizationData {
-  id: string;
-  name?: string | null;
-}
-
-const columns: ColumnDef<OrganizationData>[] = [
+const columns: ColumnDef<{ id: string; name: string }>[] = [
   {
     accessorKey: 'name',
     id: 'name',
@@ -21,7 +16,7 @@ const columns: ColumnDef<OrganizationData>[] = [
 ];
 const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({}) => {
   const organizationData = getOrganizations();
-  const organizationsTab: OrganizationData[] =
+  const organizationsTab =
     organizationData.map((edge) => ({
       id: edge.node.id ?? '',
       name: edge.node.name ?? '',

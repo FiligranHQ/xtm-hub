@@ -50,9 +50,9 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
 
   const rolePortal = getRolesPortal();
 
-  const rolePortalData: { label: string; value: string }[] =
+  const rolePortalData =
     rolePortal?.rolesPortal?.map(({ name, id }) => ({
-      label: name ?? '',
+      label: name,
       value: id,
     })) ?? [];
 
