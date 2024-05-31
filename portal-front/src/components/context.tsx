@@ -7,7 +7,6 @@ import {
   graphql,
   PreloadedQuery,
   useFragment,
-  useLazyLoadQuery,
   usePreloadedQuery,
 } from 'react-relay';
 import {
@@ -18,28 +17,20 @@ import {
 
 import { CAPABILITY_BYPASS } from '@/utils/constant';
 import { MeQuery } from '../../app/(application)/page-loader';
-import {
-  rolePortalQuery,
-  rolePortalQuery$data,
-} from '../../__generated__/rolePortalQuery.graphql';
-import { rolePortalFetch } from '@/components/organization/role.graphql';
 
 // Context
 export interface Portal {
   me?: context_fragment$data | null;
-  rolePortal?: rolePortalQuery$data | null;
   hasCapability?: (capability: Restriction) => boolean;
 }
 
 export const portalContext = createContext<Portal>({});
 
 const generatePortalContext = (
-  me: context_fragment$data | null | undefined,
-  rolePortal?: rolePortalQuery$data | null | undefined
+  me: context_fragment$data | null | undefined
 ): Portal => {
   return {
     me,
-    rolePortal,
     hasCapability: (capability: Restriction) => {
       const userCapabilities = (me?.capabilities ?? []).map((c) => c?.name);
       return (
@@ -77,10 +68,9 @@ const PortalContext: React.FunctionComponent<PortalContextProps> = ({
 }) => {
   const data = usePreloadedQuery<pageLoaderMeQuery>(MeQuery, queryRef);
   const me = useFragment<context_fragment$key>(ContextFragment, data.me);
-  const rolePortalData = useLazyLoadQuery<rolePortalQuery>(rolePortalFetch, {});
 
   return (
-    <portalContext.Provider value={generatePortalContext(me, rolePortalData)}>
+    <portalContext.Provider value={generatePortalContext(me)}>
       {children}
     </portalContext.Provider>
   );
