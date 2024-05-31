@@ -1,5 +1,6 @@
 import * as React from 'react';
 import PageLoader from './page-loader';
+import GuardCapacityComponent from '@/components/admin-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +10,11 @@ interface PageProps {}
 
 // Component
 const Page: React.FunctionComponent<PageProps> = async () => {
-  return <PageLoader />;
+  return (
+    <GuardCapacityComponent capacityRestriction={'ADMIN'}>
+      <PageLoader />{' '}
+    </GuardCapacityComponent>
+  );
 };
 
 // Component export
