@@ -35,8 +35,8 @@ import {
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { AddIcon } from 'filigran-icon';
-import { GetRolesPortal } from '@/components/role-portal/role-portal.service';
-import { GetOrganizations } from '@/components/organization/organization.service';
+import { getRolesPortal } from '@/components/role-portal/role-portal.service';
+import { getOrganizations } from '@/components/organization/organization.service';
 
 interface UserListCreateProps {
   connectionID: string;
@@ -47,7 +47,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const rolePortal = GetRolesPortal();
+  const rolePortal = getRolesPortal();
 
   const rolePortalData =
     rolePortal?.rolesPortal.map(({ name, id }) => ({
@@ -55,7 +55,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       value: id,
     })) ?? [];
 
-  const organizationData = GetOrganizations();
+  const organizationData = getOrganizations();
 
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
