@@ -23,21 +23,20 @@ import { MultiSelectFormField } from 'filigran-ui/servers';
 
 import { Button, Input } from 'filigran-ui/servers';
 import * as React from 'react';
-import { FunctionComponent, useContext, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { organizationSelectQuery } from '../../../../__generated__/organizationSelectQuery.graphql';
+import { useMutation } from 'react-relay';
 import {
   AddUserInput,
   userListCreateMutation,
 } from '../../../../__generated__/userListCreateMutation.graphql';
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
-import { organizationFetch } from '@/components/organization/organization.graphql';
 import { AddIcon } from 'filigran-icon';
-import { Portal, portalContext } from '@/components/context';
+import { GetRolesPortal } from '@/components/role-portal/role-portal.service';
+import { GetOrganizations } from '@/components/organization/organization.service';
 
 interface UserListCreateProps {
   connectionID: string;
@@ -47,19 +46,17 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
   connectionID,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const queryOrganizationData = useLazyLoadQuery<organizationSelectQuery>(
-    organizationFetch,
-    {}
-  );
 
-  const { rolePortal } = useContext<Portal>(portalContext);
+  const rolePortal = GetRolesPortal();
 
   const rolePortalData =
     rolePortal?.rolesPortal.map(({ name, id }) => ({
       label: name ?? '',
       value: id,
     })) ?? [];
-  const organizationData = queryOrganizationData.organizations.edges;
+
+  const organizationData = GetOrganizations();
+
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
