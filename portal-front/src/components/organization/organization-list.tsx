@@ -4,7 +4,7 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { Portal, portalContext } from '@/components/context';
+import { GetOrganizations } from '@/components/organization/organization.service';
 
 interface OrganizationsProps {}
 
@@ -30,10 +30,9 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({}) => {
       label: 'Organizations',
     },
   ];
-  const { organizations } = React.useContext<Portal>(portalContext);
-
+  const organizationData = GetOrganizations();
   const organizationsTab: OrganizationData[] =
-    organizations?.organizations?.edges.map((edge) => ({
+    organizationData.map((edge) => ({
       id: edge.node.id ?? '',
       name: edge.node.name ?? '',
     })) ?? [];
