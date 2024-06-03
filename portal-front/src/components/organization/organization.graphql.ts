@@ -13,6 +13,18 @@ export const organizationFetch = graphql`
   }
 `;
 
+export const CreateOrganizationMutation = graphql`
+  mutation organizationCreateMutation($name: String!, $connections: [ID!]!) {
+    addOrganization(name: $name)
+      @prependNode(
+        connections: $connections
+        edgeTypeName: "OrganizationsEdge"
+      ) {
+      ...organization_fragment
+    }
+  }
+`;
+
 export const organizationFragment = graphql`
   fragment organization_fragment on Organization {
     id
