@@ -24,12 +24,14 @@ import { organizationFormSchema } from '@/components/organization/organization-f
 import { useMutation } from 'react-relay';
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
 import { organizationCreateMutation } from '../../../__generated__/organizationCreateMutation.graphql';
-import { Portal, portalContext } from '@/components/context';
+import { Portal, portalContext } from '@/components/portal-context';
 
-interface OrganizationCreateProps {}
+interface OrganizationCreateProps {
+  setAddedOrganization: (newOrganization: { id: string; name: string }) => void;
+}
 export const OrganizationCreateSheet: FunctionComponent<
   OrganizationCreateProps
-> = () => {
+> = ({ setAddedOrganization }) => {
   const form = useForm<z.infer<typeof organizationFormSchema>>({
     resolver: zodResolver(organizationFormSchema),
     defaultValues: {
@@ -53,7 +55,11 @@ export const OrganizationCreateSheet: FunctionComponent<
         ...values,
       },
       onCompleted: (response) => {
-        console.log(response);
+        const newOrganization = {
+          id: response?.addOrganization?.id ?? '',
+          name: response?.addOrganization?.name ?? '',
+        };
+        setAddedOrganization(newOrganization);
         setOpen(false);
       },
     });
@@ -67,9 +73,9 @@ export const OrganizationCreateSheet: FunctionComponent<
       open={open}
       onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button className="absolute z-10 ml-6 rounded-3xl drop-shadow-xl">
+        <Button className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
           {' '}
-          <AddIcon className="mr-4 h-4 w-4" /> Create organization
+          <AddIcon className="mr-4 h-4 w-4" /> Organization
         </Button>
       </SheetTrigger>
       <SheetContent side={'right'}>
