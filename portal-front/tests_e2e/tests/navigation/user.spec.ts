@@ -1,10 +1,9 @@
 import { expect, test } from '../../fixtures/baseFixtures';
 
-test.use({ storageState: 'tests_e2e/.setup/.auth/user.json' });
 test('should navigate to the user page', async ({ page }) => {
   // TODO make more accessible component and rewrite test
   await page.goto('/');
-  await page.getByRole('complementary').getByRole('button').nth(1).click();
+  await page.getByLabel('Settings menu').click();
   await page.getByRole('link', { name: 'User', exact: true }).click();
   await expect(page.getByRole('link', { name: 'User' })).toBeVisible();
   await page
