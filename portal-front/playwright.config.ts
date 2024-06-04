@@ -26,6 +26,9 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://127.0.0.1:3001',
 
+    // Capture screenshot after each test failure.
+    screenshot: 'only-on-failure',
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
@@ -33,45 +36,27 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'tests_e2e/.setup/.auth/user.json',
+        viewport: {
+          width: 1920,
+          height: 1080,
+        },
+      },
+      dependencies: ['setup'],
     },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
   ],
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command:
-      'docker run -p 4001:4001 --network=portal --name=portal-api portal-api docker run -p 3000:3000 --network=portal --name=portal-front --env SERVER_HTTP_API=http://portal-api:4001 portal-front',
-    url: 'http://127.0.0.1:3000',
+    command: 'yarn build && node .next/standalone/server.js',
+    url: 'http://localhost:3001',
+    reuseExistingServer: true,
   },
 });
