@@ -27,7 +27,6 @@ export const PORTAL_COOKIE_SECRET = 'cloud-portal-cookie-key';
 const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
-
 const app = express();
 const sessionMiddleware = expressSession({
   name: PORTAL_COOKIE_NAME,
@@ -41,7 +40,6 @@ const sessionMiddleware = expressSession({
     secure: false,
     // maxAge: 60 * 60 * 1000 // 1 hour
   },
-
 });
 app.use(express.json());
 app.use(sessionMiddleware);
@@ -55,9 +53,9 @@ To prevent potential issues, calling the function before unsubscribing
 from the GraphQL SSE stream ensures
 that the correct data is obtained and sent as the event.
  */
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   const originalEnd = res.end;
-  res.end = function(chunk, encoding?) {
+  res.end = function (chunk, encoding?) {
     if (typeof chunk === 'function') {
       chunk();
     }
@@ -88,7 +86,10 @@ const server = new ApolloServer<PortalContext>({
   schema,
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
-    ApolloServerPluginLandingPageLocalDefault({ includeCookies: true, variables: {} }),
+    ApolloServerPluginLandingPageLocalDefault({
+      includeCookies: true,
+      variables: {},
+    }),
   ],
 });
 
@@ -117,7 +118,9 @@ const handler = createHandler({
   schema,
   context: async (_req) => {
     const session = await new Promise((resolve) => {
-      sessionMiddleware(_req.raw, {} as express.Response, () => resolve(_req.raw.session));
+      sessionMiddleware(_req.raw, {} as express.Response, () =>
+        resolve(_req.raw.session)
+      );
     });
     const { user } = session as SessionData;
     // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
@@ -126,7 +129,13 @@ const handler = createHandler({
   },
 });
 app.use(PORTAL_WEBSOCKET_PATH, cors<cors.CorsRequest>(), json(), handler);
-app.use(PORTAL_GRAPHQL_PATH, sessionMiddleware, cors<cors.CorsRequest>(), json(), middlewareExpress);
+app.use(
+  PORTAL_GRAPHQL_PATH,
+  sessionMiddleware,
+  cors<cors.CorsRequest>(),
+  json(),
+  middlewareExpress
+);
 // endregion
 
 await initAuthPlatform(app);
@@ -135,7 +144,11 @@ awxEndpoint(app);
 // Ensure migrate the schema
 await dbMigration.migrate();
 await platformInit();
-console.log('[Migration] Database version is now ' + await dbMigration.version());
+console.log(
+  '[Migration] Database version is now ' + (await dbMigration.version())
+);
 // Modified server startup
-await new Promise<void>((resolve) => httpServer.listen({ port: portalConfig.port }, resolve));
+await new Promise<void>((resolve) =>
+  httpServer.listen({ port: portalConfig.port }, resolve)
+);
 console.log(`🚀 Server ready at http://localhost:` + portalConfig.port);

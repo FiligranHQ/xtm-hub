@@ -1,13 +1,13 @@
 type RolePortal implements Node {
-    id: ID!
-    name: String!
+  id: ID!
+  name: String!
 }
 
 type RolePortalID implements Node {
-    id: ID!
+  id: ID!
 }
 
 type Query {
-    rolePortal(id: ID!): RolePortal @auth
-    rolesPortal: [RolePortal!]! @auth
+  rolePortal(id: ID!): RolePortal @auth
+  rolesPortal: [RolePortal!]! @auth
 }

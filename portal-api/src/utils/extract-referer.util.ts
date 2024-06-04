@@ -9,7 +9,9 @@ export const extractRefererPathFromReq = (req) => {
       return refererUrl.pathname;
     } catch {
       // prevent any invalid referer
-      console.warn('Invalid referer for redirect extraction', { referer: req.headers.referer });
+      console.warn('Invalid referer for redirect extraction', {
+        referer: req.headers.referer,
+      });
     }
   }
   return undefined;

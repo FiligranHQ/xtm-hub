@@ -25,7 +25,9 @@
     "dev:esbuild": "yarn copy && node builder/dev/dev.js",
     "start-dev": "concurrently \"yarn dev:tsc\" \"yarn dev:esbuild\" \"yarn dev:node\"",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "format:check": "prettier --check .",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@apollo/server": "4.10.4",
@@ -67,8 +69,10 @@
     "concurrently": "8.2.2",
     "esbuild": "0.20.2",
     "eslint": "9.x",
+    "eslint-config-prettier": "^9.1.0",
     "globals": "^15.3.0",
     "kanel": "3.8.8",
+    "prettier": "^3.3.0",
     "ts-node": "10.9.2",
     "typescript": "5.4.5",
     "typescript-eslint": "^7.12.0"

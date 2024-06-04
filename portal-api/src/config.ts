@@ -2,17 +2,17 @@
 import config from 'config';
 
 interface PortalConfig {
-  port: number,
+  port: number;
   admin: {
-    email: string
-    password: string
-  },
+    email: string;
+    password: string;
+  };
   database: {
-    host: string
-    port: number
-    user: string
-    password: string
-    database: string
+    host: string;
+    port: number;
+    user: string;
+    password: string;
+    database: string;
   };
 }
 

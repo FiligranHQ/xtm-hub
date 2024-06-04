@@ -8,14 +8,17 @@ import { UserWithAuthentication } from '../modules/users/users';
 export const ensureCapabilityExists = async (capability, trx) => {
   const capabilityPortal = await dbUnsecure('CapabilityPortal');
   if (!capabilityPortal.find((c) => c.id === capability.id)) {
-    await dbUnsecure<Capability>('CapabilityPortal').insert(capability).transacting(trx);
+    await dbUnsecure<Capability>('CapabilityPortal')
+      .insert(capability)
+      .transacting(trx);
   }
 };
 
 export const ensureUserRoleExist = async (user_id, role_portal_id) => {
   const userRole = await dbUnsecure('User_RolePortal')
     .where({ user_id })
-    .where({ role_portal_id }).first();
+    .where({ role_portal_id })
+    .first();
   if (!userRole) {
     await dbUnsecure('User_RolePortal').insert({ user_id, role_portal_id });
   }
@@ -29,16 +32,20 @@ export const ensureRoleExists = async (role, trx) => {
 };
 
 export const ensureRoleHasCapability = async (role, capability, trx) => {
-  const roleCapability = await dbUnsecure<RolePortalCapabilityPortal>('RolePortal_CapabilityPortal')
+  const roleCapability = await dbUnsecure<RolePortalCapabilityPortal>(
+    'RolePortal_CapabilityPortal'
+  )
     .where({ capability_portal_id: capability.id })
     .where({ role_portal_id: role.id })
     .first();
 
   if (!roleCapability) {
-    await dbUnsecure<RolePortalCapabilityPortal>('RolePortal_CapabilityPortal').insert({
-      capability_portal_id: capability.id,
-      role_portal_id: role.id,
-    }).transacting(trx);
+    await dbUnsecure<RolePortalCapabilityPortal>('RolePortal_CapabilityPortal')
+      .insert({
+        capability_portal_id: capability.id,
+        role_portal_id: role.id,
+      })
+      .transacting(trx);
   }
 };
 

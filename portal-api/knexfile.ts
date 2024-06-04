@@ -16,16 +16,16 @@ declare module 'knex' {
 }
 
 export type DatabaseType =
-  'User'
-  |'Organization'
-  |'Service'
-  |'User_RolePortal'
-  |'RolePortal'
-  |'CapabilityPortal'
-  |'RolePortal_CapabilityPortal'
-  |'ActionTracking'
-  |'MessageTracking'
-export type ActionType = 'add'|'edit'|'delete'|'merge'
+  | 'User'
+  | 'Organization'
+  | 'Service'
+  | 'User_RolePortal'
+  | 'RolePortal'
+  | 'CapabilityPortal'
+  | 'RolePortal_CapabilityPortal'
+  | 'ActionTracking'
+  | 'MessageTracking';
+export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {
   first: number;
@@ -58,7 +58,7 @@ const config: Knex.Config = {
     if (!queryContext?.__typename) return result;
     const __typename = queryContext.__typename;
     if (Array.isArray(result)) {
-      return result.map(row => ({ ...row, __typename }));
+      return result.map((row) => ({ ...row, __typename }));
     } else if (result && Object.keys(result).length > 0) {
       return { ...result, __typename };
     }
@@ -77,7 +77,11 @@ export const dbRaw = (statement: string) => database.raw(statement);
 
 export const dbTx = () => database.transaction();
 
-export const db = <T>(context: PortalContext, type: DatabaseType, opts: QueryOpts = {}) => {
+export const db = <T>(
+  context: PortalContext,
+  type: DatabaseType,
+  opts: QueryOpts = {}
+) => {
   const queryContext = database<T>(type).queryContext({ __typename: type });
   return applyDbSecurity<T>(context, type, queryContext, opts);
 };
@@ -87,9 +91,13 @@ export const dbUnsecure = <T>(type: DatabaseType) => {
   return db<T>(context, type, { unsecured: true });
 };
 
-export const dbConnections = <T>(nodes: T[], offset: string|undefined, limit: number) => {
+export const dbConnections = <T>(
+  nodes: T[],
+  offset: string | undefined,
+  limit: number
+) => {
   const currentOffset = offset ? Number(atob(offset)) : 0;
-  const edges: { cursor: string, node: T }[] = nodes.map((n, index) => {
+  const edges: { cursor: string; node: T }[] = nodes.map((n, index) => {
     const nextIndex = index + 1;
     return {
       cursor: btoa(String(currentOffset + nextIndex)),
@@ -105,13 +113,26 @@ export const dbConnections = <T>(nodes: T[], offset: string|undefined, limit: nu
   return { edges, pageInfo };
 };
 
-export const paginate = <T>(context: PortalContext, type: DatabaseType, pagination: Pagination, opts: QueryOpts = {}) => {
+export const paginate = <T>(
+  context: PortalContext,
+  type: DatabaseType,
+  pagination: Pagination,
+  opts: QueryOpts = {}
+) => {
   const { first, after, orderMode, orderBy } = pagination;
   const currentOffset = after ? Number(atob(after)) : 0;
   const queryContext = db<T>(context, type, opts);
-  queryContext.queryContext({ ...queryContext.queryContext(), ...pagination, connection: true });
-  queryContext.orderBy([{ column: orderBy, order: orderMode }]).offset(currentOffset).limit(first);
-  queryContext.asConnection = <U>() => queryContext.then(rows => dbConnections(rows, after, first)) as U;
+  queryContext.queryContext({
+    ...queryContext.queryContext(),
+    ...pagination,
+    connection: true,
+  });
+  queryContext
+    .orderBy([{ column: orderBy, order: orderMode }])
+    .offset(currentOffset)
+    .limit(first);
+  queryContext.asConnection = <U>() =>
+    queryContext.then((rows) => dbConnections(rows, after, first)) as U;
   return queryContext;
 };
 

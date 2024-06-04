@@ -8,22 +8,36 @@ export const AUTH_DIRECTIVE_NAME = 'auth';
 
 type AuthFn = (user: User) => boolean;
 type RoleFn = (user: User, roleRequiredInSchema: string[]) => boolean;
-const getSchemaTransformer = (isAuthenticatedFn: AuthFn, hasCapabilityFn: RoleFn) => {
+const getSchemaTransformer = (
+  isAuthenticatedFn: AuthFn,
+  hasCapabilityFn: RoleFn
+) => {
   const typeDirectiveArgumentMaps = {};
   return {
     authDirectiveTransformer: (schema: GraphQLSchema): GraphQLSchema =>
       mapSchema(schema, {
-        [MapperKind.TYPE]: type => {
-          const authDirective = getDirective(schema, type, AUTH_DIRECTIVE_NAME)?.[0];
+        [MapperKind.TYPE]: (type) => {
+          const authDirective = getDirective(
+            schema,
+            type,
+            AUTH_DIRECTIVE_NAME
+          )?.[0];
           if (authDirective) {
             typeDirectiveArgumentMaps[type.name] = authDirective;
           }
           return undefined;
         },
         [MapperKind.OBJECT_FIELD]: (fieldConfig, _fieldName, typeName) => {
-          const authDirective = getDirective(schema, fieldConfig, AUTH_DIRECTIVE_NAME)?.[0] ?? typeDirectiveArgumentMaps[typeName];
+          const authDirective =
+            getDirective(schema, fieldConfig, AUTH_DIRECTIVE_NAME)?.[0] ??
+            typeDirectiveArgumentMaps[typeName];
           const { resolve = defaultFieldResolver } = fieldConfig;
-          fieldConfig.resolve = function(source, args, context: PortalContext, info) {
+          fieldConfig.resolve = function (
+            source,
+            args,
+            context: PortalContext,
+            info
+          ) {
             const { user } = context;
             const capabilitiesRequired = authDirective?.requires;
             // Check if the field requires authentication
@@ -32,7 +46,9 @@ const getSchemaTransformer = (isAuthenticatedFn: AuthFn, hasCapabilityFn: RoleFn
             }
             // Get the required authorization role for the requested field
             if (authDirective && !hasCapabilityFn(user, capabilitiesRequired)) {
-              throw new Error(`Not authorized. The provided role does not meet schema requirements`);
+              throw new Error(
+                `Not authorized. The provided role does not meet schema requirements`
+              );
             }
             // Else, run the resolvers as normal
             return resolve(source, args, context, info);
@@ -60,4 +76,7 @@ const hasCapability = (user: User, capabilitiesRequired: string[]) => {
   return capabilityNames.some((id) => capabilitiesRequired.includes(id));
 };
 
-export const { authDirectiveTransformer } = getSchemaTransformer(isAuthenticated, hasCapability);
+export const { authDirectiveTransformer } = getSchemaTransformer(
+  isAuthenticated,
+  hasCapability
+);

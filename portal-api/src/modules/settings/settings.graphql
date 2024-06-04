@@ -1,13 +1,13 @@
 type PlatformProvider {
-    name: String!
-    type: String!
-    provider: String!
+  name: String!
+  type: String!
+  provider: String!
 }
 
 type Settings {
-    platform_providers: [PlatformProvider!]!
+  platform_providers: [PlatformProvider!]!
 }
 
 type Query {
-    settings: Settings!
+  settings: Settings!
 }

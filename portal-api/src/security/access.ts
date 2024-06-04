@@ -16,7 +16,10 @@ export const isUserGranted = (user: User, capability: Capability) => {
  * This method will filter every event to distribute real time data to users that have access to it
  * Data event must be consistent to provide all information needed to infer security access.
  */
-export const isNodeAccessible = (user: User, data: { [action in ActionType]: TypedNode }) => {
+export const isNodeAccessible = (
+  user: User,
+  data: { [action in ActionType]: TypedNode }
+) => {
   const isInvalidActionSize = Object.keys(data).length !== 1;
   if (isInvalidActionSize) {
     // Event can only be setup to one action
@@ -48,7 +51,12 @@ export const isNodeAccessible = (user: User, data: { [action in ActionType]: Typ
  * This method will apply queries extra filter depending on the user context
  * Every get or listing will be protected by this method
  */
-export const applyDbSecurity = <T>(context: PortalContext, type: DatabaseType, queryContext: Knex.QueryBuilder<T>, opts: QueryOpts = {}) => {
+export const applyDbSecurity = <T>(
+  context: PortalContext,
+  type: DatabaseType,
+  queryContext: Knex.QueryBuilder<T>,
+  opts: QueryOpts = {}
+) => {
   const { unsecured = false } = opts;
   // If user is admin, user has no access restriction
   if (unsecured || isUserGranted(context?.user, CAPABILITY_ADMIN)) {
@@ -62,7 +70,12 @@ export const applyDbSecurity = <T>(context: PortalContext, type: DatabaseType, q
   }
   // Standard user can access only its own organization
   if (type === 'Organization') {
-    queryContext.rightJoin('User as security', 'security.organization_id', '=', 'Organization.id');
+    queryContext.rightJoin(
+      'User as security',
+      'security.organization_id',
+      '=',
+      'Organization.id'
+    );
     return queryContext;
   }
   // Standard user can access all services

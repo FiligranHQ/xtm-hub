@@ -2,9 +2,7 @@ import * as esbuild from 'esbuild';
 
 let ctx = await esbuild.context({
   logLevel: 'info',
-  entryPoints: [
-    'src/index.ts',
-  ],
+  entryPoints: ['src/index.ts'],
   bundle: true,
   platform: 'node',
   sourcemap: 'inline',

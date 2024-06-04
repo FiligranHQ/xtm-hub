@@ -15,15 +15,9 @@
     "issuer": "changeme",
     "client_id": "changeme",
     "client_secret": "changeme",
-    "redirect_uris": [
-      "http://localhost:3000/auth/oidc/callback"
-    ],
-    "logout_callback_url": [
-      "http://localhost:3000/oidc/callback"
-    ],
-    "response_types": [
-      "code"
-    ]
+    "redirect_uris": ["http://localhost:3000/auth/oidc/callback"],
+    "logout_callback_url": ["http://localhost:3000/oidc/callback"],
+    "response_types": ["code"]
   },
   "user_management": {
     "token_reference": "access_token",
@@ -43,45 +37,27 @@
     "action_mapping": {
       "CREATE_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_create-user",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
+        "keys": ["roles", "organization_name"]
       },
       "DISABLE_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_disable-user",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
+        "keys": ["roles", "organization_name"]
       },
       "CREATE_COMMUNITY_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_create-community",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
+        "keys": ["roles", "organization_name"]
       },
       "DELETE_COMMUNITY_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_delete-community",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
+        "keys": ["roles", "organization_name"]
       },
       "COMMUNITY_ADD_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_community-add-user",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
+        "keys": ["roles", "organization_name"]
       },
       "COMMUNITY_REMOVE_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_community-remove-user",
-        "keys": [
-          "roles",
-          "organization_name"
-        ]
+        "keys": ["roles", "organization_name"]
       }
     }
   }

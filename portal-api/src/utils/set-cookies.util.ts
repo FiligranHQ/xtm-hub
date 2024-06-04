@@ -6,4 +6,3 @@ export const setCookieError = (res, message) => {
     sameSite: 'strict',
   });
 };
-
