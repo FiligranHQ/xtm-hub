@@ -11,7 +11,7 @@
     "relay": "relay-compiler",
     "prettier": "prettier . --write",
     "test": "vitest",
-    "test:e2e": "yarn playwright test",
+    "test:e2e": "yarn playwright test --headed",
     "test:e2e:ui": "yarn playwright test --ui",
     "generate-test-e2e": "npx playwright codegen http://localhost:3001/"
   },
@@ -50,7 +50,6 @@
     "@types/react-relay": "16.0.6",
     "@types/relay-test-utils": "^14.1.4",
     "@vitejs/plugin-react": "^4.3.0",
-    "babel-plugin-relay": "^16.2.0",
     "concurrently": "8.2.2",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.3",

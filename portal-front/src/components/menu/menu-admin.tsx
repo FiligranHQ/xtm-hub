@@ -6,19 +6,19 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Separator,
 } from 'filigran-ui/clients';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from 'filigran-ui/servers';
-import { Separator } from 'filigran-ui/clients';
+import { Button, buttonVariants } from 'filigran-ui/servers';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import useGranted from '@/hooks/useGranted';
 import {
-  OrganizationIcon,
   ForumIcon,
   GradeIcon,
   GroupIcon,
+  OrganizationIcon,
   SettingsIcon,
 } from 'filigran-icon';
 
@@ -41,11 +41,12 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
 const ClosedMenuAdmin = () => {
   return (
     <Popover>
-      <PopoverTrigger
-        className={buttonVariants({
-          variant: 'ghost',
-        })}>
-        <SettingsIcon className="h-4 w-4" />
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          aria-label="Settings menu">
+          <SettingsIcon className="h-4 w-4" />
+        </Button>
       </PopoverTrigger>
       <PopoverContent
         side="right"
