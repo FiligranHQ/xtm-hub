@@ -6,6 +6,8 @@ import { applyDbSecurity } from './src/security/access';
 import { PortalContext } from './src/model/portal-context';
 
 declare module 'knex' {
+  // TODO: Knex specificity, could be complicated modify the model directly
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Knex {
     interface QueryBuilder {
       asConnection<T>(): Promise<T>;

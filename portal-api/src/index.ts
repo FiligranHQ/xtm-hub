@@ -57,8 +57,7 @@ that the correct data is obtained and sent as the event.
  */
 app.use(function(req, res, next) {
   const originalEnd = res.end;
-  // @ts-ignore
-  res.end = function(chunk, encoding) {
+  res.end = function(chunk, encoding?) {
     if (typeof chunk === 'function') {
       chunk();
     }

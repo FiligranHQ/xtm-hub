@@ -44,7 +44,7 @@ export const addOIDCStrategy = (passport) => {
       const roles = extractRole(decodedUser);
       console.info('[OPENID] Successfully logged', { decodedUser });
       console.info('[OPENID] User role', { roles });
-      const { email, name, given_name: first_name, family_name: last_name } = userinfo;
+      const { email, given_name: first_name, family_name: last_name } = userinfo;
       await providerLoginHandler({ email, first_name, last_name, roles }, done);
       done(null, tokenSet.claims());
     });

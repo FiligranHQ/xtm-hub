@@ -21,7 +21,7 @@ export enum AWXAction {
 }
 
 export type AWXActionFunctionMap = {
-  [key in AWXAction]: any;
+  [key in AWXAction]: (...args: unknown[]) => Promise<unknown>;
 };
 
 interface AwxCreateUserAction {
