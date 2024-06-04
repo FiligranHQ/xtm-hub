@@ -3,9 +3,13 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
-import { getOrganizations } from '@/components/organization/organization.service';
 
-interface OrganizationsProps {}
+interface OrganizationsProps {
+  organizations: {
+    id: string;
+    name: string;
+  }[];
+}
 
 const columns: ColumnDef<{ id: string; name: string }>[] = [
   {
@@ -14,20 +18,15 @@ const columns: ColumnDef<{ id: string; name: string }>[] = [
     header: 'Name',
   },
 ];
-const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({}) => {
-  const organizationData = getOrganizations();
-  const organizationsTab =
-    organizationData.map((edge) => ({
-      id: edge.node.id ?? '',
-      name: edge.node.name ?? '',
-    })) ?? [];
-
+const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
+  organizations,
+}) => {
   return (
     <>
       <div className="container mx-auto py-10">
         <DataTable
           columns={columns}
-          data={organizationsTab}
+          data={organizations}
         />
       </div>
     </>

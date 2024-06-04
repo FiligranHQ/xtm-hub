@@ -20,14 +20,8 @@ export const CreateOrganizationMutation = graphql`
         connections: $connections
         edgeTypeName: "OrganizationsEdge"
       ) {
-      ...organization_fragment
+      id
+      name
     }
-  }
-`;
-
-export const organizationFragment = graphql`
-  fragment organization_fragment on Organization {
-    id
-    name
   }
 `;

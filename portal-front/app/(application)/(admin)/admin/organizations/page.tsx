@@ -9,7 +9,7 @@ interface PageProps {}
 const Page: React.FunctionComponent<PageProps> = () => {
   return (
     <GuardCapacityComponent capacityRestriction={'ADMIN'}>
-      <OrganizationPage></OrganizationPage>
+      <OrganizationPage />
     </GuardCapacityComponent>
   );
 };
