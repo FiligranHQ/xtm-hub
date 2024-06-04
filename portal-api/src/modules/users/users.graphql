@@ -1,75 +1,80 @@
 enum UserOrdering {
-    email
+  email
 }
 
 type Capability implements Node {
-    id: ID!
-    name: Restriction!
+  id: ID!
+  name: Restriction!
 }
 
 type User implements Node {
-    id: ID!
-    email: String!
-    first_name: String
-    last_name: String
-    organization_id: ID!
-    organization: Organization!
-    capabilities: [Capability!]!
-    tracking_data: [ActionTracking]
-    roles_portal_id: [RolePortalID!]!
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  organization_id: ID!
+  organization: Organization!
+  capabilities: [Capability!]!
+  tracking_data: [ActionTracking]
+  roles_portal_id: [RolePortalID!]!
 }
 
 type UserEdge {
-    cursor: String!
-    node: User
+  cursor: String!
+  node: User
 }
 
 type UserConnection {
-    edges: [UserEdge!]!
-    pageInfo: PageInfo!
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
 }
 
 type UserSubscription {
-    add: User
-    edit: User
-    delete: User
-    merge: MergeEvent
+  add: User
+  edit: User
+  delete: User
+  merge: MergeEvent
 }
 
 type Subscription {
-    User: UserSubscription @auth
+  User: UserSubscription @auth
 }
 
 type Query {
-    me: User @auth
-    user(id: ID!): User @auth
-    users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection! @auth
+  me: User @auth
+  user(id: ID!): User @auth
+  users(
+    first: Int!
+    after: ID
+    orderBy: UserOrdering!
+    orderMode: OrderingMode!
+  ): UserConnection! @auth
 }
 
 input EditUserInput {
-    email: String!
-    first_name: String
-    last_name: String
-    organization_id: String!
-    roles_portal_id: [String]!
+  email: String!
+  first_name: String
+  last_name: String
+  organization_id: String!
+  roles_portal_id: [String]!
 }
 
 input AddUserInput {
-    email: String!
-    password: String!
-    organization_id: String!
-    first_name: String!
-    last_name: String!
-    roles_id: [String]!
+  email: String!
+  password: String!
+  organization_id: String!
+  first_name: String!
+  last_name: String!
+  roles_id: [String]!
 }
 
 type Mutation {
-    # Management
-    mergeTest(from: ID!, target: ID!): ID! @auth(requires: [ADMIN])
-    addUser(input: AddUserInput!): User @auth(requires: [ADMIN])
-    editUser(id: ID!, input: EditUserInput!): User @auth(requires: [ADMIN])
-    deleteUser(id: ID!): User @auth(requires: [ADMIN])
-    # Login
-    login(email: String!, password: String): User
-    logout: ID! @auth
+  # Management
+  mergeTest(from: ID!, target: ID!): ID! @auth(requires: [ADMIN])
+  addUser(input: AddUserInput!): User @auth(requires: [ADMIN])
+  editUser(id: ID!, input: EditUserInput!): User @auth(requires: [ADMIN])
+  deleteUser(id: ID!): User @auth(requires: [ADMIN])
+  # Login
+  login(email: String!, password: String): User
+  logout: ID! @auth
 }

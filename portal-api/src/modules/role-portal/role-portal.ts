@@ -7,7 +7,9 @@ export const getRolePortal = (): Promise<RolePortal[]> => {
   return dbUnsecure<RolePortal>('RolePortal');
 };
 
-export const getRolePortalByUserId = (user_id: UserId): Promise<UserRolePortal[]> => {
+export const getRolePortalByUserId = (
+  user_id: UserId
+): Promise<UserRolePortal[]> => {
   return dbUnsecure<UserRolePortal>('User_RolePortal')
     .where({ user_id })
     .join('RolePortal', 'role_portal_id', '=', 'RolePortal.id');

@@ -3,13 +3,22 @@ import { loadOrganizationBy } from '../../modules/organizations/organizations';
 import { AWUserInput, AWXAddUserInput } from './awx.model';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 
-export const buildCreateUserInput = async (user: User, awxUUID: ActionTrackingId, keys: string[] = []) => {
+export const buildCreateUserInput = async (
+  user: User,
+  awxUUID: ActionTrackingId,
+  keys: string[] = []
+) => {
   const orgInfo = await loadOrganizationBy('id', user.organization_id);
   // Here add a reducer which add the corresponding
-  console.log(await completeUserInput({
-    ...user,
-    awx_client_request_id: awxUUID,
-  }, keys));
+  console.log(
+    await completeUserInput(
+      {
+        ...user,
+        awx_client_request_id: awxUUID,
+      },
+      keys
+    )
+  );
   const awxAddUserInput: AWXAddUserInput = {
     awx_client_request_id: awxUUID,
     organization_name: orgInfo.name,
@@ -22,7 +31,10 @@ export const buildCreateUserInput = async (user: User, awxUUID: ActionTrackingId
   return awxAddUserInput;
 };
 
-export const completeUserInput = async (user: AWUserInput, keys: string[] = []) => {
+export const completeUserInput = async (
+  user: AWUserInput,
+  keys: string[] = []
+) => {
   let completeUser = {
     ...user,
   };
@@ -34,8 +46,8 @@ export const completeUserInput = async (user: AWUserInput, keys: string[] = []) 
 
 const addProperty = async (key: string, user: User) => {
   const mappingProperty = {
-    'organization': getUserOrganization,
-    'roles': getUserRole,
+    organization: getUserOrganization,
+    roles: getUserRole,
   };
   const addFunction = mappingProperty[key];
   if (addFunction) {

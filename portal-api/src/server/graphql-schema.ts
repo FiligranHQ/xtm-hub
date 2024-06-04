@@ -9,7 +9,7 @@ import organizationsResolver from '../modules/organizations/organizations.resolv
 import { authDirectiveTransformer } from '../security/directive-auth';
 import settingsResolver from '../modules/settings/settings.resolver';
 import trackingResolver from '../modules/tracking/tracking.resolver';
-import rolePortalResolver from "../modules/role-portal/role-portal.resolver";
+import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
@@ -19,10 +19,22 @@ const getGlobContent = async (pattern: string) => {
 const typeDefFiles = await getGlobContent('src/**/*.graphql');
 const typeDefs = mergeTypeDefs(typeDefFiles);
 
-const resolvers = mergeResolvers([nodesResolver, servicesResolver, organizationsResolver, usersResolver, settingsResolver, trackingResolver, rolePortalResolver]);
+const resolvers = mergeResolvers([
+  nodesResolver,
+  servicesResolver,
+  organizationsResolver,
+  usersResolver,
+  settingsResolver,
+  trackingResolver,
+  rolePortalResolver,
+]);
 
 const createSchema = () => {
-  const graphQLSchema = makeExecutableSchema({ typeDefs, resolvers, inheritResolversFromInterfaces: true });
+  const graphQLSchema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+    inheritResolversFromInterfaces: true,
+  });
   return authDirectiveTransformer(graphQLSchema);
 };
 

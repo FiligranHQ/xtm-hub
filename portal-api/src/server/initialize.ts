@@ -23,7 +23,9 @@ import {
 
 const initAdminUser = async () => {
   const { email, password } = portalConfig.admin;
-  const adminUser = await dbUnsecure<User>('User').where({ id: ADMIN_UUID }).first();
+  const adminUser = await dbUnsecure<User>('User')
+    .where({ id: ADMIN_UUID })
+    .first();
   const { salt, hash } = hashPassword(password);
   const data = { salt, password: hash };
   if (adminUser) {
@@ -56,11 +58,9 @@ const completeUserInitialization = async (email, data) => {
   }
 };
 
-
 const initCapabilityAndRole = async () => {
   const trx = await dbTx();
   try {
-
     await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
     await ensureCapabilityExists(CAPABILITY_ADMIN, trx);
     await ensureCapabilityExists(CAPABILITY_USER, trx);

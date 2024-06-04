@@ -1,16 +1,18 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
-
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
-  { languageOptions: { globals: globals.node } },
+  {
+    languageOptions: { globals: globals.node },
+    plugins: {
+      prettier: eslintConfigPrettier,
+    },
+  },
   pluginJs.configs.recommended,
   ...tseslint.configs.strict,
   {
-    ignores: [
-      '**/dist/**',
-      '**/node_modules/**',
-      '**/__generated__/**'],
+    ignores: ['**/dist/**', '**/node_modules/**', '**/__generated__/**'],
   },
 ];

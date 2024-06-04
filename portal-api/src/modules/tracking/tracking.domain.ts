@@ -1,6 +1,8 @@
 import { AWXWorkflowAction } from '../../managers/awx/awx.model';
 import { v4 as uuidv4 } from 'uuid';
-import ActionTracking, { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
+import ActionTracking, {
+  ActionTrackingId,
+} from '../../model/kanel/public/ActionTracking';
 import { addNewActionTracking, updateActionTracking } from './action-tracking';
 import { addNewMessageTracking } from './message-tracking';
 import { TrackingConst } from './tracking.const';
@@ -26,7 +28,11 @@ export const initTracking = async (action: AWXWorkflowAction) => {
   return id;
 };
 
-export const endTracking = async (awxId: ActionTrackingId, status: string, output?: unknown) => {
+export const endTracking = async (
+  awxId: ActionTrackingId,
+  status: string,
+  output?: unknown
+) => {
   const ended_at = new Date();
   await updateActionTracking(awxId, {
     status,
@@ -43,24 +49,44 @@ export const endTracking = async (awxId: ActionTrackingId, status: string, outpu
   }
 
   await addNewMessageTracking(messageTrackingData);
-
 };
 
-export const loadTrackingDataBy = (context: PortalContext, field: string, value: string) => {
+export const loadTrackingDataBy = (
+  context: PortalContext,
+  field: string,
+  value: string
+) => {
   return db<ActionTracking>(context, 'ActionTracking')
-    .select(['ActionTracking.*',
-      dbRaw('case when count(distinct "MessageTracking".id) = 0 then \'[]\' else json_agg("MessageTracking".*) end as message_tracking')])
-    .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
+    .select([
+      'ActionTracking.*',
+      dbRaw(
+        'case when count(distinct "MessageTracking".id) = 0 then \'[]\' else json_agg("MessageTracking".*) end as message_tracking'
+      ),
+    ])
+    .leftJoin(
+      'MessageTracking',
+      'MessageTracking.tracking_id',
+      '=',
+      'ActionTracking.id'
+    )
     .where({ [field]: value })
     .groupBy('ActionTracking.id');
 };
 
 export const unsecureLoadTrackingDataBy = (field: string, value: string) => {
   return dbUnsecure<ActionTracking>('ActionTracking')
-    .select(['ActionTracking.*',
-      dbRaw('case when count(distinct "MessageTracking".id) = 0 then \'[]\' else json_agg("MessageTracking".*) end as message_tracking')])
-    .leftJoin('MessageTracking', 'MessageTracking.tracking_id', '=', 'ActionTracking.id')
+    .select([
+      'ActionTracking.*',
+      dbRaw(
+        'case when count(distinct "MessageTracking".id) = 0 then \'[]\' else json_agg("MessageTracking".*) end as message_tracking'
+      ),
+    ])
+    .leftJoin(
+      'MessageTracking',
+      'MessageTracking.tracking_id',
+      '=',
+      'ActionTracking.id'
+    )
     .where({ [field]: value })
     .groupBy('ActionTracking.id');
 };
-

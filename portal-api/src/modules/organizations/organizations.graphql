@@ -1,26 +1,31 @@
 enum OrganizationOrdering {
-    name
+  name
 }
 type Organization implements Node {
-    id: ID!
-    name: String
+  id: ID!
+  name: String
 }
 
 type OrganizationEdge {
-    cursor: String!
-    node: Organization!
+  cursor: String!
+  node: Organization!
 }
 
 type OrganizationConnection {
-    edges: [OrganizationEdge!]!
-    pageInfo: PageInfo!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
 }
 
 type Query {
-    organization(id: ID!): Organization @auth
-    organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection! @auth
+  organization(id: ID!): Organization @auth
+  organizations(
+    first: Int = 10
+    after: ID
+    orderBy: OrganizationOrdering = name
+    orderMode: OrderingMode = asc
+  ): OrganizationConnection! @auth
 }
 
 type Mutation {
-    addOrganization(name: String!): Organization @auth(requires: [ADMIN])
+  addOrganization(name: String!): Organization @auth(requires: [ADMIN])
 }

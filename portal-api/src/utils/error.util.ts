@@ -6,12 +6,9 @@ const errorUtil = (name, message, data) => {
   const Exception = createError(name, { data, message });
   return new Exception();
 };
-export const ForbiddenAccess = (message, data?) => errorUtil(
-  FORBIDDEN_ACCESS,
-  message || 'You are not allowed to do this.',
-  {
+export const ForbiddenAccess = (message, data?) =>
+  errorUtil(FORBIDDEN_ACCESS, message || 'You are not allowed to do this.', {
     http_status: 403,
     genre: CATEGORY_TECHNICAL,
     ...data,
-  },
-);
+  });

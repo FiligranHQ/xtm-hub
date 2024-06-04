@@ -1,33 +1,35 @@
-directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(
+  requires: [Restriction] = []
+) repeatable on OBJECT | FIELD_DEFINITION
 
 enum Restriction {
-    BYPASS
-    ADMIN
-    USER
+  BYPASS
+  ADMIN
+  USER
 }
 
 interface Node {
-    id: ID!
+  id: ID!
 }
 
 enum OrderingMode {
-    asc
-    desc
+  asc
+  desc
 }
 
 type PageInfo {
-    hasNextPage: Boolean!
-    hasPreviousPage: Boolean!
-    startCursor: String
-    endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
 }
 
 type MergeEvent implements Node {
-    id: ID!
-    from: ID!
-    target: ID!
+  id: ID!
+  from: ID!
+  target: ID!
 }
 
 type Query {
-    node(id: ID!): Node @auth
+  node(id: ID!): Node @auth
 }

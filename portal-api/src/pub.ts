@@ -16,12 +16,16 @@ type PubEvent = {
 
 const pubsub = new PubSub();
 
-export const dispatch = async (type: DatabaseType, action: ActionType, data: Node) => {
+export const dispatch = async (
+  type: DatabaseType,
+  action: ActionType,
+  data: Node
+) => {
   const node = { [action]: { ...data, __typename: type } };
   await pubsub.publish(type, { [type]: node });
 };
 
-export const listen = (context: PortalContext, topics: (DatabaseType)[]) => {
+export const listen = (context: PortalContext, topics: DatabaseType[]) => {
   const iteratorFn = () => pubsub.asyncIterator(topics);
   const filterFn = (event: PubEvent) => {
     const values = Object.values(event);

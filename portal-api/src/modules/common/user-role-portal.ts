@@ -3,14 +3,11 @@ import { UserId } from '../../model/kanel/public/User';
 import { getRolePortalByName } from '../role-portal/role-portal';
 
 export const createUserRolePortal = (user_id, role_portal_id) => {
-  return dbUnsecure('User_RolePortal')
-    .insert({ user_id, role_portal_id });
+  return dbUnsecure('User_RolePortal').insert({ user_id, role_portal_id });
 };
 
 export const deleteUserRolePortalByUserId = (user_id) => {
-  return dbUnsecure('User_RolePortal')
-    .where({ user_id })
-    .del();
+  return dbUnsecure('User_RolePortal').where({ user_id }).del();
 };
 
 export const addRolesToUser = async (userId: UserId, roles: string[]) => {
