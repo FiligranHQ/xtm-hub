@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
 import { renderHook } from '@testing-library/react-hooks';
 import useGranted from '@/hooks/useGranted';

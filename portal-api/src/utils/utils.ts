@@ -37,6 +37,9 @@ export const isEmptyField = (field: unknown): boolean => {
 export const now = () => new Date().getUTCDate();
 
 export const getNestedPropertyValue = (obj: object, paths: string) => {
+  if (!paths || paths.length === 0) {
+    return obj;
+  }
   return paths.split('.').reduce((acc, path) => acc && acc[path], obj) ?? [];
 };
 
