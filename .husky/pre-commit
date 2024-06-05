@@ -1,0 +1,7 @@
+cd portal-api
+yarn lint-staged
+yarn test
+
+cd ../portal-front
+yarn lint-staged
+yarn test

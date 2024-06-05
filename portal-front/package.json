@@ -9,11 +9,13 @@
     "start": "next start",
     "lint": "next lint",
     "relay": "relay-compiler",
-    "prettier": "prettier . --write",
-    "test": "vitest",
-    "test:e2e": "yarn playwright test --headed",
+    "format": "prettier . --write",
+    "test": "vitest run",
+    "test:w": "vitest",
+    "test:e2e": "yarn playwright test",
     "test:e2e:ui": "yarn playwright test --ui",
-    "generate-test-e2e": "npx playwright codegen http://localhost:3001/"
+    "generate-test-e2e": "npx playwright codegen http://localhost:3001/",
+    "prepare": "cd .. && husky ./.husky"
   },
   "dependencies": {
     "@hookform/resolvers": "3.3.4",
@@ -54,7 +56,10 @@
     "concurrently": "8.2.2",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.3",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.0.11",
     "jsdom": "^24.1.0",
+    "lint-staged": "^15.2.5",
     "monocart-reporter": "^2.4.7",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.5.14",

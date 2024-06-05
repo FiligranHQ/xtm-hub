@@ -9,4 +9,4 @@ dist
 .docker-compose
 .vscode
 .terraform
-.husky
+../.husky
