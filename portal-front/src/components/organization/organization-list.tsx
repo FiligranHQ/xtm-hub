@@ -20,14 +20,12 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
   organizations,
 }) => {
   return (
-    <>
-      <div className="container mx-auto py-10">
-        <DataTable
-          columns={columns}
-          data={organizations}
-        />
-      </div>
-    </>
+    <div className="container mx-auto py-10">
+      <DataTable
+        columns={columns}
+        data={organizations}
+      />
+    </div>
   );
 };
 export default OrganizationList;
