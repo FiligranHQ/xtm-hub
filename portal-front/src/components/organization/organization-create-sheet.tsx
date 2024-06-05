@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { FunctionComponent, useContext, useState } from 'react';
 import {
   Form,
@@ -6,16 +7,15 @@ import {
   FormItem,
   FormLabel,
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetClose,
-  SheetFooter,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { AddIcon } from 'filigran-icon';
-import * as React from 'react';
 import { SheetDescription } from 'filigran-ui';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -25,10 +25,12 @@ import { useMutation } from 'react-relay';
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
 import { organizationCreateMutation } from '../../../__generated__/organizationCreateMutation.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
+import { Organization } from '@/components/organization/organization-page';
 
 interface OrganizationCreateProps {
-  setAddedOrganization: (newOrganization: { id: string; name: string }) => void;
+  setAddedOrganization: (newOrganization: Organization) => void;
 }
+
 export const OrganizationCreateSheet: FunctionComponent<
   OrganizationCreateProps
 > = ({ setAddedOrganization }) => {
@@ -54,13 +56,13 @@ export const OrganizationCreateSheet: FunctionComponent<
         connections: [me.id],
         ...values,
       },
-      onCompleted: (response) => {
-        const newOrganization = {
-          id: response?.addOrganization?.id ?? '',
-          name: response?.addOrganization?.name ?? '',
-        };
-        setAddedOrganization(newOrganization);
-        setOpen(false);
+
+      onCompleted: ({ addOrganization }) => {
+        if (addOrganization) {
+          const { id, name } = addOrganization;
+          setAddedOrganization({ id, name });
+          setOpen(false);
+        }
       },
     });
   }
