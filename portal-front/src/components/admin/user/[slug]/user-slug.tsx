@@ -1,14 +1,25 @@
 import * as React from 'react';
-import { PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription } from 'react-relay';
+import {
+  PreloadedQuery,
+  useFragment,
+  useMutation,
+  usePreloadedQuery,
+  useSubscription,
+} from 'react-relay';
 import { pageLoaderUserSlugQuery } from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
 import { UserSlugQuery } from '../../../../../app/(application)/(admin)/admin/user/[slug]/page-loader';
-import { userSlug_fragment$data, userSlug_fragment$key } from '../../../../../__generated__/userSlug_fragment.graphql';
+import {
+  userSlug_fragment$data,
+  userSlug_fragment$key,
+} from '../../../../../__generated__/userSlug_fragment.graphql';
 import { useRouter } from 'next/navigation';
 import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
+import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 import {
-  userSlugSubscription as generatedUserSlugSubscription,
-} from '../../../../../__generated__/userSlugSubscription.graphql';
-import { userSlugDeletion, userSlugFragment, userSlugSubscription } from '@/components/admin/user/user.graphql';
+  userSlugDeletion,
+  userSlugFragment,
+  userSlugSubscription,
+} from '@/components/admin/user/user.graphql';
 import { Button } from 'filigran-ui/servers';
 import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
 import { DataTracking } from '@/components/data-tracking/data-tracking';

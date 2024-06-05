@@ -1,4 +1,6 @@
-directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(
+  requires: [Restriction] = []
+) repeatable on OBJECT | FIELD_DEFINITION
 
 enum Restriction {
   BYPASS
@@ -32,13 +34,28 @@ type Query {
   node(id: ID!): Node
   me: User
   user(id: ID!): User
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  users(
+    first: Int!
+    after: ID
+    orderBy: UserOrdering!
+    orderMode: OrderingMode!
+  ): UserConnection!
   settings: Settings!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  services(
+    first: Int!
+    after: ID
+    orderBy: ServiceOrdering!
+    orderMode: OrderingMode!
+  ): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   organization(id: ID!): Organization
-  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  organizations(
+    first: Int = 10
+    after: ID
+    orderBy: OrganizationOrdering = name
+    orderMode: OrderingMode = asc
+  ): OrganizationConnection!
 }
 
 enum UserOrdering {

@@ -1,4 +1,9 @@
-import { graphql, PreloadedQuery, usePaginationFragment, usePreloadedQuery } from 'react-relay';
+import {
+  graphql,
+  PreloadedQuery,
+  usePaginationFragment,
+  usePreloadedQuery,
+} from 'react-relay';
 import { pageLoaderUserQuery } from '../../../../__generated__/pageLoaderUserQuery.graphql';
 import * as React from 'react';
 import { UserListQuery } from '../../../../app/(application)/(admin)/admin/user/page-loader';
