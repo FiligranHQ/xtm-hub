@@ -5,7 +5,7 @@ export interface User {
   email: string;
   capabilities: { id: string; name: Restriction }[];
   organization_id: string;
-  organization: { id: string; name?: string };
+  organization: { id: string; name: string };
   roles_portal_id: RolePortal[];
 }
 

@@ -1,15 +1,18 @@
 'use client';
 
 import * as React from 'react';
+import { useState } from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import OrganizationList from '@/components/organization/organization-list';
 import { OrganizationCreateSheet } from '@/components/organization/organization-create-sheet';
-import { useState } from 'react';
 import { getOrganizations } from '@/components/organization/organization.service';
 
-interface OrganizationsProps {}
+export interface Organization {
+  id: string;
+  name: string;
+}
 
-const OrganizationPage: React.FunctionComponent<OrganizationsProps> = ({}) => {
+const OrganizationPage: React.FunctionComponent = () => {
   const breadcrumbValue = [
     {
       href: '/',
@@ -24,16 +27,13 @@ const OrganizationPage: React.FunctionComponent<OrganizationsProps> = ({}) => {
 
   const initialOrganizations =
     organizationData.map((edge) => ({
-      id: edge.node.id ?? '',
-      name: edge.node.name ?? '',
+      id: edge.node.id,
+      name: edge.node.name,
     })) ?? [];
   const [organizations, setOrganizations] =
-    useState<{ id: string; name: string }[]>(initialOrganizations);
+    useState<Organization[]>(initialOrganizations);
 
-  const setAddedOrganization = (newOrganization: {
-    id: string;
-    name: string;
-  }) => {
+  const setAddedOrganization = (newOrganization: Organization) => {
     setOrganizations((previousOrganizations) => [
       newOrganization,
       ...previousOrganizations,

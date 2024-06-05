@@ -3,15 +3,13 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
+import { Organization } from '@/components/organization/organization-page';
 
 interface OrganizationsProps {
-  organizations: {
-    id: string;
-    name: string;
-  }[];
+  organizations: Organization[];
 }
 
-const columns: ColumnDef<{ id: string; name: string }>[] = [
+const columns: ColumnDef<Organization>[] = [
   {
     accessorKey: 'name',
     id: 'name',
