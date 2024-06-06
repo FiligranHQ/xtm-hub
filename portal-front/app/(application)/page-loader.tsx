@@ -3,8 +3,8 @@
 import * as React from 'react';
 import Context from '@/components/me-context';
 import { graphql, useQueryLoader } from 'react-relay';
-import { pageLoaderMeQuery } from '../../__generated__/pageLoaderMeQuery.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { pageLoaderMeQuery } from '../../__generated__/pageLoaderMeQuery.graphql';
 
 // Configuration or Preloader Query
 export const MeQuery = graphql`
