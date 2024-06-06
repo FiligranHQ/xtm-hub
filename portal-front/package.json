@@ -50,6 +50,7 @@
     "@types/react-relay": "16.0.6",
     "@types/relay-test-utils": "^14.1.4",
     "@vitejs/plugin-react": "^4.3.0",
+    "babel-plugin-relay": "16.2.0",
     "concurrently": "8.2.2",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.3",
@@ -60,6 +61,7 @@
     "relay-compiler": "16.2.0",
     "relay-test-utils": "^16.2.0",
     "vite-plugin-relay": "^2.1.0",
+    "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.6.0"
   },
   "packageManager": "yarn@3.6.3",
