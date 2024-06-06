@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-__generated__
+/__generated__/**
+!__generated__/.gitkeep
 
 # dependencies
 /node_modules
