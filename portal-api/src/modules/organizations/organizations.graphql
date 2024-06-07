@@ -27,5 +27,6 @@ type Query {
 }
 
 type Mutation {
-  addOrganization(name: String!): Organization @auth(requires: [ADMIN])
+    addOrganization(name: String!): Organization @auth(requires: [ADMIN])
+    deleteOrganization(id: ID!): Organization @auth(requires: [ADMIN])
 }

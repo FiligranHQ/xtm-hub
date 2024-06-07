@@ -13,6 +13,14 @@ export const organizationFetch = graphql`
   }
 `;
 
+export const organizationDeletion = graphql`
+  mutation organizationDeletionMutation($id: ID!) {
+    deleteOrganization(id: $id) {
+      id
+    }
+  }
+`;
+
 export const CreateOrganizationMutation = graphql`
   mutation organizationCreateMutation($name: String!, $connections: [ID!]!) {
     addOrganization(name: $name)
