@@ -1,24 +1,23 @@
 import User from '../../model/kanel/public/User';
 import { loadOrganizationBy } from '../../modules/organizations/organizations';
-import { AWUserInput, AWXAddUserInput } from './awx.model';
+import { AWUserInput, AWXAddUserInput, UserInput } from './awx.model';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
+import { loadAllRolePortalBy } from '../../modules/role-portal/role-portal.domain';
+import { getRoleMappingReverse } from '../../auth/mapping-roles';
 
 export const buildCreateUserInput = async (
-  user: User,
-  awxUUID: ActionTrackingId,
-  keys: string[] = []
+  user: UserInput,
+  awxUUID: ActionTrackingId
 ) => {
   const orgInfo = await loadOrganizationBy('id', user.organization_id);
-  // Here add a reducer which add the corresponding
-  console.log(
-    await completeUserInput(
-      {
-        ...user,
-        awx_client_request_id: awxUUID,
-      },
-      keys
-    )
-  );
+  const loadUserRoles = await loadAllRolePortalBy('id', user.roles);
+
+  /* As we convert from config Thales role in input we should return the same as the output
+   * In order to do that we do a reverse mapping.
+   */
+  const roleMapping = getRoleMappingReverse();
+  const user_roles = loadUserRoles.map(({ name }) => roleMapping[name]);
+
   const awxAddUserInput: AWXAddUserInput = {
     awx_client_request_id: awxUUID,
     organization_name: orgInfo.name,
@@ -26,7 +25,7 @@ export const buildCreateUserInput = async (
     user_firstname: user.first_name,
     user_lastname: user.last_name,
     user_reset_password: user.password,
-    user_role: 'admin',
+    user_roles,
   };
   return awxAddUserInput;
 };

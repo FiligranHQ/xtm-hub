@@ -7,7 +7,7 @@ export interface AWXAddUserInput {
   user_email_address: string;
   user_firstname: string;
   user_lastname: string;
-  user_role: string;
+  user_roles: string[];
   user_reset_password: string;
 }
 
@@ -26,12 +26,12 @@ export type AWXActionFunctionMap = {
 
 interface AwxCreateUserAction {
   type: AWXAction.CREATE_USER;
-  input: User;
+  input: UserInput;
 }
 
 interface AwxDisableUserAction {
   type: AWXAction.DISABLE_USER;
-  input: User;
+  input: UserInput;
 }
 
 export type AWXWorkflowAction = AwxCreateUserAction | AwxDisableUserAction;
@@ -54,4 +54,8 @@ interface AwxResult {
 export interface AWXWorkflowConfig {
   path: string;
   keys: string[];
+}
+
+export interface UserInput extends User {
+  roles: string[];
 }

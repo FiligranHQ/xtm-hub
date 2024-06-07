@@ -4,6 +4,7 @@ import {
   isNil,
   isNotEmptyField,
   parseKeyValueArrayToObject,
+  parseKeyValueArrayToObjectReverse,
 } from './utils';
 
 describe('utils', () => {
@@ -160,6 +161,32 @@ describe('utils', () => {
       const paths = 'constructor.prototype.value';
       const expectedOutput = 'hidden';
       expect(getNestedPropertyValue(obj, paths)).toEqual(expectedOutput);
+    });
+  });
+
+  describe('parseKeyValueArrayToObjectReverse', () => {
+    it('should parse a valid key-value array and reverse the keys and values', () => {
+      const input = ['a:1', 'b:2', 'c:3'];
+      const expectedOutput = { '1': 'a', '2': 'b', '3': 'c' };
+      expect(parseKeyValueArrayToObjectReverse(input)).toEqual(expectedOutput);
+    });
+
+    it('should return an empty object when given an empty array', () => {
+      const input: string[] = [];
+      const expectedOutput = {};
+      expect(parseKeyValueArrayToObjectReverse(input)).toEqual(expectedOutput);
+    });
+
+    it('should handle elements without a colon by using undefined as key', () => {
+      const input = ['a:1', 'b2', 'c:3'];
+      const expectedOutput = { '1': 'a', undefined: 'b2', '3': 'c' };
+      expect(parseKeyValueArrayToObjectReverse(input)).toEqual(expectedOutput);
+    });
+
+    it('should handle duplicate values by overwriting with the last occurrence', () => {
+      const input = ['a:1', 'b:2', 'c:1'];
+      const expectedOutput = { '1': 'c', '2': 'b' };
+      expect(parseKeyValueArrayToObjectReverse(input)).toEqual(expectedOutput);
     });
   });
 });

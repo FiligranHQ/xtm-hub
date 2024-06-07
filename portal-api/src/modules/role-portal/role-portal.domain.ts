@@ -1,6 +1,6 @@
-import { RolePortal } from '../../__generated__/resolvers-types';
-import { db } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
+import RolePortal from '../../model/kanel/public/RolePortal';
 
 export const loadRolePortalBy = async (
   context: PortalContext,
@@ -10,4 +10,11 @@ export const loadRolePortalBy = async (
   return db<RolePortal>(context, 'RolePortal')
     .where({ [field]: value })
     .select('*');
+};
+
+export const loadAllRolePortalBy = async (
+  field: string,
+  value: string[]
+): Promise<RolePortal[]> => {
+  return dbUnsecure<RolePortal>('RolePortal').whereIn(field, value);
 };
