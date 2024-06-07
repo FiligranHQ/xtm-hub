@@ -15,7 +15,6 @@ import { TrackingConst } from '../../modules/tracking/tracking.const';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
   const awx = config.get('awx.activate');
-
   if (!awx) {
     return;
   }

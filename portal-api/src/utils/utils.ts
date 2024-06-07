@@ -51,3 +51,12 @@ export const parseKeyValueArrayToObject = (array: string[]) => {
   }
   return result;
 };
+
+export const parseKeyValueArrayToObjectReverse = (array: string[]) => {
+  const result = {};
+  for (const item of array) {
+    const [key, value] = item.split(':');
+    result[value] = key;
+  }
+  return result;
+};
