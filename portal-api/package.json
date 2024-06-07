@@ -87,7 +87,7 @@
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,json}": [
       "yarn format",
-      "yarn lint"
+      "yarn lint:fix"
     ]
   }
 }
