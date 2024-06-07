@@ -7,16 +7,32 @@ import { Organization } from '@/components/organization/organization-page';
 import { Button } from 'filigran-ui';
 import { DeleteIcon } from 'filigran-icon';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { organizationDeletion } from '@/components/organization/organization.graphql';
+import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
+import { useMutation } from 'react-relay';
 
 interface OrganizationsProps {
-  organizations: Organization[];
+  initialOrganizations: Organization[];
 }
 
 const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
-  organizations,
+  initialOrganizations,
 }) => {
+  const [organizations, setOrganizations] =
+    React.useState<Organization[]>(initialOrganizations);
+  const [deleteOrganizationMutation] =
+    useMutation<organizationDeletionMutation>(organizationDeletion);
   const deleteOrga = (organizationId: string) => {
-    console.log('DELETE', organizationId);
+    deleteOrganizationMutation({
+      variables: { id: organizationId },
+      onCompleted: (response: any) => {
+        setOrganizations(
+          organizations.filter(
+            (organization) => organization.id !== response.deleteOrganization.id
+          )
+        );
+      },
+    });
   };
   const columns: ColumnDef<Organization>[] = [
     {
@@ -43,7 +59,7 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
             }
             onClickContinue={() => deleteOrga(row.original.id)}>
             Are you sure you want to delete this organization{' '}
-            {row.original.name} ? This action can not be undone.
+            {row.original.name}? This action can not be undone.
           </AlertDialogComponent>
         );
       },

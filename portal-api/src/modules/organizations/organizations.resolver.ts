@@ -3,10 +3,12 @@ import {
   OrganizationConnection,
   Resolvers,
 } from '../../__generated__/resolvers-types';
-import { db, paginate } from '../../../knexfile';
+import { DatabaseType, db, paginate } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
 import { loadOrganizationBy } from './organizations.domain';
 import { extractId } from '../../utils/utils';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { dispatch } from '../../pub';
 
 const resolvers: Resolvers = {
   Query: {
@@ -30,6 +32,21 @@ const resolvers: Resolvers = {
         .insert(data)
         .returning('*');
       return addOrganization;
+    },
+    deleteOrganization: async (_, { id }, context) => {
+      const { id: databaseId } = fromGlobalId(id) as {
+        type: DatabaseType;
+        id: string;
+      };
+
+      const [deletedOrganization] = await db<Organization>(
+        context,
+        'Organization'
+      )
+        .where({ id: databaseId })
+        .delete('*');
+      await dispatch('Organization', 'delete', deletedOrganization);
+      return deletedOrganization;
     },
   },
 };

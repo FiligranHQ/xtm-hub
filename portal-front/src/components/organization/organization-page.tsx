@@ -43,7 +43,7 @@ const OrganizationPage: React.FunctionComponent = () => {
     <>
       <BreadcrumbNav value={breadcrumbValue} />
 
-      <OrganizationList organizations={organizations} />
+      <OrganizationList initialOrganizations={organizations} />
       <OrganizationCreateSheet setAddedOrganization={setAddedOrganization} />
     </>
   );
