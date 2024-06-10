@@ -7,33 +7,16 @@ import { Organization } from '@/components/organization/organization-page';
 import { Button } from 'filigran-ui';
 import { DeleteIcon } from 'filigran-icon';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { organizationDeletion } from '@/components/organization/organization.graphql';
-import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
-import { useMutation } from 'react-relay';
 
 interface OrganizationsProps {
-  initialOrganizations: Organization[];
+  organizations: Organization[];
+  organizationToDelete: (organizationDeleted: string) => void;
 }
 
 const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
-  initialOrganizations,
+  organizations,
+  organizationToDelete,
 }) => {
-  const [organizations, setOrganizations] =
-    React.useState<Organization[]>(initialOrganizations);
-  const [deleteOrganizationMutation] =
-    useMutation<organizationDeletionMutation>(organizationDeletion);
-  const deleteOrga = (organizationId: string) => {
-    deleteOrganizationMutation({
-      variables: { id: organizationId },
-      onCompleted: (response: any) => {
-        setOrganizations(
-          organizations.filter(
-            (organization) => organization.id !== response.deleteOrganization.id
-          )
-        );
-      },
-    });
-  };
   const columns: ColumnDef<Organization>[] = [
     {
       accessorKey: 'name',
@@ -57,7 +40,7 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
                 <DeleteIcon className="h-4 w-4" />
               </Button>
             }
-            onClickContinue={() => deleteOrga(row.original.id)}>
+            onClickContinue={() => organizationToDelete(row.original.id)}>
             Are you sure you want to delete this organization{' '}
             {row.original.name}? This action can not be undone.
           </AlertDialogComponent>

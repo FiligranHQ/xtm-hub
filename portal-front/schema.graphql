@@ -81,8 +81,8 @@ type UserSubscription {
 
 type Subscription {
   User: UserSubscription
-  ActionTracking: TrackingSubscription
   Service: ServiceSubscription
+  ActionTracking: TrackingSubscription
 }
 
 input EditUserInput {
@@ -124,30 +124,6 @@ type PlatformProvider {
 
 type Settings {
   platform_providers: [PlatformProvider!]!
-}
-
-type ActionTracking implements Node {
-  id: ID!
-  contextual_id: String!
-  status: String
-  created_at: Date!
-  ended_at: Date
-  message_tracking: [MessageTracking!]!
-}
-
-type MessageTracking implements Node {
-  id: ID!
-  tracking_id: ID
-  created_at: Date!
-  technical: Boolean
-  type: String!
-  tracking_info: JSON
-}
-
-type TrackingSubscription {
-  add: ActionTracking
-  edit: ActionTracking
-  delete: ActionTracking
 }
 
 enum ServiceOrdering {
@@ -207,3 +183,27 @@ type OrganizationConnection {
 scalar JSON
 
 scalar Date
+
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
+}

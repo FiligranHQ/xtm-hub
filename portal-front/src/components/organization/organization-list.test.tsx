@@ -1,8 +1,9 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
-import OrganizationList from '@/components/organization/organization-list'; // Importer l'extension jest-dom pour les matchers supplémentaires
+import OrganizationList from '@/components/organization/organization-list';
+import testRender from '@/utils/test/test-render';
 
 const mockOrganizations = [
   { id: '1', name: 'Organization 1' },
@@ -11,16 +12,26 @@ const mockOrganizations = [
 
 describe('OrganizationList component', () => {
   it('render with given organizations data', async () => {
-    const { getByText } = render(
-      <OrganizationList organizations={mockOrganizations} />
+    const { getByText } = testRender(
+      <OrganizationList
+        organizations={mockOrganizations}
+        organizationToDelete={() => '1'}
+      />
     );
 
-    expect(getByText('Organization 1')).toBeInTheDocument();
-    expect(getByText('Organization 2')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText('Organization 1')).toBeInTheDocument();
+      expect(getByText('Organization 2')).toBeInTheDocument();
+    });
   });
 
   it('render an empty tab', async () => {
-    const { queryByTestId } = render(<OrganizationList organizations={[]} />);
+    const { queryByTestId } = testRender(
+      <OrganizationList
+        organizations={[]}
+        organizationToDelete={() => '1'}
+      />
+    );
 
     expect(queryByTestId('data-table')).toBeNull();
   });
