@@ -9,6 +9,7 @@ import { getOrganizations } from '@/components/organization/organization.service
 import { useMutation } from 'react-relay';
 import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
 import { organizationDeletion } from '@/components/organization/organization.graphql';
+import { DialogInformative } from '@/components/ui/dialog';
 
 export interface Organization {
   id: string;
@@ -44,11 +45,13 @@ const OrganizationPage: React.FunctionComponent = () => {
   };
   const [deleteOrganizationMutation] =
     useMutation<organizationDeletionMutation>(organizationDeletion);
+
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const organizationToDelete = (orgaToDelete: string) => {
     deleteOrganizationMutation({
       variables: { id: orgaToDelete },
       onCompleted: (response: any) => {
-        console.log('response', response);
         setOrganizations(
           organizations.filter(
             (organization) => organization.id !== response.deleteOrganization.id
@@ -56,10 +59,23 @@ const OrganizationPage: React.FunctionComponent = () => {
         );
       },
       onError: (error) => {
-        console.log('error', error);
+        const message = error.message.includes(
+          'violates foreign key constraint "user_organization_id_foreign" on table "User"'
+        )
+          ? 'The organization could not be deleted because at least one user is affiliated with it. Delete the user(s) first. '
+          : error.message
+            ? error.message
+            : 'An unexpected error occurred';
+        setErrorMessage(message);
+        setErrorDialogOpen(true);
       },
     });
   };
+
+  const handleClose = () => {
+    setErrorDialogOpen(false);
+  };
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -69,6 +85,13 @@ const OrganizationPage: React.FunctionComponent = () => {
         organizations={organizations}
       />
       <OrganizationCreateSheet setAddedOrganization={setAddedOrganization} />
+      <DialogInformative
+        isOpen={isErrorDialogOpen}
+        onClose={handleClose}
+        title="Error"
+        description={'An error occured while deleting this organization.'}>
+        <p>{errorMessage}</p>
+      </DialogInformative>
     </>
   );
 };
