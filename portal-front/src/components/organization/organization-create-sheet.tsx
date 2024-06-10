@@ -75,9 +75,11 @@ export const OrganizationCreateSheet: FunctionComponent<
       open={open}
       onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          {' '}
-          <AddIcon className="mr-4 h-4 w-4" /> Organization
+        <Button
+          size="icon"
+          aria-label="Create Organization"
+          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
+          <AddIcon className="h-4 w-4" />
         </Button>
       </SheetTrigger>
       <SheetContent side={'right'}>

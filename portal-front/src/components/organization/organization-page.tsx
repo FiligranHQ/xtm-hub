@@ -6,6 +6,9 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import OrganizationList from '@/components/organization/organization-list';
 import { OrganizationCreateSheet } from '@/components/organization/organization-create-sheet';
 import { getOrganizations } from '@/components/organization/organization.service';
+import { useMutation } from 'react-relay';
+import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
+import { organizationDeletion } from '@/components/organization/organization.graphql';
 
 export interface Organization {
   id: string;
@@ -39,11 +42,32 @@ const OrganizationPage: React.FunctionComponent = () => {
       ...previousOrganizations,
     ]);
   };
+  const [deleteOrganizationMutation] =
+    useMutation<organizationDeletionMutation>(organizationDeletion);
+  const organizationToDelete = (orgaToDelete: string) => {
+    deleteOrganizationMutation({
+      variables: { id: orgaToDelete },
+      onCompleted: (response: any) => {
+        console.log('response', response);
+        setOrganizations(
+          organizations.filter(
+            (organization) => organization.id !== response.deleteOrganization.id
+          )
+        );
+      },
+      onError: (error) => {
+        console.log('error', error);
+      },
+    });
+  };
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
 
-      <OrganizationList initialOrganizations={organizations} />
+      <OrganizationList
+        organizationToDelete={organizationToDelete}
+        organizations={organizations}
+      />
       <OrganizationCreateSheet setAddedOrganization={setAddedOrganization} />
     </>
   );

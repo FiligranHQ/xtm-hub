@@ -14,7 +14,7 @@ describe('OrganizationCreateSheet component', () => {
 
   it('should enable create button on dirty form only', async () => {
     testRender(<OrganizationCreateSheet setAddedOrganization={() => {}} />);
-    const openButton = screen.getByText('Organization');
+    const openButton = screen.getByLabelText('Create Organization');
     fireEvent.click(openButton);
 
     const createButton = screen.getByText('Create') as HTMLButtonElement;
