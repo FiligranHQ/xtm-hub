@@ -10,13 +10,24 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from 'filigran-ui/clients';
+import { Button } from 'filigran-ui/servers';
 
 interface AlertDialogProps {
   triggerElement: ReactNode;
   AlertTitle: string;
   description?: string;
+  actionButtonText?: string;
   children: ReactNode;
   onClickContinue: () => void;
+  variantName?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+    | null
+    | undefined;
 }
 
 /*
@@ -25,6 +36,8 @@ Example of use :
 ```
  <AlertDialogComponent
             AlertTitle={'AlertDialog title, string'}
+            variantName={"destructive"} /*optional
+            actionButtonText={"Delete"} /*optional
             triggerElement={
               <Button
                 variant="ghost"
@@ -44,8 +57,10 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
   triggerElement,
   AlertTitle,
   description,
+  actionButtonText = 'Continue',
   children,
   onClickContinue,
+  variantName = 'default',
 }) => {
   return (
     <AlertDialog>
@@ -60,9 +75,12 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
         {children}
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onClickContinue}>
-            Continue
-          </AlertDialogAction>
+
+          <Button
+            variant={variantName}
+            onClick={onClickContinue}>
+            {actionButtonText}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

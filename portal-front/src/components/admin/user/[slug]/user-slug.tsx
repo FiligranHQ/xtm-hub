@@ -98,6 +98,8 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
 
           <AlertDialogComponent
             AlertTitle={'Delete user'}
+            actionButtonText={'Delete'}
+            variantName={'destructive'}
             triggerElement={
               <Button
                 variant="ghost"

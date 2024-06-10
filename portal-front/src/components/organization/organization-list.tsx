@@ -32,6 +32,8 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
       cell: ({ row }) => {
         return (
           <AlertDialogComponent
+            actionButtonText={'Delete'}
+            variantName={'destructive'}
             AlertTitle={'Delete organization'}
             triggerElement={
               <Button
