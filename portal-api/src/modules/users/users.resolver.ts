@@ -3,11 +3,10 @@ import {
   Resolvers,
   User as GeneratedUser,
 } from '../../__generated__/resolvers-types';
-import { DatabaseType, db, dbTx } from '../../../knexfile';
+import { db, dbTx } from '../../../knexfile';
 import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import crypto from 'node:crypto';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { loadUserBy, loadUsers } from './users.domain';
 import { dispatch, listen } from '../../pub';
@@ -49,11 +48,7 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      const { id: databaseId } = fromGlobalId(id) as {
-        type: DatabaseType;
-        id: string;
-      };
-      return loadUserBy('User.id', databaseId);
+      return loadUserBy('User.id', id);
     },
     users: async (_, { first, after, orderMode, orderBy }, context) => {
       if (!context.user)
@@ -65,10 +60,9 @@ const resolvers: Resolvers = {
   },
   User: {
     organization: (user, __, context) => {
-      const id = extractId(user.organization_id);
       return user.organization
         ? user.organization
-        : loadOrganizationBy(context, 'Organization.id', id);
+        : loadOrganizationBy(context, 'Organization.id', user.organization_id);
     },
     tracking_data: async (user, __, context) => {
       return user?.tracking_data
@@ -132,7 +126,6 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
 
       try {
-        const { id: databaseId } = fromGlobalId(id);
         const organization_id = extractId(input.organization_id);
         const { roles_portal_id, ...inputWithoutRoles } = input;
         const extracted_roles_portal_id = roles_portal_id.map(
@@ -140,7 +133,7 @@ const resolvers: Resolvers = {
         );
         const update = { ...inputWithoutRoles, organization_id };
         const [updatedUser] = await db<GeneratedUser>(context, 'User')
-          .where({ id: databaseId })
+          .where({ id })
           .update(update)
           .returning('*');
         await deleteUserRolePortalByUserId(updatedUser.id);
@@ -170,12 +163,8 @@ const resolvers: Resolvers = {
       }
     },
     deleteUser: async (_, { id }, context) => {
-      const { id: databaseId } = fromGlobalId(id) as {
-        type: DatabaseType;
-        id: string;
-      };
       const [deletedUser] = await db<GeneratedUser>(context, 'User')
-        .where({ id: databaseId })
+        .where({ id })
         .delete('*');
       await dispatch('User', 'delete', deletedUser);
       return deletedUser;

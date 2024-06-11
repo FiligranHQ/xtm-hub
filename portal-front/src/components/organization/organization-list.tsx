@@ -4,7 +4,7 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
 import { Organization } from '@/components/organization/organization-page';
-import { Button } from 'filigran-ui';
+import { Button } from 'filigran-ui/servers';
 import { DeleteIcon } from 'filigran-icon';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 
