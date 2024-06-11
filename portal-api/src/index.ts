@@ -18,6 +18,7 @@ import { User } from './model/user';
 import { PortalContext } from './model/portal-context';
 import { awxEndpoint } from './managers/awx/awx-endpoint';
 import { createHandler } from 'graphql-sse/lib/use/express';
+import { extractId } from './utils';
 
 const { json } = pkg;
 
@@ -109,6 +110,10 @@ declare module 'express-session' {
 const middlewareExpress = expressMiddleware(server, {
   context: async ({ req, res }) => {
     const { user } = req.session;
+    // extract id, only done for request with id directly
+    req?.body?.variables?.id &&
+      (req.body.variables.id = extractId(req.body.variables.id));
+
     // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
     // TODO Add build session from request authorization
     return { user, req, res };
