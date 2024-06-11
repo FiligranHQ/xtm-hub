@@ -13,4 +13,5 @@ test('should navigate to the user page', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: '(Internal) - admin@filigran.io' })
   ).toBeVisible();
+  await expect(page).toHaveScreenshot();
 });
