@@ -28,12 +28,12 @@ import { Portal, portalContext } from '@/components/portal-context';
 import { Organization } from '@/components/organization/organization-page';
 
 interface OrganizationCreateProps {
-  setAddedOrganization: (newOrganization: Organization) => void;
+  onAddedOrganization: (newOrganization: Organization) => void;
 }
 
 export const OrganizationCreateSheet: FunctionComponent<
   OrganizationCreateProps
-> = ({ setAddedOrganization }) => {
+> = ({ onAddedOrganization }) => {
   const form = useForm<z.infer<typeof organizationFormSchema>>({
     resolver: zodResolver(organizationFormSchema),
     defaultValues: {
@@ -60,7 +60,7 @@ export const OrganizationCreateSheet: FunctionComponent<
       onCompleted: ({ addOrganization }) => {
         if (addOrganization) {
           const { id, name } = addOrganization;
-          setAddedOrganization({ id, name });
+          onAddedOrganization({ id, name });
           setOpen(false);
         }
       },

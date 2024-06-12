@@ -10,12 +10,12 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 
 interface OrganizationsProps {
   organizations: Organization[];
-  organizationToDelete: (organizationDeleted: string) => void;
+  onDeletedOrganization: (deletedOrganization: string) => void;
 }
 
 const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
   organizations,
-  organizationToDelete,
+  onDeletedOrganization,
 }) => {
   const columns: ColumnDef<Organization>[] = [
     {
@@ -42,7 +42,7 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
                 <DeleteIcon className="h-4 w-4" />
               </Button>
             }
-            onClickContinue={() => organizationToDelete(row.original.id)}>
+            onClickContinue={() => onDeletedOrganization(row.original.id)}>
             Are you sure you want to delete this organization{' '}
             {row.original.name}? This action can not be undone.
           </AlertDialogComponent>
