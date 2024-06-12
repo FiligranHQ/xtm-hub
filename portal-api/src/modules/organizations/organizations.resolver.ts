@@ -31,6 +31,21 @@ const resolvers: Resolvers = {
         .returning('*');
       return addOrganization;
     },
+    editOrganization: async (_, { id, input }, context) => {
+      console.log('id', id, ' input ', input);
+      try {
+        const [updatedOrganization] = await db<Organization>(
+          context,
+          'Organization'
+        )
+          .where({ id })
+          .update({ name: input.name })
+          .returning('*');
+        return updatedOrganization;
+      } catch (error) {
+        console.log('ERROR', error);
+      }
+    },
     deleteOrganization: async (_, { id }, context) => {
       const [deletedOrganization] = await db<Organization>(
         context,

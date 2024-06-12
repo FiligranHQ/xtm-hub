@@ -33,3 +33,12 @@ export const CreateOrganizationMutation = graphql`
     }
   }
 `;
+
+export const OrganizationEditMutation = graphql`
+  mutation organizationEditMutation($id: ID!, $input: EditOrganizationInput!) {
+    editOrganization(id: $id, input: $input) {
+      id
+      name
+    }
+  }
+`;
