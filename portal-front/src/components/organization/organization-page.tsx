@@ -37,7 +37,7 @@ const OrganizationPage: React.FunctionComponent = () => {
   const [organizations, setOrganizations] =
     useState<Organization[]>(initialOrganizations);
 
-  const setAddedOrganization = (newOrganization: Organization) => {
+  const onAddedOrganization = (newOrganization: Organization) => {
     setOrganizations((previousOrganizations) => [
       newOrganization,
       ...previousOrganizations,
@@ -48,9 +48,9 @@ const OrganizationPage: React.FunctionComponent = () => {
 
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const organizationToDelete = (orgaToDelete: string) => {
+  const onDeletedOrganization = (deletedOrganization: string) => {
     deleteOrganizationMutation({
-      variables: { id: orgaToDelete },
+      variables: { id: deletedOrganization },
       onCompleted: (response: any) => {
         setOrganizations(
           organizations.filter(
@@ -81,10 +81,10 @@ const OrganizationPage: React.FunctionComponent = () => {
       <BreadcrumbNav value={breadcrumbValue} />
 
       <OrganizationList
-        organizationToDelete={organizationToDelete}
+        onDeletedOrganization={onDeletedOrganization}
         organizations={organizations}
       />
-      <OrganizationCreateSheet setAddedOrganization={setAddedOrganization} />
+      <OrganizationCreateSheet onAddedOrganization={onAddedOrganization} />
       <DialogInformative
         isOpen={isErrorDialogOpen}
         onClose={handleClose}
