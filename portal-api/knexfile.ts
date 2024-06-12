@@ -132,7 +132,9 @@ export const paginate = <T>(
     .offset(currentOffset)
     .limit(first);
   queryContext.asConnection = <U>() =>
-    queryContext.then((rows) => dbConnections(rows, after, first)) as U;
+    queryContext.then((rows) => {
+      return dbConnections(rows, after, first);
+    }) as U;
   return queryContext;
 };
 
