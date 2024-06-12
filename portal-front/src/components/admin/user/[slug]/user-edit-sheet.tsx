@@ -5,11 +5,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Sheet,
   SheetClose,
   SheetContent,
@@ -36,6 +31,7 @@ import { EditIcon } from 'filigran-icon';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { useMutation } from 'react-relay';
+import { Combobox } from 'filigran-ui';
 
 interface UserEditCreateProps {
   user: userSlug_fragment$data;
@@ -47,7 +43,12 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
   const [open, setOpen] = useState<boolean>(false);
 
   const organizationData = getOrganizations();
-
+  const transformedOrganizationData = organizationData.map((organization) => {
+    return {
+      label: organization.node.name,
+      value: organization.node.id,
+    };
+  });
   const rolePortal = getRolesPortal();
 
   const rolePortalData =
@@ -211,25 +212,17 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
               name="organization_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an organization" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {organizationData.map(({ node }) => (
-                        <SelectItem
-                          key={node.id}
-                          value={node.id}>
-                          {node.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel className="mb-2 block">Organization</FormLabel>
+                  <FormControl className="block">
+                    <Combobox
+                      dataTab={transformedOrganizationData}
+                      order={'Choose'}
+                      placeholder={'Choose a value'}
+                      emptyCommand={'Not found'}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

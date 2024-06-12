@@ -1,15 +1,11 @@
 import {
+  Combobox,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Sheet,
   SheetClose,
   SheetContent,
@@ -19,9 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from 'filigran-ui/clients';
-import { MultiSelectFormField } from 'filigran-ui/servers';
-
-import { Button, Input } from 'filigran-ui/servers';
+import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
@@ -56,7 +50,12 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     })) ?? [];
 
   const organizationData = getOrganizations();
-
+  const transformedOrganizationData = organizationData.map((organization) => {
+    return {
+      label: organization.node.name,
+      value: organization.node.id,
+    };
+  });
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -215,25 +214,17 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
               name="organization_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an organization" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {organizationData.map(({ node }) => (
-                        <SelectItem
-                          key={node.id}
-                          value={node.id}>
-                          {node.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel className="mb-2 block">Organization</FormLabel>
+                  <FormControl className="block">
+                    <Combobox
+                      dataTab={transformedOrganizationData}
+                      order={'Choose'}
+                      placeholder={'Choose a value'}
+                      emptyCommand={'Not found'}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
