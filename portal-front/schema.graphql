@@ -33,9 +33,9 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  settings: Settings!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  settings: Settings!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
@@ -110,6 +110,7 @@ type Mutation {
   login(email: String!, password: String): User
   logout: ID!
   addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
@@ -140,16 +141,6 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -169,6 +160,20 @@ type OrganizationConnection {
   pageInfo: PageInfo!
 }
 
+input EditOrganizationInput {
+  name: String!
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
 type RolePortal implements Node {
   id: ID!
   name: String!
@@ -177,6 +182,10 @@ type RolePortal implements Node {
 type RolePortalID implements Node {
   id: ID!
 }
+
+scalar JSON
+
+scalar Date
 
 enum ServiceOrdering {
   name
@@ -203,7 +212,3 @@ type ServiceSubscription {
   edit: Service
   delete: Service
 }
-
-scalar JSON
-
-scalar Date

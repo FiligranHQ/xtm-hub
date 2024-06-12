@@ -7,6 +7,7 @@ import { Organization } from '@/components/organization/organization-page';
 import { Button } from 'filigran-ui/servers';
 import { DeleteIcon } from 'filigran-icon';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { OrganizationEditSheet } from '@/components/organization/organization-edit-sheet';
 
 interface OrganizationsProps {
   organizations: Organization[];
@@ -22,6 +23,15 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
       accessorKey: 'name',
       id: 'name',
       header: 'Name',
+      cell: ({ row }) => {
+        return (
+          <>
+            <OrganizationEditSheet
+              currentOrganization={row.original}></OrganizationEditSheet>
+            {row.original.name}
+          </>
+        );
+      },
     },
     {
       id: 'actions',

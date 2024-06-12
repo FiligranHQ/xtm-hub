@@ -63,6 +63,10 @@ export type Capability = Node & {
   name: Restriction;
 };
 
+export type EditOrganizationInput = {
+  name: Scalars['String']['input'];
+};
+
 export type EditUserInput = {
   email: Scalars['String']['input'];
   first_name?: InputMaybe<Scalars['String']['input']>;
@@ -96,6 +100,7 @@ export type Mutation = {
   deleteOrganization?: Maybe<Organization>;
   deleteService?: Maybe<Service>;
   deleteUser?: Maybe<User>;
+  editOrganization?: Maybe<Organization>;
   editService?: Maybe<Service>;
   editUser?: Maybe<User>;
   login?: Maybe<User>;
@@ -125,6 +130,11 @@ export type MutationDeleteServiceArgs = {
 
 export type MutationDeleteUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type MutationEditOrganizationArgs = {
+  id: Scalars['ID']['input'];
+  input: EditOrganizationInput;
 };
 
 export type MutationEditServiceArgs = {
@@ -477,6 +487,7 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Capability: ResolverTypeWrapper<Capability>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
+  EditOrganizationInput: EditOrganizationInput;
   EditUserInput: EditUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -519,6 +530,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   Capability: Capability;
   Date: Scalars['Date']['output'];
+  EditOrganizationInput: EditOrganizationInput;
   EditUserInput: EditUserInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
@@ -671,6 +683,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationDeleteUserArgs, 'id'>
+  >;
+  editOrganization?: Resolver<
+    Maybe<ResolversTypes['Organization']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>
   >;
   editService?: Resolver<
     Maybe<ResolversTypes['Service']>,
