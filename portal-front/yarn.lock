@@ -4591,7 +4591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:2.1.1":
+"clsx@npm:2.1.1, clsx@npm:^2.1.0":
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
   checksum: acd3e1ab9d8a433ecb3cc2f6a05ab95fe50b4a3cfc5ba47abb6cbf3754585fcb87b84e90c822a1f256c4198e3b41c7f6c391577ffc8678ad587fc0976b24fd57
@@ -8443,6 +8443,7 @@ __metadata:
     prettier-plugin-tailwindcss: 0.5.14
     react: 18.3.1
     react-dom: 18.3.1
+    react-headless-pagination: ^1.1.6
     react-hook-form: 7.51.3
     react-relay: 16.2.0
     relay-compiler: 16.2.0
@@ -8735,6 +8736,17 @@ __metadata:
   peerDependencies:
     react: ">=16.13.1"
   checksum: f36270a5d775a25c8920f854c0d91649ceea417b15b5bc51e270a959b0476647bb79abb4da3be7dd9a4597b029214e8fe43ea914a7f16fa7543c91f784977f1b
+  languageName: node
+  linkType: hard
+
+"react-headless-pagination@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "react-headless-pagination@npm:1.1.6"
+  dependencies:
+    clsx: ^2.1.0
+  peerDependencies:
+    react: ">=16"
+  checksum: d405fecd4ee8f22b4a065506465e250a816eea37e69ff026b3da3a5509ad96470fdfdd43ba598a94b7b82ba6dd807423aa12ac97630cbd2b6ea4df568181947f
   languageName: node
   linkType: hard
 

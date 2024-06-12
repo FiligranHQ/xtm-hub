@@ -1,4 +1,4 @@
-import { dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Capability,
   User as UserGenerated,
@@ -130,7 +130,15 @@ export const loadUsers = async (
       node: completeUserCapability(edge.node),
     };
   });
-  return userConnection;
+
+  const { totalCount } = await db<User>(context, 'User', opts)
+    .countDistinct('id as totalCount')
+    .first();
+
+  return {
+    totalCount,
+    ...userConnection,
+  };
 };
 
 export const createUser = async (

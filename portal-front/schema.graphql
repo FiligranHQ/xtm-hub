@@ -68,6 +68,7 @@ type UserEdge {
 }
 
 type UserConnection {
+  totalCount: Int!
   edges: [UserEdge!]!
   pageInfo: PageInfo!
 }
