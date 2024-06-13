@@ -36,9 +36,9 @@ type Query {
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
   settings: Settings!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
 }
 
 enum UserOrdering {
@@ -174,19 +174,6 @@ type Settings {
   platform_providers: [PlatformProvider!]!
 }
 
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
-}
-
-scalar JSON
-
-scalar Date
-
 enum ServiceOrdering {
   name
 }
@@ -212,3 +199,16 @@ type ServiceSubscription {
   edit: Service
   delete: Service
 }
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
+}
+
+scalar JSON
+
+scalar Date

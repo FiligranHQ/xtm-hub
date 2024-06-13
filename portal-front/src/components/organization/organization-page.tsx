@@ -72,6 +72,15 @@ const OrganizationPage: React.FunctionComponent = () => {
     });
   };
 
+  const onEditedOrganization = (editedOrganization: Organization) => {
+    const updatedOrganizations = organizations.map((organization) => {
+      return organization.id === editedOrganization.id
+        ? { ...organization, name: editedOrganization.name }
+        : organization;
+    });
+    setOrganizations(updatedOrganizations as Organization[]);
+  };
+
   const handleClose = () => {
     setErrorDialogOpen(false);
   };
@@ -82,6 +91,7 @@ const OrganizationPage: React.FunctionComponent = () => {
 
       <OrganizationList
         onDeletedOrganization={onDeletedOrganization}
+        onEditedOrganization={onEditedOrganization}
         organizations={organizations}
       />
       <OrganizationCreateSheet onAddedOrganization={onAddedOrganization} />
