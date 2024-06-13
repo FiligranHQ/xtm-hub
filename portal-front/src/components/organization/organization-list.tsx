@@ -12,12 +12,17 @@ import { OrganizationEditSheet } from '@/components/organization/organization-ed
 interface OrganizationsProps {
   organizations: Organization[];
   onDeletedOrganization: (deletedOrganization: string) => void;
+  onEditedOrganization: (editedOrganization: Organization) => void;
 }
 
 const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
   organizations,
   onDeletedOrganization,
+  onEditedOrganization,
 }) => {
+  const editedOrganization = (organization: Organization) => {
+    onEditedOrganization(organization);
+  };
   const columns: ColumnDef<Organization>[] = [
     {
       accessorKey: 'name',
@@ -27,6 +32,7 @@ const OrganizationList: React.FunctionComponent<OrganizationsProps> = ({
         return (
           <>
             <OrganizationEditSheet
+              onEditedOrganization={editedOrganization}
               currentOrganization={row.original}></OrganizationEditSheet>
             {row.original.name}
           </>
