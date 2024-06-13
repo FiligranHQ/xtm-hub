@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useState } from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import OrganizationList from '@/components/organization/organization-list';
-import { OrganizationCreateSheet } from '@/components/organization/organization-create-sheet';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { useMutation } from 'react-relay';
 import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
@@ -37,12 +36,12 @@ const OrganizationPage: React.FunctionComponent = () => {
   const [organizations, setOrganizations] =
     useState<Organization[]>(initialOrganizations);
 
-  const onAddedOrganization = (newOrganization: Organization) => {
-    setOrganizations((previousOrganizations) => [
-      newOrganization,
-      ...previousOrganizations,
-    ]);
-  };
+  // const onAddedOrganization = (newOrganization: Organization) => {
+  //   setOrganizations((previousOrganizations) => [
+  //     newOrganization,
+  //     ...previousOrganizations,
+  //   ]);
+  // };
   const [deleteOrganizationMutation] =
     useMutation<organizationDeletionMutation>(organizationDeletion);
 
@@ -81,6 +80,14 @@ const OrganizationPage: React.FunctionComponent = () => {
     setOrganizations(updatedOrganizations as Organization[]);
   };
 
+  const onAddedOrganization = (addedOrganisation: Organization) => {
+    console.log('orga-page', addedOrganisation);
+    setOrganizations((previousOrganizations) => [
+      addedOrganisation,
+      ...previousOrganizations,
+    ]);
+  };
+
   const handleClose = () => {
     setErrorDialogOpen(false);
   };
@@ -92,9 +99,10 @@ const OrganizationPage: React.FunctionComponent = () => {
       <OrganizationList
         onDeletedOrganization={onDeletedOrganization}
         onEditedOrganization={onEditedOrganization}
+        onAddedOrganization={onAddedOrganization}
         organizations={organizations}
       />
-      <OrganizationCreateSheet onAddedOrganization={onAddedOrganization} />
+      {/*<OrganizationCreateSheet onAddedOrganization={onAddedOrganization} />*/}
       <DialogInformative
         isOpen={isErrorDialogOpen}
         onClose={handleClose}
