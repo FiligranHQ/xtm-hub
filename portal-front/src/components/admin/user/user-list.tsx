@@ -5,16 +5,23 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { pageLoaderUserQuery } from '../../../../__generated__/pageLoaderUserQuery.graphql';
+import {
+  OrderingMode,
+  pageLoaderUserQuery,
+  pageLoaderUserQuery$variables,
+  UserOrdering,
+} from '../../../../__generated__/pageLoaderUserQuery.graphql';
 import { UserListQuery } from '../../../../app/(application)/(admin)/admin/user/page-loader';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
 import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
 import { UserCreateSheet } from '@/components/admin/user/user-create-sheet';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, SortingState } from '@tanstack/react-table';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { DataTable } from '@/components/ui/data-table';
 import Pagination from '@/components/ui/pagination';
+import { DataTable } from 'filigran-ui/clients';
+import { useState } from 'react';
+import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
 
 // Relay
 export const usersFragment = graphql`
@@ -69,7 +76,6 @@ const columns: ColumnDef<UserData>[] = [
     accessorKey: 'email',
     id: 'email',
     header: 'Email',
-    enableSorting: false,
   },
   {
     id: 'actions',
@@ -125,7 +131,26 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   };
 
   const totalPages = Math.ceil(data.users.totalCount / DEFAULT_ITEM_BY_PAGE);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
+  const handleRefetchData = (args?: Partial<pageLoaderUserQuery$variables>) => {
+    refetch({
+      count: DEFAULT_ITEM_BY_PAGE,
+      cursor: btoa(String(DEFAULT_ITEM_BY_PAGE * page)),
+      orderBy: 'email',
+      orderMode: 'asc',
+      ...transformSortingValueToParams(sorting),
+      ...args,
+    });
+  };
+  const onSortingChange = (updater: unknown) => {
+    const newSortingValue =
+      updater instanceof Function ? updater(sorting) : updater;
+    handleRefetchData(
+      transformSortingValueToParams<UserOrdering, OrderingMode>(newSortingValue)
+    );
+    setSorting(updater as SortingState);
+  };
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -134,6 +159,11 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
         <DataTable
           columns={columns}
           data={userData}
+          tableOptions={{
+            onSortingChange: onSortingChange,
+            manualSorting: true,
+          }}
+          tableState={{ sorting }}
         />
         <Pagination
           page={page}

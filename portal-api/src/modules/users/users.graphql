@@ -1,5 +1,8 @@
 enum UserOrdering {
-  email
+  email,
+  first_name,
+  last_name,
+
 }
 
 type Capability implements Node {
