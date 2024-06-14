@@ -13,6 +13,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  useToast,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { SheetDescription } from 'filigran-ui';
@@ -27,7 +28,6 @@ import {
   OrganizationEditMutation,
 } from '@/components/organization/organization.graphql';
 import { Organization } from '@/components/organization/organization-page';
-import { DialogInformative } from '@/components/ui/dialog';
 import { organizationCreateMutation } from '../../../__generated__/organizationCreateMutation.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
 
@@ -44,14 +44,7 @@ export const OrganizationSheet: FunctionComponent<OrganizationCreateProps> = ({
   onEditedOrganization,
   children,
 }) => {
-  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
   const [open, setOpenSheet] = useState<boolean>(false);
-
-  const handleCloseErrorDialog = () => {
-    setErrorDialogOpen(false);
-  };
 
   const form = useForm<z.infer<typeof organizationFormSchema>>({
     resolver: zodResolver(organizationFormSchema),
@@ -66,18 +59,29 @@ export const OrganizationSheet: FunctionComponent<OrganizationCreateProps> = ({
     useMutation<organizationCreateMutation>(CreateOrganizationMutation);
 
   const { me } = useContext<Portal>(portalContext);
+  const { toast } = useToast();
 
-  const handleMutationError = (error: Error) => {
-    const message = error.message;
-    setErrorMessage(message);
-    setErrorDialogOpen(true);
+  const handleErrorMutation = () => {
+    toast({
+      variant: 'destructive',
+      title: 'Error',
+      description: (
+        <>
+          {currentOrganization
+            ? 'An error occured while editing this organization'
+            : 'An error occured while creating an organization.'}
+        </>
+      ),
+    });
   };
 
   function onSubmit(values: z.infer<typeof organizationFormSchema>): void {
     if (!me) {
-      console.log('Error while retrieving current user.');
-      setErrorMessage('Error while retrieving current user.');
-      setErrorDialogOpen(true);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Error while retrieving current user.',
+      });
       return;
     }
 
@@ -98,8 +102,8 @@ export const OrganizationSheet: FunctionComponent<OrganizationCreateProps> = ({
           });
           setOpenSheet(false);
         },
-        onError: (error) => {
-          handleMutationError(error);
+        onError: () => {
+          handleErrorMutation();
         },
       });
     } else {
@@ -116,8 +120,8 @@ export const OrganizationSheet: FunctionComponent<OrganizationCreateProps> = ({
           onAddedOrganization(addOrganization);
           setOpenSheet(false);
         },
-        onError: (error) => {
-          handleMutationError(error);
+        onError: () => {
+          handleErrorMutation();
         },
       });
     }
@@ -179,17 +183,6 @@ export const OrganizationSheet: FunctionComponent<OrganizationCreateProps> = ({
           </Form>
         </SheetContent>
       </Sheet>
-      <DialogInformative
-        isOpen={isErrorDialogOpen}
-        onClose={handleCloseErrorDialog}
-        title="Error"
-        description={
-          currentOrganization
-            ? 'An error occured while editing this organization'
-            : 'An error occured while creating an organization.'
-        }>
-        <p>{errorMessage}</p>
-      </DialogInformative>
     </>
   );
 };

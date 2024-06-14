@@ -8,7 +8,7 @@ import { getOrganizations } from '@/components/organization/organization.service
 import { useMutation } from 'react-relay';
 import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
 import { organizationDeletion } from '@/components/organization/organization.graphql';
-import { DialogInformative } from '@/components/ui/dialog';
+import { useToast } from 'filigran-ui/clients';
 
 export interface Organization {
   id: string;
@@ -36,17 +36,10 @@ const OrganizationPage: React.FunctionComponent = () => {
   const [organizations, setOrganizations] =
     useState<Organization[]>(initialOrganizations);
 
-  // const onAddedOrganization = (newOrganization: Organization) => {
-  //   setOrganizations((previousOrganizations) => [
-  //     newOrganization,
-  //     ...previousOrganizations,
-  //   ]);
-  // };
   const [deleteOrganizationMutation] =
     useMutation<organizationDeletionMutation>(organizationDeletion);
 
-  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const { toast } = useToast();
   const onDeletedOrganization = (deletedOrganization: string) => {
     deleteOrganizationMutation({
       variables: { id: deletedOrganization },
@@ -65,8 +58,12 @@ const OrganizationPage: React.FunctionComponent = () => {
           : error.message
             ? error.message
             : 'An unexpected error occurred';
-        setErrorMessage(message);
-        setErrorDialogOpen(true);
+
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{message}</>,
+        });
       },
     });
   };
@@ -81,15 +78,10 @@ const OrganizationPage: React.FunctionComponent = () => {
   };
 
   const onAddedOrganization = (addedOrganisation: Organization) => {
-    console.log('orga-page', addedOrganisation);
     setOrganizations((previousOrganizations) => [
       addedOrganisation,
       ...previousOrganizations,
     ]);
-  };
-
-  const handleClose = () => {
-    setErrorDialogOpen(false);
   };
 
   return (
@@ -102,14 +94,6 @@ const OrganizationPage: React.FunctionComponent = () => {
         onAddedOrganization={onAddedOrganization}
         organizations={organizations}
       />
-      {/*<OrganizationCreateSheet onAddedOrganization={onAddedOrganization} />*/}
-      <DialogInformative
-        isOpen={isErrorDialogOpen}
-        onClose={handleClose}
-        title="Error"
-        description={'An error occured while deleting this organization.'}>
-        <p>{errorMessage}</p>
-      </DialogInformative>
     </>
   );
 };

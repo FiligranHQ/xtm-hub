@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "3.3.4",
+    "@radix-ui/react-toast": "^1.1.5",
     "@svgr/webpack": "8.1.0",
     "@types/node": "20.12.7",
     "@types/react": "18.3.1",
@@ -27,7 +28,7 @@
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.1",
     "filigran-icon": "0.5.0",
-    "filigran-ui": "0.6.3",
+    "filigran-ui": "0.7.1",
     "graphql": "16.8.1",
     "graphql-sse": "2.5.3",
     "next": "14.2.3",
