@@ -28,6 +28,8 @@ import { trackingSubscription } from '@/components/data-tracking/tracking.graphq
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { DeleteIcon } from 'filigran-icon';
+import { DialogInformative } from '@/components/ui/dialog';
+import { useState } from 'react';
 
 // Component interface
 interface UserSlugProps {
@@ -41,6 +43,14 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
     UserSlugQuery,
     queryRef
   );
+
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleCloseErrorDialog = () => {
+    setErrorDialogOpen(false);
+  };
+
   const [deleteUserMutation] =
     useMutation<userSlugDeletionMutation>(userSlugDeletion);
   const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
@@ -50,6 +60,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       variables: { id: user.id },
       onCompleted: () => {
         router.replace('/admin/user');
+      },
+      onError: (error) => {
+        const message = error.message;
+        setErrorMessage(message);
+        setErrorDialogOpen(true);
       },
     });
   };
@@ -120,6 +135,13 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           />
         </div>
         <UserEditSheet user={user} />
+        <DialogInformative
+          isOpen={isErrorDialogOpen}
+          onClose={handleCloseErrorDialog}
+          title="Error"
+          description={'An error occured while editing this user.'}>
+          <p>{errorMessage}</p>
+        </DialogInformative>
       </>
     );
   }
