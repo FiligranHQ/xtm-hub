@@ -32,7 +32,6 @@ const resolvers: Resolvers = {
       return addOrganization;
     },
     editOrganization: async (_, { id, input }, context) => {
-      console.log('id', id, ' input ', input);
       try {
         const [updatedOrganization] = await db<Organization>(
           context,

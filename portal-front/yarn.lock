@@ -2934,6 +2934,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-toast@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@radix-ui/react-toast@npm:1.1.5"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+    "@radix-ui/primitive": 1.0.1
+    "@radix-ui/react-collection": 1.0.3
+    "@radix-ui/react-compose-refs": 1.0.1
+    "@radix-ui/react-context": 1.0.1
+    "@radix-ui/react-dismissable-layer": 1.0.5
+    "@radix-ui/react-portal": 1.0.4
+    "@radix-ui/react-presence": 1.0.1
+    "@radix-ui/react-primitive": 1.0.3
+    "@radix-ui/react-use-callback-ref": 1.0.1
+    "@radix-ui/react-use-controllable-state": 1.0.1
+    "@radix-ui/react-use-layout-effect": 1.0.1
+    "@radix-ui/react-visually-hidden": 1.0.3
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 6fe821ffaefd0b802e6faf1dffa3d7f69c64cf0972f10eafbdfa5a518f3e2c25c834fe542454e141bd8a35f45b8a1807e6a639e0aefe2a00a26aaeea5057ac7f
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-use-callback-ref@npm:1.0.1":
   version: 1.0.1
   resolution: "@radix-ui/react-use-callback-ref@npm:1.0.1"
@@ -5941,9 +5972,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.6.3":
-  version: 0.6.3
-  resolution: "filigran-ui@npm:0.6.3"
+"filigran-ui@npm:0.7.1":
+  version: 0.7.1
+  resolution: "filigran-ui@npm:0.7.1"
   dependencies:
     "@dnd-kit/core": ^6.1.0
     "@dnd-kit/modifiers": ^7.0.0
@@ -5959,6 +5990,7 @@ __metadata:
     "@radix-ui/react-select": ^2.0.0
     "@radix-ui/react-separator": ^1.0.3
     "@radix-ui/react-slot": ^1.0.2
+    "@radix-ui/react-toast": ^1.1.5
     "@tanstack/react-table": ^8.17.3
     class-variance-authority: 0.7.0
     clsx: 2.1.0
@@ -5971,7 +6003,7 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 89df89810ed246d917dedddd6e4fe8c1405a7b18fb7fc4febfeb00ae3270c528aed8ee33db8b630f9fc687ba030cdc240068a6deac2f777ed423d74c7169dedc
+  checksum: 01c57265759a6d67cc268ab39a699b6e1699a0c838d0991ea1434cb2321e4a61328ddc5d83b08f27bb010d9962a5dc7f2e775cb34da447ed41d12b1a691e472f
   languageName: node
   linkType: hard
 
@@ -8376,6 +8408,7 @@ __metadata:
   dependencies:
     "@hookform/resolvers": 3.3.4
     "@playwright/test": ^1.44.0
+    "@radix-ui/react-toast": ^1.1.5
     "@svgr/webpack": 8.1.0
     "@testing-library/jest-dom": ^6.4.5
     "@testing-library/react": ^15.0.7
@@ -8397,7 +8430,7 @@ __metadata:
     eslint-config-next: 14.2.3
     eslint-config-prettier: ^9.1.0
     filigran-icon: 0.5.0
-    filigran-ui: 0.6.3
+    filigran-ui: 0.7.1
     graphql: 16.8.1
     graphql-sse: 2.5.3
     husky: ^9.0.11

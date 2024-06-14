@@ -1,35 +1,23 @@
 import * as React from 'react';
+import {PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription,} from 'react-relay';
+import {pageLoaderUserSlugQuery} from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
+import {UserSlugQuery} from '../../../../../app/(application)/(admin)/admin/user/[slug]/page-loader';
+import {userSlug_fragment$data, userSlug_fragment$key,} from '../../../../../__generated__/userSlug_fragment.graphql';
+import {useRouter} from 'next/navigation';
+import {userSlugDeletionMutation} from '../../../../../__generated__/userSlugDeletionMutation.graphql';
 import {
-  PreloadedQuery,
-  useFragment,
-  useMutation,
-  usePreloadedQuery,
-  useSubscription,
-} from 'react-relay';
-import { pageLoaderUserSlugQuery } from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
-import { UserSlugQuery } from '../../../../../app/(application)/(admin)/admin/user/[slug]/page-loader';
-import {
-  userSlug_fragment$data,
-  userSlug_fragment$key,
-} from '../../../../../__generated__/userSlug_fragment.graphql';
-import { useRouter } from 'next/navigation';
-import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
-import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
-import {
-  userSlugDeletion,
-  userSlugFragment,
-  userSlugSubscription,
-} from '@/components/admin/user/user.graphql';
-import { Button } from 'filigran-ui/servers';
-import { UserEditSheet } from '@/components/admin/user/[slug]/user-edit-sheet';
-import { DataTracking } from '@/components/data-tracking/data-tracking';
-import { dataTracking_fragment$key } from '../../../../../__generated__/dataTracking_fragment.graphql';
-import { trackingSubscription } from '@/components/data-tracking/tracking.graphql';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { DeleteIcon } from 'filigran-icon';
-import { DialogInformative } from '@/components/ui/dialog';
-import { useState } from 'react';
+  userSlugSubscription as generatedUserSlugSubscription
+} from '../../../../../__generated__/userSlugSubscription.graphql';
+import {userSlugDeletion, userSlugFragment, userSlugSubscription,} from '@/components/admin/user/user.graphql';
+import {Button} from 'filigran-ui/servers';
+import {UserEditSheet} from '@/components/admin/user/[slug]/user-edit-sheet';
+import {DataTracking} from '@/components/data-tracking/data-tracking';
+import {dataTracking_fragment$key} from '../../../../../__generated__/dataTracking_fragment.graphql';
+import {trackingSubscription} from '@/components/data-tracking/tracking.graphql';
+import {AlertDialogComponent} from '@/components/ui/alert-dialog';
+import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
+import {DeleteIcon} from 'filigran-icon';
+import {useToast} from 'filigran-ui/clients';
 
 // Component interface
 interface UserSlugProps {
@@ -44,17 +32,10 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
     queryRef
   );
 
-  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleCloseErrorDialog = () => {
-    setErrorDialogOpen(false);
-  };
-
   const [deleteUserMutation] =
     useMutation<userSlugDeletionMutation>(userSlugDeletion);
   const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
-
+  const { toast } = useToast();
   const onDeleteUser = (user: userSlug_fragment$data): void => {
     deleteUserMutation({
       variables: { id: user.id },
@@ -62,9 +43,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
         router.replace('/admin/user');
       },
       onError: (error) => {
-        const message = error.message;
-        setErrorMessage(message);
-        setErrorDialogOpen(true);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
       },
     });
   };
@@ -135,13 +118,6 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           />
         </div>
         <UserEditSheet user={user} />
-        <DialogInformative
-          isOpen={isErrorDialogOpen}
-          onClose={handleCloseErrorDialog}
-          title="Error"
-          description={'An error occured while editing this user.'}>
-          <p>{errorMessage}</p>
-        </DialogInformative>
       </>
     );
   }

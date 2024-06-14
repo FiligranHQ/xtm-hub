@@ -18,6 +18,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  useToast,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import * as React from 'react';
@@ -35,7 +36,6 @@ import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { AddIcon } from 'filigran-icon';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import { getOrganizations } from '@/components/organization/organization.service';
-import { DialogInformative } from '@/components/ui/dialog';
 
 interface UserListCreateProps {
   connectionID: string;
@@ -46,12 +46,6 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleCloseErrorDialog = () => {
-    setErrorDialogOpen(false);
-  };
   const rolePortal = getRolesPortal();
 
   const rolePortalData =
@@ -95,6 +89,8 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       roles_id,
     };
 
+    const { toast } = useToast();
+
     commitUserMutation({
       variables: { input, connections: [connectionID] },
       onCompleted: (response) => {
@@ -102,9 +98,11 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
         setOpen(false);
       },
       onError: (error) => {
-        const message = error.message;
-        setErrorMessage(message);
-        setErrorDialogOpen(true);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
       },
     });
   }
@@ -264,13 +262,6 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
           </Form>
         </SheetContent>
       </Sheet>
-      <DialogInformative
-        isOpen={isErrorDialogOpen}
-        onClose={handleCloseErrorDialog}
-        title="Error"
-        description={'An error occured while creating a user.'}>
-        <p>{errorMessage}</p>
-      </DialogInformative>
     </>
   );
 };
