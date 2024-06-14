@@ -10,7 +10,7 @@ interface PageProps {}
 const Page: React.FunctionComponent<PageProps> = async () => {
   return (
     <>
-      <h1>SERVICE</h1>
+      <h1>Services</h1>
       <PageLoader />
     </>
   );

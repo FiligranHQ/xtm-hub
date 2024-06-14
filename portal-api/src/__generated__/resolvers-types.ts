@@ -282,6 +282,7 @@ export type ServiceConnection = {
   __typename?: 'ServiceConnection';
   edges: Array<ServiceEdge>;
   pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type ServiceEdge = {
@@ -909,6 +910,7 @@ export type ServiceConnectionResolvers<
     ContextType
   >;
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -41,12 +41,12 @@ export const servicesListFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
-    ) @connection(key: "Home_services") {
-      __id # See https://relay.dev/docs/guided-tour/list-data/updating-connections/#using-declarative-directives
+    ) {
+      totalCount
       edges {
         node {
           id
-          ...serviceList_fragment
+          name
         }
       }
     }
