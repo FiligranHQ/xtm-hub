@@ -16,3 +16,7 @@ postgres:
   storage:
     size: 10Gi
   resources: {}
+  pgadmin:
+    version: "8.8"
+    username: xthmhub@filigran.io
+    password: "CHANGEME--q5Y6NbtbeIu3qyjk0iPthl2hCUkAmB--CHANGEME"
