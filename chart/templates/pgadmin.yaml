@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-pgadmin
+  labels:
+    app: portal-pgadmin
+    portal.component: pgadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      portal.component: pgadmin
+  template:
+    metadata:
+      labels:
+        app: portal-pgadmin
+        portal.component: pgadmin
+    spec:
+      containers:
+        - name: pgadmin
+          image: "dpage/pgadmin4:{{ .Values.postgres.pgadmin.version }}"
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: UPGRADE_CHECK_ENABLED
+              value: "false"
+            - name: PGADMIN_DEFAULT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}-pgadmin-secrets"
+                  key: username
+                  optional: false
+            - name: PGADMIN_DEFAULT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}-pgadmin-secrets"
+                  key: password
+                  optional: false
+            - name: PGADMIN_DISABLE_POSTFIX
+              value: "true"
+          resources:
+            limits:
+              memory: 1Gi
+              cpu: "0.5"
+          volumeMounts:
+            - mountPath: /pgadmin4/servers.json
+              subPath: servers.json
+              name: pgadmin-servers
+      volumes:
+        - name: pgadmin-servers
+          configMap:
+            name: "{{ .Release.Name }}-pgadmin-servers"
