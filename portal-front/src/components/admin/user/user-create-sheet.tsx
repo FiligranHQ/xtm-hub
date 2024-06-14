@@ -1,11 +1,15 @@
 import {
-  Combobox,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Sheet,
   SheetClose,
   SheetContent,
@@ -31,6 +35,7 @@ import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { AddIcon } from 'filigran-icon';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import { getOrganizations } from '@/components/organization/organization.service';
+import { DialogInformative } from '@/components/ui/dialog';
 
 interface UserListCreateProps {
   connectionID: string;
@@ -41,6 +46,12 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleCloseErrorDialog = () => {
+    setErrorDialogOpen(false);
+  };
   const rolePortal = getRolesPortal();
 
   const rolePortalData =
@@ -50,12 +61,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
     })) ?? [];
 
   const organizationData = getOrganizations();
-  const transformedOrganizationData = organizationData.map((organization) => {
-    return {
-      label: organization.node.name,
-      value: organization.node.id,
-    };
-  });
+
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -95,154 +101,176 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
         console.log(response);
         setOpen(false);
       },
+      onError: (error) => {
+        const message = error.message;
+        setErrorMessage(message);
+        setErrorDialogOpen(true);
+      },
     });
   }
 
   return (
-    <Sheet
-      key={'right'}
-      open={open}
-      onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button
-          size="icon"
-          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <AddIcon className="h-4 w-4" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side={'right'}>
-        <SheetHeader>
-          <SheetTitle>Create a new user</SheetTitle>
-          <SheetDescription>
-            Create the profile here. Click create when you are done.
-          </SheetDescription>
-        </SheetHeader>
+    <>
+      <Sheet
+        key={'right'}
+        open={open}
+        onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button
+            size="icon"
+            className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
+            <AddIcon className="h-4 w-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side={'right'}>
+          <SheetHeader>
+            <SheetTitle>Create a new user</SheetTitle>
+            <SheetDescription>
+              Create the profile here. Click create when you are done.
+            </SheetDescription>
+          </SheetHeader>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 pt-8">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Email"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="First name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Last name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4 pt-8">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="first_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="First name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="last_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Last name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="roles_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Roles</FormLabel>
-                  <FormControl>
-                    <MultiSelectFormField
-                      options={rolePortalData}
-                      defaultValue={field.value}
+              <FormField
+                control={form.control}
+                name="roles_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Roles</FormLabel>
+                    <FormControl>
+                      <MultiSelectFormField
+                        options={rolePortalData}
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Select roles"
+                        variant="inverted"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="organization_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Organization</FormLabel>
+                    <Select
                       onValueChange={field.onChange}
-                      placeholder="Select roles"
-                      variant="inverted"
-                    />
-                  </FormControl>
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an organization" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {organizationData.map(({ node }) => (
+                          <SelectItem
+                            key={node.id}
+                            value={node.id}>
+                            {node.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="organization_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="mb-2 block">Organization</FormLabel>
-                  <FormControl className="block">
-                    <Combobox
-                      dataTab={transformedOrganizationData}
-                      order={'Choose'}
-                      placeholder={'Choose a value'}
-                      emptyCommand={'Not found'}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <SheetFooter className="pt-2">
-              <SheetClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </SheetClose>
-              <Button
-                disabled={!form.formState.isDirty}
-                type="submit">
-                Create
-              </Button>
-            </SheetFooter>
-          </form>
-        </Form>
-      </SheetContent>
-    </Sheet>
+              <SheetFooter className="pt-2">
+                <SheetClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </SheetClose>
+                <Button
+                  disabled={!form.formState.isDirty}
+                  type="submit">
+                  Create
+                </Button>
+              </SheetFooter>
+            </form>
+          </Form>
+        </SheetContent>
+      </Sheet>
+      <DialogInformative
+        isOpen={isErrorDialogOpen}
+        onClose={handleCloseErrorDialog}
+        title="Error"
+        description={'An error occured while creating a user.'}>
+        <p>{errorMessage}</p>
+      </DialogInformative>
+    </>
   );
 };
