@@ -25,7 +25,7 @@ export const usersFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
-    ) @connection(key: "Admin_users") {
+    ) {
       totalCount
       edges {
         node {
