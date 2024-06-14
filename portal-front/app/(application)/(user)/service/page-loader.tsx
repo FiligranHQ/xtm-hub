@@ -34,12 +34,7 @@ const PageLoader: React.FunctionComponent<ServiceListPreloaderProps> = () => {
   const [queryRef, loadQuery] =
     useQueryLoader<pageLoaderServiceQuery>(ServiceListQuery);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
-  return (
-    <>
-      <h2>ServiceComponent</h2>
-      {queryRef ? <ServiceList queryRef={queryRef} /> : <Loader />}
-    </>
-  );
+  return <>{queryRef ? <ServiceList queryRef={queryRef} /> : <Loader />}</>;
 };
 
 // Component export

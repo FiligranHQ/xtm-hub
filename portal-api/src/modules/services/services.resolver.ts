@@ -1,24 +1,14 @@
-import {
-  Resolvers,
-  Service,
-  ServiceConnection,
-} from '../../__generated__/resolvers-types';
-import { DatabaseType, db, paginate } from '../../../knexfile';
+import { Resolvers, Service } from '../../__generated__/resolvers-types';
+import { DatabaseType, db } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
 import { dispatch, listen } from '../../pub';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { loadServices } from './services.domain';
 
 const resolvers: Resolvers = {
   Query: {
-    services: async (_, { first, after, orderMode, orderBy }, context) => {
-      return paginate<Service>(context, 'Service', {
-        first,
-        after,
-        orderMode,
-        orderBy,
-      })
-        .select('*')
-        .asConnection<ServiceConnection>();
+    services: async (_, opt, context) => {
+      return loadServices(context, opt);
     },
   },
   Mutation: {

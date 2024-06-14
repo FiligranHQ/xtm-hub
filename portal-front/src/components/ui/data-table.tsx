@@ -4,8 +4,8 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   type Header,
+  TableState,
   useReactTable,
 } from '@tanstack/react-table';
 import {
@@ -51,6 +51,7 @@ import {
 } from 'filigran-ui';
 import { ChevronDown, ChevronUp, GripHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { TableOptions } from '@tanstack/table-core';
 
 export function fixedForwardRef<T, P = {}>(
   render: (props: P, ref: Ref<T>) => ReactNode
@@ -61,7 +62,8 @@ export function fixedForwardRef<T, P = {}>(
 interface DataTableProps<TData extends { id: string }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  rowSelectionState?: any;
+  tableState?: Partial<TableState>;
+  tableOptions?: Partial<TableOptions<TData>>;
 }
 
 function getTransformString({ x, y }: Transform) {
@@ -156,27 +158,24 @@ const DragAlongCell = ({ cell }: { cell: Cell<any, unknown> }) => {
 };
 
 function GenericDataTable<TData extends { id: string }, TValue>(
-  { columns, data, rowSelectionState }: DataTableProps<TData, TValue>,
+  { columns, data, tableState, tableOptions }: DataTableProps<TData, TValue>,
   ref?: any
 ) {
-  const columnResizeMode = 'onChange';
   const [columnOrder, setColumnOrder] = useState<string[]>(() =>
     columns.map((c) => c.id!)
   );
-  const [rowSelection, setRowSelection] = rowSelectionState ?? useState({});
   const table = useReactTable({
     data,
     columns,
-    columnResizeMode,
+    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     onColumnOrderChange: setColumnOrder,
-    onRowSelectionChange: setRowSelection,
+    getRowId: (c) => c.id,
     state: {
       columnOrder,
-      rowSelection,
+      ...tableState,
     },
-    getRowId: (c) => c.id,
+    ...tableOptions,
   });
 
   useImperativeHandle(ref, () => table);

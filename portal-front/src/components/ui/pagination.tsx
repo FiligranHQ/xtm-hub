@@ -25,7 +25,7 @@ const GenericPagination: FunctionComponent<PaginationProps> = ({
       totalPages={totalPages}
       middlePagesSiblingCount={1}>
       <div className="px-2">
-        Page {page + 1} of {totalPages}
+        Page <span className="font-bold">{page + 1}</span> of {totalPages}
       </div>
       <Pagination.PrevButton
         disabled={page === 0}
@@ -40,10 +40,10 @@ const GenericPagination: FunctionComponent<PaginationProps> = ({
       <nav className="flex">
         <ul className="flex items-center">
           <Pagination.PageButton
-            activeClassName="bg-primary-50 dark:bg-opacity-0 text-primary-600 dark:text-white"
+            activeClassName="bg-primary-50 font-bold dark:bg-opacity-0 text-primary-600 dark:text-white"
             inactiveClassName="text-gray-500"
             className={
-              'hover:text-primary-600 focus:text-primary-600 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full focus:font-bold focus:outline-none'
+              'hover:text-primary-600 focus:text-primary-600 flex h-10 w-10 cursor-pointer items-center justify-center focus:outline-none'
             }
           />
         </ul>
