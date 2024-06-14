@@ -1,8 +1,8 @@
-import { DataTable } from '@/components/ui/data-table';
 import * as React from 'react';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { Badge, Button } from 'filigran-ui/servers';
 import Link from 'next/link';
+import { DataTable } from 'filigran-ui/clients';
 
 interface ServiceTable {
   id: string;
@@ -46,7 +46,12 @@ const columns: ColumnDef<ServiceTable>[] = [
     cell: ({ row }) => {
       return (
         <Button asChild>
-          <Link href={`#${row.original.link}`}>View more</Link>
+          <Link
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            href={`${row.original.link}`}>
+            View more
+          </Link>
         </Button>
       );
     },

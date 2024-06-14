@@ -5,7 +5,7 @@ import {
   pageLoaderServiceQuery$variables,
 } from '../../../__generated__/pageLoaderServiceQuery.graphql';
 import * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   PreloadedQuery,
   usePreloadedQuery,
@@ -21,7 +21,7 @@ import {
 import { Button } from 'filigran-ui/servers';
 import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 import Loader from '@/components/loader';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from 'filigran-ui/clients';
 import { ColumnDef, SortingState } from '@tanstack/react-table';
 import Link from 'next/link';
 import Pagination from '@/components/ui/pagination';

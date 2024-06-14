@@ -14,7 +14,7 @@ export const transformSortingValueToParams = <T, U>(
     const { id, desc } = sortingValue[0];
     if (desc) {
       return { orderBy: id as T, orderMode: 'desc' as U };
-    } else return { orderBy: id as T, orderMode: 'desc' as U };
+    } else return { orderBy: id as T, orderMode: 'asc' as U };
   }
   return {};
 };

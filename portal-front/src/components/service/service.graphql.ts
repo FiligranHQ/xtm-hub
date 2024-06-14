@@ -46,7 +46,7 @@ export const servicesListFragment = graphql`
       edges {
         node {
           id
-          name
+          ...serviceList_fragment @relay(mask: false)
         }
       }
     }
