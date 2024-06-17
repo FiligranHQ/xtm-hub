@@ -5,7 +5,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { db, paginate } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
-import { loadOrganizationBy } from './organizations.domain';
+import { loadOrganizationBy, loadOrganizations } from './organizations.domain';
 import { dispatch } from '../../pub';
 
 const resolvers: Resolvers = {
@@ -13,14 +13,7 @@ const resolvers: Resolvers = {
     organization: async (_, { id }, context) =>
       loadOrganizationBy(context, 'Organization.id', id),
     organizations: async (_, { first, after, orderMode, orderBy }, context) => {
-      return paginate<Organization>(context, 'Organization', {
-        first,
-        after,
-        orderMode,
-        orderBy,
-      })
-        .select('*')
-        .asConnection<OrganizationConnection>();
+      return loadOrganizations(context, { first, after, orderMode, orderBy });
     },
   },
   Mutation: {

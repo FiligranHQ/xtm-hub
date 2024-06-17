@@ -1,5 +1,10 @@
-import { Organization } from '../../__generated__/resolvers-types';
-import { db } from '../../../knexfile';
+import {
+  Organization,
+  OrganizationConnection,
+  Service,
+  ServiceConnection,
+} from '../../__generated__/resolvers-types';
+import { db, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
 
 export const loadOrganizationBy = async (
@@ -11,4 +16,29 @@ export const loadOrganizationBy = async (
     .where({ [field]: value })
     .select('*')
     .first();
+};
+
+export const loadOrganizations = async (context: PortalContext, opts) => {
+  const { first, after, orderMode, orderBy } = opts;
+  const organizationConnection = await paginate<Organization>(
+    context,
+    'Organization',
+    {
+      first,
+      after,
+      orderMode,
+      orderBy,
+    }
+  )
+    .select('*')
+    .asConnection<OrganizationConnection>();
+
+  const { totalCount } = await db<Service>(context, 'Organization', opts)
+    .countDistinct('id as totalCount')
+    .first();
+
+  return {
+    totalCount,
+    ...organizationConnection,
+  };
 };

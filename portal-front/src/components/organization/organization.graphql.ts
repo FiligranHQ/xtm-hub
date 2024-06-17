@@ -1,15 +1,39 @@
 import { graphql } from 'react-relay';
 
-export const organizationFetch = graphql`
-  query organizationSelectQuery {
-    organizations {
+export const organizationsFragment = graphql`
+  fragment organizationList_organizations on Query
+  @refetchable(queryName: "OrganizationsPaginationQuery") {
+    organizations(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+    ) {
+      __id
+      totalCount
       edges {
         node {
-          id
-          name
+          ...organizationItem_fragment @relay(mask: false)
         }
       }
     }
+  }
+`;
+
+export const organizationItem = graphql`
+  fragment organizationItem_fragment on Organization {
+    id
+    name
+  }
+`;
+export const organizationFetch = graphql`
+  query organizationSelectQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: OrganizationOrdering!
+    $orderMode: OrderingMode!
+  ) {
+    ...organizationList_organizations
   }
 `;
 

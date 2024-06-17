@@ -1,19 +1,23 @@
 'use client';
 
 import * as React from 'react';
-import { useState } from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import OrganizationList from '@/components/organization/organization-list';
 import { getOrganizations } from '@/components/organization/organization.service';
-import { useMutation } from 'react-relay';
-import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
-import { organizationDeletion } from '@/components/organization/organization.graphql';
-import { useToast } from 'filigran-ui/clients';
-
-export interface Organization {
-  id: string;
-  name: string;
-}
+import { useRefetchableFragment } from 'react-relay';
+import { organizationsFragment } from '@/components/organization/organization.graphql';
+import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
+import {
+  organizationSelectQuery,
+  organizationSelectQuery$data,
+} from '../../../__generated__/organizationSelectQuery.graphql';
+import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
+import { DataTable } from 'filigran-ui/clients';
+import { ColumnDef } from '@tanstack/react-table';
+import { Button } from 'filigran-ui/servers';
+import { DeleteIcon, EditIcon } from 'filigran-icon';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { CreateOrganization } from '@/components/organization/create-organization';
 
 const OrganizationPage: React.FunctionComponent = () => {
   const breadcrumbValue = [
@@ -26,74 +30,63 @@ const OrganizationPage: React.FunctionComponent = () => {
     },
   ];
 
-  const organizationData = getOrganizations();
+  const organizationData: organizationSelectQuery$data = getOrganizations();
 
-  const initialOrganizations =
-    organizationData.map((edge) => ({
-      id: edge.node.id,
-      name: edge.node.name,
-    })) ?? [];
-  const [organizations, setOrganizations] =
-    useState<Organization[]>(initialOrganizations);
+  const [data, refetch] = useRefetchableFragment<
+    organizationSelectQuery,
+    organizationList_organizations$key
+  >(organizationsFragment, organizationData);
 
-  const [deleteOrganizationMutation] =
-    useMutation<organizationDeletionMutation>(organizationDeletion);
+  console.log(data);
+  const organizationDataTable = data.organizations.edges.map(
+    ({ node }) => node
+  ) as organizationItem_fragment$data[];
 
-  const { toast } = useToast();
-  const onDeletedOrganization = (deletedOrganization: string) => {
-    deleteOrganizationMutation({
-      variables: { id: deletedOrganization },
-      onCompleted: (response: any) => {
-        setOrganizations(
-          organizations.filter(
-            (organization) => organization.id !== response.deleteOrganization.id
-          )
+  const columns: ColumnDef<organizationItem_fragment$data>[] = [
+    {
+      accessorKey: 'name',
+      id: 'name',
+      header: 'Name',
+      cell: ({ row }) => {
+        return <>{row.original.name}</>;
+      },
+    },
+    {
+      id: 'actions',
+      size: 100,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => {
+        return (
+          <AlertDialogComponent
+            actionButtonText={'Delete'}
+            variantName={'destructive'}
+            AlertTitle={'Delete organization'}
+            triggerElement={
+              <Button
+                variant="ghost"
+                aria-label="Delete Organization">
+                <DeleteIcon className="h-4 w-4" />
+              </Button>
+            }
+            onClickContinue={() => {}}>
+            Are you sure you want to delete this organization{' '}
+            {row.original.name}? This action can not be undone.
+          </AlertDialogComponent>
         );
       },
-      onError: (error) => {
-        const message = error.message.includes(
-          'violates foreign key constraint "user_organization_id_foreign" on table "User"'
-        )
-          ? 'The organization could not be deleted because at least one user is affiliated with it. Delete the user(s) first. '
-          : error.message
-            ? error.message
-            : 'An unexpected error occurred';
-
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: <>{message}</>,
-        });
-      },
-    });
-  };
-
-  const onEditedOrganization = (editedOrganization: Organization) => {
-    const updatedOrganizations = organizations.map((organization) => {
-      return organization.id === editedOrganization.id
-        ? { ...organization, name: editedOrganization.name }
-        : organization;
-    });
-    setOrganizations(updatedOrganizations as Organization[]);
-  };
-
-  const onAddedOrganization = (addedOrganisation: Organization) => {
-    setOrganizations((previousOrganizations) => [
-      addedOrganisation,
-      ...previousOrganizations,
-    ]);
-  };
+    },
+  ];
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-
-      <OrganizationList
-        onDeletedOrganization={onDeletedOrganization}
-        onEditedOrganization={onEditedOrganization}
-        onAddedOrganization={onAddedOrganization}
-        organizations={organizations}
+      <DataTable
+        columns={columns}
+        data={organizationDataTable}
       />
+      <CreateOrganization connectionId={data.organizations.__id} />
     </>
   );
 };
