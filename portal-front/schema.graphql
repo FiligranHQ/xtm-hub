@@ -84,8 +84,8 @@ type UserSubscription {
 
 type Subscription {
   User: UserSubscription
-  ActionTracking: TrackingSubscription
   Service: ServiceSubscription
+  ActionTracking: TrackingSubscription
 }
 
 input EditUserInput {
@@ -118,30 +118,6 @@ type Mutation {
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-}
-
-type ActionTracking implements Node {
-  id: ID!
-  contextual_id: String!
-  status: String
-  created_at: Date!
-  ended_at: Date
-  message_tracking: [MessageTracking!]!
-}
-
-type MessageTracking implements Node {
-  id: ID!
-  tracking_id: ID
-  created_at: Date!
-  technical: Boolean
-  type: String!
-  tracking_info: JSON
-}
-
-type TrackingSubscription {
-  add: ActionTracking
-  edit: ActionTracking
-  delete: ActionTracking
 }
 
 type PlatformProvider {
@@ -179,6 +155,30 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
+}
+
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
 }
 
 type RolePortal implements Node {
