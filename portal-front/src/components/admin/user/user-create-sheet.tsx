@@ -44,6 +44,8 @@ interface UserListCreateProps {
 export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
   connectionID,
 }) => {
+  const { toast } = useToast();
+
   const [open, setOpen] = useState<boolean>(false);
 
   const rolePortal = getRolesPortal();
@@ -88,8 +90,6 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       last_name,
       roles_id,
     };
-
-    const { toast } = useToast();
 
     commitUserMutation({
       variables: { input, connections: [connectionID] },
