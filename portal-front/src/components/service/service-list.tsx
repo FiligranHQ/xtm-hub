@@ -26,6 +26,7 @@ import { ColumnDef, SortingState } from '@tanstack/react-table';
 import Link from 'next/link';
 import Pagination from '@/components/ui/pagination';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
+import ServiceCreateForm from '@/components/service/service-create-form';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<pageLoaderServiceQuery>;

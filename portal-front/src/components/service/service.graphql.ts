@@ -42,6 +42,7 @@ export const servicesListFragment = graphql`
       orderBy: $orderBy
       orderMode: $orderMode
     ) {
+      __id
       totalCount
       edges {
         node {
