@@ -12,6 +12,7 @@ type OrganizationEdge {
 }
 
 type OrganizationConnection {
+    totalCount: Int!
     edges: [OrganizationEdge!]!
     pageInfo: PageInfo!
 }
