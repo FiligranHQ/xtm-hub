@@ -38,9 +38,9 @@ export const organizationFetch = graphql`
 `;
 
 export const organizationDeletion = graphql`
-  mutation organizationDeletionMutation($id: ID!) {
+  mutation organizationDeletionMutation($id: ID!, $connections: [ID!]!) {
     deleteOrganization(id: $id) {
-      id
+      id @deleteEdge(connections: $connections)
     }
   }
 `;

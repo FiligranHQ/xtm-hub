@@ -48,8 +48,10 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
           <AddIcon className="h-4 w-4" />
         </Button>
       }
-      title={'title'}
-      description={'Description'}
+      title={'Create a new organization'}
+      description={
+        'Create the organization here. Click on Validate when you are done.'
+      }
       handleSubmit={handleSubmit}
     />
   );

@@ -44,13 +44,16 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
       trigger={
         <Button
           size="icon"
+          variant="ghost"
           aria-label="Edit Organization"
-          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
+          className="left-4 mr-4">
           <EditIcon className="h-4 w-4" />
         </Button>
       }
-      title={'Edit organization'}
-      description={'Description'}
+      title={"Edit the organization's name"}
+      description={
+        "Edit the organization's name here. Click on Validate when you are done."
+      }
       handleSubmit={handleSubmit}
     />
   );

@@ -13,11 +13,9 @@ import {
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
 import { DataTable } from 'filigran-ui/clients';
 import { ColumnDef } from '@tanstack/react-table';
-import { Button } from 'filigran-ui/servers';
-import { DeleteIcon } from 'filigran-icon';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { CreateOrganization } from '@/components/organization/create-organization';
 import { EditOrganization } from '@/components/organization/edit-organization';
+import { DeleteOrganization } from '@/components/organization/delete-organization';
 
 const OrganizationPage: React.FunctionComponent = () => {
   const breadcrumbValue = [
@@ -32,12 +30,11 @@ const OrganizationPage: React.FunctionComponent = () => {
 
   const organizationData: organizationSelectQuery$data = getOrganizations();
 
-  const [data, refetch] = useRefetchableFragment<
+  const [data] = useRefetchableFragment<
     organizationSelectQuery,
     organizationList_organizations$key
   >(organizationsFragment, organizationData);
 
-  console.log(data);
   const organizationDataTable = data.organizations.edges.map(
     ({ node }) => node
   ) as organizationItem_fragment$data[];
@@ -51,7 +48,6 @@ const OrganizationPage: React.FunctionComponent = () => {
         return (
           <>
             <EditOrganization organization={row.original}></EditOrganization>
-
             {row.original.name}
           </>
         );
@@ -63,25 +59,11 @@ const OrganizationPage: React.FunctionComponent = () => {
       enableHiding: false,
       enableSorting: false,
       enableResizing: false,
-      cell: ({ row }) => {
-        return (
-          <AlertDialogComponent
-            actionButtonText={'Delete'}
-            variantName={'destructive'}
-            AlertTitle={'Delete organization'}
-            triggerElement={
-              <Button
-                variant="ghost"
-                aria-label="Delete Organization">
-                <DeleteIcon className="h-4 w-4" />
-              </Button>
-            }
-            onClickContinue={() => {}}>
-            Are you sure you want to delete this organization{' '}
-            {row.original.name}? This action can not be undone.
-          </AlertDialogComponent>
-        );
-      },
+      cell: ({ row }) => (
+        <DeleteOrganization
+          connectionId={data.organizations.__id}
+          organization={row.original}></DeleteOrganization>
+      ),
     },
   ];
 
