@@ -3,13 +3,6 @@
 import * as React from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { getOrganizations } from '@/components/organization/organization.service';
-import { useRefetchableFragment } from 'react-relay';
-import { organizationsFragment } from '@/components/organization/organization.graphql';
-import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
-import {
-  organizationSelectQuery,
-  organizationSelectQuery$data,
-} from '../../../__generated__/organizationSelectQuery.graphql';
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
 import { DataTable } from 'filigran-ui/clients';
 import { ColumnDef } from '@tanstack/react-table';
@@ -28,14 +21,9 @@ const OrganizationPage: React.FunctionComponent = () => {
     },
   ];
 
-  const organizationData: organizationSelectQuery$data = getOrganizations();
+  const [organizationData] = getOrganizations();
 
-  const [data] = useRefetchableFragment<
-    organizationSelectQuery,
-    organizationList_organizations$key
-  >(organizationsFragment, organizationData);
-
-  const organizationDataTable = data.organizations.edges.map(
+  const organizationDataTable = organizationData.organizations.edges.map(
     ({ node }) => node
   ) as organizationItem_fragment$data[];
 
@@ -61,7 +49,7 @@ const OrganizationPage: React.FunctionComponent = () => {
       enableResizing: false,
       cell: ({ row }) => (
         <DeleteOrganization
-          connectionId={data.organizations.__id}
+          connectionId={organizationData.organizations.__id}
           organization={row.original}></DeleteOrganization>
       ),
     },
@@ -74,7 +62,7 @@ const OrganizationPage: React.FunctionComponent = () => {
         columns={columns}
         data={organizationDataTable}
       />
-      <CreateOrganization connectionId={data.organizations.__id} />
+      <CreateOrganization connectionId={organizationData.organizations.__id} />
     </>
   );
 };

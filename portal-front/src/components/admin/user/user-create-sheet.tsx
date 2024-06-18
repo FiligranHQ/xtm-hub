@@ -56,7 +56,7 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
       value: id,
     })) ?? [];
 
-  const organizationData = getOrganizations();
+  const [organizationData] = getOrganizations();
 
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
@@ -108,160 +108,158 @@ export const UserCreateSheet: FunctionComponent<UserListCreateProps> = ({
   }
 
   return (
-    <>
-      <Sheet
-        key={'right'}
-        open={open}
-        onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button
-            size="icon"
-            className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-            <AddIcon className="h-4 w-4" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side={'right'}>
-          <SheetHeader>
-            <SheetTitle>Create a new user</SheetTitle>
-            <SheetDescription>
-              Create the profile here. Click create when you are done.
-            </SheetDescription>
-          </SheetHeader>
+    <Sheet
+      key={'right'}
+      open={open}
+      onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button
+          size="icon"
+          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
+          <AddIcon className="h-4 w-4" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side={'right'}>
+        <SheetHeader>
+          <SheetTitle>Create a new user</SheetTitle>
+          <SheetDescription>
+            Create the profile here. Click create when you are done.
+          </SheetDescription>
+        </SheetHeader>
 
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4 pt-8">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="first_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="First name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="last_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Last name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 pt-8">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="first_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="First name"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="last_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Last name"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="roles_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Roles</FormLabel>
-                    <FormControl>
-                      <MultiSelectFormField
-                        options={rolePortalData}
-                        defaultValue={field.value}
-                        onValueChange={field.onChange}
-                        placeholder="Select roles"
-                        variant="inverted"
-                      />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="organization_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Organization</FormLabel>
-                    <Select
+            <FormField
+              control={form.control}
+              name="roles_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Roles</FormLabel>
+                  <FormControl>
+                    <MultiSelectFormField
+                      options={rolePortalData}
+                      defaultValue={field.value}
                       onValueChange={field.onChange}
-                      defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an organization" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {organizationData.map(({ node }) => (
-                          <SelectItem
-                            key={node.id}
-                            value={node.id}>
-                            {node.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      placeholder="Select roles"
+                      variant="inverted"
+                    />
+                  </FormControl>
 
-              <SheetFooter className="pt-2">
-                <SheetClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </SheetClose>
-                <Button
-                  disabled={!form.formState.isDirty}
-                  type="submit">
-                  Create
-                </Button>
-              </SheetFooter>
-            </form>
-          </Form>
-        </SheetContent>
-      </Sheet>
-    </>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="organization_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Organization</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an organization" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {organizationData.organizations.edges.map(({ node }) => (
+                        <SelectItem
+                          key={node.id}
+                          value={node.id}>
+                          {node.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <SheetFooter className="pt-2">
+              <SheetClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </SheetClose>
+              <Button
+                disabled={!form.formState.isDirty}
+                type="submit">
+                Create
+              </Button>
+            </SheetFooter>
+          </form>
+        </Form>
+      </SheetContent>
+    </Sheet>
   );
 };

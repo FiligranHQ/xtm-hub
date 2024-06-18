@@ -10,7 +10,6 @@ import {
 } from '../../../../../__generated__/userSlugSubscription.graphql';
 import {userSlugDeletion, userSlugFragment, userSlugSubscription,} from '@/components/admin/user/user.graphql';
 import {Button} from 'filigran-ui/servers';
-import {UserEditSheet} from '@/components/admin/user/[slug]/user-edit-sheet';
 import {DataTracking} from '@/components/data-tracking/data-tracking';
 import {dataTracking_fragment$key} from '../../../../../__generated__/dataTracking_fragment.graphql';
 import {trackingSubscription} from '@/components/data-tracking/tracking.graphql';
@@ -117,7 +116,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             data={data.user?.tracking_data as dataTracking_fragment$key}
           />
         </div>
-        <UserEditSheet user={user} />
+        {/*<UserEditSheet user={user} />*/}
       </>
     );
   }

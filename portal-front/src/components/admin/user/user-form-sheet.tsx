@@ -1,3 +1,9 @@
+import * as React from 'react';
+import { FunctionComponent, ReactNode } from 'react';
+import { z } from 'zod';
+import { userFormSchema } from '@/components/admin/user/user-form.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -5,6 +11,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Sheet,
   SheetClose,
   SheetContent,
@@ -15,104 +26,65 @@ import {
   SheetTrigger,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
-import * as React from 'react';
-import { FunctionComponent, useState } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
-import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
-import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
-import {
-  EditUserInput,
-  userSlugEditMutation,
-} from '../../../../../__generated__/userSlugEditMutation.graphql';
-import { EditIcon } from 'filigran-icon';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
-import { useMutation } from 'react-relay';
-import { Combobox } from 'filigran-ui';
+import { getOrganizations } from '@/components/organization/organization.service';
 
-interface UserEditCreateProps {
-  user: userSlug_fragment$data;
+interface UserFormSheetProps {
+  user?: any;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  trigger: ReactNode;
+  title: string;
+  description: string;
+  handleSubmit: (values: z.infer<typeof userFormSchema>) => void;
 }
 
-export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
+export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   user,
+  open,
+  setOpen,
+  trigger,
+  title,
+  description,
+  handleSubmit,
 }) => {
-  const [open, setOpen] = useState<boolean>(false);
-
-  const organizationData = getOrganizations();
-  const transformedOrganizationData = organizationData.map((organization) => {
-    return {
-      label: organization.node.name,
-      value: organization.node.id,
-    };
-  });
+  const currentRolesPortal = undefined;
   const rolePortal = getRolesPortal();
 
   const rolePortalData =
-    rolePortal?.rolesPortal?.map(({ name, id }) => ({
-      label: name,
+    rolePortal?.rolesPortal.map(({ name, id }) => ({
+      label: name ?? '',
       value: id,
     })) ?? [];
-
-  const currentRolesPortal = user.roles_portal_id.map(
-    (rolePortalData) => rolePortalData.id
-  );
-
-  const form = useForm<z.infer<typeof userEditFormSchema>>({
-    resolver: zodResolver(userEditFormSchema),
+  const [organizationData] = getOrganizations();
+  const form = useForm<z.infer<typeof userFormSchema>>({
+    resolver: zodResolver(userFormSchema),
     defaultValues: {
-      email: user.email ?? '',
-      first_name: user.first_name ?? '',
-      last_name: user.last_name ?? '',
+      email: user?.email ?? '',
+      first_name: user?.first_name ?? '',
+      last_name: user?.last_name ?? '',
       password: '',
       organization_id: user?.organization.id ?? '',
-      roles_portal_id: currentRolesPortal ? currentRolesPortal : [],
+      roles_id: currentRolesPortal ? currentRolesPortal : [],
     },
   });
 
-  const [commitUserMutation] =
-    useMutation<userSlugEditMutation>(UserSlugEditMutation);
-
-  function onSubmit({
-    email,
-    first_name,
-    last_name,
-    roles_portal_id,
-    organization_id,
-  }: z.infer<typeof userEditFormSchema>) {
-    const input: EditUserInput = {
-      email,
-      first_name,
-      last_name,
-      roles_portal_id,
-      organization_id,
-    };
-    commitUserMutation({
-      variables: { id: user.id, input },
-      onCompleted: () => setOpen(false),
+  const onSubmit = (values: z.infer<typeof userFormSchema>) => {
+    handleSubmit({
+      ...values,
     });
-  }
+  };
 
   return (
     <Sheet
       key={'right'}
       open={open}
       onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button
-          size="icon"
-          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <EditIcon className="h-4 w-4" />
-        </Button>
-      </SheetTrigger>
+      <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
         <SheetHeader>
-          <SheetTitle>Edit user</SheetTitle>
-          <SheetDescription>
-            Edit the profile here. Click save when you are done.
-          </SheetDescription>
+          <SheetTitle>{title}</SheetTitle>
+          <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
 
         <Form {...form}>
@@ -187,7 +159,7 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
 
             <FormField
               control={form.control}
-              name="roles_portal_id"
+              name="roles_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Roles</FormLabel>
@@ -211,17 +183,25 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
               name="organization_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="mb-2 block">Organization</FormLabel>
-                  <FormControl className="block">
-                    <Combobox
-                      dataTab={transformedOrganizationData}
-                      order={'Choose'}
-                      placeholder={'Choose a value'}
-                      emptyCommand={'Not found'}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    />
-                  </FormControl>
+                  <FormLabel>Organization</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an organization" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {organizationData.organizations.edges.map(({ node }) => (
+                        <SelectItem
+                          key={node.id}
+                          value={node.id}>
+                          {node.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -234,7 +214,7 @@ export const UserEditSheet: FunctionComponent<UserEditCreateProps> = ({
               <Button
                 disabled={!form.formState.isDirty}
                 type="submit">
-                Save
+                Create
               </Button>
             </SheetFooter>
           </form>
