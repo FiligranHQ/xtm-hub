@@ -3,7 +3,9 @@ import { expect, test } from '../../fixtures/baseFixtures';
 test('should confirm CRUD of organizations is OK', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Settings menu').click();
-  await expect(page.getByRole('link', { name: 'Organizations' })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Organizations' })
+  ).toBeVisible();
   await page.getByText('Organizations').click();
 
   // Create organization

@@ -124,12 +124,11 @@ const resolvers: Resolvers = {
     },
     editUser: async (_, { id, input }, context) => {
       const trx = await dbTx();
-
       try {
         const organization_id = extractId(input.organization_id);
-        const { roles_portal_id, ...inputWithoutRoles } = input;
-        const extracted_roles_portal_id = roles_portal_id.map(
-          (role_portal_id) => extractId(role_portal_id)
+        const { roles_id, ...inputWithoutRoles } = input;
+        const extracted_roles_portal_id = roles_id.map((role_portal_id) =>
+          extractId(role_portal_id)
         );
         const update = { ...inputWithoutRoles, organization_id };
         const [updatedUser] = await db<GeneratedUser>(context, 'User')
@@ -143,7 +142,7 @@ const resolvers: Resolvers = {
             id: role_id,
           };
         });
-        const roles_id = extracted_roles_portal_id.map((role_id) => {
+        const roles_portal_id = extracted_roles_portal_id.map((role_id) => {
           return {
             id: role_id,
           };
@@ -153,7 +152,7 @@ const resolvers: Resolvers = {
           'Organization.id',
           organization_id
         );
-        updatedUser.roles_portal_id = roles_id;
+        updatedUser.roles_portal_id = roles_portal_id;
         await dispatch('User', 'edit', updatedUser);
         return updatedUser;
       } catch (error) {

@@ -37,7 +37,7 @@ export const userEditFormSchema = z.object({
   organization_id: z.string().min(2, {
     message: 'Choose an organisation',
   }),
-  roles_portal_id: z
+  roles_id: z
     .array(z.string())
     .min(1, { message: 'Choose a role for the user' }),
 });
