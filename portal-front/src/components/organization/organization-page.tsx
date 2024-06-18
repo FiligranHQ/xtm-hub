@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import OrganizationList from '@/components/organization/organization-list';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { useRefetchableFragment } from 'react-relay';
 import { organizationsFragment } from '@/components/organization/organization.graphql';
@@ -15,9 +14,10 @@ import { organizationItem_fragment$data } from '../../../__generated__/organizat
 import { DataTable } from 'filigran-ui/clients';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from 'filigran-ui/servers';
-import { DeleteIcon, EditIcon } from 'filigran-icon';
+import { DeleteIcon } from 'filigran-icon';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { CreateOrganization } from '@/components/organization/create-organization';
+import { EditOrganization } from '@/components/organization/edit-organization';
 
 const OrganizationPage: React.FunctionComponent = () => {
   const breadcrumbValue = [
@@ -48,7 +48,13 @@ const OrganizationPage: React.FunctionComponent = () => {
       id: 'name',
       header: 'Name',
       cell: ({ row }) => {
-        return <>{row.original.name}</>;
+        return (
+          <>
+            <EditOrganization organization={row.original}></EditOrganization>
+
+            {row.original.name}
+          </>
+        );
       },
     },
     {

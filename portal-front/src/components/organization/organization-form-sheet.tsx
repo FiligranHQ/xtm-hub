@@ -29,8 +29,9 @@ interface OrganizationFormSheetProps {
   trigger: ReactNode;
   title: string;
   description: string;
-  handleSubmit: (values: any) => void;
+  handleSubmit: (values: z.infer<typeof organizationFormSchema>) => void;
 }
+
 export const OrganizationFormSheet: FunctionComponent<
   OrganizationFormSheetProps
 > = ({
