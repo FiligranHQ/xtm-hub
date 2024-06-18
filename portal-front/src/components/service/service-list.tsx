@@ -22,11 +22,13 @@ import { Button } from 'filigran-ui/servers';
 import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 import Loader from '@/components/loader';
 import { DataTable } from 'filigran-ui/clients';
-import { ColumnDef, SortingState } from '@tanstack/react-table';
+import {
+  ColumnDef,
+  PaginationState,
+  SortingState,
+} from '@tanstack/react-table';
 import Link from 'next/link';
-import Pagination from '@/components/ui/pagination';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
-import ServiceCreateForm from '@/components/service/service-create-form';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<pageLoaderServiceQuery>;
@@ -55,6 +57,10 @@ const columns: ColumnDef<serviceList_fragment$data>[] = [
 ];
 const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   const DEFAULT_ITEM_BY_PAGE = 10;
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: DEFAULT_ITEM_BY_PAGE,
+  });
   const queryData = usePreloadedQuery<pageLoaderServiceQuery>(
     ServiceListQuery,
     queryRef
@@ -79,22 +85,19 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     ({ node }) => node
   ) as serviceList_fragment$data[];
 
-  const [page, setPage] = React.useState<number>(0);
-
   const handleRefetchData = (
     args?: Partial<pageLoaderServiceQuery$variables>
   ) => {
     refetch({
-      count: DEFAULT_ITEM_BY_PAGE,
-      cursor: btoa(String(DEFAULT_ITEM_BY_PAGE * page)),
+      count: pagination.pageSize,
+      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+      orderBy: 'name',
+      orderMode: 'asc',
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
-  const handlePageChange = (page: number) => {
-    setPage(page);
-    handleRefetchData({ cursor: btoa(String(DEFAULT_ITEM_BY_PAGE * page)) });
-  };
+
   const totalPages = Math.ceil(data.services.totalCount / DEFAULT_ITEM_BY_PAGE);
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -106,6 +109,18 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     setSorting(updater as SortingState);
   };
 
+  const onPaginationChange = (updater: unknown) => {
+    const newPaginationValue: PaginationState =
+      updater instanceof Function ? updater(pagination) : updater;
+    handleRefetchData({
+      count: newPaginationValue.pageSize,
+      cursor: btoa(
+        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
+      ),
+    });
+    setPagination(newPaginationValue);
+  };
+
   return (
     <>
       <React.Suspense fallback={<Loader />}>
@@ -114,17 +129,14 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
           columns={columns}
           tableOptions={{
             onSortingChange: onSortingChange,
+            onPaginationChange: onPaginationChange,
+            manualPagination: true,
+            rowCount: data.services.totalCount,
             manualSorting: true,
           }}
-          tableState={{ sorting }}
-        />
-        <Pagination
-          page={page}
-          handlePageChange={handlePageChange}
-          totalPages={totalPages}
+          tableState={{ sorting, pagination }}
         />
       </React.Suspense>
-      {/*<ServiceCreateForm connectionID={connectionID} />*/}
     </>
   );
 };
