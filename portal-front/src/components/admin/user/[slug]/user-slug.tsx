@@ -17,6 +17,7 @@ import {AlertDialogComponent} from '@/components/ui/alert-dialog';
 import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
 import {DeleteIcon} from 'filigran-icon';
 import {useToast} from 'filigran-ui/clients';
+import {EditUser} from '@/components/admin/user/[slug]/user-edit';
 
 // Component interface
 interface UserSlugProps {
@@ -116,7 +117,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             data={data.user?.tracking_data as dataTracking_fragment$key}
           />
         </div>
-        {/*<UserEditSheet user={user} />*/}
+        <EditUser user={user}></EditUser>
       </>
     );
   }

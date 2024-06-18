@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { FunctionComponent, ReactNode } from 'react';
-import { z } from 'zod';
-import { userFormSchema } from '@/components/admin/user/user-form.schema';
+import { z, ZodSchema } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -28,15 +27,23 @@ import {
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import { getOrganizations } from '@/components/organization/organization.service';
+import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
+import {
+  userEditFormSchema,
+  userFormSchema,
+} from '@/components/admin/user/user-form.schema';
 
 interface UserFormSheetProps {
-  user?: any;
+  user?: userSlug_fragment$data;
   open: boolean;
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
   title: string;
   description: string;
-  handleSubmit: (values: z.infer<typeof userFormSchema>) => void;
+  handleSubmit: (
+    values: z.infer<typeof userEditFormSchema> | z.infer<typeof userFormSchema>
+  ) => void;
+  validationSchema: ZodSchema;
 }
 
 export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
@@ -47,8 +54,11 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   title,
   description,
   handleSubmit,
+  validationSchema,
 }) => {
-  const currentRolesPortal = undefined;
+  const currentRolesPortal = user?.roles_portal_id.map(
+    (rolePortalData) => rolePortalData.id
+  );
   const rolePortal = getRolesPortal();
 
   const rolePortalData =
@@ -57,8 +67,8 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
       value: id,
     })) ?? [];
   const [organizationData] = getOrganizations();
-  const form = useForm<z.infer<typeof userFormSchema>>({
-    resolver: zodResolver(userFormSchema),
+  const form = useForm<z.infer<typeof validationSchema>>({
+    resolver: zodResolver(validationSchema),
     defaultValues: {
       email: user?.email ?? '',
       first_name: user?.first_name ?? '',
@@ -69,7 +79,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
     },
   });
 
-  const onSubmit = (values: z.infer<typeof userFormSchema>) => {
+  const onSubmit = (values: z.infer<typeof validationSchema>) => {
     handleSubmit({
       ...values,
     });
@@ -214,7 +224,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
               <Button
                 disabled={!form.formState.isDirty}
                 type="submit">
-                Create
+                Validate
               </Button>
             </SheetFooter>
           </form>

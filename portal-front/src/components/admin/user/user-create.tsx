@@ -4,7 +4,10 @@ import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { userListCreateMutation } from '../../../../__generated__/userListCreateMutation.graphql';
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
-import { userFormSchema } from '@/components/admin/user/user-form.schema';
+import {
+  userEditFormSchema,
+  userFormSchema,
+} from '@/components/admin/user/user-form.schema';
 import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
 import { AddIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui/servers';
@@ -24,9 +27,14 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
     UserListCreateMutation
   );
 
-  const handleSubmit = (values: z.infer<typeof userFormSchema>) => {
+  const handleSubmit = (
+    values: z.infer<typeof userFormSchema> | z.infer<typeof userEditFormSchema>
+  ) => {
     commitUserMutation({
-      variables: { input: { ...values }, connections: [connectionId] },
+      variables: {
+        input: { ...(values as z.infer<typeof userFormSchema>) },
+        connections: [connectionId],
+      },
       onCompleted: () => {
         setOpenSheet(false);
       },
@@ -42,10 +50,11 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
   return (
     <UserFormSheet
       title={'Create a new user'}
-      description={'Create the profile here. Click create when you are done.'}
+      description={'Create the profile here. Click Validate when you are done.'}
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}
+      validationSchema={userFormSchema}
       trigger={
         <Button
           size="icon"
