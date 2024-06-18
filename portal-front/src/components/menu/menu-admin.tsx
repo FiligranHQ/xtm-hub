@@ -8,11 +8,9 @@ import {
   PopoverTrigger,
   Separator,
 } from 'filigran-ui/clients';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { Button, buttonVariants } from 'filigran-ui/servers';
+import { Button } from 'filigran-ui/servers';
 import * as React from 'react';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 import useGranted from '@/hooks/useGranted';
 import {
   ForumIcon,
@@ -21,43 +19,51 @@ import {
   OrganizationIcon,
   SettingsIcon,
 } from 'filigran-icon';
+import { useRouter } from 'next/navigation';
 
 export interface MenuAdminProps {
   open: boolean;
 }
 
 const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
-  if (!useGranted('ADMIN')) {
-    return null;
-  }
-  return (
-    <li>
-      <Separator className="my-2" />{' '}
-      {open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}
-    </li>
-  );
-};
+  const [adminOpened, setAdminOpened] = useState<boolean>(false);
+  const router = useRouter();
 
-const ClosedMenuAdmin = () => {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          aria-label="Settings menu">
-          <SettingsIcon className="h-4 w-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        side="right"
-        align="start">
-        <AdminLinks />
-      </PopoverContent>
-    </Popover>
+  const routeTo = (link: string) => {
+    router.replace(link);
+    setAdminOpened(false);
+  };
+
+  const AdminLinks = () => (
+    <>
+      <Button
+        onClick={() => routeTo('/admin/user')}
+        variant={'ghost'}
+        className={'w-full justify-start border-none text-base'}>
+        <GroupIcon className="mr-2 h-4 w-4" /> User
+      </Button>
+      <Button
+        onClick={() => routeTo('/admin/service')}
+        variant={'ghost'}
+        className={'w-full justify-start border-none text-base'}>
+        <GradeIcon className="mr-2 h-4 w-4" /> Services
+      </Button>
+      <Button
+        onClick={() => routeTo('/admin/community')}
+        variant={'ghost'}
+        className={'w-full justify-start border-none text-base'}>
+        <ForumIcon className="mr-2 h-4 w-4" /> Communities
+      </Button>
+      <Button
+        onClick={() => routeTo('/admin/organizations')}
+        variant={'ghost'}
+        className={'w-full justify-start border-none text-base'}>
+        <OrganizationIcon className="mr-2 h-4 w-4" /> Organizations
+      </Button>
+    </>
   );
-};
-const OpenedMenuAdmin = () => {
-  return (
+
+  const OpenedMenuAdmin = () => (
     <Accordion
       type="single"
       collapsible
@@ -75,51 +81,38 @@ const OpenedMenuAdmin = () => {
       </AccordionItem>
     </Accordion>
   );
-};
-const AdminLinks = () => {
+
+  const ClosedMenuAdmin = () => (
+    <Popover
+      open={adminOpened}
+      onOpenChange={setAdminOpened}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          aria-label="Settings menu">
+          <SettingsIcon className="h-4 w-4" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        side="right"
+        align="start">
+        <AdminLinks />
+      </PopoverContent>
+    </Popover>
+  );
+
+  if (!useGranted('ADMIN')) {
+    return null;
+  }
+
   return (
     <>
-      <Link
-        href={'/admin/user'}
-        className={cn(
-          buttonVariants({
-            variant: 'ghost',
-            className: 'w-full justify-start border-none text-base',
-          })
-        )}>
-        <GroupIcon className="mr-2 h-4 w-4" /> User
-      </Link>
-      <Link
-        href={'/admin/service'}
-        className={cn(
-          buttonVariants({
-            variant: 'ghost',
-            className: 'w-full justify-start border-none text-base',
-          })
-        )}>
-        <GradeIcon className="mr-2 h-4 w-4" /> Services
-      </Link>
-      <Link
-        href={'/admin/community'}
-        className={cn(
-          buttonVariants({
-            variant: 'ghost',
-            className: 'w-full justify-start border-none text-base',
-          })
-        )}>
-        <ForumIcon className="mr-2 h-4 w-4" /> Communities
-      </Link>
-      <Link
-        href={'/admin/organizations'}
-        className={cn(
-          buttonVariants({
-            variant: 'ghost',
-            className: 'w-full justify-start border-none text-base',
-          })
-        )}>
-        <OrganizationIcon className="mr-2 h-4 w-4" /> Organizations
-      </Link>
+      <li>
+        <Separator className="my-2" />
+        {open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}
+      </li>
     </>
   );
 };
+
 export default MenuAdmin;
