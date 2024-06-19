@@ -63,19 +63,20 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
 
   const rolePortalData =
     rolePortal?.rolesPortal.map(({ name, id }) => ({
-      label: name ?? '',
+      label: name,
       value: id,
     })) ?? [];
   const [organizationData] = getOrganizations();
+  const defaultUser = { ...user };
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
-      email: user?.email ?? '',
-      first_name: user?.first_name ?? '',
-      last_name: user?.last_name ?? '',
+      email: defaultUser.email,
+      first_name: defaultUser.first_name,
+      last_name: defaultUser.last_name,
       password: '',
-      organization_id: user?.organization.id ?? '',
-      roles_id: currentRolesPortal ? currentRolesPortal : [],
+      organization_id: defaultUser.organization?.id ?? '',
+      roles_id: currentRolesPortal ?? [],
     },
   });
 

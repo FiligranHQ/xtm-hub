@@ -8,6 +8,7 @@ import { AddIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui/servers';
 import { z } from 'zod';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
+import { useToast } from 'filigran-ui/clients';
 
 interface CreateOrganizationProps {
   connectionId: string;
@@ -16,6 +17,7 @@ interface CreateOrganizationProps {
 export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
   connectionId,
 }) => {
+  const { toast } = useToast();
   const [commitOrganizationCreationMutation] =
     useMutation<organizationCreateMutation>(CreateOrganizationMutation);
   const [openSheet, setOpenSheet] = useState(false);
@@ -33,7 +35,13 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
         }
         setOpenSheet(false);
       },
-      onError: () => {},
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
     });
   };
   return (
