@@ -5,6 +5,8 @@ export const UserListCreateMutation = graphql`
     addUser(input: $input)
       @prependNode(connections: $connections, edgeTypeName: "UsersEdge") {
       email
+      first_name
+      last_name
     }
   }
 `;

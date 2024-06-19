@@ -9,6 +9,7 @@ import { organizationItem_fragment$data } from '../../../__generated__/organizat
 import { organizationEditMutation } from '../../../__generated__/organizationEditMutation.graphql';
 import { z } from 'zod';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
+import { useToast } from 'filigran-ui/clients';
 
 interface EditOrganizationProps {
   organization: organizationItem_fragment$data;
@@ -17,6 +18,7 @@ interface EditOrganizationProps {
 export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   organization,
 }) => {
+  const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
   const [openSheet, setOpenSheet] = useState(false);
@@ -33,7 +35,13 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
       onCompleted: () => {
         setOpenSheet(false);
       },
-      onError: () => {},
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
     });
   };
   return (
