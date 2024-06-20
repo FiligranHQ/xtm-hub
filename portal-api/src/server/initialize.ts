@@ -5,6 +5,7 @@ import {
   ensureCapabilityExists,
   ensureRoleExists,
   ensureRoleHasCapability,
+  ensureServiceExists,
   ensureUserRoleExist,
   insertAdminUser,
   insertPlatformOrganization,
@@ -87,7 +88,19 @@ const initializeBuiltInAdministrator = async () => {
   await initAdminUser();
 };
 
+const initService = async (serviceName: string) => {
+  const cyberWeatherService = portalConfig.services.find(
+    (service) => service.name === serviceName
+  );
+  await ensureServiceExists(cyberWeatherService);
+};
+
+const initializeDefaultServices = async () => {
+  await initService('CyberWeather');
+  await initService('OpenFeed');
+};
 const platformInit = async () => {
+  await initializeDefaultServices();
   await initializeBuiltInAdministrator();
 };
 
