@@ -33,9 +33,9 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  settings: Settings!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  settings: Settings!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
@@ -144,16 +144,6 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -178,6 +168,16 @@ input EditOrganizationInput {
   name: String!
 }
 
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
 enum ServiceOrdering {
   name
 }
@@ -186,6 +186,9 @@ type Service implements Node {
   id: ID!
   name: String!
   description: String
+  url: String
+  provider: String
+  type: String
 }
 
 type ServiceEdge {

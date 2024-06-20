@@ -15,7 +15,6 @@ export const loadServices = async (context: PortalContext, opts) => {
   })
     .select('*')
     .asConnection<ServiceConnection>();
-
   const { totalCount } = await db<Service>(context, 'Service', opts)
     .countDistinct('id as totalCount')
     .first();

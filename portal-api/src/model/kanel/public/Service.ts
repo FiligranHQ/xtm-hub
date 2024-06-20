@@ -11,6 +11,12 @@ export default interface Service {
   name: string;
 
   description: string | null;
+
+  url: string | null;
+
+  provider: string | null;
+
+  type: string | null;
 }
 
 /** Represents the initializer for the table public.Service */
@@ -20,6 +26,12 @@ export interface ServiceInitializer {
   name: string;
 
   description?: string | null;
+
+  url?: string | null;
+
+  provider?: string | null;
+
+  type?: string | null;
 }
 
 /** Represents the mutator for the table public.Service */
@@ -29,4 +41,10 @@ export interface ServiceMutator {
   name?: string;
 
   description?: string | null;
+
+  url?: string | null;
+
+  provider?: string | null;
+
+  type?: string | null;
 }

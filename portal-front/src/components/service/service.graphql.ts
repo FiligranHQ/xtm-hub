@@ -13,6 +13,9 @@ export const serviceListFragment = graphql`
   fragment serviceList_fragment on Service {
     id
     name
+    url
+    provider
+    type
   }
 `;
 
