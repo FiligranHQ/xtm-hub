@@ -1,6 +1,14 @@
 // https://github.com/node-config/node-config
 import config from 'config';
 
+interface Services {
+  name: string;
+  provider: string;
+  type: string;
+  description: string;
+  url: string;
+}
+
 interface PortalConfig {
   port: number;
   admin: {
@@ -14,6 +22,7 @@ interface PortalConfig {
     password: string;
     database: string;
   };
+  services: Services[];
 }
 
 const portalConfig: PortalConfig = {
@@ -29,6 +38,7 @@ const portalConfig: PortalConfig = {
     password: config.get<string>('database.password'),
     database: config.get<string>('database.database'),
   },
+  services: [config.get('cyber_weather'), config.get('open_feed')],
 };
 
 export default portalConfig;

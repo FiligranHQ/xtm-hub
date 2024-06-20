@@ -19,6 +19,22 @@
     "logout_callback_url": ["http://localhost:3001/oidc/callback"],
     "response_types": ["code"]
   },
+  "cyber_weather": {
+    "id": "c6343882-f609-4a3f-abe0-a34f8cb11302",
+    "name": "CyberWeather",
+    "provider": "SCRED3",
+    "type": "Intel",
+    "description": "This is a short description to describe the CyberWeather app, how to use it, etc.",
+    "url": "https://weather.dev.scredplatform.io/"
+  },
+  "open_feed": {
+    "id": "d6343883-f609-5a3f-ace1-a24f8cb11454",
+    "name": "OpenFeed",
+    "provider": "SCRED4",
+    "type": "Feed",
+    "description": "This is a short description to describe the OpenFeed app, how to use it, etc.",
+    "url": "https://opencti-test2.non-prod.scredplatform.io/"
+  },
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,

@@ -4,7 +4,14 @@ import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 import { UserWithAuthentication } from '../modules/users/users';
+import Service from '../model/kanel/public/Service';
 
+export const ensureServiceExists = async (service) => {
+  const services = await dbUnsecure('Service');
+  if (!services.find((s) => s.url === service.url)) {
+    await dbUnsecure<Service>('Service').insert(service);
+  }
+};
 export const ensureCapabilityExists = async (capability, trx) => {
   const capabilityPortal = await dbUnsecure('CapabilityPortal');
   if (!capabilityPortal.find((c) => c.id === capability.id)) {
