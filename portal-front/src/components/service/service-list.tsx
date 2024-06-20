@@ -18,7 +18,7 @@ import {
   servicesListFragment,
   subscription,
 } from '@/components/service/service.graphql';
-import { Button } from 'filigran-ui/servers';
+import { Badge, Button } from 'filigran-ui/servers';
 import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 import Loader from '@/components/loader';
 import { DataTable } from 'filigran-ui/clients';
@@ -41,6 +41,23 @@ const columns: ColumnDef<serviceList_fragment$data>[] = [
     header: 'Name',
   },
   {
+    id: 'type',
+    header: 'Type',
+    cell: ({ row }) => {
+      return <Badge className={'cursor-default'}>{row.original.type}</Badge>;
+    },
+  },
+  {
+    accessorKey: 'provider',
+    id: 'provider',
+    header: 'Provider',
+  },
+  {
+    accessorKey: 'description',
+    id: 'description',
+    header: 'Description',
+  },
+  {
     id: 'actions',
     size: 100,
     enableHiding: false,
@@ -49,7 +66,7 @@ const columns: ColumnDef<serviceList_fragment$data>[] = [
     cell: ({ row }) => {
       return (
         <Button asChild>
-          <Link href={`#${row.original.name}`}>View more</Link>
+          <Link href={`#${row.original.url}`}>View more</Link>
         </Button>
       );
     },
