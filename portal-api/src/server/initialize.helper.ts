@@ -8,8 +8,13 @@ import Service from '../model/kanel/public/Service';
 
 export const ensureServiceExists = async (service) => {
   const services = await dbUnsecure('Service');
-  if (!services.find((s) => s.url === service.url)) {
+  if (!services.find((s) => s.id === service.id)) {
     await dbUnsecure<Service>('Service').insert(service);
+  } else {
+    await dbUnsecure<Service>('Service')
+      .where({ id: service.id })
+      .update(service)
+      .returning('*');
   }
 };
 export const ensureCapabilityExists = async (capability, trx) => {

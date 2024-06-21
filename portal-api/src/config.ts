@@ -38,7 +38,7 @@ const portalConfig: PortalConfig = {
     password: config.get<string>('database.password'),
     database: config.get<string>('database.database'),
   },
-  services: [config.get('cyber_weather'), config.get('open_feed')],
+  services: config.get('init_services'),
 };
 
 export default portalConfig;
