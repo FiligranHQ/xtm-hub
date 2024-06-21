@@ -1,0 +1,37 @@
+enum SubscriptionOrdering {
+    organization_id
+}
+type Subscription implements Node {
+    id: ID!
+    organization_id: ID!
+    organization: Organization
+    service_id: ID!
+    service: Service
+    start_date: Date
+    end_date: Date
+}
+
+type SubscriptionEdge {
+    cursor: String!
+    node: Subscription!
+}
+
+type SubscriptionConnection {
+    totalCount: Int!
+    edges: [SubscriptionEdge!]!
+    pageInfo: PageInfo!
+}
+
+type Query {
+    subscription(id: ID!): Subscription @auth
+    subscriptions(
+        first: Int = 10
+        after: ID
+        orderBy: SubscriptionOrdering = name
+        orderMode: OrderingMode = asc
+    ): SubscriptionConnection! @auth
+}
+
+type Mutation {
+    addSubscription(name: String!): Organization @auth(requires: [ADMIN_ORGA])
+}

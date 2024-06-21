@@ -23,16 +23,6 @@ type ServiceConnection {
     pageInfo: PageInfo!
 }
 
-type ServiceSubscription {
-    add: Service
-    edit: Service
-    delete: Service
-}
-
-type Subscription {
-    Service: ServiceSubscription @auth
-}
-
 type Mutation {
     editService(id: ID!, name: String!): Service @auth(requires: [ADMIN])
     addService(name: String!): Service @auth(requires: [ADMIN])

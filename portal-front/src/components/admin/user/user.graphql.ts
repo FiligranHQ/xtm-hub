@@ -43,19 +43,3 @@ export const userSlugFragment = graphql`
   }
 `;
 
-export const userSlugSubscription = graphql`
-  subscription userSlugSubscription {
-    User {
-      edit {
-        ...userSlug_fragment
-      }
-      merge {
-        from
-        target
-      }
-      delete {
-        id @deleteRecord
-      }
-    }
-  }
-`;
