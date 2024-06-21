@@ -8,4 +8,4 @@ Migrations must be defined as pure JS for this reason.
 - On you first launch of portail-api, it will update the DB. It will insert a new entry in the `migrations` table.
 - Generate the Ts files with `yarn generate-pg-to-ts` or `npx kanel` (remove the `type: module` from
   portal-api/package.json before launching the commands since it is not compatible)
-- Please think about update your graphQL, your models etc. 
+- Please think about update your graphQL, your models etc.

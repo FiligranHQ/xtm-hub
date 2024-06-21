@@ -24,3 +24,7 @@ export const ROLE_USER: RolePortal = {
   id: '40cfe630-c272-42f9-8fcf-f219e2f4277b' as RolePortalId,
   name: 'USER',
 };
+export const ROLE_ADMIN_ORGA: RolePortal = {
+  id: '40cfe630-c272-42f9-8fcf-f219e2f4278c' as RolePortalId,
+  name: 'ADMIN_ORGA',
+};
