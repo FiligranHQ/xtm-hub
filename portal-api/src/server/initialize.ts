@@ -88,16 +88,22 @@ const initializeBuiltInAdministrator = async () => {
   await initAdminUser();
 };
 
-const initService = async (serviceName: string) => {
-  const cyberWeatherService = portalConfig.services.find(
-    (service) => service.name === serviceName
+const findService = (serviceName: string) => {
+  const serviceObject = portalConfig.services.find(
+    (item) => item[serviceName] !== undefined
   );
-  await ensureServiceExists(cyberWeatherService);
+  return serviceObject ? serviceObject[serviceName] : null;
+};
+
+const initService = async (serviceName: string) => {
+  const currentService = findService(serviceName);
+
+  await ensureServiceExists(currentService);
 };
 
 const initializeDefaultServices = async () => {
-  await initService('CyberWeather');
-  await initService('OpenFeed');
+  await initService('cyber_weather');
+  await initService('open_feed');
 };
 const platformInit = async () => {
   await initializeDefaultServices();
