@@ -17,6 +17,8 @@ export default interface Service {
   provider: string | null;
 
   type: string | null;
+
+  subscription_type: string | null;
 }
 
 /** Represents the initializer for the table public.Service */
@@ -32,6 +34,9 @@ export interface ServiceInitializer {
   provider?: string | null;
 
   type?: string | null;
+
+  /** Default value: 'SUBSCRIPTABLE_BACKOFFICE'::text */
+  subscription_type?: string | null;
 }
 
 /** Represents the mutator for the table public.Service */
@@ -47,4 +52,6 @@ export interface ServiceMutator {
   provider?: string | null;
 
   type?: string | null;
+
+  subscription_type?: string | null;
 }

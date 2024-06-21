@@ -27,7 +27,8 @@
         "provider": "SCRED6",
         "type": "Intel",
         "description": "This is a short description to describe the CyberWeather app, how to use it, etc.",
-        "url": "https://weather.dev.scredplatform.io/"
+        "url": "https://weather.dev.scredplatform.io/",
+        "subscription_type": "SUBSCRIPTABLE_DIRECT"
       }
     },
     {
@@ -37,7 +38,8 @@
         "provider": "SCRED5",
         "type": "Feed",
         "description": "This is a short description to describe the OpenFeed app, how to use it, etc.",
-        "url": "https://opencti-test2.non-prod.scredplatform.io/"
+        "url": "https://opencti-test2.non-prod.scredplatform.io/",
+        "subscription_type": "SUBSCRIPTABLE_DIRECT"
       }
     }
   ],

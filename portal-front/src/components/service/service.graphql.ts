@@ -17,6 +17,7 @@ export const serviceListFragment = graphql`
     url
     provider
     type
+    subscription_type
   }
 `;
 

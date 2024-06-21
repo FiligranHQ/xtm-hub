@@ -9,6 +9,7 @@ type Service implements Node {
     url: String
     provider: String
     type: String
+    subscription_type: String
 }
 
 type ServiceEdge {
