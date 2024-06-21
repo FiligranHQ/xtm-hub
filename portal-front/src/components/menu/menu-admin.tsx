@@ -13,6 +13,7 @@ import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import useGranted from '@/hooks/useGranted';
 import {
+  ExternalReferenceIcon,
   ForumIcon,
   GradeIcon,
   GroupIcon,
@@ -59,6 +60,12 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <OrganizationIcon className="mr-2 h-4 w-4" /> Organizations
+      </Button>
+      <Button
+        onClick={() => routeTo('/admin/subcriptions')}
+        variant={'ghost'}
+        className={'w-full justify-start border-none text-base'}>
+        <ExternalReferenceIcon className="mr-2 h-4 w-4" /> Subscription
       </Button>
     </>
   );

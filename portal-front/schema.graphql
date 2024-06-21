@@ -4,6 +4,7 @@ enum Restriction {
   BYPASS
   ADMIN
   USER
+  ADMIN_ORGA
 }
 
 interface Node {
@@ -33,6 +34,8 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  subscription(id: ID!): Subscription
+  subscriptions(first: Int = 10, after: ID, orderBy: SubscriptionOrdering, orderMode: OrderingMode = asc): SubscriptionConnection!
   settings: Settings!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
@@ -75,19 +78,6 @@ type UserConnection {
   pageInfo: PageInfo!
 }
 
-type UserSubscription {
-  add: User
-  edit: User
-  delete: User
-  merge: MergeEvent
-}
-
-type Subscription {
-  User: UserSubscription
-  ActionTracking: TrackingSubscription
-  Service: ServiceSubscription
-}
-
 input EditUserInput {
   email: String!
   first_name: String
@@ -112,12 +102,48 @@ type Mutation {
   deleteUser(id: ID!): User
   login(email: String!, password: String): User
   logout: ID!
+  addSubscription(name: String!): Organization
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
   deleteService(id: ID!): Service
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
+}
+
+enum SubscriptionOrdering {
+  organization_id
+}
+
+type Subscription implements Node {
+  id: ID!
+  organization_id: ID!
+  organization: Organization
+  service_id: ID!
+  service: Service
+  start_date: Date
+  end_date: Date
+}
+
+type SubscriptionEdge {
+  cursor: String!
+  node: Subscription!
+}
+
+type SubscriptionConnection {
+  totalCount: Int!
+  edges: [SubscriptionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
 }
 
 type ActionTracking implements Node {
@@ -144,16 +170,6 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
 enum ServiceOrdering {
   name
 }
@@ -177,12 +193,6 @@ type ServiceConnection {
   totalCount: Int!
   edges: [ServiceEdge!]!
   pageInfo: PageInfo!
-}
-
-type ServiceSubscription {
-  add: Service
-  edit: Service
-  delete: Service
 }
 
 type RolePortal implements Node {

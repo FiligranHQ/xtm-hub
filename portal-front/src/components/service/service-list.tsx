@@ -71,7 +71,23 @@ const columns: ColumnDef<serviceList_fragment$data>[] = [
       );
     },
   },
+  {
+    id: 'subscription',
+    size: 100,
+    enableHiding: false,
+    enableSorting: false,
+    enableResizing: false,
+    cell: ({ row }) => {
+      return (
+        <Button onClick={() => subscribe(row.original.id)}>Subscribe</Button>
+      );
+    },
+  },
 ];
+
+const subscribe = (serviceId: string) => {
+  console.log('serviceId', serviceId);
+};
 const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   const DEFAULT_ITEM_BY_PAGE = 10;
   const [pagination, setPagination] = useState<PaginationState>({
