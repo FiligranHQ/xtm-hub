@@ -45,3 +45,19 @@ export const subscriptionFetch = graphql`
     ...subscriptionList_subscriptions
   }
 `;
+
+export const AddSubscriptionMutation = graphql`
+  mutation subscriptionCreateMutation(
+    $service_id: String!
+    $organization_id: String!
+    $connections: [ID!]!
+  ) {
+    addSubscription(service_id: $service_id, organization_id: $organization_id)
+      @prependNode(
+        connections: $connections
+        edgeTypeName: "SubscriptionsEdge"
+      ) {
+      id
+    }
+  }
+`;

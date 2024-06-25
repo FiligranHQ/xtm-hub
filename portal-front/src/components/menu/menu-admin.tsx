@@ -65,7 +65,7 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
         onClick={() => routeTo('/admin/subcriptions')}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
-        <ExternalReferenceIcon className="mr-2 h-4 w-4" /> Subscription
+        <ExternalReferenceIcon className="mr-2 h-4 w-4" /> Subscriptions
       </Button>
     </>
   );

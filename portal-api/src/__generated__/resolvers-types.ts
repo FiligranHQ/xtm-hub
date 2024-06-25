@@ -96,7 +96,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Service>;
-  addSubscription?: Maybe<Organization>;
+  addSubscription?: Maybe<Subscription>;
   addUser?: Maybe<User>;
   deleteOrganization?: Maybe<Organization>;
   deleteService?: Maybe<Service>;
@@ -118,7 +118,8 @@ export type MutationAddServiceArgs = {
 };
 
 export type MutationAddSubscriptionArgs = {
-  name: Scalars['String']['input'];
+  organization_id?: InputMaybe<Scalars['String']['input']>;
+  service_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MutationAddUserArgs = {
@@ -697,10 +698,10 @@ export type MutationResolvers<
     RequireFields<MutationAddServiceArgs, 'name'>
   >;
   addSubscription?: Resolver<
-    Maybe<ResolversTypes['Organization']>,
+    Maybe<ResolversTypes['Subscription']>,
     ParentType,
     ContextType,
-    RequireFields<MutationAddSubscriptionArgs, 'name'>
+    Partial<MutationAddSubscriptionArgs>
   >;
   addUser?: Resolver<
     Maybe<ResolversTypes['User']>,
