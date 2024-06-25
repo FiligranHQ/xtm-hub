@@ -1,13 +1,15 @@
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
-import { loadSubscriptions } from './subscription.domain';
-import { db } from '../../../knexfile';
+import {
+  checkSubscriptionExists,
+  loadSubscriptions,
+} from './subscription.domain';
 import { v4 as uuidv4 } from 'uuid';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { db } from '../../../knexfile';
 
 const resolvers: Resolvers = {
   Query: {
     subscriptions: async (_, { first, after, orderMode, orderBy }, context) => {
-      console.log('ici');
       return loadSubscriptions(context, { first, after, orderMode, orderBy });
     },
   },
@@ -22,6 +24,14 @@ const resolvers: Resolvers = {
         start_date: new Date(),
         end_date: undefined,
       };
+      // Check the subscription does not already exist :
+      const subscription = await checkSubscriptionExists(
+        fromGlobalId(fromGlobalId(organization_id).id.toString()).id,
+        fromGlobalId(service_id).id.toString()
+      );
+      if (subscription) {
+        throw new Error(`You have already subscribed this service.`);
+      }
       const [addedSubscription] = await db<Subscription>(
         context,
         'Subscription'

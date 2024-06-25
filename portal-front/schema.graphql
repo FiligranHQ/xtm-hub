@@ -36,12 +36,12 @@ type Query {
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 10, after: ID, orderBy: SubscriptionOrdering, orderMode: OrderingMode = asc): SubscriptionConnection!
-  organization(id: ID!): Organization
-  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
   settings: Settings!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  organization(id: ID!): Organization
+  organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
 }
 
 enum UserOrdering {
@@ -103,12 +103,12 @@ type Mutation {
   login(email: String!, password: String): User
   logout: ID!
   addSubscription(service_id: String, organization_id: String): Subscription
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
   deleteService(id: ID!): Service
+  addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
 }
 
 type ActionTracking implements Node {
@@ -160,30 +160,6 @@ type SubscriptionConnection {
   pageInfo: PageInfo!
 }
 
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditOrganizationInput {
-  name: String!
-}
-
 type PlatformProvider {
   name: String!
   type: String!
@@ -219,10 +195,6 @@ type ServiceConnection {
   pageInfo: PageInfo!
 }
 
-scalar JSON
-
-scalar Date
-
 type RolePortal implements Node {
   id: ID!
   name: String!
@@ -231,3 +203,31 @@ type RolePortal implements Node {
 type RolePortalID implements Node {
   id: ID!
 }
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input EditOrganizationInput {
+  name: String!
+}
+
+scalar JSON
+
+scalar Date

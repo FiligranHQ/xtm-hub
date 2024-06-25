@@ -16,6 +16,10 @@ export const CAPABILITY_USER: Capability = {
   id: '795004d6-8dd4-4c97-be85-2e2420e522f1',
   name: Restriction.User,
 };
+export const CAPABILITY_ADMIN_ORGA: Capability = {
+  id: '795004d6-8dd4-4c97-be85-2e2420e533a2',
+  name: Restriction.AdminOrga,
+};
 export const ROLE_ADMIN: RolePortal = {
   id: '6b632cf2-9105-46ec-a463-ad59ab58c770' as RolePortalId,
   name: 'ADMIN',

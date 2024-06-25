@@ -3,7 +3,7 @@ import {
   Subscription,
   SubscriptionConnection,
 } from '../../__generated__/resolvers-types';
-import { db, dbRaw, paginate } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
 
 export const loadSubscriptions = async (context: PortalContext, opts) => {
@@ -42,4 +42,17 @@ export const loadSubscriptions = async (context: PortalContext, opts) => {
     totalCount,
     ...subscriptionConnection,
   };
+};
+
+export const checkSubscriptionExists = async (
+  organization_id: string,
+  service_id: string
+): Promise<Subscription | boolean> => {
+  const subscriptionQuery = dbUnsecure<Subscription>('Subscription')
+    .where('organization_id', organization_id)
+    .where('service_id', service_id)
+    .select('*')
+    .first();
+  const sub = await subscriptionQuery;
+  return sub ?? false;
 };

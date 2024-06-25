@@ -85,5 +85,8 @@ export const applyDbSecurity = <T>(
   if (type === 'RolePortal') {
     return queryContext;
   }
+  if (type === 'Subscription') {
+    return queryContext;
+  }
   throw new Error('Security behavior must be defined for type ' + type);
 };
