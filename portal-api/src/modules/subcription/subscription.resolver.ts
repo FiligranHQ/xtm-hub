@@ -1,5 +1,8 @@
-import { Resolvers } from '../../__generated__/resolvers-types';
+import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import { loadSubscriptions } from './subscription.domain';
+import { db } from '../../../knexfile';
+import { v4 as uuidv4 } from 'uuid';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 
 const resolvers: Resolvers = {
   Query: {
@@ -9,13 +12,24 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    // addSubscriptions: async (_, { name }, context) => {
-    //   const data = { id: uuidv4(), name };
-    //   const [addSubscription] = await db<Subscription>(context, 'Subscription')
-    //     .insert(data)
-    //     .returning('*');
-    //   return addSubscription;
-    // },
+    addSubscription: async (_, { service_id, organization_id }, context) => {
+      const data = {
+        id: uuidv4(),
+        service_id: fromGlobalId(service_id).id.toString(),
+        organization_id: fromGlobalId(
+          fromGlobalId(organization_id).id.toString()
+        ).id,
+        start_date: new Date(),
+        end_date: undefined,
+      };
+      const [addedSubscription] = await db<Subscription>(
+        context,
+        'Subscription'
+      )
+        .insert(data)
+        .returning('*');
+      return addedSubscription;
+    },
   },
 };
 

@@ -33,5 +33,5 @@ type Query {
 }
 
 type Mutation {
-    addSubscription(name: String!): Organization @auth(requires: [ADMIN_ORGA])
+    addSubscription(service_id: String, organization_id: String): Subscription @auth(requires: [ADMIN])
 }

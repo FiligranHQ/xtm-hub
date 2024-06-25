@@ -5,19 +5,16 @@ import {
   pageLoaderServiceQuery$variables,
 } from '../../../__generated__/pageLoaderServiceQuery.graphql';
 import * as React from 'react';
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import {
   PreloadedQuery,
+  useMutation,
   usePreloadedQuery,
   useRefetchableFragment,
-  useSubscription,
 } from 'react-relay';
 import { serviceList_services$key } from '../../../__generated__/serviceList_services.graphql';
 import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
-import {
-  servicesListFragment,
-  subscription,
-} from '@/components/service/service.graphql';
+import { servicesListFragment } from '@/components/service/service.graphql';
 import { Badge, Button } from 'filigran-ui/servers';
 import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 import Loader from '@/components/loader';
@@ -29,67 +26,90 @@ import {
 } from '@tanstack/react-table';
 import Link from 'next/link';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
+import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
+import { subscriptionCreateMutation } from '../../../__generated__/subscriptionCreateMutation.graphql';
+import { Portal, portalContext } from '@/components/portal-context';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<pageLoaderServiceQuery>;
+  connectionId: string;
 }
 
-const columns: ColumnDef<serviceList_fragment$data>[] = [
-  {
-    accessorKey: 'name',
-    id: 'name',
-    header: 'Name',
-  },
-  {
-    id: 'type',
-    header: 'Type',
-    cell: ({ row }) => {
-      return <Badge className={'cursor-default'}>{row.original.type}</Badge>;
-    },
-  },
-  {
-    accessorKey: 'provider',
-    id: 'provider',
-    header: 'Provider',
-  },
-  {
-    accessorKey: 'description',
-    id: 'description',
-    header: 'Description',
-  },
-  {
-    id: 'actions',
-    size: 100,
-    enableHiding: false,
-    enableSorting: false,
-    enableResizing: false,
-    cell: ({ row }) => {
-      return (
-        <Button asChild>
-          <Link href={`#${row.original.url}`}>View more</Link>
-        </Button>
-      );
-    },
-  },
-  {
-    id: 'subscription',
-    size: 100,
-    enableHiding: false,
-    enableSorting: false,
-    enableResizing: false,
-    cell: ({ row }) => {
-      return (
-        <Button onClick={() => subscribe(row.original.id)}>Subscribe</Button>
-      );
-    },
-  },
-];
-
-const subscribe = (serviceId: string) => {
-  console.log('serviceId', serviceId);
-};
-const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
+const ServiceList: React.FunctionComponent<ServiceProps> = ({
+  queryRef,
+  connectionId,
+}) => {
+  const [commitSubscriptionCreateMutation] =
+    useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
   const DEFAULT_ITEM_BY_PAGE = 10;
+  const { me } = useContext<Portal>(portalContext);
+  const addSubscriptionInDb = (serviceId: string) => {
+    console.log('serviceId', serviceId);
+    commitSubscriptionCreateMutation({
+      variables: {
+        connections: [connectionId],
+        service_id: serviceId,
+        organization_id: me?.organization_id ?? '',
+      },
+      onCompleted: ({}) => {
+        console.log('result');
+      },
+    });
+  };
+
+  const columns: ColumnDef<serviceList_fragment$data>[] = [
+    {
+      accessorKey: 'name',
+      id: 'name',
+      header: 'Name',
+    },
+    {
+      id: 'type',
+      header: 'Type',
+      cell: ({ row }) => {
+        return <Badge className={'cursor-default'}>{row.original.type}</Badge>;
+      },
+    },
+    {
+      accessorKey: 'provider',
+      id: 'provider',
+      header: 'Provider',
+    },
+    {
+      accessorKey: 'description',
+      id: 'description',
+      header: 'Description',
+    },
+    {
+      id: 'actions',
+      size: 100,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => {
+        return (
+          <Button asChild>
+            <Link href={`#${row.original.url}`}>View more</Link>
+          </Button>
+        );
+      },
+    },
+    {
+      id: 'subscription',
+      size: 100,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => {
+        return (
+          <Button onClick={() => addSubscriptionInDb(row.original.id)}>
+            Subscribe
+          </Button>
+        );
+      },
+    },
+  ];
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: DEFAULT_ITEM_BY_PAGE,
@@ -107,12 +127,11 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   const config = useMemo(
     () => ({
       variables: { connections: [connectionID] },
-      subscription,
     }),
     [connectionID]
   );
 
-  useSubscription(config);
+  // useSubscription(config);
   const servicesData = data.services.edges.map(
     ({ node }) => node
   ) as serviceList_fragment$data[];

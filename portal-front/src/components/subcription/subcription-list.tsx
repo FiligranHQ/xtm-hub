@@ -12,12 +12,10 @@ import { subscriptionItem_fragment$data } from '../../../__generated__/subscript
 import Loader from '@/components/loader';
 import { DataTable } from 'filigran-ui/clients';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
-import {
-  OrderingMode,
-  UserOrdering,
-} from '../../../__generated__/pageLoaderUserQuery.graphql';
+import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
+import { SubscriptionOrdering } from '../../../__generated__/subscriptionsSelectQuery.graphql';
 
 const breadcrumbValue = [
   {
@@ -51,10 +49,15 @@ const SubscriptionList: React.FunctionComponent = () => {
   const [subscriptions, refetch] = getSubscriptions();
   console.log('subscriptions', subscriptions);
   const onSortingChange = (updater: unknown) => {
+    console.log('sorting', updater);
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
+    console.log('newSortingValue', newSortingValue);
+
     handleRefetchData(
-      transformSortingValueToParams<UserOrdering, OrderingMode>(newSortingValue)
+      transformSortingValueToParams<SubscriptionOrdering, OrderingMode>(
+        newSortingValue
+      )
     );
     setSorting(updater as SortingState);
   };

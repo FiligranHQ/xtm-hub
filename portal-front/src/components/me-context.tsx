@@ -1,16 +1,11 @@
 'use client';
 
-import { pageLoaderMeQuery } from '../../__generated__/pageLoaderMeQuery.graphql';
+import {pageLoaderMeQuery} from '../../__generated__/pageLoaderMeQuery.graphql';
 import * as React from 'react';
-import {
-  graphql,
-  PreloadedQuery,
-  useFragment,
-  usePreloadedQuery,
-} from 'react-relay';
-import { MeQuery } from '../../app/(application)/page-loader';
-import { PortalContext } from '@/components/portal-context';
-import { meContext_fragment$key } from '../../__generated__/meContext_fragment.graphql';
+import {graphql, PreloadedQuery, useFragment, usePreloadedQuery,} from 'react-relay';
+import {MeQuery} from '../../app/(application)/page-loader';
+import {PortalContext} from '@/components/portal-context';
+import {meContext_fragment$key} from '../../__generated__/meContext_fragment.graphql';
 
 // Context
 
@@ -25,6 +20,7 @@ const MeContextFragment = graphql`
     roles_portal_id {
       id
     }
+    organization_id
   }
 `;
 
