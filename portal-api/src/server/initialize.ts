@@ -15,6 +15,7 @@ import { hashPassword } from '../utils/hash-password.util';
 import {
   ADMIN_UUID,
   CAPABILITY_ADMIN,
+  CAPABILITY_ADMIN_ORGA,
   CAPABILITY_BYPASS,
   CAPABILITY_USER,
   PLATFORM_ORGANIZATION_UUID,
@@ -66,6 +67,7 @@ const initCapabilityAndRole = async () => {
     await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
     await ensureCapabilityExists(CAPABILITY_ADMIN, trx);
     await ensureCapabilityExists(CAPABILITY_USER, trx);
+    await ensureCapabilityExists(CAPABILITY_ADMIN_ORGA, trx);
 
     // Ensure ROLE_ADMIN and ROLE_USER exist in RolePortal
     await ensureRoleExists(ROLE_ADMIN, trx);
@@ -75,6 +77,7 @@ const initCapabilityAndRole = async () => {
     // Ensure ROLE_ADMIN has CAPABILITY_BYPASS
     await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_ADMIN, trx);
     await ensureRoleHasCapability(ROLE_USER, CAPABILITY_USER, trx);
+    await ensureRoleHasCapability(ROLE_ADMIN_ORGA, CAPABILITY_ADMIN_ORGA, trx);
 
     await trx.commit();
   } catch (error) {

@@ -18,7 +18,7 @@ import { servicesListFragment } from '@/components/service/service.graphql';
 import { Badge, Button } from 'filigran-ui/servers';
 import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 import Loader from '@/components/loader';
-import { DataTable } from 'filigran-ui/clients';
+import { DataTable, useToast } from 'filigran-ui/clients';
 import {
   ColumnDef,
   PaginationState,
@@ -29,6 +29,9 @@ import { transformSortingValueToParams } from '@/components/ui/handle-sorting.ut
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { subscriptionCreateMutation } from '../../../__generated__/subscriptionCreateMutation.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
+import useGranted from '@/hooks/useGranted';
+import GuardCapacityComponent from '@/components/admin-guard';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<pageLoaderServiceQuery>;
@@ -39,25 +42,51 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   queryRef,
   connectionId,
 }) => {
+  const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
   const DEFAULT_ITEM_BY_PAGE = 10;
   const { me } = useContext<Portal>(portalContext);
-  const addSubscriptionInDb = (serviceId: string) => {
-    console.log('serviceId', serviceId);
-    commitSubscriptionCreateMutation({
-      variables: {
-        connections: [connectionId],
-        service_id: serviceId,
-        organization_id: me?.organization_id ?? '',
-      },
-      onCompleted: ({}) => {
-        console.log('result');
-      },
-    });
+  const addSubscriptionInDb = (service: serviceList_fragment$data) => {
+    if (service.subscription_type === 'SUBSCRIPTABLE_DIRECT') {
+      commitSubscriptionCreateMutation({
+        variables: {
+          connections: [connectionId],
+          service_id: service.id,
+          organization_id: me?.organization_id ?? '',
+        },
+        onCompleted: ({}) => {
+          toast({
+            title: 'Success',
+            description: (
+              <>
+                {
+                  'You have successfully subscribed to the service. You can now find it in you subscribed services.'
+                }
+              </>
+            ),
+          });
+        },
+        onError: (error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
+        },
+      });
+    } else {
+      //TODO
+    }
   };
 
-  const columns: ColumnDef<serviceList_fragment$data>[] = [
+  const generateAlertText = (service: serviceList_fragment$data) => {
+    return service.subscription_type === 'SUBSCRIPTABLE_DIRECT'
+      ? 'Are you really sure you want to subscribe this service for X$ for X X(year/month) ? This action can not be undone.'
+      : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
+  };
+
+  let columns: ColumnDef<serviceList_fragment$data>[] = [
     {
       accessorKey: 'name',
       id: 'name',
@@ -94,20 +123,32 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
         );
       },
     },
-    {
-      id: 'subscription',
-      size: 100,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => {
-        return (
-          <Button onClick={() => addSubscriptionInDb(row.original.id)}>
-            Subscribe
-          </Button>
-        );
-      },
-    },
+    ...(useGranted('ADMIN_ORGA')
+      ? [
+          {
+            id: 'subscription',
+            size: 100,
+            enableHiding: false,
+            enableSorting: false,
+            enableResizing: false,
+            cell: ({ row }) => {
+              return (
+                <GuardCapacityComponent capacityRestriction={'ADMIN_ORGA'}>
+                  <AlertDialogComponent
+                    AlertTitle={'Subscribe service'}
+                    actionButtonText={'Continue'}
+                    triggerElement={
+                      <Button aria-label="Subscribe service">Subscribe</Button>
+                    }
+                    onClickContinue={() => addSubscriptionInDb(row.original)}>
+                    {generateAlertText(row.original)}
+                  </AlertDialogComponent>
+                </GuardCapacityComponent>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   const [pagination, setPagination] = useState<PaginationState>({
