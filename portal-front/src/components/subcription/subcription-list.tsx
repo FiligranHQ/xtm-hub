@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { getSubscriptions } from '@/components/subcription/subscription.service';
 import {
   ColumnDef,
@@ -13,19 +13,9 @@ import Loader from '@/components/loader';
 import { DataTable } from 'filigran-ui/clients';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
 import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import { SubscriptionOrdering } from '../../../__generated__/subscriptionsSelectQuery.graphql';
-
-const breadcrumbValue = [
-  {
-    href: '/',
-    label: 'Home',
-  },
-  {
-    label: 'Subscriptions',
-  },
-];
+import { Portal, portalContext } from '@/components/portal-context';
 
 const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   {
@@ -45,14 +35,20 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   },
 ];
 
-const SubscriptionList: React.FunctionComponent = () => {
-  const [subscriptions, refetch] = getSubscriptions();
-  console.log('subscriptions', subscriptions);
+interface SubscriptionListProps {}
+
+const SubscriptionList: React.FunctionComponent<
+  SubscriptionListProps
+> = ({}) => {
+  const { me } = useContext<Portal>(portalContext);
+  let subscriptions: any;
+  let refetch: any;
+
+  [subscriptions, refetch] = getSubscriptions();
+
   const onSortingChange = (updater: unknown) => {
-    console.log('sorting', updater);
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
-    console.log('newSortingValue', newSortingValue);
 
     handleRefetchData(
       transformSortingValueToParams<SubscriptionOrdering, OrderingMode>(
@@ -91,16 +87,14 @@ const SubscriptionList: React.FunctionComponent = () => {
     });
     setPagination(newPaginationValue);
   };
-
+  console.log('subscriptionsXX', subscriptions);
   const subscriptionData = subscriptions.subscriptions.edges.map(
     ({ node }) => ({
       ...node,
     })
   ) as subscriptionItem_fragment$data[];
-
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue} />
       <React.Suspense fallback={<Loader />}>
         <DataTable
           data={subscriptionData}

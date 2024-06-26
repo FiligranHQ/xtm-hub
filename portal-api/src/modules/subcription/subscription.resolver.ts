@@ -2,6 +2,7 @@ import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import {
   checkSubscriptionExists,
   loadSubscriptions,
+  loadSubscriptionsByOrganization,
 } from './subscription.domain';
 import { v4 as uuidv4 } from 'uuid';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
@@ -11,6 +12,26 @@ const resolvers: Resolvers = {
   Query: {
     subscriptions: async (_, { first, after, orderMode, orderBy }, context) => {
       return loadSubscriptions(context, { first, after, orderMode, orderBy });
+    },
+    subscriptionsByOrganization: async (
+      _,
+      { first, after, orderMode, orderBy, organization_id },
+      context
+    ) => {
+      console.log('organization_id', organization_id);
+      console.log(
+        'fromGlobalId organization_id',
+        fromGlobalId(organization_id)
+      );
+      console.log(
+        'fromGlobalId fromGlobalId organization_id',
+        fromGlobalId(fromGlobalId(organization_id).id).id
+      );
+      return loadSubscriptionsByOrganization(
+        context,
+        { first, after, orderMode, orderBy },
+        fromGlobalId(fromGlobalId(organization_id).id).id
+      );
     },
   },
   Mutation: {

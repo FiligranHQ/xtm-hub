@@ -6,8 +6,12 @@ import {
 } from '../../../__generated__/subscriptionsSelectQuery.graphql';
 import {
   subscriptionFetch,
+  subscriptionsByOrganizationFetch,
+  subscriptionsByOrganizationFragment,
   subscriptionsFragment,
 } from '@/components/subcription/subscription.graphql';
+import { subscriptionsByOrganizationSelectQuery } from '../../../__generated__/subscriptionsByOrganizationSelectQuery.graphql';
+import { subscriptionListByOrganization_subscriptions$key } from '../../../__generated__/subscriptionListByOrganization_subscriptions.graphql';
 import { subscriptionList_subscriptions$key } from '../../../__generated__/subscriptionList_subscriptions.graphql';
 
 export const getSubscriptions = (
@@ -28,5 +32,29 @@ export const getSubscriptions = (
     subscriptionsSelectQuery,
     subscriptionList_subscriptions$key
   >(subscriptionsFragment, subscriptionData);
+  // return subscriptionData;
+};
+
+export const getSubscriptionsByOrganization = (
+  organization_id: string = '9ac414f9-31cb-4d1d-8b81-48b336363060',
+  count: number = 10,
+  orderBy: SubscriptionOrdering = 'organization_id',
+  orderMode: OrderingMode = 'asc'
+) => {
+  console.log('organization_id', organization_id);
+  const subscriptionData =
+    useLazyLoadQuery<subscriptionsByOrganizationSelectQuery>(
+      subscriptionsByOrganizationFetch,
+      {
+        count,
+        orderBy,
+        orderMode,
+        organization_id,
+      }
+    );
+  return useRefetchableFragment<
+    subscriptionsByOrganizationSelectQuery,
+    subscriptionListByOrganization_subscriptions$key
+  >(subscriptionsByOrganizationFragment, subscriptionData);
   // return subscriptionData;
 };
