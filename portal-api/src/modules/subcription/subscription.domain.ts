@@ -79,7 +79,6 @@ export const loadSubscriptionsByOrganization = async (
     .where('organization_id', organization_id)
     .first();
 
-  console.log('subscriptionConnection', subscriptionConnection.edges);
   return {
     totalCount,
     ...subscriptionConnection,
