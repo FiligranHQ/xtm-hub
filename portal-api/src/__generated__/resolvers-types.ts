@@ -329,6 +329,13 @@ export enum ServiceOrdering {
   Name = 'name',
 }
 
+export type ServiceSubscription = {
+  __typename?: 'ServiceSubscription';
+  add?: Maybe<Service>;
+  delete?: Maybe<Service>;
+  edit?: Maybe<Service>;
+};
+
 export type Settings = {
   __typename?: 'Settings';
   platform_providers: Array<PlatformProvider>;
@@ -336,6 +343,8 @@ export type Settings = {
 
 export type Subscription = Node & {
   __typename?: 'Subscription';
+  Service?: Maybe<ServiceSubscription>;
+  User?: Maybe<UserSubscription>;
   end_date?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   organization?: Maybe<Organization>;
@@ -400,6 +409,14 @@ export enum UserOrdering {
   FirstName = 'first_name',
   LastName = 'last_name',
 }
+
+export type UserSubscription = {
+  __typename?: 'UserSubscription';
+  add?: Maybe<User>;
+  delete?: Maybe<User>;
+  edit?: Maybe<User>;
+  merge?: Maybe<MergeEvent>;
+};
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -556,6 +573,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
   ServiceOrdering: ServiceOrdering;
+  ServiceSubscription: ResolverTypeWrapper<ServiceSubscription>;
   Settings: ResolverTypeWrapper<Settings>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -567,6 +585,7 @@ export type ResolversTypes = ResolversObject<{
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
   UserOrdering: UserOrdering;
+  UserSubscription: ResolverTypeWrapper<UserSubscription>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -596,6 +615,7 @@ export type ResolversParentTypes = ResolversObject<{
   Service: Service;
   ServiceConnection: ServiceConnection;
   ServiceEdge: ServiceEdge;
+  ServiceSubscription: ServiceSubscription;
   Settings: Settings;
   String: Scalars['String']['output'];
   Subscription: {};
@@ -605,6 +625,7 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
+  UserSubscription: UserSubscription;
 }>;
 
 export type AuthDirectiveArgs = {
@@ -1002,6 +1023,17 @@ export type ServiceEdgeResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ServiceSubscriptionResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['ServiceSubscription'] = ResolversParentTypes['ServiceSubscription'],
+> = ResolversObject<{
+  add?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
+  delete?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
+  edit?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type SettingsResolvers<
   ContextType = PortalContext,
   ParentType extends
@@ -1020,6 +1052,18 @@ export type SubscriptionResolvers<
   ParentType extends
     ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription'],
 > = ResolversObject<{
+  Service?: SubscriptionResolver<
+    Maybe<ResolversTypes['ServiceSubscription']>,
+    'Service',
+    ParentType,
+    ContextType
+  >;
+  User?: SubscriptionResolver<
+    Maybe<ResolversTypes['UserSubscription']>,
+    'User',
+    ParentType,
+    ContextType
+  >;
   end_date?: SubscriptionResolver<
     Maybe<ResolversTypes['Date']>,
     'end_date',
@@ -1174,6 +1218,22 @@ export type UserEdgeResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserSubscriptionResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['UserSubscription'] = ResolversParentTypes['UserSubscription'],
+> = ResolversObject<{
+  add?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  edit?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  merge?: Resolver<
+    Maybe<ResolversTypes['MergeEvent']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
@@ -1194,6 +1254,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Service?: ServiceResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceEdge?: ServiceEdgeResolvers<ContextType>;
+  ServiceSubscription?: ServiceSubscriptionResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SubscriptionConnection?: SubscriptionConnectionResolvers<ContextType>;
@@ -1202,6 +1263,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;
+  UserSubscription?: UserSubscriptionResolvers<ContextType>;
 }>;
 
 export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{
