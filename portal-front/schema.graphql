@@ -34,15 +34,15 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  settings: Settings!
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 10, after: ID, orderBy: SubscriptionOrdering, orderMode: OrderingMode = asc): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 10, after: ID, orderBy: SubscriptionOrdering, orderMode: OrderingMode = asc, organization_id: String): SubscriptionConnection!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  settings: Settings!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
 }
 
 enum UserOrdering {
@@ -61,7 +61,7 @@ type User implements Node {
   email: String!
   first_name: String
   last_name: String
-  organization_id: ID!
+  organization_id: String!
   organization: Organization!
   capabilities: [Capability!]!
   tracking_data: [ActionTracking]
@@ -103,13 +103,13 @@ type Mutation {
   deleteUser(id: ID!): User
   login(email: String!, password: String): User
   logout: ID!
-  addSubscription(service_id: String, organization_id: String): Subscription
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
+  addSubscription(service_id: String, organization_id: ID): Subscription
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
   deleteService(id: ID!): Service
+  addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
 }
 
 type UserSubscription {
@@ -155,16 +155,6 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
 enum SubscriptionOrdering {
   organization_id
 }
@@ -179,43 +169,6 @@ type SubscriptionConnection {
   edges: [SubscriptionEdge!]!
   pageInfo: PageInfo!
 }
-
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditOrganizationInput {
-  name: String!
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
-}
-
-scalar JSON
-
-scalar Date
 
 enum ServiceOrdering {
   name
@@ -246,4 +199,51 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input EditOrganizationInput {
+  name: String!
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
+scalar JSON
+
+scalar Date
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
 }

@@ -23,14 +23,10 @@ const resolvers: Resolvers = {
         'fromGlobalId organization_id',
         fromGlobalId(organization_id)
       );
-      console.log(
-        'fromGlobalId fromGlobalId organization_id',
-        fromGlobalId(fromGlobalId(organization_id).id).id
-      );
       return loadSubscriptionsByOrganization(
         context,
         { first, after, orderMode, orderBy },
-        fromGlobalId(fromGlobalId(organization_id).id).id
+        fromGlobalId(organization_id)
       );
     },
   },
@@ -38,17 +34,15 @@ const resolvers: Resolvers = {
     addSubscription: async (_, { service_id, organization_id }, context) => {
       const data = {
         id: uuidv4(),
-        service_id: fromGlobalId(service_id).id.toString(),
-        organization_id: fromGlobalId(
-          fromGlobalId(organization_id).id.toString()
-        ).id,
+        service_id: fromGlobalId(service_id).id,
+        organization_id: fromGlobalId(organization_id).id,
         start_date: new Date(),
         end_date: undefined,
       };
       // Check the subscription does not already exist :
       const subscription = await checkSubscriptionExists(
-        fromGlobalId(fromGlobalId(organization_id).id.toString()).id,
-        fromGlobalId(service_id).id.toString()
+        fromGlobalId(organization_id).id,
+        fromGlobalId(service_id).id
       );
       if (subscription) {
         throw new Error(`You have already subscribed this service.`);

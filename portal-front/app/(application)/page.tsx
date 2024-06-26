@@ -15,7 +15,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
   console.log('mePAGE', me);
 
   const [subscriptions, refetch] = getSubscriptionsByOrganization(
-    me?.organization_id
+    me?.organization?.id
   );
   console.log('subscriptionsPAGE', subscriptions);
   return (

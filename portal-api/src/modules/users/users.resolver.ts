@@ -23,7 +23,6 @@ import {
   createUserRolePortal,
   deleteUserRolePortalByUserId,
 } from '../common/user-role-portal';
-import { toGlobalId } from 'graphql-relay/node/node.js';
 
 const validPassword = (
   user: UserWithAuthentication,
@@ -42,10 +41,10 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      context.user.organization_id = toGlobalId(
-        'Organization',
-        context.user.organization_id
-      );
+      // context.user.organization_id = toGlobalId(
+      //   'Organization',
+      //   context.user.organization_id
+      // );
       return context.user;
     },
     user: async (_, { id }, context) => {

@@ -14,7 +14,7 @@ type User implements Node {
     email: String!
     first_name: String
     last_name: String
-    organization_id: ID!
+    organization_id: String!
     organization: Organization!
     capabilities: [Capability!]!
     tracking_data: [ActionTracking]
@@ -79,4 +79,5 @@ type UserSubscription {
 }
 
 type Subscription {
-    User: UserSubscription @auth}
+    User: UserSubscription @auth
+}

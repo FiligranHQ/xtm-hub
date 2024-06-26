@@ -1,49 +1,49 @@
 enum ServiceOrdering {
-    name
+  name
 }
 
 type Service implements Node {
-    id: ID!
-    name: String!
-    description: String
-    url: String
-    provider: String
-    type: String
-    subscription_type: String
+  id: ID!
+  name: String!
+  description: String
+  url: String
+  provider: String
+  type: String
+  subscription_type: String
 }
 
 type ServiceEdge {
-    cursor: String!
-    node: Service!
+  cursor: String!
+  node: Service!
 }
 
 type ServiceConnection {
-    totalCount: Int!
-    edges: [ServiceEdge!]!
-    pageInfo: PageInfo!
+  totalCount: Int!
+  edges: [ServiceEdge!]!
+  pageInfo: PageInfo!
 }
 
 type Mutation {
-    editService(id: ID!, name: String!): Service @auth(requires: [ADMIN])
-    addService(name: String!): Service @auth(requires: [ADMIN])
-    deleteService(id: ID!): Service @auth(requires: [ADMIN])
+  editService(id: ID!, name: String!): Service @auth(requires: [ADMIN])
+  addService(name: String!): Service @auth(requires: [ADMIN])
+  deleteService(id: ID!): Service @auth(requires: [ADMIN])
 }
 
 type Query {
-    services(
-        first: Int!
-        after: ID
-        orderBy: ServiceOrdering!
-        orderMode: OrderingMode!
-    ): ServiceConnection! @auth(requires: [USER])
+  services(
+    first: Int!
+    after: ID
+    orderBy: ServiceOrdering!
+    orderMode: OrderingMode!
+  ): ServiceConnection! @auth(requires: [USER])
 }
 
 type ServiceSubscription {
-    add: Service
-    edit: Service
-    delete: Service
+  add: Service
+  edit: Service
+  delete: Service
 }
 
 type Subscription {
-    Service: ServiceSubscription @auth
+  Service: ServiceSubscription @auth
 }

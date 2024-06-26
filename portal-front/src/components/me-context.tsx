@@ -20,7 +20,9 @@ const MeContextFragment = graphql`
     roles_portal_id {
       id
     }
-    organization_id
+    organization {
+      id
+    }
   }
 `;
 

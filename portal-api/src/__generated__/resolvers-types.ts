@@ -118,7 +118,7 @@ export type MutationAddServiceArgs = {
 };
 
 export type MutationAddSubscriptionArgs = {
-  organization_id?: InputMaybe<Scalars['String']['input']>;
+  organization_id?: InputMaybe<Scalars['ID']['input']>;
   service_id?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -386,7 +386,7 @@ export type User = Node & {
   id: Scalars['ID']['output'];
   last_name?: Maybe<Scalars['String']['output']>;
   organization: Organization;
-  organization_id: Scalars['ID']['output'];
+  organization_id: Scalars['String']['output'];
   roles_portal_id: Array<RolePortalId>;
   tracking_data?: Maybe<Array<Maybe<ActionTracking>>>;
 };
@@ -1183,7 +1183,7 @@ export type UserResolvers<
     ParentType,
     ContextType
   >;
-  organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organization_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   roles_portal_id?: Resolver<
     Array<ResolversTypes['RolePortalID']>,
     ParentType,
