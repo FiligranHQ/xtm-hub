@@ -44,13 +44,14 @@ export const subscriptionsByOrganizationFragment = graphql`
 export const subscriptionItem = graphql`
   fragment subscriptionItem_fragment on Subscription {
     id
-    organization_id
+
     organization {
       name
+      id
     }
-    service_id
     service {
       name
+      id
     }
     start_date
     end_date
