@@ -32,7 +32,6 @@ export const getSubscriptions = (
     subscriptionsSelectQuery,
     subscriptionList_subscriptions$key
   >(subscriptionsFragment, subscriptionData);
-  // return subscriptionData;
 };
 
 export const getSubscriptionsByOrganization = (
