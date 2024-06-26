@@ -222,6 +222,7 @@ export type Query = {
   settings: Settings;
   subscription?: Maybe<Subscription>;
   subscriptions: SubscriptionConnection;
+  subscriptionsByOrganization: SubscriptionConnection;
   user?: Maybe<User>;
   users: UserConnection;
 };
@@ -261,6 +262,14 @@ export type QuerySubscriptionsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<SubscriptionOrdering>;
   orderMode?: InputMaybe<OrderingMode>;
+};
+
+export type QuerySubscriptionsByOrganizationArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<SubscriptionOrdering>;
+  orderMode?: InputMaybe<OrderingMode>;
+  organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QueryUserArgs = {
@@ -905,6 +914,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QuerySubscriptionsArgs, 'first' | 'orderMode'>
+  >;
+  subscriptionsByOrganization?: Resolver<
+    ResolversTypes['SubscriptionConnection'],
+    ParentType,
+    ContextType,
+    RequireFields<QuerySubscriptionsByOrganizationArgs, 'first' | 'orderMode'>
   >;
   user?: Resolver<
     Maybe<ResolversTypes['User']>,

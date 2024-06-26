@@ -30,6 +30,13 @@ type Query {
     orderBy: SubscriptionOrdering = name
     orderMode: OrderingMode = asc
   ): SubscriptionConnection! @auth
+  subscriptionsByOrganization(
+    first: Int = 10
+    after: ID
+    orderBy: SubscriptionOrdering = name
+    orderMode: OrderingMode = asc
+    organization_id: String
+  ): SubscriptionConnection! @auth
 }
 
 type Mutation {
