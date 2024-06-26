@@ -82,7 +82,9 @@ export const loadUserBy = async (
         (role_id: string) => !!role_id
       ),
     };
-    return completeUserCapability(cleanUser) as UserWithAuthentication;
+
+    const essai = completeUserCapability(cleanUser) as UserWithAuthentication;
+    return essai;
   }
 
   // Complete admin user with bypass if needed

@@ -82,7 +82,7 @@ export const subscriptionsByOrganizationFetch = graphql`
 export const AddSubscriptionMutation = graphql`
   mutation subscriptionCreateMutation(
     $service_id: String!
-    $organization_id: String!
+    $organization_id: ID!
     $connections: [ID!]!
   ) {
     addSubscription(service_id: $service_id, organization_id: $organization_id)
