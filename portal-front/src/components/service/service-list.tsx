@@ -32,6 +32,13 @@ import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 import GuardCapacityComponent from '@/components/admin-guard';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
+import {
+  CaseRftIcon,
+  ConstructionIcon,
+  IndicatorIcon,
+  TaskIcon,
+} from 'filigran-icon';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<pageLoaderServiceQuery>;
@@ -86,11 +93,32 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
   };
 
+  const [subscriptionsOrganization, refetchSubOrga] =
+    getSubscriptionsByOrganization(me?.organization?.id);
+
+  const subscribedServiceName =
+    subscriptionsOrganization.subscriptionsByOrganization.edges.map(
+      (subscription) => subscription.node.service?.name
+    );
+
   let columns: ColumnDef<serviceList_fragment$data>[] = [
     {
-      accessorKey: 'name',
       id: 'name',
       header: 'Name',
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center space-x-2">
+            <div>
+              {subscribedServiceName.includes(row.original.name) ? (
+                <TaskIcon className="h-6 w-6 flex-auto text-green" />
+              ) : (
+                <CaseRftIcon className="h-6 w-6 flex-auto text-destructive" />
+              )}
+            </div>
+            <div>{row.original.name} </div>
+          </div>
+        );
+      },
     },
     {
       id: 'type',
@@ -109,36 +137,38 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       id: 'description',
       header: 'Description',
     },
-    {
-      id: 'actions',
-      size: 100,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => {
-        return (
-          <Button asChild>
-            <Link href={`#${row.original.url}`}>View more</Link>
-          </Button>
-        );
-      },
-    },
+
     ...(useGranted('ADMIN_ORGA')
       ? [
           {
-            id: 'subscription',
+            id: 'action',
             size: 100,
             enableHiding: false,
             enableSorting: false,
             enableResizing: false,
             cell: ({ row }) => {
-              return (
+              return subscribedServiceName.includes(row.original.name) ? (
+                <Button
+                  className="w-4/5"
+                  asChild>
+                  <Link href={`#${row.original.url}`}>
+                    {' '}
+                    <IndicatorIcon className="mr-2 h-5 w-5" />
+                    View more
+                  </Link>
+                </Button>
+              ) : (
                 <GuardCapacityComponent capacityRestriction={'ADMIN_ORGA'}>
                   <AlertDialogComponent
                     AlertTitle={'Subscribe service'}
                     actionButtonText={'Continue'}
                     triggerElement={
-                      <Button aria-label="Subscribe service">Subscribe</Button>
+                      <Button
+                        className="w-4/5"
+                        aria-label="Subscribe service">
+                        <ConstructionIcon className="mr-2 h-5 w-5" />
+                        Subscribe
+                      </Button>
                     }
                     onClickContinue={() => addSubscriptionInDb(row.original)}>
                     {generateAlertText(row.original)}

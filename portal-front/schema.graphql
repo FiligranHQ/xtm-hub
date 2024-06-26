@@ -131,6 +131,21 @@ type Subscription implements Node {
   Service: ServiceSubscription
 }
 
+enum SubscriptionOrdering {
+  organization_id
+}
+
+type SubscriptionEdge {
+  cursor: String!
+  node: Subscription!
+}
+
+type SubscriptionConnection {
+  totalCount: Int!
+  edges: [SubscriptionEdge!]!
+  pageInfo: PageInfo!
+}
+
 type ActionTracking implements Node {
   id: ID!
   contextual_id: String!
@@ -153,21 +168,6 @@ type TrackingSubscription {
   add: ActionTracking
   edit: ActionTracking
   delete: ActionTracking
-}
-
-enum SubscriptionOrdering {
-  organization_id
-}
-
-type SubscriptionEdge {
-  cursor: String!
-  node: Subscription!
-}
-
-type SubscriptionConnection {
-  totalCount: Int!
-  edges: [SubscriptionEdge!]!
-  pageInfo: PageInfo!
 }
 
 enum ServiceOrdering {
