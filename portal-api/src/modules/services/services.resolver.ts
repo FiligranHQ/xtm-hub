@@ -1,7 +1,7 @@
 import { Resolvers, Service } from '../../__generated__/resolvers-types';
 import { DatabaseType, db } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
-import { dispatch } from '../../pub';
+import { dispatch, listen } from '../../pub';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { loadServices } from './services.domain';
 
@@ -42,6 +42,13 @@ const resolvers: Resolvers = {
         .returning('*');
       await dispatch('Service', 'add', addedService);
       return addedService;
+    },
+  },
+  Subscription: {
+    Service: {
+      subscribe: (_, __, context) => ({
+        [Symbol.asyncIterator]: () => listen(context, ['Service']),
+      }),
     },
   },
 };

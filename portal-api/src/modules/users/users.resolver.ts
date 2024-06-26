@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import crypto from 'node:crypto';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { loadUserBy, loadUsers } from './users.domain';
-import { dispatch } from '../../pub';
+import { dispatch, listen } from '../../pub';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { hashPassword } from '../../utils/hash-password.util';
@@ -191,6 +191,13 @@ const resolvers: Resolvers = {
           resolve(user ? user.id : 'anonymous');
         });
       });
+    },
+  },
+  Subscription: {
+    User: {
+      subscribe: (_, __, context) => ({
+        [Symbol.asyncIterator]: () => listen(context, ['User']),
+      }),
     },
   },
 };

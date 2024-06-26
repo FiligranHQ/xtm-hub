@@ -34,15 +34,15 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  settings: Settings!
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 10, after: ID, orderBy: SubscriptionOrdering, orderMode: OrderingMode = asc): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 10, after: ID, orderBy: SubscriptionOrdering, orderMode: OrderingMode = asc, organization_id: String): SubscriptionConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  settings: Settings!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
 }
 
 enum UserOrdering {
@@ -112,6 +112,25 @@ type Mutation {
   deleteService(id: ID!): Service
 }
 
+type UserSubscription {
+  add: User
+  edit: User
+  delete: User
+  merge: MergeEvent
+}
+
+type Subscription implements Node {
+  User: UserSubscription
+  id: ID!
+  organization_id: ID!
+  organization: Organization
+  service_id: ID!
+  service: Service
+  start_date: Date
+  end_date: Date
+  Service: ServiceSubscription
+}
+
 type ActionTracking implements Node {
   id: ID!
   contextual_id: String!
@@ -136,18 +155,18 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-enum SubscriptionOrdering {
-  organization_id
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
 }
 
-type Subscription implements Node {
-  id: ID!
-  organization_id: ID!
-  organization: Organization
-  service_id: ID!
-  service: Service
-  start_date: Date
-  end_date: Date
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
+enum SubscriptionOrdering {
+  organization_id
 }
 
 type SubscriptionEdge {
@@ -185,6 +204,19 @@ input EditOrganizationInput {
   name: String!
 }
 
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
+}
+
+scalar JSON
+
+scalar Date
+
 enum ServiceOrdering {
   name
 }
@@ -210,25 +242,8 @@ type ServiceConnection {
   pageInfo: PageInfo!
 }
 
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
-scalar JSON
-
-scalar Date
-
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
+type ServiceSubscription {
+  add: Service
+  edit: Service
+  delete: Service
 }
