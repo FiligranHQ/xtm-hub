@@ -11,6 +11,7 @@ import { authDirectiveTransformer } from '../security/directive-auth';
 import settingsResolver from '../modules/settings/settings.resolver';
 import trackingResolver from '../modules/tracking/tracking.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
+import malwareAnalysisResolver from '../modules/malware-analysis/malware-analysis.resolver';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
@@ -28,6 +29,7 @@ const resolvers = mergeResolvers([
   settingsResolver,
   trackingResolver,
   rolePortalResolver,
+  malwareAnalysisResolver,
   subscriptionsResolver,
 ]);
 
