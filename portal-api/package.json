@@ -36,7 +36,7 @@
     "@apollo/server": "4.10.4",
     "@graphql-tools/load-files": "7.0.0",
     "@graphql-tools/merge": "9.0.4",
-    "@graphql-tools/schema": "10.0.3",
+    "@graphql-tools/schema": "10.0.4",
     "apollo-errors": "1.9.0",
     "body-parser": "1.20.2",
     "config": "3.3.11",
