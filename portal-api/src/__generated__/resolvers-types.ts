@@ -75,6 +75,12 @@ export type EditUserInput = {
   roles_id: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
+export type MalwareAnalysisConnector = {
+  __typename?: 'MalwareAnalysisConnector';
+  connectors: Array<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+};
+
 export type MergeEvent = Node & {
   __typename?: 'MergeEvent';
   from: Scalars['ID']['output'];
@@ -106,6 +112,7 @@ export type Mutation = {
   editUser?: Maybe<User>;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
+  malwareAnalysis: MalwareAnalysisConnector;
   mergeTest: Scalars['ID']['output'];
 };
 
@@ -156,6 +163,10 @@ export type MutationEditUserArgs = {
 export type MutationLoginArgs = {
   email: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MutationMalwareAnalysisArgs = {
+  string: Scalars['String']['input'];
 };
 
 export type MutationMergeTestArgs = {
@@ -562,6 +573,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
+  MalwareAnalysisConnector: ResolverTypeWrapper<MalwareAnalysisConnector>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -608,6 +620,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
+  MalwareAnalysisConnector: MalwareAnalysisConnector;
   MergeEvent: MergeEvent;
   MessageTracking: MessageTracking;
   Mutation: {};
@@ -684,6 +697,20 @@ export interface JsonScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
+
+export type MalwareAnalysisConnectorResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['MalwareAnalysisConnector'] = ResolversParentTypes['MalwareAnalysisConnector'],
+> = ResolversObject<{
+  connectors?: Resolver<
+    Array<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type MergeEventResolvers<
   ContextType = PortalContext,
@@ -790,6 +817,12 @@ export type MutationResolvers<
     RequireFields<MutationLoginArgs, 'email'>
   >;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  malwareAnalysis?: Resolver<
+    ResolversTypes['MalwareAnalysisConnector'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationMalwareAnalysisArgs, 'string'>
+  >;
   mergeTest?: Resolver<
     ResolversTypes['ID'],
     ParentType,
@@ -1256,6 +1289,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Capability?: CapabilityResolvers<ContextType>;
   Date?: GraphQLScalarType;
   JSON?: GraphQLScalarType;
+  MalwareAnalysisConnector?: MalwareAnalysisConnectorResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
   MessageTracking?: MessageTrackingResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
