@@ -43,11 +43,13 @@ import {
 interface ServiceProps {
   queryRef: PreloadedQuery<pageLoaderServiceQuery>;
   connectionId: string;
+  shouldDisplayOnlyOwnedService: boolean;
 }
 
 const ServiceList: React.FunctionComponent<ServiceProps> = ({
   queryRef,
   connectionId,
+  shouldDisplayOnlyOwnedService = false,
 }) => {
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
@@ -203,9 +205,15 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   );
 
   // useSubscription(config);
-  const servicesData = data.services.edges.map(
+  let servicesData = data.services.edges.map(
     ({ node }) => node
   ) as serviceList_fragment$data[];
+
+  if (shouldDisplayOnlyOwnedService) {
+    servicesData = servicesData.filter((service) =>
+      subscribedServiceName.includes(service.name)
+    );
+  }
 
   const handleRefetchData = (
     args?: Partial<pageLoaderServiceQuery$variables>
