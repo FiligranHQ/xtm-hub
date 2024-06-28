@@ -36,6 +36,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   Date: { input: any; output: any };
   JSON: { input: any; output: any };
+  Upload: { input: any; output: any };
 };
 
 export type ActionTracking = Node & {
@@ -73,6 +74,13 @@ export type EditUserInput = {
   last_name?: InputMaybe<Scalars['String']['input']>;
   organization_id: Scalars['String']['input'];
   roles_id: Array<InputMaybe<Scalars['String']['input']>>;
+};
+
+export type File = {
+  __typename?: 'File';
+  encoding: Scalars['String']['output'];
+  filename: Scalars['String']['output'];
+  mimetype: Scalars['String']['output'];
 };
 
 export type MalwareAnalysisConnector = {
@@ -166,7 +174,8 @@ export type MutationLoginArgs = {
 };
 
 export type MutationMalwareAnalysisArgs = {
-  string: Scalars['String']['input'];
+  file?: InputMaybe<Scalars['Upload']['input']>;
+  string?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MutationMergeTestArgs = {
@@ -570,6 +579,7 @@ export type ResolversTypes = ResolversObject<{
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   EditOrganizationInput: EditOrganizationInput;
   EditUserInput: EditUserInput;
+  File: ResolverTypeWrapper<File>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
@@ -601,6 +611,7 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionEdge: ResolverTypeWrapper<SubscriptionEdge>;
   SubscriptionOrdering: SubscriptionOrdering;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
+  Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
@@ -617,6 +628,7 @@ export type ResolversParentTypes = ResolversObject<{
   Date: Scalars['Date']['output'];
   EditOrganizationInput: EditOrganizationInput;
   EditUserInput: EditUserInput;
+  File: File;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
@@ -643,6 +655,7 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionConnection: SubscriptionConnection;
   SubscriptionEdge: SubscriptionEdge;
   TrackingSubscription: TrackingSubscription;
+  Upload: Scalars['Upload']['output'];
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
@@ -692,6 +705,17 @@ export interface DateScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
+
+export type FileResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['File'] = ResolversParentTypes['File'],
+> = ResolversObject<{
+  encoding?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  filename?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  mimetype?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export interface JsonScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
@@ -821,7 +845,7 @@ export type MutationResolvers<
     ResolversTypes['MalwareAnalysisConnector'],
     ParentType,
     ContextType,
-    RequireFields<MutationMalwareAnalysisArgs, 'string'>
+    Partial<MutationMalwareAnalysisArgs>
   >;
   mergeTest?: Resolver<
     ResolversTypes['ID'],
@@ -1206,6 +1230,11 @@ export type TrackingSubscriptionResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface UploadScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
+  name: 'Upload';
+}
+
 export type UserResolvers<
   ContextType = PortalContext,
   ParentType extends
@@ -1288,6 +1317,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  File?: FileResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   MalwareAnalysisConnector?: MalwareAnalysisConnectorResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
@@ -1311,6 +1341,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   SubscriptionConnection?: SubscriptionConnectionResolvers<ContextType>;
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
   TrackingSubscription?: TrackingSubscriptionResolvers<ContextType>;
+  Upload?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;

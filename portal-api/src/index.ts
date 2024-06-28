@@ -19,6 +19,7 @@ import { PortalContext } from './model/portal-context';
 import { awxEndpoint } from './managers/awx/awx-endpoint';
 import { createHandler } from 'graphql-sse/lib/use/express';
 import { extractId } from './utils';
+import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 
 const { json } = pkg;
 
@@ -66,6 +67,7 @@ app.use(function (req, res, next) {
 });
 const httpServer = createServer(app);
 const schema = createSchema();
+app.use(graphqlUploadExpress());
 
 if (process.env.NODE_ENV !== 'production') {
   const printedSchema = printSchema(schema);
@@ -85,6 +87,7 @@ if (process.env.NODE_ENV !== 'production') {
 // }
 const server = new ApolloServer<PortalContext>({
   schema,
+  csrfPrevention: true,
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
     ApolloServerPluginLandingPageLocalDefault({
