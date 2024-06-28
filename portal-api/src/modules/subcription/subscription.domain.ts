@@ -29,8 +29,10 @@ export const loadSubscriptions = async (context: PortalContext, opts) => {
       'Subscription.*',
       dbRaw('(json_agg(org.*) ->> 0)::json as organization'),
       dbRaw('(json_agg(serv.*) ->> 0)::json as service'),
+      dbRaw('(org."name") as organization_name'),
+      dbRaw('(serv."name") as service_name'),
     ])
-    .groupBy(['Subscription.id'])
+    .groupBy(['Subscription.id', 'org.name', 'serv.name'])
     .asConnection<SubscriptionConnection>();
   console.log('subscriptionConnection', subscriptionConnection.edges);
   const { totalCount } = await db<Service>(context, 'Subscription', opts)

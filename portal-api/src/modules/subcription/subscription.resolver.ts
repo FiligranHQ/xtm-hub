@@ -18,11 +18,6 @@ const resolvers: Resolvers = {
       { first, after, orderMode, orderBy, organization_id },
       context
     ) => {
-      console.log('organization_id', organization_id);
-      console.log(
-        'fromGlobalId organization_id',
-        fromGlobalId(organization_id).id
-      );
       return loadSubscriptionsByOrganization(
         context,
         { first, after, orderMode, orderBy },

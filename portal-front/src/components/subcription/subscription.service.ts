@@ -16,10 +16,9 @@ import { subscriptionList_subscriptions$key } from '../../../__generated__/subsc
 
 export const getSubscriptions = (
   count: number = 10,
-  orderBy: SubscriptionOrdering = 'organization_id',
+  orderBy: SubscriptionOrdering = 'start_date',
   orderMode: OrderingMode = 'asc'
 ) => {
-  debugger;
   const subscriptionData = useLazyLoadQuery<subscriptionsSelectQuery>(
     subscriptionFetch,
     {
@@ -37,10 +36,9 @@ export const getSubscriptions = (
 export const getSubscriptionsByOrganization = (
   organization_id: string = '9ac414f9-31cb-4d1d-8b81-48b336363060',
   count: number = 10,
-  orderBy: SubscriptionOrdering = 'organization_id',
+  orderBy: SubscriptionOrdering = 'start_date',
   orderMode: OrderingMode = 'asc'
 ) => {
-  console.log('organization_id', organization_id);
   const subscriptionData =
     useLazyLoadQuery<subscriptionsByOrganizationSelectQuery>(
       subscriptionsByOrganizationFetch,
