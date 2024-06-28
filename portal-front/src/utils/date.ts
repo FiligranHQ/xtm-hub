@@ -1,4 +1,4 @@
-export const FormatDate = (date?: string) => {
+export const FormatDate = (date?: string, withHours: boolean = true) => {
   if (!date) {
     return null;
   }
@@ -22,5 +22,7 @@ export const FormatDate = (date?: string) => {
   }
 
   // Pad single digit values with leading zeros
-  return `${pad(day)}/${pad(month)}/${year} ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  return withHours
+    ? `${pad(day)}/${pad(month)}/${year} ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
+    : `${pad(day)}/${pad(month)}/${year}`;
 };

@@ -16,6 +16,7 @@ import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import { SubscriptionOrdering } from '../../../__generated__/subscriptionsSelectQuery.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
+import { FormatDate } from '@/utils/date';
 
 const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   {
@@ -24,13 +25,18 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     header: 'Start Date',
   },
   {
+    accessorKey: 'end_date',
+    id: 'end_date',
+    header: 'End Date',
+  },
+  {
     accessorKey: 'organization.name',
-    id: 'organization.name',
+    id: 'organization_name',
     header: 'Organization',
   },
   {
     accessorKey: 'service.name',
-    id: 'service.name',
+    id: 'service_name',
     header: 'Service',
   },
 ];
@@ -69,7 +75,7 @@ const SubscriptionList: React.FunctionComponent<
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: 'organization_id',
+      orderBy: 'start_date',
       orderMode: 'asc',
       ...transformSortingValueToParams(sorting),
       ...args,
@@ -87,12 +93,19 @@ const SubscriptionList: React.FunctionComponent<
     });
     setPagination(newPaginationValue);
   };
-  console.log('subscriptionsXX', subscriptions);
-  const subscriptionData = subscriptions.subscriptions.edges.map(
-    ({ node }) => ({
-      ...node,
-    })
-  ) as subscriptionItem_fragment$data[];
+
+  let subscriptionData = subscriptions.subscriptions.edges.map(({ node }) => ({
+    ...node,
+  })) as subscriptionItem_fragment$data[];
+
+  subscriptionData = subscriptionData.map((data) => {
+    return {
+      ...data,
+      start_date: FormatDate(data.start_date, false),
+      end_date: FormatDate(data.end_date, false),
+    };
+  });
+
   return (
     <>
       <React.Suspense fallback={<Loader />}>

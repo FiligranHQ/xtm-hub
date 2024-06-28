@@ -368,7 +368,10 @@ export type SubscriptionEdge = {
 };
 
 export enum SubscriptionOrdering {
-  OrganizationId = 'organization_id',
+  EndDate = 'end_date',
+  OrganizationName = 'organization_name',
+  ServiceName = 'service_name',
+  StartDate = 'start_date',
 }
 
 export type TrackingSubscription = {
