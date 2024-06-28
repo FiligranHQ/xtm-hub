@@ -15,7 +15,11 @@ const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   capacityRestriction,
 }) => {
   if (useGranted(capacityRestriction) === false) {
-    return;
+    return (
+      <>
+        <h1>Error</h1>You are not authorized to get this page.
+      </>
+    );
   }
   return <>{children}</>;
 };

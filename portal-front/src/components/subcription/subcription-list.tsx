@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { getSubscriptions } from '@/components/subcription/subscription.service';
 import {
   ColumnDef,
@@ -15,7 +15,6 @@ import { transformSortingValueToParams } from '@/components/ui/handle-sorting.ut
 import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import { SubscriptionOrdering } from '../../../__generated__/subscriptionsSelectQuery.graphql';
-import { Portal, portalContext } from '@/components/portal-context';
 import { FormatDate } from '@/utils/date';
 
 const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
@@ -46,11 +45,7 @@ interface SubscriptionListProps {}
 const SubscriptionList: React.FunctionComponent<
   SubscriptionListProps
 > = ({}) => {
-  const { me } = useContext<Portal>(portalContext);
-  let subscriptions: any;
-  let refetch: any;
-
-  [subscriptions, refetch] = getSubscriptions();
+  const [subscriptions, refetch] = getSubscriptions();
 
   const onSortingChange = (updater: unknown) => {
     const newSortingValue =

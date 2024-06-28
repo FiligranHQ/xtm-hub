@@ -1,12 +1,15 @@
 import * as React from 'react';
-import {PreloadedQuery, useFragment, useMutation, usePreloadedQuery,} from 'react-relay';
+import {PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription,} from 'react-relay';
 import {pageLoaderUserSlugQuery} from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
 import {UserSlugQuery} from '../../../../../app/(application)/(admin)/admin/user/[slug]/page-loader';
 import {userSlug_fragment$data, userSlug_fragment$key,} from '../../../../../__generated__/userSlug_fragment.graphql';
 import {useRouter} from 'next/navigation';
 import {userSlugDeletionMutation} from '../../../../../__generated__/userSlugDeletionMutation.graphql';
 
-import {userSlugDeletion, userSlugFragment,} from '@/components/admin/user/user.graphql';
+import {
+  userSlugSubscription as generatedUserSlugSubscription
+} from '../../../../../__generated__/userSlugSubscription.graphql';
+import {userSlugDeletion, userSlugFragment, userSlugSubscription,} from '@/components/admin/user/user.graphql';
 import {Button} from 'filigran-ui/servers';
 import {DataTracking} from '@/components/data-tracking/data-tracking';
 import {dataTracking_fragment$key} from '../../../../../__generated__/dataTracking_fragment.graphql';
@@ -15,6 +18,7 @@ import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
 import {DeleteIcon} from 'filigran-icon';
 import {useToast} from 'filigran-ui/clients';
 import {EditUser} from '@/components/admin/user/[slug]/user-edit';
+import {trackingSubscription} from '@/components/data-tracking/tracking.graphql';
 
 // Component interface
 interface UserSlugProps {
@@ -48,6 +52,21 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       },
     });
   };
+
+  useSubscription<generatedUserSlugSubscription>({
+    variables: {},
+    subscription: userSlugSubscription,
+    onNext: (response) => {
+      // In case of merge, redirect to the target merged user
+      if (response?.User?.merge && response?.User?.merge.from === user?.id) {
+        router.replace(`/admin/user/${response?.User?.merge?.target}`);
+      }
+    },
+  });
+  useSubscription<generatedUserSlugSubscription>({
+    variables: {},
+    subscription: trackingSubscription,
+  });
 
   if (!user) {
     // If user not found, redirect to admin list

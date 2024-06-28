@@ -53,5 +53,4 @@ export const getSubscriptionsByOrganization = (
     subscriptionsByOrganizationSelectQuery,
     subscriptionListByOrganization_subscriptions$key
   >(subscriptionsByOrganizationFragment, subscriptionData);
-  // return subscriptionData;
 };

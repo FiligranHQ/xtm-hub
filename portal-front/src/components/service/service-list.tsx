@@ -11,10 +11,14 @@ import {
   useMutation,
   usePreloadedQuery,
   useRefetchableFragment,
+  useSubscription,
 } from 'react-relay';
 import { serviceList_services$key } from '../../../__generated__/serviceList_services.graphql';
 import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
-import { servicesListFragment } from '@/components/service/service.graphql';
+import {
+  servicesListFragment,
+  subscription,
+} from '@/components/service/service.graphql';
 import { Badge, Button } from 'filigran-ui/servers';
 import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 import Loader from '@/components/loader';
@@ -42,13 +46,13 @@ import {
 
 interface ServiceProps {
   queryRef: PreloadedQuery<pageLoaderServiceQuery>;
-  connectionId: string;
-  shouldDisplayOnlyOwnedService: boolean;
+  connectionId?: string;
+  shouldDisplayOnlyOwnedService?: boolean;
 }
 
 const ServiceList: React.FunctionComponent<ServiceProps> = ({
   queryRef,
-  connectionId,
+  connectionId = '',
   shouldDisplayOnlyOwnedService = false,
 }) => {
   const { toast } = useToast();
@@ -103,6 +107,46 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       (subscription) => subscription.node.service?.name
     );
 
+  let columnsAdmin: ColumnDef<serviceList_fragment$data>[] = [
+    {
+      id: 'action',
+      size: 30,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => {
+        return subscribedServiceName.includes(row.original.name) ? (
+          <Button
+            asChild
+            className="w-3/4">
+            <Link href={`#${row.original.url}`}>
+              {' '}
+              <IndicatorIcon className="mr-2 h-5 w-5" />
+              View more
+            </Link>
+          </Button>
+        ) : (
+          <GuardCapacityComponent capacityRestriction={'ADMIN_ORGA'}>
+            <AlertDialogComponent
+              AlertTitle={'Subscribe service'}
+              actionButtonText={'Continue'}
+              triggerElement={
+                <Button
+                  aria-label="Subscribe service"
+                  className="w-3/4">
+                  <ConstructionIcon className="mr-2 h-5 w-5" />
+                  Subscribe
+                </Button>
+              }
+              onClickContinue={() => addSubscriptionInDb(row.original)}>
+              {generateAlertText(row.original)}
+            </AlertDialogComponent>
+          </GuardCapacityComponent>
+        );
+      },
+    },
+  ];
+
   let columns: ColumnDef<serviceList_fragment$data>[] = [
     {
       id: 'name',
@@ -124,6 +168,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     },
     {
       id: 'type',
+      size: 30,
       header: 'Type',
       cell: ({ row }) => {
         return <Badge className={'cursor-default'}>{row.original.type}</Badge>;
@@ -132,55 +177,17 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     {
       accessorKey: 'provider',
       id: 'provider',
+      size: 30,
       header: 'Provider',
     },
     {
+      size: 300,
       accessorKey: 'description',
       id: 'description',
       header: 'Description',
     },
 
-    ...(useGranted('ADMIN_ORGA')
-      ? [
-          {
-            id: 'action',
-            size: 100,
-            enableHiding: false,
-            enableSorting: false,
-            enableResizing: false,
-            cell: ({ row }) => {
-              return subscribedServiceName.includes(row.original.name) ? (
-                <Button
-                  className="w-4/5"
-                  asChild>
-                  <Link href={`#${row.original.url}`}>
-                    {' '}
-                    <IndicatorIcon className="mr-2 h-5 w-5" />
-                    View more
-                  </Link>
-                </Button>
-              ) : (
-                <GuardCapacityComponent capacityRestriction={'ADMIN_ORGA'}>
-                  <AlertDialogComponent
-                    AlertTitle={'Subscribe service'}
-                    actionButtonText={'Continue'}
-                    triggerElement={
-                      <Button
-                        className="w-4/5"
-                        aria-label="Subscribe service">
-                        <ConstructionIcon className="mr-2 h-5 w-5" />
-                        Subscribe
-                      </Button>
-                    }
-                    onClickContinue={() => addSubscriptionInDb(row.original)}>
-                    {generateAlertText(row.original)}
-                  </AlertDialogComponent>
-                </GuardCapacityComponent>
-              );
-            },
-          },
-        ]
-      : []),
+    ...(useGranted('ADMIN_ORGA') ? columnsAdmin : []),
   ];
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -200,11 +207,12 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   const config = useMemo(
     () => ({
       variables: { connections: [connectionID] },
+      subscription,
     }),
     [connectionID]
   );
 
-  // useSubscription(config);
+  useSubscription(config);
   let servicesData = data.services.edges.map(
     ({ node }) => node
   ) as serviceList_fragment$data[];

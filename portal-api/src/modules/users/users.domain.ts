@@ -83,8 +83,7 @@ export const loadUserBy = async (
       ),
     };
 
-    const essai = completeUserCapability(cleanUser) as UserWithAuthentication;
-    return essai;
+    return completeUserCapability(cleanUser) as UserWithAuthentication;
   }
 
   // Complete admin user with bypass if needed

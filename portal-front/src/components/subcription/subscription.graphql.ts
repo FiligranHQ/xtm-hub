@@ -59,7 +59,7 @@ export const subscriptionItem = graphql`
 `;
 export const subscriptionFetch = graphql`
   query subscriptionsSelectQuery(
-    $count: Int!
+    $count: Int
     $cursor: ID
     $orderBy: SubscriptionOrdering!
     $orderMode: OrderingMode!
