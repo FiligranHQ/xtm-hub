@@ -260,15 +260,15 @@ export type QuerySubscriptionArgs = {
 export type QuerySubscriptionsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<SubscriptionOrdering>;
-  orderMode?: InputMaybe<OrderingMode>;
+  orderBy: SubscriptionOrdering;
+  orderMode: OrderingMode;
 };
 
 export type QuerySubscriptionsByOrganizationArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<SubscriptionOrdering>;
-  orderMode?: InputMaybe<OrderingMode>;
+  orderBy: SubscriptionOrdering;
+  orderMode: OrderingMode;
   organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -343,6 +343,7 @@ export type Settings = {
 
 export type Subscription = Node & {
   __typename?: 'Subscription';
+  ActionTracking?: Maybe<TrackingSubscription>;
   Service?: Maybe<ServiceSubscription>;
   User?: Maybe<UserSubscription>;
   end_date?: Maybe<Scalars['Date']['output']>;
@@ -937,13 +938,16 @@ export type QueryResolvers<
     ResolversTypes['SubscriptionConnection'],
     ParentType,
     ContextType,
-    RequireFields<QuerySubscriptionsArgs, 'first' | 'orderMode'>
+    RequireFields<QuerySubscriptionsArgs, 'first' | 'orderBy' | 'orderMode'>
   >;
   subscriptionsByOrganization?: Resolver<
     ResolversTypes['SubscriptionConnection'],
     ParentType,
     ContextType,
-    RequireFields<QuerySubscriptionsByOrganizationArgs, 'first' | 'orderMode'>
+    RequireFields<
+      QuerySubscriptionsByOrganizationArgs,
+      'first' | 'orderBy' | 'orderMode'
+    >
   >;
   user?: Resolver<
     Maybe<ResolversTypes['User']>,
@@ -1055,6 +1059,12 @@ export type SubscriptionResolvers<
   ParentType extends
     ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription'],
 > = ResolversObject<{
+  ActionTracking?: SubscriptionResolver<
+    Maybe<ResolversTypes['TrackingSubscription']>,
+    'ActionTracking',
+    ParentType,
+    ContextType
+  >;
   Service?: SubscriptionResolver<
     Maybe<ResolversTypes['ServiceSubscription']>,
     'Service',

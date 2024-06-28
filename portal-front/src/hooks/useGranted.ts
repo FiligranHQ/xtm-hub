@@ -5,7 +5,7 @@ import {Restriction} from '../../__generated__/meContext_fragment.graphql';
 // Mock the useContext hook
 
 const useGranted = (capability: Restriction) => {
-  const { me, hasCapability } = useContext<Portal>(portalContext);
+  const { hasCapability } = useContext<Portal>(portalContext);
 
   return hasCapability && hasCapability(capability);
 };

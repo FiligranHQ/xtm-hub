@@ -34,7 +34,7 @@ export const loadSubscriptions = async (context: PortalContext, opts) => {
     ])
     .groupBy(['Subscription.id', 'org.name', 'serv.name'])
     .asConnection<SubscriptionConnection>();
-  console.log('subscriptionConnection', subscriptionConnection.edges);
+
   const { totalCount } = await db<Service>(context, 'Subscription', opts)
     .countDistinct('id as totalCount')
     .first();

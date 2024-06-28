@@ -19,3 +19,7 @@ type TrackingSubscription {
   edit: ActionTracking
   delete: ActionTracking
 }
+
+type Subscription {
+  ActionTracking: TrackingSubscription @auth
+}
