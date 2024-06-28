@@ -16,6 +16,8 @@ import {
 } from 'relay-runtime';
 import RelayModernEnvironment from 'relay-runtime/lib/store/RelayModernEnvironment';
 import { fetchOrSubscribe } from '@/relay/environment/fetchFn';
+import { isEmpty } from '@/lib/utils';
+import { fetchFormData } from '@/relay/environment/fetchFormData';
 
 // A singleton helper that is shared on the client.
 let clientSideRelayEnvironment: RelayModernEnvironment | null = null;
@@ -32,7 +34,12 @@ export function createClientSideRelayEnvironment() {
     return clientSideRelayEnvironment;
   }
 
-  const curriedFetchFn: FetchFunction = (request, variables, ...rest) => {
+  const curriedFetchFn: FetchFunction = (
+    request,
+    variables,
+    _,
+    uploadables
+  ) => {
     if (hasHydrationResponses()) {
       const queryId = buildQueryId(request, variables);
 
@@ -46,6 +53,14 @@ export function createClientSideRelayEnvironment() {
       }
     }
 
+    if (!isEmpty(uploadables)) {
+      return fetchFormData(
+        '/graphql-api',
+        request,
+        variables,
+        uploadables as unknown as FileList
+      );
+    }
     // If we don't have hydration responses, execute the request as usual.
     return networkFetch('/graphql-api', request, variables);
   };
