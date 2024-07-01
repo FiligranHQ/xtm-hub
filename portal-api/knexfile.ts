@@ -25,7 +25,8 @@ export type DatabaseType =
   | 'RolePortal_CapabilityPortal'
   | 'ActionTracking'
   | 'MessageTracking'
-  | 'Subscription';
+  | 'Subscription'
+  | 'ServicePrice';
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {

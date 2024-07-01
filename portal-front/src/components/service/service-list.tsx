@@ -95,7 +95,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
 
   const generateAlertText = (service: serviceList_fragment$data) => {
     return service.subscription_type === 'SUBSCRIPTABLE_DIRECT'
-      ? 'Are you really sure you want to subscribe this service for X$ for X X(year/month) ? This action can not be undone.'
+      ? 'Are you really sure you want to subscribe this service ? This action can not be undone.'
       : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
   };
 
