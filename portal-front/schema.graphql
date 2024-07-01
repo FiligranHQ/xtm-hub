@@ -34,52 +34,15 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  settings: Settings!
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 10, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 10, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, organization_id: String): SubscriptionConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 10, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
+  settings: Settings!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-}
-
-type ActionTracking implements Node {
-  id: ID!
-  contextual_id: String!
-  status: String
-  created_at: Date!
-  ended_at: Date
-  message_tracking: [MessageTracking!]!
-}
-
-type MessageTracking implements Node {
-  id: ID!
-  tracking_id: ID
-  created_at: Date!
-  technical: Boolean
-  type: String!
-  tracking_info: JSON
-}
-
-type TrackingSubscription {
-  add: ActionTracking
-  edit: ActionTracking
-  delete: ActionTracking
-}
-
-type Subscription implements Node {
-  ActionTracking: TrackingSubscription
-  User: UserSubscription
-  id: ID!
-  organization_id: ID!
-  organization: Organization
-  service_id: ID!
-  service: Service
-  start_date: Date
-  end_date: Date
-  Service: ServiceSubscription
 }
 
 enum UserOrdering {
@@ -156,14 +119,41 @@ type UserSubscription {
   merge: MergeEvent
 }
 
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
+type Subscription implements Node {
+  User: UserSubscription
+  ActionTracking: TrackingSubscription
+  id: ID!
+  organization_id: ID!
+  organization: Organization
+  service_id: ID!
+  service: Service
+  start_date: Date
+  end_date: Date
+  Service: ServiceSubscription
 }
 
-type Settings {
-  platform_providers: [PlatformProvider!]!
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
 }
 
 enum SubscriptionOrdering {
@@ -206,6 +196,16 @@ type OrganizationConnection {
 
 input EditOrganizationInput {
   name: String!
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
 }
 
 enum ServiceOrdering {

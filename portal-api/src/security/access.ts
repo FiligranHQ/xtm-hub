@@ -27,6 +27,7 @@ export const isNodeAccessible = (
   }
   // Getting the node, we don't really care about the action to check the visibility
   const node = Object.values(data)[0];
+  const availableTypes = ['Service', 'ServicePrice'];
   const type = node.__typename;
   // If user have bypass do not apply security layer
   if (isUserGranted(user, CAPABILITY_BYPASS)) {
@@ -40,10 +41,10 @@ export const isNodeAccessible = (
     // TODO Organization can be dispatched to admin or if user is part of
     return true;
   }
-  if (type === 'Service') {
-    // Services are always available to all users
+  if (availableTypes.includes(type)) {
     return true;
   }
+
   throw new Error('Security behavior must be defined for type ' + type);
 };
 
@@ -58,6 +59,7 @@ export const applyDbSecurity = <T>(
   opts: QueryOpts = {}
 ) => {
   const { unsecured = false } = opts;
+  const types = ['Service', 'RolePortal', 'Subscription', 'ServicePrice'];
   // If user is admin, user has no access restriction
   if (unsecured || isUserGranted(context?.user, CAPABILITY_ADMIN)) {
     return queryContext;
@@ -79,14 +81,9 @@ export const applyDbSecurity = <T>(
     return queryContext;
   }
   // Standard user can access all services
-  if (type === 'Service') {
+  if (types.includes(type)) {
     return queryContext;
   }
-  if (type === 'RolePortal') {
-    return queryContext;
-  }
-  if (type === 'Subscription') {
-    return queryContext;
-  }
+
   throw new Error('Security behavior must be defined for type ' + type);
 };
