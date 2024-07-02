@@ -15,7 +15,7 @@ import { subscriptionListByOrganization_subscriptions$key } from '../../../__gen
 import { subscriptionList_subscriptions$key } from '../../../__generated__/subscriptionList_subscriptions.graphql';
 
 export const getSubscriptions = (
-  count: number = 10,
+  count: number = 50,
   orderBy: SubscriptionOrdering = 'start_date',
   orderMode: OrderingMode = 'asc'
 ) => {
@@ -35,7 +35,7 @@ export const getSubscriptions = (
 
 export const getSubscriptionsByOrganization = (
   organization_id: string = '9ac414f9-31cb-4d1d-8b81-48b336363060',
-  count: number = 10,
+  count: number = 50,
   orderBy: SubscriptionOrdering = 'start_date',
   orderMode: OrderingMode = 'asc'
 ) => {

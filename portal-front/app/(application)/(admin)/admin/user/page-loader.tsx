@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { graphql, useQueryLoader } from 'react-relay';
+import {graphql, useQueryLoader} from 'react-relay';
 import UserList from '@/components/admin/user/user-list';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { pageLoaderUserQuery } from '../../../../../__generated__/pageLoaderUserQuery.graphql';
-import { useSearchParams } from 'next/navigation';
+import {pageLoaderUserQuery} from '../../../../../__generated__/pageLoaderUserQuery.graphql';
+import {useSearchParams} from 'next/navigation';
 import Loader from '@/components/loader';
 
 // Configuration or Preloader Query
@@ -26,7 +26,7 @@ interface PreloaderProps {}
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
   const searchParams = useSearchParams();
-  const count = Number(searchParams.get('count') ?? 10);
+  const count = Number(searchParams.get('count') ?? 50);
   const orderMode = searchParams.get('orderMode') ?? 'asc';
   const orderBy = searchParams.get('orderBy') ?? 'email';
   const [queryRef, loadQuery] =

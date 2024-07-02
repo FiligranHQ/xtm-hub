@@ -106,7 +106,7 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     queryRef
   );
 
-  const DEFAULT_ITEM_BY_PAGE = 10;
+  const DEFAULT_ITEM_BY_PAGE = 50;
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
