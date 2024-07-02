@@ -8,17 +8,33 @@ export const CAPABILITY_BYPASS: Capability = {
   id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09',
   name: Restriction.Bypass,
 };
-export const CAPABILITY_ADMIN: Capability = {
-  id: 'e0e32277-6530-49aa-9df6-22211f2651ff',
-  name: Restriction.Admin,
+export const CAPABILITY_BCK_MANAGE_SERVICES = {
+  id: '6ff7515e-5d86-49e8-84b6-f301d12e6038',
+  name: Restriction.BckManageServices,
 };
-export const CAPABILITY_USER: Capability = {
-  id: '795004d6-8dd4-4c97-be85-2e2420e522f1',
-  name: Restriction.User,
+export const CAPABILITY_BCK_MANAGE_COMMUNITIES = {
+  id: '6fd9bdea-6bf5-4621-8216-50bd7a6584c7',
+  name: Restriction.BckManageCommunities,
 };
-export const CAPABILITY_ADMIN_ORGA: Capability = {
-  id: '795004d6-8dd4-4c97-be85-2e2420e533a2',
-  name: Restriction.AdminOrga,
+export const CAPABILITY_FRT_SERVICE_SUBSCRIBER = {
+  id: '993b2b86-2310-47e9-90f2-b56ad9b15405',
+  name: Restriction.FrtServiceSubscriber,
+};
+export const CAPABILITY_FRT_MANAGE_SETTINGS = {
+  id: 'cabbc09c-275a-473b-b490-626b9ebf6939',
+  name: Restriction.FrtManageSettings,
+};
+export const CAPABILITY_FRT_MANAGE_USER = {
+  id: '350d67fe-5a9b-4b51-8d63-ad504d8a4999',
+  name: Restriction.FrtManageUser,
+};
+export const CAPABILITY_FRT_ACCESS_BILLING = {
+  id: 'd583993e-2cb7-4fe9-ba47-2100ca7ae54f',
+  name: Restriction.FrtAccessBilling,
+};
+export const CAPABILITY_FRT_ACCESS_SERVICES = {
+  id: 'fe5ad46d-8851-4d8f-901b-4dfb5e738df5',
+  name: Restriction.FrtAccessServices,
 };
 export const ROLE_ADMIN: RolePortal = {
   id: '6b632cf2-9105-46ec-a463-ad59ab58c770' as RolePortalId,

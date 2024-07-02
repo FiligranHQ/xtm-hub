@@ -24,9 +24,9 @@ type ServiceConnection {
 }
 
 type Mutation {
-  editService(id: ID!, name: String!): Service @auth(requires: [ADMIN])
-  addService(name: String!): Service @auth(requires: [ADMIN])
-  deleteService(id: ID!): Service @auth(requires: [ADMIN])
+  editService(id: ID!, name: String!): Service @auth(requires: [BYPASS])
+  addService(name: String!): Service @auth(requires: [BYPASS])
+  deleteService(id: ID!): Service @auth(requires: [BYPASS])
 }
 
 type Query {
@@ -35,7 +35,7 @@ type Query {
     after: ID
     orderBy: ServiceOrdering!
     orderMode: OrderingMode!
-  ): ServiceConnection! @auth(requires: [USER])
+  ): ServiceConnection! @auth(requires: [BYPASS, FRT_ACCESS_SERVICES])
 }
 
 type ServiceSubscription {

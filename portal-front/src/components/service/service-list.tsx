@@ -126,7 +126,8 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
             </Link>
           </Button>
         ) : (
-          <GuardCapacityComponent capacityRestriction={'ADMIN_ORGA'}>
+          <GuardCapacityComponent
+            capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
             <AlertDialogComponent
               AlertTitle={'Subscribe service'}
               actionButtonText={'Continue'}
@@ -187,7 +188,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       header: 'Description',
     },
 
-    ...(useGranted('ADMIN_ORGA') ? columnsAdmin : []),
+    ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
   ];
 
   const [pagination, setPagination] = useState<PaginationState>({

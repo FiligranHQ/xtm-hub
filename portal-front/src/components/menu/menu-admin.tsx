@@ -21,6 +21,7 @@ import {
   SettingsIcon,
 } from 'filigran-icon';
 import { useRouter } from 'next/navigation';
+import { RESTRICTION } from '@/utils/constant';
 
 export interface MenuAdminProps {
   open: boolean;
@@ -108,7 +109,13 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
     </Popover>
   );
 
-  if (!useGranted('ADMIN')) {
+  if (
+    !useGranted(RESTRICTION.CAPABILITY_BYPASS) ||
+    !useGranted(RESTRICTION.CAPABILITY_FRT_MANAGE_USER) ||
+    !useGranted(RESTRICTION.CAPABILITY_FRT_MANAGE_SETTINGS) ||
+    !useGranted(RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES) ||
+    !useGranted(RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES)
+  ) {
     return null;
   }
 

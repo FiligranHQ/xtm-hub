@@ -12,14 +12,13 @@ describe('useGranted', () => {
       wrapper,
     });
     expect(resultBypass.current).toBe(true);
-    const { result: resultAdmin } = renderHook(() => useGranted('ADMIN'), {
-      wrapper,
-    });
+    const { result: resultAdmin } = renderHook(
+      () => useGranted('FRT_SERVICE_SUBSCRIBER'),
+      {
+        wrapper,
+      }
+    );
     expect(resultAdmin.current).toBe(true);
-    const { result: resultUser } = renderHook(() => useGranted('USER'), {
-      wrapper,
-    });
-    expect(resultUser.current).toBe(true);
   });
 
   it('user with no capability should not have any granted right', () => {
@@ -40,17 +39,16 @@ describe('useGranted', () => {
       wrapper,
     });
     expect(resultBypass.current).toBe(false);
-    const { result: resultAdmin } = renderHook(() => useGranted('ADMIN'), {
-      wrapper,
-    });
+    const { result: resultAdmin } = renderHook(
+      () => useGranted('FRT_SERVICE_SUBSCRIBER'),
+      {
+        wrapper,
+      }
+    );
     expect(resultAdmin.current).toBe(false);
-    const { result: resultUser } = renderHook(() => useGranted('USER'), {
-      wrapper,
-    });
-    expect(resultUser.current).toBe(false);
   });
 
-  it('user with ADMIN capability should only have ADMIN right', () => {
+  it('user with FRT_SERVICE_SUBSCRIBER capability should only have FRT_SERVICE_SUBSCRIBER right', () => {
     expect(true).toBe(true);
     const wrapper = ({ children }: ProvidersWrapperProps) => {
       return (
@@ -59,7 +57,7 @@ describe('useGranted', () => {
             me: {
               capabilities: [
                 {
-                  name: 'ADMIN',
+                  name: 'FRT_SERVICE_SUBSCRIBER',
                 },
               ],
             },
@@ -68,49 +66,19 @@ describe('useGranted', () => {
         </TestWrapper>
       );
     };
-    const { result: resultBypass } = renderHook(() => useGranted('BYPASS'), {
-      wrapper,
-    });
+    const { result: resultBypass } = renderHook(
+      () => useGranted('FRT_MANAGE_USER'),
+      {
+        wrapper,
+      }
+    );
     expect(resultBypass.current).toBe(false);
-    const { result: resultAdmin } = renderHook(() => useGranted('ADMIN'), {
-      wrapper,
-    });
+    const { result: resultAdmin } = renderHook(
+      () => useGranted('FRT_SERVICE_SUBSCRIBER'),
+      {
+        wrapper,
+      }
+    );
     expect(resultAdmin.current).toBe(true);
-    const { result: resultUser } = renderHook(() => useGranted('USER'), {
-      wrapper,
-    });
-    expect(resultUser.current).toBe(false);
-  });
-
-  it('user with USER capability should only have any USER right', () => {
-    expect(true).toBe(true);
-    const wrapper = ({ children }: ProvidersWrapperProps) => {
-      return (
-        <TestWrapper
-          options={{
-            me: {
-              capabilities: [
-                {
-                  name: 'USER',
-                },
-              ],
-            },
-          }}>
-          {children}
-        </TestWrapper>
-      );
-    };
-    const { result: resultBypass } = renderHook(() => useGranted('BYPASS'), {
-      wrapper,
-    });
-    expect(resultBypass.current).toBe(false);
-    const { result: resultAdmin } = renderHook(() => useGranted('ADMIN'), {
-      wrapper,
-    });
-    expect(resultAdmin.current).toBe(false);
-    const { result: resultUser } = renderHook(() => useGranted('USER'), {
-      wrapper,
-    });
-    expect(resultUser.current).toBe(true);
   });
 });

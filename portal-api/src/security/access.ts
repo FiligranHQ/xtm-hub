@@ -4,7 +4,7 @@ import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
 import { Knex } from 'knex';
 import { User } from '../model/user';
 import { PortalContext } from '../model/portal-context';
-import { CAPABILITY_ADMIN, CAPABILITY_BYPASS } from '../portal.const';
+import { CAPABILITY_BYPASS } from '../portal.const';
 
 export const isUserGranted = (user: User, capability: Capability) => {
   if (!user) return false;
@@ -61,7 +61,7 @@ export const applyDbSecurity = <T>(
   const { unsecured = false } = opts;
   const types = ['Service', 'RolePortal', 'Subscription', 'ServicePrice'];
   // If user is admin, user has no access restriction
-  if (unsecured || isUserGranted(context?.user, CAPABILITY_ADMIN)) {
+  if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
     return queryContext;
   }
   // Standard user can access to all users from its own organization
