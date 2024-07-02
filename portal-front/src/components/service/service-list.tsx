@@ -58,7 +58,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
-  const DEFAULT_ITEM_BY_PAGE = 10;
+  const DEFAULT_ITEM_BY_PAGE = 50;
   const { me } = useContext<Portal>(portalContext);
   const addSubscriptionInDb = (service: serviceList_fragment$data) => {
     if (service.subscription_type === 'SUBSCRIPTABLE_DIRECT') {

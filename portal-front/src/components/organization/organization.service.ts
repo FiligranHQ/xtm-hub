@@ -11,7 +11,7 @@ import {
 import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
 
 export const getOrganizations = (
-  count: number = 10,
+  count: number = 50,
   orderBy: OrganizationOrdering = 'name',
   orderMode: OrderingMode = 'asc'
 ) => {

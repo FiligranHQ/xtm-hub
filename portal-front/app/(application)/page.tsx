@@ -16,7 +16,7 @@ interface PageProps {}
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {
   const searchParams = useSearchParams();
-  const count = Number(searchParams.get('count') ?? 10);
+  const count = Number(searchParams.get('count') ?? 50);
   const orderMode = searchParams.get('orderMode') ?? 'asc';
   const orderBy = searchParams.get('orderBy') ?? 'name';
   const [queryRef, loadQuery] =
