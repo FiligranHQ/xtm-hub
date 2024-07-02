@@ -284,10 +284,14 @@ export type QueryUsersArgs = {
 };
 
 export enum Restriction {
-  Admin = 'ADMIN',
-  AdminOrga = 'ADMIN_ORGA',
+  BckManageCommunities = 'BCK_MANAGE_COMMUNITIES',
+  BckManageServices = 'BCK_MANAGE_SERVICES',
   Bypass = 'BYPASS',
-  User = 'USER',
+  FrtAccessBilling = 'FRT_ACCESS_BILLING',
+  FrtAccessServices = 'FRT_ACCESS_SERVICES',
+  FrtManageSettings = 'FRT_MANAGE_SETTINGS',
+  FrtManageUser = 'FRT_MANAGE_USER',
+  FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER',
 }
 
 export type RolePortal = Node & {

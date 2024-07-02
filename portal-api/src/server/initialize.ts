@@ -14,10 +14,14 @@ import {
 import { hashPassword } from '../utils/hash-password.util';
 import {
   ADMIN_UUID,
-  CAPABILITY_ADMIN,
-  CAPABILITY_ADMIN_ORGA,
+  CAPABILITY_BCK_MANAGE_COMMUNITIES,
+  CAPABILITY_BCK_MANAGE_SERVICES,
   CAPABILITY_BYPASS,
-  CAPABILITY_USER,
+  CAPABILITY_FRT_ACCESS_BILLING,
+  CAPABILITY_FRT_ACCESS_SERVICES,
+  CAPABILITY_FRT_MANAGE_SETTINGS,
+  CAPABILITY_FRT_MANAGE_USER,
+  CAPABILITY_FRT_SERVICE_SUBSCRIBER,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
   ROLE_ADMIN_ORGA,
@@ -65,9 +69,13 @@ const initCapabilityAndRole = async () => {
   const trx = await dbTx();
   try {
     await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
-    await ensureCapabilityExists(CAPABILITY_ADMIN, trx);
-    await ensureCapabilityExists(CAPABILITY_USER, trx);
-    await ensureCapabilityExists(CAPABILITY_ADMIN_ORGA, trx);
+    await ensureCapabilityExists(CAPABILITY_BCK_MANAGE_SERVICES, trx);
+    await ensureCapabilityExists(CAPABILITY_BCK_MANAGE_COMMUNITIES, trx);
+    await ensureCapabilityExists(CAPABILITY_FRT_SERVICE_SUBSCRIBER, trx);
+    await ensureCapabilityExists(CAPABILITY_FRT_MANAGE_SETTINGS, trx);
+    await ensureCapabilityExists(CAPABILITY_FRT_ACCESS_BILLING, trx);
+    await ensureCapabilityExists(CAPABILITY_FRT_MANAGE_USER, trx);
+    await ensureCapabilityExists(CAPABILITY_FRT_ACCESS_SERVICES, trx);
 
     // Ensure ROLE_ADMIN and ROLE_USER exist in RolePortal
     await ensureRoleExists(ROLE_ADMIN, trx);
@@ -75,9 +83,42 @@ const initCapabilityAndRole = async () => {
     await ensureRoleExists(ROLE_ADMIN_ORGA, trx);
 
     // Ensure ROLE_ADMIN has CAPABILITY_BYPASS
-    await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_ADMIN, trx);
-    await ensureRoleHasCapability(ROLE_USER, CAPABILITY_USER, trx);
-    await ensureRoleHasCapability(ROLE_ADMIN_ORGA, CAPABILITY_ADMIN_ORGA, trx);
+    await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS, trx);
+    await ensureRoleHasCapability(
+      ROLE_ADMIN_ORGA,
+      CAPABILITY_BCK_MANAGE_SERVICES,
+      trx
+    );
+    await ensureRoleHasCapability(
+      ROLE_ADMIN_ORGA,
+      CAPABILITY_BCK_MANAGE_COMMUNITIES,
+      trx
+    );
+    await ensureRoleHasCapability(
+      ROLE_ADMIN_ORGA,
+      CAPABILITY_FRT_SERVICE_SUBSCRIBER,
+      trx
+    );
+    await ensureRoleHasCapability(
+      ROLE_ADMIN_ORGA,
+      CAPABILITY_FRT_MANAGE_SETTINGS,
+      trx
+    );
+    await ensureRoleHasCapability(
+      ROLE_ADMIN_ORGA,
+      CAPABILITY_FRT_ACCESS_BILLING,
+      trx
+    );
+    await ensureRoleHasCapability(
+      ROLE_ADMIN_ORGA,
+      CAPABILITY_FRT_MANAGE_USER,
+      trx
+    );
+    await ensureRoleHasCapability(
+      ROLE_USER,
+      CAPABILITY_FRT_ACCESS_SERVICES,
+      trx
+    );
 
     await trx.commit();
   } catch (error) {

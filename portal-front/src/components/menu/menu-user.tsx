@@ -9,7 +9,7 @@ export interface MenuUserProps {
 }
 
 const MenuUser: FunctionComponent<MenuUserProps> = ({ open }) => {
-  if (!useGranted('USER')) {
+  if (!useGranted('FRT_ACCESS_SERVICES')) {
     return null;
   }
   return (

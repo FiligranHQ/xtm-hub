@@ -47,7 +47,17 @@
     "token_reference": "access_token",
     "read_userinfo": false,
     "roles_path": "resource_access.scred-portal-dev.roles",
-    "role_mappings": ["admin:ADMIN", "user:USER"]
+    "roles_mappings": [
+      "admin:BYPASS",
+      "user:FRT_ACCESS_SERVICES",
+      "admin_orga:BCK_MANAGE_COMMUNITIES",
+      "admin_orga:BCK_MANAGE_SERVICES",
+      "admin_orga:FRT_ACCESS_BILLING",
+      "admin_orga:FRT_MANAGE_SETTINGS",
+      "admin_orga:FRT_MANAGE_USER",
+      "admin_orga:FRT_SERVICE_SUBSCRIBER",
+      "admin_orga:FRT_ACCESS_SERVICES"
+    ]
   },
   "awx": {
     "activate": false,

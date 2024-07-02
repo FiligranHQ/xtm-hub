@@ -1,4 +1,4 @@
-import { CAPABILITY_BYPASS } from '@/utils/constant';
+import { RESTRICTION } from '@/utils/constant';
 import * as React from 'react';
 import { createContext, FunctionComponent } from 'react';
 import {
@@ -25,7 +25,7 @@ export const generatePortalContext = (
     hasCapability: (capability: Restriction) => {
       const userCapabilities = (me?.capabilities ?? []).map((c) => c?.name);
       return (
-        userCapabilities.includes(CAPABILITY_BYPASS) ||
+        userCapabilities.includes(RESTRICTION.CAPABILITY_BYPASS) ||
         userCapabilities.includes(capability)
       );
     },
