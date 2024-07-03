@@ -26,4 +26,5 @@ __pycache__
 .pnp.*
 
 /config/local*.json
-/uploads/
+/uploads/**
+!uploads/.gitkeep

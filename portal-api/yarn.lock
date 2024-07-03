@@ -1109,7 +1109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.4.0, @eslint/js@npm:^9.4.0":
+"@eslint/js@npm:9.4.0":
   version: 9.4.0
   resolution: "@eslint/js@npm:9.4.0"
   checksum: 6df52c9d743cb20382ac7794cc96c52179d6eacaa15d1b36c15a325edab87982a1066f48cabb6d6468e70615add8bc0a781e1139875e81a80917614dd3c17b32
@@ -2412,7 +2412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/graphql-upload@npm:^16.0.7":
+"@types/graphql-upload@npm:16.0.7":
   version: 16.0.7
   resolution: "@types/graphql-upload@npm:16.0.7"
   dependencies:
@@ -4366,7 +4366,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^9.1.0":
+"eslint-config-prettier@npm:9.1.0":
   version: 9.1.0
   resolution: "eslint-config-prettier@npm:9.1.0"
   peerDependencies:
@@ -5076,6 +5076,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"globals@npm:15.3.0":
+  version: 15.3.0
+  resolution: "globals@npm:15.3.0"
+  checksum: e2dce715440ee81a11b17dbcf705835f96f2c1ec629a7e3d50f79a453abb286f8e5c6119673789c0a02e6230ab926493f0ee6cc93e6e701927482fbb6c79d6b2
+  languageName: node
+  linkType: hard
+
 "globals@npm:^11.1.0":
   version: 11.12.0
   resolution: "globals@npm:11.12.0"
@@ -5087,13 +5094,6 @@ __metadata:
   version: 14.0.0
   resolution: "globals@npm:14.0.0"
   checksum: 534b8216736a5425737f59f6e6a5c7f386254560c9f41d24a9227d60ee3ad4a9e82c5b85def0e212e9d92162f83a92544be4c7fd4c902cb913736c10e08237ac
-  languageName: node
-  linkType: hard
-
-"globals@npm:^15.3.0":
-  version: 15.3.0
-  resolution: "globals@npm:15.3.0"
-  checksum: e2dce715440ee81a11b17dbcf705835f96f2c1ec629a7e3d50f79a453abb286f8e5c6119673789c0a02e6230ab926493f0ee6cc93e6e701927482fbb6c79d6b2
   languageName: node
   linkType: hard
 
@@ -5211,7 +5211,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-upload@npm:^16.0.2":
+"graphql-upload@npm:16.0.2":
   version: 16.0.2
   resolution: "graphql-upload@npm:16.0.2"
   dependencies:
@@ -5361,7 +5361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^9.0.11":
+"husky@npm:9.0.11":
   version: 9.0.11
   resolution: "husky@npm:9.0.11"
   bin:
@@ -6028,7 +6028,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^15.2.5":
+"lint-staged@npm:15.2.5":
   version: 15.2.5
   resolution: "lint-staged@npm:15.2.5"
   dependencies:
@@ -7279,7 +7279,7 @@ __metadata:
   resolution: "portal-api@workspace:."
   dependencies:
     "@apollo/server": 4.10.4
-    "@eslint/js": ^9.4.0
+    "@eslint/js": 9.4.0
     "@graphql-codegen/cli": 5.0.2
     "@graphql-codegen/typescript": 4.0.7
     "@graphql-codegen/typescript-resolvers": 4.0.6
@@ -7290,7 +7290,7 @@ __metadata:
     "@types/cors": 2.8.17
     "@types/express": 4.17.21
     "@types/express-session": 1.18.0
-    "@types/graphql-upload": ^16.0.7
+    "@types/graphql-upload": 16.0.7
     "@types/node": 20.12.9
     "@types/uuid": 9.0.8
     "@typescript-eslint/eslint-plugin": 7.8.0
@@ -7303,30 +7303,30 @@ __metadata:
     cors: 2.8.5
     esbuild: 0.20.2
     eslint: 9.x
-    eslint-config-prettier: ^9.1.0
+    eslint-config-prettier: 9.1.0
     express: 4.19.2
     express-session: 1.18.0
     glob: 10.3.12
-    globals: ^15.3.0
+    globals: 15.3.0
     graphql: 16.8.1
     graphql-relay: 0.10.1
     graphql-sse: 2.5.3
     graphql-subscriptions: 2.0.0
-    graphql-upload: ^16.0.2
-    husky: ^9.0.11
+    graphql-upload: 16.0.2
+    husky: 9.0.11
     jwt-decode: 4.0.0
     kanel: 3.8.8
     knex: 3.1.0
-    lint-staged: ^15.2.5
+    lint-staged: 15.2.5
     openid-client: 5.6.5
     passport: 0.7.0
     pg: 8.11.5
-    prettier: ^3.3.0
+    prettier: 3.3.0
     ts-node: 10.9.2
     typescript: 5.4.5
-    typescript-eslint: ^7.12.0
+    typescript-eslint: 7.12.0
     uuid: 9.0.1
-    vitest: ^1.6.0
+    vitest: 1.6.0
   languageName: unknown
   linkType: soft
 
@@ -7385,7 +7385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.3.0":
+"prettier@npm:3.3.0":
   version: 3.3.0
   resolution: "prettier@npm:3.3.0"
   bin:
@@ -8625,7 +8625,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-eslint@npm:^7.12.0":
+"typescript-eslint@npm:7.12.0":
   version: 7.12.0
   resolution: "typescript-eslint@npm:7.12.0"
   dependencies:
@@ -8921,7 +8921,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^1.6.0":
+"vitest@npm:1.6.0":
   version: 1.6.0
   resolution: "vitest@npm:1.6.0"
   dependencies:
