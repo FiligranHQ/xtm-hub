@@ -62,12 +62,11 @@ input AddUserInput {
 
 type Mutation {
   # Management
-  mergeTest(from: ID!, target: ID!): ID!
-    @auth(requires: [BYPASS, FRT_MANAGE_USER])
-  addUser(input: AddUserInput!): User @auth(requires: [BYPASS, FRT_MANAGE_USER])
+  mergeTest(from: ID!, target: ID!): ID! @auth(requires: [FRT_MANAGE_USER])
+  addUser(input: AddUserInput!): User @auth(requires: [FRT_MANAGE_USER])
   editUser(id: ID!, input: EditUserInput!): User
-    @auth(requires: [BYPASS, FRT_MANAGE_USER])
-  deleteUser(id: ID!): User @auth(requires: [BYPASS, FRT_MANAGE_USER])
+    @auth(requires: [FRT_MANAGE_USER])
+  deleteUser(id: ID!): User @auth(requires: [FRT_MANAGE_USER])
   # Login
   login(email: String!, password: String): User
   logout: ID! @auth

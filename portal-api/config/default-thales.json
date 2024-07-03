@@ -49,8 +49,8 @@
     "roles_path": "realm_access.roles",
     "role_mappings": [
       "portal-admin:ADMIN",
-      "organization-admin:ADMIN",
-      "default-roles-ctishape:USER"
+      "organization-user:USER",
+      "organization-admin:ADMIN_ORGA"
     ]
   },
   "awx": {

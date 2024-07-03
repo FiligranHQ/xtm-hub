@@ -35,7 +35,7 @@ type Query {
     after: ID
     orderBy: ServiceOrdering!
     orderMode: OrderingMode!
-  ): ServiceConnection! @auth(requires: [BYPASS, FRT_ACCESS_SERVICES])
+  ): ServiceConnection! @auth(requires: [FRT_ACCESS_SERVICES])
 }
 
 type ServiceSubscription {
