@@ -15,12 +15,33 @@ const storeUpload = async ({
   );
 };
 
-const processUpload = async (upload) => {
+export const processUploadFile = async (upload) => {
   const { createReadStream, filename, mimetype } = await upload;
   const stream = createReadStream();
   const { path } = await storeUpload({ stream, filename });
   return { filename, mimetype, path };
 };
-export const processUploadFile = async (file) => {
-  return await processUpload(file);
+
+export const processStreamFile = async (upload) => {
+  const { createReadStream } = await upload;
+  return createReadStream();
+};
+
+export const streamToBlob = (stream, mimeType) => {
+  if (mimeType != null && typeof mimeType !== 'string') {
+    throw new Error('Invalid mimetype, expected string.');
+  }
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream
+      .on('data', (chunk) => chunks.push(chunk))
+      .once('end', () => {
+        const blob =
+          mimeType != null
+            ? new Blob(chunks, { type: mimeType })
+            : new Blob(chunks);
+        resolve(blob);
+      })
+      .once('error', reject);
+  });
 };

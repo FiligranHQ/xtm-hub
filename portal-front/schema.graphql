@@ -38,15 +38,15 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  settings: Settings!
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, organization_id: String): SubscriptionConnection!
-  settings: Settings!
-  organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
 }
 
 enum UserOrdering {
@@ -108,12 +108,14 @@ type Mutation {
   login(email: String!, password: String): User
   logout: ID!
   addSubscription(service_id: String, organization_id: ID): Subscription
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
   deleteService(id: ID!): Service
+  addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+  malwareAnalysis(string: String, file: Upload): MalwareAnalysisConnector!
+  malwareAnalysisResult(id: ID!, status: String!, result: JSON!): MalwareAnalysisResult
 }
 
 type UserSubscription {
@@ -160,6 +162,16 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
 enum SubscriptionOrdering {
   organization_name
   start_date
@@ -176,40 +188,6 @@ type SubscriptionConnection {
   totalCount: Int!
   edges: [SubscriptionEdge!]!
   pageInfo: PageInfo!
-}
-
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditOrganizationInput {
-  name: String!
 }
 
 enum ServiceOrdering {
@@ -243,10 +221,6 @@ type ServiceSubscription {
   delete: Service
 }
 
-scalar JSON
-
-scalar Date
-
 type RolePortal implements Node {
   id: ID!
   name: String!
@@ -255,3 +229,42 @@ type RolePortal implements Node {
 type RolePortalID implements Node {
   id: ID!
 }
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input EditOrganizationInput {
+  name: String!
+}
+
+type MalwareAnalysisConnector {
+  id: ID!
+  connectors: [String!]!
+}
+
+type MalwareAnalysisResult {
+  result: JSON!
+}
+
+scalar JSON
+
+scalar Date
+
+scalar Upload
