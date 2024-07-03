@@ -27,7 +27,12 @@ export const isNodeAccessible = (
   }
   // Getting the node, we don't really care about the action to check the visibility
   const node = Object.values(data)[0];
-  const availableTypes = ['Service', 'ServicePrice'];
+  const availableTypes = [
+    'Service',
+    'ServicePrice',
+    'User_Service',
+    'Service_Capability',
+  ];
   const type = node.__typename;
   // If user have bypass do not apply security layer
   if (isUserGranted(user, CAPABILITY_BYPASS)) {
@@ -59,7 +64,14 @@ export const applyDbSecurity = <T>(
   opts: QueryOpts = {}
 ) => {
   const { unsecured = false } = opts;
-  const types = ['Service', 'RolePortal', 'Subscription', 'ServicePrice'];
+  const types = [
+    'Service',
+    'RolePortal',
+    'Subscription',
+    'ServicePrice',
+    'User_Service',
+    'Service_Capability',
+  ];
   // If user is admin, user has no access restriction
   if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
     return queryContext;

@@ -1,48 +1,48 @@
 enum SubscriptionOrdering {
-  organization_name
-  start_date
-  end_date
-  service_name
+    organization_name
+    start_date
+    end_date
+    service_name
 }
 type Subscription implements Node {
-  id: ID!
-  organization_id: ID!
-  organization: Organization
-  service_id: ID!
-  service: Service
-  start_date: Date
-  end_date: Date
+    id: ID!
+    organization_id: ID!
+    organization: Organization
+    service_id: ID!
+    service: Service
+    start_date: Date
+    end_date: Date
 }
 
 type SubscriptionEdge {
-  cursor: String!
-  node: Subscription!
+    cursor: String!
+    node: Subscription!
 }
 
 type SubscriptionConnection {
-  totalCount: Int!
-  edges: [SubscriptionEdge!]!
-  pageInfo: PageInfo!
+    totalCount: Int!
+    edges: [SubscriptionEdge!]!
+    pageInfo: PageInfo!
 }
 
 type Query {
-  subscription(id: ID!): Subscription @auth
-  subscriptions(
-    first: Int = 50
-    after: ID
-    orderBy: SubscriptionOrdering!
-    orderMode: OrderingMode!
-  ): SubscriptionConnection! @auth
-  subscriptionsByOrganization(
-    first: Int = 50
-    after: ID
-    orderBy: SubscriptionOrdering!
-    orderMode: OrderingMode!
-    organization_id: String
-  ): SubscriptionConnection! @auth
+    subscription(id: ID!): Subscription @auth
+    subscriptions(
+        first: Int = 50
+        after: ID
+        orderBy: SubscriptionOrdering!
+        orderMode: OrderingMode!
+    ): SubscriptionConnection! @auth
+    subscriptionsByOrganization(
+        first: Int = 50
+        after: ID
+        orderBy: SubscriptionOrdering!
+        orderMode: OrderingMode!
+        organization_id: String
+    ): SubscriptionConnection! @auth
 }
 
 type Mutation {
-  addSubscription(service_id: String, organization_id: ID): Subscription
+    addSubscription(service_id: String, organization_id: ID, user_id: ID): Subscription
     @auth(requires: [FRT_SERVICE_SUBSCRIBER])
 }

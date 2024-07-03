@@ -5,6 +5,11 @@ import {
 } from '../../__generated__/resolvers-types';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
+import { v4 as uuidv4 } from 'uuid';
+import ServiceCapability, {
+  ServiceCapabilityId,
+} from '../../model/kanel/public/ServiceCapability';
+import { UserServiceId } from '../../model/kanel/public/UserService';
 
 export const loadSubscriptions = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -98,4 +103,23 @@ export const checkSubscriptionExists = async (
     .first();
   const sub = await subscriptionQuery;
   return sub ?? false;
+};
+
+export const insertCapa = async (
+  context: PortalContext,
+  userServiceId: string,
+  serviceCapabilityName: string
+) => {
+  const serviceCapaData = {
+    id: uuidv4() as ServiceCapabilityId,
+    user_service_id: userServiceId as UserServiceId,
+    service_capability_name: serviceCapabilityName,
+  };
+  const [addedServiceCapa] = await db<ServiceCapability>(
+    context,
+    'Service_Capability'
+  )
+    .insert(serviceCapaData)
+    .returning('*');
+  return addedServiceCapa;
 };

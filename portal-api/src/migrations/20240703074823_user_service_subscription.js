@@ -11,7 +11,7 @@ export async function up(knex) {
       .references('id')
       .inTable('Subscription')
       .onDelete('CASCADE');
-    table.json('service_personnal_data');
+    table.json('service_personal_data');
   });
 
   await knex.schema.createTable('Service_Capability', (table) => {
