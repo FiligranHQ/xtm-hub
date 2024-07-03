@@ -67,6 +67,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
           connections: [connectionId],
           service_id: service.id,
           organization_id: me?.organization?.id ?? '',
+          user_id: me?.id ?? '',
         },
         onCompleted: ({}) => {
           toast({

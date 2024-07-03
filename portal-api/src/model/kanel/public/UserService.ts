@@ -15,7 +15,7 @@ export default interface UserService {
 
   subscription_id: SubscriptionId | null;
 
-  service_personnal_data: unknown | null;
+  service_personal_data: unknown | null;
 }
 
 /** Represents the initializer for the table public.User_Service */
@@ -26,7 +26,7 @@ export interface UserServiceInitializer {
 
   subscription_id?: SubscriptionId | null;
 
-  service_personnal_data?: unknown | null;
+  service_personal_data?: unknown | null;
 }
 
 /** Represents the mutator for the table public.User_Service */
@@ -37,5 +37,5 @@ export interface UserServiceMutator {
 
   subscription_id?: SubscriptionId | null;
 
-  service_personnal_data?: unknown | null;
+  service_personal_data?: unknown | null;
 }

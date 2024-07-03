@@ -84,9 +84,14 @@ export const AddSubscriptionMutation = graphql`
   mutation subscriptionCreateMutation(
     $service_id: String!
     $organization_id: ID!
+    $user_id: ID!
     $connections: [ID!]!
   ) {
-    addSubscription(service_id: $service_id, organization_id: $organization_id)
+    addSubscription(
+      service_id: $service_id
+      organization_id: $organization_id
+      user_id: $user_id
+    )
       @prependNode(
         connections: $connections
         edgeTypeName: "SubscriptionsEdge"

@@ -26,7 +26,9 @@ export type DatabaseType =
   | 'ActionTracking'
   | 'MessageTracking'
   | 'Subscription'
-  | 'ServicePrice';
+  | 'ServicePrice'
+  | 'User_Service'
+  | 'Service_Capability';
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {
