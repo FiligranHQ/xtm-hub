@@ -44,5 +44,5 @@ type Query {
 
 type Mutation {
   addSubscription(service_id: String, organization_id: ID): Subscription
-    @auth(requires: [BYPASS, FRT_SERVICE_SUBSCRIBER])
+    @auth(requires: [FRT_SERVICE_SUBSCRIBER])
 }
