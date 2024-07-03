@@ -76,17 +76,15 @@ export type EditUserInput = {
   roles_id: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
-export type File = {
-  __typename?: 'File';
-  encoding: Scalars['String']['output'];
-  filename: Scalars['String']['output'];
-  mimetype: Scalars['String']['output'];
-};
-
 export type MalwareAnalysisConnector = {
   __typename?: 'MalwareAnalysisConnector';
   connectors: Array<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+};
+
+export type MalwareAnalysisResult = {
+  __typename?: 'MalwareAnalysisResult';
+  result: Scalars['JSON']['output'];
 };
 
 export type MergeEvent = Node & {
@@ -121,6 +119,7 @@ export type Mutation = {
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   malwareAnalysis: MalwareAnalysisConnector;
+  malwareAnalysisResult?: Maybe<MalwareAnalysisResult>;
   mergeTest: Scalars['ID']['output'];
 };
 
@@ -176,6 +175,12 @@ export type MutationLoginArgs = {
 export type MutationMalwareAnalysisArgs = {
   file?: InputMaybe<Scalars['Upload']['input']>;
   string?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MutationMalwareAnalysisResultArgs = {
+  id: Scalars['ID']['input'];
+  result: Scalars['JSON']['input'];
+  status: Scalars['String']['input'];
 };
 
 export type MutationMergeTestArgs = {
@@ -579,11 +584,11 @@ export type ResolversTypes = ResolversObject<{
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   EditOrganizationInput: EditOrganizationInput;
   EditUserInput: EditUserInput;
-  File: ResolverTypeWrapper<File>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   MalwareAnalysisConnector: ResolverTypeWrapper<MalwareAnalysisConnector>;
+  MalwareAnalysisResult: ResolverTypeWrapper<MalwareAnalysisResult>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -628,11 +633,11 @@ export type ResolversParentTypes = ResolversObject<{
   Date: Scalars['Date']['output'];
   EditOrganizationInput: EditOrganizationInput;
   EditUserInput: EditUserInput;
-  File: File;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
   MalwareAnalysisConnector: MalwareAnalysisConnector;
+  MalwareAnalysisResult: MalwareAnalysisResult;
   MergeEvent: MergeEvent;
   MessageTracking: MessageTracking;
   Mutation: {};
@@ -706,17 +711,6 @@ export interface DateScalarConfig
   name: 'Date';
 }
 
-export type FileResolvers<
-  ContextType = PortalContext,
-  ParentType extends
-    ResolversParentTypes['File'] = ResolversParentTypes['File'],
-> = ResolversObject<{
-  encoding?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  filename?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  mimetype?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export interface JsonScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
@@ -733,6 +727,15 @@ export type MalwareAnalysisConnectorResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MalwareAnalysisResultResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['MalwareAnalysisResult'] = ResolversParentTypes['MalwareAnalysisResult'],
+> = ResolversObject<{
+  result?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -846,6 +849,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     Partial<MutationMalwareAnalysisArgs>
+  >;
+  malwareAnalysisResult?: Resolver<
+    Maybe<ResolversTypes['MalwareAnalysisResult']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationMalwareAnalysisResultArgs, 'id' | 'result' | 'status'>
   >;
   mergeTest?: Resolver<
     ResolversTypes['ID'],
@@ -1317,9 +1326,9 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   Date?: GraphQLScalarType;
-  File?: FileResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   MalwareAnalysisConnector?: MalwareAnalysisConnectorResolvers<ContextType>;
+  MalwareAnalysisResult?: MalwareAnalysisResultResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
   MessageTracking?: MessageTrackingResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
