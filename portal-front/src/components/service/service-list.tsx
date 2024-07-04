@@ -55,12 +55,15 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   connectionId = '',
   shouldDisplayOnlyOwnedService = false,
 }) => {
+  const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
+
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
   const DEFAULT_ITEM_BY_PAGE = 50;
   const { me } = useContext<Portal>(portalContext);
   const addSubscriptionInDb = (service: serviceList_fragment$data) => {
+    setIsSubscriptionLoading(true);
     if (service.subscription_type === 'SUBSCRIPTABLE_DIRECT') {
       commitSubscriptionCreateMutation({
         variables: {
@@ -70,6 +73,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
           user_id: me?.id ?? '',
         },
         onCompleted: ({}) => {
+          setIsSubscriptionLoading(false);
           toast({
             title: 'Success',
             description: (
@@ -263,23 +267,26 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
 
   return (
     <>
-      <React.Suspense fallback={<Loader />}>
-        <DataTable
-          data={servicesData}
-          columns={columns}
-          tableOptions={{
-            onSortingChange: onSortingChange,
-            onPaginationChange: onPaginationChange,
-            manualPagination: true,
-            rowCount: data.services.totalCount,
-            manualSorting: true,
-          }}
-          tableState={{ sorting, pagination }}
-        />
-      </React.Suspense>
+      {isSubscriptionLoading ? (
+        <Loader />
+      ) : (
+        <React.Suspense fallback={<Loader />}>
+          <DataTable
+            data={servicesData}
+            columns={columns}
+            tableOptions={{
+              onSortingChange: onSortingChange,
+              onPaginationChange: onPaginationChange,
+              manualPagination: true,
+              rowCount: data.services.totalCount,
+              manualSorting: true,
+            }}
+            tableState={{ sorting, pagination }}
+          />
+        </React.Suspense>
+      )}
     </>
   );
 };
-// endregion
 
 export default ServiceList;

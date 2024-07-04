@@ -1,7 +1,7 @@
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import {
+  addORganizationUsersRights,
   checkSubscriptionExists,
-  insertCapa,
   loadSubscriptions,
   loadSubscriptionsByOrganization,
 } from './subscription.domain';
@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { insertUserService } from './user_service.domain';
+import { insertCapa } from './service_capability.domain';
 
 const resolvers: Resolvers = {
   Query: {
@@ -35,6 +36,7 @@ const resolvers: Resolvers = {
     ) => {
       const trx = await dbTx();
       // Check the subscription does not already exist :
+
       try {
         const subscription = await checkSubscriptionExists(
           fromGlobalId(organization_id).id,
@@ -59,9 +61,9 @@ const resolvers: Resolvers = {
           .insert(subscriptionData)
           .returning('*');
 
-        const addedUserService = await insertUserService(
+        const [addedUserService] = await insertUserService(
           context,
-          user_id,
+          fromGlobalId(user_id).id,
           addedSubscription.id
         );
 
@@ -71,8 +73,15 @@ const resolvers: Resolvers = {
           'ACCESS_SERVICE',
         ];
         initialServiceCapabilities.map(async (capa) => {
-          await insertCapa(context, addedUserService[0].id, capa);
+          await insertCapa(context, addedUserService.id, capa);
         });
+
+        await addORganizationUsersRights(
+          context,
+          fromGlobalId(organization_id).id,
+          fromGlobalId(user_id).id,
+          addedSubscription.id
+        );
 
         return addedSubscription;
       } catch (error) {
