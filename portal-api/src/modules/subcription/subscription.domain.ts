@@ -5,11 +5,9 @@ import {
 } from '../../__generated__/resolvers-types';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
-import { v4 as uuidv4 } from 'uuid';
-import ServiceCapability, {
-  ServiceCapabilityId,
-} from '../../model/kanel/public/ServiceCapability';
-import { UserServiceId } from '../../model/kanel/public/UserService';
+import { loadUsersByOrganization } from '../users/users.domain';
+import { insertUserService } from './user_service.domain';
+import { insertCapa } from './service_capability.domain';
 
 export const loadSubscriptions = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -105,21 +103,25 @@ export const checkSubscriptionExists = async (
   return sub ?? false;
 };
 
-export const insertCapa = async (
-  context: PortalContext,
-  userServiceId: string,
-  serviceCapabilityName: string
+export const addORganizationUsersRights = async (
+  context,
+  organizationId: string,
+  adminId: string,
+  addedSuscriptionId: string
 ) => {
-  const serviceCapaData = {
-    id: uuidv4() as ServiceCapabilityId,
-    user_service_id: userServiceId as UserServiceId,
-    service_capability_name: serviceCapabilityName,
-  };
-  const [addedServiceCapa] = await db<ServiceCapability>(
-    context,
-    'Service_Capability'
-  )
-    .insert(serviceCapaData)
-    .returning('*');
-  return addedServiceCapa;
+  const usersInOrga = await loadUsersByOrganization(organizationId, adminId);
+  const userServiceEntryTab = [];
+  for (const user of usersInOrga) {
+    const userServiceEntry = await insertUserService(
+      context,
+      user.id,
+      addedSuscriptionId
+    );
+    userServiceEntryTab.push(userServiceEntry);
+  }
+  console.log('userServiceEntryTab', userServiceEntryTab);
+
+  userServiceEntryTab[0].map((user) =>
+    insertCapa(context, user.id, 'ACCESS_SERVICE')
+  );
 };
