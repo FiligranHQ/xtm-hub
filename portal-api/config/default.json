@@ -55,5 +55,8 @@
     "token": null,
     "workflow": null,
     "action_mapping": null
+  },
+  "malware_analysis": {
+    "url": "http://localhost:8080"
   }
 }

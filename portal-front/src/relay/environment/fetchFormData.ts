@@ -22,20 +22,20 @@ export const fetchFormData = async (
   const formData = new FormData();
   formData.append('operations', JSON.stringify({ query: request.text }));
   const uploadablesArray = Array.from(uploadables);
-  const map = uploadablesArray.reduce((acc, _, index) => {
-    // @ts-ignore
-    acc[index] = [`variables.file${uploadables.length > 1 ? '.' + index : ''}`];
-    return acc;
-  }, {});
+  const map = uploadablesArray.reduce<{ [key: number]: string[] }>(
+    (acc, _, index) => {
+      acc[index] = [
+        `variables.file${uploadables.length > 1 ? '.' + index : ''}`,
+      ];
+      return acc;
+    },
+    {}
+  );
   formData.append('map', JSON.stringify(map));
 
-  Object.keys(uploadables).forEach((key) => {
-    console.log({ key });
-    if (Object.prototype.hasOwnProperty.call(uploadables, key)) {
-      // @ts-ignore
-      formData.append(key, uploadables[key]);
-    }
-  });
+  uploadablesArray.forEach((file, index) =>
+    formData.append(String(index), file)
+  );
 
   if (portalCookie) {
     headers.cookie = portalCookie.name + '=' + portalCookie.value;

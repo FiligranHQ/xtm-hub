@@ -84,5 +84,8 @@
         "keys": ["roles", "organization_name"]
       }
     }
+  },
+  "malware_analysis": {
+    "url": "http://localhost:8080"
   }
 }
