@@ -6,7 +6,7 @@ import {
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
 import { loadUsersByOrganization } from '../users/users.domain';
-import { insertUserService } from './user_service.domain';
+import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
 
 export const loadSubscriptions = async (context: PortalContext, opts) => {
@@ -119,7 +119,6 @@ export const addORganizationUsersRights = async (
     );
     userServiceEntryTab.push(userServiceEntry);
   }
-  console.log('userServiceEntryTab', userServiceEntryTab);
 
   userServiceEntryTab[0].map((user) =>
     insertCapa(context, user.id, 'ACCESS_SERVICE')

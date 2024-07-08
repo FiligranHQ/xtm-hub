@@ -8,7 +8,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
-import { insertUserService } from './user_service.domain';
+import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
 
 const resolvers: Resolvers = {
