@@ -52,6 +52,11 @@ export const subscriptionItem = graphql`
     service {
       name
       id
+      description
+      provider
+      subscription_type
+      type
+      url
     }
     start_date
     end_date

@@ -250,6 +250,7 @@ export type Query = {
   organizations: OrganizationConnection;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
+  serviceUsers?: Maybe<Array<Maybe<UserService>>>;
   services: ServiceConnection;
   settings: Settings;
   subscription?: Maybe<Subscription>;
@@ -275,6 +276,10 @@ export type QueryOrganizationsArgs = {
 };
 
 export type QueryRolePortalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryServiceUsersArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -346,6 +351,13 @@ export type Service = Node & {
   subscription_type?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
   url?: Maybe<Scalars['String']['output']>;
+};
+
+export type ServiceCapability = Node & {
+  __typename?: 'ServiceCapability';
+  id: Scalars['ID']['output'];
+  service_capability_name?: Maybe<Scalars['String']['output']>;
+  user_service_id: Scalars['ID']['output'];
 };
 
 export type ServiceConnection = {
@@ -449,6 +461,16 @@ export enum UserOrdering {
   FirstName = 'first_name',
   LastName = 'last_name',
 }
+
+export type UserService = Node & {
+  __typename?: 'UserService';
+  id: Scalars['ID']['output'];
+  service_capability?: Maybe<Array<Maybe<ServiceCapability>>>;
+  subscription?: Maybe<Subscription>;
+  subscription_id: Scalars['ID']['output'];
+  user?: Maybe<User>;
+  user_id: Scalars['ID']['output'];
+};
 
 export type UserSubscription = {
   __typename?: 'UserSubscription';
@@ -579,8 +601,10 @@ export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> =
       | RolePortal
       | RolePortalId
       | Service
+      | ServiceCapability
       | Subscription
-      | User;
+      | User
+      | UserService;
   }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -614,6 +638,7 @@ export type ResolversTypes = ResolversObject<{
   RolePortal: ResolverTypeWrapper<RolePortal>;
   RolePortalID: ResolverTypeWrapper<RolePortalId>;
   Service: ResolverTypeWrapper<Service>;
+  ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
   ServiceOrdering: ServiceOrdering;
@@ -630,6 +655,7 @@ export type ResolversTypes = ResolversObject<{
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
   UserOrdering: UserOrdering;
+  UserService: ResolverTypeWrapper<UserService>;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
 }>;
 
@@ -661,6 +687,7 @@ export type ResolversParentTypes = ResolversObject<{
   RolePortal: RolePortal;
   RolePortalID: RolePortalId;
   Service: Service;
+  ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
   ServiceEdge: ServiceEdge;
   ServiceSubscription: ServiceSubscription;
@@ -674,6 +701,7 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
+  UserService: UserService;
   UserSubscription: UserSubscription;
 }>;
 
@@ -899,8 +927,10 @@ export type NodeResolvers<
     | 'RolePortal'
     | 'RolePortalID'
     | 'Service'
+    | 'ServiceCapability'
     | 'Subscription'
-    | 'User',
+    | 'User'
+    | 'UserService',
     ParentType,
     ContextType
   >;
@@ -1012,6 +1042,12 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
+  serviceUsers?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['UserService']>>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryServiceUsersArgs, 'id'>
+  >;
   services?: Resolver<
     ResolversTypes['ServiceConnection'],
     ParentType,
@@ -1093,6 +1129,21 @@ export type ServiceResolvers<
   >;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServiceCapabilityResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['ServiceCapability'] = ResolversParentTypes['ServiceCapability'],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  service_capability_name?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  user_service_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1327,6 +1378,28 @@ export type UserEdgeResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserServiceResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['UserService'] = ResolversParentTypes['UserService'],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  service_capability?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['ServiceCapability']>>>,
+    ParentType,
+    ContextType
+  >;
+  subscription?: Resolver<
+    Maybe<ResolversTypes['Subscription']>,
+    ParentType,
+    ContextType
+  >;
+  subscription_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  user_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type UserSubscriptionResolvers<
   ContextType = PortalContext,
   ParentType extends
@@ -1364,6 +1437,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   RolePortal?: RolePortalResolvers<ContextType>;
   RolePortalID?: RolePortalIdResolvers<ContextType>;
   Service?: ServiceResolvers<ContextType>;
+  ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceEdge?: ServiceEdgeResolvers<ContextType>;
   ServiceSubscription?: ServiceSubscriptionResolvers<ContextType>;
@@ -1376,6 +1450,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;
+  UserService?: UserServiceResolvers<ContextType>;
   UserSubscription?: UserSubscriptionResolvers<ContextType>;
 }>;
 

@@ -40,6 +40,7 @@ import { getSubscriptionsByOrganization } from '@/components/subcription/subscri
 import {
   CaseRftIcon,
   ConstructionIcon,
+  CourseOfActionIcon,
   IndicatorIcon,
   TaskIcon,
 } from 'filigran-icon';
@@ -112,6 +113,11 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       (subscription) => subscription.node.service?.name
     );
 
+  const ownedServices =
+    subscriptionsOrganization.subscriptionsByOrganization.edges.map(
+      (subscription) => subscription.node.service
+    );
+
   let columnsAdmin: ColumnDef<serviceList_fragment$data>[] = [
     {
       id: 'action',
@@ -120,34 +126,49 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => {
-        return subscribedServiceName.includes(row.original.name) ? (
-          <Button
-            asChild
-            className="w-3/4">
-            <Link href={`#${row.original.url}`}>
-              {' '}
-              <IndicatorIcon className="mr-2 h-5 w-5" />
-              View more
-            </Link>
-          </Button>
-        ) : (
-          <GuardCapacityComponent
-            capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
-            <AlertDialogComponent
-              AlertTitle={'Subscribe service'}
-              actionButtonText={'Continue'}
-              triggerElement={
-                <Button
-                  aria-label="Subscribe service"
-                  className="w-3/4">
-                  <ConstructionIcon className="mr-2 h-5 w-5" />
-                  Subscribe
-                </Button>
-              }
-              onClickContinue={() => addSubscriptionInDb(row.original)}>
-              {generateAlertText(row.original)}
-            </AlertDialogComponent>
-          </GuardCapacityComponent>
+        return (
+          <>
+            {subscribedServiceName.includes(row.original.name) ? (
+              <Button
+                asChild
+                className="w-3/4">
+                <Link href={`#${row.original.url}`}>
+                  {' '}
+                  <IndicatorIcon className="mr-2 h-5 w-5" />
+                  View more
+                </Link>
+              </Button>
+            ) : (
+              <GuardCapacityComponent
+                capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
+                <AlertDialogComponent
+                  AlertTitle={'Subscribe service'}
+                  actionButtonText={'Continue'}
+                  triggerElement={
+                    <Button
+                      aria-label="Subscribe service"
+                      className="w-3/4">
+                      <ConstructionIcon className="mr-2 h-5 w-5" />
+                      Subscribe
+                    </Button>
+                  }
+                  onClickContinue={() => addSubscriptionInDb(row.original)}>
+                  {generateAlertText(row.original)}
+                </AlertDialogComponent>
+              </GuardCapacityComponent>
+            )}
+            <GuardCapacityComponent
+              capacityRestriction={['BCK_MANAGE_SERVICES']}>
+              <Button
+                asChild
+                className="mt-2 w-3/4">
+                <Link href={`/admin/service/${row.original.id}`}>
+                  <CourseOfActionIcon className="mr-2 h-5 w-5" />
+                  Manage
+                </Link>
+              </Button>{' '}
+            </GuardCapacityComponent>
+          </>
         );
       },
     },
@@ -223,10 +244,8 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     ({ node }) => node
   ) as serviceList_fragment$data[];
 
-  if (shouldDisplayOnlyOwnedService) {
-    servicesData = servicesData.filter((service) =>
-      subscribedServiceName.includes(service.name)
-    );
+  if (shouldDisplayOnlyOwnedService && ownedServices) {
+    servicesData = ownedServices as serviceList_fragment$data[];
   }
 
   const handleRefetchData = (

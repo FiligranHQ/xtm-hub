@@ -7,6 +7,7 @@ import servicesResolver from '../modules/services/services.resolver';
 import usersResolver from '../modules/users/users.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
+import userServiceResolver from '../modules/user_service/user_service.resolver';
 import { authDirectiveTransformer } from '../security/directive-auth';
 import settingsResolver from '../modules/settings/settings.resolver';
 import trackingResolver from '../modules/tracking/tracking.resolver';
@@ -31,6 +32,7 @@ const resolvers = mergeResolvers([
   rolePortalResolver,
   malwareAnalysisResolver,
   subscriptionsResolver,
+  userServiceResolver,
 ]);
 
 const createSchema = () => {

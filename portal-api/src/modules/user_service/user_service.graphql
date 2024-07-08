@@ -1,0 +1,18 @@
+type Query {
+  serviceUsers(id: ID!): [UserService] @auth
+}
+
+type UserService implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
+  user: User
+  subscription: Subscription
+  service_capability: [ServiceCapability]
+}
+
+type ServiceCapability implements Node {
+  id: ID!
+  service_capability_name: String
+  user_service_id: ID!
+}

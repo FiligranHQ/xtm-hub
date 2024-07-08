@@ -22,6 +22,5 @@ export const insertCapa = async (
   )
     .insert(serviceCapaData)
     .returning('*');
-  console.log('capa inserted');
   return addedServiceCapa;
 };
