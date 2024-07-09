@@ -28,7 +28,7 @@ export const organizationItem = graphql`
 `;
 export const organizationFetch = graphql`
   query organizationSelectQuery(
-    $count: Int!
+    $count: Int
     $cursor: ID
     $orderBy: OrganizationOrdering!
     $orderMode: OrderingMode!

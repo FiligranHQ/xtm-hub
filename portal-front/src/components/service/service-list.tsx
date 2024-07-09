@@ -57,7 +57,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   shouldDisplayOnlyOwnedService = false,
 }) => {
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
-
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
@@ -107,7 +106,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
 
   const [subscriptionsOrganization, refetchSubOrga] =
     getSubscriptionsByOrganization(me?.organization?.id);
-
+  connectionId = subscriptionsOrganization.subscriptionsByOrganization.__id;
   const subscribedServiceName =
     subscriptionsOrganization.subscriptionsByOrganization.edges.map(
       (subscription) => subscription.node.service?.name
@@ -132,7 +131,10 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
               <Button
                 asChild
                 className="w-3/4">
-                <Link href={`#${row.original.url}`}>
+                <Link
+                  href={`${row.original.url}`}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow">
                   {' '}
                   <IndicatorIcon className="mr-2 h-5 w-5" />
                   View more
@@ -289,20 +291,26 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       {isSubscriptionLoading ? (
         <Loader />
       ) : (
-        <React.Suspense fallback={<Loader />}>
-          <DataTable
-            data={servicesData}
-            columns={columns}
-            tableOptions={{
-              onSortingChange: onSortingChange,
-              onPaginationChange: onPaginationChange,
-              manualPagination: true,
-              rowCount: data.services.totalCount,
-              manualSorting: true,
-            }}
-            tableState={{ sorting, pagination }}
-          />
-        </React.Suspense>
+        <>
+          {data.services.edges.length > 0 ? (
+            <React.Suspense fallback={<Loader />}>
+              <DataTable
+                data={servicesData}
+                columns={columns}
+                tableOptions={{
+                  onSortingChange: onSortingChange,
+                  onPaginationChange: onPaginationChange,
+                  manualPagination: true,
+                  rowCount: data.services.totalCount,
+                  manualSorting: true,
+                }}
+                tableState={{ sorting, pagination }}
+              />
+            </React.Suspense>
+          ) : (
+            'You do not have any service... Yet !'
+          )}
+        </>
       )}
     </>
   );

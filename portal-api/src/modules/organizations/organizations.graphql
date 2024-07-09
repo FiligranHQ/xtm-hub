@@ -22,8 +22,8 @@ type Query {
   organizations(
     first: Int = 50
     after: ID
-    orderBy: OrganizationOrdering = name
-    orderMode: OrderingMode = asc
+    orderBy: OrganizationOrdering!
+    orderMode: OrderingMode!
   ): OrganizationConnection! @auth
 }
 

@@ -271,8 +271,8 @@ export type QueryOrganizationArgs = {
 export type QueryOrganizationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<OrganizationOrdering>;
-  orderMode?: InputMaybe<OrderingMode>;
+  orderBy: OrganizationOrdering;
+  orderMode: OrderingMode;
 };
 
 export type QueryRolePortalArgs = {
@@ -374,7 +374,10 @@ export type ServiceEdge = {
 };
 
 export enum ServiceOrdering {
+  Description = 'description',
   Name = 'name',
+  Provider = 'provider',
+  Type = 'type',
 }
 
 export type ServiceSubscription = {
