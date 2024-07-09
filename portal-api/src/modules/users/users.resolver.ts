@@ -118,7 +118,7 @@ const resolvers: Resolvers = {
         return addedUser;
       } catch (error) {
         await trx.rollback();
-        console.log('Error while adding the new user.');
+        console.log('Error while adding the new user.', error);
         throw error;
       }
     },

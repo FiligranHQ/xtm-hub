@@ -42,10 +42,10 @@ type Query {
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, organization_id: String): SubscriptionConnection!
-  organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering = name, orderMode: OrderingMode = asc): OrganizationConnection!
   settings: Settings!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
 }
@@ -124,14 +124,14 @@ type Mutation {
   login(email: String!, password: String): User
   logout: ID!
   addSubscription(service_id: String, organization_id: ID, user_id: ID): Subscription
+  editService(id: ID!, name: String!): Service
+  addService(name: String!): Service
+  deleteService(id: ID!): Service
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
   malwareAnalysis(string: String, file: Upload): MalwareAnalysisConnector!
   malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
-  editService(id: ID!, name: String!): Service
-  addService(name: String!): Service
-  deleteService(id: ID!): Service
 }
 
 type UserSubscription {
@@ -196,30 +196,6 @@ type SubscriptionConnection {
   pageInfo: PageInfo!
 }
 
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditOrganizationInput {
-  name: String!
-}
-
 type PlatformProvider {
   name: String!
   type: String!
@@ -230,22 +206,11 @@ type Settings {
   platform_providers: [PlatformProvider!]!
 }
 
-type MalwareAnalysisConnector {
-  id: ID!
-  connectors: [String!]!
-}
-
-type MalwareAnalysisResult implements Node {
-  id: ID!
-  result: JSON!
-}
-
-type GlimpsCallbackTemporary {
-  result: JSON!
-}
-
 enum ServiceOrdering {
   name
+  description
+  provider
+  type
 }
 
 type Service implements Node {
@@ -275,6 +240,50 @@ type ServiceSubscription {
   delete: Service
 }
 
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input EditOrganizationInput {
+  name: String!
+}
+
+type MalwareAnalysisConnector {
+  id: ID!
+  connectors: [String!]!
+}
+
+type MalwareAnalysisResult implements Node {
+  id: ID!
+  result: JSON!
+}
+
+type GlimpsCallbackTemporary {
+  result: JSON!
+}
+
+scalar JSON
+
+scalar Date
+
+scalar Upload
+
 type RolePortal implements Node {
   id: ID!
   name: String!
@@ -283,9 +292,3 @@ type RolePortal implements Node {
 type RolePortalID implements Node {
   id: ID!
 }
-
-scalar JSON
-
-scalar Date
-
-scalar Upload

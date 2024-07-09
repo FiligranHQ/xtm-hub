@@ -103,24 +103,15 @@ export const checkSubscriptionExists = async (
   return sub ?? false;
 };
 
-export const addORganizationUsersRights = async (
+export const addOrganizationUsersRights = async (
   context,
   organizationId: string,
   adminId: string,
   addedSuscriptionId: string
 ) => {
   const usersInOrga = await loadUsersByOrganization(organizationId, adminId);
-  const userServiceEntryTab = [];
   for (const user of usersInOrga) {
-    const userServiceEntry = await insertUserService(
-      context,
-      user.id,
-      addedSuscriptionId
-    );
-    userServiceEntryTab.push(userServiceEntry);
+    await insertUserService(context, user.id, addedSuscriptionId);
+    await insertCapa(context, user.id, 'ACCESS_SERVICE');
   }
-
-  userServiceEntryTab[0].map((user) =>
-    insertCapa(context, user.id, 'ACCESS_SERVICE')
-  );
 };

@@ -1,6 +1,6 @@
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import {
-  addORganizationUsersRights,
+  addOrganizationUsersRights,
   checkSubscriptionExists,
   loadSubscriptions,
   loadSubscriptionsByOrganization,
@@ -76,7 +76,7 @@ const resolvers: Resolvers = {
           await insertCapa(context, addedUserService.id, capa);
         });
 
-        await addORganizationUsersRights(
+        await addOrganizationUsersRights(
           context,
           fromGlobalId(organization_id).id,
           fromGlobalId(user_id).id,
