@@ -71,6 +71,7 @@ export const applyDbSecurity = <T>(
     'ServicePrice',
     'User_Service',
     'Service_Capability',
+    'MalwareAnalysis',
   ];
   // If user is admin, user has no access restriction
   if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {

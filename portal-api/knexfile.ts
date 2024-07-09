@@ -28,7 +28,8 @@ export type DatabaseType =
   | 'Subscription'
   | 'ServicePrice'
   | 'User_Service'
-  | 'Service_Capability';
+  | 'Service_Capability'
+  | 'MalwareAnalysis';
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {

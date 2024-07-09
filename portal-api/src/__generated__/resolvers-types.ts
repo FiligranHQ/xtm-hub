@@ -81,16 +81,45 @@ export type GlimpsCallbackTemporary = {
   result: Scalars['JSON']['output'];
 };
 
-export type MalwareAnalysisConnector = {
-  __typename?: 'MalwareAnalysisConnector';
-  connectors: Array<Scalars['String']['output']>;
+export type MalwareAnalysis = {
+  __typename?: 'MalwareAnalysis';
+  created_at: Scalars['Date']['output'];
+  ended_at?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  result: Scalars['JSON']['output'];
+  status: Scalars['String']['output'];
+  type: Scalars['String']['output'];
 };
+
+export type MalwareAnalysisConnection = {
+  __typename?: 'MalwareAnalysisConnection';
+  edges: Array<MalwareAnalysisEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type MalwareAnalysisEdge = {
+  __typename?: 'MalwareAnalysisEdge';
+  cursor: Scalars['String']['output'];
+  node: MalwareAnalysis;
+};
+
+export enum MalwareAnalysisOrdering {
+  StartDate = 'start_date',
+}
 
 export type MalwareAnalysisResult = Node & {
   __typename?: 'MalwareAnalysisResult';
   id: Scalars['ID']['output'];
   result: Scalars['JSON']['output'];
+};
+
+export type MalwareAnalysisSubscription = {
+  __typename?: 'MalwareAnalysisSubscription';
+  add?: Maybe<MalwareAnalysis>;
+  delete?: Maybe<MalwareAnalysis>;
+  edit?: Maybe<MalwareAnalysis>;
 };
 
 export type MergeEvent = Node & {
@@ -124,7 +153,7 @@ export type Mutation = {
   editUser?: Maybe<User>;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
-  malwareAnalysis: MalwareAnalysisConnector;
+  malwareAnalysis: MalwareAnalysis;
   malwareAnalysisResult?: Maybe<GlimpsCallbackTemporary>;
   mergeTest: Scalars['ID']['output'];
 };
@@ -244,6 +273,7 @@ export type PlatformProvider = {
 
 export type Query = {
   __typename?: 'Query';
+  malwareAnalysis: MalwareAnalysisConnection;
   me?: Maybe<User>;
   node?: Maybe<Node>;
   organization?: Maybe<Organization>;
@@ -258,6 +288,13 @@ export type Query = {
   subscriptionsByOrganization: SubscriptionConnection;
   user?: Maybe<User>;
   users: UserConnection;
+};
+
+export type QueryMalwareAnalysisArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: MalwareAnalysisOrdering;
+  orderMode: OrderingMode;
 };
 
 export type QueryNodeArgs = {
@@ -394,6 +431,7 @@ export type Settings = {
 export type Subscription = Node & {
   __typename?: 'Subscription';
   ActionTracking?: Maybe<TrackingSubscription>;
+  MalwareAnalysis?: Maybe<MalwareAnalysisSubscription>;
   Service?: Maybe<ServiceSubscription>;
   User?: Maybe<UserSubscription>;
   end_date?: Maybe<Scalars['Date']['output']>;
@@ -624,8 +662,12 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
-  MalwareAnalysisConnector: ResolverTypeWrapper<MalwareAnalysisConnector>;
+  MalwareAnalysis: ResolverTypeWrapper<MalwareAnalysis>;
+  MalwareAnalysisConnection: ResolverTypeWrapper<MalwareAnalysisConnection>;
+  MalwareAnalysisEdge: ResolverTypeWrapper<MalwareAnalysisEdge>;
+  MalwareAnalysisOrdering: MalwareAnalysisOrdering;
   MalwareAnalysisResult: ResolverTypeWrapper<MalwareAnalysisResult>;
+  MalwareAnalysisSubscription: ResolverTypeWrapper<MalwareAnalysisSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -676,8 +718,11 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
-  MalwareAnalysisConnector: MalwareAnalysisConnector;
+  MalwareAnalysis: MalwareAnalysis;
+  MalwareAnalysisConnection: MalwareAnalysisConnection;
+  MalwareAnalysisEdge: MalwareAnalysisEdge;
   MalwareAnalysisResult: MalwareAnalysisResult;
+  MalwareAnalysisSubscription: MalwareAnalysisSubscription;
   MergeEvent: MergeEvent;
   MessageTracking: MessageTracking;
   Mutation: {};
@@ -767,17 +812,43 @@ export interface JsonScalarConfig
   name: 'JSON';
 }
 
-export type MalwareAnalysisConnectorResolvers<
+export type MalwareAnalysisResolvers<
   ContextType = PortalContext,
   ParentType extends
-    ResolversParentTypes['MalwareAnalysisConnector'] = ResolversParentTypes['MalwareAnalysisConnector'],
+    ResolversParentTypes['MalwareAnalysis'] = ResolversParentTypes['MalwareAnalysis'],
 > = ResolversObject<{
-  connectors?: Resolver<
-    Array<ResolversTypes['String']>,
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  ended_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  result?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MalwareAnalysisConnectionResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['MalwareAnalysisConnection'] = ResolversParentTypes['MalwareAnalysisConnection'],
+> = ResolversObject<{
+  edges?: Resolver<
+    Array<ResolversTypes['MalwareAnalysisEdge']>,
     ParentType,
     ContextType
   >;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MalwareAnalysisEdgeResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['MalwareAnalysisEdge'] = ResolversParentTypes['MalwareAnalysisEdge'],
+> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['MalwareAnalysis'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -788,6 +859,29 @@ export type MalwareAnalysisResultResolvers<
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   result?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MalwareAnalysisSubscriptionResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['MalwareAnalysisSubscription'] = ResolversParentTypes['MalwareAnalysisSubscription'],
+> = ResolversObject<{
+  add?: Resolver<
+    Maybe<ResolversTypes['MalwareAnalysis']>,
+    ParentType,
+    ContextType
+  >;
+  delete?: Resolver<
+    Maybe<ResolversTypes['MalwareAnalysis']>,
+    ParentType,
+    ContextType
+  >;
+  edit?: Resolver<
+    Maybe<ResolversTypes['MalwareAnalysis']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -897,7 +991,7 @@ export type MutationResolvers<
   >;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   malwareAnalysis?: Resolver<
-    ResolversTypes['MalwareAnalysisConnector'],
+    ResolversTypes['MalwareAnalysis'],
     ParentType,
     ContextType,
     Partial<MutationMalwareAnalysisArgs>
@@ -1016,6 +1110,12 @@ export type QueryResolvers<
   ParentType extends
     ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
 > = ResolversObject<{
+  malwareAnalysis?: Resolver<
+    ResolversTypes['MalwareAnalysisConnection'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryMalwareAnalysisArgs, 'first' | 'orderBy' | 'orderMode'>
+  >;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<
     Maybe<ResolversTypes['Node']>,
@@ -1208,6 +1308,12 @@ export type SubscriptionResolvers<
   ActionTracking?: SubscriptionResolver<
     Maybe<ResolversTypes['TrackingSubscription']>,
     'ActionTracking',
+    ParentType,
+    ContextType
+  >;
+  MalwareAnalysis?: SubscriptionResolver<
+    Maybe<ResolversTypes['MalwareAnalysisSubscription']>,
+    'MalwareAnalysis',
     ParentType,
     ContextType
   >;
@@ -1426,8 +1532,11 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Date?: GraphQLScalarType;
   GlimpsCallbackTemporary?: GlimpsCallbackTemporaryResolvers<ContextType>;
   JSON?: GraphQLScalarType;
-  MalwareAnalysisConnector?: MalwareAnalysisConnectorResolvers<ContextType>;
+  MalwareAnalysis?: MalwareAnalysisResolvers<ContextType>;
+  MalwareAnalysisConnection?: MalwareAnalysisConnectionResolvers<ContextType>;
+  MalwareAnalysisEdge?: MalwareAnalysisEdgeResolvers<ContextType>;
   MalwareAnalysisResult?: MalwareAnalysisResultResolvers<ContextType>;
+  MalwareAnalysisSubscription?: MalwareAnalysisSubscriptionResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
   MessageTracking?: MessageTrackingResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
