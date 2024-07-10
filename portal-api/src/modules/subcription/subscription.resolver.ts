@@ -10,6 +10,8 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadServiceBy } from '../services/services.domain';
 
 const resolvers: Resolvers = {
   Query: {
@@ -18,14 +20,31 @@ const resolvers: Resolvers = {
     },
     subscriptionsByOrganization: async (
       _,
-      { first, after, orderMode, orderBy, organization_id },
+      { first, after, orderMode, orderBy },
       context
     ) => {
-      return loadSubscriptionsByOrganization(
-        context,
-        { first, after, orderMode, orderBy },
-        fromGlobalId(organization_id).id
-      );
+      return loadSubscriptionsByOrganization(context, {
+        first,
+        after,
+        orderMode,
+        orderBy,
+      });
+    },
+  },
+  Subscription: {
+    organization: (subscription, __, context) => {
+      return subscription.organization
+        ? subscription.organization
+        : loadOrganizationBy(
+            context,
+            'Organization.id',
+            subscription.organization_id
+          );
+    },
+    service: (subscription, __, context) => {
+      return subscription.service
+        ? subscription.service
+        : loadServiceBy(context, 'Service.id', subscription.service_id);
     },
   },
   Mutation: {
@@ -86,7 +105,7 @@ const resolvers: Resolvers = {
         return addedSubscription;
       } catch (error) {
         await trx.rollback();
-        console.log('Error while subscribing the service.');
+        console.log('Error while subscribing the service.', error);
         throw error;
       }
     },

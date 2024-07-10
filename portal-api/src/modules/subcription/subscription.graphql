@@ -3,6 +3,9 @@ enum SubscriptionOrdering {
   start_date
   end_date
   service_name
+  service_provider
+  service_type
+  service_description
 }
 type Subscription implements Node {
   id: ID!
@@ -38,7 +41,6 @@ type Query {
     after: ID
     orderBy: SubscriptionOrdering!
     orderMode: OrderingMode!
-    organization_id: String
   ): SubscriptionConnection! @auth
 }
 

@@ -105,7 +105,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   };
 
   const [subscriptionsOrganization, refetchSubOrga] =
-    getSubscriptionsByOrganization(me?.organization?.id);
+    getSubscriptionsByOrganization();
   connectionId = subscriptionsOrganization.subscriptionsByOrganization.__id;
   const subscribedServiceName =
     subscriptionsOrganization.subscriptionsByOrganization.edges.map(

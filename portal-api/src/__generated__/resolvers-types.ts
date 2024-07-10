@@ -306,7 +306,6 @@ export type QuerySubscriptionsByOrganizationArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: SubscriptionOrdering;
   orderMode: OrderingMode;
-  organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QueryUserArgs = {
@@ -423,6 +422,8 @@ export enum SubscriptionOrdering {
   EndDate = 'end_date',
   OrganizationName = 'organization_name',
   ServiceName = 'service_name',
+  ServiceProvider = 'service_provider',
+  ServiceType = 'service_type',
   StartDate = 'start_date',
 }
 

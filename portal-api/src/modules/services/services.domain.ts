@@ -24,3 +24,14 @@ export const loadServices = async (context: PortalContext, opts) => {
     ...servicesConnection,
   };
 };
+
+export const loadServiceBy = async (
+  context: PortalContext,
+  field: string,
+  value: string
+): Promise<Service> => {
+  return db<Service>(context, 'Service')
+    .where({ [field]: value })
+    .select('*')
+    .first();
+};
