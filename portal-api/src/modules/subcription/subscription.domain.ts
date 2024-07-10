@@ -50,8 +50,7 @@ export const loadSubscriptions = async (context: PortalContext, opts) => {
 
 export const loadSubscriptionsByOrganization = async (
   context: PortalContext,
-  opts,
-  organization_id
+  opts
 ) => {
   const { first, after, orderMode, orderBy } = opts;
   const subscriptionConnection = await paginate<Subscription>(
@@ -75,13 +74,23 @@ export const loadSubscriptionsByOrganization = async (
       'Subscription.*',
       dbRaw('(json_agg(org.*) ->> 0)::json as organization'),
       dbRaw('(json_agg(serv.*) ->> 0)::json as service'),
+      dbRaw('(serv."name") as service_name'),
+      dbRaw('(serv."provider") as service_provider'),
+      dbRaw('(serv."type") as service_type'),
+      dbRaw('(serv."description") as service_description'),
     ])
-    .where('organization_id', organization_id)
-    .groupBy(['Subscription.id'])
+    .where('organization_id', context.user.organization_id)
+    .groupBy([
+      'Subscription.id',
+      'serv.name',
+      'serv.provider',
+      'serv.type',
+      'serv.description',
+    ])
     .asConnection<SubscriptionConnection>();
   const { totalCount } = await db<Service>(context, 'Subscription', opts)
     .countDistinct('id as totalCount')
-    .where('organization_id', organization_id)
+    .where('organization_id', context.user.organization_id)
     .first();
 
   return {
@@ -111,7 +120,12 @@ export const addOrganizationUsersRights = async (
 ) => {
   const usersInOrga = await loadUsersByOrganization(organizationId, adminId);
   for (const user of usersInOrga) {
-    await insertUserService(context, user.id, addedSuscriptionId);
-    await insertCapa(context, user.id, 'ACCESS_SERVICE');
+    const [user_service] = await insertUserService(
+      context,
+      user.id,
+      addedSuscriptionId
+    );
+
+    await insertCapa(context, user_service.id, 'ACCESS_SERVICE');
   }
 };

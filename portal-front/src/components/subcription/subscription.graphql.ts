@@ -28,7 +28,6 @@ export const subscriptionsByOrganizationFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
-      organization_id: $organization_id
     ) {
       __id
       totalCount
@@ -44,7 +43,6 @@ export const subscriptionsByOrganizationFragment = graphql`
 export const subscriptionItem = graphql`
   fragment subscriptionItem_fragment on Subscription {
     id
-
     organization {
       name
       id
@@ -75,11 +73,10 @@ export const subscriptionFetch = graphql`
 
 export const subscriptionsByOrganizationFetch = graphql`
   query subscriptionsByOrganizationSelectQuery(
-    $count: Int!
+    $count: Int
     $cursor: ID
     $orderBy: SubscriptionOrdering!
     $orderMode: OrderingMode!
-    $organization_id: String!
   ) {
     ...subscriptionListByOrganization_subscriptions
   }
@@ -102,6 +99,17 @@ export const AddSubscriptionMutation = graphql`
         edgeTypeName: "SubscriptionsEdge"
       ) {
       id
+      organization_id
+      organization {
+        name
+        id
+      }
+      service_id
+      service {
+        name
+      }
+      start_date
+      end_date
     }
   }
 `;

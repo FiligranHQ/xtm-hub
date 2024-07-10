@@ -34,7 +34,6 @@ export const getSubscriptions = (
 };
 
 export const getSubscriptionsByOrganization = (
-  organization_id: string = '9ac414f9-31cb-4d1d-8b81-48b336363060',
   count: number = 50,
   orderBy: SubscriptionOrdering = 'start_date',
   orderMode: OrderingMode = 'asc'
@@ -46,7 +45,6 @@ export const getSubscriptionsByOrganization = (
         count,
         orderBy,
         orderMode,
-        organization_id,
       }
     );
   return useRefetchableFragment<
