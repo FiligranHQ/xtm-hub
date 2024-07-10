@@ -8,19 +8,23 @@ import {Restriction} from '../../__generated__/meContext_fragment.graphql';
 interface GuardComponentProps {
   children: React.ReactNode;
   capacityRestriction: Restriction[];
+  displayError?: Boolean;
 }
 
 const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   children,
   capacityRestriction,
+  displayError = true,
 }) => {
   const authorized = capacityRestriction.every(useGranted);
-  if (authorized === false) {
+  if (authorized === false && displayError) {
     return (
       <>
         <h1>Error</h1>You are not authorized to get this page.
       </>
     );
+  } else if (authorized === false) {
+    return <></>;
   }
   return <>{children}</>;
 };
