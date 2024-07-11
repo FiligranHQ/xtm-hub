@@ -23,6 +23,9 @@ import {
   createUserRolePortal,
   deleteUserRolePortalByUserId,
 } from '../common/user-role-portal';
+import { loadSubscriptionsByOrganization } from '../subcription/subscription.domain';
+import { insertUserService } from '../user_service/user_service.domain';
+import { insertCapa } from '../subcription/service_capability.domain';
 
 const validPassword = (
   user: UserWithAuthentication,
@@ -115,6 +118,31 @@ const resolvers: Resolvers = {
             password: input.password,
           },
         });
+
+        // Add access to free services of its organization
+        const subscriptions = await loadSubscriptionsByOrganization(context, {
+          orderBy: 'service_name',
+        });
+
+        const subscriptableDirectSubscriptions = subscriptions.edges.filter(
+          (subscription) => {
+            return (
+              typeof subscription.node.service.subscription_type === 'string' &&
+              subscription.node.service.subscription_type ===
+                'SUBSCRIPTABLE_DIRECT'
+            );
+          }
+        );
+
+        for (const subscription of subscriptableDirectSubscriptions) {
+          const [addedUserService] = await insertUserService(
+            context,
+            context.user.id,
+            subscription.node.id
+          );
+          await insertCapa(context, addedUserService.id, 'ACCESS_SERVICE');
+        }
+
         return addedUser;
       } catch (error) {
         await trx.rollback();
