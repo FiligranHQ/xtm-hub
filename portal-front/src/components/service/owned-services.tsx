@@ -92,7 +92,7 @@ const columns: ColumnDef<serviceList_fragment$data>[] = [
     },
   },
 ];
-const OwnedServices: React.FunctionComponent<{}> = ({}) => {
+const OwnedServices = ({}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const DEFAULT_ITEM_BY_PAGE = 50;
 

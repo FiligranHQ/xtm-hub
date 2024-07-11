@@ -44,10 +44,10 @@ type Query {
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   settings: Settings!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  rolePortal(id: ID!): RolePortal
-  rolesPortal: [RolePortal!]!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
+  rolePortal(id: ID!): RolePortal
+  rolesPortal: [RolePortal!]!
   malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
 }
 
@@ -245,15 +245,6 @@ type ServiceSubscription {
   delete: Service
 }
 
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -276,6 +267,15 @@ type OrganizationConnection {
 
 input EditOrganizationInput {
   name: String!
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
 }
 
 enum MalwareAnalysisOrdering {
