@@ -32,6 +32,7 @@ export const isNodeAccessible = (
     'ServicePrice',
     'User_Service',
     'Service_Capability',
+    'MalwareAnalysis',
   ];
   const type = node.__typename;
   // If user have bypass do not apply security layer

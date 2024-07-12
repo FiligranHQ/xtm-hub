@@ -1,6 +1,40 @@
 directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
+enum Restriction {
+  BYPASS
+  BCK_MANAGE_SERVICES
+  BCK_MANAGE_COMMUNITIES
+  FRT_SERVICE_SUBSCRIBER
+  FRT_MANAGE_SETTINGS
+  FRT_ACCESS_BILLING
+  FRT_MANAGE_USER
+  FRT_ACCESS_SERVICES
+}
+
+interface Node {
+  id: ID!
+}
+
+enum OrderingMode {
+  asc
+  desc
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type MergeEvent implements Node {
+  id: ID!
+  from: ID!
+  target: ID!
+}
+
 type Query {
+  node(id: ID!): Node
   serviceUsers(id: ID!): [UserService]
   me: User
   user(id: ID!): User
@@ -15,7 +49,6 @@ type Query {
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
-  node(id: ID!): Node
 }
 
 type UserService implements Node {
@@ -290,36 +323,3 @@ scalar JSON
 scalar Date
 
 scalar Upload
-
-enum Restriction {
-  BYPASS
-  BCK_MANAGE_SERVICES
-  BCK_MANAGE_COMMUNITIES
-  FRT_SERVICE_SUBSCRIBER
-  FRT_MANAGE_SETTINGS
-  FRT_ACCESS_BILLING
-  FRT_MANAGE_USER
-  FRT_ACCESS_SERVICES
-}
-
-interface Node {
-  id: ID!
-}
-
-enum OrderingMode {
-  asc
-  desc
-}
-
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
-}
-
-type MergeEvent implements Node {
-  id: ID!
-  from: ID!
-  target: ID!
-}
