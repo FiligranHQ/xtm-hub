@@ -10,7 +10,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadOrganizationBy } from '../organizations/organizations';
 import { loadServiceBy } from '../services/services.domain';
 
 const resolvers: Resolvers = {
@@ -29,22 +29,6 @@ const resolvers: Resolvers = {
         orderMode,
         orderBy,
       });
-    },
-  },
-  Subscription: {
-    organization: (subscription, __, context) => {
-      return subscription.organization
-        ? subscription.organization
-        : loadOrganizationBy(
-            context,
-            'Organization.id',
-            subscription.organization_id
-          );
-    },
-    service: (subscription, __, context) => {
-      return subscription.service
-        ? subscription.service
-        : loadServiceBy(context, 'Service.id', subscription.service_id);
     },
   },
   Mutation: {
@@ -79,6 +63,15 @@ const resolvers: Resolvers = {
         )
           .insert(subscriptionData)
           .returning('*');
+        addedSubscription.organization = await loadOrganizationBy(
+          'id',
+          addedSubscription.organization_id
+        );
+        addedSubscription.service = await loadServiceBy(
+          context,
+          'id',
+          addedSubscription.service_id
+        );
 
         const [addedUserService] = await insertUserService(
           context,
