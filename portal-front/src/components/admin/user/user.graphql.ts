@@ -28,7 +28,7 @@ export const usersFragment = graphql`
 export const UserListCreateMutation = graphql`
   mutation userListCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
     addUser(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "UsersEdge") {
+      @prependNode(connections: $connections, edgeTypeName: "UserEdge") {
       email
       first_name
       last_name

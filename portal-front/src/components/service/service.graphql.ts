@@ -3,7 +3,7 @@ import { graphql } from 'react-relay';
 export const ServiceListCreateMutation = graphql`
   mutation serviceListMutation($input: AddServiceInput, $connections: [ID!]!) {
     addService(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
+      @prependNode(connections: $connections, edgeTypeName: "ServiceEdge") {
       ...subscription_fragment
     }
   }
@@ -15,7 +15,7 @@ export const ServiceCommunityListCreateMutation = graphql`
     $connections: [ID!]!
   ) {
     addServiceCommunity(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
+      @prependNode(connections: $connections, edgeTypeName: "ServiceEdge") {
       ...serviceList_fragment
     }
   }
@@ -59,8 +59,7 @@ export const communityListFragment = graphql`
 export const subscription = graphql`
   subscription serviceListSubscription($connections: [ID!]!) {
     Service {
-      add
-        @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
+      add @prependNode(connections: $connections, edgeTypeName: "ServiceEdge") {
         ...serviceList_fragment
       }
       edit {

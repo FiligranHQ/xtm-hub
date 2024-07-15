@@ -7,7 +7,7 @@ setup('authenticate', async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.login();
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
-    'Portal admin@filigran.io'
+    'Welcome to the portal'
   );
   // End of authentication steps.
   await page.context().storageState({ path: authFile });
