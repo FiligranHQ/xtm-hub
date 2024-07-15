@@ -15,8 +15,16 @@ import { loadServiceBy } from '../services/services.domain';
 
 const resolvers: Resolvers = {
   Query: {
-    subscriptions: async (_, { first, after, orderMode, orderBy }, context) => {
-      return loadSubscriptions(context, { first, after, orderMode, orderBy });
+    subscriptions: async (
+      _,
+      { first, after, orderMode, orderBy, status },
+      context
+    ) => {
+      return loadSubscriptions(
+        context,
+        { first, after, orderMode, orderBy },
+        status
+      );
     },
     subscriptionsByOrganization: async (
       _,

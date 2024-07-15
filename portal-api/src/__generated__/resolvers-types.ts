@@ -169,6 +169,7 @@ export type MutationAddServiceArgs = {
 export type MutationAddSubscriptionArgs = {
   organization_id?: InputMaybe<Scalars['ID']['input']>;
   service_id?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
   user_id?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -336,6 +337,7 @@ export type QuerySubscriptionsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: SubscriptionOrdering;
   orderMode: OrderingMode;
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QuerySubscriptionsByOrganizationArgs = {
