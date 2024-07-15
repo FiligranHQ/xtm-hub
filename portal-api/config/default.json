@@ -21,26 +21,31 @@
   },
   "init_services": [
     {
-      "cyber_weather": {
-        "id": "c6343882-f609-4a3f-abe0-a34f8cb11302",
-        "name": "CyberWeather",
-        "provider": "SCRED6",
-        "type": "Intel",
-        "description": "This is a short description to describe the CyberWeather app, how to use it, etc.",
-        "url": "https://weather.dev.scredplatform.io/",
-        "subscription_type": "SUBSCRIPTABLE_DIRECT"
-      }
+      "id": "c6343882-f609-4a3f-abe0-a34f8cb11302",
+      "name": "CyberWeather",
+      "provider": "SCRED",
+      "type": "Intel",
+      "description": "This is a short description to describe the CyberWeather app, how to use it, etc.",
+      "url": "https://weather.dev.scredplatform.io/",
+      "subscription_type": "SUBSCRIPTABLE_DIRECT"
     },
     {
-      "open_feed": {
-        "id": "d6343883-f609-5a3f-ace1-a24f8cb11454",
-        "name": "OpenFeed",
-        "provider": "SCRED5",
-        "type": "Feed",
-        "description": "This is a short description to describe the OpenFeed app, how to use it, etc.",
-        "url": "https://opencti-test2.non-prod.scredplatform.io/",
-        "subscription_type": "SUBSCRIPTABLE_DIRECT"
-      }
+      "id": "d6343883-f609-5a3f-ace1-a24f8cb11454",
+      "name": "OpenFeed",
+      "provider": "SCRED",
+      "type": "Feed",
+      "description": "This is a short description to describe the OpenFeed app, how to use it, etc.",
+      "url": "https://opencti-test2.non-prod.scredplatform.io/",
+      "subscription_type": "SUBSCRIPTABLE_DIRECT"
+    },
+    {
+      "id": "234a5d21-8a1f-4d3f-8f57-7fd21c321bd4",
+      "name": "Malware analysis",
+      "provider": "Glimps",
+      "type": "analysis",
+      "description": "This is a short description to describe the Malware analysis app, how to use it, etc.",
+      "url": "/service/malware-analysis",
+      "subscription_type": "SUBSCRIPTABLE_DIRECT"
     }
   ],
   "user_management": {
