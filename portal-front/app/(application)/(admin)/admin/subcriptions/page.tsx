@@ -1,8 +1,8 @@
 'use client';
 import * as React from 'react';
 import GuardCapacityComponent from '@/components/admin-guard';
-import SubscriptionList from '@/components/subcription/subcription-list';
 import { RESTRICTION } from '@/utils/constant';
+import SubscriptionPage from '@/components/subcription/subscription-page';
 
 interface PageProps {}
 
@@ -11,7 +11,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
   return (
     <GuardCapacityComponent
       capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-      <SubscriptionList />
+      <SubscriptionPage />
     </GuardCapacityComponent>
   );
 };

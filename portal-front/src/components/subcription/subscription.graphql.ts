@@ -8,6 +8,7 @@ export const subscriptionsFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
+      status: $status
     ) {
       __id
       totalCount
@@ -66,6 +67,7 @@ export const subscriptionFetch = graphql`
     $cursor: ID
     $orderBy: SubscriptionOrdering!
     $orderMode: OrderingMode!
+    $status: String
   ) {
     ...subscriptionList_subscriptions
   }

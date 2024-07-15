@@ -1,8 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState } from 'react';
-import { getSubscriptions } from '@/components/subcription/subscription.service';
+import { Dispatch, SetStateAction } from 'react';
 import {
   ColumnDef,
   PaginationState,
@@ -15,7 +14,6 @@ import { transformSortingValueToParams } from '@/components/ui/handle-sorting.ut
 import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import { SubscriptionOrdering } from '../../../__generated__/subscriptionsSelectQuery.graphql';
-import { FormatDate } from '@/utils/date';
 
 const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   {
@@ -40,13 +38,25 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   },
 ];
 
-interface SubscriptionListProps {}
+interface SubscriptionListProps {
+  data: subscriptionItem_fragment$data[];
+  totalCount: number;
+  refetch: (args: {}) => void;
+  sorting: SortingState;
+  setSorting: Dispatch<SetStateAction<SortingState>>;
+  pagination: PaginationState;
+  setPagination: Dispatch<SetStateAction<PaginationState>>;
+}
 
-const SubscriptionList: React.FunctionComponent<
-  SubscriptionListProps
-> = ({}) => {
-  const [subscriptions, refetch] = getSubscriptions();
-
+const SubscriptionList: React.FunctionComponent<SubscriptionListProps> = ({
+  data,
+  totalCount,
+  refetch,
+  sorting,
+  setSorting,
+  pagination,
+  setPagination,
+}) => {
   const onSortingChange = (updater: unknown) => {
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
@@ -58,12 +68,7 @@ const SubscriptionList: React.FunctionComponent<
     );
     setSorting(updater as SortingState);
   };
-  const [sorting, setSorting] = useState<SortingState>([]);
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   const handleRefetchData = (
     args?: Partial<SubscriptionsPaginationQuery$variables>
   ) => {
@@ -89,29 +94,17 @@ const SubscriptionList: React.FunctionComponent<
     setPagination(newPaginationValue);
   };
 
-  let subscriptionData = subscriptions.subscriptions.edges.map(({ node }) => ({
-    ...node,
-  })) as subscriptionItem_fragment$data[];
-
-  subscriptionData = subscriptionData.map((data) => {
-    return {
-      ...data,
-      start_date: FormatDate(data.start_date, false),
-      end_date: FormatDate(data.end_date, false),
-    };
-  });
-
   return (
     <>
       <React.Suspense fallback={<Loader />}>
         <DataTable
-          data={subscriptionData}
+          data={data}
           columns={columns}
           tableOptions={{
             onSortingChange: onSortingChange,
             onPaginationChange: onPaginationChange,
             manualPagination: true,
-            rowCount: subscriptions.subscriptions.totalCount,
+            rowCount: totalCount,
             manualSorting: true,
           }}
           tableState={{ sorting, pagination }}

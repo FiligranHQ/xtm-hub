@@ -17,7 +17,8 @@ import { subscriptionList_subscriptions$key } from '../../../__generated__/subsc
 export const getSubscriptions = (
   count: number = 50,
   orderBy: SubscriptionOrdering = 'start_date',
-  orderMode: OrderingMode = 'asc'
+  orderMode: OrderingMode = 'asc',
+  status: string | undefined = undefined
 ) => {
   const subscriptionData = useLazyLoadQuery<subscriptionsSelectQuery>(
     subscriptionFetch,
@@ -25,6 +26,7 @@ export const getSubscriptions = (
       count,
       orderBy,
       orderMode,
+      status,
     }
   );
   return useRefetchableFragment<
