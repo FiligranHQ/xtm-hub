@@ -71,6 +71,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
           service_id: service.id,
           organization_id: me?.organization?.id ?? '',
           user_id: me?.id ?? '',
+          status: 'ACCEPTED',
         },
         onCompleted: ({}) => {
           setIsSubscriptionLoading(false);
@@ -94,7 +95,35 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
         },
       });
     } else {
-      //TODO
+      commitSubscriptionCreateMutation({
+        variables: {
+          connections: [connectionId],
+          service_id: service.id,
+          organization_id: me?.organization?.id ?? '',
+          user_id: me?.id ?? '',
+          status: 'REQUESTED',
+        },
+        onCompleted: ({}) => {
+          setIsSubscriptionLoading(false);
+          toast({
+            title: 'Success',
+            description: (
+              <>
+                {
+                  'Your request has been sent. You will soon be in touch with our team.'
+                }
+              </>
+            ),
+          });
+        },
+        onError: (error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
+        },
+      });
     }
   };
 
