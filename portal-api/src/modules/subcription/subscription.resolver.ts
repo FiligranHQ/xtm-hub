@@ -34,7 +34,7 @@ const resolvers: Resolvers = {
   Mutation: {
     addSubscription: async (
       _,
-      { service_id, organization_id, user_id },
+      { service_id, organization_id, user_id, status },
       context
     ) => {
       const trx = await dbTx();
@@ -55,6 +55,7 @@ const resolvers: Resolvers = {
           organization_id: fromGlobalId(organization_id).id,
           start_date: new Date(),
           end_date: undefined,
+          status: status,
         };
 
         const [addedSubscription] = await db<Subscription>(
