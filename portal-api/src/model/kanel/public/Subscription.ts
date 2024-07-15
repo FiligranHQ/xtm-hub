@@ -18,6 +18,8 @@ export default interface Subscription {
   start_date: Date | null;
 
   end_date: Date | null;
+
+  status: string | null;
 }
 
 /** Represents the initializer for the table public.Subscription */
@@ -31,6 +33,9 @@ export interface SubscriptionInitializer {
   start_date?: Date | null;
 
   end_date?: Date | null;
+
+  /** Default value: 'ACCEPTED'::text */
+  status?: string | null;
 }
 
 /** Represents the mutator for the table public.Subscription */
@@ -44,4 +49,6 @@ export interface SubscriptionMutator {
   start_date?: Date | null;
 
   end_date?: Date | null;
+
+  status?: string | null;
 }
