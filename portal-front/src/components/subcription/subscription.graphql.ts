@@ -126,7 +126,7 @@ export const AddSubscriptionMutation = graphql`
     )
       @prependNode(
         connections: $connections
-        edgeTypeName: "SubscriptionsEdge"
+        edgeTypeName: "SubscriptionEdge"
       ) {
       id
       organization_id

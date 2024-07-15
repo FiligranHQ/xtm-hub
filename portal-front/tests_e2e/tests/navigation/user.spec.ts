@@ -11,7 +11,7 @@ test('should navigate to the user page', async ({ page }) => {
     .getByRole('link')
     .click();
   await expect(
-    page.getByRole('heading', { name: '(Internal) - admin@filigran.io' })
+    page.getByRole('heading', { name: 'Welcome to the portal' })
   ).toBeVisible();
   await expect(page).toHaveScreenshot();
 });

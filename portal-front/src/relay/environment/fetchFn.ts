@@ -85,10 +85,3 @@ export function fetchOrSubscribe(
     );
   });
 }
-
-export async function fetchResponse(
-  params: RequestParameters,
-  variables: Variables
-) {
-  return networkFetch('/graphql-api', params, variables);
-}

@@ -50,7 +50,7 @@ export const CreateOrganizationMutation = graphql`
     addOrganization(name: $name)
       @prependNode(
         connections: $connections
-        edgeTypeName: "OrganizationsEdge"
+        edgeTypeName: "OrganizationEdge"
       ) {
       id
       name
