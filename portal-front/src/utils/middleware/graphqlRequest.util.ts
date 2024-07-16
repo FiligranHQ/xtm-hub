@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const GRAPHQL_API = '/graphql-api';
-const GRAPHQL_SSE = '/graphql-sse';
+export const GRAPHQL_API = '/graphql-api';
+export const GRAPHQL_SSE = '/graphql-sse';
 
-export const manageGraphQLRequest = (request: NextRequest) => {
-  const { pathname } = request.nextUrl;
+export const manageRequest = (request: NextRequest) => {
+  const { pathname, search } = request.nextUrl;
   const serverHttpApi = process.env.SERVER_HTTP_API ?? 'http://localhost:4001';
   if (pathname.startsWith(GRAPHQL_API)) {
     return NextResponse.rewrite(
@@ -16,5 +16,12 @@ export const manageGraphQLRequest = (request: NextRequest) => {
       new URL(serverHttpApi + GRAPHQL_SSE, request.url)
     );
   }
+
+  if (pathname.startsWith('/auth')) {
+    return NextResponse.rewrite(
+      new URL(serverHttpApi + pathname + search, request.url)
+    );
+  }
+
   return undefined;
 };
