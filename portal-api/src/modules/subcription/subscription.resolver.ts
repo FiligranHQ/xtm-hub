@@ -12,6 +12,7 @@ import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
 import { loadOrganizationBy } from '../organizations/organizations';
 import { loadServiceBy } from '../services/services.domain';
+import { extractId } from '../../utils/utils';
 
 const resolvers: Resolvers = {
   Query: {
@@ -108,6 +109,33 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         console.log('Error while subscribing the service.', error);
+        throw error;
+      }
+    },
+    editSubscription: async (_, { id, input }, context) => {
+      const trx = await dbTx();
+      try {
+        console.log('id', id);
+        console.log('input', input);
+        const organization_id = extractId(input.organization_id);
+        const service_id = extractId(input.service_id);
+        const update = {
+          id,
+          organization_id,
+          service_id,
+          status: input.status,
+        };
+        const [updatedSubscription] = await db<Subscription>(
+          context,
+          'Subscription'
+        )
+          .where({ id })
+          .update(update)
+          .returning('*');
+        return updatedSubscription;
+      } catch (error) {
+        await trx.rollback();
+        console.error('Error while editing the subscription');
         throw error;
       }
     },

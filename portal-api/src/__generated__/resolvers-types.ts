@@ -68,6 +68,15 @@ export type EditOrganizationInput = {
   name: Scalars['String']['input'];
 };
 
+export type EditSubscriptionInput = {
+  end_date?: InputMaybe<Scalars['Date']['input']>;
+  id: Scalars['ID']['input'];
+  organization_id: Scalars['ID']['input'];
+  service_id: Scalars['ID']['input'];
+  start_date?: InputMaybe<Scalars['Date']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type EditUserInput = {
   email: Scalars['String']['input'];
   first_name?: InputMaybe<Scalars['String']['input']>;
@@ -150,6 +159,7 @@ export type Mutation = {
   deleteUser?: Maybe<User>;
   editOrganization?: Maybe<Organization>;
   editService?: Maybe<Service>;
+  editSubscription?: Maybe<Subscription>;
   editUser?: Maybe<User>;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
@@ -197,6 +207,11 @@ export type MutationEditOrganizationArgs = {
 export type MutationEditServiceArgs = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
+};
+
+export type MutationEditSubscriptionArgs = {
+  id: Scalars['ID']['input'];
+  input: EditSubscriptionInput;
 };
 
 export type MutationEditUserArgs = {
@@ -661,6 +676,7 @@ export type ResolversTypes = ResolversObject<{
   Capability: ResolverTypeWrapper<Capability>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   EditOrganizationInput: EditOrganizationInput;
+  EditSubscriptionInput: EditSubscriptionInput;
   EditUserInput: EditUserInput;
   GlimpsCallbackTemporary: ResolverTypeWrapper<GlimpsCallbackTemporary>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
@@ -717,6 +733,7 @@ export type ResolversParentTypes = ResolversObject<{
   Capability: Capability;
   Date: Scalars['Date']['output'];
   EditOrganizationInput: EditOrganizationInput;
+  EditSubscriptionInput: EditSubscriptionInput;
   EditUserInput: EditUserInput;
   GlimpsCallbackTemporary: GlimpsCallbackTemporary;
   ID: Scalars['ID']['output'];
@@ -980,6 +997,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationEditServiceArgs, 'id' | 'name'>
+  >;
+  editSubscription?: Resolver<
+    Maybe<ResolversTypes['Subscription']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationEditSubscriptionArgs, 'id' | 'input'>
   >;
   editUser?: Resolver<
     Maybe<ResolversTypes['User']>,
