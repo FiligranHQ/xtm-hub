@@ -84,6 +84,31 @@ export const subscriptionsByOrganizationFetch = graphql`
   }
 `;
 
+export const subscriptionFragment = graphql`
+  fragment subscription_fragment on Subscription {
+    id
+    organization_id
+    organization {
+      name
+      id
+    }
+    service_id
+    service {
+      name
+    }
+    start_date
+    end_date
+  }
+`;
+
+export const SubscriptionEditMutation = graphql`
+  mutation subscriptionEditMutation($id: ID!, $input: EditSubscriptionInput!) {
+    editSubscription(id: $id, input: $input) {
+      ...subscription_fragment
+    }
+  }
+`;
+
 export const AddSubscriptionMutation = graphql`
   mutation subscriptionCreateMutation(
     $service_id: String!

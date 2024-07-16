@@ -13,15 +13,24 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  useToast,
 } from 'filigran-ui/clients';
 import { Badge } from 'filigran-ui/servers';
+import { useMutation } from 'react-relay';
+import { SubscriptionEditMutation } from '@/components/subcription/subscription.graphql';
+import { subscriptionEditMutation } from '../../../__generated__/subscriptionEditMutation.graphql';
 
 interface SubscriptionListProps {}
 
 const SubscriptionPage: React.FunctionComponent<
   SubscriptionListProps
 > = ({}) => {
-  const [subscriptions, refetch] = getSubscriptions();
+  const [subscriptions, refetch] = getSubscriptions(
+    50,
+    'start_date',
+    'asc',
+    'ACCEPTED'
+  );
   const [subscriptionsRequests, refetchSubRequests] = getSubscriptions(
     50,
     'start_date',
@@ -66,6 +75,41 @@ const SubscriptionPage: React.FunctionComponent<
     };
   });
 
+  const [commitSubscriptionMutation] = useMutation<subscriptionEditMutation>(
+    SubscriptionEditMutation
+  );
+  const { toast } = useToast();
+
+  const editSubscription = (
+    status: string,
+    subscription: subscriptionItem_fragment$data
+  ) => {
+    commitSubscriptionMutation({
+      variables: {
+        input: {
+          id: subscription.id,
+          organization_id: subscription?.organization?.id ?? '',
+          service_id: subscription?.service?.id ?? '',
+          status: status,
+        },
+        id: subscription.id,
+      },
+      onCompleted: (subscriptionReturned) => {
+        toast({
+          title: 'Success',
+          description: <>{'Subscription accepted'}</>,
+        });
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
+    });
+  };
+
   return (
     <>
       <React.Suspense fallback={<Loader />}>
@@ -86,6 +130,8 @@ const SubscriptionPage: React.FunctionComponent<
                 setSorting={setSorting}
                 pagination={pagination}
                 setPagination={setPagination}
+                displayActionColumn={false}
+                editSubscription={() => {}}
               />
             </AccordionContent>
           </AccordionItem>
@@ -111,6 +157,10 @@ const SubscriptionPage: React.FunctionComponent<
                 setSorting={setSortingSubRequest}
                 pagination={paginationSubRequest}
                 setPagination={setPaginationSubRequest}
+                displayActionColumn={true}
+                editSubscription={(status, subscription) => {
+                  editSubscription(status, subscription);
+                }}
               />
             </AccordionContent>
           </AccordionItem>

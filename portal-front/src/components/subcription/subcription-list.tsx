@@ -14,29 +14,8 @@ import { transformSortingValueToParams } from '@/components/ui/handle-sorting.ut
 import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import { SubscriptionOrdering } from '../../../__generated__/subscriptionsSelectQuery.graphql';
-
-const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
-  {
-    accessorKey: 'start_date',
-    id: 'start_date',
-    header: 'Start Date',
-  },
-  {
-    accessorKey: 'end_date',
-    id: 'end_date',
-    header: 'End Date',
-  },
-  {
-    accessorKey: 'organization.name',
-    id: 'organization_name',
-    header: 'Organization',
-  },
-  {
-    accessorKey: 'service.name',
-    id: 'service_name',
-    header: 'Service',
-  },
-];
+import { Button } from 'filigran-ui/servers';
+import { CheckIcon, LittleArrowIcon } from 'filigran-icon';
 
 interface SubscriptionListProps {
   data: subscriptionItem_fragment$data[];
@@ -46,6 +25,11 @@ interface SubscriptionListProps {
   setSorting: Dispatch<SetStateAction<SortingState>>;
   pagination: PaginationState;
   setPagination: Dispatch<SetStateAction<PaginationState>>;
+  editSubscription: (
+    status: string,
+    subcription: subscriptionItem_fragment$data
+  ) => void;
+  displayActionColumn: boolean;
 }
 
 const SubscriptionList: React.FunctionComponent<SubscriptionListProps> = ({
@@ -56,7 +40,54 @@ const SubscriptionList: React.FunctionComponent<SubscriptionListProps> = ({
   setSorting,
   pagination,
   setPagination,
+  editSubscription,
+  displayActionColumn = false,
 }) => {
+  const columnsAction: ColumnDef<subscriptionItem_fragment$data>[] = [
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        return (
+          <>
+            <Button
+              variant="ghost"
+              onClick={() => editSubscription('ACCEPTED', row.original)}>
+              <CheckIcon className="h-6 w-6 flex-auto text-green" />
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => editSubscription('REFUSED', row.original)}>
+              <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
+            </Button>
+          </>
+        );
+      },
+    },
+  ];
+  const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
+    {
+      accessorKey: 'start_date',
+      id: 'start_date',
+      header: 'Start Date',
+    },
+    {
+      accessorKey: 'end_date',
+      id: 'end_date',
+      header: 'End Date',
+    },
+    {
+      accessorKey: 'organization.name',
+      id: 'organization_name',
+      header: 'Organization',
+    },
+    {
+      accessorKey: 'service.name',
+      id: 'service_name',
+      header: 'Service',
+    },
+    ...(displayActionColumn ? columnsAction : []),
+  ];
+
   const onSortingChange = (updater: unknown) => {
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
