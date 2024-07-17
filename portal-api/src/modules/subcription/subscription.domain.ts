@@ -9,63 +9,37 @@ import { loadUsersByOrganization } from '../users/users.domain';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
 
-export const loadSubscriptions = async (
-  context: PortalContext,
-  opts,
-  status
-) => {
+export const loadSubscriptions = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
-  const buildQuery = (context, opts, status) => {
-    let query = paginate<Subscription>(context, 'Subscription', {
+  const subscriptionConnection = await paginate<Subscription>(
+    context,
+    'Subscription',
+    {
       first,
       after,
       orderMode,
       orderBy,
-    })
-      .leftJoin(
-        'Organization as org',
-        'Subscription.organization_id',
-        '=',
-        'org.id'
-      )
-      .leftJoin('Service as serv', 'Subscription.service_id', '=', 'serv.id')
-      .select([
-        'Subscription.*',
-        dbRaw('(json_agg(org.*) ->> 0)::json as organization'),
-        dbRaw('(json_agg(serv.*) ->> 0)::json as service'),
-        dbRaw('(org."name") as organization_name'),
-        dbRaw('(serv."name") as service_name'),
-      ])
-      .groupBy(['Subscription.id', 'org.name', 'serv.name']);
-
-    if (status) {
-      query = query.where('status', '=', status);
     }
-
-    return query;
-  };
-
-  const getTotalCount = async (context, opts, status) => {
-    let query = db<Service>(context, 'Subscription', opts)
-      .countDistinct('id as totalCount')
-      .first();
-
-    if (status) {
-      query = query.where('status', '=', status);
-    }
-
-    return query;
-  };
-
-  const subscriptionConnection = await buildQuery(
-    context,
-    opts,
-    status
-  ).asConnection<SubscriptionConnection>();
-
-  const totalCountObject = await getTotalCount(context, opts, status);
-
-  const { totalCount } = totalCountObject;
+  )
+    .leftJoin(
+      'Organization as org',
+      'Subscription.organization_id',
+      '=',
+      'org.id'
+    )
+    .leftJoin('Service as serv', 'Subscription.service_id', '=', 'serv.id')
+    .select([
+      'Subscription.*',
+      dbRaw('(json_agg(org.*) ->> 0)::json as organization'),
+      dbRaw('(json_agg(serv.*) ->> 0)::json as service'),
+      dbRaw('(org."name") as organization_name'),
+      dbRaw('(serv."name") as service_name'),
+    ])
+    .groupBy(['Subscription.id', 'org.name', 'serv.name'])
+    .asConnection<SubscriptionConnection>();
+  const { totalCount } = await db<Service>(context, 'Subscription', opts)
+    .countDistinct('id as totalCount')
+    .first();
 
   return {
     totalCount,

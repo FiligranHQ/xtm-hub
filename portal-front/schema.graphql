@@ -44,10 +44,10 @@ type Query {
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   settings: Settings!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  rolePortal(id: ID!): RolePortal
-  rolesPortal: [RolePortal!]!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
+  rolePortal(id: ID!): RolePortal
+  rolesPortal: [RolePortal!]!
   malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
 }
 
@@ -124,7 +124,8 @@ type Mutation {
   deleteUser(id: ID!): User
   login(email: String!, password: String): User
   logout: ID!
-  addSubscription(service_id: String, organization_id: ID, user_id: ID): Subscription
+  addSubscription(service_id: String, organization_id: ID, user_id: ID, status: String): Subscription
+  editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
   editService(id: ID!, name: String!): Service
   addService(name: String!): Service
   deleteService(id: ID!): Service
@@ -152,6 +153,7 @@ type Subscription implements Node {
   service: Service
   start_date: Date
   end_date: Date
+  status: String
   Service: ServiceSubscription
   MalwareAnalysis: MalwareAnalysisSubscription
 }
@@ -184,6 +186,7 @@ enum SubscriptionOrdering {
   organization_name
   start_date
   end_date
+  status
   service_name
   service_provider
   service_type
@@ -199,6 +202,15 @@ type SubscriptionConnection {
   totalCount: Int!
   edges: [SubscriptionEdge!]!
   pageInfo: PageInfo!
+}
+
+input EditSubscriptionInput {
+  id: ID!
+  organization_id: ID!
+  service_id: ID!
+  start_date: Date
+  end_date: Date
+  status: String
 }
 
 type PlatformProvider {
@@ -245,15 +257,6 @@ type ServiceSubscription {
   delete: Service
 }
 
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -276,6 +279,15 @@ type OrganizationConnection {
 
 input EditOrganizationInput {
   name: String!
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
 }
 
 enum MalwareAnalysisOrdering {
