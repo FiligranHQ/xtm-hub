@@ -352,7 +352,6 @@ export type QuerySubscriptionsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: SubscriptionOrdering;
   orderMode: OrderingMode;
-  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QuerySubscriptionsByOrganizationArgs = {
@@ -458,6 +457,7 @@ export type Subscription = Node & {
   service?: Maybe<Service>;
   service_id: Scalars['ID']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
 };
 
 export type SubscriptionConnection = {
@@ -481,6 +481,7 @@ export enum SubscriptionOrdering {
   ServiceProvider = 'service_provider',
   ServiceType = 'service_type',
   StartDate = 'start_date',
+  Status = 'status',
 }
 
 export type TrackingSubscription = {
@@ -1396,6 +1397,12 @@ export type SubscriptionResolvers<
   start_date?: SubscriptionResolver<
     Maybe<ResolversTypes['Date']>,
     'start_date',
+    ParentType,
+    ContextType
+  >;
+  status?: SubscriptionResolver<
+    Maybe<ResolversTypes['String']>,
+    'status',
     ParentType,
     ContextType
   >;

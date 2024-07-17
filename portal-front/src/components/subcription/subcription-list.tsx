@@ -29,7 +29,6 @@ interface SubscriptionListProps {
     status: string,
     subcription: subscriptionItem_fragment$data
   ) => void;
-  displayActionColumn: boolean;
 }
 
 const SubscriptionList: React.FunctionComponent<SubscriptionListProps> = ({
@@ -41,29 +40,7 @@ const SubscriptionList: React.FunctionComponent<SubscriptionListProps> = ({
   pagination,
   setPagination,
   editSubscription,
-  displayActionColumn = false,
 }) => {
-  const columnsAction: ColumnDef<subscriptionItem_fragment$data>[] = [
-    {
-      id: 'actions',
-      cell: ({ row }) => {
-        return (
-          <>
-            <Button
-              variant="ghost"
-              onClick={() => editSubscription('ACCEPTED', row.original)}>
-              <CheckIcon className="h-6 w-6 flex-auto text-green" />
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => editSubscription('REFUSED', row.original)}>
-              <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
-            </Button>
-          </>
-        );
-      },
-    },
-  ];
   const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     {
       accessorKey: 'start_date',
@@ -85,7 +62,37 @@ const SubscriptionList: React.FunctionComponent<SubscriptionListProps> = ({
       id: 'service_name',
       header: 'Service',
     },
-    ...(displayActionColumn ? columnsAction : []),
+
+    {
+      accessorKey: 'status',
+      id: 'status',
+      header: 'Status',
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        return (
+          <>
+            {row.original.status === 'REQUESTED' ? (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => editSubscription('ACCEPTED', row.original)}>
+                  <CheckIcon className="h-6 w-6 flex-auto text-green" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => editSubscription('REFUSED', row.original)}>
+                  <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
+                </Button>
+              </>
+            ) : (
+              <></>
+            )}
+          </>
+        );
+      },
+    },
   ];
 
   const onSortingChange = (updater: unknown) => {

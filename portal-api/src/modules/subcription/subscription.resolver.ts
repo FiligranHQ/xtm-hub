@@ -16,16 +16,8 @@ import { extractId } from '../../utils/utils';
 
 const resolvers: Resolvers = {
   Query: {
-    subscriptions: async (
-      _,
-      { first, after, orderMode, orderBy, status },
-      context
-    ) => {
-      return loadSubscriptions(
-        context,
-        { first, after, orderMode, orderBy },
-        status
-      );
+    subscriptions: async (_, { first, after, orderMode, orderBy }, context) => {
+      return loadSubscriptions(context, { first, after, orderMode, orderBy });
     },
     subscriptionsByOrganization: async (
       _,
@@ -132,6 +124,15 @@ const resolvers: Resolvers = {
           .where({ id })
           .update(update)
           .returning('*');
+        updatedSubscription.organization = await loadOrganizationBy(
+          'id',
+          updatedSubscription.organization_id
+        );
+        updatedSubscription.service = await loadServiceBy(
+          context,
+          'id',
+          updatedSubscription.service_id
+        );
         return updatedSubscription;
       } catch (error) {
         await trx.rollback();

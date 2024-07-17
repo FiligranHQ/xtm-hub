@@ -1,5 +1,10 @@
 import { OrderingMode } from '../../../__generated__/organizationSelectQuery.graphql';
-import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import {
+  PreloadedQuery,
+  useLazyLoadQuery,
+  usePreloadedQuery,
+  useRefetchableFragment,
+} from 'react-relay';
 import {
   SubscriptionOrdering,
   subscriptionsSelectQuery,
@@ -15,19 +20,12 @@ import { subscriptionListByOrganization_subscriptions$key } from '../../../__gen
 import { subscriptionList_subscriptions$key } from '../../../__generated__/subscriptionList_subscriptions.graphql';
 
 export const getSubscriptions = (
-  count: number = 50,
-  orderBy: SubscriptionOrdering = 'start_date',
-  orderMode: OrderingMode = 'asc',
-  status: string | undefined = undefined
+  queryRef: PreloadedQuery<subscriptionsSelectQuery>
 ) => {
-  const subscriptionData = useLazyLoadQuery<subscriptionsSelectQuery>(
+  const subscriptionData = usePreloadedQuery<subscriptionsSelectQuery>(
     subscriptionFetch,
-    {
-      count,
-      orderBy,
-      orderMode,
-      status,
-    }
+
+    queryRef
   );
   return useRefetchableFragment<
     subscriptionsSelectQuery,
