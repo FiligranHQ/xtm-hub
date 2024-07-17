@@ -62,6 +62,9 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
   const DEFAULT_ITEM_BY_PAGE = 50;
   const { me } = useContext<Portal>(portalContext);
+  if (!me) {
+    return;
+  }
   const addSubscriptionInDb = (service: serviceList_fragment$data) => {
     setIsSubscriptionLoading(true);
     if (service.subscription_type === 'SUBSCRIPTABLE_DIRECT') {
@@ -69,8 +72,8 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
         variables: {
           connections: [connectionId],
           service_id: service.id,
-          organization_id: me?.organization?.id ?? '',
-          user_id: me?.id ?? '',
+          organization_id: me.organization.id,
+          user_id: me.id,
           status: 'ACCEPTED',
         },
         onCompleted: ({}) => {
@@ -99,8 +102,8 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
         variables: {
           connections: [connectionId],
           service_id: service.id,
-          organization_id: me?.organization?.id ?? '',
-          user_id: me?.id ?? '',
+          organization_id: me.organization.id,
+          user_id: me.id,
           status: 'REQUESTED',
         },
         onCompleted: ({}) => {

@@ -8,6 +8,8 @@ import { PortalContext } from '../../model/portal-context';
 import { loadUsersByOrganization } from '../users/users.domain';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
+import { loadOrganizationBy } from '../organizations/organizations';
+import { loadServiceBy } from '../services/services.domain';
 
 export const loadSubscriptions = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -28,6 +30,7 @@ export const loadSubscriptions = async (context: PortalContext, opts) => {
       'org.id'
     )
     .leftJoin('Service as serv', 'Subscription.service_id', '=', 'serv.id')
+
     .select([
       'Subscription.*',
       dbRaw('(json_agg(org.*) ->> 0)::json as organization'),
@@ -98,6 +101,21 @@ export const loadSubscriptionsByOrganization = async (
   };
 };
 
+export const fillSubscription = async (
+  context: PortalContext,
+  updatedSubscription: Subscription
+): Promise<Subscription> => {
+  updatedSubscription.organization = await loadOrganizationBy(
+    'id',
+    updatedSubscription.organization_id
+  );
+  updatedSubscription.service = await loadServiceBy(
+    context,
+    'id',
+    updatedSubscription.service_id
+  );
+  return updatedSubscription;
+};
 export const checkSubscriptionExists = async (
   organization_id: string,
   service_id: string

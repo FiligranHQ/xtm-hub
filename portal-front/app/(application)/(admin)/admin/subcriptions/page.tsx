@@ -6,11 +6,54 @@ import SubscriptionPage from '@/components/subcription/subscription-page';
 import { useQueryLoader } from 'react-relay';
 import { subscriptionsSelectQuery } from '../../../../../__generated__/subscriptionsSelectQuery.graphql';
 import { subscriptionFetch } from '@/components/subcription/subscription.graphql';
-import Loader from '@/components/loader';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { useSearchParams } from 'next/navigation';
+import { DataTable } from 'filigran-ui/clients';
+import { ColumnDef } from '@tanstack/react-table';
+import { subscriptionItem_fragment$data } from '../../../../../__generated__/subscriptionItem_fragment.graphql';
+import { Badge } from 'filigran-ui/servers';
 
 interface PageProps {}
+
+const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
+  {
+    accessorKey: 'start_date',
+    id: 'start_date',
+    header: 'Start Date',
+  },
+  {
+    accessorKey: 'end_date',
+    id: 'end_date',
+    header: 'End Date',
+  },
+  {
+    accessorKey: 'organization.name',
+    id: 'organization_name',
+    header: 'Organization',
+  },
+  {
+    accessorKey: 'service.name',
+    id: 'service_name',
+    header: 'Service',
+  },
+
+  {
+    id: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      return (
+        <>
+          <Badge
+            variant={
+              row.original.status === 'REQUESTED' ? 'destructive' : 'secondary'
+            }>
+            {row.original.status}
+          </Badge>
+        </>
+      );
+    },
+  },
+];
 
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {
@@ -25,7 +68,18 @@ const Page: React.FunctionComponent<PageProps> = () => {
   return (
     <GuardCapacityComponent
       capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-      {queryRef ? <SubscriptionPage queryRef={queryRef} /> : <Loader />}
+      {queryRef ? (
+        <SubscriptionPage
+          columns={columns}
+          queryRef={queryRef}
+        />
+      ) : (
+        <DataTable
+          data={[]}
+          columns={columns}
+          isLoading={true}
+        />
+      )}
     </GuardCapacityComponent>
   );
 };
