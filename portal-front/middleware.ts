@@ -7,5 +7,5 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
 }
 
 export const config = {
-  matcher: ['/graphql-api', '/graphql-sse', '/auth/:path*/callback'],
+  matcher: ['/graphql-api', '/graphql-sse', '/auth/:path*'],
 };

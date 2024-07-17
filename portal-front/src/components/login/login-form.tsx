@@ -124,7 +124,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
           <Button asChild>
             <Link
               type="submit"
-              href={'http://localhost:4001/auth/oidc'}>
+              href={'/auth/oidc'}>
               OpenId Connect
             </Link>
           </Button>
