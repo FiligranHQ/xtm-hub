@@ -2,6 +2,7 @@ import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import {
   addOrganizationUsersRights,
   checkSubscriptionExists,
+  fillSubscription,
   loadSubscriptions,
   loadSubscriptionsByOrganization,
 } from './subscription.domain';
@@ -10,14 +11,17 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
-import { loadOrganizationBy } from '../organizations/organizations';
-import { loadServiceBy } from '../services/services.domain';
 import { extractId } from '../../utils/utils';
 
 const resolvers: Resolvers = {
   Query: {
     subscriptions: async (_, { first, after, orderMode, orderBy }, context) => {
-      return loadSubscriptions(context, { first, after, orderMode, orderBy });
+      return loadSubscriptions(context, {
+        first,
+        after,
+        orderMode,
+        orderBy,
+      });
     },
     subscriptionsByOrganization: async (
       _,
@@ -65,20 +69,16 @@ const resolvers: Resolvers = {
         )
           .insert(subscriptionData)
           .returning('*');
-        addedSubscription.organization = await loadOrganizationBy(
-          'id',
-          addedSubscription.organization_id
-        );
-        addedSubscription.service = await loadServiceBy(
+
+        const filledSubscription = await fillSubscription(
           context,
-          'id',
-          addedSubscription.service_id
+          addedSubscription
         );
 
         const [addedUserService] = await insertUserService(
           context,
           fromGlobalId(user_id).id,
-          addedSubscription.id
+          filledSubscription.id
         );
 
         const initialServiceCapabilities = [
@@ -90,14 +90,16 @@ const resolvers: Resolvers = {
           await insertCapa(context, addedUserService.id, capa);
         });
 
-        await addOrganizationUsersRights(
-          context,
-          fromGlobalId(organization_id).id,
-          fromGlobalId(user_id).id,
-          addedSubscription.id
-        );
+        if (filledSubscription.service.type === 'SUBSCRIPTABLE_DIRECT') {
+          await addOrganizationUsersRights(
+            context,
+            fromGlobalId(organization_id).id,
+            fromGlobalId(user_id).id,
+            filledSubscription.id
+          );
+        }
 
-        return addedSubscription;
+        return filledSubscription;
       } catch (error) {
         await trx.rollback();
         console.log('Error while subscribing the service.', error);
@@ -107,8 +109,6 @@ const resolvers: Resolvers = {
     editSubscription: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        console.log('id', id);
-        console.log('input', input);
         const organization_id = extractId(input.organization_id);
         const service_id = extractId(input.service_id);
         const update = {
@@ -124,19 +124,10 @@ const resolvers: Resolvers = {
           .where({ id })
           .update(update)
           .returning('*');
-        updatedSubscription.organization = await loadOrganizationBy(
-          'id',
-          updatedSubscription.organization_id
-        );
-        updatedSubscription.service = await loadServiceBy(
-          context,
-          'id',
-          updatedSubscription.service_id
-        );
-        return updatedSubscription;
+        return await fillSubscription(context, updatedSubscription);
       } catch (error) {
         await trx.rollback();
-        console.error('Error while editing the subscription');
+        console.error('Error while editing the subscription', error);
         throw error;
       }
     },
