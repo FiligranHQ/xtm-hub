@@ -43,12 +43,12 @@ type Query {
   subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   settings: Settings!
-  organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
-  rolePortal(id: ID!): RolePortal
-  rolesPortal: [RolePortal!]!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  rolePortal(id: ID!): RolePortal
+  rolesPortal: [RolePortal!]!
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
 }
 
@@ -75,13 +75,13 @@ type Mutation {
   logout: ID!
   addSubscription(service_id: String, organization_id: ID, user_id: ID, status: String): Subscription
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription
   addServiceCommunity(input: AddServiceCommunityInput): Service
   deleteService(id: ID!): Service
+  addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
   malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
   malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
   editServiceCapability(input: EditServiceCapabilityInput): UserService
@@ -246,39 +246,6 @@ type Settings {
   platform_providers: [PlatformProvider!]!
 }
 
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditOrganizationInput {
-  name: String!
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
-}
-
 enum ServiceOrdering {
   name
   description
@@ -335,6 +302,39 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input EditOrganizationInput {
+  name: String!
 }
 
 enum MalwareAnalysisOrdering {
