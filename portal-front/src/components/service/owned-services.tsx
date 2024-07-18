@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useState } from 'react';
 import { DataTable } from 'filigran-ui/clients';
 import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
-import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
 import {
   ColumnDef,
   PaginationState,
@@ -18,14 +17,31 @@ import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/S
 import Link from 'next/link';
 import { CourseOfActionIcon, IndicatorIcon } from 'filigran-icon';
 import GuardCapacityComponent from '@/components/admin-guard';
+import { subscriptionItem_fragment$data } from '../../../__generated__/subscriptionItem_fragment.graphql';
 
-const columns: ColumnDef<serviceList_fragment$data>[] = [
+const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   {
     id: 'service_name',
     header: 'Name',
     cell: ({ row }) => {
       return (
-        <div className="flex items-center space-x-2">{row.original.name}</div>
+        <div className="flex items-center space-x-2">
+          {row.original.service?.name}
+        </div>
+      );
+    },
+  },
+  {
+    id: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      return (
+        <Badge
+          variant={
+            row.original.status === 'REQUESTED' ? 'destructive' : 'secondary'
+          }>
+          {row.original.status}
+        </Badge>
       );
     },
   },
@@ -34,18 +50,20 @@ const columns: ColumnDef<serviceList_fragment$data>[] = [
     size: 30,
     header: 'Type',
     cell: ({ row }) => {
-      return <Badge className={'cursor-default'}>{row.original.type}</Badge>;
+      return (
+        <Badge className={'cursor-default'}>{row.original.service?.type}</Badge>
+      );
     },
   },
   {
-    accessorKey: 'provider',
+    accessorKey: 'service.provider',
     id: 'service_provider',
     size: 30,
     header: 'Provider',
   },
   {
     size: 300,
-    accessorKey: 'description',
+    accessorKey: 'service.description',
     id: 'service_description',
     header: 'Description',
   },
@@ -58,35 +76,41 @@ const columns: ColumnDef<serviceList_fragment$data>[] = [
     cell: ({ row }) => {
       return (
         <>
-          <GuardCapacityComponent
-            capacityRestriction={['FRT_ACCESS_SERVICES']}
-            displayError={false}>
-            <Button
-              asChild
-              className="w-3/4">
-              <Link
-                href={`${row.original.url}`}
-                target="_blank"
-                rel="noopener noreferrer nofollow">
-                {' '}
-                <IndicatorIcon className="mr-2 h-5 w-5" />
-                View more
-              </Link>
-            </Button>
-          </GuardCapacityComponent>
+          {row.original.status === 'ACCEPTED' ? (
+            <>
+              <GuardCapacityComponent
+                capacityRestriction={['FRT_ACCESS_SERVICES']}
+                displayError={false}>
+                <Button
+                  asChild
+                  className="w-3/4">
+                  <Link
+                    href={`${row.original.service?.url}`}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow">
+                    {' '}
+                    <IndicatorIcon className="mr-2 h-5 w-5" />
+                    View more
+                  </Link>
+                </Button>
+              </GuardCapacityComponent>
 
-          <GuardCapacityComponent
-            capacityRestriction={['BCK_MANAGE_SERVICES']}
-            displayError={false}>
-            <Button
-              asChild
-              className="mt-2 w-3/4">
-              <Link href={`/admin/service/${row.original.id}`}>
-                <CourseOfActionIcon className="mr-2 h-5 w-5" />
-                Manage
-              </Link>
-            </Button>{' '}
-          </GuardCapacityComponent>
+              <GuardCapacityComponent
+                capacityRestriction={['BCK_MANAGE_SERVICES']}
+                displayError={false}>
+                <Button
+                  asChild
+                  className="mt-2 w-3/4">
+                  <Link href={`/admin/service/${row.original.service?.id}`}>
+                    <CourseOfActionIcon className="mr-2 h-5 w-5" />
+                    Manage
+                  </Link>
+                </Button>{' '}
+              </GuardCapacityComponent>
+            </>
+          ) : (
+            <></>
+          )}
         </>
       );
     },
@@ -105,8 +129,8 @@ const OwnedServices = ({}) => {
 
   const ownedServices =
     subscriptionsOrganization.subscriptionsByOrganization.edges.map(
-      (subscription) => subscription.node.service
-    ) as serviceList_fragment$data[];
+      (subscription) => subscription.node
+    );
 
   const handleRefetchData = (
     args?: Partial<SubscriptionsPaginationQuery$variables>

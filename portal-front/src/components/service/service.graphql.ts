@@ -14,10 +14,10 @@ export const serviceListFragment = graphql`
     id
     name
     description
-    url
     provider
     type
-    subscription_type
+    subscription_service_type
+    status
   }
 `;
 

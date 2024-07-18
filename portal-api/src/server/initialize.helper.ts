@@ -5,15 +5,37 @@ import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabili
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 import { UserWithAuthentication } from '../modules/users/users';
 import Service from '../model/kanel/public/Service';
+import ServicePrice from '../model/kanel/public/ServicePrice';
+import ServiceLink from '../model/kanel/public/ServiceLink';
+// import ServicePrice from '../model/kanel/public/ServicePrice';
 
 export const ensureServiceExists = async (service) => {
   const services = await dbUnsecure('Service');
-  if (!services.find((s) => s.id === service.id)) {
-    await dbUnsecure<Service>('Service').insert(service);
+  const links = await dbUnsecure('Service_Link');
+  const prices = await dbUnsecure('Service_Price');
+  if (!services.find((s) => s.id === service.service.id)) {
+    await dbUnsecure<Service>('Service').insert(service.service);
+    // await dbUnsecure<ServicePrice>('Service_Price').insert(service.price);
   } else {
     await dbUnsecure<Service>('Service')
-      .where({ id: service.id })
-      .update(service)
+      .where({ id: service.service.id })
+      .update(service.service)
+      .returning('*');
+  }
+  if (!links.find((link) => link.id === service.link.id)) {
+    await dbUnsecure<ServiceLink>('Service_Link').insert(service.link);
+  } else {
+    await dbUnsecure<ServiceLink>('Service_Link')
+      .where({ id: service.link.id })
+      .update(service.link)
+      .returning('*');
+  }
+  if (!prices.find((price) => price.id === service.price.id)) {
+    await dbUnsecure<ServicePrice>('Service_Price').insert(service.price);
+  } else {
+    await dbUnsecure<ServicePrice>('Service_Price')
+      .where({ id: service.price.id })
+      .update(service.price)
       .returning('*');
   }
 };

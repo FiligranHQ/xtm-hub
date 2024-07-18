@@ -3,45 +3,46 @@
 
 import { type ServiceId } from './Service';
 
-/** Identifier type for public.ServicePrice */
+/** Identifier type for public.Service_Price */
 export type ServicePriceId = string & { __brand: 'ServicePriceId' };
 
-/** Represents the table public.ServicePrice */
+/** Represents the table public.Service_Price */
 export default interface ServicePrice {
   id: ServicePriceId;
 
-  price: number | null;
-
-  type: string | null;
-
   service_id: ServiceId | null;
 
-  description: string | null;
+  fee_type: string | null;
+
+  start_date: Date | null;
+
+  price: number | null;
 }
 
-/** Represents the initializer for the table public.ServicePrice */
+/** Represents the initializer for the table public.Service_Price */
 export interface ServicePriceInitializer {
-  id: ServicePriceId;
-
-  price?: number | null;
-
-  /** Default value: 'YEARLY'::text */
-  type?: string | null;
+  /** Default value: gen_random_uuid() */
+  id?: ServicePriceId;
 
   service_id?: ServiceId | null;
 
-  description?: string | null;
+  /** Default value: 'MONTHLY'::text */
+  fee_type?: string | null;
+
+  start_date?: Date | null;
+
+  price?: number | null;
 }
 
-/** Represents the mutator for the table public.ServicePrice */
+/** Represents the mutator for the table public.Service_Price */
 export interface ServicePriceMutator {
   id?: ServicePriceId;
 
-  price?: number | null;
-
-  type?: string | null;
-
   service_id?: ServiceId | null;
 
-  description?: string | null;
+  fee_type?: string | null;
+
+  start_date?: Date | null;
+
+  price?: number | null;
 }

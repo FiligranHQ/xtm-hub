@@ -29,7 +29,8 @@ export const isNodeAccessible = (
   const node = Object.values(data)[0];
   const availableTypes = [
     'Service',
-    'ServicePrice',
+    'Service_Price',
+    'Service_Link',
     'User_Service',
     'Service_Capability',
     'MalwareAnalysis',
@@ -69,7 +70,8 @@ export const applyDbSecurity = <T>(
     'Service',
     'RolePortal',
     'Subscription',
-    'ServicePrice',
+    'Service_Price',
+    'Service_Link',
     'User_Service',
     'Service_Capability',
     'MalwareAnalysis',

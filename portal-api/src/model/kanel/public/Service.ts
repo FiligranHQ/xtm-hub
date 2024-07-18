@@ -12,13 +12,13 @@ export default interface Service {
 
   description: string | null;
 
-  url: string | null;
-
   provider: string | null;
 
   type: string | null;
 
-  subscription_type: string | null;
+  creation_status: string | null;
+
+  subscription_service_type: string | null;
 }
 
 /** Represents the initializer for the table public.Service */
@@ -29,17 +29,15 @@ export interface ServiceInitializer {
 
   description?: string | null;
 
-  /** Default value: 'http://example.com'::character varying */
-  url?: string | null;
-
-  /** Default value: 'SCRED'::character varying */
   provider?: string | null;
 
-  /** Default value: 'Intel'::character varying */
   type?: string | null;
 
+  /** Default value: 'READY'::text */
+  creation_status?: string | null;
+
   /** Default value: 'SUBSCRIPTABLE_BACKOFFICE'::text */
-  subscription_type?: string | null;
+  subscription_service_type?: string | null;
 }
 
 /** Represents the mutator for the table public.Service */
@@ -50,11 +48,11 @@ export interface ServiceMutator {
 
   description?: string | null;
 
-  url?: string | null;
-
   provider?: string | null;
 
   type?: string | null;
 
-  subscription_type?: string | null;
+  creation_status?: string | null;
+
+  subscription_service_type?: string | null;
 }
