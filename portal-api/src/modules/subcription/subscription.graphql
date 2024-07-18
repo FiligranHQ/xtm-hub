@@ -13,6 +13,7 @@ type Subscription implements Node {
   organization_id: ID!
   organization: Organization
   service_id: ID!
+  service_url: String
   service: Service
   start_date: Date
   end_date: Date

@@ -28,7 +28,7 @@ const resolvers: Resolvers = {
       { first, after, orderMode, orderBy },
       context
     ) => {
-      return loadSubscriptionsByOrganization(context, {
+      return await loadSubscriptionsByOrganization(context, {
         first,
         after,
         orderMode,

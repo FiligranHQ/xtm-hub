@@ -164,7 +164,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                 asChild
                 className="w-3/4">
                 <Link
-                  href={`${'/'}`}
+                  href={`${row.original?.link?.url}`}
                   target="_blank"
                   rel="noopener noreferrer nofollow">
                   {' '}
