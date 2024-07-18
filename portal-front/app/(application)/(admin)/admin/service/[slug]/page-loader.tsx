@@ -31,7 +31,6 @@ export const UsersServiceSlugQuery = graphql`
         service {
           name
           id
-          url
         }
       }
     }

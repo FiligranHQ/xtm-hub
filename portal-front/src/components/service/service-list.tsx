@@ -67,7 +67,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   }
   const addSubscriptionInDb = (service: serviceList_fragment$data) => {
     setIsSubscriptionLoading(true);
-    if (service.subscription_type === 'SUBSCRIPTABLE_DIRECT') {
+    if (service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT') {
       commitSubscriptionCreateMutation({
         variables: {
           connections: [connectionId],
@@ -131,7 +131,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   };
 
   const generateAlertText = (service: serviceList_fragment$data) => {
-    return service.subscription_type === 'SUBSCRIPTABLE_DIRECT'
+    return service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
       ? 'Are you really sure you want to subscribe this service ? This action can not be undone.'
       : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
   };
@@ -164,7 +164,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                 asChild
                 className="w-3/4">
                 <Link
-                  href={`${row.original.url}`}
+                  href={`${'/'}`}
                   target="_blank"
                   rel="noopener noreferrer nofollow">
                   {' '}

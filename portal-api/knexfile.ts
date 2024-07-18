@@ -26,7 +26,8 @@ export type DatabaseType =
   | 'ActionTracking'
   | 'MessageTracking'
   | 'Subscription'
-  | 'ServicePrice'
+  | 'Service_Price'
+  | 'Service_Link'
   | 'User_Service'
   | 'Service_Capability'
   | 'MalwareAnalysis';

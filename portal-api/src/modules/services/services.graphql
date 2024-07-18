@@ -9,10 +9,10 @@ type Service implements Node {
   id: ID!
   name: String!
   description: String
-  url: String
   provider: String
   type: String
-  subscription_type: String
+  subscription_service_type: String
+  status: String
 }
 
 type ServiceEdge {

@@ -3,6 +3,7 @@
 
 import { type OrganizationId } from './Organization';
 import { type ServiceId } from './Service';
+import { type UserId } from './User';
 
 /** Identifier type for public.Subscription */
 export type SubscriptionId = string & { __brand: 'SubscriptionId' };
@@ -20,6 +21,8 @@ export default interface Subscription {
   end_date: Date | null;
 
   status: string | null;
+
+  subscriber_id: UserId | null;
 }
 
 /** Represents the initializer for the table public.Subscription */
@@ -36,6 +39,8 @@ export interface SubscriptionInitializer {
 
   /** Default value: 'ACCEPTED'::text */
   status?: string | null;
+
+  subscriber_id?: UserId | null;
 }
 
 /** Represents the mutator for the table public.Subscription */
@@ -51,4 +56,6 @@ export interface SubscriptionMutator {
   end_date?: Date | null;
 
   status?: string | null;
+
+  subscriber_id?: UserId | null;
 }

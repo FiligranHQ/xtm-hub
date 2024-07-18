@@ -127,8 +127,9 @@ const resolvers: Resolvers = {
         const subscriptableDirectSubscriptions = subscriptions.edges.filter(
           (subscription) => {
             return (
-              typeof subscription.node.service.subscription_type === 'string' &&
-              subscription.node.service.subscription_type ===
+              typeof subscription.node.service.subscription_service_type ===
+                'string' &&
+              subscription.node.service.subscription_service_type ===
                 'SUBSCRIPTABLE_DIRECT'
             );
           }

@@ -6,7 +6,6 @@ interface Services {
   provider: string;
   type: string;
   description: string;
-  url: string;
 }
 
 interface PortalConfig {
