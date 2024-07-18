@@ -67,66 +67,45 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   }
   const addSubscriptionInDb = (service: serviceList_fragment$data) => {
     setIsSubscriptionLoading(true);
+    const handleSuccess = (message: string) => {
+      setIsSubscriptionLoading(false);
+      toast({
+        title: 'Success',
+        description: <>{message}</>,
+      });
+    };
+    const handleError = (error: Error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: <>{error.message}</>,
+      });
+    };
+
+    const commitMutation = (status: string, successMessage: string) => {
+      commitSubscriptionCreateMutation({
+        variables: {
+          connections: [connectionId],
+          service_id: service.id,
+          organization_id: me.organization.id,
+          user_id: me.id,
+          status: status,
+        },
+        onCompleted: () => handleSuccess(successMessage),
+        onError: (error: Error) => handleError(error),
+      });
+    };
+
     if (service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT') {
-      commitSubscriptionCreateMutation({
-        variables: {
-          connections: [connectionId],
-          service_id: service.id,
-          organization_id: me.organization.id,
-          user_id: me.id,
-          status: 'ACCEPTED',
-        },
-        onCompleted: ({}) => {
-          setIsSubscriptionLoading(false);
-          toast({
-            title: 'Success',
-            description: (
-              <>
-                {
-                  'You have successfully subscribed to the service. You can now find it in you subscribed services.'
-                }
-              </>
-            ),
-          });
-        },
-        onError: (error) => {
-          toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: <>{error.message}</>,
-          });
-        },
-      });
+      commitMutation(
+        'ACCEPTED',
+        'You have successfully subscribed to the service. You can now find it in your subscribed services.'
+      );
     } else {
-      commitSubscriptionCreateMutation({
-        variables: {
-          connections: [connectionId],
-          service_id: service.id,
-          organization_id: me.organization.id,
-          user_id: me.id,
-          status: 'REQUESTED',
-        },
-        onCompleted: ({}) => {
-          setIsSubscriptionLoading(false);
-          toast({
-            title: 'Success',
-            description: (
-              <>
-                {
-                  'Your request has been sent. You will soon be in touch with our team.'
-                }
-              </>
-            ),
-          });
-        },
-        onError: (error) => {
-          toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: <>{error.message}</>,
-          });
-        },
-      });
+      commitMutation(
+        'REQUESTED',
+        'Your request has been sent. You will soon be in touch with our team.'
+      );
     }
   };
 

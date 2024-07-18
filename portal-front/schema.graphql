@@ -36,6 +36,10 @@ type MergeEvent implements Node {
 type Query {
   node(id: ID!): Node
   serviceUsers(id: ID!): [UserService]
+  me: User
+  user(id: ID!): User
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  settings: Settings!
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
@@ -49,6 +53,27 @@ type Query {
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
+  rolePortal(id: ID!): RolePortal
+  rolesPortal: [RolePortal!]!
+  malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
+}
+
+type UserService implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
+  user: User
+  subscription: Subscription
+  service_capability: [ServiceCapability]
+}
+
+type ServiceCapability implements Node {
+  id: ID!
+  service_capability_name: String
+  user_service_id: ID!
 }
 
 type UserService implements Node {
@@ -130,21 +155,57 @@ type Mutation {
   deleteOrganization(id: ID!): Organization
   malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
   malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
+  editService(id: ID!, name: String!): Service
+  addService(name: String!): Service
+  deleteService(id: ID!): Service
 }
 
-type UserService implements Node {
-  id: ID!
-  subscription_id: ID!
-  user_id: ID!
-  user: User
-  subscription: Subscription
-  service_capability: [ServiceCapability]
+type UserSubscription {
+  add: User
+  edit: User
+  delete: User
+  merge: MergeEvent
 }
 
-type ServiceCapability implements Node {
+type Subscription implements Node {
+  User: UserSubscription
+  ActionTracking: TrackingSubscription
   id: ID!
-  service_capability_name: String
-  user_service_id: ID!
+  organization_id: ID!
+  organization: Organization
+  service_id: ID!
+  service_url: String
+  service: Service
+  start_date: Date
+  end_date: Date
+  status: String
+  ActionTracking: TrackingSubscription
+  MalwareAnalysis: MalwareAnalysisSubscription
+  Service: ServiceSubscription
+}
+
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
 }
 
 type PlatformProvider {
@@ -199,30 +260,6 @@ input EditUserInput {
   roles_id: [String]!
 }
 
-type ActionTracking implements Node {
-  id: ID!
-  contextual_id: String!
-  status: String
-  created_at: Date!
-  ended_at: Date
-  message_tracking: [MessageTracking!]!
-}
-
-type MessageTracking implements Node {
-  id: ID!
-  tracking_id: ID
-  created_at: Date!
-  technical: Boolean
-  type: String!
-  tracking_info: JSON
-}
-
-type TrackingSubscription {
-  add: ActionTracking
-  edit: ActionTracking
-  delete: ActionTracking
-}
-
 input AddUserInput {
   email: String!
   password: String!
@@ -274,15 +311,6 @@ type ServiceSubscription {
   delete: Service
 }
 
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -305,6 +333,15 @@ type OrganizationConnection {
 
 input EditOrganizationInput {
   name: String!
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
 }
 
 enum MalwareAnalysisOrdering {
@@ -352,10 +389,3 @@ scalar JSON
 scalar Date
 
 scalar Upload
-
-type ServiceLink implements Node {
-  id: ID!
-  service_id: ID
-  url: String
-  name: String
-}
