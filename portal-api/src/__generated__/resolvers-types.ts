@@ -398,6 +398,7 @@ export type Service = Node & {
   __typename?: 'Service';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  link?: Maybe<ServiceLink>;
   name: Scalars['String']['output'];
   provider?: Maybe<Scalars['String']['output']>;
   status?: Maybe<Scalars['String']['output']>;
@@ -423,6 +424,14 @@ export type ServiceEdge = {
   __typename?: 'ServiceEdge';
   cursor: Scalars['String']['output'];
   node: Service;
+};
+
+export type ServiceLink = Node & {
+  __typename?: 'ServiceLink';
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  service_id?: Maybe<Scalars['ID']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
 };
 
 export enum ServiceOrdering {
@@ -456,6 +465,7 @@ export type Subscription = Node & {
   organization_id: Scalars['ID']['output'];
   service?: Maybe<Service>;
   service_id: Scalars['ID']['output'];
+  service_url?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
   status?: Maybe<Scalars['String']['output']>;
 };
@@ -664,6 +674,7 @@ export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> =
       | RolePortalId
       | Service
       | ServiceCapability
+      | ServiceLink
       | Subscription
       | User
       | UserService;
@@ -708,6 +719,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
+  ServiceLink: ResolverTypeWrapper<ServiceLink>;
   ServiceOrdering: ServiceOrdering;
   ServiceSubscription: ResolverTypeWrapper<ServiceSubscription>;
   Settings: ResolverTypeWrapper<Settings>;
@@ -761,6 +773,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
   ServiceEdge: ServiceEdge;
+  ServiceLink: ServiceLink;
   ServiceSubscription: ServiceSubscription;
   Settings: Settings;
   String: Scalars['String']['output'];
@@ -1055,6 +1068,7 @@ export type NodeResolvers<
     | 'RolePortalID'
     | 'Service'
     | 'ServiceCapability'
+    | 'ServiceLink'
     | 'Subscription'
     | 'User'
     | 'UserService',
@@ -1253,6 +1267,11 @@ export type ServiceResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  link?: Resolver<
+    Maybe<ResolversTypes['ServiceLink']>,
+    ParentType,
+    ContextType
+  >;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   provider?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1302,6 +1321,18 @@ export type ServiceEdgeResolvers<
 > = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Service'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServiceLinkResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['ServiceLink'] = ResolversParentTypes['ServiceLink'],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  service_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1391,6 +1422,12 @@ export type SubscriptionResolvers<
   service_id?: SubscriptionResolver<
     ResolversTypes['ID'],
     'service_id',
+    ParentType,
+    ContextType
+  >;
+  service_url?: SubscriptionResolver<
+    Maybe<ResolversTypes['String']>,
+    'service_url',
     ParentType,
     ContextType
   >;
@@ -1588,6 +1625,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceEdge?: ServiceEdgeResolvers<ContextType>;
+  ServiceLink?: ServiceLinkResolvers<ContextType>;
   ServiceSubscription?: ServiceSubscriptionResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;

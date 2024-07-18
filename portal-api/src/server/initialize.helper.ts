@@ -15,7 +15,6 @@ export const ensureServiceExists = async (service) => {
   const prices = await dbUnsecure('Service_Price');
   if (!services.find((s) => s.id === service.service.id)) {
     await dbUnsecure<Service>('Service').insert(service.service);
-    // await dbUnsecure<ServicePrice>('Service_Price').insert(service.price);
   } else {
     await dbUnsecure<Service>('Service')
       .where({ id: service.service.id })
