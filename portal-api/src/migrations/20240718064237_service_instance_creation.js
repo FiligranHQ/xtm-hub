@@ -11,7 +11,7 @@ export async function up(knex) {
     table
       .enum('creation_status', ['READY', 'PENDING', 'DISABLED'])
       .defaultTo('READY');
-    // table.dropColumn('subscription_type');
+    table.dropColumn('subscription_type');
     table
       .enum('subscription_service_type', [
         'SUBSCRIPTABLE_DIRECT',
