@@ -127,10 +127,10 @@ const OwnedServices = ({}) => {
   const [subscriptionsOrganization, refetchSubOrga] =
     getSubscriptionsByOrganization();
 
-  const ownedServices =
+  const ownedServices: subscriptionItem_fragment$data[] =
     subscriptionsOrganization.subscriptionsByOrganization.edges.map(
       (subscription) => subscription.node
-    );
+    ) as subscriptionItem_fragment$data[];
 
   const handleRefetchData = (
     args?: Partial<SubscriptionsPaginationQuery$variables>
