@@ -1,0 +1,15 @@
+type ServiceCapability implements Node {
+  id: ID!
+  service_capability_name: String
+  user_service_id: ID!
+}
+
+input EditServiceCapabilityInput {
+  user_service_id: String
+  capabilities: [String]!
+}
+
+type Mutation {
+  editServiceCapability(input: EditServiceCapabilityInput): UserService
+    @auth(requires: [FRT_MANAGE_USER])
+}

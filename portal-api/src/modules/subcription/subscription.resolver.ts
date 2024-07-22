@@ -90,7 +90,10 @@ const resolvers: Resolvers = {
           await insertCapa(context, addedUserService.id, capa);
         });
 
-        if (filledSubscription.service.type === 'SUBSCRIPTABLE_DIRECT') {
+        if (
+          filledSubscription.service.subscription_service_type ===
+          'SUBSCRIPTABLE_DIRECT'
+        ) {
           await addOrganizationUsersRights(
             context,
             fromGlobalId(organization_id).id,

@@ -35,7 +35,7 @@ type MergeEvent implements Node {
 
 type Query {
   node(id: ID!): Node
-  serviceUsers(id: ID!): [UserService]
+  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
@@ -51,6 +51,51 @@ type Query {
   malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
 }
 
+enum UserServiceOrdering {
+  first_name
+  last_name
+  email
+}
+
+input UserServiceInput {
+  email: String!
+  capabilities: [String]
+  subscriptionId: String!
+}
+
+type Mutation {
+  addUserService(input: UserServiceInput!): UserService
+  deleteUserService(input: UserServiceInput!): UserService
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
+  editUser(id: ID!, input: EditUserInput!): User
+  deleteUser(id: ID!): User
+  login(email: String!, password: String): User
+  logout: ID!
+  addSubscription(service_id: String, organization_id: ID, user_id: ID, status: String): Subscription
+  editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
+  editService(id: ID!, name: String!): Service
+  addService(name: String!): Service
+  deleteService(id: ID!): Service
+  addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+  malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
+  malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
+  editServiceCapability(input: EditServiceCapabilityInput): UserService
+}
+
+type UserServiceConnection {
+  totalCount: Int!
+  edges: [UserServiceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserServiceEdge {
+  cursor: String!
+  node: UserService
+}
+
 type UserService implements Node {
   id: ID!
   subscription_id: ID!
@@ -58,12 +103,6 @@ type UserService implements Node {
   user: User
   subscription: Subscription
   service_capability: [ServiceCapability]
-}
-
-type ServiceCapability implements Node {
-  id: ID!
-  service_capability_name: String
-  user_service_id: ID!
 }
 
 enum UserOrdering {
@@ -115,25 +154,6 @@ input AddUserInput {
   first_name: String!
   last_name: String!
   roles_id: [String]!
-}
-
-type Mutation {
-  mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
-  editUser(id: ID!, input: EditUserInput!): User
-  deleteUser(id: ID!): User
-  login(email: String!, password: String): User
-  logout: ID!
-  addSubscription(service_id: String, organization_id: ID, user_id: ID, status: String): Subscription
-  editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
-  editService(id: ID!, name: String!): Service
-  addService(name: String!): Service
-  deleteService(id: ID!): Service
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
-  malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
-  malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
 }
 
 type UserSubscription {
@@ -337,6 +357,17 @@ scalar JSON
 scalar Date
 
 scalar Upload
+
+type ServiceCapability implements Node {
+  id: ID!
+  service_capability_name: String
+  user_service_id: ID!
+}
+
+input EditServiceCapabilityInput {
+  user_service_id: String
+  capabilities: [String]!
+}
 
 type ServiceLink implements Node {
   id: ID!
