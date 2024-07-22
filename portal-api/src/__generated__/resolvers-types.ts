@@ -68,6 +68,11 @@ export type EditOrganizationInput = {
   name: Scalars['String']['input'];
 };
 
+export type EditServiceCapabilityInput = {
+  capabilities: Array<InputMaybe<Scalars['String']['input']>>;
+  user_service_id?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type EditSubscriptionInput = {
   end_date?: InputMaybe<Scalars['Date']['input']>;
   id: Scalars['ID']['input'];
@@ -154,11 +159,14 @@ export type Mutation = {
   addService?: Maybe<Service>;
   addSubscription?: Maybe<Subscription>;
   addUser?: Maybe<User>;
+  addUserService?: Maybe<UserService>;
   deleteOrganization?: Maybe<Organization>;
   deleteService?: Maybe<Service>;
   deleteUser?: Maybe<User>;
+  deleteUserService?: Maybe<UserService>;
   editOrganization?: Maybe<Organization>;
   editService?: Maybe<Service>;
+  editServiceCapability?: Maybe<UserService>;
   editSubscription?: Maybe<Subscription>;
   editUser?: Maybe<User>;
   login?: Maybe<User>;
@@ -187,6 +195,10 @@ export type MutationAddUserArgs = {
   input: AddUserInput;
 };
 
+export type MutationAddUserServiceArgs = {
+  input: UserServiceInput;
+};
+
 export type MutationDeleteOrganizationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -199,6 +211,10 @@ export type MutationDeleteUserArgs = {
   id: Scalars['ID']['input'];
 };
 
+export type MutationDeleteUserServiceArgs = {
+  input: UserServiceInput;
+};
+
 export type MutationEditOrganizationArgs = {
   id: Scalars['ID']['input'];
   input: EditOrganizationInput;
@@ -207,6 +223,10 @@ export type MutationEditOrganizationArgs = {
 export type MutationEditServiceArgs = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
+};
+
+export type MutationEditServiceCapabilityArgs = {
+  input?: InputMaybe<EditServiceCapabilityInput>;
 };
 
 export type MutationEditSubscriptionArgs = {
@@ -296,7 +316,7 @@ export type Query = {
   organizations: OrganizationConnection;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
-  serviceUsers?: Maybe<Array<Maybe<UserService>>>;
+  serviceUsers?: Maybe<UserServiceConnection>;
   services: ServiceConnection;
   settings: Settings;
   subscription?: Maybe<Subscription>;
@@ -333,7 +353,11 @@ export type QueryRolePortalArgs = {
 };
 
 export type QueryServiceUsersArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
   id: Scalars['ID']['input'];
+  orderBy: UserServiceOrdering;
+  orderMode: OrderingMode;
 };
 
 export type QueryServicesArgs = {
@@ -543,6 +567,31 @@ export type UserService = Node & {
   user_id: Scalars['ID']['output'];
 };
 
+export type UserServiceConnection = {
+  __typename?: 'UserServiceConnection';
+  edges: Array<UserServiceEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type UserServiceEdge = {
+  __typename?: 'UserServiceEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<UserService>;
+};
+
+export type UserServiceInput = {
+  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  email: Scalars['String']['input'];
+  subscriptionId: Scalars['String']['input'];
+};
+
+export enum UserServiceOrdering {
+  Email = 'email',
+  FirstName = 'first_name',
+  LastName = 'last_name',
+}
+
 export type UserSubscription = {
   __typename?: 'UserSubscription';
   add?: Maybe<User>;
@@ -688,6 +737,7 @@ export type ResolversTypes = ResolversObject<{
   Capability: ResolverTypeWrapper<Capability>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   EditOrganizationInput: EditOrganizationInput;
+  EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSubscriptionInput: EditSubscriptionInput;
   EditUserInput: EditUserInput;
   GlimpsCallbackTemporary: ResolverTypeWrapper<GlimpsCallbackTemporary>;
@@ -735,6 +785,10 @@ export type ResolversTypes = ResolversObject<{
   UserEdge: ResolverTypeWrapper<UserEdge>;
   UserOrdering: UserOrdering;
   UserService: ResolverTypeWrapper<UserService>;
+  UserServiceConnection: ResolverTypeWrapper<UserServiceConnection>;
+  UserServiceEdge: ResolverTypeWrapper<UserServiceEdge>;
+  UserServiceInput: UserServiceInput;
+  UserServiceOrdering: UserServiceOrdering;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
 }>;
 
@@ -746,6 +800,7 @@ export type ResolversParentTypes = ResolversObject<{
   Capability: Capability;
   Date: Scalars['Date']['output'];
   EditOrganizationInput: EditOrganizationInput;
+  EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSubscriptionInput: EditSubscriptionInput;
   EditUserInput: EditUserInput;
   GlimpsCallbackTemporary: GlimpsCallbackTemporary;
@@ -786,6 +841,9 @@ export type ResolversParentTypes = ResolversObject<{
   UserConnection: UserConnection;
   UserEdge: UserEdge;
   UserService: UserService;
+  UserServiceConnection: UserServiceConnection;
+  UserServiceEdge: UserServiceEdge;
+  UserServiceInput: UserServiceInput;
   UserSubscription: UserSubscription;
 }>;
 
@@ -982,6 +1040,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAddUserArgs, 'input'>
   >;
+  addUserService?: Resolver<
+    Maybe<ResolversTypes['UserService']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddUserServiceArgs, 'input'>
+  >;
   deleteOrganization?: Resolver<
     Maybe<ResolversTypes['Organization']>,
     ParentType,
@@ -1000,6 +1064,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationDeleteUserArgs, 'id'>
   >;
+  deleteUserService?: Resolver<
+    Maybe<ResolversTypes['UserService']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteUserServiceArgs, 'input'>
+  >;
   editOrganization?: Resolver<
     Maybe<ResolversTypes['Organization']>,
     ParentType,
@@ -1011,6 +1081,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationEditServiceArgs, 'id' | 'name'>
+  >;
+  editServiceCapability?: Resolver<
+    Maybe<ResolversTypes['UserService']>,
+    ParentType,
+    ContextType,
+    Partial<MutationEditServiceCapabilityArgs>
   >;
   editSubscription?: Resolver<
     Maybe<ResolversTypes['Subscription']>,
@@ -1190,10 +1266,13 @@ export type QueryResolvers<
     ContextType
   >;
   serviceUsers?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['UserService']>>>,
+    Maybe<ResolversTypes['UserServiceConnection']>,
     ParentType,
     ContextType,
-    RequireFields<QueryServiceUsersArgs, 'id'>
+    RequireFields<
+      QueryServiceUsersArgs,
+      'first' | 'id' | 'orderBy' | 'orderMode'
+    >
   >;
   services?: Resolver<
     ResolversTypes['ServiceConnection'],
@@ -1582,6 +1661,35 @@ export type UserServiceResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserServiceConnectionResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['UserServiceConnection'] = ResolversParentTypes['UserServiceConnection'],
+> = ResolversObject<{
+  edges?: Resolver<
+    Array<ResolversTypes['UserServiceEdge']>,
+    ParentType,
+    ContextType
+  >;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UserServiceEdgeResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['UserServiceEdge'] = ResolversParentTypes['UserServiceEdge'],
+> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<
+    Maybe<ResolversTypes['UserService']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type UserSubscriptionResolvers<
   ContextType = PortalContext,
   ParentType extends
@@ -1637,6 +1745,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;
   UserService?: UserServiceResolvers<ContextType>;
+  UserServiceConnection?: UserServiceConnectionResolvers<ContextType>;
+  UserServiceEdge?: UserServiceEdgeResolvers<ContextType>;
   UserSubscription?: UserSubscriptionResolvers<ContextType>;
 }>;
 
