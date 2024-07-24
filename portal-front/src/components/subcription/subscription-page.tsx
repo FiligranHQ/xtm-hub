@@ -19,10 +19,11 @@ import {
   subscriptionsSelectQuery,
 } from '../../../__generated__/subscriptionsSelectQuery.graphql';
 import { Button } from 'filigran-ui/servers';
-import { CheckIcon, LittleArrowIcon } from 'filigran-icon';
+import { AddIcon, CheckIcon, LittleArrowIcon } from 'filigran-icon';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
 import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
+import { SubscriptionFormSheet } from '@/components/subcription/subscription-form-sheet';
 
 interface SubscriptionListProps {
   queryRef: PreloadedQuery<subscriptionsSelectQuery>;
@@ -71,6 +72,7 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
     pageSize: 50,
   });
 
+  const connectionId = subscriptions.subscriptions.__id;
   let subscriptionData = subscriptions.subscriptions.edges.map(({ node }) => ({
     ...node,
   })) as subscriptionItem_fragment$data[];
@@ -176,6 +178,15 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
         }}
         tableState={{ sorting, pagination }}
       />
+      <SubscriptionFormSheet
+        connectionId={connectionId}
+        trigger={
+          <Button
+            size="icon"
+            className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
+            <AddIcon className="h-4 w-4" />
+          </Button>
+        }></SubscriptionFormSheet>
     </>
   );
 };

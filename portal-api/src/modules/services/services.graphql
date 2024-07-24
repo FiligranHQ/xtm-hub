@@ -27,9 +27,17 @@ type ServiceConnection {
   pageInfo: PageInfo!
 }
 
+input AddServiceInput {
+  service_name: String
+  service_description: String
+  fee_type: String
+  price: Int
+  organization_id: String
+  url: String
+}
 type Mutation {
   editService(id: ID!, name: String!): Service @auth(requires: [BYPASS])
-  addService(name: String!): Service @auth(requires: [BYPASS])
+  addService(input: AddServiceInput): Subscription @auth(requires: [BYPASS])
   deleteService(id: ID!): Service @auth(requires: [BYPASS])
 }
 

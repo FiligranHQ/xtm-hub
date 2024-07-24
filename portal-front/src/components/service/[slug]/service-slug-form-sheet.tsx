@@ -80,9 +80,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
     },
   ];
 
-  const schema = !userService.id
-    ? capabilitiesEmailFormSchema
-    : capabilitiesFormSchema;
   const form = useForm<z.infer<ZodSchema>>({
     resolver: zodResolver(
       !userService.id

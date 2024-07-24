@@ -1,10 +1,10 @@
 import { graphql } from 'react-relay';
 
 export const ServiceListCreateMutation = graphql`
-  mutation serviceListMutation($name: String!, $connections: [ID!]!) {
-    addService(name: $name)
+  mutation serviceListMutation($input: AddServiceInput, $connections: [ID!]!) {
+    addService(input: $input)
       @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
-      ...serviceList_fragment
+      ...subscription_fragment
     }
   }
 `;
