@@ -68,7 +68,7 @@ const columns: ColumnDef<DataTrackingObject>[] = [
 ];
 
 interface DataTrackingProps {
-  data?: dataTracking_fragment$key | null | undefined;
+  data: dataTracking_fragment$key | null | undefined;
 }
 
 export const DataTracking: FunctionComponent<DataTrackingProps> = ({

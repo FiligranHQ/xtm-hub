@@ -36,6 +36,20 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
     setAdminOpened(false);
   };
 
+  const useGrantedBYPASS = useGranted(RESTRICTION.CAPABILITY_BYPASS);
+  const useGrantedFRT_MANAGE_USER = useGranted(
+    RESTRICTION.CAPABILITY_FRT_MANAGE_USER
+  );
+  const useGrantedFRT_MANAGE_SETTINGS = useGranted(
+    RESTRICTION.CAPABILITY_FRT_MANAGE_SETTINGS
+  );
+  const useGrantedBCK_MANAGE_SERVICES = useGranted(
+    RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES
+  );
+  const useGrantedBCK_MANAGE_COMMUNITIES = useGranted(
+    RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES
+  );
+
   const AdminLinks = () => (
     <>
       <Button
@@ -110,11 +124,11 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   );
 
   if (
-    !useGranted(RESTRICTION.CAPABILITY_BYPASS) ||
-    !useGranted(RESTRICTION.CAPABILITY_FRT_MANAGE_USER) ||
-    !useGranted(RESTRICTION.CAPABILITY_FRT_MANAGE_SETTINGS) ||
-    !useGranted(RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES) ||
-    !useGranted(RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES)
+    !useGrantedBYPASS ||
+    !useGrantedFRT_MANAGE_USER ||
+    !useGrantedFRT_MANAGE_SETTINGS ||
+    !useGrantedBCK_MANAGE_SERVICES ||
+    !useGrantedBCK_MANAGE_COMMUNITIES
   ) {
     return null;
   }

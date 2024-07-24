@@ -7,7 +7,6 @@ import { UserWithAuthentication } from '../modules/users/users';
 import Service from '../model/kanel/public/Service';
 import ServicePrice from '../model/kanel/public/ServicePrice';
 import ServiceLink from '../model/kanel/public/ServiceLink';
-// import ServicePrice from '../model/kanel/public/ServicePrice';
 
 export const ensureServiceExists = async (service) => {
   const services = await dbUnsecure('Service');

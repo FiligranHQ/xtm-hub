@@ -70,9 +70,9 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
       cell: ({ row }) => {
         return (
           <>
-            {row.original?.service_capability?.map((service_capa, index) => (
+            {row.original?.service_capability?.map((service_capa) => (
               <Badge
-                key={index}
+                key={service_capa.id}
                 className="mb-2 mr-2 mt-2">
                 {service_capa.service_capability_name}
               </Badge>
@@ -88,17 +88,17 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
           <>
             <Button
               variant={'ghost'}
-              onClick={useCallback(() => {
+              onClick={() => {
                 setCurrentUser(row.original);
                 setOpenSheet(true);
-              }, [])}>
+              }}>
               <ChevronIcon className="h-4 w-4"></ChevronIcon>
             </Button>
             <Button
               variant={'ghost'}
-              onClick={useCallback(() => {
+              onClick={() => {
                 deleteCurrentUser(row.original);
-              }, [])}>
+              }}>
               <LittleArrowIcon className="h-4 w-4"></LittleArrowIcon>
             </Button>
           </>
@@ -226,7 +226,7 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
         }
         trigger={
           <Button
-            onClick={() => (setCurrentUser({}), [])}
+            onClick={useCallback(() => setCurrentUser({}), [])}
             size="icon"
             className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
             <AddIcon className="h-4 w-4" />

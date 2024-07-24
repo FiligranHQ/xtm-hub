@@ -11,9 +11,7 @@ interface PageProps {}
 const Page: React.FunctionComponent<PageProps> = () => {
   return (
     <>
-      <div>
-        <b>COMMUNITIES</b>
-      </div>
+      <b>COMMUNITIES</b>
     </>
   );
 };

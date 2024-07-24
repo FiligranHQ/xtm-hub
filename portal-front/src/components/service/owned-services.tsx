@@ -116,7 +116,7 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     },
   },
 ];
-const OwnedServices = ({}) => {
+const OwnedServices: React.FunctionComponent<{}> = ({}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const DEFAULT_ITEM_BY_PAGE = 50;
 

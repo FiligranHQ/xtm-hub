@@ -1,9 +1,5 @@
-import {
-  Organization,
-  OrganizationConnection,
-  Resolvers,
-} from '../../__generated__/resolvers-types';
-import { db, paginate } from '../../../knexfile';
+import { Organization, Resolvers } from '../../__generated__/resolvers-types';
+import { db } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
 import { loadOrganizationBy, loadOrganizations } from './organizations.domain';
 import { dispatch } from '../../pub';

@@ -31,7 +31,7 @@ export const MessageTracking: FunctionComponent<MessageTrackingProps> = ({
 }) => {
   const messageTracking: messageTracking_fragment$data =
     useFragment<messageTracking_fragment$key>(messageTrackingFragment, data);
-  const sortedMessageTracking = [...messageTracking].sort(
+  [...messageTracking].sort(
     (a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );

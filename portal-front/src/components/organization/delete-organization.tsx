@@ -31,9 +31,7 @@ export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
           'violates foreign key constraint "user_organization_id_foreign" on table "User"'
         )
           ? 'The organization could not be deleted because at least one user is affiliated with it. Delete the user(s) first. '
-          : error.message
-            ? error.message
-            : 'An unexpected error occurred';
+          : error.message;
 
         toast({
           variant: 'destructive',

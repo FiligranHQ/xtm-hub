@@ -274,7 +274,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     });
   };
 
-  const totalPages = Math.ceil(data.services.totalCount / DEFAULT_ITEM_BY_PAGE);
   const [sorting, setSorting] = useState<SortingState>([]);
 
   // https://tanstack.com/table/latest/docs/framework/react/guide/table-state#2-updaters-can-either-be-raw-values-or-callback-functions

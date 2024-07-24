@@ -8,7 +8,7 @@ import {Restriction} from '../../__generated__/meContext_fragment.graphql';
 interface GuardComponentProps {
   children: React.ReactNode;
   capacityRestriction: Restriction[];
-  displayError?: Boolean;
+  displayError?: boolean;
 }
 
 const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
