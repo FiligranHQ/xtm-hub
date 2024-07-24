@@ -1,5 +1,4 @@
-import { NextFetchEvent, NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 import { manageRequest } from '@/utils/middleware/graphqlRequest.util';
 
 export async function middleware(request: NextRequest, event: NextFetchEvent) {

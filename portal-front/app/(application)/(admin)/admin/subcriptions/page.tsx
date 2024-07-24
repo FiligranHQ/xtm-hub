@@ -42,14 +42,12 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     header: 'Status',
     cell: ({ row }) => {
       return (
-        <>
-          <Badge
-            variant={
-              row.original.status === 'REQUESTED' ? 'destructive' : 'secondary'
-            }>
-            {row.original.status}
-          </Badge>
-        </>
+        <Badge
+          variant={
+            row.original.status === 'REQUESTED' ? 'destructive' : 'secondary'
+          }>
+          {row.original.status}
+        </Badge>
       );
     },
   },

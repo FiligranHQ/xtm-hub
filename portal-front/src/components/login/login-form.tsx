@@ -44,10 +44,7 @@ const LoginFormMutation = graphql`
 // Component
 const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
   const router = useRouter();
-  const settingsData = usePreloadedQuery<settingsQuery>(
-    SettingsQuery,
-    queryRef
-  );
+  usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,70 +64,68 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
   };
 
   return (
-    <>
-      <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
-        <div className="mt-2 flex flex-col items-center">
-          <Image
-            src="/filigran_logo.svg"
-            width={500}
-            height={500}
-            alt="Filigran logo"
-          />
-          <h1 className="pt-10 text-2xl">- Sign in -</h1>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="w-full space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="email"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="password"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                className="w-full"
-                type="submit">
-                Submit
-              </Button>
-            </form>
-          </Form>
-        </div>
-        <div className="mt-2">
-          <Button asChild>
-            <Link
-              type="submit"
-              href={'/auth/oidc'}>
-              OpenId Connect
-            </Link>
-          </Button>
-        </div>
-      </main>
-    </>
+    <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
+      <div className="mt-2 flex flex-col items-center">
+        <Image
+          src="/filigran_logo.svg"
+          width={500}
+          height={500}
+          alt="Filigran logo"
+        />
+        <h1 className="pt-10 text-2xl">- Sign in -</h1>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-full space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="email"
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="password"
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Button
+              className="w-full"
+              type="submit">
+              Submit
+            </Button>
+          </form>
+        </Form>
+      </div>
+      <div className="mt-2">
+        <Button asChild>
+          <Link
+            type="submit"
+            href={'/auth/oidc'}>
+            OpenId Connect
+          </Link>
+        </Button>
+      </div>
+    </main>
   );
 };
 

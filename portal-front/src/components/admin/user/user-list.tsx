@@ -51,9 +51,9 @@ interface ServiceProps {
 
 export interface UserData {
   email?: string;
-  first_name?: string | null | undefined;
+  first_name: string | null | undefined;
   id: string;
-  last_name?: string | null | undefined;
+  last_name: string | null | undefined;
 }
 
 const breadcrumbValue = [
