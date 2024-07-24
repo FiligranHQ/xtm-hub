@@ -43,8 +43,8 @@ const resolvers: Resolvers = {
       context
     ) => {
       const trx = await dbTx();
-      // Check the subscription does not already exist :
 
+      // Check the subscription does not already exist :
       try {
         const subscription = await checkSubscriptionExists(
           fromGlobalId(organization_id).id,
@@ -61,6 +61,7 @@ const resolvers: Resolvers = {
           start_date: new Date(),
           end_date: undefined,
           status: status,
+          subscriber_id: context.user.id,
         };
 
         const [addedSubscription] = await db<Subscription>(
