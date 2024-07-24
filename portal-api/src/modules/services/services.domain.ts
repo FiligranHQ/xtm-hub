@@ -5,19 +5,34 @@ import {
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 
-export const loadServices = async (context: PortalContext, opts) => {
+export const loadPublicServices = async (
+  context: PortalContext,
+  opts,
+  publicOnly = true
+) => {
   const { first, after, orderMode, orderBy } = opts;
-  const servicesConnection = await paginate<Service>(context, 'Service', {
+  const query = paginate<Service>(context, 'Service', {
     first,
     after,
     orderMode,
     orderBy,
-  })
+  });
+
+  if (publicOnly) {
+    query.where('type', '!=', 'PRIVATE');
+  }
+
+  const servicesConnection = await query
     .select('*')
     .asConnection<ServiceConnection>();
-  const { totalCount } = await db<Service>(context, 'Service', opts)
-    .countDistinct('id as totalCount')
-    .first();
+
+  const queryCount = db<Service>(context, 'Service', opts);
+  if (publicOnly) {
+    queryCount.where('type', '!=', 'PRIVATE');
+  }
+  queryCount.countDistinct('id as totalCount').first();
+
+  const { totalCount } = await queryCount;
 
   return {
     totalCount,

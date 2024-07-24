@@ -49,6 +49,15 @@ export type ActionTracking = Node & {
   status?: Maybe<Scalars['String']['output']>;
 };
 
+export type AddServiceInput = {
+  fee_type?: InputMaybe<Scalars['String']['input']>;
+  organization_id?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Int']['input']>;
+  service_description?: InputMaybe<Scalars['String']['input']>;
+  service_name?: InputMaybe<Scalars['String']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AddUserInput = {
   email: Scalars['String']['input'];
   first_name: Scalars['String']['input'];
@@ -156,7 +165,7 @@ export type MessageTracking = Node & {
 export type Mutation = {
   __typename?: 'Mutation';
   addOrganization?: Maybe<Organization>;
-  addService?: Maybe<Service>;
+  addService?: Maybe<Subscription>;
   addSubscription?: Maybe<Subscription>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
@@ -181,7 +190,7 @@ export type MutationAddOrganizationArgs = {
 };
 
 export type MutationAddServiceArgs = {
-  name: Scalars['String']['input'];
+  input?: InputMaybe<AddServiceInput>;
 };
 
 export type MutationAddSubscriptionArgs = {
@@ -732,6 +741,7 @@ export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> =
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   ActionTracking: ResolverTypeWrapper<ActionTracking>;
+  AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Capability: ResolverTypeWrapper<Capability>;
@@ -795,6 +805,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   ActionTracking: ActionTracking;
+  AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
   Boolean: Scalars['Boolean']['output'];
   Capability: Capability;
@@ -1023,10 +1034,10 @@ export type MutationResolvers<
     RequireFields<MutationAddOrganizationArgs, 'name'>
   >;
   addService?: Resolver<
-    Maybe<ResolversTypes['Service']>,
+    Maybe<ResolversTypes['Subscription']>,
     ParentType,
     ContextType,
-    RequireFields<MutationAddServiceArgs, 'name'>
+    Partial<MutationAddServiceArgs>
   >;
   addSubscription?: Resolver<
     Maybe<ResolversTypes['Subscription']>,
