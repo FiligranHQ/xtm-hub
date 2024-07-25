@@ -61,3 +61,69 @@ export const servicesListFragment = graphql`
     }
   }
 `;
+
+export const serviceUsersFragment = graphql`
+  fragment serviceUser on Query
+  @refetchable(queryName: "ServiceUserPaginationQuery") {
+    serviceUsers(
+      id: $id
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+    ) {
+      __id
+      totalCount
+      edges {
+        node {
+          id
+          user {
+            id
+            last_name
+            first_name
+            email
+          }
+          service_capability {
+            id
+            service_capability_name
+          }
+          subscription {
+            id
+            organization {
+              name
+              id
+            }
+            service {
+              name
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Configuration or Preloader Query
+export const ServiceUserSlugQuery = graphql`
+  query serviceUserSlugQuery(
+    $id: ID!
+    $count: Int!
+    $cursor: ID
+    $orderBy: UserServiceOrdering!
+    $orderMode: OrderingMode!
+  ) {
+    ...serviceUser
+  }
+`;
+
+export const ServiceListQuery = graphql`
+  query serviceQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: ServiceOrdering!
+    $orderMode: OrderingMode!
+  ) {
+    ...serviceList_services
+  }
+`;

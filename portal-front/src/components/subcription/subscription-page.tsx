@@ -15,13 +15,13 @@ import { PreloadedQuery, useMutation } from 'react-relay';
 import { SubscriptionEditMutation } from '@/components/subcription/subscription.graphql';
 import { subscriptionEditMutation } from '../../../__generated__/subscriptionEditMutation.graphql';
 import {
+  OrderingMode,
   SubscriptionOrdering,
   subscriptionsSelectQuery,
 } from '../../../__generated__/subscriptionsSelectQuery.graphql';
 import { Button } from 'filigran-ui/servers';
 import { AddIcon, CheckIcon, LittleArrowIcon } from 'filigran-icon';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
-import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import { SubscriptionFormSheet } from '@/components/subcription/subscription-form-sheet';
 

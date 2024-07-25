@@ -6,7 +6,6 @@ import { RESTRICTION } from '@/utils/constant';
 export const dynamic = 'force-dynamic';
 
 // Component interface
-
 interface PageProps {}
 
 // Component

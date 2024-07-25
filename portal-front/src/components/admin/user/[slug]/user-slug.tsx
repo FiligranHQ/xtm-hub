@@ -1,7 +1,5 @@
 import * as React from 'react';
 import {PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription,} from 'react-relay';
-import {pageLoaderUserSlugQuery} from '../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
-import {UserSlugQuery} from '../../../../../app/(application)/(admin)/admin/user/[slug]/page-loader';
 import {userSlug_fragment$data, userSlug_fragment$key,} from '../../../../../__generated__/userSlug_fragment.graphql';
 import {useRouter} from 'next/navigation';
 import {userSlugDeletionMutation} from '../../../../../__generated__/userSlugDeletionMutation.graphql';
@@ -9,29 +7,32 @@ import {userSlugDeletionMutation} from '../../../../../__generated__/userSlugDel
 import {
   userSlugSubscription as generatedUserSlugSubscription
 } from '../../../../../__generated__/userSlugSubscription.graphql';
-import {userSlugDeletion, userSlugFragment, userSlugSubscription,} from '@/components/admin/user/user.graphql';
+import {
+  userSlugDeletion,
+  userSlugFragment,
+  UserSlugQuery,
+  userSlugSubscription,
+} from '@/components/admin/user/user.graphql';
 import {Button} from 'filigran-ui/servers';
 import {DataTracking} from '@/components/data-tracking/data-tracking';
-import {dataTracking_fragment$key} from '../../../../../__generated__/dataTracking_fragment.graphql';
 import {AlertDialogComponent} from '@/components/ui/alert-dialog';
 import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
 import {DeleteIcon} from 'filigran-icon';
 import {useToast} from 'filigran-ui/clients';
 import {EditUser} from '@/components/admin/user/[slug]/user-edit';
 import {trackingSubscription} from '@/components/data-tracking/tracking.graphql';
+import {userSlugQuery} from '../../../../../__generated__/userSlugQuery.graphql';
+import {trackingData_fragment$key} from '../../../../../__generated__/trackingData_fragment.graphql';
 
 // Component interface
 interface UserSlugProps {
-  queryRef: PreloadedQuery<pageLoaderUserSlugQuery>;
+  queryRef: PreloadedQuery<userSlugQuery>;
 }
 
 // Component
 const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const router = useRouter();
-  const data = usePreloadedQuery<pageLoaderUserSlugQuery>(
-    UserSlugQuery,
-    queryRef
-  );
+  const data = usePreloadedQuery<userSlugQuery>(UserSlugQuery, queryRef);
 
   const [deleteUserMutation] =
     useMutation<userSlugDeletionMutation>(userSlugDeletion);
@@ -115,7 +116,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
 
         <div className="container mx-auto py-10">
           <DataTracking
-            data={data.user?.tracking_data as dataTracking_fragment$key}
+            data={data.user?.tracking_data as trackingData_fragment$key}
           />
         </div>
         <EditUser user={user}></EditUser>

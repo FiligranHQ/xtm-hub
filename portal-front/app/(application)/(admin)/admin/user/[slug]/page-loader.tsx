@@ -1,23 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import { graphql, useQueryLoader } from 'react-relay';
+import {useQueryLoader} from 'react-relay';
 import UserSlug from '@/components/admin/user/[slug]/user-slug';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { pageLoaderUserSlugQuery } from '../../../../../../__generated__/pageLoaderUserSlugQuery.graphql';
 import Loader from '@/components/loader';
-
-// Configuration or Preloader Query
-export const UserSlugQuery = graphql`
-  query pageLoaderUserSlugQuery($id: ID!) {
-    user(id: $id) {
-      ...userSlug_fragment
-      tracking_data {
-        ...dataTracking_fragment
-      }
-    }
-  }
-`;
+import {UserSlugQuery} from '@/components/admin/user/user.graphql';
+import {userSlugQuery} from '../../../../../../__generated__/userSlugQuery.graphql';
 
 // Component interface
 interface PreloaderProps {
@@ -26,8 +15,7 @@ interface PreloaderProps {
 
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
-  const [queryRef, loadQuery] =
-    useQueryLoader<pageLoaderUserSlugQuery>(UserSlugQuery);
+  const [queryRef, loadQuery] = useQueryLoader<userSlugQuery>(UserSlugQuery);
   useMountingLoader(loadQuery, { id });
   return queryRef ? <UserSlug queryRef={queryRef} /> : <Loader />;
 };
