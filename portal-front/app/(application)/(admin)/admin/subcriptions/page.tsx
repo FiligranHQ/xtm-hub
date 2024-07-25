@@ -7,7 +7,6 @@ import {useQueryLoader} from 'react-relay';
 import {subscriptionsSelectQuery} from '../../../../../__generated__/subscriptionsSelectQuery.graphql';
 import {subscriptionFetch} from '@/components/subcription/subscription.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import {useSearchParams} from 'next/navigation';
 import {DataTable} from 'filigran-ui/clients';
 import {ColumnDef} from '@tanstack/react-table';
 import {subscriptionItem_fragment$data} from '../../../../../__generated__/subscriptionItem_fragment.graphql';
@@ -57,10 +56,22 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
 
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {
-  const searchParams = useSearchParams();
-  const count = Number(searchParams.get('count') ?? 50);
-  const orderMode = searchParams.get('orderMode') ?? 'desc';
-  const orderBy = searchParams.get('orderBy') ?? 'status';
+  let count = Number(localStorage.getItem('countSubscriptionList'));
+  if (!count) {
+    localStorage.setItem('countSubscriptionList', '50');
+    count = 50;
+  }
+  let orderMode = localStorage.getItem('orderModeSubscriptionList');
+  if (!orderMode) {
+    localStorage.setItem('orderModeSubscriptionList', 'desc');
+    orderMode = 'desc';
+  }
+
+  let orderBy = localStorage.getItem('orderBySubscriptionList');
+  if (!orderBy) {
+    localStorage.setItem('orderBySubscriptionList', 'status');
+    orderBy = 'status';
+  }
   const [queryRef, loadQuery] =
     useQueryLoader<subscriptionsSelectQuery>(subscriptionFetch);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });

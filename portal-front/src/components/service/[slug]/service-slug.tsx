@@ -8,11 +8,7 @@ import { DataTable } from 'filigran-ui/clients';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { Badge, Button } from 'filigran-ui/servers';
-import {
-  ColumnDef,
-  PaginationState,
-  SortingState,
-} from '@tanstack/react-table';
+import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
 import { AddIcon, ChevronIcon, LittleArrowIcon } from 'filigran-icon';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
@@ -93,35 +89,52 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
       } as unknown as UserServiceData;
     }) ?? [];
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-
-  const DEFAULT_ITEM_BY_PAGE = 50;
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: DEFAULT_ITEM_BY_PAGE,
+    pageSize: Number(localStorage.getItem('countServiceSlug')),
   });
 
   const handleRefetchData = (
     args?: Partial<serviceUserSlugQuery$variables>
   ) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderByServiceSlug'),
+        desc: localStorage.getItem('orderModeServiceSlug') === 'desc',
+      } as unknown as ColumnSort,
+    ];
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: 'first_name',
-      orderMode: 'asc',
+      orderBy: localStorage.getItem(
+        'orderByServiceSlug'
+      ) as UserServiceOrdering,
+      orderMode: localStorage.getItem('orderModeServiceSlug') as OrderingMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
   const onSortingChange = (updater: unknown) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderByServiceSlug'),
+        desc: localStorage.getItem('orderModeServiceSlug') === 'desc',
+      },
+    ];
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
+
+    localStorage.setItem('orderByServiceSlug', newSortingValue[0].id);
+    localStorage.setItem(
+      'orderModeServiceSlug',
+      newSortingValue[0].desc ? 'desc' : 'asc'
+    );
+
     handleRefetchData(
       transformSortingValueToParams<UserServiceOrdering, OrderingMode>(
         newSortingValue
       )
     );
-    setSorting(updater as SortingState);
   };
 
   const onPaginationChange = (updater: unknown) => {
@@ -209,7 +222,15 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
           manualPagination: true,
           rowCount: data.serviceUsers?.totalCount,
         }}
-        tableState={{ sorting, pagination }}
+        tableState={{
+          sorting: [
+            {
+              id: localStorage.getItem('orderByServiceSlug') ?? '',
+              desc: localStorage.getItem('orderModeServiceSlug') === 'desc',
+            },
+          ],
+          pagination,
+        }}
       />
 
       <ServiceSlugFormSheet
@@ -222,8 +243,12 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
           refetch({
             count: pagination.pageSize,
             cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-            orderBy: 'first_name',
-            orderMode: 'asc',
+            orderBy: localStorage.getItem(
+              'orderByServiceSlug'
+            ) as UserServiceOrdering,
+            orderMode: localStorage.getItem(
+              'orderModeServiceSlug'
+            ) as OrderingMode,
           })
         }
         trigger={

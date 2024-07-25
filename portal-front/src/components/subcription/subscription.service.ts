@@ -33,11 +33,28 @@ export const getSubscriptions = (
   >(subscriptionsFragment, subscriptionData);
 };
 
-export const getSubscriptionsByOrganization = (
-  count: number = 50,
-  orderBy: SubscriptionOrdering = 'start_date',
-  orderMode: OrderingMode = 'asc'
-) => {
+export const getSubscriptionsByOrganization = () => {
+  let count = Number(localStorage.getItem('countSubscriptionList'));
+  if (!count) {
+    localStorage.setItem('countSubscriptionList', '50');
+    count = 50;
+  }
+  let orderMode = localStorage.getItem(
+    'orderModeOwnedServices'
+  ) as OrderingMode;
+  if (!orderMode) {
+    localStorage.setItem('orderModeOwnedServices', 'asc');
+    orderMode = 'asc';
+  }
+
+  let orderBy = localStorage.getItem(
+    'orderByOwnedServices'
+  ) as SubscriptionOrdering;
+  if (!orderBy) {
+    localStorage.setItem('orderByOwnedServices', 'start_date');
+    orderBy = 'start_date';
+  }
+
   const subscriptionData =
     useLazyLoadQuery<subscriptionsByOrganizationSelectQuery>(
       subscriptionsByOrganizationFetch,
