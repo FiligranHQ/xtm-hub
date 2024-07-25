@@ -11,13 +11,13 @@ import {
 } from '@tanstack/react-table';
 import { Badge, Button } from 'filigran-ui/servers';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
-import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
 import { SubscriptionOrdering } from '../../../__generated__/subscriptionsByOrganizationSelectQuery.graphql';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import Link from 'next/link';
 import { CourseOfActionIcon, IndicatorIcon } from 'filigran-icon';
 import GuardCapacityComponent from '@/components/admin-guard';
 import { subscriptionItem_fragment$data } from '../../../__generated__/subscriptionItem_fragment.graphql';
+import { OrderingMode } from '../../../__generated__/ServiceUserPaginationQuery.graphql';
 
 const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   {
@@ -118,8 +118,8 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
 ];
 const OwnedServices: React.FunctionComponent<{}> = ({}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const DEFAULT_ITEM_BY_PAGE = 50;
 
+  const DEFAULT_ITEM_BY_PAGE = 50;
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: DEFAULT_ITEM_BY_PAGE,

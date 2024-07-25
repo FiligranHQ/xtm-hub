@@ -1,9 +1,5 @@
 'use client';
 
-import {
-  pageLoaderServiceQuery,
-  pageLoaderServiceQuery$variables,
-} from '../../../__generated__/pageLoaderServiceQuery.graphql';
 import * as React from 'react';
 import { useContext, useMemo, useState } from 'react';
 import {
@@ -16,11 +12,11 @@ import {
 import { serviceList_services$key } from '../../../__generated__/serviceList_services.graphql';
 import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
 import {
+  ServiceListQuery,
   servicesListFragment,
   subscription,
 } from '@/components/service/service.graphql';
 import { Badge, Button } from 'filigran-ui/servers';
-import { ServiceListQuery } from '../../../app/(application)/(user)/service/page-loader';
 import Loader from '@/components/loader';
 import { DataTable, useToast } from 'filigran-ui/clients';
 import {
@@ -44,9 +40,13 @@ import {
   IndicatorIcon,
   TaskIcon,
 } from 'filigran-icon';
+import {
+  serviceQuery,
+  serviceQuery$variables,
+} from '../../../__generated__/serviceQuery.graphql';
 
 interface ServiceProps {
-  queryRef: PreloadedQuery<pageLoaderServiceQuery>;
+  queryRef: PreloadedQuery<serviceQuery>;
   connectionId?: string;
   shouldDisplayOnlyOwnedService?: boolean;
 }
@@ -234,12 +234,9 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     pageIndex: 0,
     pageSize: DEFAULT_ITEM_BY_PAGE,
   });
-  const queryData = usePreloadedQuery<pageLoaderServiceQuery>(
-    ServiceListQuery,
-    queryRef
-  );
+  const queryData = usePreloadedQuery<serviceQuery>(ServiceListQuery, queryRef);
   const [data, refetch] = useRefetchableFragment<
-    pageLoaderServiceQuery,
+    serviceQuery,
     serviceList_services$key
   >(servicesListFragment, queryData);
 
@@ -261,9 +258,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     servicesData = ownedServices as serviceList_fragment$data[];
   }
 
-  const handleRefetchData = (
-    args?: Partial<pageLoaderServiceQuery$variables>
-  ) => {
+  const handleRefetchData = (args?: Partial<serviceQuery$variables>) => {
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),

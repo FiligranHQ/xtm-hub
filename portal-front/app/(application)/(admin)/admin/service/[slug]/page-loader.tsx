@@ -1,66 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { graphql, useQueryLoader } from 'react-relay';
+import {useQueryLoader} from 'react-relay';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import Loader from '@/components/loader';
-import { pageLoaderUsersServiceSlugQuery } from '../../../../../../__generated__/pageLoaderUsersServiceSlugQuery.graphql';
 import ServiceSlug from '@/components/service/[slug]/service-slug';
-import { useSearchParams } from 'next/navigation';
-
-export const serviceUsersFragment = graphql`
-  fragment pageLoaderserviceUser on Query
-  @refetchable(queryName: "ServiceUserPaginationQuery") {
-    serviceUsers(
-      id: $id
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          id
-          user {
-            id
-            last_name
-            first_name
-            email
-          }
-          service_capability {
-            id
-            service_capability_name
-          }
-          subscription {
-            id
-            organization {
-              name
-              id
-            }
-            service {
-              name
-              id
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-// Configuration or Preloader Query
-export const UsersServiceSlugQuery = graphql`
-  query pageLoaderUsersServiceSlugQuery(
-    $id: ID!
-    $count: Int!
-    $cursor: ID
-    $orderBy: UserServiceOrdering!
-    $orderMode: OrderingMode!
-  ) {
-    ...pageLoaderserviceUser
-  }
-`;
+import {useSearchParams} from 'next/navigation';
+import {serviceUserSlugQuery} from '../../../../../../__generated__/serviceUserSlugQuery.graphql';
+import {ServiceUserSlugQuery} from '@/components/service/service.graphql';
 
 // Component interface
 interface PreloaderProps {
@@ -73,9 +20,8 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
   const count = Number(searchParams.get('count') ?? 50);
   const orderMode = searchParams.get('orderMode') ?? 'asc';
   const orderBy = searchParams.get('orderBy') ?? 'first_name';
-  const [queryRef, loadQuery] = useQueryLoader<pageLoaderUsersServiceSlugQuery>(
-    UsersServiceSlugQuery
-  );
+  const [queryRef, loadQuery] =
+    useQueryLoader<serviceUserSlugQuery>(ServiceUserSlugQuery);
   useMountingLoader(loadQuery, { id, count, orderBy, orderMode });
   return queryRef ? <ServiceSlug queryRef={queryRef} /> : <Loader />;
 };

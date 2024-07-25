@@ -1,24 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import {graphql, useQueryLoader} from 'react-relay';
+import {useQueryLoader} from 'react-relay';
 import UserList from '@/components/admin/user/user-list';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import {pageLoaderUserQuery} from '../../../../../__generated__/pageLoaderUserQuery.graphql';
 import {useSearchParams} from 'next/navigation';
 import Loader from '@/components/loader';
-
-// Configuration or Preloader Query
-export const UserListQuery = graphql`
-  query pageLoaderUserQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: UserOrdering!
-    $orderMode: OrderingMode!
-  ) {
-    ...userList_users
-  }
-`;
+import {UserListQuery} from '@/components/admin/user/user.graphql';
+import {userQuery} from '../../../../../__generated__/userQuery.graphql';
 
 // Component interface
 interface PreloaderProps {}
@@ -29,8 +18,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
   const count = Number(searchParams.get('count') ?? 50);
   const orderMode = searchParams.get('orderMode') ?? 'asc';
   const orderBy = searchParams.get('orderBy') ?? 'email';
-  const [queryRef, loadQuery] =
-    useQueryLoader<pageLoaderUserQuery>(UserListQuery);
+  const [queryRef, loadQuery] = useQueryLoader<userQuery>(UserListQuery);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
   return queryRef ? <UserList queryRef={queryRef} /> : <Loader />;
 };

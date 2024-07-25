@@ -1,12 +1,7 @@
 'use client';
 
 import React, { FunctionComponent } from 'react';
-import {
-  graphql,
-  PreloadedQuery,
-  useMutation,
-  usePreloadedQuery,
-} from 'react-relay';
+import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button, Input } from 'filigran-ui/servers';
@@ -23,6 +18,7 @@ import { useForm } from 'react-hook-form';
 import Link from 'next/link';
 import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
 import { SettingsQuery } from '@/components/login/settings.graphql';
+import { LoginFormMutation } from '@/components/login/login.graphql';
 
 interface LoginFormProps {
   queryRef: PreloadedQuery<settingsQuery>;
@@ -32,14 +28,6 @@ const formSchema = z.object({
   email: z.string().email('This is not a valid email.'),
   password: z.string(),
 });
-// Relay
-const LoginFormMutation = graphql`
-  mutation loginFormMutation($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      ...meContext_fragment
-    }
-  }
-`;
 
 // Component
 const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {

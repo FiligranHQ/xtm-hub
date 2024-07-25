@@ -1,13 +1,6 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {graphql, PreloadedQuery, usePreloadedQuery, useRefetchableFragment,} from 'react-relay';
-import {
-  OrderingMode,
-  pageLoaderUserQuery,
-  pageLoaderUserQuery$variables,
-  UserOrdering,
-} from '../../../../__generated__/pageLoaderUserQuery.graphql';
-import {UserListQuery} from '../../../../app/(application)/(admin)/admin/user/page-loader';
+import {PreloadedQuery, usePreloadedQuery, useRefetchableFragment,} from 'react-relay';
 import {userList_users$key} from '../../../../__generated__/userList_users.graphql';
 import {Button} from 'filigran-ui/servers';
 import Link from 'next/link';
@@ -16,37 +9,14 @@ import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
 import {DataTable} from 'filigran-ui/clients';
 import {transformSortingValueToParams} from '@/components/ui/handle-sorting.utils';
 import {CreateUser} from '@/components/admin/user/user-create';
+import {UserListQuery, usersFragment,} from '@/components/admin/user/user.graphql';
+import {OrderingMode, UserOrdering, userQuery, userQuery$variables,} from '../../../../__generated__/userQuery.graphql';
 
 // Relay
-export const usersFragment = graphql`
-  fragment userList_users on Query
-  @refetchable(queryName: "UsersPaginationQuery") {
-    users(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          id
-          email
-          first_name
-          last_name
-          organization {
-            name
-          }
-        }
-      }
-    }
-  }
-`;
 
 // Component interface
 interface ServiceProps {
-  queryRef: PreloadedQuery<pageLoaderUserQuery>;
+  queryRef: PreloadedQuery<userQuery>;
 }
 
 export interface UserData {
@@ -101,10 +71,7 @@ const columns: ColumnDef<UserData>[] = [
 ];
 // Component
 const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
-  const queryData = usePreloadedQuery<pageLoaderUserQuery>(
-    UserListQuery,
-    queryRef
-  );
+  const queryData = usePreloadedQuery<userQuery>(UserListQuery, queryRef);
 
   const DEFAULT_ITEM_BY_PAGE = 50;
 
@@ -113,10 +80,10 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     pageSize: DEFAULT_ITEM_BY_PAGE,
   });
 
-  const [data, refetch] = useRefetchableFragment<
-    pageLoaderUserQuery,
-    userList_users$key
-  >(usersFragment, queryData);
+  const [data, refetch] = useRefetchableFragment<userQuery, userList_users$key>(
+    usersFragment,
+    queryData
+  );
 
   const userData = data.users.edges.map(({ node }) => ({
     ...node,
@@ -124,7 +91,7 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const handleRefetchData = (args?: Partial<pageLoaderUserQuery$variables>) => {
+  const handleRefetchData = (args?: Partial<userQuery$variables>) => {
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),

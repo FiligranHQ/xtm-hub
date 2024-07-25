@@ -1,5 +1,30 @@
 import { graphql } from 'react-relay';
 
+export const usersFragment = graphql`
+  fragment userList_users on Query
+  @refetchable(queryName: "UsersPaginationQuery") {
+    users(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+    ) {
+      __id
+      totalCount
+      edges {
+        node {
+          id
+          email
+          first_name
+          last_name
+          organization {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
 export const UserListCreateMutation = graphql`
   mutation userListCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
     addUser(input: $input)
@@ -55,6 +80,29 @@ export const userSlugSubscription = graphql`
       }
       delete {
         id @deleteRecord
+      }
+    }
+  }
+`;
+
+// Configuration or Preloader Query
+export const UserListQuery = graphql`
+  query userQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: UserOrdering!
+    $orderMode: OrderingMode!
+  ) {
+    ...userList_users
+  }
+`;
+
+export const UserSlugQuery = graphql`
+  query userSlugQuery($id: ID!) {
+    user(id: $id) {
+      ...userSlug_fragment
+      tracking_data {
+        ...trackingData_fragment
       }
     }
   }

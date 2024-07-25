@@ -1,8 +1,4 @@
-import { graphql, useFragment } from 'react-relay';
-import {
-  messageTracking_fragment$data,
-  messageTracking_fragment$key,
-} from '../../../__generated__/messageTracking_fragment.graphql';
+import { useFragment } from 'react-relay';
 import { FunctionComponent } from 'react';
 import {
   Accordion,
@@ -11,26 +7,21 @@ import {
   AccordionTrigger,
 } from 'filigran-ui/clients';
 import { FormatDate } from '@/utils/date';
-
-export const messageTrackingFragment = graphql`
-  fragment messageTracking_fragment on MessageTracking @relay(plural: true) {
-    id
-    created_at
-    type
-    technical
-    tracking_info
-  }
-`;
+import { messageTrackingFragment } from '@/components/data-tracking/tracking.graphql';
+import {
+  trackingMessage_fragment$data,
+  trackingMessage_fragment$key,
+} from '../../../__generated__/trackingMessage_fragment.graphql';
 
 interface MessageTrackingProps {
-  data: messageTracking_fragment$key;
+  data: trackingMessage_fragment$key;
 }
 
 export const MessageTracking: FunctionComponent<MessageTrackingProps> = ({
   data,
 }) => {
-  const messageTracking: messageTracking_fragment$data =
-    useFragment<messageTracking_fragment$key>(messageTrackingFragment, data);
+  const messageTracking: trackingMessage_fragment$data =
+    useFragment<trackingMessage_fragment$key>(messageTrackingFragment, data);
   [...messageTracking].sort(
     (a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

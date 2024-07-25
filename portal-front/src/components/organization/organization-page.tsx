@@ -15,60 +15,35 @@ import { CreateOrganization } from '@/components/organization/create-organizatio
 import { EditOrganization } from '@/components/organization/edit-organization';
 import { DeleteOrganization } from '@/components/organization/delete-organization';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
-import { OrderingMode } from '../../../__generated__/pageLoaderUserQuery.graphql';
-import { OrganizationsPaginationQuery$variables } from '../../../__generated__/OrganizationsPaginationQuery.graphql';
+import {
+  OrderingMode,
+  OrganizationsPaginationQuery$variables,
+} from '../../../__generated__/OrganizationsPaginationQuery.graphql';
 import { OrganizationOrdering } from '../../../__generated__/organizationSelectQuery.graphql';
 
+const breadcrumbValue = [
+  {
+    href: '/',
+    label: 'Home',
+  },
+  {
+    label: 'Organizations',
+  },
+];
+
 const OrganizationPage: React.FunctionComponent = () => {
-  const breadcrumbValue = [
-    {
-      href: '/',
-      label: 'Home',
-    },
-    {
-      label: 'Organizations',
-    },
-  ];
-
   const [organizationData, refetch] = getOrganizations();
-
   const organizationDataTable = organizationData.organizations.edges.map(
     ({ node }) => node
   ) as organizationItem_fragment$data[];
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const DEFAULT_ITEM_BY_PAGE = 50;
 
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const DEFAULT_ITEM_BY_PAGE = 50;
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: DEFAULT_ITEM_BY_PAGE,
   });
-  const columns: ColumnDef<organizationItem_fragment$data>[] = [
-    {
-      accessorKey: 'name',
-      id: 'name',
-      header: 'Name',
-      cell: ({ row }) => {
-        return (
-          <>
-            <EditOrganization organization={row.original}></EditOrganization>
-            {row.original.name}
-          </>
-        );
-      },
-    },
-    {
-      id: 'actions',
-      size: 100,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => (
-        <DeleteOrganization
-          connectionId={organizationData.organizations.__id}
-          organization={row.original}></DeleteOrganization>
-      ),
-    },
-  ];
 
   const handleRefetchData = (
     args?: Partial<OrganizationsPaginationQuery$variables>
@@ -105,6 +80,34 @@ const OrganizationPage: React.FunctionComponent = () => {
     });
     setPagination(newPaginationValue);
   };
+
+  const columns: ColumnDef<organizationItem_fragment$data>[] = [
+    {
+      accessorKey: 'name',
+      id: 'name',
+      header: 'Name',
+      cell: ({ row }) => {
+        return (
+          <>
+            <EditOrganization organization={row.original}></EditOrganization>
+            {row.original.name}
+          </>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      size: 100,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => (
+        <DeleteOrganization
+          connectionId={organizationData.organizations.__id}
+          organization={row.original}></DeleteOrganization>
+      ),
+    },
+  ];
 
   return (
     <>

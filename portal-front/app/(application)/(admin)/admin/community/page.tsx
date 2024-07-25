@@ -2,8 +2,6 @@
 
 import * as React from 'react';
 
-// Configuration or Preloader Query
-
 // Component interface
 interface PageProps {}
 
