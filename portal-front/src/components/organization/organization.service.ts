@@ -10,11 +10,28 @@ import {
 } from '@/components/organization/organization.graphql';
 import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
 
-export const getOrganizations = (
-  count: number = 50,
-  orderBy: OrganizationOrdering = 'name',
-  orderMode: OrderingMode = 'asc'
-) => {
+export const getOrganizations = () => {
+  let count = Number(localStorage.getItem('countOrganizationList'));
+  if (!count) {
+    localStorage.setItem('countOrganizationList', '50');
+    count = 50;
+  }
+  let orderMode = localStorage.getItem(
+    'orderModeOrganizationList'
+  ) as OrderingMode;
+  if (!orderMode) {
+    localStorage.setItem('orderModeOrganizationList', 'asc');
+    orderMode = 'asc';
+  }
+
+  let orderBy = localStorage.getItem(
+    'orderByOrganizationList'
+  ) as OrganizationOrdering;
+  if (!orderBy) {
+    localStorage.setItem('orderByOrganizationList', 'name');
+    orderBy = 'name';
+  }
+
   const organizationData = useLazyLoadQuery<organizationSelectQuery>(
     organizationFetch,
     {

@@ -4,15 +4,13 @@ import {PreloadedQuery, usePreloadedQuery, useRefetchableFragment,} from 'react-
 import {userList_users$key} from '../../../../__generated__/userList_users.graphql';
 import {Button} from 'filigran-ui/servers';
 import Link from 'next/link';
-import {ColumnDef, PaginationState, SortingState,} from '@tanstack/react-table';
+import {ColumnDef, ColumnSort, PaginationState} from '@tanstack/react-table';
 import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
 import {DataTable} from 'filigran-ui/clients';
 import {transformSortingValueToParams} from '@/components/ui/handle-sorting.utils';
 import {CreateUser} from '@/components/admin/user/user-create';
 import {UserListQuery, usersFragment,} from '@/components/admin/user/user.graphql';
 import {OrderingMode, UserOrdering, userQuery, userQuery$variables,} from '../../../../__generated__/userQuery.graphql';
-
-// Relay
 
 // Component interface
 interface ServiceProps {
@@ -73,11 +71,9 @@ const columns: ColumnDef<UserData>[] = [
 const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   const queryData = usePreloadedQuery<userQuery>(UserListQuery, queryRef);
 
-  const DEFAULT_ITEM_BY_PAGE = 50;
-
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: DEFAULT_ITEM_BY_PAGE,
+    pageSize: Number(localStorage.getItem('countUserList')),
   });
 
   const [data, refetch] = useRefetchableFragment<userQuery, userList_users$key>(
@@ -89,25 +85,40 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     ...node,
   })) as UserData[];
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-
   const handleRefetchData = (args?: Partial<userQuery$variables>) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderByUserList'),
+        desc: localStorage.getItem('orderModeUserList') === 'desc',
+      } as unknown as ColumnSort,
+    ];
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: 'email',
-      orderMode: 'asc',
+      orderBy: localStorage.getItem('orderByUserList') as UserOrdering,
+      orderMode: localStorage.getItem('orderModeUserList') as OrderingMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
   const onSortingChange = (updater: unknown) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderByUserList'),
+        desc: localStorage.getItem('orderModeUserList') === 'desc',
+      },
+    ];
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
+
+    localStorage.setItem('orderByUserList', newSortingValue[0].id);
+    localStorage.setItem(
+      'orderModeUserList',
+      newSortingValue[0].desc ? 'desc' : 'asc'
+    );
     handleRefetchData(
       transformSortingValueToParams<UserOrdering, OrderingMode>(newSortingValue)
     );
-    setSorting(updater as SortingState);
   };
 
   const onPaginationChange = (updater: unknown) => {
@@ -137,7 +148,15 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
             manualPagination: true,
             rowCount: data.users.totalCount,
           }}
-          tableState={{ sorting, pagination }}
+          tableState={{
+            sorting: [
+              {
+                id: localStorage.getItem('orderByUserList') ?? '',
+                desc: localStorage.getItem('orderModeUserList') === 'desc',
+              },
+            ],
+            pagination,
+          }}
         />
       </div>
       <CreateUser connectionId={data?.users?.__id}></CreateUser>

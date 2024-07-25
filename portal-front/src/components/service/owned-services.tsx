@@ -4,11 +4,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { DataTable } from 'filigran-ui/clients';
 import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
-import {
-  ColumnDef,
-  PaginationState,
-  SortingState,
-} from '@tanstack/react-table';
+import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import { Badge, Button } from 'filigran-ui/servers';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
 import { SubscriptionOrdering } from '../../../__generated__/subscriptionsByOrganizationSelectQuery.graphql';
@@ -117,12 +113,9 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   },
 ];
 const OwnedServices: React.FunctionComponent<{}> = ({}) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-
-  const DEFAULT_ITEM_BY_PAGE = 50;
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: DEFAULT_ITEM_BY_PAGE,
+    pageSize: Number(localStorage.getItem('countSubscriptionList')),
   });
   const [subscriptionsOrganization, refetchSubOrga] =
     getSubscriptionsByOrganization();
@@ -135,25 +128,45 @@ const OwnedServices: React.FunctionComponent<{}> = ({}) => {
   const handleRefetchData = (
     args?: Partial<SubscriptionsPaginationQuery$variables>
   ) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderByOwnedServices'),
+        desc: localStorage.getItem('orderModeOwnedServices') === 'desc',
+      } as unknown as ColumnSort,
+    ];
     refetchSubOrga({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: 'start_date',
-      orderMode: 'asc',
+      orderBy: localStorage.getItem(
+        'orderByOwnedServices'
+      ) as SubscriptionOrdering,
+      orderMode: localStorage.getItem('orderModeOwnedServices') as OrderingMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
 
   const onSortingChange = (updater: unknown) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderByOwnedServices'),
+        desc: localStorage.getItem('orderModeOwnedServices') === 'desc',
+      },
+    ];
+
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
+    localStorage.setItem('orderByOwnedServices', newSortingValue[0].id);
+    localStorage.setItem(
+      'orderModeOwnedServices',
+      newSortingValue[0].desc ? 'desc' : 'asc'
+    );
+
     handleRefetchData(
       transformSortingValueToParams<SubscriptionOrdering, OrderingMode>(
         newSortingValue
       )
     );
-    setSorting(updater as SortingState);
   };
 
   const onPaginationChange = (updater: unknown) => {
@@ -179,7 +192,15 @@ const OwnedServices: React.FunctionComponent<{}> = ({}) => {
             manualSorting: true,
             manualPagination: true,
           }}
-          tableState={{ sorting, pagination }}
+          tableState={{
+            sorting: [
+              {
+                id: localStorage.getItem('orderByOwnedServices') ?? '',
+                desc: localStorage.getItem('orderModeOwnedServices') === 'desc',
+              },
+            ],
+            pagination,
+          }}
         />
       ) : (
         'You do not have any service... Yet !'

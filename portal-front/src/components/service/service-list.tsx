@@ -19,11 +19,7 @@ import {
 import { Badge, Button } from 'filigran-ui/servers';
 import Loader from '@/components/loader';
 import { DataTable, useToast } from 'filigran-ui/clients';
-import {
-  ColumnDef,
-  PaginationState,
-  SortingState,
-} from '@tanstack/react-table';
+import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import Link from 'next/link';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
@@ -41,6 +37,8 @@ import {
   TaskIcon,
 } from 'filigran-icon';
 import {
+  OrderingMode,
+  ServiceOrdering,
   serviceQuery,
   serviceQuery$variables,
 } from '../../../__generated__/serviceQuery.graphql';
@@ -60,7 +58,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
-  const DEFAULT_ITEM_BY_PAGE = 50;
   const { me } = useContext<Portal>(portalContext);
   if (!me) {
     return;
@@ -230,10 +227,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
   ];
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: DEFAULT_ITEM_BY_PAGE,
-  });
   const queryData = usePreloadedQuery<serviceQuery>(ServiceListQuery, queryRef);
   const [data, refetch] = useRefetchableFragment<
     serviceQuery,
@@ -257,26 +250,43 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   if (shouldDisplayOnlyOwnedService && ownedServices) {
     servicesData = ownedServices as serviceList_fragment$data[];
   }
-
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: Number(localStorage.getItem('countServiceList')),
+  });
   const handleRefetchData = (args?: Partial<serviceQuery$variables>) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderByServiceList'),
+        desc: localStorage.getItem('orderModeServiceList') === 'desc',
+      } as unknown as ColumnSort,
+    ];
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: 'name',
-      orderMode: 'asc',
+      orderBy: localStorage.getItem('orderByServiceList') as ServiceOrdering,
+      orderMode: localStorage.getItem('orderModeServiceList') as OrderingMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-
   // https://tanstack.com/table/latest/docs/framework/react/guide/table-state#2-updaters-can-either-be-raw-values-or-callback-functions
   const onSortingChange = (updater: unknown) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderByServiceList'),
+        desc: localStorage.getItem('orderModeServiceList') === 'desc',
+      },
+    ];
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
+    localStorage.setItem('orderByServiceList', newSortingValue[0].id);
+    localStorage.setItem(
+      'orderModeServiceList',
+      newSortingValue[0].desc ? 'desc' : 'asc'
+    );
     handleRefetchData(transformSortingValueToParams(newSortingValue));
-    setSorting(updater as SortingState);
   };
 
   const onPaginationChange = (updater: unknown) => {
@@ -309,7 +319,16 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                   rowCount: data.services.totalCount,
                   manualSorting: true,
                 }}
-                tableState={{ sorting, pagination }}
+                tableState={{
+                  sorting: [
+                    {
+                      id: localStorage.getItem('orderByServiceList') ?? '',
+                      desc:
+                        localStorage.getItem('orderModeServiceList') === 'desc',
+                    },
+                  ],
+                  pagination,
+                }}
               />
             </React.Suspense>
           ) : (

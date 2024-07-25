@@ -5,11 +5,7 @@ import { useCallback, useState } from 'react';
 import { getSubscriptions } from '@/components/subcription/subscription.service';
 import { subscriptionItem_fragment$data } from '../../../__generated__/subscriptionItem_fragment.graphql';
 import { FormatDate } from '@/utils/date';
-import {
-  ColumnDef,
-  PaginationState,
-  SortingState,
-} from '@tanstack/react-table';
+import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import { DataTable, useToast } from 'filigran-ui/clients';
 import { PreloadedQuery, useMutation } from 'react-relay';
 import { SubscriptionEditMutation } from '@/components/subcription/subscription.graphql';
@@ -34,42 +30,13 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
   queryRef,
   columns,
 }) => {
-  const columnsWithAdmin: ColumnDef<subscriptionItem_fragment$data>[] = [
-    ...columns,
-    {
-      id: 'actions',
-      cell: ({ row }) => {
-        return (
-          <>
-            {row.original.status === 'REQUESTED' ? (
-              <>
-                <Button
-                  variant="ghost"
-                  onClick={() => editSubscription('ACCEPTED', row.original)}>
-                  <CheckIcon className="h-6 w-6 flex-auto text-green" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => editSubscription('REFUSED', row.original)}>
-                  <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
-                </Button>
-              </>
-            ) : (
-              <></>
-            )}
-          </>
-        );
-      },
-    },
-  ];
+  const { toast } = useToast();
 
   const [subscriptions, refetch] = getSubscriptions(queryRef);
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 50,
+    pageSize: Number(localStorage.getItem('countSubscriptionList')),
   });
 
   const connectionId = subscriptions.subscriptions.__id;
@@ -84,47 +51,10 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
       end_date: FormatDate(data.end_date, false),
     };
   });
-  const onSortingChange = (updater: unknown) => {
-    const newSortingValue =
-      updater instanceof Function ? updater(sorting) : updater;
-
-    handleRefetchData(
-      transformSortingValueToParams<SubscriptionOrdering, OrderingMode>(
-        newSortingValue
-      )
-    );
-    setSorting(updater as SortingState);
-  };
-
-  const handleRefetchData = (
-    args?: Partial<SubscriptionsPaginationQuery$variables>
-  ) => {
-    refetch({
-      count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: 'start_date',
-      orderMode: 'asc',
-      ...transformSortingValueToParams(sorting),
-      ...args,
-    });
-  };
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-    setPagination(newPaginationValue);
-  };
 
   const [commitSubscriptionMutation] = useMutation<subscriptionEditMutation>(
     SubscriptionEditMutation
   );
-  const { toast } = useToast();
 
   const editSubscription = useCallback(
     (status: string, subscription: subscriptionItem_fragment$data) => {
@@ -161,8 +91,95 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
         },
       });
     },
-    []
+    [commitSubscriptionMutation, toast]
   );
+
+  const onSortingChange = (updater: unknown) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderBySubscriptionList'),
+        desc: localStorage.getItem('orderModeSubscriptionList') === 'desc',
+      },
+    ];
+    const newSortingValue =
+      updater instanceof Function ? updater(sorting) : updater;
+
+    localStorage.setItem('orderBySubscriptionList', newSortingValue[0].id);
+    localStorage.setItem(
+      'orderModeSubscriptionList',
+      newSortingValue[0].desc ? 'desc' : 'asc'
+    );
+
+    handleRefetchData(
+      transformSortingValueToParams<SubscriptionOrdering, OrderingMode>(
+        newSortingValue
+      )
+    );
+  };
+
+  const handleRefetchData = (
+    args?: Partial<SubscriptionsPaginationQuery$variables>
+  ) => {
+    const sorting = [
+      {
+        id: localStorage.getItem('orderBySubscriptionList'),
+        desc: localStorage.getItem('orderModeSubscriptionList') === 'desc',
+      } as unknown as ColumnSort,
+    ];
+    refetch({
+      count: pagination.pageSize,
+      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+      orderBy: localStorage.getItem(
+        'orderBySubscriptionList'
+      ) as SubscriptionOrdering,
+      orderMode: localStorage.getItem(
+        'orderModeSubscriptionList'
+      ) as OrderingMode,
+      ...transformSortingValueToParams(sorting),
+      ...args,
+    });
+  };
+
+  const onPaginationChange = (updater: unknown) => {
+    const newPaginationValue: PaginationState =
+      updater instanceof Function ? updater(pagination) : updater;
+    handleRefetchData({
+      count: newPaginationValue.pageSize,
+      cursor: btoa(
+        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
+      ),
+    });
+    setPagination(newPaginationValue);
+  };
+
+  const columnsWithAdmin: ColumnDef<subscriptionItem_fragment$data>[] = [
+    ...columns,
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        return (
+          <>
+            {row.original.status === 'REQUESTED' ? (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => editSubscription('ACCEPTED', row.original)}>
+                  <CheckIcon className="h-6 w-6 flex-auto text-green" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => editSubscription('REFUSED', row.original)}>
+                  <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
+                </Button>
+              </>
+            ) : (
+              <></>
+            )}
+          </>
+        );
+      },
+    },
+  ];
 
   return (
     <>
@@ -176,7 +193,16 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
           rowCount: subscriptions.subscriptions.totalCount,
           manualSorting: true,
         }}
-        tableState={{ sorting, pagination }}
+        tableState={{
+          sorting: [
+            {
+              id: localStorage.getItem('orderBySubscriptionList') ?? '',
+              desc:
+                localStorage.getItem('orderModeSubscriptionList') === 'desc',
+            },
+          ],
+          pagination,
+        }}
       />
       <SubscriptionFormSheet
         connectionId={connectionId}
