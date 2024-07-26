@@ -35,21 +35,9 @@ input AddServiceInput {
     organization_id: String
     url: String
 }
-input AddServiceCommunityInput {
-    community_name: String
-    community_description: String
-    price: Int
-    fee_type: String
-    open_feed_url: String
-    private_feed_url: String
-    cyber_weather_url: String
-    next_cloud_url: String
-    organizations_id: [String]
-}
 type Mutation {
     editService(id: ID!, name: String!): Service @auth(requires: [BYPASS])
     addService(input: AddServiceInput): Subscription @auth(requires: [BYPASS])
-    addServiceCommunity(input: AddServiceCommunityInput): Service @auth(requires: [BYPASS])
     deleteService(id: ID!): Service @auth(requires: [BYPASS])
 }
 

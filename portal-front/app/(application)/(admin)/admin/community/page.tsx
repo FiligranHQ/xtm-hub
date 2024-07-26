@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 import {useQueryLoader} from 'react-relay';
-import {ServiceCommunityListQuery} from '@/components/service/service.graphql';
+import {ServiceCommunityListQuery,} from '@/components/service/service.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import Loader from '@/components/loader';
 import {serviceCommunitiesQuery} from '../../../../../__generated__/serviceCommunitiesQuery.graphql';
-import CommunityList from '@/components/service/community/community-list';
+import CommunityList from '@/components/community/community-list';
 
 // Component interface
 interface PageProps {}
@@ -33,12 +33,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
     ServiceCommunityListQuery
   );
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
-  return (
-    <>
-      <b>Communities</b>
-      {queryRef ? <CommunityList queryRef={queryRef} /> : <Loader />}
-    </>
-  );
+  return <>{queryRef ? <CommunityList queryRef={queryRef} /> : <Loader />}</>;
 };
 
 // Component export
