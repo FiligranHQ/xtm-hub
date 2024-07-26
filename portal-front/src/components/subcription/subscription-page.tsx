@@ -163,12 +163,18 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
               <>
                 <Button
                   variant="ghost"
-                  onClick={() => editSubscription('ACCEPTED', row.original)}>
+                  onClick={useCallback(
+                    () => editSubscription('ACCEPTED', row.original),
+                    []
+                  )}>
                   <CheckIcon className="h-6 w-6 flex-auto text-green" />
                 </Button>
                 <Button
                   variant="ghost"
-                  onClick={() => editSubscription('REFUSED', row.original)}>
+                  onClick={useCallback(
+                    () => editSubscription('REFUSED', row.original),
+                    []
+                  )}>
                   <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
                 </Button>
               </>

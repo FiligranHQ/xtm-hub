@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useCallback} from 'react';
 import {PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription,} from 'react-relay';
 import {userSlug_fragment$data, userSlug_fragment$key,} from '../../../../../__generated__/userSlug_fragment.graphql';
 import {useRouter} from 'next/navigation';
@@ -108,7 +109,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
                 <DeleteIcon className="h-4 w-4" />
               </Button>
             }
-            onClickContinue={() => onDeleteUser(user)}>
+            onClickContinue={useCallback(() => onDeleteUser(user), [])}>
             Are you sure you want to delete this user {user.first_name}{' '}
             {user.last_name} ?
           </AlertDialogComponent>

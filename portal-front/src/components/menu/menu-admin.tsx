@@ -10,7 +10,7 @@ import {
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import * as React from 'react';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import useGranted from '@/hooks/useGranted';
 import {
   ExternalReferenceIcon,
@@ -53,31 +53,31 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   const AdminLinks = () => (
     <>
       <Button
-        onClick={() => routeTo('/admin/user')}
+        onClick={useCallback(() => routeTo('/admin/user'), [])}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <GroupIcon className="mr-2 h-4 w-4" /> User
       </Button>
       <Button
-        onClick={() => routeTo('/admin/service')}
+        onClick={useCallback(() => routeTo('/admin/service'), [])}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <GradeIcon className="mr-2 h-4 w-4" /> Services
       </Button>
       <Button
-        onClick={() => routeTo('/admin/community')}
+        onClick={useCallback(() => routeTo('/admin/community'), [])}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <ForumIcon className="mr-2 h-4 w-4" /> Communities
       </Button>
       <Button
-        onClick={() => routeTo('/admin/organizations')}
+        onClick={useCallback(() => routeTo('/admin/organizations'), [])}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <OrganizationIcon className="mr-2 h-4 w-4" /> Organizations
       </Button>
       <Button
-        onClick={() => routeTo('/admin/subcriptions')}
+        onClick={useCallback(() => routeTo('/admin/subcriptions'), [])}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <ExternalReferenceIcon className="mr-2 h-4 w-4" /> Subscriptions

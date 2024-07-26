@@ -52,7 +52,6 @@ const resolvers: Resolvers = {
       return updatedService;
     },
     addService: async (_, { input }, context) => {
-      console.log('input', input);
       const trx = await dbTx();
 
       try {

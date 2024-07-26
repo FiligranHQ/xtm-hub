@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import {
   PreloadedQuery,
   useMutation,
@@ -162,7 +162,10 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                       Subscribe
                     </Button>
                   }
-                  onClickContinue={() => addSubscriptionInDb(row.original)}>
+                  onClickContinue={useCallback(
+                    () => addSubscriptionInDb(row.original),
+                    []
+                  )}>
                   {generateAlertText(row.original)}
                 </AlertDialogComponent>
               </GuardCapacityComponent>

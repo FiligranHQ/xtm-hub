@@ -191,17 +191,17 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
           <>
             <Button
               variant={'ghost'}
-              onClick={() => {
+              onClick={useCallback(() => {
                 setCurrentUser(row.original);
                 setOpenSheet(true);
-              }}>
+              }, [])}>
               <ChevronIcon className="h-4 w-4"></ChevronIcon>
             </Button>
             <Button
               variant={'ghost'}
-              onClick={() => {
+              onClick={useCallback(() => {
                 deleteCurrentUser(row.original);
-              }}>
+              }, [])}>
               <LittleArrowIcon className="h-4 w-4"></LittleArrowIcon>
             </Button>
           </>
