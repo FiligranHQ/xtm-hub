@@ -42,13 +42,14 @@ type Query {
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
+  settings: Settings!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
+  malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
-  settings: Settings!
 }
 
 enum UserServiceOrdering {
@@ -77,11 +78,11 @@ type Mutation {
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
+  malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
+  malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription
   deleteService(id: ID!): Service
-  malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
-  malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
   editServiceCapability(input: EditServiceCapabilityInput): UserService
 }
 
@@ -175,8 +176,8 @@ type Subscription implements Node {
   start_date: Date
   end_date: Date
   status: String
-  Service: ServiceSubscription
   MalwareAnalysis: MalwareAnalysisSubscription
+  Service: ServiceSubscription
 }
 
 type ActionTracking implements Node {
@@ -234,6 +235,16 @@ input EditSubscriptionInput {
   status: String
 }
 
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
 enum OrganizationOrdering {
   name
 }
@@ -258,13 +269,44 @@ input EditOrganizationInput {
   name: String!
 }
 
-type RolePortal implements Node {
-  id: ID!
-  name: String!
+enum MalwareAnalysisOrdering {
+  created_at
 }
 
-type RolePortalID implements Node {
+type MalwareAnalysisResult implements Node {
   id: ID!
+  result: JSON!
+}
+
+type GlimpsCallbackTemporary {
+  result: JSON!
+}
+
+type MalwareAnalysis implements Node {
+  id: ID!
+  name: String!
+  created_at: Date!
+  ended_at: Date
+  result: JSON!
+  status: String!
+  type: String!
+}
+
+type MalwareAnalysisEdge {
+  cursor: String!
+  node: MalwareAnalysis!
+}
+
+type MalwareAnalysisConnection {
+  totalCount: Int!
+  edges: [MalwareAnalysisEdge!]!
+  pageInfo: PageInfo!
+}
+
+type MalwareAnalysisSubscription {
+  add: MalwareAnalysis
+  edit: MalwareAnalysis
+  delete: MalwareAnalysis
 }
 
 enum ServiceOrdering {
@@ -311,61 +353,20 @@ type ServiceSubscription {
   delete: Service
 }
 
-enum MalwareAnalysisOrdering {
-  created_at
-}
-
-type MalwareAnalysisResult implements Node {
-  id: ID!
-  result: JSON!
-}
-
-type GlimpsCallbackTemporary {
-  result: JSON!
-}
-
-type MalwareAnalysis implements Node {
-  id: ID!
-  name: String!
-  created_at: Date!
-  ended_at: Date
-  result: JSON!
-  status: String!
-  type: String!
-}
-
-type MalwareAnalysisEdge {
-  cursor: String!
-  node: MalwareAnalysis!
-}
-
-type MalwareAnalysisConnection {
-  totalCount: Int!
-  edges: [MalwareAnalysisEdge!]!
-  pageInfo: PageInfo!
-}
-
-type MalwareAnalysisSubscription {
-  add: MalwareAnalysis
-  edit: MalwareAnalysis
-  delete: MalwareAnalysis
-}
-
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
 scalar JSON
 
 scalar Date
 
 scalar Upload
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
+}
 
 type ServiceCapability implements Node {
   id: ID!

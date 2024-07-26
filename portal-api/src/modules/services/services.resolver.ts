@@ -26,6 +26,18 @@ const resolvers: Resolvers = {
 
       return loadPublicServices(context, opt, shouldReturnPrivateServices);
     },
+    communities: async (_, opt, context) => {
+      const shouldReturnPrivateServices = context.user.capabilities.some(
+        (capability) => !capability.name.includes('BYPASS')
+      );
+
+      return loadPublicServices(
+        context,
+        opt,
+        shouldReturnPrivateServices,
+        true
+      );
+    },
   },
   Mutation: {
     deleteService: async (_, { id }, context) => {

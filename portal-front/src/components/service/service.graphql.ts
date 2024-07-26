@@ -61,6 +61,26 @@ export const servicesListFragment = graphql`
     }
   }
 `;
+export const communitiesListFragment = graphql`
+  fragment serviceCommunityList_services on Query
+  @refetchable(queryName: "CommunitiesPaginationQuery") {
+    communities(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+    ) {
+      __id
+      totalCount
+      edges {
+        node {
+          id
+          ...serviceList_fragment @relay(mask: false)
+        }
+      }
+    }
+  }
+`;
 
 export const serviceUsersFragment = graphql`
   fragment serviceUser on Query
@@ -125,5 +145,16 @@ export const ServiceListQuery = graphql`
     $orderMode: OrderingMode!
   ) {
     ...serviceList_services
+  }
+`;
+
+export const ServiceCommunityListQuery = graphql`
+  query serviceCommunitiesQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: ServiceOrdering!
+    $orderMode: OrderingMode!
+  ) {
+    ...serviceCommunityList_services
   }
 `;

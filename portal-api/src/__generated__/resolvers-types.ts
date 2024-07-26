@@ -318,6 +318,7 @@ export type PlatformProvider = {
 
 export type Query = {
   __typename?: 'Query';
+  communities: ServiceConnection;
   malwareAnalysis: MalwareAnalysisConnection;
   me?: Maybe<User>;
   node?: Maybe<Node>;
@@ -333,6 +334,13 @@ export type Query = {
   subscriptionsByOrganization: SubscriptionConnection;
   user?: Maybe<User>;
   users: UserConnection;
+};
+
+export type QueryCommunitiesArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: ServiceOrdering;
+  orderMode: OrderingMode;
 };
 
 export type QueryMalwareAnalysisArgs = {
@@ -1240,6 +1248,12 @@ export type QueryResolvers<
   ParentType extends
     ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
 > = ResolversObject<{
+  communities?: Resolver<
+    ResolversTypes['ServiceConnection'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryCommunitiesArgs, 'first' | 'orderBy' | 'orderMode'>
+  >;
   malwareAnalysis?: Resolver<
     ResolversTypes['MalwareAnalysisConnection'],
     ParentType,
