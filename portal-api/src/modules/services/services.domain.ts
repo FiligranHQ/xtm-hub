@@ -8,7 +8,8 @@ import { PortalContext } from '../../model/portal-context';
 export const loadPublicServices = async (
   context: PortalContext,
   opts,
-  publicOnly = true
+  publicOnly = true,
+  communities = false
 ) => {
   const { first, after, orderMode, orderBy } = opts;
   const query = paginate<Service>(context, 'Service', {
@@ -21,6 +22,11 @@ export const loadPublicServices = async (
   if (publicOnly) {
     query.where('type', '!=', 'PRIVATE');
   }
+  if (communities) {
+    query.where('type', '=', 'COMMUNITY');
+  } else {
+    query.where('type', '!=', 'COMMUNITY');
+  }
 
   const servicesConnection = await query
     .select('*')
@@ -29,6 +35,11 @@ export const loadPublicServices = async (
   const queryCount = db<Service>(context, 'Service', opts);
   if (publicOnly) {
     queryCount.where('type', '!=', 'PRIVATE');
+  }
+  if (communities) {
+    queryCount.where('type', '=', 'COMMUNITY');
+  } else {
+    query.where('type', '!=', 'COMMUNITY');
   }
   queryCount.countDistinct('id as totalCount').first();
 
