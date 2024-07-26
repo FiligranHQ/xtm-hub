@@ -44,11 +44,11 @@ type Query {
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
-  settings: Settings!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
+  settings: Settings!
 }
 
 enum UserServiceOrdering {
@@ -258,14 +258,13 @@ input EditOrganizationInput {
   name: String!
 }
 
-type PlatformProvider {
+type RolePortal implements Node {
+  id: ID!
   name: String!
-  type: String!
-  provider: String!
 }
 
-type Settings {
-  platform_providers: [PlatformProvider!]!
+type RolePortalID implements Node {
+  id: ID!
 }
 
 enum ServiceOrdering {
@@ -312,15 +311,6 @@ type ServiceSubscription {
   delete: Service
 }
 
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
-}
-
 enum MalwareAnalysisOrdering {
   created_at
 }
@@ -359,6 +349,16 @@ type MalwareAnalysisSubscription {
   add: MalwareAnalysis
   edit: MalwareAnalysis
   delete: MalwareAnalysis
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
 }
 
 scalar JSON

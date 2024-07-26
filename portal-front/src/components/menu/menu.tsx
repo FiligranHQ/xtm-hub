@@ -4,7 +4,7 @@ import { Separator } from 'filigran-ui/clients';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { ElementType, FunctionComponent, useState } from 'react';
+import { ElementType, FunctionComponent, useCallback, useState } from 'react';
 import Logout from '@/components/logout';
 import MenuUser from '@/components/menu/menu-user';
 import MenuAdmin from '@/components/menu/menu-admin';
@@ -52,7 +52,7 @@ const Menu = () => {
           <li>
             <Button
               variant="ghost"
-              onClick={() => setOpen(!open)}>
+              onClick={useCallback(() => setOpen(!open), [])}>
               <KeyboardArrowLeftIcon
                 className={cn(
                   'h-4 w-4 flex-shrink-0 flex-grow-0 p-1 duration-300 ease-in-out',
