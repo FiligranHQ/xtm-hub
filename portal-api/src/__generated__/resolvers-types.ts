@@ -49,6 +49,18 @@ export type ActionTracking = Node & {
   status?: Maybe<Scalars['String']['output']>;
 };
 
+export type AddServiceCommunityInput = {
+  community_description?: InputMaybe<Scalars['String']['input']>;
+  community_name?: InputMaybe<Scalars['String']['input']>;
+  cyber_weather_url?: InputMaybe<Scalars['String']['input']>;
+  fee_type?: InputMaybe<Scalars['String']['input']>;
+  next_cloud_url?: InputMaybe<Scalars['String']['input']>;
+  open_feed_url?: InputMaybe<Scalars['String']['input']>;
+  organizations_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  price?: InputMaybe<Scalars['Int']['input']>;
+  private_feed_url?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AddServiceInput = {
   fee_type?: InputMaybe<Scalars['String']['input']>;
   organization_id?: InputMaybe<Scalars['String']['input']>;
@@ -166,6 +178,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Subscription>;
+  addServiceCommunity?: Maybe<Service>;
   addSubscription?: Maybe<Subscription>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
@@ -191,6 +204,10 @@ export type MutationAddOrganizationArgs = {
 
 export type MutationAddServiceArgs = {
   input?: InputMaybe<AddServiceInput>;
+};
+
+export type MutationAddServiceCommunityArgs = {
+  input?: InputMaybe<AddServiceCommunityInput>;
 };
 
 export type MutationAddSubscriptionArgs = {
@@ -749,6 +766,7 @@ export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> =
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   ActionTracking: ResolverTypeWrapper<ActionTracking>;
+  AddServiceCommunityInput: AddServiceCommunityInput;
   AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -813,6 +831,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   ActionTracking: ActionTracking;
+  AddServiceCommunityInput: AddServiceCommunityInput;
   AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
   Boolean: Scalars['Boolean']['output'];
@@ -1046,6 +1065,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     Partial<MutationAddServiceArgs>
+  >;
+  addServiceCommunity?: Resolver<
+    Maybe<ResolversTypes['Service']>,
+    ParentType,
+    ContextType,
+    Partial<MutationAddServiceCommunityArgs>
   >;
   addSubscription?: Resolver<
     Maybe<ResolversTypes['Subscription']>,

@@ -9,6 +9,18 @@ export const ServiceListCreateMutation = graphql`
   }
 `;
 
+export const ServiceCommunityListCreateMutation = graphql`
+  mutation serviceCommunityListMutation(
+    $input: AddServiceCommunityInput
+    $connections: [ID!]!
+  ) {
+    addServiceCommunity(input: $input)
+      @prependNode(connections: $connections, edgeTypeName: "ServicesEdge") {
+      ...serviceList_fragment
+    }
+  }
+`;
+
 export const serviceListFragment = graphql`
   fragment serviceList_fragment on Service {
     id

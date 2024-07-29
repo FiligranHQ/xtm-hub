@@ -15,7 +15,7 @@ import { ServiceId } from '../../model/kanel/public/Service';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
-import { loadPublicServices } from './services.domain';
+import { addServiceLink, loadPublicServices } from './services.domain';
 
 const resolvers: Resolvers = {
   Query: {
@@ -129,6 +129,83 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         console.log('Error while adding the new service.', error);
+        throw error;
+      }
+    },
+    addServiceCommunity: async (_, { input }, context) => {
+      const trx = await dbTx();
+      try {
+        const dataService = {
+          id: uuidv4(),
+          name: input.community_name,
+          description: input.community_description,
+          provider: 'SCRED_ONDEMAND',
+          type: 'COMMUNITY',
+          creation_status: 'READY',
+          subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
+        };
+        const [addedService] = await db<Service>(context, 'Service')
+          .insert(dataService)
+          .returning('*');
+
+        const dataServicePrice = {
+          id: uuidv4() as unknown as ServicePriceId,
+          service_id: addedService.id as unknown as ServiceId,
+          fee_type: input.fee_type,
+          start_date: new Date(),
+          price: input.price,
+        };
+
+        await db<ServicePrice>(context, 'Service_Price')
+          .insert(dataServicePrice)
+          .returning('*');
+
+        addServiceLink(
+          context,
+          addedService.id as unknown as ServiceId,
+          input.open_feed_url,
+          'OpenFeed'
+        );
+        addServiceLink(
+          context,
+          addedService.id as unknown as ServiceId,
+          input.private_feed_url,
+          'PrivateFeed'
+        );
+        addServiceLink(
+          context,
+          addedService.id as unknown as ServiceId,
+          input.cyber_weather_url,
+          'CyberWeather'
+        );
+        addServiceLink(
+          context,
+          addedService.id as unknown as ServiceId,
+          input.next_cloud_url,
+          'NextCloud'
+        );
+
+        let dataSubscription;
+
+        for (const organization_id of input.organizations_id) {
+          dataSubscription = {
+            id: uuidv4() as unknown as SubscriptionId,
+            organization_id: fromGlobalId(organization_id).id,
+            service_id: addedService.id,
+            start_date: new Date(),
+            end_date: null,
+            status: 'ACCEPTED',
+          };
+
+          await db<Subscription>(context, 'Subscription')
+            .insert(dataSubscription)
+            .returning('*');
+        }
+
+        return addedService;
+      } catch (error) {
+        await trx.rollback();
+        console.log('Error while adding the new community.', error);
         throw error;
       }
     },

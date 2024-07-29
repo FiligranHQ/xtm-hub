@@ -9,7 +9,7 @@ import {
   useRefetchableFragment,
   useSubscription,
 } from 'react-relay';
-import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
+import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
 import {
   communitiesListFragment,
   ServiceCommunityListQuery,
@@ -22,26 +22,25 @@ import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import Link from 'next/link';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
-import { subscriptionCreateMutation } from '../../../__generated__/subscriptionCreateMutation.graphql';
+import { subscriptionCreateMutation } from '../../../../__generated__/subscriptionCreateMutation.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 import GuardCapacityComponent from '@/components/admin-guard';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
 import {
-  CaseRftIcon,
   ConstructionIcon,
   CourseOfActionIcon,
   IndicatorIcon,
-  TaskIcon,
 } from 'filigran-icon';
 import {
   OrderingMode,
   ServiceOrdering,
   serviceQuery$variables,
-} from '../../../__generated__/serviceQuery.graphql';
-import { serviceCommunitiesQuery } from '../../../__generated__/serviceCommunitiesQuery.graphql';
-import { serviceCommunityList_services$key } from '../../../__generated__/serviceCommunityList_services.graphql';
+} from '../../../../__generated__/serviceQuery.graphql';
+import { serviceCommunitiesQuery } from '../../../../__generated__/serviceCommunitiesQuery.graphql';
+import { serviceCommunityList_services$key } from '../../../../__generated__/serviceCommunityList_services.graphql';
+import { CreateCommunity } from '@/components/service/community/community-create';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -193,16 +192,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       header: 'Name',
       cell: ({ row }) => {
         return (
-          <div className="flex items-center space-x-2">
-            <div>
-              {subscribedServiceName.includes(row.original.name) ? (
-                <TaskIcon className="h-6 w-6 flex-auto text-green" />
-              ) : (
-                <CaseRftIcon className="h-6 w-6 flex-auto text-destructive" />
-              )}
-            </div>
-            <div>{row.original.name} </div>
-          </div>
+          <div className="flex items-center space-x-2">{row.original.name}</div>
         );
       },
     },
@@ -340,6 +330,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           ) : (
             'You do not have any service... Yet !'
           )}
+          <CreateCommunity connectionId={connectionId}></CreateCommunity>
         </>
       )}
     </>
