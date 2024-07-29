@@ -2,8 +2,12 @@ import { db, paginate } from '../../../knexfile';
 import {
   Service,
   ServiceConnection,
+  ServiceLink,
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
+import { v4 as uuidv4 } from 'uuid';
+import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
+import { ServiceId } from '../../model/kanel/public/Service';
 
 export const loadPublicServices = async (
   context: PortalContext,
@@ -60,4 +64,23 @@ export const loadServiceBy = async (
     .where({ [field]: value })
     .select('*')
     .first();
+};
+
+export const addServiceLink = async (
+  context: PortalContext,
+  serviceId: ServiceId,
+  url: string,
+  serviceName: string
+): Promise<ServiceLink> => {
+  const dataServiceLink = {
+    id: uuidv4() as unknown as ServiceLinkId,
+    service_id: serviceId,
+    url: url,
+    name: serviceName,
+  };
+
+  const [serviceLink] = await db<ServiceLink>(context, 'Service_Link')
+    .insert(dataServiceLink)
+    .returning('*');
+  return serviceLink;
 };
