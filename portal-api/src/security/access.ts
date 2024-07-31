@@ -75,6 +75,7 @@ export const applyDbSecurity = <T>(
     'User_Service',
     'Service_Capability',
     'MalwareAnalysis',
+    'Organization',
   ];
   // If user is admin, user has no access restriction
   if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
@@ -87,15 +88,15 @@ export const applyDbSecurity = <T>(
     return queryContext;
   }
   // Standard user can access only its own organization
-  if (type === 'Organization') {
-    queryContext.rightJoin(
-      'User as security',
-      'security.organization_id',
-      '=',
-      'Organization.id'
-    );
-    return queryContext;
-  }
+  //if (type === 'Organization') {
+  //  queryContext.rightJoin(
+  //    'User as security',
+  //    'security.organization_id',
+  //    '=',
+  //    'Organization.id'
+  //  );
+  //  return queryContext;
+  //}
   // Standard user can access all services
   if (types.includes(type)) {
     return queryContext;

@@ -9,7 +9,6 @@ import {
   useRefetchableFragment,
   useSubscription,
 } from 'react-relay';
-import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
 import {
   communitiesListFragment,
   ServiceCommunityListQuery,
@@ -41,6 +40,7 @@ import {
 import { serviceCommunitiesQuery } from '../../../../__generated__/serviceCommunitiesQuery.graphql';
 import { serviceCommunityList_services$key } from '../../../../__generated__/serviceCommunityList_services.graphql';
 import { CreateCommunity } from '@/components/service/community/community-create';
+import { serviceCommunityList_fragment$data } from '../../../../__generated__/serviceCommunityList_fragment.graphql';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -61,7 +61,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   if (!me) {
     return;
   }
-  const addSubscriptionInDb = (service: serviceList_fragment$data) => {
+  const addSubscriptionInDb = (service: serviceCommunityList_fragment$data) => {
     setIsSubscriptionLoading(true);
     const handleSuccess = (message: string) => {
       setIsSubscriptionLoading(false);
@@ -105,7 +105,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     }
   };
 
-  const generateAlertText = (service: serviceList_fragment$data) => {
+  const generateAlertText = (service: serviceCommunityList_fragment$data) => {
     return service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
       ? 'Are you really sure you want to subscribe this service ? This action can not be undone.'
       : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
@@ -124,7 +124,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       (subscription) => subscription.node.service
     );
 
-  let columnsAdmin: ColumnDef<serviceList_fragment$data>[] = [
+  let columnsAdmin: ColumnDef<serviceCommunityList_fragment$data>[] = [
     {
       id: 'action',
       size: 30,
@@ -139,7 +139,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
                 asChild
                 className="w-3/4">
                 <Link
-                  href={`${row.original?.link?.url}`}
+                  href={` `}
                   target="_blank"
                   rel="noopener noreferrer nofollow">
                   {' '}
@@ -186,7 +186,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     },
   ];
 
-  let columns: ColumnDef<serviceList_fragment$data>[] = [
+  let columns: ColumnDef<serviceCommunityList_fragment$data>[] = [
     {
       id: 'name',
       header: 'Name',
@@ -217,6 +217,35 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       header: 'Description',
     },
 
+    {
+      id: 'organizations',
+      size: 30,
+      header: 'Organizations',
+      cell: ({ row }) => {
+        return (
+          <>
+            {row?.original?.organization?.map((org) => (
+              <Badge className={'cursor-default'}>{org?.name}</Badge>
+            ))}
+          </>
+        );
+      },
+    },
+    {
+      id: 'status',
+      size: 30,
+      header: 'Status',
+      cell: ({ row }) => {
+        return (
+          <>
+            <Badge className={'cursor-default'}>
+              {row?.original?.subscription?.[0]?.status ?? 'ACCEPTED'}
+            </Badge>
+          </>
+        );
+      },
+    },
+
     ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
   ];
 
@@ -241,10 +270,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   useSubscription(config);
   let servicesData = data.communities.edges.map(
     ({ node }) => node
-  ) as serviceList_fragment$data[];
+  ) as unknown as serviceCommunityList_fragment$data[];
 
+  console.log('servicesData', servicesData);
   if (shouldDisplayOnlyOwnedService && ownedServices) {
-    servicesData = ownedServices as serviceList_fragment$data[];
+    servicesData = ownedServices as serviceCommunityList_fragment$data[];
   }
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

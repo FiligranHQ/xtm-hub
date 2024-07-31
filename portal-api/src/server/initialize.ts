@@ -115,6 +115,11 @@ const initCapabilityAndRole = async () => {
       trx
     );
     await ensureRoleHasCapability(
+      ROLE_ADMIN_ORGA,
+      CAPABILITY_FRT_ACCESS_SERVICES,
+      trx
+    );
+    await ensureRoleHasCapability(
       ROLE_USER,
       CAPABILITY_FRT_ACCESS_SERVICES,
       trx

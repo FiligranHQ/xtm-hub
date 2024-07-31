@@ -124,23 +124,23 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   );
 
   if (
-    !useGrantedBYPASS ||
-    !useGrantedFRT_MANAGE_USER ||
-    !useGrantedFRT_MANAGE_SETTINGS ||
-    !useGrantedBCK_MANAGE_SERVICES ||
-    !useGrantedBCK_MANAGE_COMMUNITIES
+    useGrantedBYPASS ||
+    useGrantedFRT_MANAGE_USER ||
+    useGrantedFRT_MANAGE_SETTINGS ||
+    useGrantedBCK_MANAGE_SERVICES ||
+    useGrantedBCK_MANAGE_COMMUNITIES
   ) {
-    return null;
+    return (
+      <>
+        <li>
+          <Separator className="my-2" />
+          {open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}
+        </li>
+      </>
+    );
   }
 
-  return (
-    <>
-      <li>
-        <Separator className="my-2" />
-        {open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}
-      </li>
-    </>
-  );
+  return null;
 };
 
 export default MenuAdmin;

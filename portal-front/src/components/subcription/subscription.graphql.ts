@@ -55,7 +55,6 @@ export const subscriptionItem = graphql`
       subscription_service_type
       type
     }
-    service_url
     start_date
     end_date
     status

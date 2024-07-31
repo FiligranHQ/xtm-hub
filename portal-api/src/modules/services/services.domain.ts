@@ -1,4 +1,4 @@
-import { db, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   Service,
   ServiceConnection,
@@ -33,9 +33,28 @@ export const loadPublicServices = async (
   }
 
   const servicesConnection = await query
-    .select('*')
+    .rightJoin(
+      'Subscription as subscription',
+      'subscription.service_id',
+      '=',
+      'Service.id'
+    )
+    .leftJoin(
+      'Organization as org',
+      'subscription.organization_id',
+      '=',
+      'org.id'
+    )
+    .select([
+      'Service.*',
+      dbRaw('(json_agg(org.*))::json as organization'),
+      dbRaw('(json_agg(subscription.*))::json as subscription'),
+    ])
+    .groupBy(['Service.id'])
     .asConnection<ServiceConnection>();
 
+  console.log('servicesConnection', servicesConnection);
+  console.log('servicesConnection', servicesConnection.edges[0].node);
   const queryCount = db<Service>(context, 'Service', opts);
   if (publicOnly) {
     queryCount.where('type', '!=', 'PRIVATE');
@@ -45,7 +64,7 @@ export const loadPublicServices = async (
   } else {
     query.where('type', '!=', 'COMMUNITY');
   }
-  queryCount.countDistinct('id as totalCount').first();
+  queryCount.countDistinct('Service.id as totalCount').first();
 
   const { totalCount } = await queryCount;
 

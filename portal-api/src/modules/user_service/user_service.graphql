@@ -12,9 +12,9 @@ input UserServiceInput {
 
 type Mutation {
   addUserService(input: UserServiceInput!): UserService
-    @auth(requires: [FRT_MANAGE_USER])
+    @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
   deleteUserService(input: UserServiceInput!): UserService
-    @auth(requires: [FRT_MANAGE_USER])
+    @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
 }
 type Query {
   serviceUsers(

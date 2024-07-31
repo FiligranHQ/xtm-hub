@@ -458,8 +458,10 @@ export type Service = Node & {
   id: Scalars['ID']['output'];
   link?: Maybe<ServiceLink>;
   name: Scalars['String']['output'];
+  organization?: Maybe<Array<Maybe<Organization>>>;
   provider?: Maybe<Scalars['String']['output']>;
   status?: Maybe<Scalars['String']['output']>;
+  subscription?: Maybe<Array<Maybe<Subscription>>>;
   subscription_service_type?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
@@ -1402,8 +1404,18 @@ export type ServiceResolvers<
     ContextType
   >;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organization?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['Organization']>>>,
+    ParentType,
+    ContextType
+  >;
   provider?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  subscription?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['Subscription']>>>,
+    ParentType,
+    ContextType
+  >;
   subscription_service_type?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
