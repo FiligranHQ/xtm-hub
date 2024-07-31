@@ -81,7 +81,7 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
                   asChild
                   className="w-3/4">
                   <Link
-                    href={`${row.original.service_url}`}
+                    href={` `}
                     target="_blank"
                     rel="noopener noreferrer nofollow">
                     {' '}
