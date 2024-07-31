@@ -78,7 +78,6 @@ export const SubscriptionFormSheet: FunctionComponent<
   );
 
   const onSubmit = (values: z.infer<typeof onServiceFormSchema>) => {
-    console.log('values', values);
     commitServiceAddMutation({
       variables: {
         connections: [connectionId],

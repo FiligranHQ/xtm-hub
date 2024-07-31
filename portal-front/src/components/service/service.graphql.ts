@@ -36,6 +36,26 @@ export const serviceListFragment = graphql`
   }
 `;
 
+export const communityListFragment = graphql`
+  fragment serviceCommunityList_fragment on Service {
+    id
+    name
+    description
+    provider
+    type
+    subscription_service_type
+    status
+    organization {
+      id
+      name
+    }
+    subscription {
+      id
+      status
+    }
+  }
+`;
+
 export const subscription = graphql`
   subscription serviceListSubscription($connections: [ID!]!) {
     Service {
@@ -87,7 +107,20 @@ export const communitiesListFragment = graphql`
       edges {
         node {
           id
-          ...serviceList_fragment @relay(mask: false)
+          name
+          description
+          provider
+          type
+          subscription_service_type
+          status
+          organization {
+            id
+            name
+          }
+          subscription {
+            id
+            status
+          }
         }
       }
     }

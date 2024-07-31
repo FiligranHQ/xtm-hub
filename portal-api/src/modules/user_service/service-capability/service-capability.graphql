@@ -11,5 +11,5 @@ input EditServiceCapabilityInput {
 
 type Mutation {
   editServiceCapability(input: EditServiceCapabilityInput): UserService
-    @auth(requires: [FRT_MANAGE_USER])
+    @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
 }

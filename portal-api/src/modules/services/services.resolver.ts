@@ -16,6 +16,7 @@ import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
 import { addServiceLink, loadPublicServices } from './services.domain';
+import { getRolePortalBy } from '../role-portal/role-portal';
 
 const resolvers: Resolvers = {
   Query: {
@@ -133,6 +134,12 @@ const resolvers: Resolvers = {
       }
     },
     addServiceCommunity: async (_, { input }, context) => {
+      const role = await getRolePortalBy(
+        context,
+        'id',
+        context.user.roles_portal_id[0].id
+      );
+
       const trx = await dbTx();
       try {
         const dataService = {
@@ -141,7 +148,7 @@ const resolvers: Resolvers = {
           description: input.community_description,
           provider: 'SCRED_ONDEMAND',
           type: 'COMMUNITY',
-          creation_status: 'READY',
+          creation_status: role.name === 'ADMIN' ? 'READY' : 'PENDING',
           subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
         };
         const [addedService] = await db<Service>(context, 'Service')
@@ -194,7 +201,8 @@ const resolvers: Resolvers = {
             service_id: addedService.id,
             start_date: new Date(),
             end_date: null,
-            status: 'ACCEPTED',
+            status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
+            subscriber_id: context.user.id,
           };
 
           await db<Subscription>(context, 'Subscription')
