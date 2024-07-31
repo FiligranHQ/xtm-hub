@@ -20,7 +20,10 @@ import { DataTable, useToast } from 'filigran-ui/clients';
 import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import Link from 'next/link';
 import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
-import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
+import {
+  AddSubscriptionMutation,
+  SubscriptionEditMutation,
+} from '@/components/subcription/subscription.graphql';
 import { subscriptionCreateMutation } from '../../../../__generated__/subscriptionCreateMutation.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
@@ -28,9 +31,11 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
 import {
+  CheckIcon,
   ConstructionIcon,
   CourseOfActionIcon,
   IndicatorIcon,
+  LittleArrowIcon,
 } from 'filigran-icon';
 import {
   OrderingMode,
@@ -41,6 +46,8 @@ import { serviceCommunitiesQuery } from '../../../../__generated__/serviceCommun
 import { serviceCommunityList_services$key } from '../../../../__generated__/serviceCommunityList_services.graphql';
 import { CreateCommunity } from '@/components/service/community/community-create';
 import { serviceCommunityList_fragment$data } from '../../../../__generated__/serviceCommunityList_fragment.graphql';
+import { subscriptionItem_fragment$data } from '../../../../__generated__/subscriptionItem_fragment.graphql';
+import { subscriptionEditMutation } from '../../../../__generated__/subscriptionEditMutation.graphql';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -163,7 +170,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
                   }
                   onClickContinue={useCallback(
                     () => addSubscriptionInDb(row.original),
-                    []
+                    [row.original]
                   )}>
                   {generateAlertText(row.original)}
                 </AlertDialogComponent>
@@ -180,6 +187,42 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
                 </Link>
               </Button>{' '}
             </GuardCapacityComponent>
+          </>
+        );
+      },
+    },
+    {
+      id: 'accept',
+      size: 30,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => {
+        return (
+          <>
+            {row?.original?.subscription &&
+            row.original.subscription[0]?.status === 'REQUESTED' ? (
+              <GuardCapacityComponent capacityRestriction={['BYPASS']}>
+                <Button
+                  variant="ghost"
+                  onClick={useCallback(
+                    () => editSubscriptions('ACCEPTED', row.original),
+                    [row.original]
+                  )}>
+                  <CheckIcon className="h-6 w-6 flex-auto text-green" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={useCallback(
+                    () => editSubscriptions('REFUSED', row.original),
+                    [row.original]
+                  )}>
+                  <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
+                </Button>
+              </GuardCapacityComponent>
+            ) : (
+              <></>
+            )}
           </>
         );
       },
@@ -225,7 +268,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         return (
           <>
             {row?.original?.organization?.map((org) => (
-              <Badge className={'cursor-default'}>{org?.name}</Badge>
+              <Badge
+                key={org?.id}
+                className={'cursor-default'}>
+                {org?.name}
+              </Badge>
             ))}
           </>
         );
@@ -248,6 +295,58 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
 
     ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
   ];
+
+  const editSubscriptions = (
+    status: string,
+    serviceData: serviceCommunityList_fragment$data
+  ) => {
+    serviceData.subscription?.forEach((subscription) => {
+      editSubscription(status, subscription as subscriptionItem_fragment$data);
+    });
+  };
+
+  const [commitSubscriptionMutation] = useMutation<subscriptionEditMutation>(
+    SubscriptionEditMutation
+  );
+
+  const editSubscription = useCallback(
+    (status: string, subscription: subscriptionItem_fragment$data) => {
+      console.log('subscription', subscription);
+      if (!subscription.organization_id || !subscription.service_id) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{'Error while editing the subscription.'}</>,
+        });
+        return;
+      }
+      commitSubscriptionMutation({
+        variables: {
+          input: {
+            id: subscription.id,
+            organization_id: subscription.organization_id,
+            service_id: subscription.service_id,
+            status: status,
+          },
+          id: subscription.id,
+        },
+        onCompleted: () => {
+          toast({
+            title: 'Success',
+            description: <>{'Subscription accepted'}</>,
+          });
+        },
+        onError: (error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
+        },
+      });
+    },
+    [commitSubscriptionMutation, toast]
+  );
 
   const queryData = usePreloadedQuery<serviceCommunitiesQuery>(
     ServiceCommunityListQuery,
@@ -272,7 +371,6 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     ({ node }) => node
   ) as unknown as serviceCommunityList_fragment$data[];
 
-  console.log('servicesData', servicesData);
   if (shouldDisplayOnlyOwnedService && ownedServices) {
     servicesData = ownedServices as serviceCommunityList_fragment$data[];
   }

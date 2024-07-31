@@ -8,6 +8,7 @@ import { PortalContext } from '../../model/portal-context';
 import { v4 as uuidv4 } from 'uuid';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { ServiceId } from '../../model/kanel/public/Service';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 
 export const loadPublicServices = async (
   context: PortalContext,
@@ -53,8 +54,12 @@ export const loadPublicServices = async (
     .groupBy(['Service.id'])
     .asConnection<ServiceConnection>();
 
-  console.log('servicesConnection', servicesConnection);
-  console.log('servicesConnection', servicesConnection.edges[0].node);
+  servicesConnection.edges.map((edge) => {
+    edge.node.subscription.map((sub) => {
+      sub.service_id = toGlobalId('Service', sub.service_id);
+      sub.organization_id = toGlobalId('Organization', sub.organization_id);
+    });
+  });
   const queryCount = db<Service>(context, 'Service', opts);
   if (publicOnly) {
     queryCount.where('type', '!=', 'PRIVATE');

@@ -120,6 +120,10 @@ export const communitiesListFragment = graphql`
           subscription {
             id
             status
+            organization_id
+            service_id
+            start_date
+            end_date
           }
         }
       }

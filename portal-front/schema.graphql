@@ -44,12 +44,12 @@ type Query {
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
-  settings: Settings!
   malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  settings: Settings!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
 }
 
 enum UserServiceOrdering {
@@ -167,7 +167,6 @@ type UserSubscription {
 
 type Subscription implements Node {
   User: UserSubscription
-  ActionTracking: TrackingSubscription
   id: ID!
   organization_id: ID!
   organization: Organization
@@ -177,32 +176,9 @@ type Subscription implements Node {
   start_date: Date
   end_date: Date
   status: String
+  ActionTracking: TrackingSubscription
   MalwareAnalysis: MalwareAnalysisSubscription
   Service: ServiceSubscription
-}
-
-type ActionTracking implements Node {
-  id: ID!
-  contextual_id: String!
-  status: String
-  created_at: Date!
-  ended_at: Date
-  message_tracking: [MessageTracking!]!
-}
-
-type MessageTracking implements Node {
-  id: ID!
-  tracking_id: ID
-  created_at: Date!
-  technical: Boolean
-  type: String!
-  tracking_info: JSON
-}
-
-type TrackingSubscription {
-  add: ActionTracking
-  edit: ActionTracking
-  delete: ActionTracking
 }
 
 enum SubscriptionOrdering {
@@ -236,6 +212,30 @@ input EditSubscriptionInput {
   status: String
 }
 
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
+}
+
 enum OrganizationOrdering {
   name
 }
@@ -258,16 +258,6 @@ type OrganizationConnection {
 
 input EditOrganizationInput {
   name: String!
-}
-
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
 }
 
 enum MalwareAnalysisOrdering {
@@ -308,6 +298,25 @@ type MalwareAnalysisSubscription {
   add: MalwareAnalysis
   edit: MalwareAnalysis
   delete: MalwareAnalysis
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
 }
 
 enum ServiceOrdering {
@@ -373,15 +382,6 @@ scalar JSON
 scalar Date
 
 scalar Upload
-
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
-}
 
 type ServiceCapability implements Node {
   id: ID!
