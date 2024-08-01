@@ -32,6 +32,7 @@ import {
   userEditFormSchema,
   userFormSchema,
 } from '@/components/admin/user/user-form.schema';
+import useGranted from '@/hooks/useGranted';
 
 interface UserFormSheetProps {
   user?: userSlug_fragment$data;
@@ -56,16 +57,23 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   handleSubmit,
   validationSchema,
 }) => {
-  const currentRolesPortal = user?.roles_portal_id.map(
+  const currentRolesPortal = user?.roles_portal_id?.map(
     (rolePortalData) => rolePortalData.id
   );
   const rolePortal = getRolesPortal();
+  const isFullAdmin = useGranted('BYPASS');
 
-  const rolePortalData =
-    rolePortal?.rolesPortal.map(({ name, id }) => ({
+  let rolePortalData =
+    rolePortal?.rolesPortal?.map(({ name, id }) => ({
       label: name,
       value: id,
     })) ?? [];
+
+  if (!isFullAdmin) {
+    rolePortalData = rolePortalData.filter((rolePortal) => {
+      return rolePortal.label !== 'ADMIN' && rolePortal.label !== 'ADMIN_COMMU';
+    });
+  }
   const [organizationData] = getOrganizations();
   const defaultUser = { ...user };
   const form = useForm<z.infer<typeof validationSchema>>({
@@ -189,34 +197,41 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="organization_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an organization" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {organizationData.organizations.edges.map(({ node }) => (
-                        <SelectItem
-                          key={node.id}
-                          value={node.id}>
-                          {node.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {isFullAdmin ? (
+              <FormField
+                control={form.control}
+                name="organization_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Organization</FormLabel>
+                    <Select
+                      disabled={!isFullAdmin}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an organization" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {organizationData.organizations.edges.map(
+                          ({ node }) => (
+                            <SelectItem
+                              key={node.id}
+                              value={node.id}>
+                              {node.name}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <> </>
+            )}
 
             <SheetFooter className="pt-2">
               <SheetClose asChild>

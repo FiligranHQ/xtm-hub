@@ -16,14 +16,14 @@ const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   capacityRestriction,
   displayError = true,
 }) => {
-  const authorized = capacityRestriction.every(useGranted);
-  if (authorized === false && displayError) {
+  const authorized = capacityRestriction.some(useGranted);
+  if (!authorized && displayError) {
     return (
       <>
         <h1>Error</h1>You are not authorized to get this page.
       </>
     );
-  } else if (authorized === false) {
+  } else if (!authorized) {
     return <></>;
   }
   return <>{children}</>;
