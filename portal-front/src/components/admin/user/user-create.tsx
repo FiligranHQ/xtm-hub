@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { userListCreateMutation } from '../../../../__generated__/userListCreateMutation.graphql';
@@ -12,6 +12,9 @@ import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
 import { AddIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui/servers';
 import { useToast } from 'filigran-ui/clients';
+import useGranted from '@/hooks/useGranted';
+import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
+import { Portal, portalContext } from '@/components/portal-context';
 
 interface CreateUserProps {
   connectionId: string;
@@ -26,6 +29,13 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
   const [commitUserMutation] = useMutation<userListCreateMutation>(
     UserListCreateMutation
   );
+  const { me } = useContext<Portal>(portalContext);
+  const isFullAdmin = useGranted('BYPASS');
+  const user = {
+    organization: {
+      id: me?.organization.id,
+    },
+  } as userSlug_fragment$data;
 
   const handleSubmit = (
     values: z.infer<typeof userFormSchema> | z.infer<typeof userEditFormSchema>
@@ -55,6 +65,7 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
       open={openSheet}
       setOpen={setOpenSheet}
       validationSchema={userFormSchema}
+      user={isFullAdmin ? undefined : user}
       trigger={
         <Button
           size="icon"
