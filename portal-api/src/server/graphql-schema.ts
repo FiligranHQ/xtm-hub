@@ -17,7 +17,7 @@ import malwareAnalysisResolver from '../modules/malware-analysis/malware-analysi
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
-  return globFiles.map((t) => fs.readFileSync(t, 'utf-8'));
+  return globFiles.sort().map((t) => fs.readFileSync(t, 'utf-8'));
 };
 
 const typeDefFiles = await getGlobContent('src/**/*.graphql');
