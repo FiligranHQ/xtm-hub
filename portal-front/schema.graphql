@@ -1,55 +1,281 @@
 directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
-enum Restriction {
-  BYPASS
-  BCK_MANAGE_SERVICES
-  BCK_MANAGE_COMMUNITIES
-  FRT_SERVICE_SUBSCRIBER
-  FRT_MANAGE_SETTINGS
-  FRT_ACCESS_BILLING
-  FRT_MANAGE_USER
-  FRT_ACCESS_SERVICES
+scalar JSON
+
+scalar Date
+
+scalar Upload
+
+enum MalwareAnalysisOrdering {
+  created_at
 }
 
-interface Node {
+type MalwareAnalysisResult implements Node {
   id: ID!
+  result: JSON!
 }
 
-enum OrderingMode {
-  asc
-  desc
+type GlimpsCallbackTemporary {
+  result: JSON!
 }
 
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
-}
-
-type MergeEvent implements Node {
+type MalwareAnalysis implements Node {
   id: ID!
-  from: ID!
-  target: ID!
+  name: String!
+  created_at: Date!
+  ended_at: Date
+  result: JSON!
+  status: String!
+  type: String!
+}
+
+type MalwareAnalysisEdge {
+  cursor: String!
+  node: MalwareAnalysis!
+}
+
+type MalwareAnalysisConnection {
+  totalCount: Int!
+  edges: [MalwareAnalysisEdge!]!
+  pageInfo: PageInfo!
 }
 
 type Query {
-  node(id: ID!): Node
+  malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
+  rolePortal(id: ID!): RolePortal
+  rolesPortal: [RolePortal!]!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  settings: Settings!
+  subscription(id: ID!): Subscription
+  subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
+  subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
-  subscription(id: ID!): Subscription
-  subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
-  subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
-  settings: Settings!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  rolePortal(id: ID!): RolePortal
-  rolesPortal: [RolePortal!]!
-  organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
-  malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
+  node(id: ID!): Node
+}
+
+type Mutation {
+  malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
+  malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
+  addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+  editService(id: ID!, name: String!): Service
+  addService(input: AddServiceInput): Subscription
+  addServiceCommunity(input: AddServiceCommunityInput): Service
+  deleteService(id: ID!): Service
+  addSubscription(service_id: String, organization_id: ID, user_id: ID, status: String): Subscription
+  editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
+  editServiceCapability(input: EditServiceCapabilityInput): UserService
+  addUserService(input: UserServiceInput!): UserService
+  deleteUserService(input: UserServiceInput!): UserService
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
+  editUser(id: ID!, input: EditUserInput!): User
+  deleteUser(id: ID!): User
+  login(email: String!, password: String): User
+  logout: ID!
+}
+
+type MalwareAnalysisSubscription {
+  add: MalwareAnalysis
+  edit: MalwareAnalysis
+  delete: MalwareAnalysis
+}
+
+type Subscription implements Node {
+  MalwareAnalysis: MalwareAnalysisSubscription
+  Service: ServiceSubscription
+  id: ID!
+  organization_id: ID!
+  organization: Organization
+  service_id: ID!
+  service_url: String
+  service: Service
+  start_date: Date
+  end_date: Date
+  status: String
+  ActionTracking: TrackingSubscription
+  User: UserSubscription
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input EditOrganizationInput {
+  name: String!
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type RolePortalID implements Node {
+  id: ID!
+}
+
+type ServiceLink implements Node {
+  id: ID!
+  service_id: ID
+  url: String
+  name: String
+}
+
+enum ServiceOrdering {
+  name
+  description
+  provider
+  type
+}
+
+type Service implements Node {
+  id: ID!
+  name: String!
+  description: String
+  provider: String
+  type: String
+  subscription_service_type: String
+  status: String
+  link: ServiceLink
+  organization: [Organization]
+  subscription: [Subscription]
+}
+
+type ServiceEdge {
+  cursor: String!
+  node: Service!
+}
+
+type ServiceConnection {
+  totalCount: Int!
+  edges: [ServiceEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddServiceInput {
+  service_name: String
+  service_description: String
+  fee_type: String
+  price: Int
+  organization_id: String
+  url: String
+}
+
+input AddServiceCommunityInput {
+  community_name: String
+  community_description: String
+  price: Int
+  fee_type: String
+  open_feed_url: String
+  private_feed_url: String
+  cyber_weather_url: String
+  next_cloud_url: String
+  organizations_id: [String]
+}
+
+type ServiceSubscription {
+  add: Service
+  edit: Service
+  delete: Service
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+}
+
+enum SubscriptionOrdering {
+  organization_name
+  start_date
+  end_date
+  status
+  service_name
+  service_provider
+  service_type
+  service_description
+}
+
+type SubscriptionEdge {
+  cursor: String!
+  node: Subscription!
+}
+
+type SubscriptionConnection {
+  totalCount: Int!
+  edges: [SubscriptionEdge!]!
+  pageInfo: PageInfo!
+}
+
+input EditSubscriptionInput {
+  id: ID!
+  organization_id: ID!
+  service_id: ID!
+  start_date: Date
+  end_date: Date
+  status: String
+}
+
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
+}
+
+type ServiceCapability implements Node {
+  id: ID!
+  service_capability_name: String
+  user_service_id: ID!
+}
+
+input EditServiceCapabilityInput {
+  user_service_id: String
+  capabilities: [String]!
 }
 
 enum UserServiceOrdering {
@@ -62,29 +288,6 @@ input UserServiceInput {
   email: String!
   capabilities: [String]
   subscriptionId: String!
-}
-
-type Mutation {
-  addUserService(input: UserServiceInput!): UserService
-  deleteUserService(input: UserServiceInput!): UserService
-  mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
-  editUser(id: ID!, input: EditUserInput!): User
-  deleteUser(id: ID!): User
-  login(email: String!, password: String): User
-  logout: ID!
-  addSubscription(service_id: String, organization_id: ID, user_id: ID, status: String): Subscription
-  editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
-  editService(id: ID!, name: String!): Service
-  addService(input: AddServiceInput): Subscription
-  addServiceCommunity(input: AddServiceCommunityInput): Service
-  deleteService(id: ID!): Service
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
-  malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
-  malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
-  editServiceCapability(input: EditServiceCapabilityInput): UserService
 }
 
 type UserServiceConnection {
@@ -165,238 +368,35 @@ type UserSubscription {
   merge: MergeEvent
 }
 
-type Subscription implements Node {
-  User: UserSubscription
-  ActionTracking: TrackingSubscription
-  id: ID!
-  organization_id: ID!
-  organization: Organization
-  service_id: ID!
-  service_url: String
-  service: Service
-  start_date: Date
-  end_date: Date
-  status: String
-  Service: ServiceSubscription
-  MalwareAnalysis: MalwareAnalysisSubscription
+enum Restriction {
+  BYPASS
+  BCK_MANAGE_SERVICES
+  BCK_MANAGE_COMMUNITIES
+  FRT_SERVICE_SUBSCRIBER
+  FRT_MANAGE_SETTINGS
+  FRT_ACCESS_BILLING
+  FRT_MANAGE_USER
+  FRT_ACCESS_SERVICES
 }
 
-type ActionTracking implements Node {
-  id: ID!
-  contextual_id: String!
-  status: String
-  created_at: Date!
-  ended_at: Date
-  message_tracking: [MessageTracking!]!
-}
-
-type MessageTracking implements Node {
-  id: ID!
-  tracking_id: ID
-  created_at: Date!
-  technical: Boolean
-  type: String!
-  tracking_info: JSON
-}
-
-type TrackingSubscription {
-  add: ActionTracking
-  edit: ActionTracking
-  delete: ActionTracking
-}
-
-enum SubscriptionOrdering {
-  organization_name
-  start_date
-  end_date
-  status
-  service_name
-  service_provider
-  service_type
-  service_description
-}
-
-type SubscriptionEdge {
-  cursor: String!
-  node: Subscription!
-}
-
-type SubscriptionConnection {
-  totalCount: Int!
-  edges: [SubscriptionEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditSubscriptionInput {
-  id: ID!
-  organization_id: ID!
-  service_id: ID!
-  start_date: Date
-  end_date: Date
-  status: String
-}
-
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_providers: [PlatformProvider!]!
-}
-
-enum ServiceOrdering {
-  name
-  description
-  provider
-  type
-}
-
-type Service implements Node {
-  id: ID!
-  name: String!
-  description: String
-  provider: String
-  type: String
-  subscription_service_type: String
-  status: String
-  link: ServiceLink
-  organization: [Organization]
-  subscription: [Subscription]
-}
-
-type ServiceEdge {
-  cursor: String!
-  node: Service!
-}
-
-type ServiceConnection {
-  totalCount: Int!
-  edges: [ServiceEdge!]!
-  pageInfo: PageInfo!
-}
-
-input AddServiceInput {
-  service_name: String
-  service_description: String
-  fee_type: String
-  price: Int
-  organization_id: String
-  url: String
-}
-
-input AddServiceCommunityInput {
-  community_name: String
-  community_description: String
-  price: Int
-  fee_type: String
-  open_feed_url: String
-  private_feed_url: String
-  cyber_weather_url: String
-  next_cloud_url: String
-  organizations_id: [String]
-}
-
-type ServiceSubscription {
-  add: Service
-  edit: Service
-  delete: Service
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type RolePortalID implements Node {
+interface Node {
   id: ID!
 }
 
-enum OrganizationOrdering {
-  name
+enum OrderingMode {
+  asc
+  desc
 }
 
-type Organization implements Node {
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type MergeEvent implements Node {
   id: ID!
-  name: String!
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditOrganizationInput {
-  name: String!
-}
-
-enum MalwareAnalysisOrdering {
-  created_at
-}
-
-type MalwareAnalysisResult implements Node {
-  id: ID!
-  result: JSON!
-}
-
-type GlimpsCallbackTemporary {
-  result: JSON!
-}
-
-type MalwareAnalysis implements Node {
-  id: ID!
-  name: String!
-  created_at: Date!
-  ended_at: Date
-  result: JSON!
-  status: String!
-  type: String!
-}
-
-type MalwareAnalysisEdge {
-  cursor: String!
-  node: MalwareAnalysis!
-}
-
-type MalwareAnalysisConnection {
-  totalCount: Int!
-  edges: [MalwareAnalysisEdge!]!
-  pageInfo: PageInfo!
-}
-
-type MalwareAnalysisSubscription {
-  add: MalwareAnalysis
-  edit: MalwareAnalysis
-  delete: MalwareAnalysis
-}
-
-scalar JSON
-
-scalar Date
-
-scalar Upload
-
-type ServiceCapability implements Node {
-  id: ID!
-  service_capability_name: String
-  user_service_id: ID!
-}
-
-input EditServiceCapabilityInput {
-  user_service_id: String
-  capabilities: [String]!
-}
-
-type ServiceLink implements Node {
-  id: ID!
-  service_id: ID
-  url: String
-  name: String
+  from: ID!
+  target: ID!
 }
