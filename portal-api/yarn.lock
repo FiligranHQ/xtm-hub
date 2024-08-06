@@ -2685,6 +2685,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nodemailer@npm:6.4.15":
+  version: 6.4.15
+  resolution: "@types/nodemailer@npm:6.4.15"
+  dependencies:
+    "@types/node": "*"
+  checksum: f6f9a2f8a669703ecc3ca6359c12345b16f6b2e5691b93c406b9af7de639c02092ec00133526e6fecd8c60d884890a7cd0f967d8e64bedab46d5c3d8be0882d7
+  languageName: node
+  linkType: hard
+
 "@types/object-path@npm:^0.11.1":
   version: 0.11.4
   resolution: "@types/object-path@npm:0.11.4"
@@ -6680,6 +6689,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nodemailer@npm:^6.9.14":
+  version: 6.9.14
+  resolution: "nodemailer@npm:6.9.14"
+  checksum: 4037a45e24dbca47c0ea9a962d2c316deef7afe6ebf73c7da3a84942a8d501d85aae7f36dc1c5dac58dec7275f7cb1c92fd4f9c7c19f037225019ad2f402a9dc
+  languageName: node
+  linkType: hard
+
 "noms@npm:0.0.0":
   version: 0.0.0
   resolution: "noms@npm:0.0.0"
@@ -7328,6 +7344,7 @@ __metadata:
     "@types/express-session": 1.18.0
     "@types/graphql-upload": 16.0.7
     "@types/node": 22.1.0
+    "@types/nodemailer": 6.4.15
     "@types/uuid": 10.0.0
     "@typescript-eslint/eslint-plugin": 8.0.0
     "@typescript-eslint/parser": 8.0.0
@@ -7354,6 +7371,7 @@ __metadata:
     kanel: 3.9.1
     knex: 3.1.0
     lint-staged: 15.2.8
+    nodemailer: ^6.9.14
     openid-client: 5.6.5
     passport: 0.7.0
     pg: 8.12.0

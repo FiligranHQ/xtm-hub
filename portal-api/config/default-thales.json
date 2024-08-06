@@ -19,6 +19,15 @@
     "logout_callback_url": ["http://localhost:3000/oidc/callback"],
     "response_types": ["code"]
   },
+  "smtp_options": {
+    "host": "changeMe",
+    "port": 587,
+    "secure": false,
+    "auth": {
+      "user": "changeMe",
+      "pass": "changeMe"
+    }
+  },
   "init_services": [
     {
       "service": {
