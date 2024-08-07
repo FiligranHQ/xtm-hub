@@ -49,6 +49,7 @@ export const subscriptionItem = graphql`
     }
     organization_id
     service_id
+    service_url
     service {
       name
       id
