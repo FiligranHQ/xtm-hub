@@ -45,8 +45,13 @@ export const loadPublicServices = async (
       '=',
       'org.id'
     )
-    .select(['Service.*', dbRaw('(json_agg(org.*))::json as organization')])
-    .groupBy(['Service.id'])
+    .leftJoin('Service_Link as link', 'Service.id', '=', 'link.service_id')
+    .select([
+      'Service.*',
+      dbRaw('(json_agg(org.*))::json as organization'),
+      dbRaw('row_to_json(link.*) as link'),
+    ])
+    .groupBy(['Service.id', 'link.*'])
     .asConnection<ServiceConnection>();
 
   const queryCount = db<Service>(context, 'Service', opts);
