@@ -4,19 +4,20 @@ import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
 import { Knex } from 'knex';
 import { User } from '../model/user';
 import { PortalContext } from '../model/portal-context';
-import { CAPABILITY_BYPASS } from '../portal.const';
+import { CAPABILITY_BYPASS, CAPABILITY_FRT_MANAGE_USER } from '../portal.const';
+import MalwareAnalysis from '../model/kanel/public/MalwareAnalysis';
+import { loadUserBy } from '../modules/users/users.domain';
 
-export const isUserGranted = (user: User, capability: Capability) => {
-  if (!user) return false;
-  const ids = user.capabilities.map((c) => c.id);
-  return ids.includes(CAPABILITY_BYPASS.id) || ids.includes(capability.id);
-};
-
+const isUserGranted = (user: User, capability: Capability) =>
+  !!user &&
+  user.capabilities.some(
+    (c) => c.id === CAPABILITY_BYPASS.id || c.id === capability.id
+  );
 /**
  * This method will filter every event to distribute real time data to users that have access to it
  * Data event must be consistent to provide all information needed to infer security access.
  */
-export const isNodeAccessible = (
+export const isNodeAccessible = async (
   user: User,
   data: { [action in ActionType]: TypedNode }
 ) => {
@@ -33,7 +34,6 @@ export const isNodeAccessible = (
     'Service_Link',
     'User_Service',
     'Service_Capability',
-    'MalwareAnalysis',
   ];
   const type = node.__typename;
   // If user have bypass do not apply security layer
@@ -41,12 +41,19 @@ export const isNodeAccessible = (
     return true;
   }
   if (type === 'User') {
-    // TODO Users can only be dispatched to admin
-    return true;
+    // Users can only be dispatched to admin
+    return isUserGranted(user, CAPABILITY_FRT_MANAGE_USER);
   }
   if (type === 'Organization') {
     // TODO Organization can be dispatched to admin or if user is part of
+    // We do not send any organization by SSE for the moment
     return true;
+  }
+  if (type === 'MalwareAnalysis') {
+    // TODO Dispatch only if user is part of the same organization
+    const malwareObj = node as unknown as MalwareAnalysis;
+    const userFromMalwareObj = await loadUserBy('User.id', malwareObj.user_id);
+    return user.organization_id === userFromMalwareObj.organization_id;
   }
   if (availableTypes.includes(type)) {
     return true;

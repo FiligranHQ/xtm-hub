@@ -27,9 +27,9 @@ export const dispatch = async (
 
 export const listen = (context: PortalContext, topics: DatabaseType[]) => {
   const iteratorFn = () => pubsub.asyncIterator(topics);
-  const filterFn = (event: PubEvent) => {
+  const filterFn = async (event: PubEvent) => {
     const values = Object.values(event);
-    return isNodeAccessible(context.user, values[0]);
+    return await isNodeAccessible(context.user, values[0]);
   };
   return withFilter(iteratorFn, filterFn)();
 };
