@@ -11,19 +11,6 @@ export const communityFormSchema = z.object({
   fee_type: z.string().min(2, {
     message: 'FeeType must be at least 2 characters.',
   }),
-  open_feed_url: z.string().min(2, {
-    message: 'Url must be at least 2 characters.',
-  }),
-  private_feed_url: z.string().min(2, {
-    message: 'Url must be at least 2 characters.',
-  }),
-  cyber_weather_url: z.string().min(2, {
-    message: 'Url must be at least 2 characters.',
-  }),
-  next_cloud_url: z.string().min(2, {
-    message: 'Url must be at least 2 characters.',
-  }),
-
   organizations_id: z
     .array(z.string())
     .min(1, { message: 'Choose an organization to be part of this community' }),
