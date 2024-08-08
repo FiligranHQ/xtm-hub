@@ -52,13 +52,9 @@ export type ActionTracking = Node & {
 export type AddServiceCommunityInput = {
   community_description?: InputMaybe<Scalars['String']['input']>;
   community_name?: InputMaybe<Scalars['String']['input']>;
-  cyber_weather_url?: InputMaybe<Scalars['String']['input']>;
   fee_type?: InputMaybe<Scalars['String']['input']>;
-  next_cloud_url?: InputMaybe<Scalars['String']['input']>;
-  open_feed_url?: InputMaybe<Scalars['String']['input']>;
   organizations_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   price?: InputMaybe<Scalars['Int']['input']>;
-  private_feed_url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AddServiceInput = {
@@ -745,7 +741,7 @@ export type DirectiveResolverFn<
 ) => TResult | Promise<TResult>;
 
 /** Mapping of interface types */
-export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> =
+export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
   ResolversObject<{
     Node:
       | ActionTracking

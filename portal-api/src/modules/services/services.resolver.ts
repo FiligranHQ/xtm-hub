@@ -15,7 +15,7 @@ import { ServiceId } from '../../model/kanel/public/Service';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
-import { addServiceLink, loadPublicServices } from './services.domain';
+import { loadPublicServices } from './services.domain';
 import { getRolePortalBy } from '../role-portal/role-portal';
 
 const resolvers: Resolvers = {
@@ -166,31 +166,6 @@ const resolvers: Resolvers = {
         await db<ServicePrice>(context, 'Service_Price')
           .insert(dataServicePrice)
           .returning('*');
-
-        addServiceLink(
-          context,
-          addedService.id as unknown as ServiceId,
-          input.open_feed_url,
-          'OpenFeed'
-        );
-        addServiceLink(
-          context,
-          addedService.id as unknown as ServiceId,
-          input.private_feed_url,
-          'PrivateFeed'
-        );
-        addServiceLink(
-          context,
-          addedService.id as unknown as ServiceId,
-          input.cyber_weather_url,
-          'CyberWeather'
-        );
-        addServiceLink(
-          context,
-          addedService.id as unknown as ServiceId,
-          input.next_cloud_url,
-          'NextCloud'
-        );
 
         let dataSubscription;
 

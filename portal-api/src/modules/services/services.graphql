@@ -42,10 +42,6 @@ input AddServiceCommunityInput {
   community_description: String
   price: Int
   fee_type: String
-  open_feed_url: String
-  private_feed_url: String
-  cyber_weather_url: String
-  next_cloud_url: String
   organizations_id: [String]
 }
 type Mutation {
