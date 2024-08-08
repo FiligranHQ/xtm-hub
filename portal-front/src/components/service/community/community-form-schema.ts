@@ -14,4 +14,5 @@ export const communityFormSchema = z.object({
   organizations_id: z
     .array(z.string())
     .min(1, { message: 'Choose an organization to be part of this community' }),
+  basic_services: z.array(z.string()),
 });

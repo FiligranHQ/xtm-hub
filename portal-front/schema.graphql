@@ -190,6 +190,7 @@ input AddServiceCommunityInput {
   price: Int
   fee_type: String
   organizations_id: [String]
+  basic_services: [String]
 }
 
 type ServiceSubscription {
