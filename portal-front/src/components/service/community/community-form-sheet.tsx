@@ -47,6 +47,20 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
   handleSubmit,
   validationSchema,
 }) => {
+  const servicesData = [
+    {
+      label: 'OpenFeed',
+      value: 'OpenFeed',
+    },
+    {
+      label: 'NextCloud',
+      value: 'NextCloud',
+    },
+    {
+      label: 'OpenCTI',
+      value: 'OpenCTI',
+    },
+  ];
   const [organizations] = getOrganizations();
   const organizationsData =
     organizations.organizations.edges.map(({ node }) => ({
@@ -179,6 +193,27 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                       placeholder="Select organizations"
+                      variant="inverted"
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="basic_services"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Services wanted</FormLabel>
+                  <FormControl>
+                    <MultiSelectFormField
+                      options={servicesData}
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Select services"
                       variant="inverted"
                     />
                   </FormControl>

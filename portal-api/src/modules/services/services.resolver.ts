@@ -15,7 +15,7 @@ import { ServiceId } from '../../model/kanel/public/Service';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
-import { loadPublicServices } from './services.domain';
+import { addServiceLink, loadPublicServices } from './services.domain';
 import { getRolePortalBy } from '../role-portal/role-portal';
 
 const resolvers: Resolvers = {
@@ -183,6 +183,16 @@ const resolvers: Resolvers = {
           await db<Subscription>(context, 'Subscription')
             .insert(dataSubscription)
             .returning('*');
+        }
+
+        for (const serviceLink of input.basic_services) {
+          // TODO Call AWX to add service to community
+          addServiceLink(
+            context,
+            addedService.id as unknown as ServiceId,
+            undefined,
+            serviceLink
+          );
         }
 
         return addedService;
