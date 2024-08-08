@@ -9,8 +9,10 @@ import Login from '@/components/login/login';
 import AppContext from '@/components/app-context';
 import HeaderComponent from '@/components/header';
 import PageLoader from './page-loader';
-import {ContentLayout} from '@/components/content-layout';
-import meLoaderQueryNode, {meLoaderQuery,} from '../../__generated__/meLoaderQuery.graphql';
+import { ContentLayout } from '@/components/content-layout';
+import meLoaderQueryNode, {
+  meLoaderQuery,
+} from '../../__generated__/meLoaderQuery.graphql';
 
 // Component interface
 interface RootLayoutProps {

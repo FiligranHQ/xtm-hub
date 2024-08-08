@@ -30,7 +30,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
       className={cn(
         buttonVariants({
           variant: 'ghost',
-          className: ' w-full justify-start border-none',
+          className: 'w-full justify-start border-none',
         })
       )}>
       <Icon className="mr-2 h-4 w-4 flex-auto flex-shrink-0 flex-grow-0" />
@@ -41,6 +41,10 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
 
 const Menu = () => {
   const [open, setOpen] = useState(false);
+  const handleOpenMenu = useCallback(
+    () => setOpen((prev0pen) => !prev0pen),
+    []
+  );
   return (
     <aside
       className={cn(
@@ -52,7 +56,7 @@ const Menu = () => {
           <li>
             <Button
               variant="ghost"
-              onClick={useCallback(() => setOpen(!open), [])}>
+              onClick={handleOpenMenu}>
               <KeyboardArrowLeftIcon
                 className={cn(
                   'h-4 w-4 flex-shrink-0 flex-grow-0 p-1 duration-300 ease-in-out',
@@ -70,7 +74,6 @@ const Menu = () => {
             />
           </li>
           <MenuUser open={open} />
-
           <MenuAdmin open={open} />
         </ul>
       </nav>

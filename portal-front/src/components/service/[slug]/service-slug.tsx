@@ -5,8 +5,7 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { DataTable } from 'filigran-ui/clients';
-import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { FunctionComponent, useMemo, useState } from 'react';
 import { Badge, Button } from 'filigran-ui/servers';
 import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
@@ -36,9 +35,7 @@ interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceUserSlugQuery>;
 }
 
-const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
-  queryRef,
-}) => {
+const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
   const [openSheet, setOpenSheet] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
 
@@ -149,66 +146,69 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
     setPagination(newPaginationValue);
   };
 
-  const columns: ColumnDef<UserServiceData>[] = [
-    {
-      accessorKey: 'user.first_name',
-      id: 'first_name',
-      header: 'First Name',
-    },
-    {
-      accessorKey: 'user.last_name',
-      id: 'last_name',
-      header: 'Last Name',
-    },
-    {
-      accessorKey: 'user.email',
-      id: 'email',
-      header: 'Email',
-    },
-    {
-      accessorKey: 'service_capability_names',
-      id: 'service_capability_names',
-      header: 'Capabilities',
-      enableSorting: false,
-      cell: ({ row }) => {
-        return (
-          <>
-            {row.original?.service_capability?.map((service_capa) => (
-              <Badge
-                key={service_capa.id}
-                className="mb-2 mr-2 mt-2">
-                {service_capa.service_capability_name}
-              </Badge>
-            ))}
-          </>
-        );
+  const columns: ColumnDef<UserServiceData>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'user.first_name',
+        id: 'first_name',
+        header: 'First Name',
       },
-    },
-    {
-      id: 'actions',
-      cell: ({ row }) => {
-        return (
-          <>
-            <Button
-              variant={'ghost'}
-              onClick={useCallback(() => {
-                setCurrentUser(row.original);
-                setOpenSheet(true);
-              }, [])}>
-              <ChevronIcon className="h-4 w-4"></ChevronIcon>
-            </Button>
-            <Button
-              variant={'ghost'}
-              onClick={useCallback(() => {
-                deleteCurrentUser(row.original);
-              }, [])}>
-              <LittleArrowIcon className="h-4 w-4"></LittleArrowIcon>
-            </Button>
-          </>
-        );
+      {
+        accessorKey: 'user.last_name',
+        id: 'last_name',
+        header: 'Last Name',
       },
-    },
-  ];
+      {
+        accessorKey: 'user.email',
+        id: 'email',
+        header: 'Email',
+      },
+      {
+        accessorKey: 'service_capability_names',
+        id: 'service_capability_names',
+        header: 'Capabilities',
+        enableSorting: false,
+        cell: ({ row }) => {
+          return (
+            <>
+              {row.original?.service_capability?.map((service_capa) => (
+                <Badge
+                  key={service_capa.id}
+                  className="mb-2 mr-2 mt-2">
+                  {service_capa.service_capability_name}
+                </Badge>
+              ))}
+            </>
+          );
+        },
+      },
+      {
+        id: 'actions',
+        cell: ({ row }) => {
+          return (
+            <>
+              <Button
+                variant={'ghost'}
+                onClick={() => {
+                  setCurrentUser(row.original);
+                  setOpenSheet(true);
+                }}>
+                <ChevronIcon className="h-4 w-4"></ChevronIcon>
+              </Button>
+              <Button
+                variant={'ghost'}
+                onClick={() => {
+                  deleteCurrentUser(row.original);
+                }}>
+                <LittleArrowIcon className="h-4 w-4"></LittleArrowIcon>
+              </Button>
+            </>
+          );
+        },
+      },
+    ],
+    []
+  );
 
   return (
     <>
@@ -253,7 +253,7 @@ const ServiceSlug: React.FunctionComponent<ServiceSlugProps> = ({
         }
         trigger={
           <Button
-            onClick={useCallback(() => setCurrentUser({}), [])}
+            onClick={() => setCurrentUser({})}
             size="icon"
             className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
             <AddIcon className="h-4 w-4" />

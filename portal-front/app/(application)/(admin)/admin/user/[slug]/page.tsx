@@ -6,18 +6,18 @@ export const dynamic = 'force-dynamic';
 
 // Component interface
 interface PageProps {
-    params: { slug: string };
+  params: { slug: string };
 }
 
 // Component
-const Page: React.FunctionComponent<PageProps> = async ({params}) => {
-    const id = decodeURIComponent(params.slug);
-    try {
-        return <PageLoader id={id}/>;
-    } catch (e) {
-        // If error at user loading, redirect to the list
-        redirect('/admin/user');
-    }
+const Page: React.FunctionComponent<PageProps> = async ({ params }) => {
+  const id = decodeURIComponent(params.slug);
+  try {
+    return <PageLoader id={id} />;
+  } catch (e) {
+    // If error at user loading, redirect to the list
+    redirect('/admin/user');
+  }
 };
 
 // Component export

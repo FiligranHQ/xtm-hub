@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { getSubscriptions } from '@/components/subcription/subscription.service';
 import { subscriptionItem_fragment$data } from '../../../__generated__/subscriptionItem_fragment.graphql';
 import { FormatDate } from '@/utils/date';
@@ -152,40 +152,37 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
     setPagination(newPaginationValue);
   };
 
-  const columnsWithAdmin: ColumnDef<subscriptionItem_fragment$data>[] = [
-    ...columns,
-    {
-      id: 'actions',
-      cell: ({ row }) => {
-        return (
-          <>
-            {row.original.status === 'REQUESTED' ? (
-              <>
-                <Button
-                  variant="ghost"
-                  onClick={useCallback(
-                    () => editSubscription('ACCEPTED', row.original),
-                    []
-                  )}>
-                  <CheckIcon className="h-6 w-6 flex-auto text-green" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={useCallback(
-                    () => editSubscription('REFUSED', row.original),
-                    []
-                  )}>
-                  <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
-                </Button>
-              </>
-            ) : (
-              <></>
-            )}
-          </>
-        );
+  const columnsWithAdmin: ColumnDef<subscriptionItem_fragment$data>[] = useMemo(
+    () => [
+      ...columns,
+      {
+        id: 'actions',
+        cell: ({ row }) => {
+          return (
+            <>
+              {row.original.status === 'REQUESTED' ? (
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => editSubscription('ACCEPTED', row.original)}>
+                    <CheckIcon className="h-6 w-6 flex-auto text-green" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => editSubscription('REFUSED', row.original)}>
+                    <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
+                  </Button>
+                </>
+              ) : (
+                <></>
+              )}
+            </>
+          );
+        },
       },
-    },
-  ];
+    ],
+    []
+  );
 
   return (
     <>

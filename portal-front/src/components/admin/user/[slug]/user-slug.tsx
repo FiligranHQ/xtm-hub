@@ -1,29 +1,36 @@
 import * as React from 'react';
-import {useCallback} from 'react';
-import {PreloadedQuery, useFragment, useMutation, usePreloadedQuery, useSubscription,} from 'react-relay';
-import {userSlug_fragment$data, userSlug_fragment$key,} from '../../../../../__generated__/userSlug_fragment.graphql';
-import {useRouter} from 'next/navigation';
-import {userSlugDeletionMutation} from '../../../../../__generated__/userSlugDeletionMutation.graphql';
-
+import { useCallback } from 'react';
 import {
-  userSlugSubscription as generatedUserSlugSubscription
-} from '../../../../../__generated__/userSlugSubscription.graphql';
+  PreloadedQuery,
+  useFragment,
+  useMutation,
+  usePreloadedQuery,
+  useSubscription,
+} from 'react-relay';
+import {
+  userSlug_fragment$data,
+  userSlug_fragment$key,
+} from '../../../../../__generated__/userSlug_fragment.graphql';
+import { useRouter } from 'next/navigation';
+import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
+
+import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 import {
   userSlugDeletion,
   userSlugFragment,
   UserSlugQuery,
   userSlugSubscription,
 } from '@/components/admin/user/user.graphql';
-import {Button} from 'filigran-ui/servers';
-import {DataTracking} from '@/components/data-tracking/data-tracking';
-import {AlertDialogComponent} from '@/components/ui/alert-dialog';
-import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
-import {DeleteIcon} from 'filigran-icon';
-import {useToast} from 'filigran-ui/clients';
-import {EditUser} from '@/components/admin/user/[slug]/user-edit';
-import {trackingSubscription} from '@/components/data-tracking/tracking.graphql';
-import {userSlugQuery} from '../../../../../__generated__/userSlugQuery.graphql';
-import {trackingData_fragment$key} from '../../../../../__generated__/trackingData_fragment.graphql';
+import { Button } from 'filigran-ui/servers';
+import { DataTracking } from '@/components/data-tracking/data-tracking';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { DeleteIcon } from 'filigran-icon';
+import { useToast } from 'filigran-ui/clients';
+import { EditUser } from '@/components/admin/user/[slug]/user-edit';
+import { trackingSubscription } from '@/components/data-tracking/tracking.graphql';
+import { userSlugQuery } from '../../../../../__generated__/userSlugQuery.graphql';
+import { trackingData_fragment$key } from '../../../../../__generated__/trackingData_fragment.graphql';
 
 // Component interface
 interface UserSlugProps {
@@ -109,7 +116,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
                 <DeleteIcon className="h-4 w-4" />
               </Button>
             }
-            onClickContinue={useCallback(() => onDeleteUser(user), [])}>
+            onClickContinue={() => onDeleteUser(user)}>
             Are you sure you want to delete this user {user.first_name}{' '}
             {user.last_name} ?
           </AlertDialogComponent>

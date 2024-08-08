@@ -40,7 +40,7 @@ export const MessageTracking: FunctionComponent<MessageTrackingProps> = ({
             <AccordionItem
               key={id}
               value={id}
-              className=" border-b">
+              className="border-b">
               <AccordionTrigger>
                 <h2 className="py-2">
                   <strong>{type}</strong> {FormatDate(created_at)}

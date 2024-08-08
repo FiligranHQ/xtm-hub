@@ -1,16 +1,16 @@
 'use client';
 import * as React from 'react';
 import GuardCapacityComponent from '@/components/admin-guard';
-import {RESTRICTION} from '@/utils/constant';
+import { RESTRICTION } from '@/utils/constant';
 import SubscriptionPage from '@/components/subcription/subscription-page';
-import {useQueryLoader} from 'react-relay';
-import {subscriptionsSelectQuery} from '../../../../../__generated__/subscriptionsSelectQuery.graphql';
-import {subscriptionFetch} from '@/components/subcription/subscription.graphql';
+import { useQueryLoader } from 'react-relay';
+import { subscriptionsSelectQuery } from '../../../../../__generated__/subscriptionsSelectQuery.graphql';
+import { subscriptionFetch } from '@/components/subcription/subscription.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import {DataTable} from 'filigran-ui/clients';
-import {ColumnDef} from '@tanstack/react-table';
-import {subscriptionItem_fragment$data} from '../../../../../__generated__/subscriptionItem_fragment.graphql';
-import {Badge} from 'filigran-ui/servers';
+import { DataTable } from 'filigran-ui/clients';
+import { ColumnDef } from '@tanstack/react-table';
+import { subscriptionItem_fragment$data } from '../../../../../__generated__/subscriptionItem_fragment.graphql';
+import { Badge } from 'filigran-ui/servers';
 
 // Component interface
 interface PageProps {}

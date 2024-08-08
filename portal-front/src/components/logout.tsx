@@ -1,12 +1,12 @@
 'use client';
 
-import {useMutation} from 'react-relay';
+import { useMutation } from 'react-relay';
 import * as React from 'react';
-import {useRouter} from 'next/navigation';
-import {Button} from 'filigran-ui/servers';
-import {LogoutIcon} from 'filigran-icon';
-import {cn} from '@/lib/utils';
-import {LogoutMutation} from '@/components/logout.graphql';
+import { useRouter } from 'next/navigation';
+import { Button } from 'filigran-ui/servers';
+import { LogoutIcon } from 'filigran-icon';
+import { cn } from '@/lib/utils';
+import { LogoutMutation } from '@/components/logout.graphql';
 
 // Component interface
 interface LogoutProps {
