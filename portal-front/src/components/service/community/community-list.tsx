@@ -60,6 +60,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   connectionId = '',
   shouldDisplayOnlyOwnedService = false,
 }) => {
+  // TODO: use useTransition instead https://react.dev/reference/react/useTransition
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
@@ -131,103 +132,97 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       (subscription) => subscription.node.service
     );
 
-  let columnsAdmin: ColumnDef<serviceCommunityList_fragment$data>[] = [
-    {
-      id: 'action',
-      size: 30,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => {
-        return (
-          <>
-            {subscribedServiceName.includes(row.original.name) ? (
-              <Button
-                asChild
-                className="w-3/4">
-                <Link
-                  href={` `}
-                  target="_blank"
-                  rel="noopener noreferrer nofollow">
-                  {' '}
-                  <IndicatorIcon className="mr-2 h-5 w-5" />
-                  View more
-                </Link>
-              </Button>
-            ) : (
+  let columnsAdmin: ColumnDef<serviceCommunityList_fragment$data>[] = useMemo(
+    () => [
+      {
+        id: 'action',
+        size: 30,
+        enableHiding: false,
+        enableSorting: false,
+        enableResizing: false,
+        cell: ({ row }) => {
+          return (
+            <>
+              {subscribedServiceName.includes(row.original.name) ? (
+                <Button
+                  asChild
+                  className="w-3/4">
+                  <Link
+                    href={` `}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow">
+                    {' '}
+                    <IndicatorIcon className="mr-2 h-5 w-5" />
+                    View more
+                  </Link>
+                </Button>
+              ) : (
+                <GuardCapacityComponent
+                  capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
+                  <AlertDialogComponent
+                    AlertTitle={'Subscribe service'}
+                    actionButtonText={'Continue'}
+                    triggerElement={
+                      <Button
+                        aria-label="Subscribe service"
+                        className="w-3/4">
+                        <ConstructionIcon className="mr-2 h-5 w-5" />
+                        Subscribe
+                      </Button>
+                    }
+                    onClickContinue={() => addSubscriptionInDb(row.original)}>
+                    {generateAlertText(row.original)}
+                  </AlertDialogComponent>
+                </GuardCapacityComponent>
+              )}
               <GuardCapacityComponent
-                capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
-                <AlertDialogComponent
-                  AlertTitle={'Subscribe service'}
-                  actionButtonText={'Continue'}
-                  triggerElement={
-                    <Button
-                      aria-label="Subscribe service"
-                      className="w-3/4">
-                      <ConstructionIcon className="mr-2 h-5 w-5" />
-                      Subscribe
-                    </Button>
-                  }
-                  onClickContinue={useCallback(
-                    () => addSubscriptionInDb(row.original),
-                    [row.original]
-                  )}>
-                  {generateAlertText(row.original)}
-                </AlertDialogComponent>
-              </GuardCapacityComponent>
-            )}
-            <GuardCapacityComponent
-              capacityRestriction={['BCK_MANAGE_SERVICES']}>
-              <Button
-                asChild
-                className="mt-2 w-3/4">
-                <Link href={`/admin/service/${row.original.id}`}>
-                  <CourseOfActionIcon className="mr-2 h-5 w-5" />
-                  Manage
-                </Link>
-              </Button>{' '}
-            </GuardCapacityComponent>
-          </>
-        );
-      },
-    },
-    {
-      id: 'accept',
-      size: 30,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => {
-        return (
-          <>
-            {row?.original?.subscription &&
-            row.original.subscription[0]?.status === 'REQUESTED' ? (
-              <GuardCapacityComponent capacityRestriction={['BYPASS']}>
+                capacityRestriction={['BCK_MANAGE_SERVICES']}>
                 <Button
-                  variant="ghost"
-                  onClick={useCallback(
-                    () => editSubscriptions('ACCEPTED', row.original),
-                    [row.original]
-                  )}>
-                  <CheckIcon className="h-6 w-6 flex-auto text-green" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={useCallback(
-                    () => editSubscriptions('REFUSED', row.original),
-                    [row.original]
-                  )}>
-                  <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
-                </Button>
+                  asChild
+                  className="mt-2 w-3/4">
+                  <Link href={`/admin/service/${row.original.id}`}>
+                    <CourseOfActionIcon className="mr-2 h-5 w-5" />
+                    Manage
+                  </Link>
+                </Button>{' '}
               </GuardCapacityComponent>
-            ) : (
-              <></>
-            )}
-          </>
-        );
+            </>
+          );
+        },
       },
-    },
-  ];
+      {
+        id: 'accept',
+        size: 30,
+        enableHiding: false,
+        enableSorting: false,
+        enableResizing: false,
+        cell: ({ row }) => {
+          return (
+            <>
+              {row?.original?.subscription &&
+              row.original.subscription[0]?.status === 'REQUESTED' ? (
+                <GuardCapacityComponent capacityRestriction={['BYPASS']}>
+                  <Button
+                    variant="ghost"
+                    onClick={() => editSubscriptions('ACCEPTED', row.original)}>
+                    <CheckIcon className="h-6 w-6 flex-auto text-green" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => editSubscriptions('REFUSED', row.original)}>
+                    <LittleArrowIcon className="h-6 w-6 flex-auto text-red" />
+                  </Button>
+                </GuardCapacityComponent>
+              ) : (
+                <></>
+              )}
+            </>
+          );
+        },
+      },
+    ],
+    []
+  );
 
   let columns: ColumnDef<serviceCommunityList_fragment$data>[] = [
     {
@@ -243,9 +238,9 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       id: 'type',
       size: 30,
       header: 'Type',
-      cell: ({ row }) => {
-        return <Badge className={'cursor-default'}>{row.original.type}</Badge>;
-      },
+      cell: ({ row }) => (
+        <Badge className={'cursor-default'}>{row.original.type}</Badge>
+      ),
     },
     {
       accessorKey: 'provider',
@@ -282,15 +277,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       id: 'status',
       size: 30,
       header: 'Status',
-      cell: ({ row }) => {
-        return (
-          <>
-            <Badge className={'cursor-default'}>
-              {row?.original?.subscription?.[0]?.status ?? 'ACCEPTED'}
-            </Badge>
-          </>
-        );
-      },
+      cell: ({ row }) => (
+        <Badge className={'cursor-default'}>
+          {row?.original?.subscription?.[0]?.status ?? 'ACCEPTED'}
+        </Badge>
+      ),
     },
 
     ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
@@ -311,12 +302,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
 
   const editSubscription = useCallback(
     (status: string, subscription: subscriptionItem_fragment$data) => {
-      console.log('subscription', subscription);
       if (!subscription.organization_id || !subscription.service_id) {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: <>{'Error while editing the subscription.'}</>,
+          description: 'Error while editing the subscription.',
         });
         return;
       }

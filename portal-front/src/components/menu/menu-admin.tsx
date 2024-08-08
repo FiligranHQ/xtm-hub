@@ -31,10 +31,10 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   const [adminOpened, setAdminOpened] = useState<boolean>(false);
   const router = useRouter();
 
-  const routeTo = (link: string) => {
+  const routeTo = useCallback((link: string) => {
     router.replace(link);
     setAdminOpened(false);
-  };
+  }, []);
 
   const useGrantedBYPASS = useGranted(RESTRICTION.CAPABILITY_BYPASS);
   const useGrantedFRT_MANAGE_USER = useGranted(
@@ -53,31 +53,31 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   const AdminLinks = () => (
     <>
       <Button
-        onClick={useCallback(() => routeTo('/admin/user'), [])}
+        onClick={() => routeTo('/admin/user')}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <GroupIcon className="mr-2 h-4 w-4" /> User
       </Button>
       <Button
-        onClick={useCallback(() => routeTo('/admin/service'), [])}
+        onClick={() => routeTo('/admin/service')}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <GradeIcon className="mr-2 h-4 w-4" /> Services
       </Button>
       <Button
-        onClick={useCallback(() => routeTo('/admin/community'), [])}
+        onClick={() => routeTo('/admin/community')}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <ForumIcon className="mr-2 h-4 w-4" /> Communities
       </Button>
       <Button
-        onClick={useCallback(() => routeTo('/admin/organizations'), [])}
+        onClick={() => routeTo('/admin/organizations')}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <OrganizationIcon className="mr-2 h-4 w-4" /> Organizations
       </Button>
       <Button
-        onClick={useCallback(() => routeTo('/admin/subcriptions'), [])}
+        onClick={() => routeTo('/admin/subcriptions')}
         variant={'ghost'}
         className={'w-full justify-start border-none text-base'}>
         <ExternalReferenceIcon className="mr-2 h-4 w-4" /> Subscriptions

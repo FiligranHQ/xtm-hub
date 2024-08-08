@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import Context from '@/components/me-context';
-import {useQueryLoader} from 'react-relay';
+import { useQueryLoader } from 'react-relay';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import {MeQuery} from '@/components/me.graphql';
-import {meLoaderQuery} from '../../__generated__/meLoaderQuery.graphql';
+import { MeQuery } from '@/components/me.graphql';
+import { meLoaderQuery } from '../../__generated__/meLoaderQuery.graphql';
 
 // Component interface
 interface LayoutPreloaderProps {
