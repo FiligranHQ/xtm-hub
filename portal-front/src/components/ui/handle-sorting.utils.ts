@@ -18,3 +18,12 @@ export const transformSortingValueToParams = <T, U>(
   }
   return {};
 };
+
+export const mapToSortingTableValue = <T, U>(orderBy: T, orderMode: U) => {
+  return [
+    {
+      id: orderBy,
+      desc: orderMode === 'desc',
+    },
+  ];
+};

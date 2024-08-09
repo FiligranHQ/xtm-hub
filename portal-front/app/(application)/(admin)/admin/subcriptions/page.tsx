@@ -11,6 +11,7 @@ import { DataTable } from 'filigran-ui/clients';
 import { ColumnDef } from '@tanstack/react-table';
 import { subscriptionItem_fragment$data } from '../../../../../__generated__/subscriptionItem_fragment.graphql';
 import { Badge } from 'filigran-ui/servers';
+import { useLocalStorage } from 'usehooks-ts';
 
 // Component interface
 interface PageProps {}
@@ -56,22 +57,16 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
 
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {
-  let count = Number(localStorage.getItem('countSubscriptionList'));
-  if (!count) {
-    localStorage.setItem('countSubscriptionList', '50');
-    count = 50;
-  }
-  let orderMode = localStorage.getItem('orderModeSubscriptionList');
-  if (!orderMode) {
-    localStorage.setItem('orderModeSubscriptionList', 'desc');
-    orderMode = 'desc';
-  }
+  const [count, setCount] = useLocalStorage('countSubscriptionList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage(
+    'orderModeSubscriptionList',
+    'desc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage(
+    'countSubscriptionList',
+    'status'
+  );
 
-  let orderBy = localStorage.getItem('orderBySubscriptionList');
-  if (!orderBy) {
-    localStorage.setItem('orderBySubscriptionList', 'status');
-    orderBy = 'status';
-  }
   const [queryRef, loadQuery] =
     useQueryLoader<subscriptionsSelectQuery>(subscriptionFetch);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
