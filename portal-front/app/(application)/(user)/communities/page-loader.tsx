@@ -7,28 +7,22 @@ import Loader from '@/components/loader';
 import { ServiceCommunityListQuery } from '@/components/service/service.graphql';
 import { serviceCommunitiesQuery } from '../../../../__generated__/serviceCommunitiesQuery.graphql';
 import CommunityList from '@/components/service/community/community-list';
+import { useLocalStorage } from 'usehooks-ts';
 
 // Component interface
 interface PageProps {}
 
 // Component
 const PageLoader: React.FunctionComponent<PageProps> = () => {
-  let count = Number(localStorage.getItem('countCommunitiesList'));
-  if (!count) {
-    localStorage.setItem('countCommunitiesList', '50');
-    count = 50;
-  }
-  let orderMode = localStorage.getItem('orderModeCommunitiesList');
-  if (!orderMode) {
-    localStorage.setItem('orderModeCommunitiesList', 'asc');
-    orderMode = 'asc';
-  }
-
-  let orderBy = localStorage.getItem('orderByCommunitiesList');
-  if (!orderBy) {
-    localStorage.setItem('orderByCommunitiesList', 'name');
-    orderBy = 'name';
-  }
+  const [count, setCount] = useLocalStorage('countCommunitiesList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage(
+    'orderModeCommunitiesList',
+    'asc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage(
+    'orderByCommunitiesList',
+    'name'
+  );
   const [queryRef, loadQuery] = useQueryLoader<serviceCommunitiesQuery>(
     ServiceCommunityListQuery
   );

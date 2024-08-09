@@ -19,7 +19,10 @@ import Loader from '@/components/loader';
 import { DataTable, useToast } from 'filigran-ui/clients';
 import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import Link from 'next/link';
-import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
+import {
+  mapToSortingTableValue,
+  transformSortingValueToParams,
+} from '@/components/ui/handle-sorting.utils';
 import {
   AddSubscriptionMutation,
   SubscriptionEditMutation,
@@ -48,6 +51,7 @@ import { CreateCommunity } from '@/components/service/community/community-create
 import { serviceCommunityList_fragment$data } from '../../../../__generated__/serviceCommunityList_fragment.graphql';
 import { subscriptionItem_fragment$data } from '../../../../__generated__/subscriptionItem_fragment.graphql';
 import { subscriptionEditMutation } from '../../../../__generated__/subscriptionEditMutation.graphql';
+import { useLocalStorage } from 'usehooks-ts';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -55,6 +59,29 @@ interface CommunityProps {
   shouldDisplayOnlyOwnedService?: boolean;
 }
 
+interface SubscriptableMessagesProps {
+  status: string;
+  successMessage: string;
+  alertMessage: string;
+}
+const SUBSCRIPTABLE_MESSAGES: Record<string, SubscriptableMessagesProps> = {
+  SUBSCRIPTABLE_DIRECT: {
+    status: 'ACCEPTED',
+    successMessage:
+      'You have successfully subscribed to the service. You can now find it in your subscribed services.',
+    alertMessage:
+      'Are you really sure you want to subscribe this service ? This action can not be undone.',
+  },
+  SUBSCRIPTABLE_BACKOFFICE: {
+    status: 'REQUESTED',
+    successMessage:
+      'Your request has been sent. You will soon be in touch with our team.',
+    alertMessage:
+      'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?',
+  },
+};
+
+//TODO : Remove me.context and avoid when possible optional value in GraphqlTyping ex: ServiceType
 const CommunityList: React.FunctionComponent<CommunityProps> = ({
   queryRef,
   connectionId = '',
@@ -62,6 +89,19 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
 }) => {
   // TODO: use useTransition instead https://react.dev/reference/react/useTransition
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
+  const [pageSize, setPageSize] = useLocalStorage('countCommunitiesList', 50);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize,
+  });
+  const [orderBy, setOrderBy] = useLocalStorage<ServiceOrdering>(
+    'orderModeCommunitiesList',
+    'name'
+  );
+  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
+    'orderByCommunitiesList',
+    'asc'
+  );
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
@@ -69,54 +109,49 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   if (!me) {
     return;
   }
+
+  const handleSuccess = (message: string) => {
+    setIsSubscriptionLoading(false);
+    toast({
+      title: 'Success',
+      description: <>{message}</>,
+    });
+  };
+  const handleError = (error: Error) => {
+    setIsSubscriptionLoading(false);
+    toast({
+      variant: 'destructive',
+      title: 'Error',
+      description: <>{error.message}</>,
+    });
+  };
+
+  const commitMutation = (service_id: string, serviceType: string) => {
+    commitSubscriptionCreateMutation({
+      variables: {
+        connections: [connectionId],
+        service_id,
+        organization_id: me.organization.id,
+        user_id: me.id,
+        status: SUBSCRIPTABLE_MESSAGES[serviceType]!.status,
+      },
+      onCompleted: () =>
+        handleSuccess(SUBSCRIPTABLE_MESSAGES[serviceType]!.successMessage),
+      onError: (error: Error) => handleError(error),
+    });
+  };
   const addSubscriptionInDb = (service: serviceCommunityList_fragment$data) => {
     setIsSubscriptionLoading(true);
-    const handleSuccess = (message: string) => {
-      setIsSubscriptionLoading(false);
-      toast({
-        title: 'Success',
-        description: <>{message}</>,
-      });
-    };
-    const handleError = (error: Error) => {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: <>{error.message}</>,
-      });
-    };
-
-    const commitMutation = (status: string, successMessage: string) => {
-      commitSubscriptionCreateMutation({
-        variables: {
-          connections: [connectionId],
-          service_id: service.id,
-          organization_id: me.organization.id,
-          user_id: me.id,
-          status: status,
-        },
-        onCompleted: () => handleSuccess(successMessage),
-        onError: (error: Error) => handleError(error),
-      });
-    };
-
-    if (service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT') {
-      commitMutation(
-        'ACCEPTED',
-        'You have successfully subscribed to the service. You can now find it in your subscribed services.'
-      );
-    } else {
-      commitMutation(
-        'REQUESTED',
-        'Your request has been sent. You will soon be in touch with our team.'
-      );
-    }
+    commitMutation(
+      service.id,
+      service.subscription_service_type ?? 'SUBSCRIPTABLE_BACKOFFICE'
+    );
   };
 
   const generateAlertText = (service: serviceCommunityList_fragment$data) => {
-    return service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
-      ? 'Are you really sure you want to subscribe this service ? This action can not be undone.'
-      : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
+    const serviceType =
+      service.subscription_service_type ?? 'SUBSCRIPTABLE_BACKOFFICE';
+    return SUBSCRIPTABLE_MESSAGES[serviceType]!.alertMessage;
   };
 
   const [subscriptionsOrganization, refetchSubOrga] =
@@ -132,7 +167,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       (subscription) => subscription.node.service
     );
 
-  let columnsAdmin: ColumnDef<serviceCommunityList_fragment$data>[] = useMemo(
+  const columnsAdmin: ColumnDef<serviceCommunityList_fragment$data>[] = useMemo(
     () => [
       {
         id: 'action',
@@ -224,68 +259,73 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     []
   );
 
-  let columns: ColumnDef<serviceCommunityList_fragment$data>[] = [
-    {
-      id: 'name',
-      header: 'Name',
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center space-x-2">{row.original.name}</div>
-        );
+  const columns: ColumnDef<serviceCommunityList_fragment$data>[] = useMemo(
+    () => [
+      {
+        id: 'name',
+        header: 'Name',
+        cell: ({ row }) => {
+          return (
+            <div className="flex items-center space-x-2">
+              {row.original.name}
+            </div>
+          );
+        },
       },
-    },
-    {
-      id: 'type',
-      size: 30,
-      header: 'Type',
-      cell: ({ row }) => (
-        <Badge className={'cursor-default'}>{row.original.type}</Badge>
-      ),
-    },
-    {
-      accessorKey: 'provider',
-      id: 'provider',
-      size: 30,
-      header: 'Provider',
-    },
-    {
-      size: 300,
-      accessorKey: 'description',
-      id: 'description',
-      header: 'Description',
-    },
-
-    {
-      id: 'organizations',
-      size: 30,
-      header: 'Organizations',
-      cell: ({ row }) => {
-        return (
-          <>
-            {row?.original?.organization?.map((org) => (
-              <Badge
-                key={org?.id}
-                className={'cursor-default'}>
-                {org?.name}
-              </Badge>
-            ))}
-          </>
-        );
+      {
+        id: 'type',
+        size: 30,
+        header: 'Type',
+        cell: ({ row }) => (
+          <Badge className={'cursor-default'}>{row.original.type}</Badge>
+        ),
       },
-    },
-    {
-      id: 'status',
-      size: 30,
-      header: 'Status',
-      cell: ({ row }) => (
-        <Badge className={'cursor-default'}>
-          {row?.original?.subscription?.[0]?.status ?? 'ACCEPTED'}
-        </Badge>
-      ),
-    },
+      {
+        accessorKey: 'provider',
+        id: 'provider',
+        size: 30,
+        header: 'Provider',
+      },
+      {
+        size: 300,
+        accessorKey: 'description',
+        id: 'description',
+        header: 'Description',
+      },
 
-    ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
-  ];
+      {
+        id: 'organizations',
+        size: 30,
+        header: 'Organizations',
+        cell: ({ row }) => {
+          return (
+            <>
+              {row?.original?.organization?.map((org) => (
+                <Badge
+                  key={org?.id}
+                  className={'cursor-default'}>
+                  {org?.name}
+                </Badge>
+              ))}
+            </>
+          );
+        },
+      },
+      {
+        id: 'status',
+        size: 30,
+        header: 'Status',
+        cell: ({ row }) => (
+          <Badge className={'cursor-default'}>
+            {row?.original?.subscription?.[0]?.status ?? 'ACCEPTED'}
+          </Badge>
+        ),
+      },
+
+      ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
+    ],
+    [columnsAdmin]
+  );
 
   const editSubscriptions = (
     status: string,
@@ -355,31 +395,22 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     }),
     [connectionID]
   );
-
   useSubscription(config);
   let servicesData = data.communities.edges.map(
     ({ node }) => node
-  ) as unknown as serviceCommunityList_fragment$data[];
+  ) as serviceCommunityList_fragment$data[];
 
   if (shouldDisplayOnlyOwnedService && ownedServices) {
     servicesData = ownedServices as serviceCommunityList_fragment$data[];
   }
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: Number(localStorage.getItem('countServiceList')),
-  });
+
   const handleRefetchData = (args?: Partial<serviceQuery$variables>) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByServiceList'),
-        desc: localStorage.getItem('orderModeServiceList') === 'desc',
-      } as unknown as ColumnSort,
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: localStorage.getItem('orderByServiceList') as ServiceOrdering,
-      orderMode: localStorage.getItem('orderModeServiceList') as OrderingMode,
+      orderBy,
+      orderMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
@@ -387,19 +418,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
 
   // https://tanstack.com/table/latest/docs/framework/react/guide/table-state#2-updaters-can-either-be-raw-values-or-callback-functions
   const onSortingChange = (updater: unknown) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByServiceList'),
-        desc: localStorage.getItem('orderModeServiceList') === 'desc',
-      },
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
-    localStorage.setItem('orderByServiceList', newSortingValue[0].id);
-    localStorage.setItem(
-      'orderModeServiceList',
-      newSortingValue[0].desc ? 'desc' : 'asc'
-    );
+    setOrderBy(newSortingValue[0].id);
+    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
     handleRefetchData(transformSortingValueToParams(newSortingValue));
   };
 
@@ -413,6 +436,9 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       ),
     });
     setPagination(newPaginationValue);
+    if (newPaginationValue.pageSize !== pageSize) {
+      setPageSize(newPaginationValue.pageSize);
+    }
   };
 
   return (
@@ -434,13 +460,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
                   manualSorting: true,
                 }}
                 tableState={{
-                  sorting: [
-                    {
-                      id: localStorage.getItem('orderByServiceList') ?? '',
-                      desc:
-                        localStorage.getItem('orderModeServiceList') === 'desc',
-                    },
-                  ],
+                  sorting: mapToSortingTableValue(orderBy, orderMode),
                   pagination,
                 }}
               />
