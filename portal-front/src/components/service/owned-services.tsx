@@ -6,7 +6,10 @@ import { DataTable } from 'filigran-ui/clients';
 import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
 import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import { Badge, Button } from 'filigran-ui/servers';
-import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
+import {
+  mapToSortingTableValue,
+  transformSortingValueToParams,
+} from '@/components/ui/handle-sorting.utils';
 import { SubscriptionOrdering } from '../../../__generated__/subscriptionsByOrganizationSelectQuery.graphql';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import Link from 'next/link';
@@ -14,6 +17,7 @@ import { CourseOfActionIcon, IndicatorIcon } from 'filigran-icon';
 import GuardCapacityComponent from '@/components/admin-guard';
 import { subscriptionItem_fragment$data } from '../../../__generated__/subscriptionItem_fragment.graphql';
 import { OrderingMode } from '../../../__generated__/ServiceUserPaginationQuery.graphql';
+import { useLocalStorage } from 'usehooks-ts';
 
 const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   {
@@ -112,10 +116,20 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     },
   },
 ];
+
 const OwnedServices: React.FunctionComponent<{}> = ({}) => {
+  const [pageSize, setPageSize] = useLocalStorage('countOwnedServicesList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
+    'orderModeOwnedServices',
+    'asc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage<SubscriptionOrdering>(
+    'orderByOwnedServices',
+    'start_date'
+  );
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: Number(localStorage.getItem('countSubscriptionList')),
+    pageSize,
   });
   const [subscriptionsOrganization, refetchSubOrga] =
     getSubscriptionsByOrganization();
@@ -128,39 +142,23 @@ const OwnedServices: React.FunctionComponent<{}> = ({}) => {
   const handleRefetchData = (
     args?: Partial<SubscriptionsPaginationQuery$variables>
   ) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByOwnedServices'),
-        desc: localStorage.getItem('orderModeOwnedServices') === 'desc',
-      } as unknown as ColumnSort,
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetchSubOrga({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: localStorage.getItem(
-        'orderByOwnedServices'
-      ) as SubscriptionOrdering,
-      orderMode: localStorage.getItem('orderModeOwnedServices') as OrderingMode,
+      orderBy,
+      orderMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
 
   const onSortingChange = (updater: unknown) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByOwnedServices'),
-        desc: localStorage.getItem('orderModeOwnedServices') === 'desc',
-      },
-    ];
-
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
-    localStorage.setItem('orderByOwnedServices', newSortingValue[0].id);
-    localStorage.setItem(
-      'orderModeOwnedServices',
-      newSortingValue[0].desc ? 'desc' : 'asc'
-    );
+    setOrderBy(newSortingValue[0].id);
+    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
 
     handleRefetchData(
       transformSortingValueToParams<SubscriptionOrdering, OrderingMode>(
@@ -179,6 +177,9 @@ const OwnedServices: React.FunctionComponent<{}> = ({}) => {
       ),
     });
     setPagination(newPaginationValue);
+    if (newPaginationValue.pageSize !== pageSize) {
+      setPageSize(newPaginationValue.pageSize);
+    }
   };
   return (
     <>
@@ -193,12 +194,7 @@ const OwnedServices: React.FunctionComponent<{}> = ({}) => {
             manualPagination: true,
           }}
           tableState={{
-            sorting: [
-              {
-                id: localStorage.getItem('orderByOwnedServices') ?? '',
-                desc: localStorage.getItem('orderModeOwnedServices') === 'desc',
-              },
-            ],
+            sorting: mapToSortingTableValue(orderBy, orderMode),
             pagination,
           }}
         />
