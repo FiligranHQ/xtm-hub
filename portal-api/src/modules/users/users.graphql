@@ -40,6 +40,7 @@ type Query {
     after: ID
     orderBy: UserOrdering!
     orderMode: OrderingMode!
+    filter: String
   ): UserConnection! @auth
 }
 

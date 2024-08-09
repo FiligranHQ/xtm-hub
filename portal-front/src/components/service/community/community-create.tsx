@@ -8,7 +8,11 @@ import { CommunityFormSheet } from '@/components/service/community/community-for
 import { communityFormSchema } from '@/components/service/community/community-form-schema';
 import { ServiceCommunityListCreateMutation } from '@/components/service/service.graphql';
 import { serviceCommunityListMutation } from '../../../../__generated__/serviceCommunityListMutation.graphql';
-import { useMutation } from 'react-relay';
+import { useMutation, useQueryLoader } from 'react-relay';
+import { userQuery } from '../../../../__generated__/userQuery.graphql';
+import { UserListQuery } from '@/components/admin/user/user.graphql';
+import useMountingLoader from '@/hooks/useMountingLoader';
+import Loader from '@/components/loader';
 
 interface CreateCommunityProps {
   connectionId: string;
@@ -42,8 +46,16 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
     });
     setOpenSheet(false);
   };
-  return (
+
+  const [queryRef, loadQuery] = useQueryLoader<userQuery>(UserListQuery);
+  useMountingLoader(loadQuery, {
+    count: 50,
+    orderBy: 'email',
+    orderMode: 'asc',
+  });
+  return queryRef ? (
     <CommunityFormSheet
+      queryRef={queryRef}
       title={'Create a new community'}
       description={
         'Create the community here. Click Validate when you are done.'
@@ -59,5 +71,7 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
           <AddIcon className="h-4 w-4" />
         </Button>
       }></CommunityFormSheet>
+  ) : (
+    <Loader />
   );
 };

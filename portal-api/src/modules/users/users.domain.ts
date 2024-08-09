@@ -103,9 +103,15 @@ export const loadUserBy = async (
 
 export const loadUsers = async (
   context: PortalContext,
-  opts
+  opts,
+  filter
 ): Promise<UserConnection> => {
-  const userConnection = await paginate<UserGenerated>(context, 'User', opts)
+  const query = paginate<UserGenerated>(context, 'User', opts);
+  if (filter) {
+    query.where('email', 'LIKE', filter + '%');
+  }
+
+  const userConnection = await query
     .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
     .leftJoin(
       'User_RolePortal as user_RolePortal',
@@ -135,7 +141,7 @@ export const loadUsers = async (
     ])
     .groupBy(['User.id'])
     .asConnection<UserConnection>();
-  // Complete admin user with bypass if needed
+
   userConnection.edges = userConnection.edges.map((edge) => {
     return {
       cursor: edge.cursor,
