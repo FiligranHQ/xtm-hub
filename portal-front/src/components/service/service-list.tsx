@@ -21,7 +21,10 @@ import Loader from '@/components/loader';
 import { DataTable, useToast } from 'filigran-ui/clients';
 import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import Link from 'next/link';
-import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
+import {
+  mapToSortingTableValue,
+  transformSortingValueToParams,
+} from '@/components/ui/handle-sorting.utils';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { subscriptionCreateMutation } from '../../../__generated__/subscriptionCreateMutation.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
@@ -42,6 +45,7 @@ import {
   serviceQuery,
   serviceQuery$variables,
 } from '../../../__generated__/serviceQuery.graphql';
+import { useLocalStorage } from 'usehooks-ts';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<serviceQuery>;
@@ -55,6 +59,15 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   shouldDisplayOnlyOwnedService = false,
 }) => {
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
+  const [pageSize, setPageSize] = useLocalStorage('countServiceList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
+    'orderModeServiceList',
+    'asc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage<ServiceOrdering>(
+    'orderByServiceList',
+    'name'
+  );
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
@@ -253,22 +266,19 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   if (shouldDisplayOnlyOwnedService && ownedServices) {
     servicesData = ownedServices as serviceList_fragment$data[];
   }
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: Number(localStorage.getItem('countServiceList')),
+    pageSize,
   });
+
   const handleRefetchData = (args?: Partial<serviceQuery$variables>) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByServiceList'),
-        desc: localStorage.getItem('orderModeServiceList') === 'desc',
-      } as unknown as ColumnSort,
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: localStorage.getItem('orderByServiceList') as ServiceOrdering,
-      orderMode: localStorage.getItem('orderModeServiceList') as OrderingMode,
+      orderBy,
+      orderMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
@@ -276,19 +286,11 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
 
   // https://tanstack.com/table/latest/docs/framework/react/guide/table-state#2-updaters-can-either-be-raw-values-or-callback-functions
   const onSortingChange = (updater: unknown) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByServiceList'),
-        desc: localStorage.getItem('orderModeServiceList') === 'desc',
-      },
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
-    localStorage.setItem('orderByServiceList', newSortingValue[0].id);
-    localStorage.setItem(
-      'orderModeServiceList',
-      newSortingValue[0].desc ? 'desc' : 'asc'
-    );
+    setOrderBy(newSortingValue[0].id);
+    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
     handleRefetchData(transformSortingValueToParams(newSortingValue));
   };
 
@@ -302,6 +304,9 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       ),
     });
     setPagination(newPaginationValue);
+    if (newPaginationValue.pageSize !== pageSize) {
+      setPageSize(newPaginationValue.pageSize);
+    }
   };
 
   return (
@@ -323,13 +328,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                   manualSorting: true,
                 }}
                 tableState={{
-                  sorting: [
-                    {
-                      id: localStorage.getItem('orderByServiceList') ?? '',
-                      desc:
-                        localStorage.getItem('orderModeServiceList') === 'desc',
-                    },
-                  ],
+                  sorting: mapToSortingTableValue(orderBy, orderMode),
                   pagination,
                 }}
               />

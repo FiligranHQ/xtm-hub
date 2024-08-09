@@ -9,28 +9,18 @@ import {
   organizationsFragment,
 } from '@/components/organization/organization.graphql';
 import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
+import { useLocalStorage } from 'usehooks-ts';
 
 export const getOrganizations = () => {
-  let count = Number(localStorage.getItem('countOrganizationList'));
-  if (!count) {
-    localStorage.setItem('countOrganizationList', '50');
-    count = 50;
-  }
-  let orderMode = localStorage.getItem(
-    'orderModeOrganizationList'
-  ) as OrderingMode;
-  if (!orderMode) {
-    localStorage.setItem('orderModeOrganizationList', 'asc');
-    orderMode = 'asc';
-  }
-
-  let orderBy = localStorage.getItem(
-    'orderByOrganizationList'
-  ) as OrganizationOrdering;
-  if (!orderBy) {
-    localStorage.setItem('orderByOrganizationList', 'name');
-    orderBy = 'name';
-  }
+  const [count, setCount] = useLocalStorage('countOrganizationList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
+    'orderModeOrganizationList',
+    'asc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage<OrganizationOrdering>(
+    'orderByOrganizationList',
+    'name'
+  );
 
   const organizationData = useLazyLoadQuery<organizationSelectQuery>(
     organizationFetch,
