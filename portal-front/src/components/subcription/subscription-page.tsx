@@ -17,9 +17,13 @@ import {
 } from '../../../__generated__/subscriptionsSelectQuery.graphql';
 import { Button } from 'filigran-ui/servers';
 import { AddIcon, CheckIcon, LittleArrowIcon } from 'filigran-icon';
-import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
+import {
+  mapToSortingTableValue,
+  transformSortingValueToParams,
+} from '@/components/ui/handle-sorting.utils';
 import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import { SubscriptionFormSheet } from '@/components/subcription/subscription-form-sheet';
+import { useLocalStorage } from 'usehooks-ts';
 
 interface SubscriptionListProps {
   queryRef: PreloadedQuery<subscriptionsSelectQuery>;
@@ -31,26 +35,30 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
   columns,
 }) => {
   const { toast } = useToast();
-
   const [subscriptions, refetch] = getSubscriptions(queryRef);
+  const [pageSize, setPageSize] = useLocalStorage('countSubscriptionList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
+    'orderModeSubscriptionList',
+    'desc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage<SubscriptionOrdering>(
+    'countSubscriptionList',
+    'status'
+  );
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: Number(localStorage.getItem('countSubscriptionList')),
+    pageSize,
   });
 
   const connectionId = subscriptions.subscriptions.__id;
-  let subscriptionData = subscriptions.subscriptions.edges.map(({ node }) => ({
-    ...node,
-  })) as subscriptionItem_fragment$data[];
-
-  subscriptionData = subscriptionData.map((data) => {
-    return {
-      ...data,
-      start_date: FormatDate(data.start_date, false),
-      end_date: FormatDate(data.end_date, false),
-    };
-  });
+  const subscriptionData = subscriptions.subscriptions.edges.map(
+    ({ node }) => ({
+      ...node,
+      start_date: FormatDate(node.start_date, false),
+      end_date: FormatDate(node.end_date, false),
+    })
+  ) as subscriptionItem_fragment$data[];
 
   const [commitSubscriptionMutation] = useMutation<subscriptionEditMutation>(
     SubscriptionEditMutation
@@ -95,20 +103,11 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
   );
 
   const onSortingChange = (updater: unknown) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderBySubscriptionList'),
-        desc: localStorage.getItem('orderModeSubscriptionList') === 'desc',
-      },
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
-
-    localStorage.setItem('orderBySubscriptionList', newSortingValue[0].id);
-    localStorage.setItem(
-      'orderModeSubscriptionList',
-      newSortingValue[0].desc ? 'desc' : 'asc'
-    );
+    setOrderBy(newSortingValue[0].id);
+    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
 
     handleRefetchData(
       transformSortingValueToParams<SubscriptionOrdering, OrderingMode>(
@@ -120,21 +119,12 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
   const handleRefetchData = (
     args?: Partial<SubscriptionsPaginationQuery$variables>
   ) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderBySubscriptionList'),
-        desc: localStorage.getItem('orderModeSubscriptionList') === 'desc',
-      } as unknown as ColumnSort,
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: localStorage.getItem(
-        'orderBySubscriptionList'
-      ) as SubscriptionOrdering,
-      orderMode: localStorage.getItem(
-        'orderModeSubscriptionList'
-      ) as OrderingMode,
+      orderBy,
+      orderMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
@@ -150,6 +140,9 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
       ),
     });
     setPagination(newPaginationValue);
+    if (newPaginationValue.pageSize !== pageSize) {
+      setPageSize(newPaginationValue.pageSize);
+    }
   };
 
   const columnsWithAdmin: ColumnDef<subscriptionItem_fragment$data>[] = useMemo(
@@ -192,18 +185,12 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
         tableOptions={{
           onSortingChange: onSortingChange,
           onPaginationChange: onPaginationChange,
-          manualPagination: true,
           rowCount: subscriptions.subscriptions.totalCount,
+          manualPagination: true,
           manualSorting: true,
         }}
         tableState={{
-          sorting: [
-            {
-              id: localStorage.getItem('orderBySubscriptionList') ?? '',
-              desc:
-                localStorage.getItem('orderModeSubscriptionList') === 'desc',
-            },
-          ],
+          sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,
         }}
       />
