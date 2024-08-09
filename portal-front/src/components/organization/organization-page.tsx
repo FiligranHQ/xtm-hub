@@ -10,12 +10,16 @@ import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import { CreateOrganization } from '@/components/organization/create-organization';
 import { EditOrganization } from '@/components/organization/edit-organization';
 import { DeleteOrganization } from '@/components/organization/delete-organization';
-import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
+import {
+  mapToSortingTableValue,
+  transformSortingValueToParams,
+} from '@/components/ui/handle-sorting.utils';
 import {
   OrderingMode,
   OrganizationsPaginationQuery$variables,
 } from '../../../__generated__/OrganizationsPaginationQuery.graphql';
 import { OrganizationOrdering } from '../../../__generated__/organizationSelectQuery.graphql';
+import { useLocalStorage } from 'usehooks-ts';
 
 const breadcrumbValue = [
   {
@@ -32,50 +36,40 @@ const OrganizationPage: React.FunctionComponent = () => {
   const organizationDataTable = organizationData.organizations.edges.map(
     ({ node }) => node
   ) as organizationItem_fragment$data[];
-
+  const [pageSize, setPageSize] = useLocalStorage('countOrganizationList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
+    'orderModeOrganizationList',
+    'asc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage<OrganizationOrdering>(
+    'orderByOrganizationList',
+    'name'
+  );
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: Number(localStorage.getItem('countOrganizationList')),
+    pageSize,
   });
 
   const handleRefetchData = (
     args?: Partial<OrganizationsPaginationQuery$variables>
   ) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByOrganizationList'),
-        desc: localStorage.getItem('orderModeOrganizationList') === 'desc',
-      } as unknown as ColumnSort,
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: localStorage.getItem(
-        'orderByOrganizationList'
-      ) as OrganizationOrdering,
-      orderMode: localStorage.getItem(
-        'orderModeOrganizationList'
-      ) as OrderingMode,
+      orderBy,
+      orderMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
 
   const onSortingChange = (updater: unknown) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByOrganizationList'),
-        desc: localStorage.getItem('orderModeOrganizationList') === 'desc',
-      },
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
-    localStorage.setItem('orderByOrganizationList', newSortingValue[0].id);
-    localStorage.setItem(
-      'orderModeOrganizationList',
-      newSortingValue[0].desc ? 'desc' : 'asc'
-    );
-
+    setOrderBy(newSortingValue[0].id);
+    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
     handleRefetchData(
       transformSortingValueToParams<OrganizationOrdering, OrderingMode>(
         newSortingValue
@@ -93,6 +87,9 @@ const OrganizationPage: React.FunctionComponent = () => {
       ),
     });
     setPagination(newPaginationValue);
+    if (newPaginationValue.pageSize !== pageSize) {
+      setPageSize(newPaginationValue.pageSize);
+    }
   };
 
   const columns: ColumnDef<organizationItem_fragment$data>[] = [
@@ -136,13 +133,7 @@ const OrganizationPage: React.FunctionComponent = () => {
           manualPagination: true,
         }}
         tableState={{
-          sorting: [
-            {
-              id: localStorage.getItem('orderByOrganizationList') ?? '',
-              desc:
-                localStorage.getItem('orderModeOrganizationList') === 'desc',
-            },
-          ],
+          sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,
         }}
       />

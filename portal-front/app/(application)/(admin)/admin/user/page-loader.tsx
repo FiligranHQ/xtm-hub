@@ -7,28 +7,16 @@ import useMountingLoader from '@/hooks/useMountingLoader';
 import Loader from '@/components/loader';
 import { UserListQuery } from '@/components/admin/user/user.graphql';
 import { userQuery } from '../../../../../__generated__/userQuery.graphql';
+import { useLocalStorage } from 'usehooks-ts';
 
 // Component interface
 interface PreloaderProps {}
 
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
-  let count = Number(localStorage.getItem('countUserList'));
-  if (!count) {
-    localStorage.setItem('countUserList', '50');
-    count = 50;
-  }
-  let orderMode = localStorage.getItem('orderModeUserList');
-  if (!orderMode) {
-    localStorage.setItem('orderModeUserList', 'asc');
-    orderMode = 'asc';
-  }
-
-  let orderBy = localStorage.getItem('orderByUserList');
-  if (!orderBy) {
-    localStorage.setItem('orderByUserList', 'email');
-    orderBy = 'email';
-  }
+  const [count, setCount] = useLocalStorage('countUserList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage('orderModeUserList', 'asc');
+  const [orderBy, setOrderBy] = useLocalStorage('orderByUserList', 'email');
 
   const [queryRef, loadQuery] = useQueryLoader<userQuery>(UserListQuery);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });

@@ -10,12 +10,15 @@ import { Badge, Button } from 'filigran-ui/servers';
 import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
 import { AddIcon, ChevronIcon, LittleArrowIcon } from 'filigran-icon';
-import { transformSortingValueToParams } from '@/components/ui/handle-sorting.utils';
-import { UserServiceOrdering } from '../../../../__generated__/ServiceUserPaginationQuery.graphql';
+import {
+  mapToSortingTableValue,
+  transformSortingValueToParams,
+} from '@/components/ui/handle-sorting.utils';
 import { UserServiceDeleteMutation } from '@/components/service/[slug]/user-service/user-service.graphql';
 import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
 import {
   OrderingMode,
+  UserServiceOrdering,
   serviceUserSlugQuery,
   serviceUserSlugQuery$data,
   serviceUserSlugQuery$variables,
@@ -25,6 +28,7 @@ import {
   ServiceUserSlugQuery,
 } from '@/components/service/service.graphql';
 import { serviceUser$key } from '../../../../__generated__/serviceUser.graphql';
+import { useLocalStorage } from 'usehooks-ts';
 
 export interface UserServiceData extends serviceUserSlugQuery$data {
   id: string;
@@ -38,7 +42,15 @@ interface ServiceSlugProps {
 const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
   const [openSheet, setOpenSheet] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
-
+  const [pageSize, setPageSize] = useLocalStorage('countServiceSlug', 50);
+  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
+    'orderModeServiceSlug',
+    'asc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage<UserServiceOrdering>(
+    'orderByServiceSlug',
+    'first_name'
+  );
   const [commitUserServiceDeletingMutation] =
     useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
   const deleteCurrentUser = (userService: any) => {
@@ -88,44 +100,29 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: Number(localStorage.getItem('countServiceSlug')),
+    pageSize,
   });
 
   const handleRefetchData = (
     args?: Partial<serviceUserSlugQuery$variables>
   ) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByServiceSlug'),
-        desc: localStorage.getItem('orderModeServiceSlug') === 'desc',
-      } as unknown as ColumnSort,
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy: localStorage.getItem(
-        'orderByServiceSlug'
-      ) as UserServiceOrdering,
-      orderMode: localStorage.getItem('orderModeServiceSlug') as OrderingMode,
+      orderBy,
+      orderMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
   const onSortingChange = (updater: unknown) => {
-    const sorting = [
-      {
-        id: localStorage.getItem('orderByServiceSlug'),
-        desc: localStorage.getItem('orderModeServiceSlug') === 'desc',
-      },
-    ];
+    const sorting = mapToSortingTableValue(orderBy, orderMode);
     const newSortingValue =
       updater instanceof Function ? updater(sorting) : updater;
 
-    localStorage.setItem('orderByServiceSlug', newSortingValue[0].id);
-    localStorage.setItem(
-      'orderModeServiceSlug',
-      newSortingValue[0].desc ? 'desc' : 'asc'
-    );
+    setOrderBy(newSortingValue[0].id);
+    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
 
     handleRefetchData(
       transformSortingValueToParams<UserServiceOrdering, OrderingMode>(
@@ -144,6 +141,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
       ),
     });
     setPagination(newPaginationValue);
+    if (newPaginationValue.pageSize !== pageSize) {
+      setPageSize(newPaginationValue.pageSize);
+    }
   };
 
   const columns: ColumnDef<UserServiceData>[] = useMemo(
@@ -223,12 +223,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
           rowCount: data.serviceUsers?.totalCount,
         }}
         tableState={{
-          sorting: [
-            {
-              id: localStorage.getItem('orderByServiceSlug') ?? '',
-              desc: localStorage.getItem('orderModeServiceSlug') === 'desc',
-            },
-          ],
+          sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,
         }}
       />
@@ -243,12 +238,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
           refetch({
             count: pagination.pageSize,
             cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-            orderBy: localStorage.getItem(
-              'orderByServiceSlug'
-            ) as UserServiceOrdering,
-            orderMode: localStorage.getItem(
-              'orderModeServiceSlug'
-            ) as OrderingMode,
+            orderBy,
+            orderMode,
           })
         }
         trigger={
