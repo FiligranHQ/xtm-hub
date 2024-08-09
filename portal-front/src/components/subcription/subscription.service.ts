@@ -18,6 +18,7 @@ import {
 import { subscriptionsByOrganizationSelectQuery } from '../../../__generated__/subscriptionsByOrganizationSelectQuery.graphql';
 import { subscriptionListByOrganization_subscriptions$key } from '../../../__generated__/subscriptionListByOrganization_subscriptions.graphql';
 import { subscriptionList_subscriptions$key } from '../../../__generated__/subscriptionList_subscriptions.graphql';
+import { useLocalStorage } from 'usehooks-ts';
 
 export const getSubscriptions = (
   queryRef: PreloadedQuery<subscriptionsSelectQuery>
@@ -34,26 +35,15 @@ export const getSubscriptions = (
 };
 
 export const getSubscriptionsByOrganization = () => {
-  let count = Number(localStorage.getItem('countSubscriptionList'));
-  if (!count) {
-    localStorage.setItem('countSubscriptionList', '50');
-    count = 50;
-  }
-  let orderMode = localStorage.getItem(
-    'orderModeOwnedServices'
-  ) as OrderingMode;
-  if (!orderMode) {
-    localStorage.setItem('orderModeOwnedServices', 'asc');
-    orderMode = 'asc';
-  }
-
-  let orderBy = localStorage.getItem(
-    'orderByOwnedServices'
-  ) as SubscriptionOrdering;
-  if (!orderBy) {
-    localStorage.setItem('orderByOwnedServices', 'start_date');
-    orderBy = 'start_date';
-  }
+  const [count, setCount] = useLocalStorage('countOwnedServicesList', 50);
+  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
+    'orderModeOwnedServices',
+    'asc'
+  );
+  const [orderBy, setOrderBy] = useLocalStorage<SubscriptionOrdering>(
+    'orderByOwnedServices',
+    'start_date'
+  );
 
   const subscriptionData =
     useLazyLoadQuery<subscriptionsByOrganizationSelectQuery>(
