@@ -17,6 +17,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
 import { addServiceLink, loadPublicServices } from './services.domain';
 import { getRolePortalBy } from '../role-portal/role-portal';
+import { loadUserBy } from '../users/users.domain';
 
 const resolvers: Resolvers = {
   Query: {
@@ -169,6 +170,14 @@ const resolvers: Resolvers = {
 
         let dataSubscription;
 
+        let userBillingManager;
+        if (role.name === 'ADMIN' && input.billing_manager) {
+          userBillingManager = await loadUserBy(
+            'User.email',
+            input.billing_manager
+          );
+        }
+
         for (const organization_id of input.organizations_id) {
           dataSubscription = {
             id: uuidv4() as unknown as SubscriptionId,
@@ -177,7 +186,8 @@ const resolvers: Resolvers = {
             start_date: new Date(),
             end_date: null,
             status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
-            subscriber_id: context.user.id,
+            subscriber_id:
+              role.name === 'ADMIN' ? userBillingManager.id : context.user.id,
           };
 
           await db<Subscription>(context, 'Subscription')

@@ -4,6 +4,7 @@ import { z, ZodSchema } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
+  Combobox,
   Form,
   FormControl,
   FormField,
@@ -27,8 +28,21 @@ import {
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { communityFormSchema } from '@/components/service/community/community-form-schema';
+import {
+  PreloadedQuery,
+  usePreloadedQuery,
+  useRefetchableFragment,
+} from 'react-relay';
+import { userQuery } from '../../../../__generated__/userQuery.graphql';
+import {
+  UserListQuery,
+  usersFragment,
+} from '@/components/admin/user/user.graphql';
+import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
+import GuardCapacityComponent from '@/components/admin-guard';
 
 interface CommunityFormSheetProps {
+  queryRef: PreloadedQuery<userQuery>;
   open: boolean;
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
@@ -39,6 +53,7 @@ interface CommunityFormSheetProps {
 }
 
 export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
+  queryRef,
   open,
   setOpen,
   trigger,
@@ -47,20 +62,17 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
   handleSubmit,
   validationSchema,
 }) => {
-  const servicesData = [
-    {
-      label: 'OpenFeed',
-      value: 'OpenFeed',
-    },
-    {
-      label: 'NextCloud',
-      value: 'NextCloud',
-    },
-    {
-      label: 'OpenCTI',
-      value: 'OpenCTI',
-    },
-  ];
+  const [selectedValue, setSelectedValue] = React.useState('acef');
+
+  const availableServicesList = ['OpenFeed', 'NextCloud', 'OpenCTI'];
+
+  const servicesData = availableServicesList?.map((service) => {
+    return {
+      label: service,
+      value: service,
+    };
+  });
+
   const [organizations] = getOrganizations();
   const organizationsData =
     organizations.organizations.edges.map(({ node }) => ({
@@ -76,6 +88,25 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
   const onSubmit = (values: z.infer<typeof validationSchema>) => {
     handleSubmit({
       ...values,
+    });
+  };
+
+  const queryData = usePreloadedQuery<userQuery>(UserListQuery, queryRef);
+  const [data, refetch] = useRefetchableFragment<userQuery, userList_users$key>(
+    usersFragment,
+    queryData
+  );
+
+  const usersData = data.users.edges.map((user) => {
+    return {
+      value: user.node?.email ?? '',
+      label: user.node?.email ?? '',
+    };
+  });
+
+  const handleInputChange = (inputValue: string) => {
+    refetch({
+      filter: inputValue,
     });
   };
 
@@ -129,58 +160,89 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="fee_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fee type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}>
+            <GuardCapacityComponent
+              displayError={false}
+              capacityRestriction={['BYPASS']}>
+              <FormField
+                control={form.control}
+                name="billing_manager"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Community billing manager</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a fee type" />
-                      </SelectTrigger>
+                      <div>
+                        <Combobox
+                          dataTab={usersData}
+                          order={'Choose'}
+                          placeholder={'Choose an email'}
+                          emptyCommand={'Not found'}
+                          onInputChange={handleInputChange}
+                          value={selectedValue}
+                          onValueChange={(value) => {
+                            setSelectedValue(value);
+                            field.onChange(value);
+                          }}
+                        />
+                      </div>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem
-                        key={'MONTHLY'}
-                        value={'MONTHLY'}>
-                        {'MONTHLY'}
-                      </SelectItem>
-                      <SelectItem
-                        key={'YEARLY'}
-                        value={'YEARLY'}>
-                        {'YEARLY'}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price (€)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="100"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="fee_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fee type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a fee type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem
+                          key={'MONTHLY'}
+                          value={'MONTHLY'}>
+                          {'MONTHLY'}
+                        </SelectItem>
+                        <SelectItem
+                          key={'YEARLY'}
+                          value={'YEARLY'}>
+                          {'YEARLY'}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price (€)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="100"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </GuardCapacityComponent>
             <FormField
               control={form.control}
               name="organizations_id"

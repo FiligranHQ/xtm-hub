@@ -55,7 +55,7 @@ type Query {
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: User
   user(id: ID!): User
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!): UserConnection!
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: String): UserConnection!
   node(id: ID!): Node
 }
 
@@ -191,6 +191,7 @@ input AddServiceCommunityInput {
   fee_type: String
   organizations_id: [String]
   basic_services: [String]
+  billing_manager: String
 }
 
 type ServiceSubscription {

@@ -8,6 +8,7 @@ export const usersFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
+      filter: $filter
     ) {
       __id
       totalCount
@@ -92,6 +93,7 @@ export const UserListQuery = graphql`
     $cursor: ID
     $orderBy: UserOrdering!
     $orderMode: OrderingMode!
+    $filter: String
   ) {
     ...userList_users
   }

@@ -47,11 +47,11 @@ import {
 } from '../../../../__generated__/serviceQuery.graphql';
 import { serviceCommunitiesQuery } from '../../../../__generated__/serviceCommunitiesQuery.graphql';
 import { serviceCommunityList_services$key } from '../../../../__generated__/serviceCommunityList_services.graphql';
-import { CreateCommunity } from '@/components/service/community/community-create';
 import { serviceCommunityList_fragment$data } from '../../../../__generated__/serviceCommunityList_fragment.graphql';
 import { subscriptionItem_fragment$data } from '../../../../__generated__/subscriptionItem_fragment.graphql';
 import { subscriptionEditMutation } from '../../../../__generated__/subscriptionEditMutation.graphql';
 import { useLocalStorage } from 'usehooks-ts';
+import { CreateCommunity } from '@/components/service/community/community-create';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
