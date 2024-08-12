@@ -48,7 +48,9 @@ export const loadPublicServices = async (
       'Service.*',
       dbRaw('((subscription.status)) as status'),
       dbRaw('(json_agg(org.*))::json as organization'),
-      dbRaw('(json_agg(subscription.*))::json as subscription'),
+      dbRaw(
+        "(json_agg(json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, 'organization', json_build_object('id', \"org\".id,'name', \"org\".name,'__typename', 'Organization'),'__typename', 'Subscription')))::json as subscription"
+      ),
 
       dbRaw('row_to_json(link.*) as link'),
     ])
@@ -79,7 +81,7 @@ export const loadServiceBy = async (
   field: string,
   value: string
 ): Promise<Service> => {
-  const [service] = db<Service>(context, 'Service')
+  const service = await db<Service>(context, 'Service')
     .where({ [field]: value })
     .select('*')
     .first();

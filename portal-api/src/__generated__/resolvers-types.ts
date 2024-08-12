@@ -224,7 +224,6 @@ export type MutationAddServicePriceArgs = {
 export type MutationAddSubscriptionArgs = {
   organization_id?: InputMaybe<Scalars['ID']['input']>;
   service_id?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<Scalars['String']['input']>;
   user_id?: InputMaybe<Scalars['ID']['input']>;
 };
 

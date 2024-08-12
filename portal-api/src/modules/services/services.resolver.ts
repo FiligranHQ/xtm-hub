@@ -122,6 +122,7 @@ const resolvers: Resolvers = {
           .insert(dataSubscription)
           .returning('*');
         addedSubscription.organization = await loadOrganizationBy(
+          context,
           'id',
           fromGlobalId(input.organization_id).id
         );

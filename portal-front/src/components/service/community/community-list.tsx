@@ -364,7 +364,8 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         serviceDataOnGoingCommunity?.subscription?.forEach((subscription) => {
           editSubscription(
             statusOnGoingCommunity,
-            subscription as subscriptionItem_fragment$data
+            subscription as subscriptionItem_fragment$data,
+            serviceDataOnGoingCommunity?.id
           );
         });
       },
@@ -392,7 +393,8 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       serviceData.subscription?.forEach((subscription) => {
         editSubscription(
           status,
-          subscription as subscriptionItem_fragment$data
+          subscription as subscriptionItem_fragment$data,
+          serviceData.id
         );
       });
     }
@@ -403,8 +405,12 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   );
 
   const editSubscription = useCallback(
-    (status: string, subscription: subscriptionItem_fragment$data) => {
-      if (!subscription.organization_id || !subscription.service_id) {
+    (
+      status: string,
+      subscription: subscriptionItem_fragment$data,
+      service_id: string
+    ) => {
+      if (!subscription.organization?.id) {
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -416,8 +422,8 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         variables: {
           input: {
             id: subscription.id,
-            organization_id: subscription.organization_id,
-            service_id: subscription.service_id,
+            organization_id: subscription.organization.id,
+            service_id,
             status: status,
           },
           id: subscription.id,

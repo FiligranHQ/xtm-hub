@@ -19,7 +19,7 @@ import {
 import { Badge, Button } from 'filigran-ui/servers';
 import Loader from '@/components/loader';
 import { DataTable, useToast } from 'filigran-ui/clients';
-import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import Link from 'next/link';
 import {
   mapToSortingTableValue,
@@ -99,7 +99,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
           service_id: service.id,
           organization_id: me.organization.id,
           user_id: me.id,
-          status: status,
         },
         onCompleted: () => handleSuccess(successMessage),
         onError: (error: Error) => handleError(error),
