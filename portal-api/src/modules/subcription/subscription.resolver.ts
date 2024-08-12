@@ -11,7 +11,6 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
-import { extractId } from '../../utils/utils';
 
 const resolvers: Resolvers = {
   Query: {
@@ -113,12 +112,10 @@ const resolvers: Resolvers = {
     editSubscription: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        const organization_id = extractId(input.organization_id);
-        const service_id = extractId(input.service_id);
         const update = {
           id,
-          organization_id,
-          service_id,
+          organization_id: input.organization_id,
+          service_id: input.service_id,
           status: input.status,
         };
         const [updatedSubscription] = await db<Subscription>(

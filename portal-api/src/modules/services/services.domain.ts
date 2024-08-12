@@ -5,9 +5,7 @@ import {
   ServiceLink,
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
-import { v4 as uuidv4 } from 'uuid';
-import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
-import { ServiceId } from '../../model/kanel/public/Service';
+import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
 
 export const loadPublicServices = async (
   context: PortalContext,
@@ -48,10 +46,13 @@ export const loadPublicServices = async (
     .leftJoin('Service_Link as link', 'Service.id', '=', 'link.service_id')
     .select([
       'Service.*',
+      dbRaw('((subscription.status)) as status'),
       dbRaw('(json_agg(org.*))::json as organization'),
+      dbRaw('(json_agg(subscription.*))::json as subscription'),
+
       dbRaw('row_to_json(link.*) as link'),
     ])
-    .groupBy(['Service.id', 'link.*'])
+    .groupBy(['Service.id', 'link.*', 'subscription.status'])
     .asConnection<ServiceConnection>();
 
   const queryCount = db<Service>(context, 'Service', opts);
@@ -78,25 +79,17 @@ export const loadServiceBy = async (
   field: string,
   value: string
 ): Promise<Service> => {
-  return db<Service>(context, 'Service')
+  const [service] = db<Service>(context, 'Service')
     .where({ [field]: value })
     .select('*')
     .first();
+  return service;
 };
 
 export const addServiceLink = async (
   context: PortalContext,
-  serviceId: ServiceId,
-  url: string,
-  serviceName: string
+  dataServiceLink: ServiceLinkInitializer
 ): Promise<ServiceLink> => {
-  const dataServiceLink = {
-    id: uuidv4() as unknown as ServiceLinkId,
-    service_id: serviceId,
-    url: url,
-    name: serviceName,
-  };
-
   const [serviceLink] = await db<ServiceLink>(context, 'Service_Link')
     .insert(dataServiceLink)
     .returning('*');

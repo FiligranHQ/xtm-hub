@@ -17,7 +17,7 @@ import {
 import { Badge, Button } from 'filigran-ui/servers';
 import Loader from '@/components/loader';
 import { DataTable, useToast } from 'filigran-ui/clients';
-import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import Link from 'next/link';
 import {
   mapToSortingTableValue,
@@ -52,6 +52,11 @@ import { subscriptionItem_fragment$data } from '../../../../__generated__/subscr
 import { subscriptionEditMutation } from '../../../../__generated__/subscriptionEditMutation.graphql';
 import { useLocalStorage } from 'usehooks-ts';
 import { CreateCommunity } from '@/components/service/community/community-create';
+import { communityAcceptFormSchema } from '@/components/service/community/community-form-schema';
+import { CommunityAcceptFormSheet } from '@/components/service/community/community-accept-form-sheet';
+import { z } from 'zod';
+import { ServicePriceCreateMutation } from '@/components/service/service-price.graphql';
+import { servicePriceMutation } from '../../../../__generated__/servicePriceMutation.graphql';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -64,6 +69,7 @@ interface SubscriptableMessagesProps {
   successMessage: string;
   alertMessage: string;
 }
+
 const SUBSCRIPTABLE_MESSAGES: Record<string, SubscriptableMessagesProps> = {
   SUBSCRIPTABLE_DIRECT: {
     status: 'ACCEPTED',
@@ -94,6 +100,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     pageIndex: 0,
     pageSize,
   });
+  const [openSheet, setOpenSheet] = useState(false);
+  const [statusOnGoingCommunity, setStatusOnGoingCommunity] = useState('');
+  const [serviceDataOnGoingCommunity, setServiceDataOnGoingCommunity] =
+    useState<serviceCommunityList_fragment$data>();
+
   const [orderBy, setOrderBy] = useLocalStorage<ServiceOrdering>(
     'orderModeCommunitiesList',
     'name'
@@ -234,9 +245,10 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         cell: ({ row }) => {
           return (
             <>
-              {row?.original?.subscription &&
-              row.original.subscription[0]?.status === 'REQUESTED' ? (
-                <GuardCapacityComponent capacityRestriction={['BYPASS']}>
+              {row.original?.status === 'REQUESTED' ? (
+                <GuardCapacityComponent
+                  displayError={false}
+                  capacityRestriction={['BYPASS']}>
                   <Button
                     variant="ghost"
                     onClick={() => editSubscriptions('ACCEPTED', row.original)}>
@@ -316,8 +328,14 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         size: 30,
         header: 'Status',
         cell: ({ row }) => (
-          <Badge className={'cursor-default'}>
-            {row?.original?.subscription?.[0]?.status ?? 'ACCEPTED'}
+          <Badge
+            variant={
+              row?.original?.status === 'REQUESTED'
+                ? 'destructive'
+                : 'secondary'
+            }
+            className={'cursor-default'}>
+            {row?.original?.status ?? 'ACCEPTED'}
           </Badge>
         ),
       },
@@ -327,13 +345,57 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     [columnsAdmin]
   );
 
+  const [commitServicePriceMutation] = useMutation<servicePriceMutation>(
+    ServicePriceCreateMutation
+  );
+
+  const handleAcceptCommunity = (
+    values: z.infer<typeof communityAcceptFormSchema>
+  ) => {
+    commitServicePriceMutation({
+      variables: {
+        input: {
+          service_id: serviceDataOnGoingCommunity?.id,
+          fee_type: values.fee_type,
+          price: values.price,
+        },
+      },
+      onCompleted: () => {
+        serviceDataOnGoingCommunity?.subscription?.forEach((subscription) => {
+          editSubscription(
+            statusOnGoingCommunity,
+            subscription as subscriptionItem_fragment$data
+          );
+        });
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
+    });
+
+    setOpenSheet(false);
+  };
+
   const editSubscriptions = (
     status: string,
     serviceData: serviceCommunityList_fragment$data
   ) => {
-    serviceData.subscription?.forEach((subscription) => {
-      editSubscription(status, subscription as subscriptionItem_fragment$data);
-    });
+    if (status === 'ACCEPTED') {
+      setOpenSheet(true);
+      setStatusOnGoingCommunity(status);
+      setServiceDataOnGoingCommunity(serviceData);
+    } else {
+      serviceData.subscription?.forEach((subscription) => {
+        editSubscription(
+          status,
+          subscription as subscriptionItem_fragment$data
+        );
+      });
+    }
   };
 
   const [commitSubscriptionMutation] = useMutation<subscriptionEditMutation>(
@@ -469,6 +531,17 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
             'You do not have any service... Yet !'
           )}
           <CreateCommunity connectionId={connectionId}></CreateCommunity>
+          <CommunityAcceptFormSheet
+            title={'Accept a new community'}
+            description={
+              'Insert the billing here. Click Validate when you are done. The subscriptions will be accepted.'
+            }
+            handleSubmit={handleAcceptCommunity}
+            open={openSheet}
+            setOpen={setOpenSheet}
+            validationSchema={
+              communityAcceptFormSchema
+            }></CommunityAcceptFormSheet>
         </>
       )}
     </>

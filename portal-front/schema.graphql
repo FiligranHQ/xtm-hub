@@ -65,6 +65,7 @@ type Mutation {
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
+  addServicePrice(input: AddServicePriceInput): ServicePrice
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription
   addServiceCommunity(input: AddServiceCommunityInput): Service
@@ -144,6 +145,20 @@ type ServiceLink implements Node {
   name: String
 }
 
+input AddServicePriceInput {
+  service_id: ID
+  price: Int
+  fee_type: String
+}
+
+type ServicePrice implements Node {
+  id: ID!
+  service_id: ID
+  fee_type: String
+  start_date: Date
+  price: Int
+}
+
 enum ServiceOrdering {
   name
   description
@@ -190,7 +205,7 @@ input AddServiceCommunityInput {
   price: Int
   fee_type: String
   organizations_id: [String]
-  basic_services: [String]
+  requested_services: [String]
   billing_manager: String
 }
 

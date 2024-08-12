@@ -195,14 +195,14 @@ const resolvers: Resolvers = {
             .returning('*');
         }
 
-        for (const serviceLink of input.basic_services) {
+        for (const serviceLink of input.requested_services) {
+          const dataServiceLink = {
+            id: uuidv4() as ServiceLinkId,
+            service_id: addedService.id as ServiceId,
+            name: serviceLink,
+          };
           // TODO Call AWX to add service to community
-          addServiceLink(
-            context,
-            addedService.id as unknown as ServiceId,
-            undefined,
-            serviceLink
-          );
+          addServiceLink(context, dataServiceLink);
         }
 
         return addedService;

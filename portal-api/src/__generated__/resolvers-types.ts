@@ -50,13 +50,15 @@ export type ActionTracking = Node & {
 };
 
 export type AddServiceCommunityInput = {
-  basic_services?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   billing_manager?: InputMaybe<Scalars['String']['input']>;
   community_description?: InputMaybe<Scalars['String']['input']>;
   community_name?: InputMaybe<Scalars['String']['input']>;
   fee_type?: InputMaybe<Scalars['String']['input']>;
   organizations_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   price?: InputMaybe<Scalars['Int']['input']>;
+  requested_services?: InputMaybe<
+    Array<InputMaybe<Scalars['String']['input']>>
+  >;
 };
 
 export type AddServiceInput = {
@@ -66,6 +68,12 @@ export type AddServiceInput = {
   service_description?: InputMaybe<Scalars['String']['input']>;
   service_name?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddServicePriceInput = {
+  fee_type?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Int']['input']>;
+  service_id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type AddUserInput = {
@@ -177,6 +185,7 @@ export type Mutation = {
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Subscription>;
   addServiceCommunity?: Maybe<Service>;
+  addServicePrice?: Maybe<ServicePrice>;
   addSubscription?: Maybe<Subscription>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
@@ -206,6 +215,10 @@ export type MutationAddServiceArgs = {
 
 export type MutationAddServiceCommunityArgs = {
   input?: InputMaybe<AddServiceCommunityInput>;
+};
+
+export type MutationAddServicePriceArgs = {
+  input?: InputMaybe<AddServicePriceInput>;
 };
 
 export type MutationAddSubscriptionArgs = {
@@ -500,6 +513,15 @@ export enum ServiceOrdering {
   Type = 'type',
 }
 
+export type ServicePrice = Node & {
+  __typename?: 'ServicePrice';
+  fee_type?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  price?: Maybe<Scalars['Int']['output']>;
+  service_id?: Maybe<Scalars['ID']['output']>;
+  start_date?: Maybe<Scalars['Date']['output']>;
+};
+
 export type ServiceSubscription = {
   __typename?: 'ServiceSubscription';
   add?: Maybe<Service>;
@@ -759,6 +781,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
       | Service
       | ServiceCapability
       | ServiceLink
+      | ServicePrice
       | Subscription
       | User
       | UserService;
@@ -769,6 +792,7 @@ export type ResolversTypes = ResolversObject<{
   ActionTracking: ResolverTypeWrapper<ActionTracking>;
   AddServiceCommunityInput: AddServiceCommunityInput;
   AddServiceInput: AddServiceInput;
+  AddServicePriceInput: AddServicePriceInput;
   AddUserInput: AddUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Capability: ResolverTypeWrapper<Capability>;
@@ -808,6 +832,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
   ServiceOrdering: ServiceOrdering;
+  ServicePrice: ResolverTypeWrapper<ServicePrice>;
   ServiceSubscription: ResolverTypeWrapper<ServiceSubscription>;
   Settings: ResolverTypeWrapper<Settings>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -834,6 +859,7 @@ export type ResolversParentTypes = ResolversObject<{
   ActionTracking: ActionTracking;
   AddServiceCommunityInput: AddServiceCommunityInput;
   AddServiceInput: AddServiceInput;
+  AddServicePriceInput: AddServicePriceInput;
   AddUserInput: AddUserInput;
   Boolean: Scalars['Boolean']['output'];
   Capability: Capability;
@@ -868,6 +894,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceConnection: ServiceConnection;
   ServiceEdge: ServiceEdge;
   ServiceLink: ServiceLink;
+  ServicePrice: ServicePrice;
   ServiceSubscription: ServiceSubscription;
   Settings: Settings;
   String: Scalars['String']['output'];
@@ -1073,6 +1100,12 @@ export type MutationResolvers<
     ContextType,
     Partial<MutationAddServiceCommunityArgs>
   >;
+  addServicePrice?: Resolver<
+    Maybe<ResolversTypes['ServicePrice']>,
+    ParentType,
+    ContextType,
+    Partial<MutationAddServicePriceArgs>
+  >;
   addSubscription?: Resolver<
     Maybe<ResolversTypes['Subscription']>,
     ParentType,
@@ -1190,6 +1223,7 @@ export type NodeResolvers<
     | 'Service'
     | 'ServiceCapability'
     | 'ServiceLink'
+    | 'ServicePrice'
     | 'Subscription'
     | 'User'
     | 'UserService',
@@ -1473,6 +1507,19 @@ export type ServiceLinkResolvers<
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServicePriceResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['ServicePrice'] = ResolversParentTypes['ServicePrice'],
+> = ResolversObject<{
+  fee_type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  price?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  service_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1795,6 +1842,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceEdge?: ServiceEdgeResolvers<ContextType>;
   ServiceLink?: ServiceLinkResolvers<ContextType>;
+  ServicePrice?: ServicePriceResolvers<ContextType>;
   ServiceSubscription?: ServiceSubscriptionResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
