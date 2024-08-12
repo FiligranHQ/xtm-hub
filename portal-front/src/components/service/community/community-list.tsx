@@ -65,21 +65,18 @@ interface CommunityProps {
 }
 
 interface SubscriptableMessagesProps {
-  status: string;
   successMessage: string;
   alertMessage: string;
 }
 
 const SUBSCRIPTABLE_MESSAGES: Record<string, SubscriptableMessagesProps> = {
   SUBSCRIPTABLE_DIRECT: {
-    status: 'ACCEPTED',
     successMessage:
       'You have successfully subscribed to the service. You can now find it in your subscribed services.',
     alertMessage:
       'Are you really sure you want to subscribe this service ? This action can not be undone.',
   },
   SUBSCRIPTABLE_BACKOFFICE: {
-    status: 'REQUESTED',
     successMessage:
       'Your request has been sent. You will soon be in touch with our team.',
     alertMessage:
@@ -144,7 +141,6 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         service_id,
         organization_id: me.organization.id,
         user_id: me.id,
-        status: SUBSCRIPTABLE_MESSAGES[serviceType]!.status,
       },
       onCompleted: () =>
         handleSuccess(SUBSCRIPTABLE_MESSAGES[serviceType]!.successMessage),
@@ -352,6 +348,14 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   const handleAcceptCommunity = (
     values: z.infer<typeof communityAcceptFormSchema>
   ) => {
+    if (!serviceDataOnGoingCommunity) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Error while retrieving current community...',
+      });
+      return;
+    }
     commitServicePriceMutation({
       variables: {
         input: {
@@ -365,7 +369,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           editSubscription(
             statusOnGoingCommunity,
             subscription as subscriptionItem_fragment$data,
-            serviceDataOnGoingCommunity?.id
+            serviceDataOnGoingCommunity.id
           );
         });
       },
