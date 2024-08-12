@@ -20,6 +20,7 @@ interface PortalConfig {
     user: string;
     password: string;
     database: string;
+    seeds: string;
   };
   services: Services[];
 }
@@ -35,9 +36,13 @@ const portalConfig: PortalConfig = {
     port: config.get<number>('database.port'),
     user: config.get<string>('database.user'),
     password: config.get<string>('database.password'),
-    database: config.get<string>('database.database'),
+    database: process.env.TEST_MODE
+      ? config.get<string>('database-test.database')
+      : config.get<string>('database.database'),
+    seeds: process.env.TEST_MODE
+      ? config.get<string>('database-test.seeds')
+      : 'src/seeds',
   },
   services: config.get('init_services'),
 };
-
 export default portalConfig;

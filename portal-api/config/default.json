@@ -11,6 +11,10 @@
     "password": "portal-password",
     "database": "cloud-portal"
   },
+  "database-test": {
+    "database": "test_database",
+    "seeds": "tests/seeds"
+  },
   "oidc_provider": {
     "issuer": "http://localhost:8080/realms/keycloak-express",
     "client_id": "keycloak-express",
