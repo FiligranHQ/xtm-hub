@@ -1,5 +1,8 @@
 import User from '../../model/kanel/public/User';
-import { loadOrganizationBy } from '../../modules/organizations/organizations';
+import {
+  loadOrganizationBy,
+  loadUnsecureOrganizationBy,
+} from '../../modules/organizations/organizations';
 import { AWUserInput, AWXAddUserInput, UserInput } from './awx.model';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { loadAllRolePortalBy } from '../../modules/role-portal/role-portal.domain';
@@ -9,7 +12,7 @@ export const buildCreateUserInput = async (
   user: UserInput,
   awxUUID: ActionTrackingId
 ) => {
-  const orgInfo = await loadOrganizationBy('id', user.organization_id);
+  const orgInfo = await loadUnsecureOrganizationBy('id', user.organization_id);
   const loadUserRoles = await loadAllRolePortalBy('id', user.roles);
 
   /* As we convert from config Thales role in input we should return the same as the output
@@ -56,7 +59,7 @@ const addProperty = async (key: string, user: User) => {
 };
 
 const getUserOrganization = async (user: AWUserInput) => {
-  const orgInfo = await loadOrganizationBy('id', user.organization_id);
+  const orgInfo = await loadUnsecureOrganizationBy('id', user.organization_id);
   return {
     ...user,
     ...orgInfo,

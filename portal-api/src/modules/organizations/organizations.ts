@@ -1,15 +1,24 @@
 import Organization from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
-import { db } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 
 export const loadOrganizationBy = async (
   context: PortalContext,
   field: string,
   value: string
 ): Promise<Organization> => {
-  const organization = await db<Organization>(context, 'Organization')
+  return db<Organization>(context, 'Organization')
     .where({ [field]: value })
     .select('*')
     .first();
-  return organization;
+};
+
+export const loadUnsecureOrganizationBy = async (
+  field: string,
+  value: string
+): Promise<Organization> => {
+  return dbUnsecure<Organization>('Organization')
+    .where({ [field]: value })
+    .select('*')
+    .first();
 };

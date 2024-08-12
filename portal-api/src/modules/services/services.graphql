@@ -55,6 +55,8 @@ type Mutation {
     @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
   deleteService(id: ID!): Service
     @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
+  addUserToCommunity(id: ID!, email: String!): Boolean
+    @auth(requires: [BCK_MANAGE_COMMUNITIES])
 }
 
 type Query {

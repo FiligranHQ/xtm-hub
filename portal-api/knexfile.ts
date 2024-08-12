@@ -1,4 +1,3 @@
-import 'knex';
 import portalConfig from './src/config';
 import pkg, { type Knex } from 'knex';
 import { PageInfo } from 'graphql-relay/connection/connection';
@@ -40,7 +39,7 @@ interface Pagination {
   orderBy: string;
 }
 
-const { knex } = pkg;
+const knex = pkg;
 
 const config: Knex.Config = {
   client: 'pg',
@@ -58,7 +57,7 @@ const config: Knex.Config = {
   },
   seeds: {
     extension: 'js',
-    directory: 'src/seeds',
+    directory: portalConfig.database.seeds,
   },
   postProcessResponse: (result, queryContext) => {
     if (!queryContext?.__typename) return result;

@@ -8,7 +8,6 @@ config/ssl
 config/development.json
 config/production.json
 config/reference.json
-config/test.json
 coverage
 test-results
 logs
@@ -28,3 +27,5 @@ __pycache__
 /config/local*.json
 /uploads/**
 !uploads/.gitkeep
+/config/filigran.json
+/config/thales.json

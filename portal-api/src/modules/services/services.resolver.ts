@@ -213,6 +213,11 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
+    addUserToCommunity: async (_, { email }) => {
+      const user = await loadUserBy('User.email', email);
+
+      return !!user;
+    },
   },
   Subscription: {
     Service: {
