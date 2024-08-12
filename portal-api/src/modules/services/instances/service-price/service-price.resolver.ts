@@ -12,7 +12,7 @@ const resolvers: Resolvers = {
     addServicePrice: async (_, { input }, context) => {
       const dataServicePrice = {
         id: uuidv4() as unknown as ServicePriceId,
-        service_id: fromGlobalId(input.service_id).id as unknown as ServiceId,
+        service_id: fromGlobalId(input.service_id).id as ServiceId,
         fee_type: input.fee_type,
         start_date: new Date(),
         price: input.price,
