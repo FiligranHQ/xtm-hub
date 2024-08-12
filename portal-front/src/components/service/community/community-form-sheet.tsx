@@ -266,7 +266,7 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
 
             <FormField
               control={form.control}
-              name="basic_services"
+              name="requested_services"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Services wanted</FormLabel>

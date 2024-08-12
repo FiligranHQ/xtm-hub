@@ -17,6 +17,16 @@ export const communityFormSchema = z.object({
   organizations_id: z
     .array(z.string())
     .min(1, { message: 'Choose an organization to be part of this community' }),
-  basic_services: z.array(z.string()).optional(),
+  requested_services: z.array(z.string()).optional(),
   billing_manager: z.string().email('This is not a valid email.').optional(),
+});
+
+export const communityAcceptFormSchema = z.object({
+  price: z.number().optional(),
+  fee_type: z
+    .string()
+    .min(2, {
+      message: 'FeeType must be at least 2 characters.',
+    })
+    .optional(),
 });

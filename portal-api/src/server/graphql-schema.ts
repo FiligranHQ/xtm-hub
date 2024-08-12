@@ -14,6 +14,7 @@ import settingsResolver from '../modules/settings/settings.resolver';
 import trackingResolver from '../modules/tracking/tracking.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import malwareAnalysisResolver from '../modules/malware-analysis/malware-analysis.resolver';
+import servicePriceResolver from '../modules/services/instances/service-price/service-price.resolver';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
@@ -35,6 +36,7 @@ const resolvers = mergeResolvers([
   subscriptionsResolver,
   userServiceResolver,
   serviceCapabilityResolver,
+  servicePriceResolver,
 ]);
 
 const createSchema = () => {
