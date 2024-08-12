@@ -63,7 +63,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
     'desc'
   );
   const [orderBy, setOrderBy] = useLocalStorage(
-    'countSubscriptionList',
+    'orderBySubscriptionList',
     'status'
   );
 

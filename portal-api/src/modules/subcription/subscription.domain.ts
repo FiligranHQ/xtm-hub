@@ -109,9 +109,11 @@ export const fillSubscription = async (
   updatedSubscription: Subscription
 ): Promise<Subscription> => {
   updatedSubscription.organization = await loadOrganizationBy(
+    context,
     'id',
     updatedSubscription.organization_id
   );
+
   updatedSubscription.service = await loadServiceBy(
     context,
     'id',

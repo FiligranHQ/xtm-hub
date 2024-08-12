@@ -11,6 +11,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
+import { loadServiceBy } from '../services/services.domain';
 
 const resolvers: Resolvers = {
   Query: {
@@ -38,7 +39,7 @@ const resolvers: Resolvers = {
   Mutation: {
     addSubscription: async (
       _,
-      { service_id, organization_id, user_id, status },
+      { service_id, organization_id, user_id },
       context
     ) => {
       const trx = await dbTx();
@@ -53,13 +54,22 @@ const resolvers: Resolvers = {
           throw new Error(`You have already subscribed this service.`);
         }
 
+        const service = await loadServiceBy(
+          context,
+          'id',
+          fromGlobalId(service_id).id
+        );
+
         const subscriptionData = {
           id: uuidv4(),
           service_id: fromGlobalId(service_id).id,
           organization_id: fromGlobalId(organization_id).id,
           start_date: new Date(),
           end_date: undefined,
-          status: status,
+          status:
+            service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
+              ? 'ACCEPTED'
+              : 'REQUESTED',
           subscriber_id: context.user.id,
         };
 
@@ -114,8 +124,8 @@ const resolvers: Resolvers = {
       try {
         const update = {
           id,
-          organization_id: input.organization_id,
-          service_id: input.service_id,
+          organization_id: fromGlobalId(input.organization_id).id,
+          service_id: fromGlobalId(input.service_id).id,
           status: input.status,
         };
         const [updatedSubscription] = await db<Subscription>(
