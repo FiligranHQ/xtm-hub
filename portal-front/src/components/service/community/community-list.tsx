@@ -57,6 +57,7 @@ import { CommunityAcceptFormSheet } from '@/components/service/community/communi
 import { z } from 'zod';
 import { ServicePriceCreateMutation } from '@/components/service/service-price.graphql';
 import { servicePriceMutation } from '../../../../__generated__/servicePriceMutation.graphql';
+import { RESTRICTION } from '@/utils/constant';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -540,7 +541,14 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           ) : (
             'You do not have any service... Yet !'
           )}
-          <CreateCommunity connectionId={connectionId}></CreateCommunity>
+          <GuardCapacityComponent
+            capacityRestriction={[
+              RESTRICTION.CAPABILITY_BYPASS,
+              RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
+              RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
+            ]}>
+            <CreateCommunity connectionId={connectionId}></CreateCommunity>
+          </GuardCapacityComponent>
           <CommunityAcceptFormSheet
             title={'Accept a new community'}
             description={

@@ -2,6 +2,7 @@ import { Resolvers } from '../../__generated__/resolvers-types';
 import {
   loadUsersBySubscription,
   loadUserServiceById,
+  loadUserServiceByUser,
 } from './user_service.domain';
 import { v4 as uuidv4 } from 'uuid';
 import { loadUserBy } from '../users/users.domain';
@@ -30,6 +31,18 @@ const resolvers: Resolvers = {
       context
     ) => {
       return loadUsersBySubscription(context, id, {
+        first,
+        after,
+        orderMode,
+        orderBy,
+      });
+    },
+    userServiceOwned: async (
+      _,
+      { first, after, orderMode, orderBy },
+      context
+    ) => {
+      return loadUserServiceByUser(context, context.user.id, {
         first,
         after,
         orderMode,
