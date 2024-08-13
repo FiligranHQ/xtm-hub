@@ -360,6 +360,7 @@ export type Query = {
   subscriptions: SubscriptionConnection;
   subscriptionsByOrganization: SubscriptionConnection;
   user?: Maybe<User>;
+  userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
 };
 
@@ -431,6 +432,13 @@ export type QuerySubscriptionsByOrganizationArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type QueryUserServiceOwnedArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: UserServiceOrdering;
+  orderMode: OrderingMode;
 };
 
 export type QueryUsersArgs = {
@@ -646,6 +654,11 @@ export enum UserServiceOrdering {
   Email = 'email',
   FirstName = 'first_name',
   LastName = 'last_name',
+  ServiceDescription = 'service_description',
+  ServiceName = 'service_name',
+  ServiceProvider = 'service_provider',
+  ServiceType = 'service_type',
+  SubscriptionStatus = 'subscription_status',
 }
 
 export type UserSubscription = {
@@ -1391,6 +1404,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryUserArgs, 'id'>
+  >;
+  userServiceOwned?: Resolver<
+    Maybe<ResolversTypes['UserServiceConnection']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>
   >;
   users?: Resolver<
     ResolversTypes['UserConnection'],

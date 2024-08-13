@@ -1,46 +1,55 @@
 enum UserServiceOrdering {
-  first_name
-  last_name
-  email
+    first_name
+    last_name
+    email
+    service_name
+    service_provider
+    service_type
+    service_description
+    subscription_status
 }
 
 input UserServiceInput {
-  email: String!
-  capabilities: [String]
-  subscriptionId: String!
+    email: String!
+    capabilities: [String]
+    subscriptionId: String!
 }
 
 type Mutation {
-  addUserService(input: UserServiceInput!): UserService
+    addUserService(input: UserServiceInput!): UserService
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
-  deleteUserService(input: UserServiceInput!): UserService
+    deleteUserService(input: UserServiceInput!): UserService
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
 }
 type Query {
-  serviceUsers(
-    id: ID!
-    first: Int!
-    after: ID
-    orderBy: UserServiceOrdering!
-    orderMode: OrderingMode!
-  ): UserServiceConnection @auth
+    userServiceOwned(first: Int!
+        after: ID
+        orderBy: UserServiceOrdering!
+        orderMode: OrderingMode!): UserServiceConnection @auth
+    serviceUsers(
+        id: ID!
+        first: Int!
+        after: ID
+        orderBy: UserServiceOrdering!
+        orderMode: OrderingMode!
+    ): UserServiceConnection @auth
 }
 type UserServiceConnection {
-  totalCount: Int!
-  edges: [UserServiceEdge!]!
-  pageInfo: PageInfo!
+    totalCount: Int!
+    edges: [UserServiceEdge!]!
+    pageInfo: PageInfo!
 }
 
 type UserServiceEdge {
-  cursor: String!
-  node: UserService
+    cursor: String!
+    node: UserService
 }
 
 type UserService implements Node {
-  id: ID!
-  subscription_id: ID!
-  user_id: ID!
-  user: User
-  subscription: Subscription
-  service_capability: [ServiceCapability]
+    id: ID!
+    subscription_id: ID!
+    user_id: ID!
+    user: User
+    subscription: Subscription
+    service_capability: [ServiceCapability]
 }

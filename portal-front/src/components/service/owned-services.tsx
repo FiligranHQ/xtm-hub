@@ -3,30 +3,42 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { DataTable } from 'filigran-ui/clients';
-import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
-import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
+import { PaginationState } from '@tanstack/react-table';
 import { Badge, Button } from 'filigran-ui/servers';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import { SubscriptionOrdering } from '../../../__generated__/subscriptionsByOrganizationSelectQuery.graphql';
-import { SubscriptionsPaginationQuery$variables } from '../../../__generated__/SubscriptionsPaginationQuery.graphql';
 import Link from 'next/link';
 import { CourseOfActionIcon, IndicatorIcon } from 'filigran-icon';
 import GuardCapacityComponent from '@/components/admin-guard';
-import { subscriptionItem_fragment$data } from '../../../__generated__/subscriptionItem_fragment.graphql';
 import { OrderingMode } from '../../../__generated__/ServiceUserPaginationQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
+import {
+  PreloadedQuery,
+  usePreloadedQuery,
+  useRefetchableFragment,
+} from 'react-relay';
+import {
+  userServiceOwnedFragment,
+  UserServiceOwnedQuery,
+} from '@/components/service/user_service.graphql';
+import { userServiceOwnedQuery } from '../../../__generated__/userServiceOwnedQuery.graphql';
+import {
+  userServiceOwnedUser$data,
+  userServiceOwnedUser$key,
+} from '../../../__generated__/userServiceOwnedUser.graphql';
+import { UserServiceOrdering } from '../../../__generated__/serviceUserSlugQuery.graphql';
+import { ServiceUserOwnedPaginationQuery$variables } from '../../../__generated__/ServiceUserOwnedPaginationQuery.graphql';
 
-const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
+const columns = [
   {
     id: 'service_name',
     header: 'Name',
     cell: ({ row }) => {
       return (
         <div className="flex items-center space-x-2">
-          {row.original.service?.name}
+          {row.original.subscription.service.name}
         </div>
       );
     },
@@ -38,9 +50,11 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
       return (
         <Badge
           variant={
-            row.original.status === 'REQUESTED' ? 'destructive' : 'secondary'
+            row.original.subscription.status === 'REQUESTED'
+              ? 'destructive'
+              : 'secondary'
           }>
-          {row.original.status}
+          {row.original.subscription.status}
         </Badge>
       );
     },
@@ -51,19 +65,21 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     header: 'Type',
     cell: ({ row }) => {
       return (
-        <Badge className={'cursor-default'}>{row.original.service?.type}</Badge>
+        <Badge className={'cursor-default'}>
+          {row.original.subscription.service.type}
+        </Badge>
       );
     },
   },
   {
-    accessorKey: 'service.provider',
+    accessorKey: 'subscription.service.provider',
     id: 'service_provider',
     size: 30,
     header: 'Provider',
   },
   {
     size: 300,
-    accessorKey: 'service.description',
+    accessorKey: 'subscription.service.description',
     id: 'service_description',
     header: 'Description',
   },
@@ -76,7 +92,7 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     cell: ({ row }) => {
       return (
         <>
-          {row.original.status === 'ACCEPTED' ? (
+          {row.original.subscription.status === 'ACCEPTED' ? (
             <>
               <GuardCapacityComponent
                 capacityRestriction={['FRT_ACCESS_SERVICES']}
@@ -117,33 +133,47 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   },
 ];
 
-const OwnedServices: React.FunctionComponent<{}> = ({}) => {
+interface OwnedServicesProps {
+  queryRef: PreloadedQuery<userServiceOwnedQuery>;
+}
+
+const OwnedServices: React.FunctionComponent<OwnedServicesProps> = ({
+  queryRef,
+}) => {
   const [pageSize, setPageSize] = useLocalStorage('countOwnedServicesList', 50);
   const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
     'orderModeOwnedServices',
     'asc'
   );
-  const [orderBy, setOrderBy] = useLocalStorage<SubscriptionOrdering>(
+  const [orderBy, setOrderBy] = useLocalStorage<UserServiceOrdering>(
     'orderByOwnedServices',
-    'start_date'
+    'service_name'
   );
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize,
   });
-  const [subscriptionsOrganization, refetchSubOrga] =
-    getSubscriptionsByOrganization();
 
-  const ownedServices: subscriptionItem_fragment$data[] =
-    subscriptionsOrganization.subscriptionsByOrganization.edges.map(
-      (subscription) => subscription.node
-    ) as subscriptionItem_fragment$data[];
+  const queryData = usePreloadedQuery<userServiceOwnedQuery>(
+    UserServiceOwnedQuery,
+    queryRef
+  );
+
+  const [data, refetch] = useRefetchableFragment<
+    userServiceOwnedQuery,
+    userServiceOwnedUser$key
+  >(userServiceOwnedFragment, queryData);
+
+  const ownedServices: userServiceOwnedUser$data[] =
+    data.userServiceOwned?.edges.map(
+      (userService) => userService.node
+    ) as userServiceOwnedUser$data[];
 
   const handleRefetchData = (
-    args?: Partial<SubscriptionsPaginationQuery$variables>
+    args?: Partial<ServiceUserOwnedPaginationQuery$variables>
   ) => {
     const sorting = mapToSortingTableValue(orderBy, orderMode);
-    refetchSubOrga({
+    refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
       orderBy,
@@ -161,7 +191,7 @@ const OwnedServices: React.FunctionComponent<{}> = ({}) => {
     setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
 
     handleRefetchData(
-      transformSortingValueToParams<SubscriptionOrdering, OrderingMode>(
+      transformSortingValueToParams<UserServiceOrdering, OrderingMode>(
         newSortingValue
       )
     );
