@@ -34,6 +34,7 @@ export const isNodeAccessible = async (
     'Service_Link',
     'User_Service',
     'Service_Capability',
+    'ActionTracking',
   ];
   const type = node.__typename;
   // If user have bypass do not apply security layer
@@ -83,6 +84,7 @@ export const applyDbSecurity = <T>(
     'Service_Capability',
     'MalwareAnalysis',
     'Organization',
+    'ActionTracking',
   ];
   // If user is admin, user has no access restriction
   if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
