@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { DataTable } from 'filigran-ui/clients';
-import { PaginationState } from '@tanstack/react-table';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { Badge, Button } from 'filigran-ui/servers';
 import {
   mapToSortingTableValue,
@@ -30,15 +30,16 @@ import {
 } from '../../../__generated__/userServiceOwnedUser.graphql';
 import { UserServiceOrdering } from '../../../__generated__/serviceUserSlugQuery.graphql';
 import { ServiceUserOwnedPaginationQuery$variables } from '../../../__generated__/ServiceUserOwnedPaginationQuery.graphql';
+import { userServicesOwned_fragment$data } from '../../../__generated__/userServicesOwned_fragment.graphql';
 
-const columns = [
+const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
   {
     id: 'service_name',
     header: 'Name',
     cell: ({ row }) => {
       return (
         <div className="flex items-center space-x-2">
-          {row.original.subscription.service.name}
+          {row.original.subscription?.service?.name}
         </div>
       );
     },
@@ -50,11 +51,11 @@ const columns = [
       return (
         <Badge
           variant={
-            row.original.subscription.status === 'REQUESTED'
+            row.original.subscription?.status === 'REQUESTED'
               ? 'destructive'
               : 'secondary'
           }>
-          {row.original.subscription.status}
+          {row.original.subscription?.status}
         </Badge>
       );
     },
@@ -66,7 +67,7 @@ const columns = [
     cell: ({ row }) => {
       return (
         <Badge className={'cursor-default'}>
-          {row.original.subscription.service.type}
+          {row.original.subscription?.service?.type}
         </Badge>
       );
     },
@@ -92,7 +93,11 @@ const columns = [
     cell: ({ row }) => {
       return (
         <>
-          {row.original.subscription.status === 'ACCEPTED' ? (
+          {row.original.subscription.status === 'ACCEPTED' &&
+          row.original.service_capability.some(
+            (service_capability) =>
+              service_capability.service_capability_name === 'ACCESS_SERVICE'
+          ) ? (
             <>
               <GuardCapacityComponent
                 capacityRestriction={['FRT_ACCESS_SERVICES']}
@@ -111,18 +116,26 @@ const columns = [
                 </Button>
               </GuardCapacityComponent>
 
-              <GuardCapacityComponent
-                capacityRestriction={['BCK_MANAGE_SERVICES']}
-                displayError={false}>
-                <Button
-                  asChild
-                  className="mt-2 w-3/4">
-                  <Link href={`/admin/service/${row.original.service?.id}`}>
-                    <CourseOfActionIcon className="mr-2 h-5 w-5" />
-                    Manage
-                  </Link>
-                </Button>{' '}
-              </GuardCapacityComponent>
+              {row.original.service_capability.some(
+                (service_capability) =>
+                  service_capability.service_capability_name === 'MANAGE_ACCESS'
+              ) ? (
+                <GuardCapacityComponent
+                  capacityRestriction={['BCK_MANAGE_SERVICES']}
+                  displayError={false}>
+                  <Button
+                    asChild
+                    className="mt-2 w-3/4">
+                    <Link
+                      href={`/admin/service/${row.original.subscription.service?.id}`}>
+                      <CourseOfActionIcon className="mr-2 h-5 w-5" />
+                      Manage
+                    </Link>
+                  </Button>{' '}
+                </GuardCapacityComponent>
+              ) : (
+                <></>
+              )}
             </>
           ) : (
             <></>

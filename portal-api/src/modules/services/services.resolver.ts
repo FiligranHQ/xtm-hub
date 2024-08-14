@@ -1,8 +1,10 @@
 import {
   Resolvers,
   Service,
+  ServiceCapability,
   ServiceLink,
   Subscription,
+  UserService,
 } from '../../__generated__/resolvers-types';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,7 +19,9 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
 import { addServiceLink, loadPublicServices } from './services.domain';
 import { getRolePortalBy } from '../role-portal/role-portal';
-import { loadUserBy } from '../users/users.domain';
+import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
+import { UserServiceId } from '../../model/kanel/public/UserService';
+import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 
 const resolvers: Resolvers = {
   Query: {
@@ -191,9 +195,71 @@ const resolvers: Resolvers = {
               role.name === 'ADMIN' ? userBillingManager.id : context.user.id,
           };
 
-          await db<Subscription>(context, 'Subscription')
+          const [addedSubscription] = await db<Subscription>(
+            context,
+            'Subscription'
+          )
             .insert(dataSubscription)
             .returning('*');
+
+          const users = await loadUsersByOrganization(
+            fromGlobalId(organization_id).id,
+            userBillingManager.id
+          );
+          for (const user of users) {
+            const dataUserService = {
+              id: uuidv4() as UserServiceId,
+              user_id: user.id,
+              subscription_id: addedSubscription.id,
+            };
+
+            const [insertedUserService] = await db<UserService>(
+              context,
+              'User_Service'
+            )
+              .insert(dataUserService)
+              .returning('*');
+
+            const dataServiceCapability = {
+              id: uuidv4() as ServiceCapabilityId,
+              user_service_id: insertedUserService.id,
+              service_capability_name: 'ACCESS_SERVICE',
+            };
+
+            await db<ServiceCapability>(context, 'Service_Capability')
+              .insert(dataServiceCapability)
+              .returning('*');
+          }
+
+          const dataUserService = {
+            id: uuidv4() as UserServiceId,
+            user_id: userBillingManager.id,
+            subscription_id: addedSubscription.id,
+          };
+
+          const [insertedUserService] = await db<UserService>(
+            context,
+            'User_Service'
+          )
+            .insert(dataUserService)
+            .returning('*');
+
+          const capabilities = [
+            'ADMIN_SUBSCRIPTION',
+            'MANAGE_ACCESS',
+            'ACCESS_SERVICE',
+          ];
+          for (const capability of capabilities) {
+            const dataServiceCapability = {
+              id: uuidv4() as ServiceCapabilityId,
+              user_service_id: insertedUserService.id,
+              service_capability_name: capability,
+            };
+
+            await db<ServiceCapability>(context, 'Service_Capability')
+              .insert(dataServiceCapability)
+              .returning('*');
+          }
         }
 
         for (const serviceLink of input.requested_services) {
