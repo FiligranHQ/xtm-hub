@@ -7,21 +7,20 @@ import {
 import { DataTable } from 'filigran-ui/clients';
 import { FunctionComponent, useMemo, useState } from 'react';
 import { Badge, Button } from 'filigran-ui/servers';
-import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
 import { AddIcon, ChevronIcon, LittleArrowIcon } from 'filigran-icon';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import { UserServiceDeleteMutation } from '@/components/service/[slug]/user-service/user-service.graphql';
 import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
 import {
   OrderingMode,
-  UserServiceOrdering,
   serviceUserSlugQuery,
   serviceUserSlugQuery$data,
   serviceUserSlugQuery$variables,
+  UserServiceOrdering,
 } from '../../../../__generated__/serviceUserSlugQuery.graphql';
 import {
   serviceUsersFragment,
@@ -29,6 +28,7 @@ import {
 } from '@/components/service/service.graphql';
 import { serviceUser$key } from '../../../../__generated__/serviceUser.graphql';
 import { useLocalStorage } from 'usehooks-ts';
+import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 
 export interface UserServiceData extends serviceUserSlugQuery$data {
   id: string;
