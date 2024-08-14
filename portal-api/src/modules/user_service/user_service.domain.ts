@@ -106,6 +106,11 @@ export const loadUserServiceByUser = async (
       'user.first_name',
       'user.last_name',
       'user.email',
+      'service.name',
+      'service.type',
+      'service.provider',
+      'service.description',
+      'sub.status',
     ])
     .asConnection<UserServiceConnection>();
 

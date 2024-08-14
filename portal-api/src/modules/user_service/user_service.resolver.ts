@@ -42,6 +42,7 @@ const resolvers: Resolvers = {
       { first, after, orderMode, orderBy },
       context
     ) => {
+      console.log('user.id', context.user.id);
       return loadUserServiceByUser(context, context.user.id, {
         first,
         after,

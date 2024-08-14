@@ -227,7 +227,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
                     <CourseOfActionIcon className="mr-2 h-5 w-5" />
                     Manage
                   </Link>
-                </Button>{' '}
+                </Button>
               </GuardCapacityComponent>
             </>
           );

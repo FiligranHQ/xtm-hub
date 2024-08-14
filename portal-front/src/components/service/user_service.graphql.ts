@@ -55,3 +55,34 @@ export const userServiceOwnedFragment = graphql`
     }
   }
 `;
+
+export const userServicesOwnedFragment = graphql`
+  fragment userServicesOwned_fragment on UserService {
+    id
+    user {
+      id
+      last_name
+      first_name
+      email
+    }
+    service_capability {
+      id
+      service_capability_name
+    }
+    subscription {
+      id
+      status
+      organization {
+        name
+        id
+      }
+      service {
+        name
+        id
+        type
+        provider
+        description
+      }
+    }
+  }
+`;
