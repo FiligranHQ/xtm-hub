@@ -23,8 +23,8 @@ import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import { useMutation } from 'react-relay';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { serviceCapabilityMutation } from '../../../../__generated__/serviceCapabilityMutation.graphql';
-import { UserServiceCreateMutation } from '@/components/service/[slug]/user-service/user-service.graphql';
 import { userServiceCreateMutation } from '../../../../__generated__/userServiceCreateMutation.graphql';
+import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 
 interface ServiceSlugFormSheetProps {
   open: boolean;
