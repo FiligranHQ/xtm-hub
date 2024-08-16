@@ -27,7 +27,7 @@ export const loadUserServiceById = async (
   context: PortalContext,
   userServiceId
 ) => {
-  const userServiceQuery = db<UserService>(context, 'User_Service')
+  return db<UserService>(context, 'User_Service')
     .where('User_Service.id', '=', userServiceId)
     .leftJoin(
       'Subscription as sub',
@@ -57,8 +57,6 @@ export const loadUserServiceById = async (
     ])
     .groupBy(['User_Service.id'])
     .first();
-  const userService = await userServiceQuery;
-  return userService;
 };
 
 export const loadUsersBySubscription = async (

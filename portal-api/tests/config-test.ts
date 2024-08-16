@@ -37,7 +37,7 @@ const configTest: Knex.Config = {
     directory: portalConfig.database.seeds,
   },
 };
-const getDbTestConnection = () => {
+export const getDbTestConnection = () => {
   return pkg(configTest);
 };
 
@@ -55,6 +55,10 @@ export async function createDatabase() {
   } catch (err) {
     console.log(err);
   } finally {
-    // await dbConnection.destroy();
+    await dbConnection.destroy();
   }
+}
+
+export async function setup() {
+  await createDatabase();
 }

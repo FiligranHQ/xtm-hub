@@ -45,4 +45,41 @@ export async function seed(knex) {
       price: 1000,
     },
   ]);
+  await knex('Subscription').insert([
+    {
+      id: 'fdd973f0-6e8e-4794-9857-da84830679d5',
+      organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
+      start_date: '2024-08-08',
+      end_date: null,
+      status: 'ACCEPTED',
+      subscriber_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+    },
+  ]);
+  await knex('User_Service').insert([
+    {
+      id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
+      user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      subscription_id: 'fdd973f0-6e8e-4794-9857-da84830679d5',
+      service_personal_data: null,
+    },
+  ]);
+
+  await knex('Service_Capability').insert([
+    {
+      id: '706c2468-581e-4739-8d25-082c0a3f328d',
+      user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
+      service_capability_name: 'ADMIN_SUBSCRIPTION',
+    },
+    {
+      id: '51491107-5dc5-4aee-bca6-e07410844477',
+      user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
+      service_capability_name: 'MANAGE_ACCESS',
+    },
+    {
+      id: 'ccb3c0e7-29dd-4cd0-bb9d-b428bd1f5cab',
+      user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
+      service_capability_name: 'ACCESS_SERVICE',
+    },
+  ]);
 }

@@ -11,6 +11,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { loadUserBy } from '../users/users.domain';
 import { db } from '../../../knexfile';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { loadUnsecureUserServiceBy } from './user-service.helper';
+import { UserId } from '../../model/kanel/public/User';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { GraphQLError } from 'graphql/error/index.js';
 
 const resolvers: Resolvers = {
   Query: {
@@ -30,15 +34,33 @@ const resolvers: Resolvers = {
   Mutation: {
     addUserService: async (_, { input }, context) => {
       const user = await loadUserBy('email', input.email);
-
       const user_service = {
         id: uuidv4(),
         subscription_id: fromGlobalId(input.subscriptionId).id,
         user_id: user.id,
       };
+
+      if (!user_service.subscription_id) {
+        throw new GraphQLError('Sorry the subscription does not exist', {
+          extensions: { code: 'UNKNOWN SUBSCRIPTION' },
+        });
+      }
+
+      const [existingUserService] = await loadUnsecureUserServiceBy({
+        user_id: user_service.user_id as UserId,
+        subscription_id: user_service.subscription_id as SubscriptionId,
+      });
+
+      if (existingUserService) {
+        throw new GraphQLError('The User access to service is already exist', {
+          extensions: { code: 'ALREADY_EXIST' },
+        });
+      }
+
       const [addedUserService] = await db<UserService>(context, 'User_Service')
         .insert(user_service)
         .returning('*');
+
       for (const capability of input.capabilities) {
         const service_capa = {
           id: uuidv4(),
@@ -51,12 +73,7 @@ const resolvers: Resolvers = {
           .returning('*');
       }
 
-      const userServiceToReturn = await loadUserServiceById(
-        context,
-        addedUserService.id
-      );
-
-      return userServiceToReturn;
+      return await loadUserServiceById(context, addedUserService.id);
     },
     deleteUserService: async (_, { input }, context) => {
       const userToDelete = await loadUserBy('email', input.email);
