@@ -16,7 +16,7 @@ import {
   addRolesToUser,
   deleteUserRolePortalByUserId,
 } from '../common/user-role-portal';
-import { addNewUserWithRoles } from './user.helper';
+import { addNewUserWithRoles } from './users.helper';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 
 const completeUserCapability = (user: UserGenerated): UserGenerated => {
@@ -174,7 +174,6 @@ export const createUser = async (
     last_name,
   };
   // Use insert with returning to get the newly created user
-  console.log({ roles });
   await addNewUserWithRoles(data, roles);
   return await loadUserBy('User.email', email);
 };

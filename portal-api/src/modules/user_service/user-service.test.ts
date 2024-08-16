@@ -9,6 +9,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadUnsecureServiceCapabitiesBy } from '../service_capability/service_capability.helper';
 import { loadUserBy } from '../users/users.domain';
+import { v4 as uuidv4 } from 'uuid';
 
 const userServiceCreateMutation = {
   query: print(gql`
@@ -105,18 +106,19 @@ describe('Services GraphQL Endpoint', async () => {
     });
 
     describe('add an new user and create different capacity for the Service', async () => {
+      const testEmail = `newUserService${uuidv4()}@test.fr`;
       await userAdmin.post('/graphql-api').send({
         ...userServiceCreateMutation,
         variables: {
           ...userServiceCreateMutation.variables,
           input: {
             ...userServiceCreateMutation.variables.input,
-            email: 'anyNewUser@test.fr',
+            email: testEmail,
             capabilities: ['ACCESS_SERVICE'],
           },
         },
       });
-      const createdUser = await loadUserBy('email', 'anyNewUser@test.fr');
+      const createdUser = await loadUserBy('email', testEmail);
 
       it('the user should be created', async () => {
         expect(createdUser).toBeTruthy();
@@ -128,7 +130,6 @@ describe('Services GraphQL Endpoint', async () => {
           'fdd973f0-6e8e-4794-9857-da84830679d5' as SubscriptionId,
       });
       it('check if the user has 1 and only 1 access', async () => {
-        console.log(existingUserService);
         expect(existingUserService.length).toBe(1);
       });
       it('check if the user has 1 capacity ACCESS_SERVICE', async () => {

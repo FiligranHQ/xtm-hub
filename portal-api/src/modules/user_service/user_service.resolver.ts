@@ -11,7 +11,7 @@ import { loadUnsecureUserServiceBy } from './user-service.helper';
 import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { GraphQLError } from 'graphql/error/index.js';
-import { createNewUserFromInvitation } from '../users/user.helper';
+import { createNewUserFromInvitation } from '../users/users.helper';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import UserService, {
   UserServiceId,
@@ -41,18 +41,18 @@ const resolvers: Resolvers = {
     addUserService: async (_, { input }, context) => {
       const user = await loadUserBy('email', input.email);
 
-      let newUser;
-      if (!user) {
-        newUser = await createNewUserFromInvitation(
-          input.email,
-          context.user.organization_id as OrganizationId
-        );
-      }
       const user_service: UserServiceInitializer = {
         id: uuidv4() as UserServiceId,
         subscription_id: fromGlobalId(input.subscriptionId)
           .id as SubscriptionId,
-        user_id: (user ? user.id : newUser.id) as UserId,
+        user_id: (user
+          ? user.id
+          : (
+              await createNewUserFromInvitation(
+                input.email,
+                context.user.organization_id as OrganizationId
+              )
+            ).id) as UserId,
       };
 
       if (!user_service.subscription_id) {
