@@ -52,7 +52,7 @@ export const loadPublicServices = async (
         "(json_agg(json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, 'organization', json_build_object('id', \"org\".id,'name', \"org\".name,'__typename', 'Organization'),'__typename', 'Subscription')))::json as subscription"
       ),
 
-      dbRaw('row_to_json(link.*) as link'),
+      dbRaw('row_to_json(link.*) as links'),
     ])
     .groupBy(['Service.id', 'link.*', 'subscription.status'])
     .asConnection<ServiceConnection>();

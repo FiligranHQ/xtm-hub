@@ -10,7 +10,7 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import Link from 'next/link';
-import { CourseOfActionIcon, IndicatorIcon } from 'filigran-icon';
+import { CourseOfActionIcon } from 'filigran-icon';
 import GuardCapacityComponent from '@/components/admin-guard';
 import { OrderingMode } from '../../../__generated__/ServiceUserPaginationQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
@@ -102,18 +102,19 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
               <GuardCapacityComponent
                 capacityRestriction={['FRT_ACCESS_SERVICES']}
                 displayError={false}>
-                <Button
-                  asChild
-                  className="w-3/4">
-                  <Link
-                    href={row?.original?.service_url ?? '#'}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow">
-                    {' '}
-                    <IndicatorIcon className="mr-2 h-5 w-5" />
-                    View more
-                  </Link>
-                </Button>
+                {row.original?.subscription?.service?.links?.map((link) => (
+                  <Button
+                    asChild
+                    key={link?.id}
+                    className="mt-2 w-3/4">
+                    <Link
+                      href={link?.url ?? '#'}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow">
+                      {link?.name}
+                    </Link>
+                  </Button>
+                ))}
               </GuardCapacityComponent>
 
               {row.original.service_capability?.some(

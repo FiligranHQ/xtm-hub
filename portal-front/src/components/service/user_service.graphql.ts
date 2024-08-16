@@ -48,7 +48,9 @@ export const userServiceOwnedFragment = graphql`
               type
               provider
               description
-              link {
+              links {
+                id
+                name
                 url
               }
             }
@@ -85,6 +87,11 @@ export const userServicesOwnedFragment = graphql`
         type
         provider
         description
+        links {
+          id
+          name
+          url
+        }
       }
     }
   }
