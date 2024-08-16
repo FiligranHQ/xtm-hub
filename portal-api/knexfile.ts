@@ -29,7 +29,8 @@ export type DatabaseType =
   | 'Service_Link'
   | 'User_Service'
   | 'Service_Capability'
-  | 'MalwareAnalysis';
+  | 'MalwareAnalysis'
+  | 'UserService';
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {

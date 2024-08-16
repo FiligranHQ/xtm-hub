@@ -70,7 +70,6 @@ type Mutation {
   addService(input: AddServiceInput): Subscription
   addServiceCommunity(input: AddServiceCommunityInput): Service
   deleteService(id: ID!): Service
-  addUserToCommunity(id: ID!, email: String!): Boolean
   addSubscription(service_id: String, organization_id: ID, user_id: ID): Subscription
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
   editServiceCapability(input: EditServiceCapabilityInput): UserService
