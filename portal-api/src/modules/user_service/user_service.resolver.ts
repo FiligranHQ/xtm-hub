@@ -1,8 +1,4 @@
-import {
-  Resolvers,
-  ServiceCapability,
-  UserService,
-} from '../../__generated__/resolvers-types';
+import { Resolvers } from '../../__generated__/resolvers-types';
 import {
   loadUsersBySubscription,
   loadUserServiceById,
@@ -15,6 +11,16 @@ import { loadUnsecureUserServiceBy } from './user-service.helper';
 import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { GraphQLError } from 'graphql/error/index.js';
+import { createNewUserFromInvitation } from '../users/user.helper';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import UserService, {
+  UserServiceId,
+  UserServiceInitializer,
+} from '../../model/kanel/public/UserService';
+import ServiceCapability, {
+  ServiceCapabilityId,
+  ServiceCapabilityInitializer,
+} from '../../model/kanel/public/ServiceCapability';
 
 const resolvers: Resolvers = {
   Query: {
@@ -34,15 +40,24 @@ const resolvers: Resolvers = {
   Mutation: {
     addUserService: async (_, { input }, context) => {
       const user = await loadUserBy('email', input.email);
-      const user_service = {
-        id: uuidv4(),
-        subscription_id: fromGlobalId(input.subscriptionId).id,
-        user_id: user.id,
+
+      let newUser;
+      if (!user) {
+        newUser = await createNewUserFromInvitation(
+          input.email,
+          context.user.organization_id as OrganizationId
+        );
+      }
+      const user_service: UserServiceInitializer = {
+        id: uuidv4() as UserServiceId,
+        subscription_id: fromGlobalId(input.subscriptionId)
+          .id as SubscriptionId,
+        user_id: (user ? user.id : newUser.id) as UserId,
       };
 
       if (!user_service.subscription_id) {
         throw new GraphQLError('Sorry the subscription does not exist', {
-          extensions: { code: 'UNKNOWN SUBSCRIPTION' },
+          extensions: { code: '[User_Service] UNKNOWN SUBSCRIPTION' },
         });
       }
 
@@ -52,8 +67,8 @@ const resolvers: Resolvers = {
       });
 
       if (existingUserService) {
-        throw new GraphQLError('The User access to service is already exist', {
-          extensions: { code: 'ALREADY_EXIST' },
+        throw new GraphQLError(' The User access to service is already exist', {
+          extensions: { code: '[User_Service] ALREADY_EXIST' },
         });
       }
 
@@ -62,8 +77,8 @@ const resolvers: Resolvers = {
         .returning('*');
 
       for (const capability of input.capabilities) {
-        const service_capa = {
-          id: uuidv4(),
+        const service_capa: ServiceCapabilityInitializer = {
+          id: uuidv4() as ServiceCapabilityId,
           user_service_id: addedUserService.id,
           service_capability_name: capability,
         };

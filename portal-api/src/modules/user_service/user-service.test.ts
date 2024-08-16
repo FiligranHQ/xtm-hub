@@ -7,7 +7,8 @@ import { toGlobalId } from 'graphql-relay/node/node';
 import { loadUnsecureUserServiceBy } from './user-service.helper';
 import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { getDbTestConnection } from '../../../tests/config-test';
+import { loadUnsecureServiceCapabitiesBy } from '../service_capability/service_capability.helper';
+import { loadUserBy } from '../users/users.domain';
 
 const userServiceCreateMutation = {
   query: print(gql`
@@ -55,7 +56,6 @@ describe('Services GraphQL Endpoint', async () => {
 
   describe('Call GraphqlEndpoint addUserService', () => {
     it('should return 200', async () => {
-      console.log('####Should return 200');
       const response = await userAdmin
         .post('/graphql-api')
         .send(userServiceCreateMutation);
@@ -77,7 +77,7 @@ describe('Services GraphQL Endpoint', async () => {
     });
 
     describe('add an already created user and create different capacity for the Service', async () => {
-      const response = await userAdmin.post('/graphql-api').send({
+      await userAdmin.post('/graphql-api').send({
         ...userServiceCreateMutation,
         variables: {
           ...userServiceCreateMutation.variables,
@@ -87,14 +87,55 @@ describe('Services GraphQL Endpoint', async () => {
           },
         },
       });
-
-      it('check if there only 1 access', async () => {
-        const existingUserService = await loadUnsecureUserServiceBy({
-          user_id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28' as UserId,
-          subscription_id:
-            'fdd973f0-6e8e-4794-9857-da84830679d5' as SubscriptionId,
-        });
+      const existingUserService = await loadUnsecureUserServiceBy({
+        user_id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28' as UserId,
+        subscription_id:
+          'fdd973f0-6e8e-4794-9857-da84830679d5' as SubscriptionId,
+      });
+      it('check if the user has 1 and only 1 access', async () => {
         expect(existingUserService.length).toBe(1);
+      });
+
+      it('check if the user has 3 capacities', async () => {
+        const userCapacities = await loadUnsecureServiceCapabitiesBy({
+          user_service_id: existingUserService[0].id,
+        });
+        expect(userCapacities.length).toBe(3);
+      });
+    });
+
+    describe('add an new user and create different capacity for the Service', async () => {
+      await userAdmin.post('/graphql-api').send({
+        ...userServiceCreateMutation,
+        variables: {
+          ...userServiceCreateMutation.variables,
+          input: {
+            ...userServiceCreateMutation.variables.input,
+            email: 'anyNewUser@test.fr',
+            capabilities: ['ACCESS_SERVICE'],
+          },
+        },
+      });
+      const createdUser = await loadUserBy('email', 'anyNewUser@test.fr');
+
+      it('the user should be created', async () => {
+        expect(createdUser).toBeTruthy();
+      });
+
+      const existingUserService = await loadUnsecureUserServiceBy({
+        user_id: createdUser.id as UserId,
+        subscription_id:
+          'fdd973f0-6e8e-4794-9857-da84830679d5' as SubscriptionId,
+      });
+      it('check if the user has 1 and only 1 access', async () => {
+        console.log(existingUserService);
+        expect(existingUserService.length).toBe(1);
+      });
+      it('check if the user has 1 capacity ACCESS_SERVICE', async () => {
+        const userCapacities = await loadUnsecureServiceCapabitiesBy({
+          user_service_id: existingUserService[0].id,
+        });
+        expect(userCapacities.length).toBe(1);
       });
     });
   });

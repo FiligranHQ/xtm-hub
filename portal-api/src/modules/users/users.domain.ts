@@ -16,7 +16,7 @@ import {
   addRolesToUser,
   deleteUserRolePortalByUserId,
 } from '../common/user-role-portal';
-import { addNewUser } from './user';
+import { addNewUserWithRoles } from './user.helper';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 
 const completeUserCapability = (user: UserGenerated): UserGenerated => {
@@ -152,7 +152,6 @@ export const loadUsers = async (
   const { totalCount } = await db<User>(context, 'User', opts)
     .countDistinct('id as totalCount')
     .first();
-
   return {
     totalCount,
     ...userConnection,
@@ -175,8 +174,8 @@ export const createUser = async (
     last_name,
   };
   // Use insert with returning to get the newly created user
-  const [addedUser] = await addNewUser(data);
-  await addRolesToUser(addedUser.id, roles);
+  console.log({ roles });
+  await addNewUserWithRoles(data, roles);
   return await loadUserBy('User.email', email);
 };
 

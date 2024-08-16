@@ -26,6 +26,7 @@ import {
 import { loadSubscriptionsByOrganization } from '../subcription/subscription.domain';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from '../subcription/service_capability.domain';
+import { RolePortalId } from '../../model/kanel/public/RolePortal';
 
 const validPassword = (
   user: UserWithAuthentication,
@@ -107,7 +108,10 @@ const resolvers: Resolvers = {
           extractId(role_id)
         );
         for (const role_id of extractRolesId) {
-          await createUserRolePortal(addedUser.id, role_id);
+          await createUserRolePortal(
+            addedUser.id as UserId,
+            role_id as RolePortalId
+          );
         }
 
         await launchAWXWorkflow({
@@ -166,7 +170,10 @@ const resolvers: Resolvers = {
           .returning('*');
         await deleteUserRolePortalByUserId(updatedUser.id);
         extracted_roles_portal_id.map(async (role_id) => {
-          await createUserRolePortal(updatedUser.id, role_id);
+          await createUserRolePortal(
+            updatedUser.id as UserId,
+            role_id as RolePortalId
+          );
           return {
             id: role_id,
           };
