@@ -75,10 +75,10 @@ export const loadUserServiceByUser = async (
     .select(
       'Service.*',
       dbRaw(
-        "( json_agg( json_build_object( 'name',service_link.name, 'url', service_link.url ) ) ):: json as services_link"
+        "( json_agg( json_build_object('id', service_link.id, 'name',service_link.name, 'url', service_link.url ) ) ):: json as services_link"
       )
     )
-    .groupBy(['Service.id', 'service_link.url']);
+    .groupBy(['Service.id']);
 
   const userServiceConnection = await paginate<UserService>(
     context,
