@@ -175,7 +175,7 @@ type Service implements Node {
   type: String
   subscription_service_type: String
   status: String
-  link: ServiceLink
+  link: [ServiceLink]
   organization: [Organization]
   subscription: [Subscription]
 }

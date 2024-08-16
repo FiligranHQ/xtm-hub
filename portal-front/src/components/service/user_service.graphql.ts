@@ -48,6 +48,9 @@ export const userServiceOwnedFragment = graphql`
               type
               provider
               description
+              link {
+                url
+              }
             }
           }
         }

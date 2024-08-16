@@ -93,10 +93,10 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
     cell: ({ row }) => {
       return (
         <>
-          {row.original.subscription.status === 'ACCEPTED' &&
-          row.original.service_capability.some(
+          {row.original?.subscription?.status === 'ACCEPTED' &&
+          row.original.service_capability?.some(
             (service_capability) =>
-              service_capability.service_capability_name === 'ACCESS_SERVICE'
+              service_capability?.service_capability_name === 'ACCESS_SERVICE'
           ) ? (
             <>
               <GuardCapacityComponent
@@ -106,7 +106,7 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
                   asChild
                   className="w-3/4">
                   <Link
-                    href={row.original.service_url ?? '#'}
+                    href={row?.original?.service_url ?? '#'}
                     target="_blank"
                     rel="noopener noreferrer nofollow">
                     {' '}
@@ -116,9 +116,10 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
                 </Button>
               </GuardCapacityComponent>
 
-              {row.original.service_capability.some(
+              {row.original.service_capability?.some(
                 (service_capability) =>
-                  service_capability.service_capability_name === 'MANAGE_ACCESS'
+                  service_capability?.service_capability_name ===
+                  'MANAGE_ACCESS'
               ) ? (
                 <GuardCapacityComponent
                   capacityRestriction={['BCK_MANAGE_SERVICES']}

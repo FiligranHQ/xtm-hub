@@ -475,7 +475,7 @@ export type Service = Node & {
   __typename?: 'Service';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  link?: Maybe<ServiceLink>;
+  link?: Maybe<Array<Maybe<ServiceLink>>>;
   name: Scalars['String']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
   provider?: Maybe<Scalars['String']['output']>;
@@ -1450,7 +1450,7 @@ export type ServiceResolvers<
   >;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   link?: Resolver<
-    Maybe<ResolversTypes['ServiceLink']>,
+    Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>,
     ParentType,
     ContextType
   >;
