@@ -11,7 +11,10 @@ export const createUserRolePortal = async (
   role_portal_id: RolePortalId
 ) => {
   return dbUnsecure<UserRolePortal>('User_RolePortal')
-    .insert({ user_id, role_portal_id } as UserRolePortalInitializer)
+    .insert({
+      user_id,
+      role_portal_id,
+    } as UserRolePortalInitializer)
     .returning('*');
 };
 

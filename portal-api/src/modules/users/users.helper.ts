@@ -12,7 +12,7 @@ export const addNewUserWithRoles = async (
   const [addedUser] = await dbUnsecure<User>('User')
     .insert(data)
     .returning('*');
-  await addRolesToUser(addedUser.id, roles);
+  await addRolesToUser(data.id, roles);
   return addedUser;
 };
 
