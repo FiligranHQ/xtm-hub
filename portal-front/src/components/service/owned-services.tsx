@@ -24,10 +24,7 @@ import {
   UserServiceOwnedQuery,
 } from '@/components/service/user_service.graphql';
 import { userServiceOwnedQuery } from '../../../__generated__/userServiceOwnedQuery.graphql';
-import {
-  userServiceOwnedUser$data,
-  userServiceOwnedUser$key,
-} from '../../../__generated__/userServiceOwnedUser.graphql';
+import { userServiceOwnedUser$key } from '../../../__generated__/userServiceOwnedUser.graphql';
 import { UserServiceOrdering } from '../../../__generated__/serviceUserSlugQuery.graphql';
 import { ServiceUserOwnedPaginationQuery$variables } from '../../../__generated__/ServiceUserOwnedPaginationQuery.graphql';
 import { userServicesOwned_fragment$data } from '../../../__generated__/userServicesOwned_fragment.graphql';
@@ -179,10 +176,10 @@ const OwnedServices: React.FunctionComponent<OwnedServicesProps> = ({
     userServiceOwnedUser$key
   >(userServiceOwnedFragment, queryData);
 
-  const ownedServices: userServiceOwnedUser$data[] =
+  const ownedServices: userServicesOwned_fragment$data[] =
     data.userServiceOwned?.edges.map(
       (userService) => userService.node
-    ) as userServiceOwnedUser$data[];
+    ) as unknown as userServicesOwned_fragment$data[];
 
   const handleRefetchData = (
     args?: Partial<ServiceUserOwnedPaginationQuery$variables>
