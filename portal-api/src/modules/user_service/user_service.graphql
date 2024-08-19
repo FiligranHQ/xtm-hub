@@ -18,7 +18,7 @@ input UserServiceInput {
 type Mutation {
   addUserService(input: UserServiceInput!): UserService
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
-  deleteUserService(input: UserServiceInput!): UserService
+  deleteUserService(input: UserServiceInput!): UserServiceDeleted
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
 }
 type Query {
@@ -54,4 +54,10 @@ type UserService implements Node {
   user: User!
   subscription: Subscription!
   service_capability: [ServiceCapability]
+}
+
+type UserServiceDeleted implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
 }
