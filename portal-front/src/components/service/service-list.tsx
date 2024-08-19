@@ -36,7 +36,6 @@ import {
   CaseRftIcon,
   ConstructionIcon,
   CourseOfActionIcon,
-  IndicatorIcon,
   TaskIcon,
 } from 'filigran-icon';
 import {
@@ -147,41 +146,27 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       cell: ({ row }) => {
         return (
           <>
-            {subscribedServiceName.includes(row.original.name) ? (
-              <Button
-                asChild
-                className="w-3/4">
-                <Link
-                  href={`${row.original?.link?.url}`}
-                  target="_blank"
-                  rel="noopener noreferrer nofollow">
-                  {' '}
-                  <IndicatorIcon className="mr-2 h-5 w-5" />
-                  View more
-                </Link>
-              </Button>
-            ) : (
-              <GuardCapacityComponent
-                capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
-                <AlertDialogComponent
-                  AlertTitle={'Subscribe service'}
-                  actionButtonText={'Continue'}
-                  triggerElement={
-                    <Button
-                      aria-label="Subscribe service"
-                      className="w-3/4">
-                      <ConstructionIcon className="mr-2 h-5 w-5" />
-                      Subscribe
-                    </Button>
-                  }
-                  onClickContinue={useCallback(
-                    () => addSubscriptionInDb(row.original),
-                    []
-                  )}>
-                  {generateAlertText(row.original)}
-                </AlertDialogComponent>
-              </GuardCapacityComponent>
-            )}
+            <GuardCapacityComponent
+              capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
+              <AlertDialogComponent
+                AlertTitle={'Subscribe service'}
+                actionButtonText={'Continue'}
+                triggerElement={
+                  <Button
+                    aria-label="Subscribe service"
+                    className="w-3/4">
+                    <ConstructionIcon className="mr-2 h-5 w-5" />
+                    Subscribe
+                  </Button>
+                }
+                onClickContinue={useCallback(
+                  () => addSubscriptionInDb(row.original),
+                  []
+                )}>
+                {generateAlertText(row.original)}
+              </AlertDialogComponent>
+            </GuardCapacityComponent>
+
             <GuardCapacityComponent
               capacityRestriction={['BCK_MANAGE_SERVICES']}>
               <Button
