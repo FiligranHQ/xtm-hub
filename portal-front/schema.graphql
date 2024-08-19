@@ -75,7 +75,7 @@ type Mutation {
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
   editServiceCapability(input: EditServiceCapabilityInput): UserService
   addUserService(input: UserServiceInput!): UserService
-  deleteUserService(input: UserServiceInput!): UserService
+  deleteUserService(input: UserServiceInput!): UserServiceDeleted
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User
@@ -327,6 +327,12 @@ type UserService implements Node {
   user: User!
   subscription: Subscription!
   service_capability: [ServiceCapability]
+}
+
+type UserServiceDeleted implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
 }
 
 enum UserOrdering {

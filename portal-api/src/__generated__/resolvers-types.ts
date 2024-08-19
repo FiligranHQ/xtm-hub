@@ -189,11 +189,10 @@ export type Mutation = {
   addSubscription?: Maybe<Subscription>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
-  addUserToCommunity?: Maybe<Scalars['Boolean']['output']>;
   deleteOrganization?: Maybe<Organization>;
   deleteService?: Maybe<Service>;
   deleteUser?: Maybe<User>;
-  deleteUserService?: Maybe<UserService>;
+  deleteUserService?: Maybe<UserServiceDeleted>;
   editOrganization?: Maybe<Organization>;
   editService?: Maybe<Service>;
   editServiceCapability?: Maybe<UserService>;
@@ -234,11 +233,6 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceInput;
-};
-
-export type MutationAddUserToCommunityArgs = {
-  email: Scalars['String']['input'];
-  id: Scalars['ID']['input'];
 };
 
 export type MutationDeleteOrganizationArgs = {
@@ -644,6 +638,13 @@ export type UserServiceConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type UserServiceDeleted = Node & {
+  __typename?: 'UserServiceDeleted';
+  id: Scalars['ID']['output'];
+  subscription_id: Scalars['ID']['output'];
+  user_id: Scalars['ID']['output'];
+};
+
 export type UserServiceEdge = {
   __typename?: 'UserServiceEdge';
   cursor: Scalars['String']['output'];
@@ -802,7 +803,8 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
       | ServicePrice
       | Subscription
       | User
-      | UserService;
+      | UserService
+      | UserServiceDeleted;
   }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -866,6 +868,7 @@ export type ResolversTypes = ResolversObject<{
   UserOrdering: UserOrdering;
   UserService: ResolverTypeWrapper<UserService>;
   UserServiceConnection: ResolverTypeWrapper<UserServiceConnection>;
+  UserServiceDeleted: ResolverTypeWrapper<UserServiceDeleted>;
   UserServiceEdge: ResolverTypeWrapper<UserServiceEdge>;
   UserServiceInput: UserServiceInput;
   UserServiceOrdering: UserServiceOrdering;
@@ -926,6 +929,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserEdge: UserEdge;
   UserService: UserService;
   UserServiceConnection: UserServiceConnection;
+  UserServiceDeleted: UserServiceDeleted;
   UserServiceEdge: UserServiceEdge;
   UserServiceInput: UserServiceInput;
   UserSubscription: UserSubscription;
@@ -1142,12 +1146,6 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAddUserServiceArgs, 'input'>
   >;
-  addUserToCommunity?: Resolver<
-    Maybe<ResolversTypes['Boolean']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationAddUserToCommunityArgs, 'email' | 'id'>
-  >;
   deleteOrganization?: Resolver<
     Maybe<ResolversTypes['Organization']>,
     ParentType,
@@ -1167,7 +1165,7 @@ export type MutationResolvers<
     RequireFields<MutationDeleteUserArgs, 'id'>
   >;
   deleteUserService?: Resolver<
-    Maybe<ResolversTypes['UserService']>,
+    Maybe<ResolversTypes['UserServiceDeleted']>,
     ParentType,
     ContextType,
     RequireFields<MutationDeleteUserServiceArgs, 'input'>
@@ -1250,7 +1248,8 @@ export type NodeResolvers<
     | 'ServicePrice'
     | 'Subscription'
     | 'User'
-    | 'UserService',
+    | 'UserService'
+    | 'UserServiceDeleted',
     ParentType,
     ContextType
   >;
@@ -1814,6 +1813,17 @@ export type UserServiceConnectionResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserServiceDeletedResolvers<
+  ContextType = PortalContext,
+  ParentType extends
+    ResolversParentTypes['UserServiceDeleted'] = ResolversParentTypes['UserServiceDeleted'],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  subscription_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  user_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type UserServiceEdgeResolvers<
   ContextType = PortalContext,
   ParentType extends
@@ -1885,6 +1895,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserEdge?: UserEdgeResolvers<ContextType>;
   UserService?: UserServiceResolvers<ContextType>;
   UserServiceConnection?: UserServiceConnectionResolvers<ContextType>;
+  UserServiceDeleted?: UserServiceDeletedResolvers<ContextType>;
   UserServiceEdge?: UserServiceEdgeResolvers<ContextType>;
   UserSubscription?: UserSubscriptionResolvers<ContextType>;
 }>;
