@@ -95,10 +95,10 @@ type Subscription implements Node {
   Service: ServiceSubscription
   id: ID!
   organization_id: ID!
-  organization: Organization!
+  organization: Organization
   service_id: ID!
   service_url: String
-  service: Service!
+  service: Service
   start_date: Date
   end_date: Date
   status: String
@@ -324,8 +324,8 @@ type UserService implements Node {
   id: ID!
   subscription_id: ID!
   user_id: ID!
-  user: User!
-  subscription: Subscription!
+  user: User
+  subscription: Subscription
   service_capability: [ServiceCapability]
 }
 
