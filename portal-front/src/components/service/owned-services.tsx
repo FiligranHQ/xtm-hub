@@ -36,7 +36,7 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center space-x-2">
-          {row.original.subscription?.service?.name}
+          {row.original.subscription.service.name}
         </div>
       );
     },
@@ -48,11 +48,11 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
       return (
         <Badge
           variant={
-            row.original.subscription?.status === 'REQUESTED'
+            row.original.subscription.status === 'REQUESTED'
               ? 'destructive'
               : 'secondary'
           }>
-          {row.original.subscription?.status}
+          {row.original.subscription.status}
         </Badge>
       );
     },
@@ -64,7 +64,7 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
     cell: ({ row }) => {
       return (
         <Badge className={'cursor-default'}>
-          {row.original.subscription?.service?.type}
+          {row.original.subscription.service.type}
         </Badge>
       );
     },
@@ -90,7 +90,7 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
     cell: ({ row }) => {
       return (
         <>
-          {row.original?.subscription?.status === 'ACCEPTED' &&
+          {row.original.subscription.status === 'ACCEPTED' &&
           row.original.service_capability?.some(
             (service_capability) =>
               service_capability?.service_capability_name === 'ACCESS_SERVICE'
@@ -99,7 +99,7 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
               <GuardCapacityComponent
                 capacityRestriction={['FRT_ACCESS_SERVICES']}
                 displayError={false}>
-                {row.original?.subscription?.service?.links?.map((link) => (
+                {row.original.subscription.service.links?.map((link) => (
                   <Button
                     asChild
                     key={link?.id}
@@ -126,7 +126,7 @@ const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
                     asChild
                     className="mt-2 w-3/4">
                     <Link
-                      href={`/admin/service/${row.original.subscription.service?.id}`}>
+                      href={`/admin/service/${row.original.subscription.service.id}`}>
                       <CourseOfActionIcon className="mr-2 h-5 w-5" />
                       Manage
                     </Link>

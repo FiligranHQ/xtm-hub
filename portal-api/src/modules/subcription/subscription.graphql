@@ -11,10 +11,10 @@ enum SubscriptionOrdering {
 type Subscription implements Node {
   id: ID!
   organization_id: ID!
-  organization: Organization
+  organization: Organization!
   service_id: ID!
   service_url: String
-  service: Service
+  service: Service!
   start_date: Date
   end_date: Date
   status: String

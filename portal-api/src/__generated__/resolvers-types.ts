@@ -189,6 +189,7 @@ export type Mutation = {
   addSubscription?: Maybe<Subscription>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
+  addUserToCommunity?: Maybe<Scalars['Boolean']['output']>;
   deleteOrganization?: Maybe<Organization>;
   deleteService?: Maybe<Service>;
   deleteUser?: Maybe<User>;
@@ -233,6 +234,11 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceInput;
+};
+
+export type MutationAddUserToCommunityArgs = {
+  email: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
 };
 
 export type MutationDeleteOrganizationArgs = {
@@ -549,9 +555,9 @@ export type Subscription = Node & {
   User?: Maybe<UserSubscription>;
   end_date?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
-  organization?: Maybe<Organization>;
+  organization: Organization;
   organization_id: Scalars['ID']['output'];
-  service?: Maybe<Service>;
+  service: Service;
   service_id: Scalars['ID']['output'];
   service_url?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
@@ -625,9 +631,9 @@ export type UserService = Node & {
   __typename?: 'UserService';
   id: Scalars['ID']['output'];
   service_capability?: Maybe<Array<Maybe<ServiceCapability>>>;
-  subscription?: Maybe<Subscription>;
+  subscription: Subscription;
   subscription_id: Scalars['ID']['output'];
-  user?: Maybe<User>;
+  user: User;
   user_id: Scalars['ID']['output'];
 };
 
@@ -1136,6 +1142,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAddUserServiceArgs, 'input'>
   >;
+  addUserToCommunity?: Resolver<
+    Maybe<ResolversTypes['Boolean']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddUserToCommunityArgs, 'email' | 'id'>
+  >;
   deleteOrganization?: Resolver<
     Maybe<ResolversTypes['Organization']>,
     ParentType,
@@ -1607,7 +1619,7 @@ export type SubscriptionResolvers<
     ContextType
   >;
   organization?: SubscriptionResolver<
-    Maybe<ResolversTypes['Organization']>,
+    ResolversTypes['Organization'],
     'organization',
     ParentType,
     ContextType
@@ -1619,7 +1631,7 @@ export type SubscriptionResolvers<
     ContextType
   >;
   service?: SubscriptionResolver<
-    Maybe<ResolversTypes['Service']>,
+    ResolversTypes['Service'],
     'service',
     ParentType,
     ContextType
@@ -1777,12 +1789,12 @@ export type UserServiceResolvers<
     ContextType
   >;
   subscription?: Resolver<
-    Maybe<ResolversTypes['Subscription']>,
+    ResolversTypes['Subscription'],
     ParentType,
     ContextType
   >;
   subscription_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   user_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

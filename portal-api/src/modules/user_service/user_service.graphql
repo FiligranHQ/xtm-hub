@@ -51,7 +51,7 @@ type UserService implements Node {
   id: ID!
   subscription_id: ID!
   user_id: ID!
-  user: User
-  subscription: Subscription
+  user: User!
+  subscription: Subscription!
   service_capability: [ServiceCapability]
 }
