@@ -17,7 +17,11 @@ import { ServiceId } from '../../model/kanel/public/Service';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
-import { addServiceLink, loadPublicServices } from './services.domain';
+import {
+  addServiceLink,
+  loadCommunities,
+  loadPublicServices,
+} from './services.domain';
 import { getRolePortalBy } from '../role-portal/role-portal';
 import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import { UserServiceId } from '../../model/kanel/public/UserService';
@@ -33,16 +37,7 @@ const resolvers: Resolvers = {
       return loadPublicServices(context, opt, shouldReturnPrivateServices);
     },
     communities: async (_, opt, context) => {
-      const shouldReturnPrivateServices = context.user.capabilities.some(
-        (capability) => !capability.name.includes('BYPASS')
-      );
-
-      return loadPublicServices(
-        context,
-        opt,
-        shouldReturnPrivateServices,
-        true
-      );
+      return loadCommunities(context, opt);
     },
   },
   Mutation: {

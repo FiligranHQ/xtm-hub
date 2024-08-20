@@ -49,8 +49,8 @@ type Query {
 
 input EditSubscriptionInput {
     id: ID!
-    organization_id: ID!
-    service_id: ID!
+    organization_id: ID
+    service_id: ID
     start_date: Date
     end_date: Date
     status: String
@@ -63,6 +63,6 @@ type Mutation {
         user_id: ID
     ): Subscription
     @auth(requires: [FRT_SERVICE_SUBSCRIBER, BCK_MANAGE_COMMUNITIES])
-    editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
+    editSubscription(id: ID!, input: EditSubscriptionInput): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
 }

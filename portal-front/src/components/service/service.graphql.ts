@@ -41,11 +41,6 @@ export const communityListFragment = graphql`
     provider
     type
     subscription_service_type
-    status
-    organization {
-      id
-      name
-    }
     subscription {
       id
       status
