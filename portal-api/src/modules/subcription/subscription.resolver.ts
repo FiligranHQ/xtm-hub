@@ -3,6 +3,7 @@ import {
   addOrganizationUsersRights,
   checkSubscriptionExists,
   fillSubscription,
+  loadSubscriptionBy,
   loadSubscriptions,
   loadSubscriptionsByOrganization,
 } from './subscription.domain';
@@ -122,11 +123,17 @@ const resolvers: Resolvers = {
     editSubscription: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
+        // Retrieve subscription
+        const [retrievedSubscription] = await loadSubscriptionBy('id', id);
         const update = {
           id,
-          organization_id: fromGlobalId(input.organization_id).id,
-          service_id: fromGlobalId(input.service_id).id,
-          status: input.status,
+          organization_id: input.organization_id
+            ? fromGlobalId(input.organization_id).id
+            : retrievedSubscription.organization_id,
+          service_id: input.organization_id
+            ? fromGlobalId(input.service_id).id
+            : retrievedSubscription.service_id,
+          status: input.status ? input.status : retrievedSubscription.status,
         };
         const [updatedSubscription] = await db<Subscription>(
           context,

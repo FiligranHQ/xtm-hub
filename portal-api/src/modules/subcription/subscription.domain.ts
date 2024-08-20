@@ -49,7 +49,9 @@ export const loadSubscriptions = async (context: PortalContext, opts) => {
     ...subscriptionConnection,
   };
 };
-
+export const loadSubscriptionBy = async (field: string, value: string) => {
+  return await dbUnsecure<Subscription>('Subscription').where(field, value);
+};
 export const loadSubscriptionsByOrganization = async (
   context: PortalContext,
   opts

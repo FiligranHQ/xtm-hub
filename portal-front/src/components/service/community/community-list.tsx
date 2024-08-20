@@ -242,7 +242,8 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         cell: ({ row }) => {
           return (
             <>
-              {row.original?.status === 'REQUESTED' ? (
+              {!row.original?.subscription ||
+              row.original?.subscription[0]?.status === 'REQUESTED' ? (
                 <GuardCapacityComponent
                   displayError={false}
                   capacityRestriction={['BYPASS']}>
@@ -303,36 +304,23 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       },
 
       {
-        id: 'organizations',
-        size: 30,
-        header: 'Organizations',
-        cell: ({ row }) => {
-          return (
-            <>
-              {row?.original?.organization?.map((org) => (
-                <Badge
-                  key={org?.id}
-                  className={'cursor-default'}>
-                  {org?.name}
-                </Badge>
-              ))}
-            </>
-          );
-        },
-      },
-      {
         id: 'status',
         size: 30,
         header: 'Status',
         cell: ({ row }) => (
           <Badge
             variant={
-              row?.original?.status === 'REQUESTED'
+              row.original?.subscription &&
+              row.original?.subscription[0] &&
+              row.original?.subscription[0].status === 'REQUESTED'
                 ? 'destructive'
                 : 'secondary'
             }
             className={'cursor-default'}>
-            {row?.original?.status ?? 'ACCEPTED'}
+            {(row.original?.subscription &&
+              row.original?.subscription[0] &&
+              row.original?.subscription[0].status) ??
+              'ACCEPTED'}
           </Badge>
         ),
       },
@@ -415,22 +403,9 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       subscription: subscriptionItem_fragment$data,
       service_id: string
     ) => {
-      if (!subscription.organization?.id) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Error while editing the subscription.',
-        });
-        return;
-      }
       commitSubscriptionMutation({
         variables: {
-          input: {
-            id: subscription.id,
-            organization_id: subscription.organization.id,
-            service_id,
-            status: status,
-          },
+          input: { status: status, id: subscription.id },
           id: subscription.id,
         },
         onCompleted: () => {
@@ -471,10 +446,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   useSubscription(config);
   let servicesData = data.communities.edges.map(
     ({ node }) => node
-  ) as serviceCommunityList_fragment$data[];
+  ) as unknown as serviceCommunityList_fragment$data[];
 
   if (shouldDisplayOnlyOwnedService && ownedServices) {
-    servicesData = ownedServices as serviceCommunityList_fragment$data[];
+    servicesData =
+      ownedServices as unknown as serviceCommunityList_fragment$data[];
   }
 
   const handleRefetchData = (args?: Partial<serviceQuery$variables>) => {

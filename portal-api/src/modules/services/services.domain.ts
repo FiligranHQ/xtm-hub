@@ -7,6 +7,41 @@ import {
 import { PortalContext } from '../../model/portal-context';
 import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
 
+export const loadCommunities = async (context: PortalContext, opts) => {
+  const { first, after, orderMode, orderBy } = opts;
+  const query = await paginate<Service>(context, 'Service', {
+    first,
+    after,
+    orderMode,
+    orderBy,
+  })
+    .leftJoin(
+      'Subscription as subscription',
+      'subscription.service_id',
+      '=',
+      'Service.id'
+    )
+    .where('type', '=', 'COMMUNITY')
+    .select(
+      'Service.*',
+      dbRaw(
+        "(json_agg(json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, '__typename', 'Subscription')))::json as subscription"
+      )
+    )
+    .groupBy(['Service.id', 'subscription.id'])
+    .asConnection<ServiceConnection>();
+
+  const { totalCount } = await db<Service>(context, 'Service', opts)
+    .where('type', '=', 'COMMUNITY')
+    .countDistinct('Service.id as totalCount')
+    .first();
+
+  return {
+    totalCount,
+    ...query,
+  };
+};
+
 export const loadPublicServices = async (
   context: PortalContext,
   opts,
