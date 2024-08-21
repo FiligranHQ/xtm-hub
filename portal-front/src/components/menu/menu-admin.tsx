@@ -132,10 +132,7 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   ) {
     return (
       <>
-        <li>
-          <Separator className="my-2" />
-          {open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}
-        </li>
+        <li>{open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}</li>
       </>
     );
   }

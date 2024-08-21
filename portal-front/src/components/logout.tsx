@@ -31,7 +31,7 @@ const Logout: React.FunctionComponent<LogoutProps> = ({ open }) => {
       variant="ghost"
       className="w-full justify-start border-none">
       <LogoutIcon className="mr-2 h-4 w-4 flex-auto flex-shrink-0 flex-grow-0" />
-      <span className={cn(open ? 'opacity-100' : 'opacity-0')}>Logout</span>
+      <span className={cn(!open && 'sr-only')}>Logout</span>
     </Button>
   );
 };

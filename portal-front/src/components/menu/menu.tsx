@@ -34,7 +34,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
         })
       )}>
       <Icon className="mr-2 h-4 w-4 flex-auto flex-shrink-0 flex-grow-0" />
-      <span className={cn(open ? 'opacity-100' : 'opacity-0')}>{text}</span>
+      <span className={cn(!open && 'sr-only')}>{text}</span>
     </Link>
   );
 };
@@ -48,23 +48,11 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'mt-2 flex flex-col border bg-background p-2 pt-16 duration-300 ease-in-out',
-        open ? 'w-72' : 'w-16'
+        'mt-2 flex flex-col justify-between overflow-y-auto overflow-x-hidden border bg-background p-2 pt-16 duration-300 ease-in-out',
+        open ? 'w-48' : 'w-16'
       )}>
       <nav>
         <ul>
-          <li>
-            <Button
-              variant="ghost"
-              onClick={handleOpenMenu}>
-              <KeyboardArrowLeftIcon
-                className={cn(
-                  'h-4 w-4 flex-shrink-0 flex-grow-0 p-1 duration-300 ease-in-out',
-                  open ? 'rotate-0' : 'rotate-180'
-                )}
-              />
-            </Button>
-          </li>
           <li>
             <LinkMenu
               open={open}
@@ -73,13 +61,29 @@ const Menu = () => {
               text={'Home'}
             />
           </li>
+          <Separator className="my-2" />
           <MenuUser open={open} />
+          <Separator className="my-2" />
           <MenuAdmin open={open} />
         </ul>
       </nav>
       <div>
         <Separator className="my-2" />
         <Logout open={open} />
+        <Separator className="my-2" />
+        <Button
+          variant="ghost"
+          className="w-full justify-start border-none"
+          onClick={handleOpenMenu}>
+          <KeyboardArrowLeftIcon
+            className={cn(
+              'mr-2 h-4 w-4 flex-shrink-0 flex-grow-0 p-1 duration-300 ease-in-out',
+              open ? 'rotate-0' : 'rotate-180'
+            )}
+          />
+
+          <span className={cn(!open && 'sr-only')}>Collapse</span>
+        </Button>
       </div>
     </aside>
   );
