@@ -10,7 +10,7 @@ import {
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import * as React from 'react';
-import { FunctionComponent, useCallback, useState } from 'react';
+import { ElementType, FunctionComponent, useCallback, useState } from 'react';
 import useGranted from '@/hooks/useGranted';
 import {
   ExternalReferenceIcon,
@@ -26,6 +26,28 @@ import { RESTRICTION } from '@/utils/constant';
 export interface MenuAdminProps {
   open: boolean;
 }
+
+const AdminButton = ({
+  onClick,
+  icon: Icon,
+  label,
+  className,
+}: {
+  onClick: () => void;
+  icon: ElementType;
+  label: string;
+  className?: string;
+}) => (
+  <Button
+    onClick={onClick}
+    variant="ghost"
+    className={`h-9 w-full justify-start border-none ${className}`}>
+    <span className="ml-1 mr-2 flex w-8 justify-center">
+      <Icon className="h-4 w-4" />{' '}
+    </span>
+    {label}
+  </Button>
+);
 
 const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   const [adminOpened, setAdminOpened] = useState<boolean>(false);
@@ -50,38 +72,38 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
     RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES
   );
 
-  const AdminLinks = () => (
+  const AdminLinks = ({ className }: { className?: string }) => (
     <>
-      <Button
+      <AdminButton
+        className={className}
         onClick={() => routeTo('/admin/user')}
-        variant={'ghost'}
-        className={'w-full justify-start border-none text-base'}>
-        <GroupIcon className="mr-2 h-4 w-4" /> User
-      </Button>
-      <Button
+        icon={GroupIcon}
+        label="User"
+      />
+      <AdminButton
+        className={className}
         onClick={() => routeTo('/admin/service')}
-        variant={'ghost'}
-        className={'w-full justify-start border-none text-base'}>
-        <GradeIcon className="mr-2 h-4 w-4" /> Services
-      </Button>
-      <Button
+        icon={GradeIcon}
+        label="Services"
+      />
+      <AdminButton
+        className={className}
         onClick={() => routeTo('/admin/community')}
-        variant={'ghost'}
-        className={'w-full justify-start border-none text-base'}>
-        <ForumIcon className="mr-2 h-4 w-4" /> Communities
-      </Button>
-      <Button
+        icon={ForumIcon}
+        label="Communities"
+      />
+      <AdminButton
+        className={className}
         onClick={() => routeTo('/admin/organizations')}
-        variant={'ghost'}
-        className={'w-full justify-start border-none text-base'}>
-        <OrganizationIcon className="mr-2 h-4 w-4" /> Organizations
-      </Button>
-      <Button
+        icon={OrganizationIcon}
+        label="Organizations"
+      />
+      <AdminButton
+        className={className}
         onClick={() => routeTo('/admin/subcriptions')}
-        variant={'ghost'}
-        className={'w-full justify-start border-none text-base'}>
-        <ExternalReferenceIcon className="mr-2 h-4 w-4" /> Subscriptions
-      </Button>
+        icon={ExternalReferenceIcon}
+        label="Subscriptions"
+      />
     </>
   );
 
@@ -93,12 +115,14 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
       <AccordionItem
         className="border-none"
         value="item-1">
-        <AccordionTrigger className="justify-normal px-4 py-2">
-          <SettingsIcon className="h-4 w-4" />
-          <span className="flex-1 px-2 text-left">Settings</span>
+        <AccordionTrigger className="h-9 justify-normal px-4 py-2">
+          <span className="flex w-8 flex-shrink-0 justify-center">
+            <SettingsIcon className="h-4 w-4" />
+          </span>
+          <span className="flex-1 px-2 text-left txt-default">Settings</span>
         </AccordionTrigger>
         <AccordionContent>
-          <AdminLinks />
+          <AdminLinks className="h-8 txt-sub-content" />
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -111,11 +135,15 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
+          className="h-9"
           aria-label="Settings menu">
-          <SettingsIcon className="h-4 w-4" />
+          <span className="flex w-8 flex-shrink-0 justify-center">
+            <SettingsIcon className="h-4 w-4" />
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
+        className="w-min"
         side="right"
         align="start">
         <AdminLinks />

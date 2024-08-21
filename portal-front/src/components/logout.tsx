@@ -29,9 +29,11 @@ const Logout: React.FunctionComponent<LogoutProps> = ({ open }) => {
     <Button
       onClick={logout}
       variant="ghost"
-      className="w-full justify-start border-none">
-      <LogoutIcon className="mr-2 h-4 w-4 flex-auto flex-shrink-0 flex-grow-0" />
-      <span className={cn(!open && 'sr-only')}>Logout</span>
+      className="h-9 w-full justify-start border-none">
+      <span className="flex w-8 flex-shrink-0 justify-center">
+        <LogoutIcon className="h-4 w-4" />
+      </span>
+      <span className={cn(open ? 'ml-2' : 'sr-only')}>Logout</span>
     </Button>
   );
 };

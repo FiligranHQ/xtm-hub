@@ -30,11 +30,13 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
       className={cn(
         buttonVariants({
           variant: 'ghost',
-          className: 'w-full justify-start border-none',
+          className: 'h-9 w-full justify-start border-none',
         })
       )}>
-      <Icon className="mr-2 h-4 w-4 flex-auto flex-shrink-0 flex-grow-0" />
-      <span className={cn(!open && 'sr-only')}>{text}</span>
+      <span className="flex w-8 flex-shrink-0 justify-center">
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className={cn(open ? 'ml-2' : 'sr-only')}>{text}</span>
     </Link>
   );
 };
@@ -48,7 +50,7 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'mt-2 flex flex-col justify-between overflow-y-auto overflow-x-hidden border bg-background p-2 pt-16 duration-300 ease-in-out',
+        'z-9 sticky top-[4rem] flex h-[calc(100vh-4rem)] flex-col justify-between overflow-y-auto overflow-x-hidden border-r bg-background py-2 duration-300 ease-in-out',
         open ? 'w-48' : 'w-16'
       )}>
       <nav>
@@ -73,16 +75,18 @@ const Menu = () => {
         <Separator className="my-2" />
         <Button
           variant="ghost"
-          className="w-full justify-start border-none"
+          className="h-9 w-full justify-start border-none"
           onClick={handleOpenMenu}>
-          <KeyboardArrowLeftIcon
-            className={cn(
-              'mr-2 h-4 w-4 flex-shrink-0 flex-grow-0 p-1 duration-300 ease-in-out',
-              open ? 'rotate-0' : 'rotate-180'
-            )}
-          />
+          <span className="flex w-8 flex-shrink-0 justify-center">
+            <KeyboardArrowLeftIcon
+              className={cn(
+                'h-4 w-4 p-1 duration-300 ease-in-out',
+                open ? 'rotate-0' : 'rotate-180'
+              )}
+            />
+          </span>
 
-          <span className={cn(!open && 'sr-only')}>Collapse</span>
+          <span className={cn(open ? 'ml-2' : 'sr-only')}>Collapse</span>
         </Button>
       </div>
     </aside>

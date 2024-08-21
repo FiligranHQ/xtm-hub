@@ -10,9 +10,9 @@ export const ContentLayout: FunctionComponent<ContentLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-1">
       <Menu />
-      <main className={`mt-6 flex-1 overflow-auto bg-background p-6 pt-16`}>
+      <main className={`flex-1 overflow-auto bg-background p-6`}>
         {children}
       </main>
     </div>

@@ -13,7 +13,7 @@ interface HeaderComponentProps {}
 const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
   const { me } = useContext<Portal>(portalContext);
   return (
-    <header className="fixed top-0 z-10 flex h-16 w-full items-center bg-background px-4 shadow-md">
+    <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center bg-background px-4 shadow-md">
       <Logo className="mr-2 h-8 w-8" />
       <h2 className="text-xl">
         {me?.email ? (
