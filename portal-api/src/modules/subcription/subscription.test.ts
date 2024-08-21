@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { dbUnsecure } from '../../../knexfile';
 import UserService from '../../model/kanel/public/UserService';
+import { deleteSubscriptionUnsecure } from './subscription.helper';
 
 const addSubscriptionTestQuery = (serviceId) => ({
   query: print(gql`
@@ -67,7 +68,9 @@ describe('UserAdmin can subscribe to a service', async () => {
       expect(userService.totalCount).toEqual(numberOfUserServiceAccess);
 
       // Clean everything
-      await dbUnsecure<UserService>('Subscription').delete('*').returning('*');
+      deleteSubscriptionUnsecure(
+        fromGlobalId(transform.data.addSubscription.id).id
+      );
     }
   );
 });

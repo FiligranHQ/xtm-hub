@@ -101,11 +101,6 @@ export type EditServiceCapabilityInput = {
 };
 
 export type EditSubscriptionInput = {
-  end_date?: InputMaybe<Scalars['Date']['input']>;
-  id: Scalars['ID']['input'];
-  organization_id?: InputMaybe<Scalars['ID']['input']>;
-  service_id?: InputMaybe<Scalars['ID']['input']>;
-  start_date?: InputMaybe<Scalars['Date']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
 };
 
