@@ -67,7 +67,7 @@ export const OrganizationFormSheet: FunctionComponent<
         </SheetHeader>
         <Form {...form}>
           <form
-            className="space-y-4 pt-8"
+            className="w-full space-y-s"
             onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}

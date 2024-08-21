@@ -125,7 +125,7 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 pt-8">
+            className="w-full space-y-4">
             <FormField
               control={form.control}
               name="community_name"
@@ -290,7 +290,7 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
                 <Button variant="outline">Cancel</Button>
               </SheetClose>
               <Button
-                disabled={!form.formState.isDirty}
+                disabled={!form.formState.isValid}
                 type="submit">
                 Validate
               </Button>
