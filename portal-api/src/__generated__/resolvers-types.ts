@@ -1187,7 +1187,7 @@ export type MutationResolvers<
     Maybe<ResolversTypes['Subscription']>,
     ParentType,
     ContextType,
-    RequireFields<MutationEditSubscriptionArgs, 'id'>
+    RequireFields<MutationEditSubscriptionArgs, 'id' | 'input'>
   >;
   editUser?: Resolver<
     Maybe<ResolversTypes['User']>,
