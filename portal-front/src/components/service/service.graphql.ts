@@ -28,8 +28,9 @@ export const serviceListFragment = graphql`
     description
     provider
     type
+    joining
     subscription_service_type
-    status
+    creation_status
   }
 `;
 
@@ -41,6 +42,11 @@ export const communityListFragment = graphql`
     provider
     type
     subscription_service_type
+    creation_status
+    organization {
+      id
+      name
+    }
     subscription {
       id
       status
@@ -103,7 +109,7 @@ export const communitiesListFragment = graphql`
           provider
           type
           subscription_service_type
-          status
+          creation_status
           organization {
             id
             name

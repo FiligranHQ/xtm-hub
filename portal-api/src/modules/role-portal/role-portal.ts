@@ -3,7 +3,6 @@ import { db, dbUnsecure } from '../../../knexfile';
 import UserRolePortal from '../../model/kanel/public/UserRolePortal';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
-import { Organization } from '../../__generated__/resolvers-types';
 
 export const getRolePortal = (): Promise<RolePortal[]> => {
   return dbUnsecure<RolePortal>('RolePortal');
@@ -25,8 +24,8 @@ export const getRolePortalBy = async (
   context: PortalContext,
   field: string,
   value: string
-): Promise<Organization> => {
-  return db<Organization>(context, 'RolePortal')
+): Promise<RolePortal> => {
+  return db<RolePortal>(context, 'RolePortal')
     .where({ [field]: value })
     .select('*')
     .first();

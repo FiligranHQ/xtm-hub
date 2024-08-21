@@ -54,6 +54,7 @@ export type AddServiceCommunityInput = {
   community_description?: InputMaybe<Scalars['String']['input']>;
   community_name?: InputMaybe<Scalars['String']['input']>;
   fee_type?: InputMaybe<Scalars['String']['input']>;
+  joining?: InputMaybe<Scalars['String']['input']>;
   organizations_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   price?: InputMaybe<Scalars['Int']['input']>;
   requested_services?: InputMaybe<
@@ -468,13 +469,14 @@ export type RolePortalId = Node & {
 
 export type Service = Node & {
   __typename?: 'Service';
+  creation_status?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  joining?: Maybe<Scalars['String']['output']>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   name: Scalars['String']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
   provider?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
   subscription?: Maybe<Array<Maybe<Subscription>>>;
   subscription_service_type?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
@@ -1449,12 +1451,18 @@ export type ServiceResolvers<
   ParentType extends
     ResolversParentTypes['Service'] = ResolversParentTypes['Service'],
 > = ResolversObject<{
+  creation_status?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
   description?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  joining?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   links?: Resolver<
     Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>,
     ParentType,
@@ -1467,7 +1475,6 @@ export type ServiceResolvers<
     ContextType
   >;
   provider?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscription?: Resolver<
     Maybe<Array<Maybe<ResolversTypes['Subscription']>>>,
     ParentType,

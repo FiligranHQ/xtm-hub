@@ -1,10 +1,8 @@
 import {
   Resolvers,
   Service,
-  ServiceCapability,
   ServiceLink,
   Subscription,
-  UserService,
 } from '../../__generated__/resolvers-types';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,14 +16,15 @@ import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
 import {
-  addServiceLink,
-  loadCommunities,
-  loadPublicServices,
+    addServiceLink,
+    insertCommunityNeededData,
+    insertService,
+    loadCommunities, loadPublicServices,
 } from './services.domain';
+
 import { getRolePortalBy } from '../role-portal/role-portal';
-import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
-import { UserServiceId } from '../../model/kanel/public/UserService';
-import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
+import { loadUserBy } from '../users/users.domain';
+import { insertServicePrice } from './instances/service-price/service_price.helper';
 
 const resolvers: Resolvers = {
   Query: {
@@ -151,10 +150,9 @@ const resolvers: Resolvers = {
           type: 'COMMUNITY',
           creation_status: role.name === 'ADMIN' ? 'READY' : 'PENDING',
           subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
+          joining: input.joining ?? 'AUTO_JOIN',
         };
-        const [addedService] = await db<Service>(context, 'Service')
-          .insert(dataService)
-          .returning('*');
+        const [addedService] = await insertService(context, dataService);
 
         const dataServicePrice = {
           id: uuidv4() as unknown as ServicePriceId,
@@ -163,12 +161,7 @@ const resolvers: Resolvers = {
           start_date: new Date(),
           price: input.price,
         };
-
-        await db<ServicePrice>(context, 'Service_Price')
-          .insert(dataServicePrice)
-          .returning('*');
-
-        let dataSubscription;
+        insertServicePrice(context, dataServicePrice);
 
         let userBillingManager;
         if (role.name === 'ADMIN' && input.billing_manager) {
@@ -178,84 +171,13 @@ const resolvers: Resolvers = {
           );
         }
 
-        for (const organization_id of input.organizations_id) {
-          dataSubscription = {
-            id: uuidv4() as unknown as SubscriptionId,
-            organization_id: fromGlobalId(organization_id).id,
-            service_id: addedService.id,
-            start_date: new Date(),
-            end_date: null,
-            status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
-            subscriber_id:
-              role.name === 'ADMIN' ? userBillingManager.id : context.user.id,
-          };
-
-          const [addedSubscription] = await db<Subscription>(
-            context,
-            'Subscription'
-          )
-            .insert(dataSubscription)
-            .returning('*');
-
-          const users = await loadUsersByOrganization(
-            fromGlobalId(organization_id).id,
-            userBillingManager.id
-          );
-          for (const user of users) {
-            const dataUserService = {
-              id: uuidv4() as UserServiceId,
-              user_id: user.id,
-              subscription_id: addedSubscription.id,
-            };
-
-            const [insertedUserService] = await db<UserService>(
-              context,
-              'User_Service'
-            )
-              .insert(dataUserService)
-              .returning('*');
-
-            const dataServiceCapability = {
-              id: uuidv4() as ServiceCapabilityId,
-              user_service_id: insertedUserService.id,
-              service_capability_name: 'ACCESS_SERVICE',
-            };
-
-            await db<ServiceCapability>(context, 'Service_Capability')
-              .insert(dataServiceCapability)
-              .returning('*');
-          }
-
-          const dataUserService = {
-            id: uuidv4() as UserServiceId,
-            user_id: userBillingManager.id,
-            subscription_id: addedSubscription.id,
-          };
-
-          const [insertedUserService] = await db<UserService>(
-            context,
-            'User_Service'
-          )
-            .insert(dataUserService)
-            .returning('*');
-
-          const capabilities = [
-            'ADMIN_SUBSCRIPTION',
-            'MANAGE_ACCESS',
-            'ACCESS_SERVICE',
-          ];
-          for (const capability of capabilities) {
-            const dataServiceCapability = {
-              id: uuidv4() as ServiceCapabilityId,
-              user_service_id: insertedUserService.id,
-              service_capability_name: capability,
-            };
-
-            await db<ServiceCapability>(context, 'Service_Capability')
-              .insert(dataServiceCapability)
-              .returning('*');
-          }
-        }
+        await insertCommunityNeededData(
+          context,
+          input.organizations_id,
+          role,
+          addedService,
+          userBillingManager
+        );
 
         for (const serviceLink of input.requested_services) {
           const dataServiceLink = {
@@ -264,7 +186,7 @@ const resolvers: Resolvers = {
             name: serviceLink,
           };
           // TODO Call AWX to add service to community
-          addServiceLink(context, dataServiceLink);
+          await addServiceLink(context, dataServiceLink);
         }
 
         return addedService;

@@ -1,26 +1,12 @@
 import { PortalContext } from '../../model/portal-context';
 import { db, dbRaw, paginate } from '../../../knexfile';
-import UserService, {
-  UserServiceId,
-} from '../../model/kanel/public/UserService';
-import { UserId } from '../../model/kanel/public/User';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { v4 as uuidv4 } from 'uuid';
+import UserService from '../../model/kanel/public/UserService';
 import { UserServiceConnection } from '../../__generated__/resolvers-types';
 import Service from '../../model/kanel/public/Service';
 
-export const insertUserService = async (
-  context: PortalContext,
-  user_id: string,
-  addedSuscriptionId: string
-) => {
+export const insertUserService = async (context, userServiceData) => {
   return db<UserService>(context, 'User_Service')
-    .insert({
-      id: uuidv4() as UserServiceId,
-      user_id: user_id as UserId,
-      subscription_id: addedSuscriptionId as SubscriptionId,
-      service_personal_data: null,
-    })
+    .insert(userServiceData)
     .returning('*');
 };
 

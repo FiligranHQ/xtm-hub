@@ -1,4 +1,4 @@
-import { db, dbRaw, paginate } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Service,
   ServiceConnection,
@@ -6,6 +6,17 @@ import {
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
+import { ServiceMutator } from '../../model/kanel/public/Service';
+import { RolePortal, User } from '../../model/user';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { v4 as uuidv4 } from 'uuid';
+import { loadUsersByOrganization } from '../users/users.domain';
+import { UserServiceId } from '../../model/kanel/public/UserService';
+import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
+import { insertSubscription } from '../subcription/subscription.domain';
+import { insertUserService } from '../user_service/user_service.domain';
+import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 
 export const loadCommunities = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -123,6 +134,10 @@ export const loadServiceBy = async (
   return service;
 };
 
+export const loadUnsecureServiceBy = async (field: ServiceMutator) => {
+  return dbUnsecure<Service>('Service').where(field);
+};
+
 export const addServiceLink = async (
   context: PortalContext,
   dataServiceLink: ServiceLinkInitializer
@@ -131,4 +146,95 @@ export const addServiceLink = async (
     .insert(dataServiceLink)
     .returning('*');
   return serviceLink;
+};
+
+export const insertService = async (context: PortalContext, dataService) => {
+  return db<Service>(context, 'Service').insert(dataService).returning('*');
+};
+
+export const insertCommunityNeededData = async (
+  context: PortalContext,
+  organizationsId: string[],
+  role: RolePortal,
+  addedService: Service,
+  userBillingManager: User
+) => {
+  let parentSubscription;
+  let dataSubscription;
+  for (const organization_id of organizationsId) {
+    dataSubscription = {
+      id: uuidv4() as unknown as SubscriptionId,
+      organization_id: fromGlobalId(organization_id).id,
+      service_id: addedService.id,
+      start_date: new Date(),
+      end_date: null,
+      status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
+      subscriber_id:
+        role.name === 'ADMIN' ? userBillingManager.id : context.user.id,
+    };
+    const [addedSubscription] = await insertSubscription(
+      context,
+      dataSubscription
+    );
+
+    if (!parentSubscription) {
+      parentSubscription = addedSubscription;
+    }
+    const users = await loadUsersByOrganization(
+      fromGlobalId(organization_id).id,
+      userBillingManager.id
+    );
+    const capabilitiesUsers = [
+      'ADMIN_SUBSCRIPTION',
+      'MANAGE_ACCESS',
+      'ACCESS_SERVICE',
+    ];
+    for (const user of users) {
+      insertNeededUserService(
+        context,
+        capabilitiesUsers,
+        user,
+        addedSubscription.id
+      );
+    }
+  }
+
+  const capabilitiesAdmin = [
+    'ADMIN_SUBSCRIPTION',
+    'MANAGE_ACCESS',
+    'ACCESS_SERVICE',
+  ];
+
+  insertNeededUserService(
+    context,
+    capabilitiesAdmin,
+    userBillingManager,
+    parentSubscription.id
+  );
+};
+
+export const insertNeededUserService = async (
+  context: PortalContext,
+  capabilities: string[],
+  user: User,
+  subscriptionId: string
+) => {
+  const dataUserService = {
+    id: uuidv4() as UserServiceId,
+    user_id: user.id,
+    subscription_id: subscriptionId,
+  };
+  const [insertedUserService] = await insertUserService(
+    context,
+    dataUserService
+  );
+
+  for (const capability of capabilities) {
+    const dataServiceCapability = {
+      id: uuidv4() as ServiceCapabilityId,
+      user_service_id: insertedUserService.id,
+      service_capability_name: capability,
+    };
+    await insertServiceCapability(context, dataServiceCapability);
+  }
 };
