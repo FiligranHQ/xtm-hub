@@ -1,5 +1,9 @@
 import { dbUnsecure } from '../../../knexfile';
-import User, { UserId, UserInitializer } from '../../model/kanel/public/User';
+import User, {
+  UserId,
+  UserInitializer,
+  UserMutator,
+} from '../../model/kanel/public/User';
 import { addRolesToUser } from '../common/user-role-portal';
 import { hashPassword } from '../../utils/hash-password.util';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,6 +18,10 @@ export const addNewUserWithRoles = async (
     .returning('*');
   await addRolesToUser(data.id, roles);
   return addedUser;
+};
+
+export const deleteUserUnsecure = async (field: UserMutator) => {
+  return dbUnsecure<User>('User').where(field).delete('*').returning('*');
 };
 
 export const createNewUserFromInvitation = async (

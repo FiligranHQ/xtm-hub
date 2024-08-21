@@ -405,7 +405,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     ) => {
       commitSubscriptionMutation({
         variables: {
-          input: { status: status, id: subscription.id },
+          input: { status: status },
           id: subscription.id,
         },
         onCompleted: () => {

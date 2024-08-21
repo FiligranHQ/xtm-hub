@@ -249,11 +249,6 @@ type SubscriptionConnection {
 }
 
 input EditSubscriptionInput {
-  id: ID!
-  organization_id: ID
-  service_id: ID
-  start_date: Date
-  end_date: Date
   status: String
 }
 

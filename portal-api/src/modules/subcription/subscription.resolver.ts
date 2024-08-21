@@ -127,12 +127,8 @@ const resolvers: Resolvers = {
         const [retrievedSubscription] = await loadSubscriptionBy('id', id);
         const update = {
           id,
-          organization_id: input.organization_id
-            ? fromGlobalId(input.organization_id).id
-            : retrievedSubscription.organization_id,
-          service_id: input.organization_id
-            ? fromGlobalId(input.service_id).id
-            : retrievedSubscription.service_id,
+          organization_id: retrievedSubscription.organization_id,
+          service_id: retrievedSubscription.service_id,
           status: input.status ? input.status : retrievedSubscription.status,
         };
         const [updatedSubscription] = await db<Subscription>(

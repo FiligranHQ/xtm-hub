@@ -149,9 +149,6 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
     commitSubscriptionMutation({
       variables: {
         input: {
-          id: subscription.id,
-          organization_id: subscription.organization.id,
-          service_id: subscription.service.id,
           status: status,
         },
         id: subscription.id,

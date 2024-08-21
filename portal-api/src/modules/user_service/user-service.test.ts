@@ -1,5 +1,5 @@
 import 'knex';
-import { describe, expect } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { getAdminAgent } from '../../../tests/test.util';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language';
@@ -10,6 +10,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadUnsecureServiceCapabitiesBy } from '../service_capability/service_capability.helper';
 import { loadUserBy } from '../users/users.domain';
 import { v4 as uuidv4 } from 'uuid';
+import { deleteUserUnsecure } from '../users/users.helper';
 
 const userServiceCreateMutation = {
   query: print(gql`
@@ -137,6 +138,10 @@ describe('Services GraphQL Endpoint', async () => {
           user_service_id: existingUserService[0].id,
         });
         expect(userCapacities.length).toBe(1);
+      });
+
+      afterAll(() => {
+        deleteUserUnsecure({ email: testEmail });
       });
     });
   });
