@@ -1,50 +1,50 @@
 enum SubscriptionOrdering {
-    organization_name
-    start_date
-    end_date
-    status
-    service_name
-    service_provider
-    service_type
-    service_description
+  organization_name
+  start_date
+  end_date
+  status
+  service_name
+  service_provider
+  service_type
+  service_description
 }
 type Subscription implements Node {
-    id: ID!
-    organization_id: ID!
-    organization: Organization
-    service_id: ID!
-    service_url: String
-    service: Service
-    start_date: Date
-    end_date: Date
-    status: String
+  id: ID!
+  organization_id: ID!
+  organization: Organization
+  service_id: ID!
+  service_url: String
+  service: Service
+  start_date: Date
+  end_date: Date
+  status: String
 }
 
 type SubscriptionEdge {
-    cursor: String!
-    node: Subscription!
+  cursor: String!
+  node: Subscription!
 }
 
 type SubscriptionConnection {
-    totalCount: Int!
-    edges: [SubscriptionEdge!]!
-    pageInfo: PageInfo!
+  totalCount: Int!
+  edges: [SubscriptionEdge!]!
+  pageInfo: PageInfo!
 }
 
 type Query {
-    subscription(id: ID!): Subscription @auth
-    subscriptions(
-        first: Int = 50
-        after: ID
-        orderBy: SubscriptionOrdering!
-        orderMode: OrderingMode!
-    ): SubscriptionConnection! @auth
-    subscriptionsByOrganization(
-        first: Int = 50
-        after: ID
-        orderBy: SubscriptionOrdering!
-        orderMode: OrderingMode!
-    ): SubscriptionConnection! @auth
+  subscription(id: ID!): Subscription @auth
+  subscriptions(
+    first: Int = 50
+    after: ID
+    orderBy: SubscriptionOrdering!
+    orderMode: OrderingMode!
+  ): SubscriptionConnection! @auth
+  subscriptionsByOrganization(
+    first: Int = 50
+    after: ID
+    orderBy: SubscriptionOrdering!
+    orderMode: OrderingMode!
+  ): SubscriptionConnection! @auth
 }
 
 input EditSubscriptionInput {
@@ -52,12 +52,12 @@ input EditSubscriptionInput {
 }
 
 type Mutation {
-    addSubscription(
-        service_id: String
-        organization_id: ID
-        user_id: ID
-    ): Subscription
+  addSubscription(
+    service_id: String
+    organization_id: ID
+    user_id: ID
+  ): Subscription
     @auth(requires: [FRT_SERVICE_SUBSCRIBER, BCK_MANAGE_COMMUNITIES])
-    editSubscription(id: ID!, input: EditSubscriptionInput): Subscription
+  editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
 }
