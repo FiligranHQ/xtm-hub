@@ -27,6 +27,7 @@ import { loadSubscriptionsByOrganization } from '../subcription/subscription.dom
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from '../subcription/service_capability.domain';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
+import { UserServiceId } from '../../model/kanel/public/UserService';
 
 const validPassword = (
   user: UserWithAuthentication,
@@ -140,11 +141,12 @@ const resolvers: Resolvers = {
         );
 
         for (const subscription of subscriptableDirectSubscriptions) {
-          const [addedUserService] = await insertUserService(
-            context,
-            context.user.id,
-            subscription.node.id
-          );
+          const [addedUserService] = await insertUserService(context, {
+            id: uuidv4() as UserServiceId,
+            user_id: context.user.id,
+            subscription_id: subscription.node.id,
+            service_personal_data: null,
+          });
           await insertCapa(context, addedUserService.id, 'ACCESS_SERVICE');
         }
 

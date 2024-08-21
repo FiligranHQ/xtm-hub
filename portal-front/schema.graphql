@@ -174,7 +174,8 @@ type Service implements Node {
   provider: String
   type: String
   subscription_service_type: String
-  status: String
+  creation_status: String
+  joining: String
   links: [ServiceLink]
   organization: [Organization]
   subscription: [Subscription]
@@ -208,6 +209,7 @@ input AddServiceCommunityInput {
   organizations_id: [String]
   requested_services: [String]
   billing_manager: String
+  joining: String
 }
 
 type ServiceSubscription {

@@ -13,6 +13,9 @@ import { db, dbTx } from '../../../knexfile';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
 import { loadServiceBy } from '../services/services.domain';
+import { UserServiceId } from '../../model/kanel/public/UserService';
+import { UserId } from '../../model/kanel/public/User';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 
 const resolvers: Resolvers = {
   Query: {
@@ -86,11 +89,12 @@ const resolvers: Resolvers = {
           addedSubscription
         );
 
-        const [addedUserService] = await insertUserService(
-          context,
-          fromGlobalId(user_id).id,
-          filledSubscription.id
-        );
+        const [addedUserService] = await insertUserService(context, {
+          id: uuidv4() as UserServiceId,
+          user_id: fromGlobalId(user_id).id as UserId,
+          subscription_id: filledSubscription.id as SubscriptionId,
+          service_personal_data: null,
+        });
 
         const initialServiceCapabilities = [
           'ADMIN_SUBSCRIPTION',

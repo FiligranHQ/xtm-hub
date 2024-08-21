@@ -10,6 +10,10 @@ import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
 import { loadOrganizationBy } from '../organizations/organizations';
 import { loadServiceBy } from '../services/services.domain';
+import { UserServiceId } from '../../model/kanel/public/UserService';
+import { UserId } from '../../model/kanel/public/User';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { v4 as uuidv4 } from 'uuid';
 
 export const loadSubscriptions = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -136,6 +140,15 @@ export const checkSubscriptionExists = async (
   return sub ?? false;
 };
 
+export const insertSubscription = async (
+  context: PortalContext,
+  dataSubscription
+) => {
+  return db<Subscription>(context, 'Subscription')
+    .insert(dataSubscription)
+    .returning('*');
+};
+
 export const addOrganizationUsersRights = async (
   context,
   organizationId: string,
@@ -144,11 +157,12 @@ export const addOrganizationUsersRights = async (
 ) => {
   const usersInOrga = await loadUsersByOrganization(organizationId, adminId);
   for (const user of usersInOrga) {
-    const [user_service] = await insertUserService(
-      context,
-      user.id,
-      addedSuscriptionId
-    );
+    const [user_service] = await insertUserService(context, {
+      id: uuidv4() as UserServiceId,
+      user_id: user.id as UserId,
+      subscription_id: addedSuscriptionId as SubscriptionId,
+      service_personal_data: null,
+    });
 
     await insertCapa(context, user_service.id, 'ACCESS_SERVICE');
   }
