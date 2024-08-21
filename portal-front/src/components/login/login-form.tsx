@@ -64,7 +64,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-4">
+            className="w-full space-y-s">
             <FormField
               control={form.control}
               name="email"
