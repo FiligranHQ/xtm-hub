@@ -30,7 +30,11 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
             <>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={href}>{label}</Link>
+                  <Link
+                    className="hover:underline"
+                    href={href}>
+                    {label}
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
