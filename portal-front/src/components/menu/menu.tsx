@@ -9,6 +9,7 @@ import Logout from '@/components/logout';
 import MenuUser from '@/components/menu/menu-user';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { HomeIcon, KeyboardArrowLeftIcon } from 'filigran-icon';
+import { usePathname } from 'next/navigation';
 
 interface LinkMenuProps {
   open: boolean;
@@ -23,6 +24,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
   text,
   open,
 }) => {
+  const currentPath = usePathname();
   const Icon = icon;
   return (
     <Link
@@ -30,8 +32,10 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
       className={cn(
         buttonVariants({
           variant: 'ghost',
-          className: 'h-9 w-full justify-start border-none',
-        })
+          className: 'h-9 w-full justify-start rounded-none',
+        }),
+        currentPath === href &&
+          'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
       )}>
       <span className="flex w-8 flex-shrink-0 justify-center">
         <Icon className="h-4 w-4" />
