@@ -16,14 +16,14 @@ import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
 import {
-    addServiceLink,
-    insertCommunityNeededData,
-    insertService,
-    loadCommunities, loadPublicServices,
+  addServiceLink,
+  grantCommunityAccess,
+  insertService,
+  loadCommunities,
+  loadPublicServices,
 } from './services.domain';
 
 import { getRolePortalBy } from '../role-portal/role-portal';
-import { loadUserBy } from '../users/users.domain';
 import { insertServicePrice } from './instances/service-price/service_price.helper';
 
 const resolvers: Resolvers = {
@@ -163,20 +163,12 @@ const resolvers: Resolvers = {
         };
         insertServicePrice(context, dataServicePrice);
 
-        let userBillingManager;
-        if (role.name === 'ADMIN' && input.billing_manager) {
-          userBillingManager = await loadUserBy(
-            'User.email',
-            input.billing_manager
-          );
-        }
-
-        await insertCommunityNeededData(
+        await grantCommunityAccess(
           context,
           input.organizations_id,
           role,
           addedService,
-          userBillingManager
+          input.billing_manager
         );
 
         for (const serviceLink of input.requested_services) {
