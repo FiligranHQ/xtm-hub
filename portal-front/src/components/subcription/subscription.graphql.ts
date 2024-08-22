@@ -104,7 +104,7 @@ export const subscriptionFragment = graphql`
 `;
 
 export const SubscriptionEditMutation = graphql`
-  mutation subscriptionEditMutation($id: ID!, $input: EditSubscriptionInput) {
+  mutation subscriptionEditMutation($id: ID!, $input: EditSubscriptionInput!) {
     editSubscription(id: $id, input: $input) {
       ...subscription_fragment
     }

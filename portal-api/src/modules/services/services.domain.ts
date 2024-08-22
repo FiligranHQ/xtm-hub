@@ -6,17 +6,21 @@ import {
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
-import { ServiceMutator } from '../../model/kanel/public/Service';
-import { RolePortal, User } from '../../model/user';
+import { ServiceId, ServiceMutator } from '../../model/kanel/public/Service';
+import { RolePortal } from '../../model/user';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
 import { loadUsersByOrganization } from '../users/users.domain';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
-import { insertSubscription } from '../subcription/subscription.domain';
+import {
+  insertSubscription,
+  loadUnsecureSubscriptionBy,
+} from '../subcription/subscription.domain';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 
 export const loadCommunities = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -152,17 +156,16 @@ export const insertService = async (context: PortalContext, dataService) => {
   return db<Service>(context, 'Service').insert(dataService).returning('*');
 };
 
-export const insertCommunityNeededData = async (
+export const grantCommunityAccess = async (
   context: PortalContext,
   organizationsId: string[],
   role: RolePortal,
   addedService: Service,
-  userBillingManager: User
+  userBillingManager: string
 ) => {
-  let parentSubscription;
-  let dataSubscription;
+  const billingManager = JSON.parse(userBillingManager);
   for (const organization_id of organizationsId) {
-    dataSubscription = {
+    const dataSubscription = {
       id: uuidv4() as unknown as SubscriptionId,
       organization_id: fromGlobalId(organization_id).id,
       service_id: addedService.id,
@@ -170,30 +173,25 @@ export const insertCommunityNeededData = async (
       end_date: null,
       status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
       subscriber_id:
-        role.name === 'ADMIN' ? userBillingManager.id : context.user.id,
+        role.name === 'ADMIN'
+          ? fromGlobalId(billingManager.id).id
+          : context.user.id,
     };
     const [addedSubscription] = await insertSubscription(
       context,
       dataSubscription
     );
 
-    if (!parentSubscription) {
-      parentSubscription = addedSubscription;
-    }
     const users = await loadUsersByOrganization(
       fromGlobalId(organization_id).id,
-      userBillingManager.id
+      fromGlobalId(billingManager.id).id
     );
-    const capabilitiesUsers = [
-      'ADMIN_SUBSCRIPTION',
-      'MANAGE_ACCESS',
-      'ACCESS_SERVICE',
-    ];
+    const capabilitiesUsers = ['ACCESS_SERVICE'];
     for (const user of users) {
-      insertNeededUserService(
+      await grantServiceAccess(
         context,
         capabilitiesUsers,
-        user,
+        user.id,
         addedSubscription.id
       );
     }
@@ -205,23 +203,28 @@ export const insertCommunityNeededData = async (
     'ACCESS_SERVICE',
   ];
 
-  insertNeededUserService(
+  const [retrievedSubscription] = await loadUnsecureSubscriptionBy({
+    service_id: addedService.id as ServiceId,
+    organization_id: fromGlobalId(billingManager.organization_id)
+      .id as OrganizationId,
+  });
+  await grantServiceAccess(
     context,
     capabilitiesAdmin,
-    userBillingManager,
-    parentSubscription.id
+    fromGlobalId(billingManager.id).id,
+    retrievedSubscription.id
   );
 };
 
-export const insertNeededUserService = async (
+export const grantServiceAccess = async (
   context: PortalContext,
   capabilities: string[],
-  user: User,
+  userId: string,
   subscriptionId: string
 ) => {
   const dataUserService = {
     id: uuidv4() as UserServiceId,
-    user_id: user.id,
+    user_id: userId,
     subscription_id: subscriptionId,
   };
   const [insertedUserService] = await insertUserService(

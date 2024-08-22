@@ -357,7 +357,7 @@ type User implements Node {
 
 type UserEdge {
   cursor: String!
-  node: User
+  node: User!
 }
 
 type UserConnection {

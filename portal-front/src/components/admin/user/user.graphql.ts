@@ -19,6 +19,7 @@ export const usersFragment = graphql`
           first_name
           last_name
           organization {
+            id
             name
           }
         }

@@ -12,7 +12,10 @@ import { loadOrganizationBy } from '../organizations/organizations';
 import { loadServiceBy } from '../services/services.domain';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UserId } from '../../model/kanel/public/User';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import {
+  SubscriptionId,
+  SubscriptionMutator,
+} from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
 
 export const loadSubscriptions = async (context: PortalContext, opts) => {
@@ -56,6 +59,11 @@ export const loadSubscriptions = async (context: PortalContext, opts) => {
 export const loadSubscriptionBy = async (field: string, value: string) => {
   return await dbUnsecure<Subscription>('Subscription').where(field, value);
 };
+
+export const loadUnsecureSubscriptionBy = (field: SubscriptionMutator) => {
+  return dbUnsecure<Subscription>('Subscription').where(field);
+};
+
 export const loadSubscriptionsByOrganization = async (
   context: PortalContext,
   opts
