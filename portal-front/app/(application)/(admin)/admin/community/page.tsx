@@ -30,7 +30,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
   return (
     <>
-      <b>Communities</b>
+      <h1>Communities</h1>
       {queryRef ? <CommunityList queryRef={queryRef} /> : <Loader />}
     </>
   );

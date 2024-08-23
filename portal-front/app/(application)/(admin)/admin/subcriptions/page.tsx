@@ -12,12 +12,26 @@ import { ColumnDef } from '@tanstack/react-table';
 import { subscriptionItem_fragment$data } from '../../../../../__generated__/subscriptionItem_fragment.graphql';
 import { Badge } from 'filigran-ui/servers';
 import { useLocalStorage } from 'usehooks-ts';
+import { cn } from '@/lib/utils';
 
 // Component interface
 interface PageProps {}
 
 // Table columns
 const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
+  {
+    id: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      return (
+        <Badge
+          variant={'secondary'}
+          className={cn(row.original.status === 'REQUESTED' && 'text-orange')}>
+          {row.original.status}
+        </Badge>
+      );
+    },
+  },
   {
     accessorKey: 'start_date',
     id: 'start_date',
@@ -37,21 +51,6 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     accessorKey: 'service.name',
     id: 'service_name',
     header: 'Service',
-  },
-
-  {
-    id: 'status',
-    header: 'Status',
-    cell: ({ row }) => {
-      return (
-        <Badge
-          variant={
-            row.original.status === 'REQUESTED' ? 'destructive' : 'secondary'
-          }>
-          {row.original.status}
-        </Badge>
-      );
-    },
   },
 ];
 

@@ -36,6 +36,7 @@ import {
   CaseRftIcon,
   ConstructionIcon,
   CourseOfActionIcon,
+  EditIcon,
   TaskIcon,
 } from 'filigran-icon';
 import {
@@ -146,35 +147,35 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       cell: ({ row }) => {
         return (
           <>
-            <GuardCapacityComponent
-              capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
-              <AlertDialogComponent
-                AlertTitle={'Subscribe service'}
-                actionButtonText={'Continue'}
-                triggerElement={
-                  <Button
-                    aria-label="Subscribe service"
-                    className="w-3/4">
-                    <ConstructionIcon className="mr-2 h-5 w-5" />
-                    Subscribe
-                  </Button>
-                }
-                onClickContinue={useCallback(
-                  () => addSubscriptionInDb(row.original),
-                  []
-                )}>
-                {generateAlertText(row.original)}
-              </AlertDialogComponent>
-            </GuardCapacityComponent>
+            {/*<GuardCapacityComponent*/}
+            {/*  capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>*/}
+            {/*  <AlertDialogComponent*/}
+            {/*    AlertTitle={'Subscribe service'}*/}
+            {/*    actionButtonText={'Continue'}*/}
+            {/*    triggerElement={*/}
+            {/*      <Button*/}
+            {/*        aria-label="Subscribe service"*/}
+            {/*        className="w-3/4">*/}
+            {/*        <ConstructionIcon className="mr-2 h-5 w-5" />*/}
+            {/*        Subscribe*/}
+            {/*      </Button>*/}
+            {/*    }*/}
+            {/*    onClickContinue={useCallback(*/}
+            {/*      () => addSubscriptionInDb(row.original),*/}
+            {/*      []*/}
+            {/*    )}>*/}
+            {/*    {generateAlertText(row.original)}*/}
+            {/*  </AlertDialogComponent>*/}
+            {/*</GuardCapacityComponent>*/}
 
             <GuardCapacityComponent
               capacityRestriction={['BCK_MANAGE_SERVICES']}>
               <Button
                 asChild
-                className="mt-2 w-3/4">
+                variant={'ghost'}
+                size={'icon'}>
                 <Link href={`/admin/service/${row.original.id}`}>
-                  <CourseOfActionIcon className="mr-2 h-5 w-5" />
-                  Manage
+                  <EditIcon className="h-4 w-4" />
                 </Link>
               </Button>{' '}
             </GuardCapacityComponent>
@@ -186,20 +187,13 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
 
   let columns: ColumnDef<serviceList_fragment$data>[] = [
     {
-      id: 'name',
-      header: 'Name',
+      id: 'service_state',
+      header: 'State',
       cell: ({ row }) => {
-        return (
-          <div className="flex items-center space-x-2">
-            <div>
-              {subscribedServiceName.includes(row.original.name) ? (
-                <TaskIcon className="h-6 w-6 flex-auto text-green" />
-              ) : (
-                <CaseRftIcon className="h-6 w-6 flex-auto text-destructive" />
-              )}
-            </div>
-            <div>{row.original.name} </div>
-          </div>
+        return row.original.status === 'ACCEPTED' ? (
+          <Badge variant={'secondary'}>Subscribed</Badge>
+        ) : (
+          <Badge variant={'destructive'}>Not subscribed</Badge>
         );
       },
     },
@@ -209,6 +203,13 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       header: 'Type',
       cell: ({ row }) => {
         return <Badge className={'cursor-default'}>{row.original.type}</Badge>;
+      },
+    },
+    {
+      id: 'name',
+      header: 'Name',
+      cell: ({ row }) => {
+        return <>{row.original.name}</>;
       },
     },
     {

@@ -65,10 +65,8 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
       setOpen={setOpenSheet}
       validationSchema={communityFormSchema}
       trigger={
-        <Button
-          size="icon"
-          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <AddIcon className="h-4 w-4" />
+        <Button className="flex h-14 items-center rounded-full">
+          <AddIcon className="mr-m h-5 w-5" /> Create community
         </Button>
       }></CommunityFormSheet>
   ) : (

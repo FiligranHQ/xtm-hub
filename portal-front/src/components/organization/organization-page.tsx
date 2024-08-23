@@ -5,8 +5,13 @@ import { useState } from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
-import { DataTable } from 'filigran-ui/clients';
-import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
+import { DataTable, toast } from 'filigran-ui/clients';
+import {
+  ColumnDef,
+  ColumnSort,
+  PaginationState,
+  Row,
+} from '@tanstack/react-table';
 import { CreateOrganization } from '@/components/organization/create-organization';
 import { EditOrganization } from '@/components/organization/edit-organization';
 import { DeleteOrganization } from '@/components/organization/delete-organization';
@@ -33,6 +38,9 @@ const breadcrumbValue = [
 
 const OrganizationPage: React.FunctionComponent = () => {
   const [organizationData, refetch] = getOrganizations();
+  const [editedOrganization, setEditedOrganization] = useState<
+    organizationItem_fragment$data | undefined
+  >(undefined);
   const organizationDataTable = organizationData.organizations.edges.map(
     ({ node }) => node
   ) as organizationItem_fragment$data[];
@@ -94,16 +102,10 @@ const OrganizationPage: React.FunctionComponent = () => {
 
   const columns: ColumnDef<organizationItem_fragment$data>[] = [
     {
-      accessorKey: 'name',
       id: 'name',
       header: 'Name',
       cell: ({ row }) => {
-        return (
-          <>
-            <EditOrganization organization={row.original}></EditOrganization>
-            {row.original.name}
-          </>
-        );
+        return <>{row.original.name}</>;
       },
     },
     {
@@ -120,9 +122,20 @@ const OrganizationPage: React.FunctionComponent = () => {
     },
   ];
 
+  const onClickRow = (row: Row<organizationItem_fragment$data>) => {
+    setEditedOrganization(row.original);
+  };
+  const onClose = () => {
+    setEditedOrganization(undefined);
+  };
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
+      <EditOrganization
+        organization={editedOrganization}
+        onClose={onClose}
+      />
+      <CreateOrganization connectionId={organizationData.organizations.__id} />
       <DataTable
         columns={columns}
         data={organizationDataTable}
@@ -136,8 +149,8 @@ const OrganizationPage: React.FunctionComponent = () => {
           sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,
         }}
+        onClickRow={onClickRow}
       />
-      <CreateOrganization connectionId={organizationData.organizations.__id} />
     </>
   );
 };
