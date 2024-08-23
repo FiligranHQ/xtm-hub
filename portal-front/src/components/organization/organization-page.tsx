@@ -117,7 +117,8 @@ const OrganizationPage: React.FunctionComponent = () => {
       cell: ({ row }) => (
         <DeleteOrganization
           connectionId={organizationData.organizations.__id}
-          organization={row.original}></DeleteOrganization>
+          organization={row.original}
+        />
       ),
     },
   ];
@@ -135,7 +136,11 @@ const OrganizationPage: React.FunctionComponent = () => {
         organization={editedOrganization}
         onClose={onClose}
       />
-      <CreateOrganization connectionId={organizationData.organizations.__id} />
+      <div className="flex justify-end pb-s">
+        <CreateOrganization
+          connectionId={organizationData.organizations.__id}
+        />
+      </div>
       <DataTable
         columns={columns}
         data={organizationDataTable}

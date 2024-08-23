@@ -15,6 +15,7 @@ import { useToast } from 'filigran-ui/clients';
 import useGranted from '@/hooks/useGranted';
 import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
+import CreateButton from '@/components/ui/create-button';
 
 interface CreateUserProps {
   connectionId: string;
@@ -66,12 +67,6 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
       setOpen={setOpenSheet}
       validationSchema={userFormSchema}
       user={isFullAdmin ? undefined : user}
-      trigger={
-        <Button
-          size="icon"
-          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <AddIcon className="h-4 w-4" />
-        </Button>
-      }></UserFormSheet>
+      trigger={<CreateButton label="Create user" />}></UserFormSheet>
   );
 };

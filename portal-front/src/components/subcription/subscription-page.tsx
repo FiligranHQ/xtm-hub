@@ -31,6 +31,7 @@ import {
 import { servicePriceMutation } from '../../../__generated__/servicePriceMutation.graphql';
 import { ServicePriceCreateMutation } from '@/components/service/service-price.graphql';
 import { z } from 'zod';
+import CreateButton from '@/components/ui/create-button';
 
 interface SubscriptionListProps {
     queryRef: PreloadedQuery<subscriptionsSelectQuery>;
@@ -248,41 +249,41 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
         []
     );
 
-    return (
-        <>
-            <DataTable
-                data={subscriptionData}
-                columns={columnsWithAdmin}
-                tableOptions={{
-                    onSortingChange: onSortingChange,
-                    onPaginationChange: onPaginationChange,
-                    rowCount: subscriptions.subscriptions.totalCount,
-                    manualPagination: true,
-                    manualSorting: true,
-                }}
-                tableState={{
-                    sorting: mapToSortingTableValue(orderBy, orderMode),
-                    pagination,
-                }}
-            />
-            <SubscriptionFormSheet
-                connectionId={connectionId}
-                trigger={
-                    <Button
-                        size="icon"
-                        className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-                        <AddIcon className="h-4 w-4" />
-                    </Button>
-                }></SubscriptionFormSheet>
-            <SubscriptionAcceptFormSheet
-                title={'Accept a new community'}
-                description={
-                    'Insert the billing here. Click Validate when you are done. The subscriptions will be accepted.'
-                }
-                handleSubmit={handleAcceptSubscription}
-                open={openSheet}
-                setOpen={setOpenSheet}></SubscriptionAcceptFormSheet>
-        </>
-    );
+  return (
+    <>
+      <div className="flex justify-end pb-s">
+        <SubscriptionFormSheet
+          connectionId={connectionId}
+          trigger={<CreateButton label="Add subscription" />}
+        />
+      </div>
+
+      <DataTable
+        data={subscriptionData}
+        columns={columnsWithAdmin}
+        tableOptions={{
+          onSortingChange: onSortingChange,
+          onPaginationChange: onPaginationChange,
+          rowCount: subscriptions.subscriptions.totalCount,
+          manualPagination: true,
+          manualSorting: true,
+        }}
+        tableState={{
+          sorting: mapToSortingTableValue(orderBy, orderMode),
+          pagination,
+        }}
+      />
+
+      <SubscriptionAcceptFormSheet
+        title={'Accept a new community'}
+        description={
+          'Insert the billing here. Click Validate when you are done. The subscriptions will be accepted.'
+        }
+        handleSubmit={handleAcceptSubscription}
+        open={openSheet}
+        setOpen={setOpenSheet}
+      />
+    </>
+  );
 };
 export default SubscriptionPage;
