@@ -122,11 +122,9 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           </AlertDialogComponent>
         </div>
 
-        <div className="container mx-auto py-10">
-          <DataTracking
-            data={data.user?.tracking_data as trackingData_fragment$key}
-          />
-        </div>
+        <DataTracking
+          data={data.user?.tracking_data as trackingData_fragment$key}
+        />
         <EditUser user={user}></EditUser>
       </>
     );

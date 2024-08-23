@@ -62,7 +62,7 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
   handleSubmit,
   validationSchema,
 }) => {
-  const [selectedValue, setSelectedValue] = React.useState('acef');
+  const [selectedValue, setSelectedValue] = React.useState('');
 
   const availableServicesList = ['OpenFeed', 'NextCloud', 'OpenCTI'];
 
@@ -117,7 +117,7 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
       onOpenChange={setOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
-        <SheetHeader>
+        <SheetHeader className="bg-white">
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
@@ -168,22 +168,22 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
                 name="billing_manager"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Community billing manager</FormLabel>
+                    <FormLabel className="block">
+                      Community billing manager
+                    </FormLabel>
                     <FormControl>
-                      <div>
-                        <Combobox
-                          dataTab={usersData}
-                          order={'Choose'}
-                          placeholder={'Choose an email'}
-                          emptyCommand={'Not found'}
-                          onInputChange={handleInputChange}
-                          value={selectedValue}
-                          onValueChange={(value) => {
-                            setSelectedValue(value);
-                            field.onChange(value);
-                          }}
-                        />
-                      </div>
+                      <Combobox
+                        dataTab={usersData}
+                        order={'Choose an email'}
+                        placeholder={'Choose an email'}
+                        emptyCommand={'Not found'}
+                        onInputChange={handleInputChange}
+                        value={selectedValue}
+                        onValueChange={(value) => {
+                          setSelectedValue(value);
+                          field.onChange(value);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

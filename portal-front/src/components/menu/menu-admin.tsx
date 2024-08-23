@@ -130,7 +130,10 @@ const AdminButton = ({
       className={cn(
         buttonVariants({
           variant: 'ghost',
-          className: `${className} h-9 w-full justify-start rounded-none border-none`,
+          className: cn(
+            'h-9 w-full justify-start rounded-none border-none',
+            className
+          ),
         }),
         currentPath === href &&
           'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'

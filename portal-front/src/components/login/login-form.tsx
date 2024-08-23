@@ -105,8 +105,11 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
         </Form>
       </div>
       <div className="mt-2">
-        <Button asChild>
+        <Button
+          variant="outline"
+          asChild>
           <Link
+            className="w-full"
             type="submit"
             href={'/auth/oidc'}>
             OpenId Connect

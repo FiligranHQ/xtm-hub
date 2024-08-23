@@ -357,8 +357,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         serviceDataOnGoingCommunity?.subscription?.forEach((subscription) => {
           editSubscription(
             statusOnGoingCommunity,
-            subscription as subscriptionItem_fragment$data,
-            serviceDataOnGoingCommunity.id
+            subscription as subscriptionItem_fragment$data
           );
         });
       },
@@ -386,8 +385,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       serviceData.subscription?.forEach((subscription) => {
         editSubscription(
           status,
-          subscription as subscriptionItem_fragment$data,
-          serviceData.id
+          subscription as subscriptionItem_fragment$data
         );
       });
     }
@@ -398,11 +396,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   );
 
   const editSubscription = useCallback(
-    (
-      status: string,
-      subscription: subscriptionItem_fragment$data,
-      service_id: string
-    ) => {
+    (status: string, subscription: subscriptionItem_fragment$data) => {
       commitSubscriptionMutation({
         variables: {
           input: { status: status },
@@ -492,6 +486,16 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
 
   return (
     <>
+      <div className="flex justify-end pb-m">
+        <GuardCapacityComponent
+          capacityRestriction={[
+            RESTRICTION.CAPABILITY_BYPASS,
+            RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
+            RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
+          ]}>
+          <CreateCommunity connectionId={connectionId}></CreateCommunity>
+        </GuardCapacityComponent>
+      </div>
       {isSubscriptionLoading ? (
         <Loader />
       ) : (
@@ -517,14 +521,6 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           ) : (
             'You do not have any service... Yet !'
           )}
-          <GuardCapacityComponent
-            capacityRestriction={[
-              RESTRICTION.CAPABILITY_BYPASS,
-              RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
-              RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
-            ]}>
-            <CreateCommunity connectionId={connectionId}></CreateCommunity>
-          </GuardCapacityComponent>
           <CommunityAcceptFormSheet
             title={'Accept a new community'}
             description={

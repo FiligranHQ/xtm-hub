@@ -101,7 +101,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
       onOpenChange={setOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
-        <SheetHeader>
+        <SheetHeader className="bg-white">
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>

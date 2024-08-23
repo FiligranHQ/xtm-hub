@@ -12,52 +12,48 @@ import { organizationFormSchema } from '@/components/organization/organization-f
 import { useToast } from 'filigran-ui/clients';
 
 interface EditOrganizationProps {
-  organization: organizationItem_fragment$data;
+  organization?: organizationItem_fragment$data;
+  onClose: () => void;
 }
 
 export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   organization,
+  onClose,
 }) => {
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
-  const [openSheet, setOpenSheet] = useState(false);
 
+  console.log(organization);
   const handleSubmit = (values: z.infer<typeof organizationFormSchema>) => {
-    commitOrganizationEditionMutation({
-      variables: {
-        id: organization.id,
-        input: {
-          ...values,
+    if (organization) {
+      commitOrganizationEditionMutation({
+        variables: {
+          id: organization.id,
+          input: {
+            ...values,
+          },
         },
-      },
 
-      onCompleted: () => {
-        setOpenSheet(false);
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: <>{error.message}</>,
-        });
-      },
-    });
+        onCompleted: () => {
+          onClose();
+        },
+        onError: (error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
+        },
+      });
+    }
   };
   return (
     <OrganizationFormSheet
-      open={openSheet}
-      setOpen={setOpenSheet}
+      open={!!organization}
+      setOpen={onClose}
       organization={organization}
-      trigger={
-        <Button
-          size="icon"
-          variant="ghost"
-          aria-label="Edit Organization"
-          className="left-4 mr-4">
-          <EditIcon className="h-4 w-4" />
-        </Button>
-      }
+      trigger={<></>}
       title={"Edit the organization's name"}
       description={
         "Edit the organization's name here. Click on Validate when you are done."

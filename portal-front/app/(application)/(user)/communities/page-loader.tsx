@@ -27,12 +27,7 @@ const PageLoader: React.FunctionComponent<PageProps> = () => {
     ServiceCommunityListQuery
   );
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
-  return (
-    <>
-      <b>Communities</b>
-      {queryRef ? <CommunityList queryRef={queryRef} /> : <Loader />}
-    </>
-  );
+  return <>{queryRef ? <CommunityList queryRef={queryRef} /> : <Loader />}</>;
 };
 // Component export
 export default PageLoader;

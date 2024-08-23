@@ -6,9 +6,13 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
-import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
-import { ColumnDef, ColumnSort, PaginationState } from '@tanstack/react-table';
+import {
+  ColumnDef,
+  ColumnSort,
+  PaginationState,
+  Row,
+} from '@tanstack/react-table';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { DataTable } from 'filigran-ui/clients';
 import {
@@ -27,6 +31,7 @@ import {
   userQuery$variables,
 } from '../../../../__generated__/userQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
+import { useRouter } from 'next/navigation';
 
 // Component interface
 interface ServiceProps {
@@ -66,25 +71,10 @@ const columns: ColumnDef<UserData>[] = [
     id: 'email',
     header: 'Email',
   },
-  {
-    id: 'actions',
-    size: 100,
-    enableHiding: false,
-    enableSorting: false,
-    enableResizing: false,
-    cell: ({ row }) => {
-      return (
-        <Button
-          asChild
-          variant="ghost">
-          <Link href={`/admin/user/${row.original.id}`}>Details</Link>
-        </Button>
-      );
-    },
-  },
 ];
 // Component
 const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
+  const router = useRouter();
   const queryData = usePreloadedQuery<userQuery>(UserListQuery, queryRef);
   const [pageSize, setPageSize] = useLocalStorage('countUserList', 50);
   const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
@@ -146,27 +136,29 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     }
   };
 
+  const onClickRow = (row: Row<UserData>) => {
+    router.push(`/admin/user/${row.original.id}`);
+  };
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
 
-      <div className="container mx-auto py-10">
-        <DataTable
-          columns={columns}
-          data={userData}
-          tableOptions={{
-            onSortingChange: onSortingChange,
-            onPaginationChange: onPaginationChange,
-            manualSorting: true,
-            manualPagination: true,
-            rowCount: data.users.totalCount,
-          }}
-          tableState={{
-            sorting: mapToSortingTableValue(orderBy, orderMode),
-            pagination,
-          }}
-        />
-      </div>
+      <DataTable
+        columns={columns}
+        data={userData}
+        tableOptions={{
+          onSortingChange: onSortingChange,
+          onPaginationChange: onPaginationChange,
+          manualSorting: true,
+          manualPagination: true,
+          rowCount: data.users.totalCount,
+        }}
+        tableState={{
+          sorting: mapToSortingTableValue(orderBy, orderMode),
+          pagination,
+        }}
+        onClickRow={onClickRow}
+      />
       <CreateUser connectionId={data?.users?.__id}></CreateUser>
     </>
   );
