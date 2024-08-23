@@ -29,6 +29,7 @@ import {
 import { serviceUser$key } from '../../../../__generated__/serviceUser.graphql';
 import { useLocalStorage } from 'usehooks-ts';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
+import CreateButton from '@/components/ui/create-button';
 
 export interface UserServiceData extends serviceUserSlugQuery$data {
   id: string;
@@ -212,6 +213,29 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
 
   return (
     <>
+      <div className="flex justify-end pb-s">
+        <ServiceSlugFormSheet
+          open={openSheet}
+          setOpen={setOpenSheet}
+          userService={currentUser}
+          connectionId={connectionId}
+          subscriptionId={subscriptionId}
+          refetch={() =>
+            refetch({
+              count: pagination.pageSize,
+              cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+              orderBy,
+              orderMode,
+            })
+          }
+          trigger={
+            <CreateButton
+              onClick={() => setCurrentUser({})}
+              label="Invite user"
+            />
+          }
+        />
+      </div>
       <DataTable
         columns={columns}
         data={usersData}
@@ -227,29 +251,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
           pagination,
         }}
       />
-
-      <ServiceSlugFormSheet
-        open={openSheet}
-        setOpen={setOpenSheet}
-        userService={currentUser}
-        connectionId={connectionId}
-        subscriptionId={subscriptionId}
-        refetch={() =>
-          refetch({
-            count: pagination.pageSize,
-            cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-            orderBy,
-            orderMode,
-          })
-        }
-        trigger={
-          <Button
-            onClick={() => setCurrentUser({})}
-            size="icon"
-            className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-            <AddIcon className="h-4 w-4" />
-          </Button>
-        }></ServiceSlugFormSheet>
     </>
   );
 };

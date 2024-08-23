@@ -9,6 +9,7 @@ import { Button } from 'filigran-ui/servers';
 import { z } from 'zod';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { useToast } from 'filigran-ui/clients';
+import CreateButton from '@/components/ui/create-button';
 
 interface CreateOrganizationProps {
   connectionId: string;
@@ -48,14 +49,7 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
     <OrganizationFormSheet
       open={openSheet}
       setOpen={setOpenSheet}
-      trigger={
-        <Button
-          size="icon"
-          aria-label="Create Organization"
-          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <AddIcon className="h-4 w-4" />
-        </Button>
-      }
+      trigger={<CreateButton label="Create organization" />}
       title={'Create a new organization'}
       description={
         'Create the organization here. Click on Validate when you are done.'

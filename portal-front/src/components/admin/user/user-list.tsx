@@ -142,7 +142,9 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-
+      <div className="flex justify-end pb-s">
+        <CreateUser connectionId={data?.users?.__id} />
+      </div>
       <DataTable
         columns={columns}
         data={userData}
@@ -159,7 +161,6 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
         }}
         onClickRow={onClickRow}
       />
-      <CreateUser connectionId={data?.users?.__id}></CreateUser>
     </>
   );
 };
