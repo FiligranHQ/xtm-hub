@@ -47,7 +47,7 @@ const addServiceTestQuery = {
   },
 };
 
-describe('User can create communities ', () => {
+describe('Admin can create communities ', () => {
   let userAdmin;
   let response;
   let result;
