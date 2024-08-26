@@ -24,7 +24,6 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
 
-  console.log(organization);
   const handleSubmit = (values: z.infer<typeof organizationFormSchema>) => {
     if (organization) {
       commitOrganizationEditionMutation({

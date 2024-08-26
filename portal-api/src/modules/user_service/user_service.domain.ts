@@ -128,7 +128,9 @@ export const loadUserServiceByUser = async (
     };
   });
   const { totalCount } = await db<UserService>(context, 'User_Service', opts)
-    .countDistinct('id as totalCount')
+    .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
+    .where('user.id', userId)
+    .countDistinct('User_Service.id as totalCount')
     .first();
   return { totalCount, ...userServiceConnection };
 };
