@@ -7,6 +7,12 @@ export const communityFormSchema = z.object({
   community_description: z.string().min(2, {
     message: 'Description must be at least 2 characters.',
   }),
+  justification: z
+    .string()
+    .min(2, {
+      message: 'Description must be at least 2 characters.',
+    })
+    .optional(),
   price: z.number().optional(),
   fee_type: z
     .string()
@@ -16,7 +22,8 @@ export const communityFormSchema = z.object({
     .optional(),
   organizations_id: z
     .array(z.string())
-    .min(1, { message: 'Choose an organization to be part of this community' }),
+    .min(1, { message: 'Choose an organization to be part of this community' })
+    .optional(),
   requested_services: z.array(z.string()).optional(),
   billing_manager: z.string().optional(),
 });

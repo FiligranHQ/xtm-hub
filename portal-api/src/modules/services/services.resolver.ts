@@ -25,6 +25,7 @@ import {
 
 import { getRolePortalBy } from '../role-portal/role-portal';
 import { insertServicePrice } from './instances/service-price/service_price.helper';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 
 const resolvers: Resolvers = {
   Query: {
@@ -160,24 +161,39 @@ const resolvers: Resolvers = {
           start_date: new Date(),
           price: input.price,
         };
-        insertServicePrice(context, dataServicePrice);
-
+        const [servicePrice] = await insertServicePrice(
+          context,
+          dataServicePrice
+        );
+        const userId = input.billing_manager
+          ? fromGlobalId(JSON.parse(input.billing_manager).id).id
+          : context.user.id;
+        const userOrganizationId = (
+          input.billing_manager
+            ? fromGlobalId(JSON.parse(input.billing_manager).organization_id).id
+            : context.user.organization_id
+        ) as OrganizationId;
         await grantCommunityAccess(
           context,
-          input.organizations_id,
+          input.organizations_id ?? [],
           role,
           addedService,
-          input.billing_manager
+          userId,
+          userOrganizationId
         );
 
-        for (const serviceLink of input.requested_services) {
+        const services = ['OCTI', 'Nextcloud'];
+        for (const serviceLink of services) {
           const dataServiceLink = {
             id: uuidv4() as ServiceLinkId,
             service_id: addedService.id as ServiceId,
             name: serviceLink,
           };
           // TODO Call AWX to add service to community
-          await addServiceLink(context, dataServiceLink);
+          const serviceLinkConsole = await addServiceLink(
+            context,
+            dataServiceLink
+          );
         }
 
         return addedService;

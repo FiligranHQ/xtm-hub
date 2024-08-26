@@ -161,9 +161,9 @@ export const grantCommunityAccess = async (
   organizationsId: string[],
   role: RolePortal,
   addedService: Service,
-  userBillingManager: string
+  userId: string,
+  userOrganizationId: OrganizationId
 ) => {
-  const billingManager = JSON.parse(userBillingManager);
   for (const organization_id of organizationsId) {
     const dataSubscription = {
       id: uuidv4() as unknown as SubscriptionId,
@@ -180,7 +180,7 @@ export const grantCommunityAccess = async (
 
     const users = await loadUsersByOrganization(
       fromGlobalId(organization_id).id,
-      fromGlobalId(billingManager.id).id
+      userId
     );
     const capabilitiesUsers = ['ACCESS_SERVICE'];
     for (const user of users) {
@@ -199,15 +199,29 @@ export const grantCommunityAccess = async (
     'ACCESS_SERVICE',
   ];
 
-  const [retrievedSubscription] = await loadUnsecureSubscriptionBy({
+  let [retrievedSubscription] = await loadUnsecureSubscriptionBy({
     service_id: addedService.id as ServiceId,
-    organization_id: fromGlobalId(billingManager.organization_id)
-      .id as OrganizationId,
+    organization_id: userOrganizationId,
   });
+  if (!retrievedSubscription) {
+    const dataSubscription = {
+      id: uuidv4() as unknown as SubscriptionId,
+      organization_id: userOrganizationId,
+      service_id: addedService.id,
+      start_date: new Date(),
+      end_date: null,
+      status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
+    };
+    const [addedSubscription] = await insertSubscription(
+      context,
+      dataSubscription
+    );
+    retrievedSubscription = addedSubscription;
+  }
   await grantServiceAccess(
     context,
     capabilitiesAdmin,
-    fromGlobalId(billingManager.id).id,
+    userId,
     retrievedSubscription.id
   );
 };
