@@ -147,27 +147,26 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       cell: ({ row }) => {
         return (
           <>
-            {/*<GuardCapacityComponent*/}
-            {/*  capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>*/}
-            {/*  <AlertDialogComponent*/}
-            {/*    AlertTitle={'Subscribe service'}*/}
-            {/*    actionButtonText={'Continue'}*/}
-            {/*    triggerElement={*/}
-            {/*      <Button*/}
-            {/*        aria-label="Subscribe service"*/}
-            {/*        className="w-3/4">*/}
-            {/*        <ConstructionIcon className="mr-2 h-5 w-5" />*/}
-            {/*        Subscribe*/}
-            {/*      </Button>*/}
-            {/*    }*/}
-            {/*    onClickContinue={useCallback(*/}
-            {/*      () => addSubscriptionInDb(row.original),*/}
-            {/*      []*/}
-            {/*    )}>*/}
-            {/*    {generateAlertText(row.original)}*/}
-            {/*  </AlertDialogComponent>*/}
-            {/*</GuardCapacityComponent>*/}
-
+            <GuardCapacityComponent
+              capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
+              <AlertDialogComponent
+                AlertTitle={'Subscribe service'}
+                actionButtonText={'Continue'}
+                triggerElement={
+                  <Button
+                    aria-label="Subscribe service"
+                    className="w-3/4">
+                    <ConstructionIcon className="mr-2 h-5 w-5" />
+                    Subscribe
+                  </Button>
+                }
+                onClickContinue={useCallback(
+                  () => addSubscriptionInDb(row.original),
+                  []
+                )}>
+                {generateAlertText(row.original)}
+              </AlertDialogComponent>
+            </GuardCapacityComponent>
             <GuardCapacityComponent
               capacityRestriction={['BCK_MANAGE_SERVICES']}>
               <Button
@@ -190,10 +189,15 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       id: 'service_state',
       header: 'State',
       cell: ({ row }) => {
-        return row.original.status === 'ACCEPTED' ? (
-          <Badge variant={'secondary'}>Subscribed</Badge>
-        ) : (
-          <Badge variant={'destructive'}>Not subscribed</Badge>
+        return (
+          <Badge
+            variant={
+              row.original.creation_status === 'READY'
+                ? 'secondary'
+                : 'destructive'
+            }>
+            {row.original.creation_status}
+          </Badge>
         );
       },
     },
