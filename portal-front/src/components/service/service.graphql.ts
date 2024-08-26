@@ -28,7 +28,6 @@ export const serviceListFragment = graphql`
     description
     provider
     type
-    joining
     subscription_service_type
     creation_status
   }

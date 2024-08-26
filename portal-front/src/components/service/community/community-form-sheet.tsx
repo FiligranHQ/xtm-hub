@@ -110,8 +110,6 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
     });
   };
 
-  const joiningTypes = ['AUTO_JOIN', 'SELF_JOIN', 'ASK_TO_JOIN'];
-
   return (
     <Sheet
       key={'right'}
@@ -157,35 +155,6 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="joining"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Joining type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a joining type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {joiningTypes.map((type) => (
-                        <SelectItem
-                          key={type}
-                          value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

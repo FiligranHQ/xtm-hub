@@ -74,7 +74,6 @@ const resolvers: Resolvers = {
             service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
               ? 'ACCEPTED'
               : 'REQUESTED',
-          subscriber_id: context.user.id,
         };
 
         const [addedSubscription] = await db<Subscription>(

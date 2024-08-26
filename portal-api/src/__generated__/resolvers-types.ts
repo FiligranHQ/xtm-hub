@@ -35,7 +35,6 @@ export type AddServiceCommunityInput = {
   community_description?: InputMaybe<Scalars['String']['input']>;
   community_name?: InputMaybe<Scalars['String']['input']>;
   fee_type?: InputMaybe<Scalars['String']['input']>;
-  joining?: InputMaybe<Scalars['String']['input']>;
   organizations_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   price?: InputMaybe<Scalars['Int']['input']>;
   requested_services?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -485,7 +484,6 @@ export type Service = Node & {
   creation_status?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  joining?: Maybe<Scalars['String']['output']>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   name: Scalars['String']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
@@ -1075,7 +1073,6 @@ export type ServiceResolvers<ContextType = PortalContext, ParentType extends Res
   creation_status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  joining?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organization']>>>, ParentType, ContextType>;

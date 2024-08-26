@@ -150,7 +150,6 @@ const resolvers: Resolvers = {
           type: 'COMMUNITY',
           creation_status: role.name === 'ADMIN' ? 'READY' : 'PENDING',
           subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
-          joining: input.joining ?? 'AUTO_JOIN',
         };
         const [addedService] = await insertService(context, dataService);
 
