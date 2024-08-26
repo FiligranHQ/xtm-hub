@@ -48,7 +48,7 @@ type Query {
 }
 
 input EditSubscriptionInput {
-    status: String
+  status: String
 }
 
 type Mutation {

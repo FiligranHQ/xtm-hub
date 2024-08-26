@@ -172,10 +172,6 @@ export const grantCommunityAccess = async (
       start_date: new Date(),
       end_date: null,
       status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
-      subscriber_id:
-        role.name === 'ADMIN'
-          ? fromGlobalId(billingManager.id).id
-          : context.user.id,
     };
     const [addedSubscription] = await insertSubscription(
       context,

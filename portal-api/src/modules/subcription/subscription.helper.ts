@@ -1,6 +1,6 @@
 import { dbUnsecure } from '../../../knexfile';
 import Subscription, {
-    SubscriptionMutator,
+  SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 export const deleteSubscriptionUnsecure = async (subscriptionId: string) => {
   return dbUnsecure<Subscription>('Subscription')
@@ -10,7 +10,7 @@ export const deleteSubscriptionUnsecure = async (subscriptionId: string) => {
 };
 
 export const loadUnsecureSubscriptionBy = async (
-    field: SubscriptionMutator
+  field: SubscriptionMutator
 ) => {
-    return dbUnsecure<Subscription>('Subscription').where(field);
+  return dbUnsecure<Subscription>('Subscription').where(field);
 };

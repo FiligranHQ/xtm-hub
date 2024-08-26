@@ -53,7 +53,6 @@ export async function seed(knex) {
       start_date: '2024-08-08',
       end_date: null,
       status: 'ACCEPTED',
-      subscriber_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
     },
   ]);
   await knex('User_Service').insert([

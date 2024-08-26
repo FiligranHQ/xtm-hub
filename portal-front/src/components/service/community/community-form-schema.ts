@@ -19,7 +19,6 @@ export const communityFormSchema = z.object({
     .min(1, { message: 'Choose an organization to be part of this community' }),
   requested_services: z.array(z.string()).optional(),
   billing_manager: z.string().optional(),
-  joining: z.string().min(2, { message: 'Joining type must be chosen' }),
 });
 
 export const communityAcceptFormSchema = z.object({
