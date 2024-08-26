@@ -242,48 +242,28 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="organizations_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Organizations</FormLabel>
+                    <FormControl>
+                      <MultiSelectFormField
+                        options={organizationsData}
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Select organizations"
+                        variant="inverted"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </GuardCapacityComponent>
-            <FormField
-              control={form.control}
-              name="organizations_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organizations</FormLabel>
-                  <FormControl>
-                    <MultiSelectFormField
-                      options={organizationsData}
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                      placeholder="Select organizations"
-                      variant="inverted"
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="requested_services"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Services wanted</FormLabel>
-                  <FormControl>
-                    <MultiSelectFormField
-                      options={servicesData}
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                      placeholder="Select services"
-                      variant="inverted"
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <SheetFooter className="pt-2">
               <SheetClose asChild>
