@@ -40,7 +40,7 @@ export const loadCommunities = async (context: PortalContext, opts) => {
     .select(
       'Service.*',
       dbRaw(
-        "(json_agg(json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, '__typename', 'Subscription')))::json as subscription"
+        "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
       )
     )
     .groupBy(['Service.id', 'subscription.id'])
