@@ -61,7 +61,6 @@ describe('User can create communities ', () => {
     result = JSON.parse(response.text);
   });
   it('Should return 200', () => {
-    console.log('result', result);
     expect(response.status).toBe(200);
   });
   it('Should insert service with type community', async () => {

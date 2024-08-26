@@ -135,7 +135,8 @@ const resolvers: Resolvers = {
               typeof subscription.node.service.subscription_service_type ===
                 'string' &&
               subscription.node.service.subscription_service_type ===
-                'SUBSCRIPTABLE_DIRECT'
+                'SUBSCRIPTABLE_DIRECT' &&
+              subscription.node.joining === 'AUTO_JOIN'
             );
           }
         );

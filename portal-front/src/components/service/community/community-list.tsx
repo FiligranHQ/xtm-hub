@@ -242,7 +242,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         cell: ({ row }) => {
           return (
             <>
-              {!row.original?.subscription ||
+              {row.original?.subscription &&
               row.original?.subscription[0]?.status === 'REQUESTED' ? (
                 <GuardCapacityComponent
                   displayError={false}
