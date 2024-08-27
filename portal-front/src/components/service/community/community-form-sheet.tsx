@@ -4,7 +4,6 @@ import { z, ZodSchema } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
-  Combobox,
   Form,
   FormControl,
   FormField,
@@ -163,33 +162,6 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
             <GuardCapacityComponent
               displayError={false}
               capacityRestriction={['BYPASS']}>
-              <FormField
-                control={form.control}
-                name="billing_manager"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="block">
-                      Community billing manager
-                    </FormLabel>
-                    <FormControl>
-                      <Combobox
-                        dataTab={usersData}
-                        order={'Choose an email'}
-                        placeholder={'Choose an email'}
-                        emptyCommand={'Not found'}
-                        onInputChange={handleInputChange}
-                        value={selectedValue}
-                        onValueChange={(value) => {
-                          setSelectedValue(value);
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="fee_type"

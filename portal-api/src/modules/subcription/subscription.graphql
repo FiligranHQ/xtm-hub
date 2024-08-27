@@ -57,8 +57,10 @@ type Mutation {
         service_id: String
         organization_id: ID
         user_id: ID
+        billing: Int
     ): Subscription
     @auth(requires: [FRT_SERVICE_SUBSCRIBER, BCK_MANAGE_COMMUNITIES])
     editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
+
 }

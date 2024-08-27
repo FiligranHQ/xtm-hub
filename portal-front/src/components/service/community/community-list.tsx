@@ -31,15 +31,8 @@ import { subscriptionCreateMutation } from '../../../../__generated__/subscripti
 import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 import GuardCapacityComponent from '@/components/admin-guard';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
-import {
-  CheckIcon,
-  ConstructionIcon,
-  CourseOfActionIcon,
-  IndicatorIcon,
-  LittleArrowIcon,
-} from 'filigran-icon';
+import { CheckIcon, CourseOfActionIcon, LittleArrowIcon } from 'filigran-icon';
 import {
   OrderingMode,
   ServiceOrdering,
@@ -64,26 +57,6 @@ interface CommunityProps {
   connectionId?: string;
   shouldDisplayOnlyOwnedService?: boolean;
 }
-
-interface SubscriptableMessagesProps {
-  successMessage: string;
-  alertMessage: string;
-}
-
-const SUBSCRIPTABLE_MESSAGES: Record<string, SubscriptableMessagesProps> = {
-  SUBSCRIPTABLE_DIRECT: {
-    successMessage:
-      'You have successfully subscribed to the service. You can now find it in your subscribed services.',
-    alertMessage:
-      'Are you really sure you want to subscribe this service ? This action can not be undone.',
-  },
-  SUBSCRIPTABLE_BACKOFFICE: {
-    successMessage:
-      'Your request has been sent. You will soon be in touch with our team.',
-    alertMessage:
-      'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?',
-  },
-};
 
 //TODO : Remove me.context and avoid when possible optional value in GraphqlTyping ex: ServiceType
 const CommunityList: React.FunctionComponent<CommunityProps> = ({
@@ -119,57 +92,9 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     return;
   }
 
-  const handleSuccess = (message: string) => {
-    setIsSubscriptionLoading(false);
-    toast({
-      title: 'Success',
-      description: <>{message}</>,
-    });
-  };
-  const handleError = (error: Error) => {
-    setIsSubscriptionLoading(false);
-    toast({
-      variant: 'destructive',
-      title: 'Error',
-      description: <>{error.message}</>,
-    });
-  };
-
-  const commitMutation = (service_id: string, serviceType: string) => {
-    commitSubscriptionCreateMutation({
-      variables: {
-        connections: [connectionId],
-        service_id,
-        organization_id: me.organization.id,
-        user_id: me.id,
-      },
-      onCompleted: () =>
-        handleSuccess(SUBSCRIPTABLE_MESSAGES[serviceType]!.successMessage),
-      onError: (error: Error) => handleError(error),
-    });
-  };
-  const addSubscriptionInDb = (service: serviceCommunityList_fragment$data) => {
-    setIsSubscriptionLoading(true);
-    commitMutation(
-      service.id,
-      service.subscription_service_type ?? 'SUBSCRIPTABLE_BACKOFFICE'
-    );
-  };
-
-  const generateAlertText = (service: serviceCommunityList_fragment$data) => {
-    const serviceType =
-      service.subscription_service_type ?? 'SUBSCRIPTABLE_BACKOFFICE';
-    return SUBSCRIPTABLE_MESSAGES[serviceType]!.alertMessage;
-  };
-
   const [subscriptionsOrganization, refetchSubOrga] =
     getSubscriptionsByOrganization();
   connectionId = subscriptionsOrganization.subscriptionsByOrganization.__id;
-  const subscribedServiceName =
-    subscriptionsOrganization.subscriptionsByOrganization.edges.map(
-      (subscription) => subscription.node.service?.name
-    );
-
   const ownedServices =
     subscriptionsOrganization.subscriptionsByOrganization.edges.map(
       (subscription) => subscription.node.service
@@ -186,38 +111,6 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         cell: ({ row }) => {
           return (
             <>
-              {subscribedServiceName.includes(row.original.name) ? (
-                <Button
-                  asChild
-                  className="w-3/4">
-                  <Link
-                    href={` `}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow">
-                    {' '}
-                    <IndicatorIcon className="mr-2 h-5 w-5" />
-                    View more
-                  </Link>
-                </Button>
-              ) : (
-                <GuardCapacityComponent
-                  capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
-                  <AlertDialogComponent
-                    AlertTitle={'Subscribe service'}
-                    actionButtonText={'Continue'}
-                    triggerElement={
-                      <Button
-                        aria-label="Subscribe service"
-                        className="w-3/4">
-                        <ConstructionIcon className="mr-2 h-5 w-5" />
-                        Subscribe
-                      </Button>
-                    }
-                    onClickContinue={() => addSubscriptionInDb(row.original)}>
-                    {generateAlertText(row.original)}
-                  </AlertDialogComponent>
-                </GuardCapacityComponent>
-              )}
               <GuardCapacityComponent
                 capacityRestriction={['BCK_MANAGE_SERVICES']}>
                 <Button
@@ -344,6 +237,25 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         description: 'Error while retrieving current community...',
       });
       return;
+    }
+    for (let orga_id of values.organizations_id) {
+      commitSubscriptionCreateMutation({
+        variables: {
+          connections: [connectionId],
+          service_id: serviceDataOnGoingCommunity.id,
+          organization_id: orga_id,
+          user_id: me.id,
+          billing: 0,
+        },
+        onCompleted: () => {},
+        onError: (error: Error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
+        },
+      });
     }
     commitServicePriceMutation({
       variables: {
