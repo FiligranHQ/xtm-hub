@@ -15,7 +15,7 @@ const serviceName = 'name_community_test';
 const serviceDescription = 'short description test';
 const servicePrice = 10;
 const serviceFeeType = 'YEARLY';
-const serviceLinks = ['Service1', 'Service2'];
+const serviceLinks = ['OCTI', 'Nextcloud'];
 const organizationList = [
   toGlobalId('Organization', 'ba091095-418f-4b4f-b150-6c9295e232c4'),
   toGlobalId('Organization', '681fb117-e2c3-46d3-945a-0e921b5d4b6c'),
@@ -41,7 +41,6 @@ const addServiceTestQuery = {
       price: servicePrice,
       fee_type: serviceFeeType,
       organizations_id: organizationList,
-      requested_services: serviceLinks,
       billing_manager: `{"id": "${toGlobalId('User', 'ba091095-418f-4b4f-b150-6c9295e232c3')}", "organization_id": "${toGlobalId('Organization', 'ba091095-418f-4b4f-b150-6c9295e232c4')}" }`,
     },
   },
@@ -59,6 +58,7 @@ describe('Admin can create communities ', () => {
     userAdmin = await getAdminAgent();
     response = await userAdmin.post('/graphql-api').send(addServiceTestQuery);
     result = JSON.parse(response.text);
+    console.log('result', result);
   });
   it('Should return 200', () => {
     expect(response.status).toBe(200);

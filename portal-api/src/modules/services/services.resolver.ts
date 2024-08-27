@@ -161,10 +161,7 @@ const resolvers: Resolvers = {
           start_date: new Date(),
           price: input.price,
         };
-        const [servicePrice] = await insertServicePrice(
-          context,
-          dataServicePrice
-        );
+        await insertServicePrice(context, dataServicePrice);
         const userId = input.billing_manager
           ? fromGlobalId(JSON.parse(input.billing_manager).id).id
           : context.user.id;

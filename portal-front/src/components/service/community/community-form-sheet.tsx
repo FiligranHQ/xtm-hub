@@ -4,6 +4,7 @@ import { z, ZodSchema } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
+  Combobox,
   Form,
   FormControl,
   FormField,
@@ -27,18 +28,18 @@ import {
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { communityFormSchema } from '@/components/service/community/community-form-schema';
+import GuardCapacityComponent from '@/components/admin-guard';
+import { userQuery } from '../../../../__generated__/userQuery.graphql';
 import {
   PreloadedQuery,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { userQuery } from '../../../../__generated__/userQuery.graphql';
 import {
   UserListQuery,
   usersFragment,
 } from '@/components/admin/user/user.graphql';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
-import GuardCapacityComponent from '@/components/admin-guard';
 
 interface CommunityFormSheetProps {
   queryRef: PreloadedQuery<userQuery>;
@@ -62,16 +63,6 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
   validationSchema,
 }) => {
   const [selectedValue, setSelectedValue] = React.useState('');
-
-  const availableServicesList = ['OpenFeed', 'NextCloud', 'OpenCTI'];
-
-  const servicesData = availableServicesList?.map((service) => {
-    return {
-      label: service,
-      value: service,
-    };
-  });
-
   const [organizations] = getOrganizations();
   const organizationsData =
     organizations.organizations.edges.map(({ node }) => ({
@@ -208,6 +199,33 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
                         onChange={(e) =>
                           field.onChange(parseFloat(e.target.value))
                         }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="billing_manager"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="block">
+                      Community billing manager
+                    </FormLabel>
+                    <FormControl>
+                      <Combobox
+                        dataTab={usersData}
+                        order={'Choose an email'}
+                        placeholder={'Choose an email'}
+                        emptyCommand={'Not found'}
+                        onInputChange={handleInputChange}
+                        value={selectedValue}
+                        onValueChange={(value) => {
+                          setSelectedValue(value);
+                          field.onChange(value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
