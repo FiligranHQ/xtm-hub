@@ -35,11 +35,7 @@ import User from '../../model/kanel/public/User';
 const resolvers: Resolvers = {
   Query: {
     services: async (_, opt, context) => {
-      const shouldReturnPrivateServices = context.user.capabilities.some(
-        (capability) => !capability.name.includes('BYPASS')
-      );
-
-      return loadPublicServices(context, opt, shouldReturnPrivateServices);
+      return loadPublicServices(context, opt);
     },
     communities: async (_, opt, context) => {
       return loadCommunities(context, opt);
