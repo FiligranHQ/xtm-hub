@@ -150,7 +150,7 @@ const resolvers: Resolvers = {
           provider: 'SCRED_ONDEMAND',
           type: 'COMMUNITY',
           creation_status: role.name === 'ADMIN' ? 'READY' : 'PENDING',
-          subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
+          subscription_service_type: 'SUBSCRIPTABLE_DIRECT',
         };
         const [addedService] = await insertService(context, dataService);
 
@@ -176,7 +176,8 @@ const resolvers: Resolvers = {
           role,
           addedService,
           userId,
-          userOrganizationId
+          userOrganizationId,
+          input.justification
         );
 
         const services = ['OCTI', 'Nextcloud'];
@@ -187,10 +188,7 @@ const resolvers: Resolvers = {
             name: serviceLink,
           };
           // TODO Call AWX to add service to community
-          const serviceLinkConsole = await addServiceLink(
-            context,
-            dataServiceLink
-          );
+          await addServiceLink(context, dataServiceLink);
         }
 
         return addedService;

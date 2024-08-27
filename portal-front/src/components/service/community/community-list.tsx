@@ -72,6 +72,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     pageSize,
   });
   const [openSheet, setOpenSheet] = useState(false);
+  const [justification, setJustification] = useState('');
   const [statusOnGoingCommunity, setStatusOnGoingCommunity] = useState('');
   const [serviceDataOnGoingCommunity, setServiceDataOnGoingCommunity] =
     useState<serviceCommunityList_fragment$data>();
@@ -289,6 +290,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     status: string,
     serviceData: serviceCommunityList_fragment$data
   ) => {
+    setJustification(serviceData.subscription[0].justification);
     if (status === 'ACCEPTED') {
       setOpenSheet(true);
       setStatusOnGoingCommunity(status);
@@ -433,11 +435,21 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           ) : (
             'You do not have any service... Yet !'
           )}
+          <GuardCapacityComponent
+            displayError={false}
+            capacityRestriction={[
+              RESTRICTION.CAPABILITY_BYPASS,
+              RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
+              RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
+            ]}>
+            <CreateCommunity connectionId={connectionId}></CreateCommunity>
+          </GuardCapacityComponent>
           <CommunityAcceptFormSheet
             title={'Accept a new community'}
             description={
               'Insert the billing here. Click Validate when you are done. The subscriptions will be accepted.'
             }
+            justification={justification}
             handleSubmit={handleAcceptCommunity}
             open={openSheet}
             setOpen={setOpenSheet}

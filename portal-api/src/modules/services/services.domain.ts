@@ -42,7 +42,7 @@ export const loadCommunities = async (context: PortalContext, opts) => {
     .select(
       'Service.*',
       dbRaw(
-        "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
+        "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, 'justification', \"subscription\".justification, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
       )
     )
     .groupBy(['Service.id', 'subscription.id'])
@@ -164,7 +164,8 @@ export const grantCommunityAccess = async (
   role: RolePortal,
   addedService: Service,
   userId: string,
-  userOrganizationId: OrganizationId
+  userOrganizationId: OrganizationId,
+  justification: string
 ) => {
   for (const organization_id of organizationsId) {
     const dataSubscription = {
@@ -174,6 +175,7 @@ export const grantCommunityAccess = async (
       start_date: new Date(),
       end_date: null,
       billing: 0,
+      justification: justification,
       status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
     };
     const [addedSubscription] = await insertSubscription(
@@ -214,6 +216,7 @@ export const grantCommunityAccess = async (
       start_date: new Date(),
       end_date: null,
       billing: 100,
+      justification: justification,
       status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
     };
     const [addedSubscription] = await insertSubscription(

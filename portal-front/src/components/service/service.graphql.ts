@@ -123,6 +123,7 @@ export const communitiesListFragment = graphql`
             }
             start_date
             end_date
+            justification
           }
         }
       }

@@ -103,6 +103,7 @@ type Subscription implements Node {
   end_date: Date
   status: String
   joining: String
+  justification: String
   ActionTracking: TrackingSubscription
   User: UserSubscription
 }
@@ -204,7 +205,7 @@ input AddServiceInput {
 input AddServiceCommunityInput {
   community_name: String
   community_description: String
-  community_justification: String
+  justification: String
   price: Int
   fee_type: String
   organizations_id: [String]

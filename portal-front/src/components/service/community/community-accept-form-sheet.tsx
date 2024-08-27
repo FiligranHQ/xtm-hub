@@ -32,13 +32,22 @@ interface CommunityAcceptFormSheetProps {
   setOpen: (open: boolean) => void;
   title: string;
   description: string;
+  justification: string;
   handleSubmit: (values: z.infer<typeof communityFormSchema>) => void;
   validationSchema: ZodSchema;
 }
 
 export const CommunityAcceptFormSheet: FunctionComponent<
   CommunityAcceptFormSheetProps
-> = ({ open, setOpen, title, description, handleSubmit, validationSchema }) => {
+> = ({
+  open,
+  setOpen,
+  title,
+  description,
+  justification,
+  handleSubmit,
+  validationSchema,
+}) => {
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
     defaultValues: {},
@@ -67,6 +76,7 @@ export const CommunityAcceptFormSheet: FunctionComponent<
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
+        {justification}
 
         <Form {...form}>
           <form
