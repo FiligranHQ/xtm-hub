@@ -23,8 +23,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
+import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import { communityFormSchema } from '@/components/service/community/community-form-schema';
+import { getOrganizations } from '@/components/organization/organization.service';
 
 interface CommunityAcceptFormSheetProps {
   open: boolean;
@@ -42,6 +43,13 @@ export const CommunityAcceptFormSheet: FunctionComponent<
     resolver: zodResolver(validationSchema),
     defaultValues: {},
   });
+
+  const [organizations] = getOrganizations();
+  const organizationsData =
+    organizations.organizations.edges.map(({ node }) => ({
+      label: node.name,
+      value: node.id,
+    })) ?? [];
 
   const onSubmit = (values: z.infer<typeof validationSchema>) => {
     handleSubmit({
@@ -112,6 +120,27 @@ export const CommunityAcceptFormSheet: FunctionComponent<
                       }
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="organizations_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Organizations</FormLabel>
+                  <FormControl>
+                    <MultiSelectFormField
+                      options={organizationsData}
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Select organizations"
+                      variant="inverted"
+                    />
+                  </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}

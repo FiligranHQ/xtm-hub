@@ -29,11 +29,11 @@ export const communityFormSchema = z.object({
 });
 
 export const communityAcceptFormSchema = z.object({
-  price: z.number().optional(),
-  fee_type: z
-    .string()
-    .min(2, {
-      message: 'FeeType must be at least 2 characters.',
-    })
-    .optional(),
+  price: z.number(),
+  fee_type: z.string().min(2, {
+    message: 'FeeType must be at least 2 characters.',
+  }),
+  organizations_id: z
+    .array(z.string())
+    .min(1, { message: 'Choose an organization to be part of this community' }),
 });

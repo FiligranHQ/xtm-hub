@@ -37,7 +37,7 @@ const addSubscriptionTestQuery = (serviceId) => ({
   },
 });
 
-describe.skip('UserAdmin can subscribe to a service', async () => {
+describe('UserAdmin can subscribe to a service', async () => {
   const userAdmin = await getAdminAgent();
 
   it.each`

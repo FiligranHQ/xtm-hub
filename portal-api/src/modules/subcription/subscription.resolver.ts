@@ -43,7 +43,7 @@ const resolvers: Resolvers = {
   Mutation: {
     addSubscription: async (
       _,
-      { service_id, organization_id, user_id },
+      { service_id, organization_id, user_id, billing },
       context
     ) => {
       const trx = await dbTx();
@@ -70,6 +70,7 @@ const resolvers: Resolvers = {
           organization_id: fromGlobalId(organization_id).id,
           start_date: new Date(),
           end_date: undefined,
+          billing: billing ?? 100,
           status:
             service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
               ? 'ACCEPTED'
@@ -125,6 +126,7 @@ const resolvers: Resolvers = {
     },
     editSubscription: async (_, { id, input }, context) => {
       const trx = await dbTx();
+
       try {
         // Retrieve subscription
         const [retrievedSubscription] = await loadSubscriptionBy('id', id);

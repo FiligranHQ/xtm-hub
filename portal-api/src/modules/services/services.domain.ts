@@ -9,7 +9,9 @@ import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
 import { ServiceId, ServiceMutator } from '../../model/kanel/public/Service';
 import { RolePortal } from '../../model/user';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import Subscription, {
+  SubscriptionId,
+} from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
 import { loadUsersByOrganization } from '../users/users.domain';
 import { UserServiceId } from '../../model/kanel/public/UserService';
@@ -171,6 +173,7 @@ export const grantCommunityAccess = async (
       service_id: addedService.id,
       start_date: new Date(),
       end_date: null,
+      billing: 0,
       status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
     };
     const [addedSubscription] = await insertSubscription(
@@ -210,6 +213,7 @@ export const grantCommunityAccess = async (
       service_id: addedService.id,
       start_date: new Date(),
       end_date: null,
+      billing: 100,
       status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
     };
     const [addedSubscription] = await insertSubscription(
@@ -217,6 +221,12 @@ export const grantCommunityAccess = async (
       dataSubscription
     );
     retrievedSubscription = addedSubscription;
+  } else {
+    // Edit subscription to sett 100% billing
+    await db<Subscription>(context, 'Subscription')
+      .where({ id: retrievedSubscription.id })
+      .update({ billing: 100 })
+      .returning('*');
   }
   await grantServiceAccess(
     context,
