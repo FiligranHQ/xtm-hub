@@ -54,6 +54,7 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
     orderBy: 'email',
     orderMode: 'asc',
   });
+
   return queryRef ? (
     <CommunityFormSheet
       queryRef={queryRef}
