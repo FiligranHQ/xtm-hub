@@ -8,7 +8,7 @@ import Loader from '@/components/loader';
 import { useLocalStorage } from 'usehooks-ts';
 import { userServiceOwnedQuery } from '../../__generated__/userServiceOwnedQuery.graphql';
 import { UserServiceOwnedQuery } from '@/components/service/user_service.graphql';
-import OwnedServices from '@/components/service/owned-services';
+import OwnedServices from '@/components/service/home/owned-services';
 
 export const dynamic = 'force-dynamic';
 

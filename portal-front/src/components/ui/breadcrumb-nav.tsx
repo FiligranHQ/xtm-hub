@@ -25,24 +25,29 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
   return (
     <Breadcrumb className="pb-2">
       <BreadcrumbList>
-        {value.map(({ href, label }) => {
-          return href ? (
+        {value.map(({ href, label }, index) => {
+          const lastIndex = value.length - 1 === index;
+          return (
             <>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link
-                    className="hover:underline"
-                    href={href}>
-                    {label}
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
+              {href ? (
+                <>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Link
+                        className="hover:underline"
+                        href={href}>
+                        {label}
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </>
+              ) : (
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{label}</BreadcrumbPage>
+                </BreadcrumbItem>
+              )}
+              {!lastIndex && <BreadcrumbSeparator />}
             </>
-          ) : (
-            <BreadcrumbItem>
-              <BreadcrumbPage>{label}</BreadcrumbPage>
-            </BreadcrumbItem>
           );
         })}
       </BreadcrumbList>

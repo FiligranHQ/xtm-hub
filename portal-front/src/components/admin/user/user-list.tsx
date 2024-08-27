@@ -47,8 +47,7 @@ export interface UserData {
 
 const breadcrumbValue = [
   {
-    href: '/',
-    label: 'Home',
+    label: 'Backoffice',
   },
   {
     label: 'Users',

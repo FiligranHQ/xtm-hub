@@ -432,7 +432,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
               />
             </React.Suspense>
           ) : (
-            'You do not have any service... Yet !'
+            'There is any community... Yet !'
           )}
 
           <CommunityAcceptFormSheet
