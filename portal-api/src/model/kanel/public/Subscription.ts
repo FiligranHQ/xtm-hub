@@ -24,6 +24,8 @@ export default interface Subscription {
   joining: string | null;
 
   billing: number | null;
+
+  justification: string | null;
 }
 
 /** Represents the initializer for the table public.Subscription */
@@ -46,6 +48,8 @@ export interface SubscriptionInitializer {
 
   /** Default value: 100 */
   billing?: number | null;
+
+  justification?: string | null;
 }
 
 /** Represents the mutator for the table public.Subscription */
@@ -65,4 +69,6 @@ export interface SubscriptionMutator {
   joining?: string | null;
 
   billing?: number | null;
+
+  justification?: string | null;
 }

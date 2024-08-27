@@ -25,7 +25,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from 'filigran-ui/clients';
-import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
+import {
+  Button,
+  Input,
+  MultiSelectFormField,
+  Textarea,
+} from 'filigran-ui/servers';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { communityFormSchema } from '@/components/service/community/community-form-schema';
 import GuardCapacityComponent from '@/components/admin-guard';
@@ -142,6 +147,23 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
                   <FormControl>
                     <Input
                       placeholder="Short description here"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="justification"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Explain</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Explain here why do you want a community and etc."
                       {...field}
                     />
                   </FormControl>

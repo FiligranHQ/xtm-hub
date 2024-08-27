@@ -19,9 +19,15 @@
     "issuer": "http://localhost:8080/realms/keycloak-express",
     "client_id": "keycloak-express",
     "client_secret": "long_secret-here",
-    "redirect_uris": ["http://localhost:3001/auth/oidc/callback"],
-    "logout_callback_url": ["http://localhost:3001/oidc/callback"],
-    "response_types": ["code"]
+    "redirect_uris": [
+      "http://localhost:3001/auth/oidc/callback"
+    ],
+    "logout_callback_url": [
+      "http://localhost:3001/oidc/callback"
+    ],
+    "response_types": [
+      "code"
+    ]
   },
   "smtp_options": {
     "host": "changeMe",
@@ -86,7 +92,7 @@
         "provider": "Glimps",
         "type": "analysis",
         "description": "This is a short description to describe the Malware analysis app, how to use it, etc.",
-        "subscription_service_type": "SUBSCRIPTABLE_BACKOFFICE"
+        "subscription_service_type": "SUBSCRIPTABLE_DIRECT"
       },
       "link": {
         "id": "b3c1664d-2337-46f5-a3ce-c3b72460e71a",
@@ -107,7 +113,11 @@
     "token_reference": "access_token",
     "read_userinfo": false,
     "roles_path": "resource_access.scred-portal-dev.roles",
-    "role_mappings": ["admin:ADMIN", "user:USER", "admin_orga:ADMIN_ORGA"]
+    "role_mappings": [
+      "admin:ADMIN",
+      "user:USER",
+      "admin_orga:ADMIN_ORGA"
+    ]
   },
   "awx": {
     "activate": false,

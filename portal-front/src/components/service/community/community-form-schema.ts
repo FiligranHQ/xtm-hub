@@ -7,12 +7,7 @@ export const communityFormSchema = z.object({
   community_description: z.string().min(2, {
     message: 'Description must be at least 2 characters.',
   }),
-  justification: z
-    .string()
-    .min(2, {
-      message: 'Description must be at least 2 characters.',
-    })
-    .optional(),
+  justification: z.string().optional(),
   price: z.number().optional(),
   fee_type: z
     .string()
