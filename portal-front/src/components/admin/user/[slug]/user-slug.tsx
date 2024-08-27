@@ -83,8 +83,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   } else {
     const breadcrumbValue = [
       {
-        href: '/',
-        label: 'Home',
+        label: 'Backoffice',
       },
       {
         href: '/admin/user',

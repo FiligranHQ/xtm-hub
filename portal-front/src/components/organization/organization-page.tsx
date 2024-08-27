@@ -5,13 +5,8 @@ import { useState } from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
-import { DataTable, toast } from 'filigran-ui/clients';
-import {
-  ColumnDef,
-  ColumnSort,
-  PaginationState,
-  Row,
-} from '@tanstack/react-table';
+import { DataTable } from 'filigran-ui/clients';
+import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { CreateOrganization } from '@/components/organization/create-organization';
 import { EditOrganization } from '@/components/organization/edit-organization';
 import { DeleteOrganization } from '@/components/organization/delete-organization';
@@ -28,8 +23,7 @@ import { useLocalStorage } from 'usehooks-ts';
 
 const breadcrumbValue = [
   {
-    href: '/',
-    label: 'Home',
+    label: 'Backoffice',
   },
   {
     label: 'Organizations',

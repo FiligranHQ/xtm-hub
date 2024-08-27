@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 import { CourseOfActionIcon } from 'filigran-icon';
 import GuardCapacityComponent from '@/components/admin-guard';
-import { OrderingMode } from '../../../__generated__/ServiceUserPaginationQuery.graphql';
+import { OrderingMode } from '../../../../__generated__/ServiceUserPaginationQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
 import {
   PreloadedQuery,
@@ -23,11 +23,13 @@ import {
   userServiceOwnedFragment,
   UserServiceOwnedQuery,
 } from '@/components/service/user_service.graphql';
-import { userServiceOwnedQuery } from '../../../__generated__/userServiceOwnedQuery.graphql';
-import { userServiceOwnedUser$key } from '../../../__generated__/userServiceOwnedUser.graphql';
-import { UserServiceOrdering } from '../../../__generated__/serviceUserSlugQuery.graphql';
-import { ServiceUserOwnedPaginationQuery$variables } from '../../../__generated__/ServiceUserOwnedPaginationQuery.graphql';
-import { userServicesOwned_fragment$data } from '../../../__generated__/userServicesOwned_fragment.graphql';
+import { userServiceOwnedQuery } from '../../../../__generated__/userServiceOwnedQuery.graphql';
+import { userServiceOwnedUser$key } from '../../../../__generated__/userServiceOwnedUser.graphql';
+import { UserServiceOrdering } from '../../../../__generated__/serviceUserSlugQuery.graphql';
+import { ServiceUserOwnedPaginationQuery$variables } from '../../../../__generated__/ServiceUserOwnedPaginationQuery.graphql';
+import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
+import { EmptyServices } from '@/components/service/home/empty-services';
+import { OwnedServicesList } from '@/components/service/home/owned-services-list';
 
 const columns: ColumnDef<userServicesOwned_fragment$data>[] = [
   {
@@ -152,26 +154,12 @@ interface OwnedServicesProps {
 const OwnedServices: React.FunctionComponent<OwnedServicesProps> = ({
   queryRef,
 }) => {
-  const [pageSize, setPageSize] = useLocalStorage('countOwnedServicesList', 50);
-  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
-    'orderModeOwnedServices',
-    'asc'
-  );
-  const [orderBy, setOrderBy] = useLocalStorage<UserServiceOrdering>(
-    'orderByOwnedServices',
-    'service_name'
-  );
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-
   const queryData = usePreloadedQuery<userServiceOwnedQuery>(
     UserServiceOwnedQuery,
     queryRef
   );
 
-  const [data, refetch] = useRefetchableFragment<
+  const [data] = useRefetchableFragment<
     userServiceOwnedQuery,
     userServiceOwnedUser$key
   >(userServiceOwnedFragment, queryData);
@@ -181,67 +169,12 @@ const OwnedServices: React.FunctionComponent<OwnedServicesProps> = ({
       (userService) => userService.node
     ) as unknown as userServicesOwned_fragment$data[];
 
-  const handleRefetchData = (
-    args?: Partial<ServiceUserOwnedPaginationQuery$variables>
-  ) => {
-    const sorting = mapToSortingTableValue(orderBy, orderMode);
-    refetch({
-      count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy,
-      orderMode,
-      ...transformSortingValueToParams(sorting),
-      ...args,
-    });
-  };
-
-  const onSortingChange = (updater: unknown) => {
-    const sorting = mapToSortingTableValue(orderBy, orderMode);
-    const newSortingValue =
-      updater instanceof Function ? updater(sorting) : updater;
-    setOrderBy(newSortingValue[0].id);
-    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
-
-    handleRefetchData(
-      transformSortingValueToParams<UserServiceOrdering, OrderingMode>(
-        newSortingValue
-      )
-    );
-  };
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
-  };
   return (
     <>
       {ownedServices.length > 0 ? (
-        <DataTable
-          data={ownedServices}
-          columns={columns}
-          tableOptions={{
-            onSortingChange: onSortingChange,
-            onPaginationChange: onPaginationChange,
-            manualSorting: true,
-            manualPagination: true,
-          }}
-          tableState={{
-            sorting: mapToSortingTableValue(orderBy, orderMode),
-            pagination,
-          }}
-        />
+        <OwnedServicesList services={ownedServices} />
       ) : (
-        'You do not have any service... Yet !'
+        <EmptyServices />
       )}
     </>
   );

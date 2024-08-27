@@ -46,6 +46,7 @@ import {
   serviceQuery$variables,
 } from '../../../__generated__/serviceQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
+import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<serviceQuery>;
@@ -206,7 +207,9 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       size: 30,
       header: 'Type',
       cell: ({ row }) => {
-        return <Badge className={'cursor-default'}>{row.original.type}</Badge>;
+        return (
+          <ServiceTypeBadge type={row.original.type as ServiceTypeBadge} />
+        );
       },
     },
     {
@@ -228,7 +231,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       id: 'description',
       header: 'Description',
     },
-
     ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
   ];
 
@@ -323,7 +325,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
               />
             </React.Suspense>
           ) : (
-            'You do not have any service... Yet !'
+            'There is any service... Yet !'
           )}
         </>
       )}
