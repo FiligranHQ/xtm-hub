@@ -79,7 +79,10 @@ export interface QueryOpts {
   unsecured?: boolean;
 }
 
-export const dbRaw = (statement: string) => database.raw(statement);
+export const dbRaw = (
+  statement: string,
+  binding?: Knex.RawBinding | Knex.RawBinding[]
+) => database.raw(statement, binding);
 
 export const dbTx = () => database.transaction();
 

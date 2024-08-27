@@ -51,7 +51,7 @@ const resolvers: Resolvers = {
       // Check the subscription does not already exist :
       try {
         const subscription = await checkSubscriptionExists(
-          fromGlobalId(organization_id).id,
+          context.user.organization_id,
           fromGlobalId(service_id).id
         );
         if (subscription) {
@@ -67,7 +67,7 @@ const resolvers: Resolvers = {
         const subscriptionData = {
           id: uuidv4(),
           service_id: fromGlobalId(service_id).id,
-          organization_id: fromGlobalId(organization_id).id,
+          organization_id: context.user.organization_id,
           start_date: new Date(),
           end_date: undefined,
           billing: billing ?? 100,
@@ -91,7 +91,7 @@ const resolvers: Resolvers = {
 
         const [addedUserService] = await insertUserService(context, {
           id: uuidv4() as UserServiceId,
-          user_id: fromGlobalId(user_id).id as UserId,
+          user_id: context.user.id as UserId,
           subscription_id: filledSubscription.id as SubscriptionId,
           service_personal_data: null,
         });
@@ -111,8 +111,8 @@ const resolvers: Resolvers = {
         ) {
           await addOrganizationUsersRights(
             context,
-            fromGlobalId(organization_id).id,
-            fromGlobalId(user_id).id,
+            context.user.organization_id,
+            context.user.id,
             filledSubscription.id
           );
         }

@@ -70,12 +70,7 @@ export const loadCommunities = async (context: PortalContext, opts) => {
   };
 };
 
-export const loadPublicServices = async (
-  context: PortalContext,
-  opts,
-  publicOnly = true,
-  communities = false
-) => {
+export const loadPublicServices = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
   const query = paginate<Service>(context, 'Service', {
     first,
@@ -83,55 +78,30 @@ export const loadPublicServices = async (
     orderMode,
     orderBy,
   });
-
-  if (publicOnly) {
-    query.where('type', '!=', 'PRIVATE');
-  }
-  if (communities) {
-    query.where('type', '=', 'COMMUNITY');
-  } else {
-    query.where('type', '!=', 'COMMUNITY');
-  }
-
+  const organizationId = context.user.organization_id;
   const servicesConnection = await query
-    .leftJoin(
-      'Subscription as subscription',
-      'subscription.service_id',
-      '=',
-      'Service.id'
-    )
-    .leftJoin(
-      'Organization as org',
-      'subscription.organization_id',
-      '=',
-      'org.id'
-    )
-    .leftJoin('Service_Link as link', 'Service.id', '=', 'link.service_id')
+    .leftJoin('Subscription as subscription', function () {
+      this.on('subscription.service_id', '=', 'Service.id').andOn(
+        'subscription.organization_id',
+        '=',
+        dbRaw('?', [organizationId])
+      );
+    })
     .select([
       'Service.*',
-      dbRaw('((subscription.status)) as status'),
-      dbRaw('(json_agg(org.*))::json as organization'),
-      dbRaw(
-        "(json_agg(json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, 'organization', json_build_object('id', \"org\".id,'name', \"org\".name,'__typename', 'Organization'),'__typename', 'Subscription')))::json as subscription"
-      ),
-
-      dbRaw('row_to_json(link.*) as links'),
+      dbRaw(`
+      CASE
+        WHEN "subscription"."id" IS NOT NULL THEN true
+        ELSE false
+      END AS subscribed
+    `),
     ])
-    .groupBy(['Service.id', 'link.*', 'subscription.status'])
+    .groupBy(['Service.id', 'subscription.id'])
     .asConnection<ServiceConnection>();
 
-  const queryCount = db<Service>(context, 'Service', opts);
-  if (publicOnly) {
-    queryCount.where('type', '!=', 'PRIVATE');
-  }
-  if (communities) {
-    queryCount.where('type', '=', 'COMMUNITY');
-  } else {
-    query.where('type', '!=', 'COMMUNITY');
-  }
-  queryCount.countDistinct('Service.id as totalCount').first();
-
-  const { totalCount } = await queryCount;
+  const { totalCount } = await db<Service>(context, 'Service', opts)
+    .countDistinct('Service.id as totalCount')
+    .first();
 
   return {
     totalCount,

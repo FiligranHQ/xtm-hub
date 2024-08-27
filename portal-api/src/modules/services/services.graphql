@@ -6,16 +6,17 @@ enum ServiceOrdering {
 }
 
 type Service implements Node {
-    id: ID!
-    name: String!
-    description: String
-    provider: String
-    type: String
-    subscription_service_type: String
-    creation_status: String
-    links: [ServiceLink]
-    organization: [Organization]
-    subscription: [Subscription]
+  id: ID!
+  name: String!
+  description: String
+  provider: String
+  type: String
+  subscription_service_type: String
+  creation_status: String
+  subscribed: Boolean
+  links: [ServiceLink]
+  organization: [Organization]
+  subscription: [Subscription]
 }
 
 type ServiceEdge {
