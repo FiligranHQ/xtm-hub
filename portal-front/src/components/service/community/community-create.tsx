@@ -14,7 +14,7 @@ import { userQuery } from '../../../../__generated__/userQuery.graphql';
 import { UserListQuery } from '@/components/admin/user/user.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import Loader from '@/components/loader';
-import CreateButton from '@/components/ui/create-button';
+import TriggerButton from '@/components/ui/trigger-button';
 
 interface CreateCommunityProps {
   connectionId: string;
@@ -77,7 +77,7 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
       open={openSheet}
       setOpen={setOpenSheet}
       adminForm={adminForm}
-      trigger={<CreateButton label="Create community" />}
+      trigger={<TriggerButton label="Create community" />}
     />
   ) : (
     <Loader />

@@ -31,7 +31,7 @@ import {
 import { servicePriceMutation } from '../../../__generated__/servicePriceMutation.graphql';
 import { ServicePriceCreateMutation } from '@/components/service/service-price.graphql';
 import { z } from 'zod';
-import CreateButton from '@/components/ui/create-button';
+import TriggerButton from '@/components/ui/trigger-button';
 
 interface SubscriptionListProps {
   queryRef: PreloadedQuery<subscriptionsSelectQuery>;
@@ -254,7 +254,7 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
       <div className="flex justify-end pb-s">
         <SubscriptionFormSheet
           connectionId={connectionId}
-          trigger={<CreateButton label="Add subscription" />}
+          trigger={<TriggerButton label="Add subscription" />}
         />
       </div>
 

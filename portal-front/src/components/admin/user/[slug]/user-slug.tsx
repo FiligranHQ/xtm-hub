@@ -102,29 +102,29 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             {user.first_name} {user.last_name} ({user.organization.name}) -{' '}
             {user.email}
           </h2>
-
-          <AlertDialogComponent
-            AlertTitle={'Delete user'}
-            actionButtonText={'Delete'}
-            variantName={'destructive'}
-            triggerElement={
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Delete User">
-                <DeleteIcon className="h-4 w-4" />
-              </Button>
-            }
-            onClickContinue={() => onDeleteUser(user)}>
-            Are you sure you want to delete this user {user.first_name}{' '}
-            {user.last_name} ?
-          </AlertDialogComponent>
+          <div className="space-x-2">
+            <EditUser user={user}></EditUser>
+            <AlertDialogComponent
+              AlertTitle={'Delete user'}
+              actionButtonText={'Delete'}
+              variantName={'destructive'}
+              triggerElement={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Delete User">
+                  <DeleteIcon className="h-4 w-4" />
+                </Button>
+              }
+              onClickContinue={() => onDeleteUser(user)}>
+              Are you sure you want to delete this user {user.first_name}{' '}
+              {user.last_name} ?
+            </AlertDialogComponent>
+          </div>
         </div>
-
         <DataTracking
           data={data.user?.tracking_data as trackingData_fragment$key}
         />
-        <EditUser user={user}></EditUser>
       </>
     );
   }

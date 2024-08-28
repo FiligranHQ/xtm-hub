@@ -29,9 +29,9 @@ import {
 import { serviceUser$key } from '../../../../__generated__/serviceUser.graphql';
 import { useLocalStorage } from 'usehooks-ts';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
-import CreateButton from '@/components/ui/create-button';
 import { RESTRICTION } from '@/utils/constant';
 import GuardCapacityComponent from '@/components/admin-guard';
+import TriggerButton from '@/components/ui/trigger-button';
 
 export interface UserServiceData extends serviceUserSlugQuery$data {
   id: string;
@@ -237,7 +237,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
             })
           }
           trigger={
-            <CreateButton
+            <TriggerButton
               onClick={() => setCurrentUser({})}
               label="Invite user"
             />
