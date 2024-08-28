@@ -63,7 +63,10 @@ export const loadUserServiceByUser = async (
     .select(
       'Service.*',
       dbRaw(
-        "( json_agg( json_build_object('id', service_link.id, 'name',service_link.name, 'url', service_link.url ) ) ):: json as services_link"
+        `CASE 
+        WHEN COUNT(service_link.id) = 0 THEN NULL
+        ELSE (json_agg(json_build_object('id', service_link.id, 'name', service_link.name, 'url', service_link.url)))::json 
+      END AS services_link`
       )
     )
     .groupBy(['Service.id']);
@@ -134,6 +137,7 @@ export const loadUserServiceByUser = async (
     .where('user.id', userId)
     .countDistinct('User_Service.id as totalCount')
     .first();
+
   return { totalCount, ...userServiceConnection };
 };
 

@@ -1,19 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { useState } from 'react';
-import { DataTable } from 'filigran-ui/clients';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { Badge, Button } from 'filigran-ui/servers';
-import {
-  mapToSortingTableValue,
-  transformSortingValueToParams,
-} from '@/components/ui/handle-sorting.utils';
 import Link from 'next/link';
 import { CourseOfActionIcon } from 'filigran-icon';
 import GuardCapacityComponent from '@/components/admin-guard';
-import { OrderingMode } from '../../../../__generated__/ServiceUserPaginationQuery.graphql';
-import { useLocalStorage } from 'usehooks-ts';
 import {
   PreloadedQuery,
   usePreloadedQuery,
@@ -25,8 +17,6 @@ import {
 } from '@/components/service/user_service.graphql';
 import { userServiceOwnedQuery } from '../../../../__generated__/userServiceOwnedQuery.graphql';
 import { userServiceOwnedUser$key } from '../../../../__generated__/userServiceOwnedUser.graphql';
-import { UserServiceOrdering } from '../../../../__generated__/serviceUserSlugQuery.graphql';
-import { ServiceUserOwnedPaginationQuery$variables } from '../../../../__generated__/ServiceUserOwnedPaginationQuery.graphql';
 import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
 import { EmptyServices } from '@/components/service/home/empty-services';
 import { OwnedServicesList } from '@/components/service/home/owned-services-list';
