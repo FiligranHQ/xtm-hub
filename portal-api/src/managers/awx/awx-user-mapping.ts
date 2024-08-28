@@ -1,8 +1,5 @@
 import User from '../../model/kanel/public/User';
-import {
-  loadOrganizationBy,
-  loadUnsecureOrganizationBy,
-} from '../../modules/organizations/organizations';
+import { loadUnsecureOrganizationBy } from '../../modules/organizations/organizations';
 import { AWUserInput, AWXAddUserInput, UserInput } from './awx.model';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { loadAllRolePortalBy } from '../../modules/role-portal/role-portal.domain';

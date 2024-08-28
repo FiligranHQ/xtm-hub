@@ -10,6 +10,7 @@ import { Button } from 'filigran-ui/servers';
 import { useToast } from 'filigran-ui/clients';
 import { userSlugEditMutation } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
+import TriggerButton from '@/components/ui/trigger-button';
 
 interface EditUserProps {
   user: userSlug_fragment$data;
@@ -48,11 +49,10 @@ export const EditUser: FunctionComponent<EditUserProps> = ({ user }) => {
       user={user}
       validationSchema={userEditFormSchema}
       trigger={
-        <Button
-          size="icon"
-          className="absolute bottom-4 right-4 z-10 rounded-3xl drop-shadow-xl">
-          <EditIcon className="h-4 w-4" />
-        </Button>
+        <TriggerButton
+          icon={<EditIcon className="mr-2 h-4 w-4" />}
+          label="Edit"
+        />
       }></UserFormSheet>
   );
 };

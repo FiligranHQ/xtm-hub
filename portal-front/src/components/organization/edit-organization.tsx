@@ -12,47 +12,51 @@ import { organizationFormSchema } from '@/components/organization/organization-f
 import { useToast } from 'filigran-ui/clients';
 
 interface EditOrganizationProps {
-  organization?: organizationItem_fragment$data;
-  onClose: () => void;
+  organization: organizationItem_fragment$data;
 }
 
 export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   organization,
-  onClose,
 }) => {
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
+  const [openSheet, setOpenSheet] = useState(false);
 
   const handleSubmit = (values: z.infer<typeof organizationFormSchema>) => {
-    if (organization) {
-      commitOrganizationEditionMutation({
-        variables: {
-          id: organization.id,
-          input: {
-            ...values,
-          },
+    commitOrganizationEditionMutation({
+      variables: {
+        id: organization.id,
+        input: {
+          ...values,
         },
+      },
 
-        onCompleted: () => {
-          onClose();
-        },
-        onError: (error) => {
-          toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: <>{error.message}</>,
-          });
-        },
-      });
-    }
+      onCompleted: () => {
+        setOpenSheet(false);
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
+    });
   };
   return (
     <OrganizationFormSheet
-      open={!!organization}
-      setOpen={onClose}
+      open={openSheet}
+      setOpen={setOpenSheet}
       organization={organization}
-      trigger={<></>}
+      trigger={
+        <Button
+          size="icon"
+          variant="ghost"
+          aria-label="Edit Organization">
+          <EditIcon className="h-4 w-4" />
+        </Button>
+      }
       title={"Edit the organization's name"}
       description={
         "Edit the organization's name here. Click on Validate when you are done."

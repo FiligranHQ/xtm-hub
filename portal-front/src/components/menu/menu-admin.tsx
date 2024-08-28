@@ -83,18 +83,12 @@ const ClosedMenuAdmin = () => {
   );
 };
 const adminLinksData = [
-  { href: '/admin/user', icon: GroupIcon, label: 'User' },
-  { href: '/admin/service', icon: GradeIcon, label: 'Services' },
   { href: '/admin/community', icon: ForumIcon, label: 'Communities' },
+  { href: '/admin/user', icon: GroupIcon, label: 'User' },
   {
     href: '/admin/organizations',
     icon: OrganizationIcon,
     label: 'Organizations',
-  },
-  {
-    href: '/admin/subcriptions',
-    icon: ExternalReferenceIcon,
-    label: 'Subscriptions',
   },
 ];
 

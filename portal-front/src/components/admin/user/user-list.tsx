@@ -6,13 +6,7 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
-import Link from 'next/link';
-import {
-  ColumnDef,
-  ColumnSort,
-  PaginationState,
-  Row,
-} from '@tanstack/react-table';
+import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { DataTable } from 'filigran-ui/clients';
 import {
