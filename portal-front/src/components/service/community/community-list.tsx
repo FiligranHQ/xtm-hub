@@ -397,7 +397,6 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       setPageSize(newPaginationValue.pageSize);
     }
   };
-
   return (
     <>
       <div className="flex justify-end pb-m">
@@ -407,7 +406,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
             RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
             RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
           ]}>
-          <CreateCommunity connectionId={connectionId}></CreateCommunity>
+          <CreateCommunity
+            connectionId={connectionId}
+            adminForm={me.capabilities.some(
+              (capability) => capability.name === 'BYPASS'
+            )}></CreateCommunity>
         </GuardCapacityComponent>
       </div>
       {isSubscriptionLoading ? (
@@ -435,15 +438,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           ) : (
             'You do not have any service... Yet !'
           )}
-          <GuardCapacityComponent
-            displayError={false}
-            capacityRestriction={[
-              RESTRICTION.CAPABILITY_BYPASS,
-              RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
-              RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
-            ]}>
-            <CreateCommunity connectionId={connectionId}></CreateCommunity>
-          </GuardCapacityComponent>
+
           <CommunityAcceptFormSheet
             title={'Accept a new community'}
             description={
