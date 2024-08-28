@@ -24,8 +24,8 @@ import {
   SheetTitle,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
-import { communityFormSchema } from '@/components/service/community/community-form-schema';
 import { getOrganizations } from '@/components/organization/organization.service';
+import { communityAcceptFormSchema } from '@/components/service/community/community-form-schema';
 
 interface CommunityAcceptFormSheetProps {
   open: boolean;
@@ -33,7 +33,7 @@ interface CommunityAcceptFormSheetProps {
   title: string;
   description: string;
   justification: string;
-  handleSubmit: (values: z.infer<typeof communityFormSchema>) => void;
+  handleSubmit: (values: z.infer<typeof communityAcceptFormSchema>) => void;
   validationSchema: ZodSchema;
 }
 

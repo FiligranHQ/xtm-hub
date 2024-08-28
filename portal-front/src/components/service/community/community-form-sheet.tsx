@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FunctionComponent, ReactNode } from 'react';
-import { z, ZodSchema } from 'zod';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -32,7 +32,10 @@ import {
   Textarea,
 } from 'filigran-ui/servers';
 import { getOrganizations } from '@/components/organization/organization.service';
-import { communityFormSchema } from '@/components/service/community/community-form-schema';
+import {
+  communityFormSchemaAdmin,
+  communityFormSchemaOrga,
+} from '@/components/service/community/community-form-schema';
 import GuardCapacityComponent from '@/components/admin-guard';
 import { userQuery } from '../../../../__generated__/userQuery.graphql';
 import {
@@ -53,8 +56,10 @@ interface CommunityFormSheetProps {
   trigger: ReactNode;
   title: string;
   description: string;
-  handleSubmit: (values: z.infer<typeof communityFormSchema>) => void;
-  validationSchema: ZodSchema;
+  handleSubmit: (
+    values: z.infer<typeof communityFormSchemaOrga | communityFormSchemaAdmin>
+  ) => void;
+  adminForm: boolean;
 }
 
 export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
@@ -65,8 +70,13 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
   title,
   description,
   handleSubmit,
-  validationSchema,
+  adminForm = false,
 }) => {
+  const validationSchema = adminForm
+    ? communityFormSchemaAdmin
+    : communityFormSchemaAdmin;
+  console.log('validationSchema', validationSchema);
+  console.log('validationSchema', typeof validationSchema);
   const [selectedValue, setSelectedValue] = React.useState('');
   const [organizations] = getOrganizations();
   const organizationsData =
@@ -155,22 +165,26 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="justification"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Explain</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Explain here why do you want a community and etc."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {adminForm ? (
+              <></>
+            ) : (
+              <FormField
+                control={form.control}
+                name="justification"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Explain</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Explain here why do you want a community and etc."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <GuardCapacityComponent
               displayError={false}
