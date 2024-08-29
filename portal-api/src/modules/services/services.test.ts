@@ -63,7 +63,7 @@ describe('Admin can create communities ', () => {
   it('Should return 200', () => {
     expect(response.status).toBe(200);
   });
-  it('Should insert service with type community', async () => {
+  it('Should insert service with type community ', async () => {
     const community = result.data.addServiceCommunity;
 
     expect(community).toEqual(
@@ -72,12 +72,12 @@ describe('Admin can create communities ', () => {
         description: serviceDescription,
         provider: 'SCRED_ONDEMAND',
         type: 'COMMUNITY',
-        subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
+        subscription_service_type: 'SUBSCRIPTABLE_DIRECT',
       })
     );
   });
 
-  it('Should insert ServicePrice ', async () => {
+  it('Should insert ServicePrice', async () => {
     const [loadedService] = await loadUnsecureServiceBy({
       name: serviceName,
     });
@@ -107,6 +107,7 @@ describe('Admin can create communities ', () => {
       const loadedUserServices = await loadUnsecureUserServiceBy({
         subscription_id: sub.id,
       });
+
       expect(loadedUserServices.length).toEqual(2);
       for (const userService of loadedUserServices) {
         const loadedCapabilities = await loadUnsecureServiceCapabilitiesBy({

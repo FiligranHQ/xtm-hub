@@ -6,23 +6,24 @@ import {
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
-import { ServiceId, ServiceMutator } from '../../model/kanel/public/Service';
-import { RolePortal } from '../../model/user';
+import { ServiceMutator } from '../../model/kanel/public/Service';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
 import { loadUsersByOrganization } from '../users/users.domain';
-import { UserServiceId } from '../../model/kanel/public/UserService';
+import UserService, {
+  UserServiceId,
+} from '../../model/kanel/public/UserService';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import {
   insertSubscription,
-  loadUnsecureSubscriptionBy,
+  loadSubscription,
 } from '../subcription/subscription.domain';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
-import { OrganizationId } from '../../model/kanel/public/Organization';
+import User from '../../model/kanel/public/User';
 
 export const loadCommunities = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -158,109 +159,108 @@ export const insertService = async (context: PortalContext, dataService) => {
   return db<Service>(context, 'Service').insert(dataService).returning('*');
 };
 
-export const grantCommunityAccess = async (
+export const adminCreateCommu = async (
   context: PortalContext,
   organizationsId: string[],
-  role: RolePortal,
   addedService: Service,
-  userId: string,
-  userOrganizationId: OrganizationId,
-  justification: string
+  adminId: string
 ) => {
-  for (const organization_id of organizationsId) {
-    const dataSubscription = {
-      id: uuidv4() as unknown as SubscriptionId,
-      organization_id: fromGlobalId(organization_id).id,
-      service_id: addedService.id,
-      start_date: new Date(),
-      end_date: null,
-      billing: 0,
-      justification: justification,
-      status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
-    };
-    const [addedSubscription] = await insertSubscription(
-      context,
-      dataSubscription
-    );
+  const subsData = organizationsId.map((orga_id) => ({
+    id: uuidv4() as unknown as SubscriptionId,
+    organization_id: fromGlobalId(orga_id).id,
+    service_id: addedService.id,
+    start_date: new Date(),
+    end_date: null,
+    billing: 0,
+    status: 'ACCEPTED',
+  }));
+  const addedSubscriptions = await insertSubscription(context, subsData);
 
-    const users = await loadUsersByOrganization(
-      fromGlobalId(organization_id).id,
-      userId
+  for (const addedSubscription of addedSubscriptions) {
+    const users = (await loadUsersByOrganization(
+      addedSubscription.organization_id,
+      adminId
+    )) as User[];
+    await grantServiceAccess(
+      context,
+      ['ACCESS_SERVICE'],
+      users.map(({ id }) => id),
+      addedSubscription.id
     );
-    const capabilitiesUsers = ['ACCESS_SERVICE'];
-    for (const user of users) {
-      await grantServiceAccess(
-        context,
-        capabilitiesUsers,
-        user.id,
-        addedSubscription.id
-      );
-    }
   }
 
-  const capabilitiesAdmin = [
-    'ADMIN_SUBSCRIPTION',
-    'MANAGE_ACCESS',
-    'ACCESS_SERVICE',
-  ];
+  await grantServiceAdminAccess(context, adminId, addedService);
+};
 
-  let [retrievedSubscription] = await loadUnsecureSubscriptionBy({
-    service_id: addedService.id as ServiceId,
-    organization_id: userOrganizationId,
-  });
-  if (!retrievedSubscription) {
-    const dataSubscription = {
-      id: uuidv4() as unknown as SubscriptionId,
-      organization_id: userOrganizationId,
-      service_id: addedService.id,
-      start_date: new Date(),
-      end_date: null,
-      billing: 100,
-      justification: justification,
-      status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
-    };
-    const [addedSubscription] = await insertSubscription(
-      context,
-      dataSubscription
-    );
-    retrievedSubscription = addedSubscription;
-  } else {
-    // Edit subscription to sett 100% billing
-    await db<Subscription>(context, 'Subscription')
-      .where({ id: retrievedSubscription.id })
-      .update({ billing: 100 })
-      .returning('*');
-  }
-  await grantServiceAccess(
-    context,
-    capabilitiesAdmin,
-    userId,
-    retrievedSubscription.id
+export const grantServiceAdminAccess = async (
+  context: PortalContext,
+  adminId: string,
+  addedService: Service
+) => {
+  const [subscriptionOfAdmin] = await loadSubscription(
+    adminId,
+    addedService.id
   );
+  await db<Subscription>(context, 'Subscription')
+    .where({ id: subscriptionOfAdmin.id })
+    .update({ billing: 100 })
+    .returning('*');
+  const dataUserService = {
+    id: uuidv4() as UserServiceId,
+    user_id: adminId,
+    subscription_id: subscriptionOfAdmin.id,
+  };
+  const [userService] = await insertUserService(context, dataUserService);
+
+  const capabilities = [
+    'ACCESS_SERVICE',
+    'MANAGE_ACCESS',
+    'ADMIN_SUBSCRIPTION',
+  ];
+  const dataCapabilities = capabilities.map((capability) => ({
+    id: uuidv4() as ServiceCapabilityId,
+    user_service_id: userService.id,
+    service_capability_name: capability,
+  }));
+
+  await insertServiceCapability(context, dataCapabilities);
 };
 
 export const grantServiceAccess = async (
   context: PortalContext,
   capabilities: string[],
-  userId: string,
+  usersId: string[],
   subscriptionId: string
 ) => {
-  const dataUserService = {
+  const dataUserServices = usersId.map((userId) => ({
     id: uuidv4() as UserServiceId,
     user_id: userId,
     subscription_id: subscriptionId,
-  };
-  const [insertedUserService] = await insertUserService(
-    context,
-    dataUserService
-  );
+  }));
 
-  for (const capability of capabilities) {
-    const dataServiceCapability = {
+  const insertedUserServices = (await insertUserService(
+    context,
+    dataUserServices
+  )) as UserService[];
+
+  for (const insertedUserService of insertedUserServices) {
+    const dataServiceCapabilities = capabilities.map((capability) => ({
       id: uuidv4() as ServiceCapabilityId,
       user_service_id: insertedUserService.id,
       service_capability_name: capability,
-    };
-    await insertServiceCapability(context, dataServiceCapability);
+    }));
+
+    await insertServiceCapability(context, dataServiceCapabilities);
+  }
+
+  for (const capability of capabilities) {
+    const dataServiceCapabilities = insertedUserServices.map(
+      (insertedUserService) => ({
+        id: uuidv4() as ServiceCapabilityId,
+        user_service_id: insertedUserService.id,
+        service_capability_name: capability,
+      })
+    );
+    await insertServiceCapability(context, dataServiceCapabilities);
   }
 };
