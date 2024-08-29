@@ -6,7 +6,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
-import { ServiceMutator } from '../../model/kanel/public/Service';
+import { ServiceId, ServiceMutator } from '../../model/kanel/public/Service';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import Subscription, {
   SubscriptionId,
@@ -21,9 +21,13 @@ import {
   insertSubscription,
   loadSubscription,
 } from '../subcription/subscription.domain';
-import { insertUserService } from '../user_service/user_service.domain';
+import {
+  insertUserService,
+  loadUnsecureUserServiceBy,
+} from '../user_service/user_service.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 import User from '../../model/kanel/public/User';
+import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
 
 export const loadCommunities = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -39,11 +43,17 @@ export const loadCommunities = async (context: PortalContext, opts) => {
       '=',
       'Service.id'
     )
+    .leftJoin(
+      'Organization as org',
+      'org.id',
+      '=',
+      'subscription.organization_id'
+    )
     .where('type', '=', 'COMMUNITY')
     .select(
       'Service.*',
       dbRaw(
-        "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, 'justification', \"subscription\".justification, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
+        "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date,'organization', json_build_object('id',\"org\".id, 'name', \"org\".name), 'justification', \"subscription\".justification, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
       )
     )
     .groupBy(['Service.id', 'subscription.id'])
@@ -159,22 +169,33 @@ export const insertService = async (context: PortalContext, dataService) => {
   return db<Service>(context, 'Service').insert(dataService).returning('*');
 };
 
+export const orgaCreateCommu = async (
+  context,
+  organizationsId: string[],
+  addedServiceId: ServiceId,
+  justification: string
+) => {
+  await addSubscriptions(
+    context,
+    addedServiceId,
+    organizationsId,
+    'REQUESTED',
+    justification
+  );
+};
+
 export const adminCreateCommu = async (
   context: PortalContext,
   organizationsId: string[],
-  addedService: Service,
+  addedServiceId: ServiceId,
   adminId: string
 ) => {
-  const subsData = organizationsId.map((orga_id) => ({
-    id: uuidv4() as unknown as SubscriptionId,
-    organization_id: fromGlobalId(orga_id).id,
-    service_id: addedService.id,
-    start_date: new Date(),
-    end_date: null,
-    billing: 0,
-    status: 'ACCEPTED',
-  }));
-  const addedSubscriptions = await insertSubscription(context, subsData);
+  const addedSubscriptions = await addSubscriptions(
+    context,
+    addedServiceId,
+    organizationsId,
+    'ACCEPTED'
+  );
 
   for (const addedSubscription of addedSubscriptions) {
     const users = (await loadUsersByOrganization(
@@ -188,19 +209,34 @@ export const adminCreateCommu = async (
       addedSubscription.id
     );
   }
+};
 
-  await grantServiceAdminAccess(context, adminId, addedService);
+export const addSubscriptions = async (
+  context: PortalContext,
+  addedServiceId: string,
+  organizationsId: string[],
+  status: string,
+  justification: string = ''
+) => {
+  const subsData = organizationsId.map((orga_id) => ({
+    id: uuidv4() as unknown as SubscriptionId,
+    organization_id: fromGlobalId(orga_id).id,
+    service_id: addedServiceId,
+    start_date: new Date(),
+    end_date: null,
+    billing: 0,
+    status: status,
+    justification,
+  }));
+  return insertSubscription(context, subsData);
 };
 
 export const grantServiceAdminAccess = async (
   context: PortalContext,
   adminId: string,
-  addedService: Service
+  addedServiceId: string
 ) => {
-  const [subscriptionOfAdmin] = await loadSubscription(
-    adminId,
-    addedService.id
-  );
+  const [subscriptionOfAdmin] = await loadSubscription(adminId, addedServiceId);
   await db<Subscription>(context, 'Subscription')
     .where({ id: subscriptionOfAdmin.id })
     .update({ billing: 100 })
@@ -211,7 +247,6 @@ export const grantServiceAdminAccess = async (
     subscription_id: subscriptionOfAdmin.id,
   };
   const [userService] = await insertUserService(context, dataUserService);
-
   const capabilities = [
     'ACCESS_SERVICE',
     'MANAGE_ACCESS',
@@ -263,4 +298,19 @@ export const grantServiceAccess = async (
     );
     await insertServiceCapability(context, dataServiceCapabilities);
   }
+};
+
+export const findCurrentCommuAdminId = async (serviceId: ServiceId) => {
+  const existingSubscriptions = await loadUnsecureSubscriptionBy({
+    service_id: serviceId,
+  });
+  // Only one subscription exists, we know it is the admin's
+  const adminsSubscription = existingSubscriptions[0];
+  const userServiceAdmin = await loadUnsecureUserServiceBy({
+    subscription_id: adminsSubscription.id,
+  });
+  return {
+    adminCommuId: userServiceAdmin[0].user_id,
+    adminsSubscription: adminsSubscription,
+  };
 };

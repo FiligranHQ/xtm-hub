@@ -58,7 +58,6 @@ describe('Admin can create communities ', () => {
     userAdmin = await getAdminAgent();
     response = await userAdmin.post('/graphql-api').send(addServiceTestQuery);
     result = JSON.parse(response.text);
-    console.log('result', result);
   });
   it('Should return 200', () => {
     expect(response.status).toBe(200);
@@ -90,7 +89,7 @@ describe('Admin can create communities ', () => {
     expect(loadedServicePrice.service_id).toEqual(service.id);
   });
 
-  it('Should insert Subscription, UserService and capabilities', async () => {
+  it('Should insert Subscription, UserService and capabilities ', async () => {
     const loadedSubscriptions = await loadUnsecureSubscriptionBy({
       service_id: service.id,
     });

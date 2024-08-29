@@ -33,6 +33,7 @@ interface CommunityAcceptFormSheetProps {
   title: string;
   description: string;
   justification: string;
+  mainOrganization: { id: string; name: string };
   handleSubmit: (values: z.infer<typeof communityAcceptFormSchema>) => void;
   validationSchema: ZodSchema;
 }
@@ -46,6 +47,7 @@ export const CommunityAcceptFormSheet: FunctionComponent<
   description,
   justification,
   handleSubmit,
+  mainOrganization,
   validationSchema,
 }) => {
   const form = useForm<z.infer<typeof validationSchema>>({
@@ -54,11 +56,14 @@ export const CommunityAcceptFormSheet: FunctionComponent<
   });
 
   const [organizations] = getOrganizations();
+
   const organizationsData =
-    organizations.organizations.edges.map(({ node }) => ({
-      label: node.name,
-      value: node.id,
-    })) ?? [];
+    organizations.organizations.edges
+      .filter(({ node }) => !node.id.includes(mainOrganization.id))
+      .map(({ node }) => ({
+        label: node.name,
+        value: node.id,
+      })) ?? [];
 
   const onSubmit = (values: z.infer<typeof validationSchema>) => {
     handleSubmit({
@@ -113,7 +118,6 @@ export const CommunityAcceptFormSheet: FunctionComponent<
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="price"
@@ -140,7 +144,10 @@ export const CommunityAcceptFormSheet: FunctionComponent<
               name="organizations_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organizations</FormLabel>
+                  <FormLabel>
+                    Partners organizations (Billing organization :{' '}
+                    {mainOrganization.name})
+                  </FormLabel>
                   <FormControl>
                     <MultiSelectFormField
                       options={organizationsData}
@@ -155,7 +162,6 @@ export const CommunityAcceptFormSheet: FunctionComponent<
                 </FormItem>
               )}
             />
-
             <SheetFooter className="pt-2">
               <SheetClose asChild>
                 <Button variant="outline">Cancel</Button>

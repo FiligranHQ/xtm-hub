@@ -34,13 +34,15 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
     );
 
   const handleSubmit = (
-    values: z.infer<typeof communityFormSchemaOrga | communityFormSchemaAdmin>
+    values: z.infer<
+      typeof communityFormSchemaOrga | typeof communityFormSchemaAdmin
+    >
   ) => {
     commitServiceCommunityMutation({
       variables: {
         input: {
           ...(values as z.infer<
-            typeof communityFormSchemaOrga | communityFormSchemaAdmin
+            typeof communityFormSchemaOrga | typeof communityFormSchemaAdmin
           >),
         },
         connections: [connectionId],

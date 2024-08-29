@@ -70,6 +70,7 @@ type Mutation {
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription
   addServiceCommunity(input: AddServiceCommunityInput): Service
+  acceptCommunity(input: ServiceCommunityAcceptInput): [Subscription]
   deleteService(id: ID!): Service
   addSubscription(service_id: String, organization_id: ID, user_id: ID, billing: Int): Subscription
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
@@ -104,6 +105,7 @@ type Subscription implements Node {
   status: String
   joining: String
   justification: String
+  billing: Int
   ActionTracking: TrackingSubscription
   User: UserSubscription
 }
@@ -210,6 +212,11 @@ input AddServiceCommunityInput {
   fee_type: String
   organizations_id: [String]
   billing_manager: String
+}
+
+input ServiceCommunityAcceptInput {
+  serviceId: String
+  organizationsId: [String]
 }
 
 type ServiceSubscription {
