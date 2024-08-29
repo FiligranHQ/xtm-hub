@@ -32,12 +32,11 @@ const completeUserCapability = (user: UserGenerated): UserGenerated => {
 export const loadUsersByOrganization = async (
   organizationId: string,
   excludedUser: string
-): Promise<UserWithAuthentication[]> => {
-  const usersQuery = dbUnsecure<User>('User')
+) => {
+  return dbUnsecure<User>('User')
     .where('organization_id', organizationId)
-    .where('id', '!=', excludedUser);
-  const users = await usersQuery;
-  return users;
+    .where('id', '!=', excludedUser)
+    .returning('*');
 };
 
 export const loadUserBy = async (

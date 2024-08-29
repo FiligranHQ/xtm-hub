@@ -17,7 +17,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
 import {
   addServiceLink,
-  grantCommunityAccess,
+  adminCreateCommu,
   insertService,
   loadCommunities,
   loadPublicServices,
@@ -25,7 +25,6 @@ import {
 
 import { getRolePortalBy } from '../role-portal/role-portal';
 import { insertServicePrice } from './instances/service-price/service_price.helper';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 
 const resolvers: Resolvers = {
   Query: {
@@ -165,20 +164,22 @@ const resolvers: Resolvers = {
         const userId = input.billing_manager
           ? fromGlobalId(JSON.parse(input.billing_manager).id).id
           : context.user.id;
-        const userOrganizationId = (
-          input.billing_manager
-            ? fromGlobalId(JSON.parse(input.billing_manager).organization_id).id
-            : context.user.organization_id
-        ) as OrganizationId;
-        await grantCommunityAccess(
+
+        await adminCreateCommu(
           context,
           input.organizations_id ?? [],
-          role,
           addedService,
-          userId,
-          userOrganizationId,
-          input.justification
+          userId
         );
+        //await grantCommunityAccess(
+        //  context,
+        //  input.organizations_id ?? [],
+        //  role,
+        //  addedService,
+        //  userId,
+        //  userOrganizationId,
+        //  input.justification
+        //);
 
         const services = ['OCTI', 'Nextcloud'];
         for (const serviceLink of services) {
