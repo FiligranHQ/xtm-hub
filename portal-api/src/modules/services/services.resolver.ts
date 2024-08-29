@@ -7,7 +7,7 @@ import {
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
 import { dispatch, listen } from '../../pub';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import ServicePrice, {
   ServicePriceId,
 } from '../../model/kanel/public/ServicePrice';
@@ -17,14 +17,20 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations';
 import {
   addServiceLink,
+  addSubscriptions,
   adminCreateCommu,
+  findCurrentCommuAdminId,
+  grantServiceAccess,
+  grantServiceAdminAccess,
   insertService,
   loadCommunities,
   loadPublicServices,
+  orgaCreateCommu,
 } from './services.domain';
-
-import { getRolePortalBy } from '../role-portal/role-portal';
 import { insertServicePrice } from './instances/service-price/service_price.helper';
+import { isAdmin } from '../role-portal/role-portal.domain';
+import { loadUsersByOrganization } from '../users/users.domain';
+import User from '../../model/kanel/public/User';
 
 const resolvers: Resolvers = {
   Query: {
@@ -134,11 +140,7 @@ const resolvers: Resolvers = {
       }
     },
     addServiceCommunity: async (_, { input }, context) => {
-      const role = await getRolePortalBy(
-        context,
-        'id',
-        context.user.roles_portal_id[0].id
-      );
+      const isUserAdmin = await isAdmin(context);
 
       const trx = await dbTx();
       try {
@@ -148,7 +150,7 @@ const resolvers: Resolvers = {
           description: input.community_description,
           provider: 'SCRED_ONDEMAND',
           type: 'COMMUNITY',
-          creation_status: role.name === 'ADMIN' ? 'READY' : 'PENDING',
+          creation_status: isUserAdmin ? 'READY' : 'PENDING',
           subscription_service_type: 'SUBSCRIPTABLE_DIRECT',
         };
         const [addedService] = await insertService(context, dataService);
@@ -161,25 +163,6 @@ const resolvers: Resolvers = {
           price: input.price,
         };
         await insertServicePrice(context, dataServicePrice);
-        const userId = input.billing_manager
-          ? fromGlobalId(JSON.parse(input.billing_manager).id).id
-          : context.user.id;
-
-        await adminCreateCommu(
-          context,
-          input.organizations_id ?? [],
-          addedService,
-          userId
-        );
-        //await grantCommunityAccess(
-        //  context,
-        //  input.organizations_id ?? [],
-        //  role,
-        //  addedService,
-        //  userId,
-        //  userOrganizationId,
-        //  input.justification
-        //);
 
         const services = ['OCTI', 'Nextcloud'];
         for (const serviceLink of services) {
@@ -192,10 +175,83 @@ const resolvers: Resolvers = {
           await addServiceLink(context, dataServiceLink);
         }
 
+        const userId = input.billing_manager
+          ? fromGlobalId(JSON.parse(input.billing_manager).id).id
+          : context.user.id;
+        isUserAdmin
+          ? await adminCreateCommu(
+              context,
+              input.organizations_id ?? [],
+              addedService.id as ServiceId,
+              userId
+            )
+          : await orgaCreateCommu(
+              context,
+              [toGlobalId('Organization', context.user.organization_id)],
+              addedService.id as ServiceId,
+              input.justification
+            );
+
+        await grantServiceAdminAccess(context, userId, addedService.id);
+
         return addedService;
       } catch (error) {
         await trx.rollback();
         console.log('Error while adding the new community.', error);
+        throw error;
+      }
+    },
+    acceptCommunity: async (_, { input }, context) => {
+      const trx = await dbTx();
+      try {
+        const { adminCommuId, adminsSubscription } =
+          await findCurrentCommuAdminId(
+            fromGlobalId(input.serviceId).id as ServiceId
+          );
+
+        const addedSubscriptions = await addSubscriptions(
+          context,
+          fromGlobalId(input.serviceId).id as ServiceId,
+          input.organizationsId,
+          'ACCEPTED'
+        );
+
+        for (const addedSubscription of addedSubscriptions) {
+          const users = (await loadUsersByOrganization(
+            addedSubscription.organization_id,
+            adminCommuId
+          )) as User[];
+          await grantServiceAccess(
+            context,
+            ['ACCESS_SERVICE'],
+            users.map(({ id }) => id),
+            addedSubscription.id
+          );
+        }
+
+        // ADMIN
+        // Update its current subscription to set 100% billing
+        await db<Subscription>(context, 'Subscription')
+          .where({ id: adminsSubscription.id })
+          .update({ billing: 100, status: 'ACCEPTED' })
+          .returning('*');
+
+        // Grant all users access in admin's organization.
+        // Grant all users access in admin's organization.
+        const users = (await loadUsersByOrganization(
+          adminsSubscription.organization_id,
+          adminCommuId
+        )) as User[];
+        await grantServiceAccess(
+          context,
+          ['ACCESS_SERVICE'],
+          users.map(({ id }) => id),
+          adminsSubscription.id
+        );
+        return addedSubscriptions;
+      } catch (error) {
+        await trx.rollback();
+        console.log('Error while accepting the service.', error);
         throw error;
       }
     },

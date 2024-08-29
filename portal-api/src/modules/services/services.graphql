@@ -1,92 +1,97 @@
 enum ServiceOrdering {
-  name
-  description
-  provider
-  type
+    name
+    description
+    provider
+    type
 }
 
 type Service implements Node {
-  id: ID!
-  name: String!
-  description: String
-  provider: String
-  type: String
-  subscription_service_type: String
-  creation_status: String
-  links: [ServiceLink]
-  organization: [Organization]
-  subscription: [Subscription]
+    id: ID!
+    name: String!
+    description: String
+    provider: String
+    type: String
+    subscription_service_type: String
+    creation_status: String
+    links: [ServiceLink]
+    organization: [Organization]
+    subscription: [Subscription]
 }
 
 type ServiceEdge {
-  cursor: String!
-  node: Service!
+    cursor: String!
+    node: Service!
 }
 
 type ServiceConnection {
-  totalCount: Int!
-  edges: [ServiceEdge!]!
-  pageInfo: PageInfo!
+    totalCount: Int!
+    edges: [ServiceEdge!]!
+    pageInfo: PageInfo!
 }
 
 input AddServiceInput {
-  service_name: String
-  service_description: String
-  fee_type: String
-  price: Int
-  organization_id: String
-  url: String
+    service_name: String
+    service_description: String
+    fee_type: String
+    price: Int
+    organization_id: String
+    url: String
 }
 
 input AddServiceCommunityInput {
-  community_name: String
-  community_description: String
-  justification: String
-  price: Int
-  fee_type: String
-  organizations_id: [String]
-  billing_manager: String
+    community_name: String
+    community_description: String
+    justification: String
+    price: Int
+    fee_type: String
+    organizations_id: [String]
+    billing_manager: String
+}
+
+input ServiceCommunityAcceptInput {
+    serviceId: String, organizationsId: [String]
 }
 type Mutation {
-  editService(id: ID!, name: String!): Service
+    editService(id: ID!, name: String!): Service
     @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
-  addService(input: AddServiceInput): Subscription
+    addService(input: AddServiceInput): Subscription
     @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
-  addServiceCommunity(input: AddServiceCommunityInput): Service
+    addServiceCommunity(input: AddServiceCommunityInput): Service
     @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
-  deleteService(id: ID!): Service
+    acceptCommunity(input: ServiceCommunityAcceptInput): [Subscription] @auth(requires: [BCK_MANAGE_COMMUNITIES])
+    deleteService(id: ID!): Service
     @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
 }
 
 type Query {
-  services(
-    first: Int!
-    after: ID
-    orderBy: ServiceOrdering!
-    orderMode: OrderingMode!
-  ): ServiceConnection!
+    services(
+        first: Int!
+        after: ID
+        orderBy: ServiceOrdering!
+        orderMode: OrderingMode!
+    ): ServiceConnection!
     @auth(
-      requires: [
-        FRT_ACCESS_SERVICES
-        BCK_MANAGE_SERVICES
-        BCK_MANAGE_COMMUNITIES
-      ]
+        requires: [
+            FRT_ACCESS_SERVICES
+            BCK_MANAGE_SERVICES
+            BCK_MANAGE_COMMUNITIES
+        ]
     )
-  communities(
-    first: Int!
-    after: ID
-    orderBy: ServiceOrdering!
-    orderMode: OrderingMode!
-  ): ServiceConnection!
+    communities(
+        first: Int!
+        after: ID
+        orderBy: ServiceOrdering!
+        orderMode: OrderingMode!
+    ): ServiceConnection!
     @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_COMMUNITIES])
 }
 
 type ServiceSubscription {
-  add: Service
-  edit: Service
-  delete: Service
+    add: Service
+    edit: Service
+    delete: Service
 }
 
 type Subscription {
-  Service: ServiceSubscription @auth
+    Service: ServiceSubscription @auth
 }

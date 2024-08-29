@@ -31,11 +31,11 @@ const completeUserCapability = (user: UserGenerated): UserGenerated => {
 
 export const loadUsersByOrganization = async (
   organizationId: string,
-  excludedUser: string
+  excludedUserId: string
 ) => {
   return dbUnsecure<User>('User')
     .where('organization_id', organizationId)
-    .where('id', '!=', excludedUser)
+    .where('id', '!=', excludedUserId)
     .returning('*');
 };
 

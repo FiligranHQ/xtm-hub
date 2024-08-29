@@ -11,6 +11,7 @@ import {
 } from 'react-relay';
 import {
   communitiesListFragment,
+  ServiceCommunityAcceptMutation,
   ServiceCommunityListQuery,
   subscription,
 } from '@/components/service/service.graphql';
@@ -23,11 +24,7 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import {
-  AddSubscriptionMutation,
-  SubscriptionEditMutation,
-} from '@/components/subcription/subscription.graphql';
-import { subscriptionCreateMutation } from '../../../../__generated__/subscriptionCreateMutation.graphql';
+import { SubscriptionEditMutation } from '@/components/subcription/subscription.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 import GuardCapacityComponent from '@/components/admin-guard';
@@ -51,6 +48,7 @@ import { z } from 'zod';
 import { ServicePriceCreateMutation } from '@/components/service/service-price.graphql';
 import { servicePriceMutation } from '../../../../__generated__/servicePriceMutation.graphql';
 import { RESTRICTION } from '@/utils/constant';
+import { serviceCommunityAcceptMutation } from '../../../../__generated__/serviceCommunityAcceptMutation.graphql';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -73,7 +71,10 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   });
   const [openSheet, setOpenSheet] = useState(false);
   const [justification, setJustification] = useState('');
-  const [statusOnGoingCommunity, setStatusOnGoingCommunity] = useState('');
+  const [mainOrganization, setMainOrganization] = useState({
+    id: '',
+    name: '',
+  });
   const [serviceDataOnGoingCommunity, setServiceDataOnGoingCommunity] =
     useState<serviceCommunityList_fragment$data>();
 
@@ -86,8 +87,8 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     'asc'
   );
   const { toast } = useToast();
-  const [commitSubscriptionCreateMutation] =
-    useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
+  const [commitServiceCommunityAcceptMutation] =
+    useMutation<serviceCommunityAcceptMutation>(ServiceCommunityAcceptMutation);
   const { me } = useContext<Portal>(portalContext);
   if (!me) {
     return;
@@ -239,25 +240,23 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       });
       return;
     }
-    for (let orga_id of values.organizations_id) {
-      commitSubscriptionCreateMutation({
-        variables: {
-          connections: [connectionId],
-          service_id: serviceDataOnGoingCommunity.id,
-          organization_id: orga_id,
-          user_id: me.id,
-          billing: 0,
+    commitServiceCommunityAcceptMutation({
+      variables: {
+        input: {
+          serviceId: serviceDataOnGoingCommunity.id,
+          organizationsId: values.organizations_id,
         },
-        onCompleted: () => {},
-        onError: (error: Error) => {
-          toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: <>{error.message}</>,
-          });
-        },
-      });
-    }
+      },
+      onCompleted: () => {},
+      onError: (error: Error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
+    });
+
     commitServicePriceMutation({
       variables: {
         input: {
@@ -266,14 +265,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           price: values.price,
         },
       },
-      onCompleted: () => {
-        serviceDataOnGoingCommunity?.subscription?.forEach((subscription) => {
-          editSubscription(
-            statusOnGoingCommunity,
-            subscription as subscriptionItem_fragment$data
-          );
-        });
-      },
+      onCompleted: () => {},
       onError: (error) => {
         toast({
           variant: 'destructive',
@@ -290,16 +282,20 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     status: string,
     serviceData: serviceCommunityList_fragment$data
   ) => {
-    setJustification(serviceData.subscription[0].justification);
+    if (serviceData.subscription) {
+      setJustification(serviceData.subscription[0]?.justification ?? '');
+      setMainOrganization(
+        serviceData.subscription[0]?.organization ?? { id: '', name: '' }
+      );
+    }
     if (status === 'ACCEPTED') {
       setOpenSheet(true);
-      setStatusOnGoingCommunity(status);
       setServiceDataOnGoingCommunity(serviceData);
     } else {
       serviceData.subscription?.forEach((subscription) => {
         editSubscription(
           status,
-          subscription as subscriptionItem_fragment$data
+          subscription as unknown as subscriptionItem_fragment$data
         );
       });
     }
@@ -448,6 +444,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
             handleSubmit={handleAcceptCommunity}
             open={openSheet}
             setOpen={setOpenSheet}
+            mainOrganization={mainOrganization}
             validationSchema={
               communityAcceptFormSchema
             }></CommunityAcceptFormSheet>

@@ -18,3 +18,9 @@ export const loadAllRolePortalBy = async (
 ): Promise<RolePortal[]> => {
   return dbUnsecure<RolePortal>('RolePortal').whereIn(field, value);
 };
+
+export const isAdmin = async (context: PortalContext) => {
+  return context.user.roles_portal_id.some(
+    (role) => role.id === '6b632cf2-9105-46ec-a463-ad59ab58c770'
+  );
+};

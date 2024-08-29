@@ -57,7 +57,9 @@ interface CommunityFormSheetProps {
   title: string;
   description: string;
   handleSubmit: (
-    values: z.infer<typeof communityFormSchemaOrga | communityFormSchemaAdmin>
+    values: z.infer<
+      typeof communityFormSchemaOrga | typeof communityFormSchemaAdmin
+    >
   ) => void;
   adminForm: boolean;
 }
@@ -74,9 +76,7 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
 }) => {
   const validationSchema = adminForm
     ? communityFormSchemaAdmin
-    : communityFormSchemaAdmin;
-  console.log('validationSchema', validationSchema);
-  console.log('validationSchema', typeof validationSchema);
+    : communityFormSchemaOrga;
   const [selectedValue, setSelectedValue] = React.useState('');
   const [organizations] = getOrganizations();
   const organizationsData =
