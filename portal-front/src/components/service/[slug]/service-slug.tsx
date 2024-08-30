@@ -35,6 +35,7 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
+import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import TriggerButton from '@/components/ui/trigger-button';
 
 export interface UserServiceData extends serviceUserSlugQuery$data {
@@ -48,6 +49,7 @@ interface ServiceSlugProps {
 
 const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
   const [openSheet, setOpenSheet] = useState(false);
+  const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
   const [pageSize, setPageSize] = useLocalStorage('countServiceSlug', 50);
   const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
@@ -267,7 +269,13 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
         ]}>
-        <div className="flex justify-end pb-s">
+        <div className="flex justify-end gap-m pb-s">
+          <ServiceSlugAddOrgaFormSheet
+            open={openSheetAddOrga}
+            setOpen={setOpenSheetAddOrga}
+            trigger={<CreateButton label="Add organization" />}
+          />
+
           <ServiceSlugFormSheet
             open={openSheet}
             setOpen={setOpenSheet}
