@@ -152,6 +152,24 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
+    deleteSubscription: async (_, { subscription_id }, context) => {
+      const [subscription] = await loadSubscriptionBy(
+        'id',
+        fromGlobalId(subscription_id).id
+      );
+
+      if (subscription.billing !== 0) {
+        throw new Error('You can not delete a subscription with billing.');
+      }
+      const [deletedSubscription] = await db<Subscription>(
+        context,
+        'Subscription'
+      )
+        .where({ id: fromGlobalId(subscription_id).id })
+        .delete('*');
+
+      return deletedSubscription;
+    },
   },
 };
 

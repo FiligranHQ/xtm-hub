@@ -64,4 +64,6 @@ type Mutation {
     @auth(requires: [FRT_SERVICE_SUBSCRIBER, BCK_MANAGE_COMMUNITIES])
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
+    deleteSubscription(subscription_id: ID!): Subscription @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
+
 }
