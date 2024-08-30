@@ -13,7 +13,6 @@ import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { GraphQLError } from 'graphql/error/index.js';
 import { createNewUserFromInvitation } from '../users/users.helper';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import UserService, {
   UserServiceId,
   UserServiceInitializer,
@@ -60,12 +59,7 @@ const resolvers: Resolvers = {
           .id as SubscriptionId,
         user_id: (user
           ? user.id
-          : (
-              await createNewUserFromInvitation(
-                input.email,
-                context.user.organization_id as OrganizationId
-              )
-            ).id) as UserId,
+          : (await createNewUserFromInvitation(input.email)).id) as UserId,
       };
 
       if (!user_service.subscription_id) {

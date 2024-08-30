@@ -14,7 +14,7 @@ import ServicePrice, {
 import { ServiceId } from '../../model/kanel/public/Service';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { loadOrganizationBy } from '../organizations/organizations';
+import { loadOrganizationBy } from '../organizations/organizations.helper';
 import {
   addServiceLink,
   addSubscriptions,

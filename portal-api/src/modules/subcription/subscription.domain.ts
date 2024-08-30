@@ -8,7 +8,7 @@ import { PortalContext } from '../../model/portal-context';
 import { loadUsersByOrganization } from '../users/users.domain';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from './service_capability.domain';
-import { loadOrganizationBy } from '../organizations/organizations';
+import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadServiceBy } from '../services/services.domain';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import User, { UserId } from '../../model/kanel/public/User';
