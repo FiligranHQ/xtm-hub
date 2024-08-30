@@ -1,6 +1,7 @@
 import Organization from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
 import { db, dbUnsecure } from '../../../knexfile';
+import { extractDomain } from '../../utils/verify-email.util';
 
 export const loadOrganizationBy = async (
   context: PortalContext,
@@ -21,4 +22,13 @@ export const loadUnsecureOrganizationBy = async (
     .where({ [field]: value })
     .select('*')
     .first();
+};
+
+export const loadOrganizationsFromEmail = async (
+  email: string
+): Promise<Organization[]> => {
+  const extractedDomain = extractDomain(email);
+  return dbUnsecure<Organization[]>('Organization')
+    .whereRaw('? = ANY("domains")', [extractedDomain])
+    .select('*');
 };

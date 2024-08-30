@@ -107,7 +107,7 @@ describe('Services GraphQL Endpoint', async () => {
     });
 
     describe('add an new user and create different capacity for the Service', async () => {
-      const testEmail = `newUserService${uuidv4()}@test.fr`;
+      const testEmail = `newUserService${uuidv4()}@filigran.io`;
       await userAdmin.post('/graphql-api').send({
         ...userServiceCreateMutation,
         variables: {
