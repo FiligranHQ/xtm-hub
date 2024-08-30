@@ -74,10 +74,10 @@ export const loadUserBy = async (
         "case when count(distinct capability.id) = 0 then '[]' else json_agg(distinct capability.*) end as capabilities"
       ),
       dbRaw(
-        "case when count(distinct \"user_RolePortal\".role_portal_id) = 0 then '[]' else json_agg(json_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal')) end as roles_portal_id"
+        "case when count(distinct \"user_RolePortal\".role_portal_id) = 0 then '[]' else json_agg( json_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal')) end as roles_portal_id"
       ),
     ])
-    .groupBy(['User.id'])
+    .groupBy(['User.id', 'user_RolePortal.role_portal_id'])
     .first();
 
   const user = await userQuery;
