@@ -1,9 +1,13 @@
-import { describe } from 'vitest';
+import { describe, expect } from 'vitest';
 import { v4 as uuidv4 } from 'uuid';
 import { createNewUserFromInvitation, deleteUserById } from './users.helper';
 import { ROLE_USER } from '../../portal.const';
 import { loadUserBy } from './users.domain';
 import { UserId } from '../../model/kanel/public/User';
+import {
+  deleteOrganizationByName,
+  loadUnsecureOrganizationBy,
+} from '../organizations/organizations.helper';
 
 describe('User helpers - createNewUserFromInvitation', async () => {
   it('should be add new user with Role user only in an existing Organization', async () => {
@@ -24,16 +28,21 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     const newUser = await loadUserBy('User.email', testMail);
     expect(newUser).toBeFalsy();
   });
-  // it('should be add new user with Role admin organization with an new Organization', async () => {
-  //   const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
-  //   await createNewUserFromInvitation(testMail);
-  //   const newUser = await loadUserBy('User.email', testMail);
-  //   expect(newUser).toBeTruthy();
-  //   expect(newUser.roles_portal_id[0].id).toBe(ROLE_USER.id);
-  //
-  //   // Delete corresponding in order to avoid issue with other tests
-  //   deleteUserById(newUser.id as UserId);
-  //   const testUserDeletion = await loadUserBy('User.email', testMail);
-  //   expect(testUserDeletion).toBeFalsy();
-  // });
+  it('should be add new user with Role admin organization with an new Organization', async () => {
+    const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
+    await createNewUserFromInvitation(testMail);
+    const newUser = await loadUserBy('User.email', testMail);
+    expect(newUser).toBeTruthy();
+    const newOrganization = await loadUnsecureOrganizationBy(
+      'name',
+      'test-new-organization'
+    );
+    expect(newOrganization).toBeTruthy();
+
+    // Delete corresponding in order to avoid issue with other tests
+    deleteUserById(newUser.id as UserId);
+    const testUserDeletion = await loadUserBy('User.email', testMail);
+    expect(testUserDeletion).toBeFalsy();
+    deleteOrganizationByName('test-new-organization');
+  });
 });

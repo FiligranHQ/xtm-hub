@@ -26,7 +26,7 @@ export const addRolesToUser = async (userId: UserId, roles: string[]) => {
   for (const roleName of roles) {
     const role = await getRolePortalByName(roleName);
     if (role) {
-      return await createUserRolePortal(userId, role.id);
+      await createUserRolePortal(userId, role.id);
     } else {
       console.error(`Role "${roleName}" not found in database`);
     }

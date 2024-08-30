@@ -7,7 +7,15 @@ import User, {
 import { addRolesToUser } from '../common/user-role-portal';
 import { hashPassword } from '../../utils/hash-password.util';
 import { v4 as uuidv4 } from 'uuid';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
+import {
+  insertNewOrganization,
+  loadOrganizationsFromEmail,
+} from '../organizations/organizations.helper';
+import {
+  extractDomain,
+  isAuthorizedEmail,
+} from '../../utils/verify-email.util';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 
 export const addNewUserWithRoles = async (
   data: UserInitializer,
@@ -27,13 +35,38 @@ export const deleteUserUnsecure = async (field: UserMutator) => {
 export const createNewUserFromInvitation = async (email: string) => {
   const { salt, hash } = hashPassword('temporaryPassword');
 
-  const [organization] = await loadOrganizationsFromEmail(email);
-  if (!organization) {
+  if (!isAuthorizedEmail(email)) {
     // TODO: Should throw an error and break the following execution
     // throw new GraphQLError('Sorry this mail is not authorize', {
     //   extensions: { code: '[Users] NOT AUTHORIZED MAIL' },
     // });
     return null;
+  }
+
+  const [organization] = await loadOrganizationsFromEmail(email);
+  if (!organization) {
+    const extractedDomain = extractDomain(email);
+
+    // TODO: Should throw an error and break the following execution
+    // throw new GraphQLError('Sorry this mail is not authorize', {
+    //   extensions: { code: '[Users] NOT AUTHORIZED MAIL' },
+    // });
+    const [newOrganization] = await insertNewOrganization({
+      id: uuidv4() as OrganizationId,
+      name: extractedDomain.split('.')[0],
+      domains: [extractedDomain],
+    });
+
+    return await addNewUserWithRoles(
+      {
+        id: uuidv4() as UserId,
+        email,
+        salt,
+        password: hash,
+        organization_id: newOrganization.id,
+      },
+      ['ADMIN_ORGA', 'USER']
+    );
   }
 
   return await addNewUserWithRoles(
