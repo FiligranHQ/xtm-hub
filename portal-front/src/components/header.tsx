@@ -15,13 +15,13 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
   return (
     <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center bg-background bg-white px-4 shadow-md">
       <Logo className="mr-2 h-8 w-8" />
-      <h2 className="text-xl">
+      <h1 className="text-xl">
         {me?.email ? (
           <span> Portal {me.email}</span>
         ) : (
           <Skeleton className="h-6 w-56" />
         )}
-      </h2>
+      </h1>
     </header>
   );
 };
