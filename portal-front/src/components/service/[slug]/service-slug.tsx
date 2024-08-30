@@ -30,6 +30,8 @@ import { serviceUser$key } from '../../../../__generated__/serviceUser.graphql';
 import { useLocalStorage } from 'usehooks-ts';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import CreateButton from '@/components/ui/create-button';
+import { RESTRICTION } from '@/utils/constant';
+import GuardCapacityComponent from '@/components/admin-guard';
 
 export interface UserServiceData extends serviceUserSlugQuery$data {
   id: string;
@@ -213,6 +215,12 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
 
   return (
     <>
+        <GuardCapacityComponent
+            capacityRestriction={[
+                RESTRICTION.CAPABILITY_BYPASS,
+                RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
+                RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
+            ]}>
       <div className="flex justify-end pb-s">
         <ServiceSlugFormSheet
           open={openSheet}
@@ -251,6 +259,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
           pagination,
         }}
       />
+        </GuardCapacityComponent>
     </>
   );
 };

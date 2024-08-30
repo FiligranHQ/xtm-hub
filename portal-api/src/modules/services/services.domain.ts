@@ -7,20 +7,27 @@ import {
 import { PortalContext } from '../../model/portal-context';
 import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
 import { ServiceId, ServiceMutator } from '../../model/kanel/public/Service';
-import { RolePortal } from '../../model/user';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import Subscription, {
+  SubscriptionId,
+} from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
 import { loadUsersByOrganization } from '../users/users.domain';
-import { UserServiceId } from '../../model/kanel/public/UserService';
+import UserService, {
+  UserServiceId,
+} from '../../model/kanel/public/UserService';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import {
   insertSubscription,
-  loadUnsecureSubscriptionBy,
+  loadSubscription,
 } from '../subcription/subscription.domain';
-import { insertUserService } from '../user_service/user_service.domain';
+import {
+  insertUserService,
+  loadUnsecureUserServiceBy,
+} from '../user_service/user_service.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
-import { OrganizationId } from '../../model/kanel/public/Organization';
+import User from '../../model/kanel/public/User';
+import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
 
 export const loadCommunities = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -36,11 +43,17 @@ export const loadCommunities = async (context: PortalContext, opts) => {
       '=',
       'Service.id'
     )
+    .leftJoin(
+      'Organization as org',
+      'org.id',
+      '=',
+      'subscription.organization_id'
+    )
     .where('type', '=', 'COMMUNITY')
     .select(
       'Service.*',
       dbRaw(
-        "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
+        "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date,'organization', json_build_object('id',\"org\".id, 'name', \"org\".name), 'justification', \"subscription\".justification, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
       )
     )
     .groupBy(['Service.id', 'subscription.id'])
@@ -156,84 +169,148 @@ export const insertService = async (context: PortalContext, dataService) => {
   return db<Service>(context, 'Service').insert(dataService).returning('*');
 };
 
-export const grantCommunityAccess = async (
+export const orgaCreateCommu = async (
+  context,
+  organizationsId: string[],
+  addedServiceId: ServiceId,
+  justification: string
+) => {
+  await addSubscriptions(
+    context,
+    addedServiceId,
+    organizationsId,
+    'REQUESTED',
+    justification
+  );
+};
+
+export const adminCreateCommu = async (
   context: PortalContext,
   organizationsId: string[],
-  role: RolePortal,
-  addedService: Service,
-  userBillingManager: string
+  addedServiceId: ServiceId,
+  adminId: string
 ) => {
-  const billingManager = JSON.parse(userBillingManager);
-  for (const organization_id of organizationsId) {
-    const dataSubscription = {
-      id: uuidv4() as unknown as SubscriptionId,
-      organization_id: fromGlobalId(organization_id).id,
-      service_id: addedService.id,
-      start_date: new Date(),
-      end_date: null,
-      status: role.name === 'ADMIN' ? 'ACCEPTED' : 'REQUESTED',
-    };
-    const [addedSubscription] = await insertSubscription(
-      context,
-      dataSubscription
-    );
-
-    const users = await loadUsersByOrganization(
-      fromGlobalId(organization_id).id,
-      fromGlobalId(billingManager.id).id
-    );
-    const capabilitiesUsers = ['ACCESS_SERVICE'];
-    for (const user of users) {
-      await grantServiceAccess(
-        context,
-        capabilitiesUsers,
-        user.id,
-        addedSubscription.id
-      );
-    }
-  }
-
-  const capabilitiesAdmin = [
-    'ADMIN_SUBSCRIPTION',
-    'MANAGE_ACCESS',
-    'ACCESS_SERVICE',
-  ];
-
-  const [retrievedSubscription] = await loadUnsecureSubscriptionBy({
-    service_id: addedService.id as ServiceId,
-    organization_id: fromGlobalId(billingManager.organization_id)
-      .id as OrganizationId,
-  });
-  await grantServiceAccess(
+  const addedSubscriptions = await addSubscriptions(
     context,
-    capabilitiesAdmin,
-    fromGlobalId(billingManager.id).id,
-    retrievedSubscription.id
+    addedServiceId,
+    organizationsId,
+    'ACCEPTED'
   );
+
+  for (const addedSubscription of addedSubscriptions) {
+    const users = (await loadUsersByOrganization(
+      addedSubscription.organization_id,
+      adminId
+    )) as User[];
+    await grantServiceAccess(
+      context,
+      ['ACCESS_SERVICE'],
+      users.map(({ id }) => id),
+      addedSubscription.id
+    );
+  }
+};
+
+export const addSubscriptions = async (
+  context: PortalContext,
+  addedServiceId: string,
+  organizationsId: string[],
+  status: string,
+  justification: string = ''
+) => {
+  const subsData = organizationsId.map((orga_id) => ({
+    id: uuidv4() as unknown as SubscriptionId,
+    organization_id: fromGlobalId(orga_id).id,
+    service_id: addedServiceId,
+    start_date: new Date(),
+    end_date: null,
+    billing: 0,
+    status: status,
+    justification,
+  }));
+  return insertSubscription(context, subsData);
+};
+
+export const grantServiceAdminAccess = async (
+  context: PortalContext,
+  adminId: string,
+  addedServiceId: string
+) => {
+  const [subscriptionOfAdmin] = await loadSubscription(adminId, addedServiceId);
+  await db<Subscription>(context, 'Subscription')
+    .where({ id: subscriptionOfAdmin.id })
+    .update({ billing: 100 })
+    .returning('*');
+  const dataUserService = {
+    id: uuidv4() as UserServiceId,
+    user_id: adminId,
+    subscription_id: subscriptionOfAdmin.id,
+  };
+  const [userService] = await insertUserService(context, dataUserService);
+  const capabilities = [
+    'ACCESS_SERVICE',
+    'MANAGE_ACCESS',
+    'ADMIN_SUBSCRIPTION',
+  ];
+  const dataCapabilities = capabilities.map((capability) => ({
+    id: uuidv4() as ServiceCapabilityId,
+    user_service_id: userService.id,
+    service_capability_name: capability,
+  }));
+
+  await insertServiceCapability(context, dataCapabilities);
 };
 
 export const grantServiceAccess = async (
   context: PortalContext,
   capabilities: string[],
-  userId: string,
+  usersId: string[],
   subscriptionId: string
 ) => {
-  const dataUserService = {
+  const dataUserServices = usersId.map((userId) => ({
     id: uuidv4() as UserServiceId,
     user_id: userId,
     subscription_id: subscriptionId,
-  };
-  const [insertedUserService] = await insertUserService(
-    context,
-    dataUserService
-  );
+  }));
 
-  for (const capability of capabilities) {
-    const dataServiceCapability = {
+  const insertedUserServices = (await insertUserService(
+    context,
+    dataUserServices
+  )) as UserService[];
+
+  for (const insertedUserService of insertedUserServices) {
+    const dataServiceCapabilities = capabilities.map((capability) => ({
       id: uuidv4() as ServiceCapabilityId,
       user_service_id: insertedUserService.id,
       service_capability_name: capability,
-    };
-    await insertServiceCapability(context, dataServiceCapability);
+    }));
+
+    await insertServiceCapability(context, dataServiceCapabilities);
   }
+
+  for (const capability of capabilities) {
+    const dataServiceCapabilities = insertedUserServices.map(
+      (insertedUserService) => ({
+        id: uuidv4() as ServiceCapabilityId,
+        user_service_id: insertedUserService.id,
+        service_capability_name: capability,
+      })
+    );
+    await insertServiceCapability(context, dataServiceCapabilities);
+  }
+};
+
+export const findCurrentCommuAdminId = async (serviceId: ServiceId) => {
+  const existingSubscriptions = await loadUnsecureSubscriptionBy({
+    service_id: serviceId,
+  });
+  // Only one subscription exists, we know it is the admin's
+  const adminsSubscription = existingSubscriptions[0];
+  const userServiceAdmin = await loadUnsecureUserServiceBy({
+    subscription_id: adminsSubscription.id,
+  });
+  return {
+    adminCommuId: userServiceAdmin[0].user_id,
+    adminsSubscription: adminsSubscription,
+  };
 };

@@ -15,7 +15,7 @@ const serviceName = 'name_community_test';
 const serviceDescription = 'short description test';
 const servicePrice = 10;
 const serviceFeeType = 'YEARLY';
-const serviceLinks = ['Service1', 'Service2'];
+const serviceLinks = ['OCTI', 'Nextcloud'];
 const organizationList = [
   toGlobalId('Organization', 'ba091095-418f-4b4f-b150-6c9295e232c4'),
   toGlobalId('Organization', '681fb117-e2c3-46d3-945a-0e921b5d4b6c'),
@@ -41,13 +41,12 @@ const addServiceTestQuery = {
       price: servicePrice,
       fee_type: serviceFeeType,
       organizations_id: organizationList,
-      requested_services: serviceLinks,
       billing_manager: `{"id": "${toGlobalId('User', 'ba091095-418f-4b4f-b150-6c9295e232c3')}", "organization_id": "${toGlobalId('Organization', 'ba091095-418f-4b4f-b150-6c9295e232c4')}" }`,
     },
   },
 };
 
-describe('User can create communities ', () => {
+describe('Admin can create communities ', () => {
   let userAdmin;
   let response;
   let result;
@@ -63,7 +62,7 @@ describe('User can create communities ', () => {
   it('Should return 200', () => {
     expect(response.status).toBe(200);
   });
-  it('Should insert service with type community', async () => {
+  it('Should insert service with type community ', async () => {
     const community = result.data.addServiceCommunity;
 
     expect(community).toEqual(
@@ -72,12 +71,12 @@ describe('User can create communities ', () => {
         description: serviceDescription,
         provider: 'SCRED_ONDEMAND',
         type: 'COMMUNITY',
-        subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
+        subscription_service_type: 'SUBSCRIPTABLE_DIRECT',
       })
     );
   });
 
-  it('Should insert ServicePrice ', async () => {
+  it('Should insert ServicePrice', async () => {
     const [loadedService] = await loadUnsecureServiceBy({
       name: serviceName,
     });
@@ -90,7 +89,7 @@ describe('User can create communities ', () => {
     expect(loadedServicePrice.service_id).toEqual(service.id);
   });
 
-  it('Should insert Subscription, UserService and capabilities', async () => {
+  it('Should insert Subscription, UserService and capabilities ', async () => {
     const loadedSubscriptions = await loadUnsecureSubscriptionBy({
       service_id: service.id,
     });
@@ -107,6 +106,7 @@ describe('User can create communities ', () => {
       const loadedUserServices = await loadUnsecureUserServiceBy({
         subscription_id: sub.id,
       });
+
       expect(loadedUserServices.length).toEqual(2);
       for (const userService of loadedUserServices) {
         const loadedCapabilities = await loadUnsecureServiceCapabilitiesBy({

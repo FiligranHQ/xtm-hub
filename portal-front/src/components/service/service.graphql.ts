@@ -21,6 +21,14 @@ export const ServiceCommunityListCreateMutation = graphql`
   }
 `;
 
+export const ServiceCommunityAcceptMutation = graphql`
+  mutation serviceCommunityAcceptMutation($input: ServiceCommunityAcceptInput) {
+    acceptCommunity(input: $input) {
+      ...subscription_fragment
+    }
+  }
+`;
+
 export const serviceListFragment = graphql`
   fragment serviceList_fragment on Service {
     id
@@ -49,6 +57,11 @@ export const communityListFragment = graphql`
     subscription {
       id
       status
+      justification
+      organization {
+        id
+        name
+      }
     }
   }
 `;
@@ -116,13 +129,13 @@ export const communitiesListFragment = graphql`
           subscription {
             id
             status
-
             organization {
               name
               id
             }
             start_date
             end_date
+            justification
           }
         }
       }

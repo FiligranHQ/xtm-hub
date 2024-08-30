@@ -116,12 +116,14 @@ export const AddSubscriptionMutation = graphql`
     $service_id: String!
     $organization_id: ID!
     $user_id: ID!
+    $billing: Int
     $connections: [ID!]!
   ) {
     addSubscription(
       service_id: $service_id
       organization_id: $organization_id
       user_id: $user_id
+      billing: $billing
     )
       @prependNode(
         connections: $connections

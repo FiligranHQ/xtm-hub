@@ -11,6 +11,7 @@ import {
 } from 'react-relay';
 import {
   communitiesListFragment,
+  ServiceCommunityAcceptMutation,
   ServiceCommunityListQuery,
   subscription,
 } from '@/components/service/service.graphql';
@@ -23,23 +24,12 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import {
-  AddSubscriptionMutation,
-  SubscriptionEditMutation,
-} from '@/components/subcription/subscription.graphql';
-import { subscriptionCreateMutation } from '../../../../__generated__/subscriptionCreateMutation.graphql';
+import { SubscriptionEditMutation } from '@/components/subcription/subscription.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 import GuardCapacityComponent from '@/components/admin-guard';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { getSubscriptionsByOrganization } from '@/components/subcription/subscription.service';
-import {
-  CheckIcon,
-  ConstructionIcon,
-  CourseOfActionIcon,
-  IndicatorIcon,
-  LittleArrowIcon,
-} from 'filigran-icon';
+import { CheckIcon, CourseOfActionIcon, LittleArrowIcon } from 'filigran-icon';
 import {
   OrderingMode,
   ServiceOrdering,
@@ -58,32 +48,13 @@ import { z } from 'zod';
 import { ServicePriceCreateMutation } from '@/components/service/service-price.graphql';
 import { servicePriceMutation } from '../../../../__generated__/servicePriceMutation.graphql';
 import { RESTRICTION } from '@/utils/constant';
+import { serviceCommunityAcceptMutation } from '../../../../__generated__/serviceCommunityAcceptMutation.graphql';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
   connectionId?: string;
   shouldDisplayOnlyOwnedService?: boolean;
 }
-
-interface SubscriptableMessagesProps {
-  successMessage: string;
-  alertMessage: string;
-}
-
-const SUBSCRIPTABLE_MESSAGES: Record<string, SubscriptableMessagesProps> = {
-  SUBSCRIPTABLE_DIRECT: {
-    successMessage:
-      'You have successfully subscribed to the service. You can now find it in your subscribed services.',
-    alertMessage:
-      'Are you really sure you want to subscribe this service ? This action can not be undone.',
-  },
-  SUBSCRIPTABLE_BACKOFFICE: {
-    successMessage:
-      'Your request has been sent. You will soon be in touch with our team.',
-    alertMessage:
-      'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?',
-  },
-};
 
 //TODO : Remove me.context and avoid when possible optional value in GraphqlTyping ex: ServiceType
 const CommunityList: React.FunctionComponent<CommunityProps> = ({
@@ -99,7 +70,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     pageSize,
   });
   const [openSheet, setOpenSheet] = useState(false);
-  const [statusOnGoingCommunity, setStatusOnGoingCommunity] = useState('');
+  const [justification, setJustification] = useState('');
+  const [mainOrganization, setMainOrganization] = useState({
+    id: '',
+    name: '',
+  });
   const [serviceDataOnGoingCommunity, setServiceDataOnGoingCommunity] =
     useState<serviceCommunityList_fragment$data>();
 
@@ -112,64 +87,16 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     'asc'
   );
   const { toast } = useToast();
-  const [commitSubscriptionCreateMutation] =
-    useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
+  const [commitServiceCommunityAcceptMutation] =
+    useMutation<serviceCommunityAcceptMutation>(ServiceCommunityAcceptMutation);
   const { me } = useContext<Portal>(portalContext);
   if (!me) {
     return;
   }
 
-  const handleSuccess = (message: string) => {
-    setIsSubscriptionLoading(false);
-    toast({
-      title: 'Success',
-      description: <>{message}</>,
-    });
-  };
-  const handleError = (error: Error) => {
-    setIsSubscriptionLoading(false);
-    toast({
-      variant: 'destructive',
-      title: 'Error',
-      description: <>{error.message}</>,
-    });
-  };
-
-  const commitMutation = (service_id: string, serviceType: string) => {
-    commitSubscriptionCreateMutation({
-      variables: {
-        connections: [connectionId],
-        service_id,
-        organization_id: me.organization.id,
-        user_id: me.id,
-      },
-      onCompleted: () =>
-        handleSuccess(SUBSCRIPTABLE_MESSAGES[serviceType]!.successMessage),
-      onError: (error: Error) => handleError(error),
-    });
-  };
-  const addSubscriptionInDb = (service: serviceCommunityList_fragment$data) => {
-    setIsSubscriptionLoading(true);
-    commitMutation(
-      service.id,
-      service.subscription_service_type ?? 'SUBSCRIPTABLE_BACKOFFICE'
-    );
-  };
-
-  const generateAlertText = (service: serviceCommunityList_fragment$data) => {
-    const serviceType =
-      service.subscription_service_type ?? 'SUBSCRIPTABLE_BACKOFFICE';
-    return SUBSCRIPTABLE_MESSAGES[serviceType]!.alertMessage;
-  };
-
   const [subscriptionsOrganization, refetchSubOrga] =
     getSubscriptionsByOrganization();
   connectionId = subscriptionsOrganization.subscriptionsByOrganization.__id;
-  const subscribedServiceName =
-    subscriptionsOrganization.subscriptionsByOrganization.edges.map(
-      (subscription) => subscription.node.service?.name
-    );
-
   const ownedServices =
     subscriptionsOrganization.subscriptionsByOrganization.edges.map(
       (subscription) => subscription.node.service
@@ -186,38 +113,6 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         cell: ({ row }) => {
           return (
             <>
-              {subscribedServiceName.includes(row.original.name) ? (
-                <Button
-                  asChild
-                  className="w-3/4">
-                  <Link
-                    href={` `}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow">
-                    {' '}
-                    <IndicatorIcon className="mr-2 h-5 w-5" />
-                    View more
-                  </Link>
-                </Button>
-              ) : (
-                <GuardCapacityComponent
-                  capacityRestriction={['FRT_SERVICE_SUBSCRIBER']}>
-                  <AlertDialogComponent
-                    AlertTitle={'Subscribe service'}
-                    actionButtonText={'Continue'}
-                    triggerElement={
-                      <Button
-                        aria-label="Subscribe service"
-                        className="w-3/4">
-                        <ConstructionIcon className="mr-2 h-5 w-5" />
-                        Subscribe
-                      </Button>
-                    }
-                    onClickContinue={() => addSubscriptionInDb(row.original)}>
-                    {generateAlertText(row.original)}
-                  </AlertDialogComponent>
-                </GuardCapacityComponent>
-              )}
               <GuardCapacityComponent
                 capacityRestriction={['BCK_MANAGE_SERVICES']}>
                 <Button
@@ -345,6 +240,23 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       });
       return;
     }
+    commitServiceCommunityAcceptMutation({
+      variables: {
+        input: {
+          serviceId: serviceDataOnGoingCommunity.id,
+          organizationsId: values.organizations_id,
+        },
+      },
+      onCompleted: () => {},
+      onError: (error: Error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
+    });
+
     commitServicePriceMutation({
       variables: {
         input: {
@@ -353,14 +265,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           price: values.price,
         },
       },
-      onCompleted: () => {
-        serviceDataOnGoingCommunity?.subscription?.forEach((subscription) => {
-          editSubscription(
-            statusOnGoingCommunity,
-            subscription as subscriptionItem_fragment$data
-          );
-        });
-      },
+      onCompleted: () => {},
       onError: (error) => {
         toast({
           variant: 'destructive',
@@ -377,15 +282,20 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     status: string,
     serviceData: serviceCommunityList_fragment$data
   ) => {
+    if (serviceData.subscription) {
+      setJustification(serviceData.subscription[0]?.justification ?? '');
+      setMainOrganization(
+        serviceData.subscription[0]?.organization ?? { id: '', name: '' }
+      );
+    }
     if (status === 'ACCEPTED') {
       setOpenSheet(true);
-      setStatusOnGoingCommunity(status);
       setServiceDataOnGoingCommunity(serviceData);
     } else {
       serviceData.subscription?.forEach((subscription) => {
         editSubscription(
           status,
-          subscription as subscriptionItem_fragment$data
+          subscription as unknown as subscriptionItem_fragment$data
         );
       });
     }
@@ -483,7 +393,6 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
       setPageSize(newPaginationValue.pageSize);
     }
   };
-
   return (
     <>
       <div className="flex justify-end pb-m">
@@ -493,7 +402,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
             RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
             RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
           ]}>
-          <CreateCommunity connectionId={connectionId}></CreateCommunity>
+          <CreateCommunity
+            connectionId={connectionId}
+            adminForm={me.capabilities.some(
+              (capability) => capability.name === 'BYPASS'
+            )}></CreateCommunity>
         </GuardCapacityComponent>
       </div>
       {isSubscriptionLoading ? (
@@ -521,14 +434,17 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           ) : (
             'You do not have any service... Yet !'
           )}
+
           <CommunityAcceptFormSheet
             title={'Accept a new community'}
             description={
               'Insert the billing here. Click Validate when you are done. The subscriptions will be accepted.'
             }
+            justification={justification}
             handleSubmit={handleAcceptCommunity}
             open={openSheet}
             setOpen={setOpenSheet}
+            mainOrganization={mainOrganization}
             validationSchema={
               communityAcceptFormSchema
             }></CommunityAcceptFormSheet>
