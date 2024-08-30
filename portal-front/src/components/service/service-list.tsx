@@ -100,6 +100,8 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
           variables: {
             connections: [connectionID],
             service_id: service.id,
+            organization_id: me.organization.id,
+            user_id: me.id,
           },
           onCompleted: () => handleSuccess(successMessage),
           onError: (error: Error) => handleError(error),
