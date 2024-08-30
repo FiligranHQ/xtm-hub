@@ -86,7 +86,7 @@
         "provider": "Glimps",
         "type": "analysis",
         "description": "This is a short description to describe the Malware analysis app, how to use it, etc.",
-        "subscription_service_type": "SUBSCRIPTABLE_BACKOFFICE"
+        "subscription_service_type": "SUBSCRIPTABLE_DIRECT"
       },
       "link": {
         "id": "b3c1664d-2337-46f5-a3ce-c3b72460e71a",

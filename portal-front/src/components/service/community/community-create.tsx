@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
-import { AddIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
 import { useToast } from 'filigran-ui/clients';
 import { CommunityFormSheet } from '@/components/service/community/community-form-sheet';
-import { communityFormSchema } from '@/components/service/community/community-form-schema';
+import {
+  communityFormSchemaAdmin,
+  communityFormSchemaOrga,
+} from '@/components/service/community/community-form-schema';
 import { ServiceCommunityListCreateMutation } from '@/components/service/service.graphql';
 import { serviceCommunityListMutation } from '../../../../__generated__/serviceCommunityListMutation.graphql';
 import { useMutation, useQueryLoader } from 'react-relay';
@@ -17,10 +18,12 @@ import CreateButton from '@/components/ui/create-button';
 
 interface CreateCommunityProps {
   connectionId: string;
+  adminForm: boolean;
 }
 
 export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
   connectionId,
+  adminForm = false,
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
 
@@ -30,10 +33,18 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
       ServiceCommunityListCreateMutation
     );
 
-  const handleSubmit = (values: z.infer<typeof communityFormSchema>) => {
+  const handleSubmit = (
+    values: z.infer<
+      typeof communityFormSchemaOrga | typeof communityFormSchemaAdmin
+    >
+  ) => {
     commitServiceCommunityMutation({
       variables: {
-        input: { ...(values as z.infer<typeof communityFormSchema>) },
+        input: {
+          ...(values as z.infer<
+            typeof communityFormSchemaOrga | typeof communityFormSchemaAdmin
+          >),
+        },
         connections: [connectionId],
       },
       onCompleted: () => {},
@@ -54,6 +65,7 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
     orderBy: 'email',
     orderMode: 'asc',
   });
+
   return queryRef ? (
     <CommunityFormSheet
       queryRef={queryRef}
@@ -64,7 +76,7 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}
-      validationSchema={communityFormSchema}
+      adminForm={adminForm}
       trigger={<CreateButton label="Create community" />}
     />
   ) : (

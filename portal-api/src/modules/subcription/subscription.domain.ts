@@ -11,7 +11,7 @@ import { insertCapa } from './service_capability.domain';
 import { loadOrganizationBy } from '../organizations/organizations';
 import { loadServiceBy } from '../services/services.domain';
 import { UserServiceId } from '../../model/kanel/public/UserService';
-import { UserId } from '../../model/kanel/public/User';
+import User, { UserId } from '../../model/kanel/public/User';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -62,6 +62,19 @@ export const loadSubscriptionBy = async (field: string, value: string) => {
 
 export const loadUnsecureSubscriptionBy = (field: SubscriptionMutator) => {
   return dbUnsecure<Subscription>('Subscription').where(field);
+};
+
+export const loadSubscription = (userId, serviceId) => {
+  return dbUnsecure<User>('User')
+    .leftJoin(
+      'Subscription as sub',
+      'sub.organization_id',
+      '=',
+      'User.organization_id'
+    )
+    .where('User.id', userId)
+    .where('sub.service_id', serviceId)
+    .select('sub.id');
 };
 
 export const loadSubscriptionsByOrganization = async (

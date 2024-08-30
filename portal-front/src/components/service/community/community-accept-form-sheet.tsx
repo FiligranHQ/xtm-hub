@@ -23,25 +23,47 @@ import {
   SheetHeader,
   SheetTitle,
 } from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
-import { communityFormSchema } from '@/components/service/community/community-form-schema';
+import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
+import { getOrganizations } from '@/components/organization/organization.service';
+import { communityAcceptFormSchema } from '@/components/service/community/community-form-schema';
 
 interface CommunityAcceptFormSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   title: string;
   description: string;
-  handleSubmit: (values: z.infer<typeof communityFormSchema>) => void;
+  justification: string;
+  mainOrganization: { id: string; name: string };
+  handleSubmit: (values: z.infer<typeof communityAcceptFormSchema>) => void;
   validationSchema: ZodSchema;
 }
 
 export const CommunityAcceptFormSheet: FunctionComponent<
   CommunityAcceptFormSheetProps
-> = ({ open, setOpen, title, description, handleSubmit, validationSchema }) => {
+> = ({
+  open,
+  setOpen,
+  title,
+  description,
+  justification,
+  handleSubmit,
+  mainOrganization,
+  validationSchema,
+}) => {
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
     defaultValues: {},
   });
+
+  const [organizations] = getOrganizations();
+
+  const organizationsData =
+    organizations.organizations.edges
+      .filter(({ node }) => !node.id.includes(mainOrganization.id))
+      .map(({ node }) => ({
+        label: node.name,
+        value: node.id,
+      })) ?? [];
 
   const onSubmit = (values: z.infer<typeof validationSchema>) => {
     handleSubmit({
@@ -59,6 +81,7 @@ export const CommunityAcceptFormSheet: FunctionComponent<
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
+        {justification}
 
         <Form {...form}>
           <form
@@ -95,7 +118,6 @@ export const CommunityAcceptFormSheet: FunctionComponent<
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="price"
@@ -117,6 +139,29 @@ export const CommunityAcceptFormSheet: FunctionComponent<
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="organizations_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Partners organizations (Billing organization :{' '}
+                    {mainOrganization.name})
+                  </FormLabel>
+                  <FormControl>
+                    <MultiSelectFormField
+                      options={organizationsData}
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Select organizations"
+                      variant="inverted"
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <SheetFooter className="pt-2">
               <SheetClose asChild>
                 <Button variant="outline">Cancel</Button>

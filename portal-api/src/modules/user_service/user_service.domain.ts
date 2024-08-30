@@ -1,6 +1,8 @@
 import { PortalContext } from '../../model/portal-context';
-import { db, dbRaw, paginate } from '../../../knexfile';
-import UserService from '../../model/kanel/public/UserService';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import UserService, {
+  UserServiceMutator,
+} from '../../model/kanel/public/UserService';
 import { UserServiceConnection } from '../../__generated__/resolvers-types';
 import Service from '../../model/kanel/public/Service';
 
@@ -133,6 +135,10 @@ export const loadUserServiceByUser = async (
     .countDistinct('User_Service.id as totalCount')
     .first();
   return { totalCount, ...userServiceConnection };
+};
+
+export const loadUnsecureUserServiceBy = async (field: UserServiceMutator) => {
+  return dbUnsecure<UserService>('User_Service').where(field);
 };
 
 export const loadUsersBySubscription = async (
