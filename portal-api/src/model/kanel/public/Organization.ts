@@ -9,6 +9,8 @@ export default interface Organization {
   id: OrganizationId;
 
   name: string | null;
+
+  domains: string[] | null;
 }
 
 /** Represents the initializer for the table public.Organization */
@@ -16,6 +18,8 @@ export interface OrganizationInitializer {
   id: OrganizationId;
 
   name?: string | null;
+
+  domains?: string[] | null;
 }
 
 /** Represents the mutator for the table public.Organization */
@@ -23,4 +27,6 @@ export interface OrganizationMutator {
   id?: OrganizationId;
 
   name?: string | null;
+
+  domains?: string[] | null;
 }

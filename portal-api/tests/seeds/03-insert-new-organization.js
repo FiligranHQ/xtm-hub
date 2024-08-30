@@ -3,6 +3,7 @@ export async function seed(knex) {
     {
       id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
       name: 'Thales',
+      domains: ['thales.com'],
     },
   ]);
   await knex('User').insert([

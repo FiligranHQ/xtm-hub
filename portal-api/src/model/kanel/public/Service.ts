@@ -29,8 +29,10 @@ export interface ServiceInitializer {
 
   description?: string | null;
 
+  /** Default value: 'SCRED'::character varying */
   provider?: string | null;
 
+  /** Default value: 'Intel'::character varying */
   type?: string | null;
 
   /** Default value: 'READY'::text */

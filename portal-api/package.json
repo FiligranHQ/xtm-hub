@@ -28,7 +28,7 @@
     "lint:fix": "eslint --fix",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "test": "vitest run",
+    "test": "TEST_MODE=true && vitest run",
     "prepare": "cd .. && husky ./.husky",
     "seed:make:test": "TEST_MODE=true && yarn knex:run seed:make",
     "start-dev-test": "TEST_MODE=true && yarn start-dev",
