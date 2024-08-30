@@ -171,6 +171,7 @@ export const serviceUsersFragment = graphql`
           }
           subscription {
             id
+            billing
             organization {
               name
               id

@@ -4,12 +4,13 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { DataTable } from 'filigran-ui/clients';
+import { DataTable, useToast } from 'filigran-ui/clients';
+import * as React from 'react';
 import { FunctionComponent, useMemo, useState } from 'react';
 import { Badge, Button } from 'filigran-ui/servers';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
-import { AddIcon, ChevronIcon, LittleArrowIcon } from 'filigran-icon';
+import { ChevronIcon, DeleteIcon, LittleArrowIcon } from 'filigran-icon';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
@@ -31,6 +32,9 @@ import { useLocalStorage } from 'usehooks-ts';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import { RESTRICTION } from '@/utils/constant';
 import GuardCapacityComponent from '@/components/admin-guard';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
+import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
 import TriggerButton from '@/components/ui/trigger-button';
 
 export interface UserServiceData extends serviceUserSlugQuery$data {
@@ -54,8 +58,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
     'orderByServiceSlug',
     'first_name'
   );
+
   const [commitUserServiceDeletingMutation] =
     useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
+
+  const { toast } = useToast();
   const deleteCurrentUser = (userService: any) => {
     commitUserServiceDeletingMutation({
       variables: {
@@ -100,6 +107,19 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
         service_capability_names: capa_names,
       } as unknown as UserServiceData;
     }) ?? [];
+
+  const organizations = data.serviceUsers?.edges.map((item) => {
+    return {
+      organization: item.node?.subscription?.organization,
+      billing: item.node?.subscription?.billing,
+      subscription_id: item.node?.subscription?.id,
+    };
+  });
+  const uniqueOrganizations = organizations.filter(
+    (org, index, self) =>
+      index ===
+      self.findIndex((t) => t?.organization?.id === org?.organization?.id)
+  );
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -147,6 +167,32 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
     if (newPaginationValue.pageSize !== pageSize) {
       setPageSize(newPaginationValue.pageSize);
     }
+  };
+
+  const [commitSubscriptionMutation] = useMutation<subscriptionDeleteMutation>(
+    SubscriptionDeleteMutation
+  );
+
+  const onRemoveOrganization = (subscription_id: string) => {
+    commitSubscriptionMutation({
+      variables: {
+        subscription_id: subscription_id,
+      },
+      onCompleted: () => {
+        toast({
+          title: 'Success',
+          description: <>{'Subscription accepted'}</>,
+        });
+        setOpenSheet(false);
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
+    });
   };
 
   const columns: ColumnDef<UserServiceData>[] = useMemo(
@@ -215,51 +261,102 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
 
   return (
     <>
-        <GuardCapacityComponent
-            capacityRestriction={[
-                RESTRICTION.CAPABILITY_BYPASS,
-                RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-                RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
-            ]}>
-      <div className="flex justify-end pb-s">
-        <ServiceSlugFormSheet
-          open={openSheet}
-          setOpen={setOpenSheet}
-          userService={currentUser}
-          connectionId={connectionId}
-          subscriptionId={subscriptionId}
-          refetch={() =>
-            refetch({
-              count: pagination.pageSize,
-              cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-              orderBy,
-              orderMode,
-            })
-          }
-          trigger={
-            <TriggerButton
-              onClick={() => setCurrentUser({})}
-              label="Invite user"
-            />
-          }
+      <GuardCapacityComponent
+        capacityRestriction={[
+          RESTRICTION.CAPABILITY_BYPASS,
+          RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
+          RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
+        ]}>
+        <div className="flex justify-end pb-s">
+          <ServiceSlugFormSheet
+            open={openSheet}
+            setOpen={setOpenSheet}
+            userService={currentUser}
+            connectionId={connectionId}
+            subscriptionId={subscriptionId}
+            refetch={() =>
+              refetch({
+                count: pagination.pageSize,
+                cursor: btoa(
+                  String(pagination.pageSize * pagination.pageIndex)
+                ),
+                orderBy,
+                orderMode,
+              })
+            }
+            trigger={
+              <TriggerButton
+                onClick={() => setCurrentUser({})}
+                label="Invite user"
+              />
+            }
+          />
+        </div>
+
+        <ul
+          className={
+            'grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-m'
+          }>
+          {uniqueOrganizations.map(
+            ({ billing, organization, subscription_id }) => {
+              return (
+                <li
+                  className="border-light flex flex-col bg-white p-s"
+                  key={organization?.id}>
+                  <div className="flex-1 p-m pb-xl">
+                    <div className="flex items-center justify-between">
+                      <h3>Organization : {organization?.name}</h3>
+                      <div className="justify-end">
+                        {billing === 0 ? (
+                          <AlertDialogComponent
+                            actionButtonText={'Remove'}
+                            variantName={'destructive'}
+                            AlertTitle={'Remove organization'}
+                            triggerElement={
+                              <Button
+                                variant="destructive"
+                                aria-label="Delete Organization from Community">
+                                <DeleteIcon className="h-4 w-4" />
+                              </Button>
+                            }
+                            onClickContinue={() =>
+                              onRemoveOrganization(subscription_id ?? '')
+                            }>
+                            Are you sure you want to delete this organization{' '}
+                            {organization?.name} from this community? This
+                            action can not be undone.
+                          </AlertDialogComponent>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                    <p className={'pt-s txt-sub-content'}>
+                      Billing : {billing} %
+                    </p>
+                  </div>
+                </li>
+              );
+            }
+          )}
+        </ul>
+
+        <DataTable
+          columns={columns}
+          data={usersData}
+          tableOptions={{
+            onSortingChange: onSortingChange,
+            onPaginationChange: onPaginationChange,
+            manualSorting: true,
+            manualPagination: true,
+            rowCount: data.serviceUsers?.totalCount,
+          }}
+          tableState={{
+            sorting: mapToSortingTableValue(orderBy, orderMode),
+            pagination,
+          }}
         />
-      </div>
-      <DataTable
-        columns={columns}
-        data={usersData}
-        tableOptions={{
-          onSortingChange: onSortingChange,
-          onPaginationChange: onPaginationChange,
-          manualSorting: true,
-          manualPagination: true,
-          rowCount: data.serviceUsers?.totalCount,
-        }}
-        tableState={{
-          sorting: mapToSortingTableValue(orderBy, orderMode),
-          pagination,
-        }}
-      />
-        </GuardCapacityComponent>
+      </GuardCapacityComponent>
     </>
   );
 };

@@ -111,6 +111,13 @@ export const SubscriptionEditMutation = graphql`
   }
 `;
 
+export const SubscriptionDeleteMutation = graphql`
+  mutation subscriptionDeleteMutation($subscription_id: ID!) {
+    deleteSubscription(subscription_id: $subscription_id) {
+      ...subscription_fragment
+    }
+  }
+`;
 export const AddSubscriptionMutation = graphql`
   mutation subscriptionCreateMutation(
     $service_id: String!
