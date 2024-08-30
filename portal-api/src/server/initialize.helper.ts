@@ -1,5 +1,4 @@
 import { dbUnsecure } from '../../knexfile';
-import { Capability, Organization } from '../__generated__/resolvers-types';
 import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
@@ -7,6 +6,9 @@ import { UserWithAuthentication } from '../modules/users/users';
 import Service from '../model/kanel/public/Service';
 import ServicePrice from '../model/kanel/public/ServicePrice';
 import ServiceLink from '../model/kanel/public/ServiceLink';
+import Organization, {
+  OrganizationId,
+} from '../model/kanel/public/Organization';
 
 export const ensureServiceExists = async (service) => {
   const services = await dbUnsecure('Service');
@@ -40,7 +42,7 @@ export const ensureServiceExists = async (service) => {
 export const ensureCapabilityExists = async (capability, trx) => {
   const capabilityPortal = await dbUnsecure('CapabilityPortal');
   if (!capabilityPortal.find((c) => c.id === capability.id)) {
-    await dbUnsecure<Capability>('CapabilityPortal')
+    await dbUnsecure<RolePortalCapabilityPortal>('CapabilityPortal')
       .insert(capability)
       .transacting(trx);
   }
@@ -83,7 +85,10 @@ export const ensureRoleHasCapability = async (role, capability, trx) => {
 
 export const insertPlatformOrganization = async (trx) => {
   await dbUnsecure<Organization>('Organization')
-    .insert({ id: PLATFORM_ORGANIZATION_UUID, name: 'Internal' })
+    .insert({
+      id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
+      name: 'Internal',
+    })
     .transacting(trx);
 };
 

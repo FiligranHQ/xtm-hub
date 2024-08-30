@@ -8,6 +8,7 @@ import { addRolesToUser } from '../common/user-role-portal';
 import { hashPassword } from '../../utils/hash-password.util';
 import { v4 as uuidv4 } from 'uuid';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { isAuthorizedEmail } from '../../utils/verify-email.util';
 
 export const addNewUserWithRoles = async (
   data: UserInitializer,
@@ -29,6 +30,13 @@ export const createNewUserFromInvitation = async (
   organization_id: OrganizationId
 ) => {
   const { salt, hash } = hashPassword('temporaryPassword');
+  if (!isAuthorizedEmail(email)) {
+    // TODO: Should throw an error and break the following execution
+    // throw new GraphQLError('Sorry this mail is not authorize', {
+    //   extensions: { code: '[Users] NOT AUTHORIZED MAIL' },
+    // });
+    return null;
+  }
   return await addNewUserWithRoles(
     {
       id: uuidv4() as UserId,
@@ -39,4 +47,11 @@ export const createNewUserFromInvitation = async (
     },
     ['USER']
   );
+};
+
+export const deleteUserById = async (userId: UserId) => {
+  return dbUnsecure<User>('User')
+    .where('id', userId)
+    .delete('*')
+    .returning('*');
 };

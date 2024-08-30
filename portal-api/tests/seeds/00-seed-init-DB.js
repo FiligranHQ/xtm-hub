@@ -3,6 +3,7 @@ export async function seed(knex) {
     {
       id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
       name: 'Internal',
+      domains: ['filigran.io', 'internal.com'],
     },
   ]);
   await knex('User').insert([
