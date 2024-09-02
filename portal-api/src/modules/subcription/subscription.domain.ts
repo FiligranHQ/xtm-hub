@@ -5,15 +5,17 @@ import {
 } from '../../__generated__/resolvers-types';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
-import { loadUsersByOrganization } from '../users/users.domain';
-import { insertUserService } from '../user_service/user_service.domain';
-import { insertCapa } from './service_capability.domain';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadServiceBy } from '../services/services.domain';
-import { UserServiceId } from '../../model/kanel/public/UserService';
-import User, { UserId } from '../../model/kanel/public/User';
+import User from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { loadUserBy } from '../users/users.domain';
+import { loadUnsecureServiceCapabilitiesBy } from '../services/instances/service-capabilities/service_capabilities.helper';
+import UserService from '../../model/kanel/public/UserService';
+import { ServiceId } from '../../model/kanel/public/Service';
+import { loadSubscriptionBy } from './subscription.helper';
 
 export const loadSubscriptions = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -166,21 +168,72 @@ export const checkSubscriptionExists = async (
   return sub ?? false;
 };
 
-export const addOrganizationUsersRights = async (
-  context,
-  organizationId: string,
-  adminId: string,
-  addedSuscriptionId: string
+export const insertSubscription = async (
+  context: PortalContext,
+  dataSubscription
 ) => {
-  const usersInOrga = await loadUsersByOrganization(organizationId, adminId);
-  for (const user of usersInOrga) {
-    const [user_service] = await insertUserService(context, {
-      id: uuidv4() as UserServiceId,
-      user_id: user.id as UserId,
-      subscription_id: addedSuscriptionId as SubscriptionId,
-      service_personal_data: null,
-    });
+  return db<Subscription>(context, 'Subscription')
+    .insert(dataSubscription)
+    .returning('*');
+};
 
-    await insertCapa(context, user_service.id, 'ACCESS_SERVICE');
+export const addSubscriptions = async (
+  context: PortalContext,
+  addedServiceId: string,
+  organizationsId: string[],
+  status: string,
+  justification: string = ''
+) => {
+  const subsData = organizationsId.map((orga_id) => ({
+    id: uuidv4() as unknown as SubscriptionId,
+    organization_id: fromGlobalId(orga_id).id,
+    service_id: addedServiceId,
+    start_date: new Date(),
+    end_date: null,
+    billing: 0,
+    status: status,
+    justification,
+  }));
+  return insertSubscription(context, subsData);
+};
+
+export const fillUserServiceData = async (
+  userServices: [UserService],
+  service_id: ServiceId
+) => {
+  const userServicesData = [];
+  for (const userService of userServices) {
+    const user = await loadUserBy('User.id', userService.user_id);
+    const [subscription] = await loadSubscriptionBy(
+      'Subscription.id',
+      userService.subscription_id
+    );
+    const serviceCapa = await loadUnsecureServiceCapabilitiesBy({
+      user_service_id: userService.id,
+    });
+    const userServiceData = {
+      id: userService.id,
+      subscription: {
+        billing: subscription.billing,
+        id: subscription.id,
+        organization: {
+          id: user.organization.id,
+          name: user.organization.name,
+        },
+        service: {
+          id: service_id,
+          name: '',
+        },
+      },
+      user: {
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        id: user.id,
+      },
+      service_capability: serviceCapa,
+    };
+    userServicesData.push(userServiceData);
   }
+  return userServicesData;
 };

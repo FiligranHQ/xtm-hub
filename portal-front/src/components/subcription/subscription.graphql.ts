@@ -118,36 +118,61 @@ export const SubscriptionDeleteMutation = graphql`
     }
   }
 `;
+
+export const AddSubscriptionInCommunityMutation = graphql`
+  mutation subscriptionInCommunityCreateMutation(
+    $service_id: String!
+    $organization_id: ID
+    $connections: [ID!]!
+  ) {
+    addSubscriptionInCommunity(
+      service_id: $service_id
+      organization_id: $organization_id
+    ) @prependNode(connections: $connections, edgeTypeName: "UserServiceEdge") {
+      id
+      user {
+        id
+        last_name
+        first_name
+        email
+      }
+      service_capability {
+        id
+        service_capability_name
+      }
+      subscription {
+        id
+        billing
+        organization {
+          name
+          id
+        }
+        service {
+          name
+          id
+        }
+      }
+    }
+  }
+`;
+
 export const AddSubscriptionMutation = graphql`
   mutation subscriptionCreateMutation(
     $service_id: String!
-    $organization_id: ID!
-    $user_id: ID!
-    $billing: Int
     $connections: [ID!]!
   ) {
-    addSubscription(
-      service_id: $service_id
-      organization_id: $organization_id
-      user_id: $user_id
-      billing: $billing
-    )
+    addSubscription(service_id: $service_id)
       @prependNode(
         connections: $connections
         edgeTypeName: "SubscriptionEdge"
       ) {
       id
-      organization_id
-      organization {
-        name
-        id
-      }
-      service_id
-      service {
-        name
-      }
-      start_date
-      end_date
+      name
+      description
+      provider
+      type
+      subscription_service_type
+      creation_status
     }
   }
 `;

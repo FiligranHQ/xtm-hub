@@ -1,10 +1,16 @@
 import { PortalContext } from '../../model/portal-context';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import UserService, {
+  UserServiceId,
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
 import { UserServiceConnection } from '../../__generated__/resolvers-types';
 import Service from '../../model/kanel/public/Service';
+import { v4 as uuidv4 } from 'uuid';
+import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
+import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { UserId } from '../../model/kanel/public/User';
 
 export const insertUserService = async (context, userServiceData) => {
   return db<UserService>(context, 'User_Service')
@@ -201,4 +207,29 @@ export const loadUsersBySubscription = async (
     .countDistinct('id as totalCount')
     .first();
   return { totalCount, ...userServiceConnection };
+};
+
+export const addAdminAccess = async (
+  context: PortalContext,
+  adminId: UserId,
+  subscriptionId: SubscriptionId
+) => {
+  const dataUserService = {
+    id: uuidv4() as UserServiceId,
+    user_id: adminId,
+    subscription_id: subscriptionId,
+  };
+  const [userService] = await insertUserService(context, dataUserService);
+  const capabilities = [
+    'ACCESS_SERVICE',
+    'MANAGE_ACCESS',
+    'ADMIN_SUBSCRIPTION',
+  ];
+  const dataCapabilities = capabilities.map((capability) => ({
+    id: uuidv4() as ServiceCapabilityId,
+    user_service_id: userService.id,
+    service_capability_name: capability,
+  }));
+
+  await insertServiceCapability(context, dataCapabilities);
 };
