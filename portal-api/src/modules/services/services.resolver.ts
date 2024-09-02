@@ -17,7 +17,6 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import {
   addServiceLink,
-  addSubscriptions,
   adminCreateCommu,
   findCurrentCommuAdminId,
   grantServiceAccess,
@@ -32,6 +31,7 @@ import { isAdmin } from '../role-portal/role-portal.domain';
 import { loadUsersByOrganization } from '../users/users.domain';
 import User from '../../model/kanel/public/User';
 import { GraphQLError } from 'graphql/error/index.js';
+import { addSubscriptions } from '../subcription/subscription.domain';
 
 const resolvers: Resolvers = {
   Query: {

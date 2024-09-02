@@ -1,21 +1,24 @@
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import {
-  addOrganizationUsersRights,
   checkSubscriptionExists,
   fillSubscription,
+  fillUserServiceData,
   loadSubscriptions,
   loadSubscriptionsByOrganization,
 } from './subscription.domain';
 import { v4 as uuidv4 } from 'uuid';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
-import { insertUserService } from '../user_service/user_service.domain';
-import { insertCapa } from './service_capability.domain';
-import { loadServiceBy } from '../services/services.domain';
-import { UserServiceId } from '../../model/kanel/public/UserService';
+import { addAdminAccess } from '../user_service/user_service.domain';
 import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { loadUnsecureSubscriptionBy } from './subscription.helper';
+import {
+  loadSubscriptionBy,
+  loadUnsecureSubscriptionBy,
+} from './subscription.helper';
+import { grantServiceAccessUsers } from '../services/services.domain';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceId } from '../../model/kanel/public/Service';
 
 const resolvers: Resolvers = {
   Query: {
@@ -41,11 +44,7 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    addSubscription: async (
-      _,
-      { service_id, organization_id, user_id, billing },
-      context
-    ) => {
+    addSubscription: async (_, { service_id }, context) => {
       const trx = await dbTx();
 
       // Check the subscription does not already exist :
@@ -58,23 +57,14 @@ const resolvers: Resolvers = {
           throw new Error(`You have already subscribed this service.`);
         }
 
-        const service = await loadServiceBy(
-          context,
-          'id',
-          fromGlobalId(service_id).id
-        );
-
         const subscriptionData = {
           id: uuidv4(),
           service_id: fromGlobalId(service_id).id,
           organization_id: context.user.organization_id,
           start_date: new Date(),
           end_date: undefined,
-          billing: billing ?? 100,
-          status:
-            service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
-              ? 'ACCEPTED'
-              : 'REQUESTED',
+          billing: 100,
+          status: 'ACCEPTED',
         };
 
         const [addedSubscription] = await db<Subscription>(
@@ -89,35 +79,72 @@ const resolvers: Resolvers = {
           addedSubscription
         );
 
-        const [addedUserService] = await insertUserService(context, {
-          id: uuidv4() as UserServiceId,
-          user_id: context.user.id as UserId,
-          subscription_id: filledSubscription.id as SubscriptionId,
-          service_personal_data: null,
-        });
+        await addAdminAccess(
+          context,
+          context.user.id as UserId,
+          filledSubscription.id as SubscriptionId
+        );
+        await grantServiceAccessUsers(
+          context,
+          context.user.organization_id as OrganizationId,
+          context.user.id,
+          filledSubscription.id
+        );
 
-        const initialServiceCapabilities = [
-          'ADMIN_SUBSCRIPTION',
-          'MANAGE_ACCESS',
-          'ACCESS_SERVICE',
-        ];
-        initialServiceCapabilities.map(async (capa) => {
-          await insertCapa(context, addedUserService.id, capa);
-        });
+        return filledSubscription.service;
+      } catch (error) {
+        await trx.rollback();
+        console.log('Error while subscribing the service.', error);
+        throw error;
+      }
+    },
+    addSubscriptionInCommunity: async (
+      _,
+      { service_id, organization_id },
+      context
+    ) => {
+      const trx = await dbTx();
 
-        if (
-          filledSubscription.service.subscription_service_type ===
-          'SUBSCRIPTABLE_DIRECT'
-        ) {
-          await addOrganizationUsersRights(
-            context,
-            context.user.organization_id,
-            context.user.id,
-            filledSubscription.id
-          );
+      // Check the subscription does not already exist :
+      try {
+        const subscription = await checkSubscriptionExists(
+          fromGlobalId(organization_id).id ?? context.user.organization_id,
+          fromGlobalId(service_id).id
+        );
+        if (subscription) {
+          throw new Error(`You have already subscribed this service.`);
         }
 
-        return filledSubscription;
+        const subscriptionData = {
+          id: uuidv4(),
+          service_id: fromGlobalId(service_id).id,
+          organization_id:
+            fromGlobalId(organization_id).id ?? context.user.organization_id,
+          start_date: new Date(),
+          end_date: undefined,
+          billing: 0,
+          status: 'ACCEPTED',
+        };
+
+        const [addedSubscription] = await db<Subscription>(
+          context,
+          'Subscription'
+        )
+          .insert(subscriptionData)
+          .returning('*');
+
+        const userServices = await grantServiceAccessUsers(
+          context,
+          (fromGlobalId(organization_id).id ??
+            context.user.organization_id) as OrganizationId,
+          context.user.id,
+          addedSubscription.id
+        );
+
+        return fillUserServiceData(
+          userServices,
+          fromGlobalId(service_id).id as ServiceId
+        );
       } catch (error) {
         await trx.rollback();
         console.log('Error while subscribing the service.', error);

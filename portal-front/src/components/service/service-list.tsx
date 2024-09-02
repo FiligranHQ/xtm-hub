@@ -29,7 +29,7 @@ import { subscriptionCreateMutation } from '../../../__generated__/subscriptionC
 import { Portal, portalContext } from '@/components/portal-context';
 import GuardCapacityComponent from '@/components/admin-guard';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { ConstructionIcon, EditIcon } from 'filigran-icon';
+import { EditIcon } from 'filigran-icon';
 import {
   OrderingMode,
   ServiceOrdering,
@@ -98,12 +98,12 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       const commitMutation = (status: string, successMessage: string) => {
         commitSubscriptionCreateMutation({
           variables: {
-            connections: [connectionID],
             service_id: service.id,
-            organization_id: me.organization.id,
-            user_id: me.id,
+            connections: [connectionID],
           },
-          onCompleted: () => handleSuccess(successMessage),
+          onCompleted: () => {
+            handleSuccess(successMessage);
+          },
           onError: (error: Error) => handleError(error),
         });
       };

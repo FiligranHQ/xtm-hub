@@ -37,6 +37,7 @@ import { SubscriptionDeleteMutation } from '@/components/subcription/subscriptio
 import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
 import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import TriggerButton from '@/components/ui/trigger-button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
 
 export interface UserServiceData extends serviceUserSlugQuery$data {
   id: string;
@@ -97,6 +98,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
   const subscriptionId: string =
     data?.serviceUsers?.edges[0]?.node?.subscription?.id ?? '';
 
+  console.log('data', data);
   const connectionId = data.serviceUsers?.__id ?? '';
   const usersData: UserServiceData[] =
     data?.serviceUsers?.edges.map((user) => {
@@ -109,6 +111,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
         service_capability_names: capa_names,
       } as unknown as UserServiceData;
     }) ?? [];
+  console.log('usersData', usersData);
 
   const organizations = data.serviceUsers?.edges.map((item) => {
     return {
@@ -117,11 +120,13 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
       subscription_id: item.node?.subscription?.id,
     };
   });
-  const uniqueOrganizations = organizations.filter(
-    (org, index, self) =>
-      index ===
-      self.findIndex((t) => t?.organization?.id === org?.organization?.id)
-  );
+  const uniqueOrganizations = organizations
+    ?.filter(
+      (org, index, self) =>
+        index ===
+        self.findIndex((t) => t?.organization?.id === org?.organization?.id)
+    )
+    .sort((a, b) => ((a?.billing ?? 0) > (b?.billing ?? 0) ? -1 : 1));
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -183,7 +188,13 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
       onCompleted: () => {
         toast({
           title: 'Success',
-          description: <>{'Subscription accepted'}</>,
+          description: <>{'Organization removed'}</>,
+        });
+        refetch({
+          count: pagination.pageSize,
+          cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+          orderBy,
+          orderMode,
         });
         setOpenSheet(false);
       },
@@ -273,7 +284,12 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
           <ServiceSlugAddOrgaFormSheet
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
-            trigger={<CreateButton label="Add organization" />}
+            connectionId={connectionId}
+            serviceId={
+              data?.serviceUsers?.edges[0]?.node?.subscription?.service?.id ??
+              ''
+            }
+            trigger={<TriggerButton label="Add organization" />}
           />
 
           <ServiceSlugFormSheet
@@ -301,69 +317,79 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
           />
         </div>
 
-        <ul
-          className={
-            'grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-m'
-          }>
-          {uniqueOrganizations.map(
+        <Tabs defaultValue={uniqueOrganizations[0]?.organization?.name}>
+          <TabsList>
+            {uniqueOrganizations?.map(
+              ({ billing, organization, subscription_id }) => {
+                return (
+                  <TabsTrigger
+                    className="mb-5 min-h-[55px] data-[state=active]:bg-white"
+                    key={organization?.name}
+                    value={organization?.name}>
+                    {organization?.name} (billing: {billing} %){' '}
+                    {billing === 0 ? (
+                      <AlertDialogComponent
+                        actionButtonText={'Remove'}
+                        variantName={'destructive'}
+                        AlertTitle={'Remove organization'}
+                        triggerElement={
+                          <Button
+                            className="ml-2"
+                            variant="ghost"
+                            aria-label="Delete Organization from Community">
+                            <DeleteIcon className="h-4 w-4" />
+                          </Button>
+                        }
+                        onClickContinue={() =>
+                          onRemoveOrganization(subscription_id ?? '')
+                        }>
+                        Are you sure you want to delete this organization{' '}
+                        {organization?.name} from this community? This action
+                        can not be undone.
+                      </AlertDialogComponent>
+                    ) : (
+                      <></>
+                    )}
+                  </TabsTrigger>
+                );
+              }
+            )}
+          </TabsList>
+          {uniqueOrganizations?.map(
             ({ billing, organization, subscription_id }) => {
               return (
-                <li
-                  className="border-light flex flex-col bg-white p-s"
-                  key={organization?.id}>
-                  <div className="flex-1 p-m pb-xl">
-                    <div className="flex items-center justify-between">
-                      <h3>Organization : {organization?.name}</h3>
-                      <div className="justify-end">
-                        {billing === 0 ? (
-                          <AlertDialogComponent
-                            actionButtonText={'Remove'}
-                            variantName={'destructive'}
-                            AlertTitle={'Remove organization'}
-                            triggerElement={
-                              <Button
-                                variant="destructive"
-                                aria-label="Delete Organization from Community">
-                                <DeleteIcon className="h-4 w-4" />
-                              </Button>
-                            }
-                            onClickContinue={() =>
-                              onRemoveOrganization(subscription_id ?? '')
-                            }>
-                            Are you sure you want to delete this organization{' '}
-                            {organization?.name} from this community? This
-                            action can not be undone.
-                          </AlertDialogComponent>
-                        ) : (
-                          <></>
-                        )}
-                      </div>
-                    </div>
-                    <p className={'pt-s txt-sub-content'}>
-                      Billing : {billing} %
-                    </p>
-                  </div>
-                </li>
+                <>
+                  <TabsContent
+                    className="ml-1 mt-0 bg-white p-10"
+                    value={organization?.name}>
+                    <DataTable
+                      columns={columns}
+                      data={usersData.filter(
+                        (user) =>
+                          user.subscription.organization.id === organization?.id
+                      )}
+                      tableOptions={{
+                        onSortingChange: onSortingChange,
+                        onPaginationChange: onPaginationChange,
+                        manualSorting: true,
+                        manualPagination: true,
+                        rowCount: usersData.filter(
+                          (user) =>
+                            user.subscription.organization.id ===
+                            organization?.id
+                        ).length,
+                      }}
+                      tableState={{
+                        sorting: mapToSortingTableValue(orderBy, orderMode),
+                        pagination,
+                      }}
+                    />
+                  </TabsContent>
+                </>
               );
             }
           )}
-        </ul>
-
-        <DataTable
-          columns={columns}
-          data={usersData}
-          tableOptions={{
-            onSortingChange: onSortingChange,
-            onPaginationChange: onPaginationChange,
-            manualSorting: true,
-            manualPagination: true,
-            rowCount: data.serviceUsers?.totalCount,
-          }}
-          tableState={{
-            sorting: mapToSortingTableValue(orderBy, orderMode),
-            pagination,
-          }}
-        />
+        </Tabs>
       </GuardCapacityComponent>
     </>
   );

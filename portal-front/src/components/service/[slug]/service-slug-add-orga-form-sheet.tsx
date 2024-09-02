@@ -21,24 +21,56 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  useToast,
 } from 'filigran-ui/clients';
 import { useForm } from 'react-hook-form';
 import { z, ZodSchema } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from 'filigran-ui/servers';
+import { useMutation } from 'react-relay';
+import { AddSubscriptionInCommunityMutation } from '@/components/subcription/subscription.graphql';
+import { subscriptionInCommunityCreateMutation } from '../../../../__generated__/subscriptionInCommunityCreateMutation.graphql';
 
 interface ServiceSlugAddOrgaFormSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
+  connectionId: string;
+  serviceId: string;
 }
 
 export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ open, setOpen, trigger }) => {
+> = ({ open, setOpen, trigger, connectionId, serviceId }) => {
   const [organizations] = getOrganizations();
-  const onSubmit = (inputValue: string) => {
-    console.log('inputValue', inputValue);
+  const { toast } = useToast();
+  const [commitSubscriptionCreateMutation] =
+    useMutation<subscriptionInCommunityCreateMutation>(
+      AddSubscriptionInCommunityMutation
+    );
+
+  const onSubmit = (inputValue: z.infer<ZodSchema>) => {
+    commitSubscriptionCreateMutation({
+      variables: {
+        connections: [connectionId],
+        service_id: serviceId,
+        organization_id: inputValue.organization_id,
+      },
+      onCompleted: () => {
+        toast({
+          title: 'Success',
+          description: <>{'Organization added'}</>,
+        });
+      },
+      onError: (error: Error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
+    });
+    setOpen(false);
   };
 
   const form = useForm<z.infer<ZodSchema>>({
@@ -50,7 +82,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       })
     ),
     defaultValues: {
-      email: '',
+      organization_id: '',
     },
   });
 
@@ -62,7 +94,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
         <SheetHeader className="bg-white">
-          <SheetTitle>{'Add organization'}</SheetTitle>
+          <SheetTitle className="txt-title">{'Add organization'}</SheetTitle>
         </SheetHeader>
         <SheetDescription>
           {

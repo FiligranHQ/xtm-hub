@@ -55,15 +55,14 @@ input EditSubscriptionInput {
 }
 
 type Mutation {
-  addSubscription(
+  addSubscription(service_id: String): Service
+    @auth(requires: [FRT_SERVICE_SUBSCRIBER, BCK_MANAGE_COMMUNITIES])
+  addSubscriptionInCommunity(
     service_id: String
     organization_id: ID
-    user_id: ID
-    billing: Int
-  ): Subscription
-    @auth(requires: [FRT_SERVICE_SUBSCRIBER, BCK_MANAGE_COMMUNITIES])
+  ): [UserService] @auth
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
-    deleteSubscription(subscription_id: ID!): Subscription @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
-
+  deleteSubscription(subscription_id: ID!): Subscription
+    @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
 }
