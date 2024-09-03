@@ -4,23 +4,21 @@ import {
   loadUserServiceById,
   loadUserServiceByUser,
 } from './user_service.domain';
-import { v4 as uuidv4 } from 'uuid';
 import { loadUserBy } from '../users/users.domain';
 import { db } from '../../../knexfile';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { loadUnsecureUserServiceBy } from './user-service.helper';
+import {
+  createUserAccessForOtherOrg,
+  createUserServiceAccess,
+  isUserServiceExist,
+} from './user-service.helper';
 import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { GraphQLError } from 'graphql/error/index.js';
-import { createNewUserFromInvitation } from '../users/users.helper';
-import UserService, {
-  UserServiceId,
-  UserServiceInitializer,
-} from '../../model/kanel/public/UserService';
-import ServiceCapability, {
-  ServiceCapabilityId,
-  ServiceCapabilityInitializer,
-} from '../../model/kanel/public/ServiceCapability';
+import { getOrCreateUser } from '../users/users.helper';
+import UserService from '../../model/kanel/public/UserService';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { isOrgMatchingSub } from '../subcription/subscription.helper';
 
 const resolvers: Resolvers = {
   Query: {
@@ -51,50 +49,39 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     addUserService: async (_, { input }, context) => {
-      const user = await loadUserBy('email', input.email);
+      const user = await getOrCreateUser(input.email);
 
-      const user_service: UserServiceInitializer = {
-        id: uuidv4() as UserServiceId,
-        subscription_id: fromGlobalId(input.subscriptionId)
-          .id as SubscriptionId,
-        user_id: (user
-          ? user.id
-          : (await createNewUserFromInvitation(input.email)).id) as UserId,
-      };
+      const subscription_id = fromGlobalId(input.subscriptionId)
+        .id as SubscriptionId;
 
-      if (!user_service.subscription_id) {
+      if (!subscription_id) {
         throw new GraphQLError('Sorry the subscription does not exist', {
           extensions: { code: '[User_Service] UNKNOWN SUBSCRIPTION' },
         });
       }
 
-      const [existingUserService] = await loadUnsecureUserServiceBy({
-        user_id: user_service.user_id as UserId,
-        subscription_id: user_service.subscription_id as SubscriptionId,
-      });
-
-      if (existingUserService) {
+      if (await isUserServiceExist(user.id as UserId, subscription_id)) {
         throw new GraphQLError(' The User access to service is already exist', {
           extensions: { code: '[User_Service] ALREADY_EXIST' },
         });
       }
 
-      const [addedUserService] = await db<UserService>(context, 'User_Service')
-        .insert(user_service)
-        .returning('*');
-
-      for (const capability of input.capabilities) {
-        const service_capa: ServiceCapabilityInitializer = {
-          id: uuidv4() as ServiceCapabilityId,
-          user_service_id: addedUserService.id,
-          service_capability_name: capability,
-        };
-
-        await db<ServiceCapability>(context, 'Service_Capability')
-          .insert(service_capa)
-          .returning('*');
-      }
-
+      const isSameOrganization = await isOrgMatchingSub(
+        user.organization_id as OrganizationId,
+        subscription_id
+      );
+      const addedUserService = await (isSameOrganization
+        ? createUserServiceAccess(context, {
+            subscription_id,
+            user_id: user.id as UserId,
+            capabilities: input.capabilities,
+          })
+        : createUserAccessForOtherOrg(context, {
+            subscription_id,
+            user_id: user.id as UserId,
+            capabilities: input.capabilities,
+            organization_id: user.organization_id as OrganizationId,
+          }));
       return await loadUserServiceById(context, addedUserService.id);
     },
     deleteUserService: async (_, { input }, context) => {

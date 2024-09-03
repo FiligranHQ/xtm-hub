@@ -16,6 +16,7 @@ import {
   isAuthorizedEmail,
 } from '../../utils/verify-email.util';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { loadUserBy } from './users.domain';
 
 export const addNewUserWithRoles = async (
   data: UserInitializer,
@@ -32,6 +33,35 @@ export const deleteUserUnsecure = async (field: UserMutator) => {
   return dbUnsecure<User>('User').where(field).delete('*').returning('*');
 };
 
+async function createOrganisationWithAdminUser(
+  email: string,
+  salt: string,
+  hash: string
+) {
+  const extractedDomain = extractDomain(email);
+
+  // TODO: Should throw an error and break the following execution
+  // throw new GraphQLError('Sorry this mail is not authorize', {
+  //   extensions: { code: '[Users] NOT AUTHORIZED MAIL' },
+  // });
+  const [newOrganization] = await insertNewOrganization({
+    id: uuidv4() as OrganizationId,
+    name: extractedDomain.split('.')[0],
+    domains: [extractedDomain],
+  });
+
+  return await addNewUserWithRoles(
+    {
+      id: uuidv4() as UserId,
+      email,
+      salt,
+      password: hash,
+      organization_id: newOrganization.id,
+    },
+    ['ADMIN_ORGA', 'USER']
+  );
+}
+
 export const createNewUserFromInvitation = async (email: string) => {
   const { salt, hash } = hashPassword('temporaryPassword');
 
@@ -44,29 +74,9 @@ export const createNewUserFromInvitation = async (email: string) => {
   }
 
   const [organization] = await loadOrganizationsFromEmail(email);
+
   if (!organization) {
-    const extractedDomain = extractDomain(email);
-
-    // TODO: Should throw an error and break the following execution
-    // throw new GraphQLError('Sorry this mail is not authorize', {
-    //   extensions: { code: '[Users] NOT AUTHORIZED MAIL' },
-    // });
-    const [newOrganization] = await insertNewOrganization({
-      id: uuidv4() as OrganizationId,
-      name: extractedDomain.split('.')[0],
-      domains: [extractedDomain],
-    });
-
-    return await addNewUserWithRoles(
-      {
-        id: uuidv4() as UserId,
-        email,
-        salt,
-        password: hash,
-        organization_id: newOrganization.id,
-      },
-      ['ADMIN_ORGA', 'USER']
-    );
+    return await createOrganisationWithAdminUser(email, salt, hash);
   }
 
   return await addNewUserWithRoles(
@@ -86,4 +96,9 @@ export const deleteUserById = async (userId: UserId) => {
     .where('id', userId)
     .delete('*')
     .returning('*');
+};
+
+export const getOrCreateUser = async (email: string) => {
+  const user = await loadUserBy('email', email);
+  return user ? user : await createNewUserFromInvitation(email);
 };
