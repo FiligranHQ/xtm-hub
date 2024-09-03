@@ -1,6 +1,10 @@
 import { describe, expect } from 'vitest';
 import { v4 as uuidv4 } from 'uuid';
-import { createNewUserFromInvitation, deleteUserById } from './users.helper';
+import {
+  createNewUserFromInvitation,
+  deleteUserById,
+  loadUserRoles,
+} from './users.helper';
 import { ROLE_USER } from '../../portal.const';
 import { loadUserBy } from './users.domain';
 import { UserId } from '../../model/kanel/public/User';
@@ -22,7 +26,7 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     const testUserDeletion = await loadUserBy('User.email', testMail);
     expect(testUserDeletion).toBeFalsy();
   });
-  it('should not add new user with an unknown domain Organization', async () => {
+  it('should not add new user with an unauthorized domain Organization', async () => {
     const testMail = `testCreateNewUserFromInvitation${uuidv4()}@gmail.com`;
     await createNewUserFromInvitation(testMail);
     const newUser = await loadUserBy('User.email', testMail);
@@ -37,6 +41,11 @@ describe('User helpers - createNewUserFromInvitation', async () => {
       'name',
       'test-new-organization'
     );
+    const userRoles = await loadUserRoles(newUser.id as UserId);
+    expect(userRoles.roles.length).toBe(2);
+    expect(userRoles.roles.includes('ADMIN_ORGA')).toBeTruthy();
+    expect(userRoles.roles.includes('USER')).toBeTruthy();
+
     expect(newOrganization).toBeTruthy();
 
     // Delete corresponding in order to avoid issue with other tests

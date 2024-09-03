@@ -36,12 +36,14 @@ const portalConfig: PortalConfig = {
     port: config.get<number>('database.port'),
     user: config.get<string>('database.user'),
     password: config.get<string>('database.password'),
-    database: process.env.TEST_MODE
-      ? config.get<string>('database-test.database')
-      : config.get<string>('database.database'),
-    seeds: process.env.TEST_MODE
-      ? config.get<string>('database-test.seeds')
-      : 'src/seeds',
+    database:
+      process.env.TEST_MODE || process.env.NODE_ENV === 'test'
+        ? config.get<string>('database-test.database')
+        : config.get<string>('database.database'),
+    seeds:
+      process.env.TEST_MODE || process.env.NODE_ENV === 'test'
+        ? config.get<string>('database-test.seeds')
+        : 'src/seeds',
   },
   services: config.get('init_services'),
 };

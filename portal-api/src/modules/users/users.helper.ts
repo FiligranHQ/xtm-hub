@@ -1,4 +1,4 @@
-import { dbUnsecure } from '../../../knexfile';
+import { dbRaw, dbUnsecure } from '../../../knexfile';
 import User, {
   UserId,
   UserInitializer,
@@ -101,4 +101,17 @@ export const deleteUserById = async (userId: UserId) => {
 export const getOrCreateUser = async (email: string) => {
   const user = await loadUserBy('email', email);
   return user ? user : await createNewUserFromInvitation(email);
+};
+
+export const loadUserRoles = async (userId: UserId) => {
+  return dbUnsecure('User')
+    .leftJoin('User_RolePortal', 'User.id', 'User_RolePortal.user_id')
+    .leftJoin('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
+    .where('User.id', userId)
+    .select([
+      'User.*', // Select all columns from the User table
+      dbRaw('json_agg("RolePortal".name) as roles'), // Aggregate role names into an array
+    ])
+    .groupBy('User.id') // Group by User.id to ensure proper aggregation
+    .first();
 };
