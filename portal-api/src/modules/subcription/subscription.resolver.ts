@@ -3,7 +3,6 @@ import {
   addOrganizationUsersRights,
   checkSubscriptionExists,
   fillSubscription,
-  loadSubscriptionBy,
   loadSubscriptions,
   loadSubscriptionsByOrganization,
 } from './subscription.domain';
@@ -16,6 +15,10 @@ import { loadServiceBy } from '../services/services.domain';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import {
+  loadSubscriptionBy,
+  loadUnsecureSubscriptionBy,
+} from './subscription.helper';
 
 const resolvers: Resolvers = {
   Query: {
@@ -129,7 +132,9 @@ const resolvers: Resolvers = {
 
       try {
         // Retrieve subscription
-        const [retrievedSubscription] = await loadSubscriptionBy('id', id);
+        const [retrievedSubscription] = await loadUnsecureSubscriptionBy({
+          id: id as SubscriptionId,
+        });
         const update = {
           id,
           organization_id: retrievedSubscription.organization_id,

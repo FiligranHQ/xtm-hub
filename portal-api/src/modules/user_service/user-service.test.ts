@@ -11,6 +11,15 @@ import { loadUnsecureServiceCapabitiesBy } from '../service_capability/service_c
 import { loadUserBy } from '../users/users.domain';
 import { v4 as uuidv4 } from 'uuid';
 import { deleteUserUnsecure } from '../users/users.helper';
+import {
+  deleteOrganizationByName,
+  loadUnsecureOrganizationBy,
+} from '../organizations/organizations.helper';
+import {
+  deleteSubscriptionUnsecure,
+  loadUnsecureSubscriptionBy,
+} from '../subcription/subscription.helper';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 
 const userServiceCreateMutation = {
   query: print(gql`
@@ -140,8 +149,90 @@ describe('Services GraphQL Endpoint', async () => {
         expect(userCapacities.length).toBe(1);
       });
 
-      afterAll(() => {
-        deleteUserUnsecure({ email: testEmail });
+      afterAll(async () => {
+        await deleteUserUnsecure({ email: testEmail });
+      });
+    });
+
+    describe('add an new user and a new organization', async () => {
+      const testEmail = `newUserService${uuidv4()}@tripadvisor.io`;
+      const response = await userAdmin.post('/graphql-api').send({
+        ...userServiceCreateMutation,
+        variables: {
+          ...userServiceCreateMutation.variables,
+          input: {
+            ...userServiceCreateMutation.variables.input,
+            email: testEmail,
+            capabilities: ['ACCESS_SERVICE'],
+          },
+        },
+      });
+      const transform = JSON.parse(response.text);
+      const createdUser = await loadUserBy('email', testEmail);
+      const newOrganization = await loadUnsecureOrganizationBy(
+        'name',
+        'tripadvisor'
+      );
+      it('the user should be created and with his organization', async () => {
+        expect(createdUser).toBeTruthy();
+        expect(createdUser.email).toBe(testEmail);
+
+        expect(createdUser.organization_id).toBe(newOrganization.id);
+      });
+      it('the subscription should be created and with his organization', async () => {
+        expect(createdUser.organization_id).toBe(newOrganization.id);
+        const [createdSubscription] = await loadUnsecureSubscriptionBy({
+          id: fromGlobalId(transform.data.addUserService.subscription.id)
+            .id as SubscriptionId,
+        });
+        expect(createdSubscription.organization_id).toBe(newOrganization.id);
+      });
+      afterAll(async () => {
+        await deleteUserUnsecure({ email: testEmail });
+        await deleteOrganizationByName('tripadvisor');
+        await deleteSubscriptionUnsecure(
+          fromGlobalId(transform.data.addUserService.subscription.id).id
+        );
+      });
+    });
+    describe('add two user and with the same organizations', async () => {
+      const testEmail1 = `newUserService${uuidv4()}@thales.com`;
+      const testEmail2 = `newUserService${uuidv4()}@thales.com`;
+      const response1 = await userAdmin.post('/graphql-api').send({
+        ...userServiceCreateMutation,
+        variables: {
+          ...userServiceCreateMutation.variables,
+          input: {
+            ...userServiceCreateMutation.variables.input,
+            email: testEmail1,
+            capabilities: ['ACCESS_SERVICE'],
+          },
+        },
+      });
+      const response2 = await userAdmin.post('/graphql-api').send({
+        ...userServiceCreateMutation,
+        variables: {
+          ...userServiceCreateMutation.variables,
+          input: {
+            ...userServiceCreateMutation.variables.input,
+            email: testEmail2,
+            capabilities: ['ACCESS_SERVICE'],
+          },
+        },
+      });
+      const transform1 = JSON.parse(response1.text);
+      const transform2 = JSON.parse(response2.text);
+      it('for the same organization the two users should have the same subscription', async () => {
+        expect(transform1.data.addUserService.subscription.id).toBe(
+          transform2.data.addUserService.subscription.id
+        );
+      });
+      afterAll(async () => {
+        await deleteUserUnsecure({ email: testEmail1 });
+        await deleteUserUnsecure({ email: testEmail2 });
+        await deleteSubscriptionUnsecure(
+          fromGlobalId(transform1.data.addUserService.subscription.id).id
+        );
       });
     });
   });
