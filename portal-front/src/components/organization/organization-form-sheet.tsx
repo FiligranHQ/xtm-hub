@@ -47,6 +47,7 @@ export const OrganizationFormSheet: FunctionComponent<
     resolver: zodResolver(organizationFormSchema),
     defaultValues: {
       name: organization?.name ?? '',
+      domains: (organization?.domains as string[]) ?? [],
     },
   });
   useEffect(

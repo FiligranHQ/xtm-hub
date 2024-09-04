@@ -20,6 +20,8 @@ import {
 } from '../../../__generated__/OrganizationsPaginationQuery.graphql';
 import { OrganizationOrdering } from '../../../__generated__/organizationSelectQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
+import { Badge } from 'filigran-ui/servers';
+import { ThreeDotsActions } from '@/components/ui/three-dots-actions';
 
 const breadcrumbValue = [
   {
@@ -101,19 +103,33 @@ const OrganizationPage: React.FunctionComponent = () => {
       },
     },
     {
+      accessorKey: 'domains',
+      id: 'domains',
+      header: 'Domains',
+      cell: ({ row }) => {
+        return (
+          <div className="space-x-s">
+            {row.original.domains?.map((domain) => (
+              <Badge key={domain}>{domain}</Badge>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
       id: 'actions',
       size: 100,
       enableHiding: false,
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => (
-        <>
+        <ThreeDotsActions>
           <EditOrganization organization={row.original} />
           <DeleteOrganization
             connectionId={organizationData.organizations.__id}
             organization={row.original}
           />
-        </>
+        </ThreeDotsActions>
       ),
     },
   ];
@@ -138,6 +154,9 @@ const OrganizationPage: React.FunctionComponent = () => {
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,
+          columnPinning: {
+            right: ['actions'],
+          },
         }}
       />
     </>

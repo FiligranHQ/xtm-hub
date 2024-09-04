@@ -51,10 +51,10 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
       organization={organization}
       trigger={
         <Button
-          size="icon"
           variant="ghost"
+          className="w-full justify-start"
           aria-label="Edit Organization">
-          <EditIcon className="h-4 w-4" />
+          Edit
         </Button>
       }
       title={"Edit the organization's name"}

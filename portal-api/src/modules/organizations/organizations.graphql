@@ -4,6 +4,7 @@ enum OrganizationOrdering {
 type Organization implements Node {
   id: ID!
   name: String!
+  domains: [String!]
 }
 
 type OrganizationEdge {
