@@ -1,9 +1,12 @@
-import { dbUnsecure } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import Subscription, {
   SubscriptionId,
+  SubscriptionInitializer,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { PortalContext } from '../../model/portal-context';
+
 export const deleteSubscriptionUnsecure = async (subscriptionId: string) => {
   return dbUnsecure<Subscription>('Subscription')
     .where('Subscription.id', '=', subscriptionId)
@@ -29,4 +32,21 @@ export const isOrgMatchingSub = async (
     id: subscriptionId,
   });
   return subscription.organization_id === organization_id;
+};
+
+export const insertSubscription = async (
+  context: PortalContext,
+  dataSubscription
+) => {
+  return db<Subscription>(context, 'Subscription')
+    .insert(dataSubscription)
+    .returning('*');
+};
+
+export const insertUnsecureSubscription = async (
+  dataSubscription: SubscriptionInitializer
+) => {
+  return dbUnsecure<Subscription>('Subscription')
+    .insert(dataSubscription)
+    .returning('*');
 };

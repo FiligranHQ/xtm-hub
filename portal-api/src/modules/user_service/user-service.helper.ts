@@ -4,16 +4,18 @@ import UserService, {
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
 import { db, dbUnsecure } from '../../../knexfile';
-import User, { UserId } from '../../model/kanel/public/User';
+import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
 import ServiceCapability, {
   ServiceCapabilityId,
   ServiceCapabilityInitializer,
 } from '../../model/kanel/public/ServiceCapability';
-import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
+import {
+  insertSubscription,
+  loadUnsecureSubscriptionBy,
+} from '../subcription/subscription.helper';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { insertSubscription } from '../subcription/subscription.domain';
 
 export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
   return dbUnsecure<UserService>('User_Service').where(field);

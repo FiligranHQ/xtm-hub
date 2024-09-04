@@ -151,15 +151,6 @@ export const checkSubscriptionExists = async (
   return sub ?? false;
 };
 
-export const insertSubscription = async (
-  context: PortalContext,
-  dataSubscription
-) => {
-  return db<Subscription>(context, 'Subscription')
-    .insert(dataSubscription)
-    .returning('*');
-};
-
 export const addOrganizationUsersRights = async (
   context,
   organizationId: string,

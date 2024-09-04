@@ -1,15 +1,23 @@
 import { print } from 'graphql/language';
 import gql from 'graphql-tag';
+import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getAdminAgent } from '../../../tests/test.util';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { loadUnsecureServiceBy } from './services.domain';
 import { loadUnsecureServicePriceBy } from './instances/service-price/service_price.helper';
-import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
+import {
+  deleteSubscriptionUnsecure,
+  insertUnsecureSubscription,
+  loadUnsecureSubscriptionBy,
+} from '../subcription/subscription.helper';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUnsecureServiceCapabilitiesBy } from './instances/service-capabilities/service_capabilities.helper';
 import { deleteServiceUnsecure } from './services.helper';
 import { loadUnsecureServiceLinkBy } from './instances/service-link/service_link.helper';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceId } from '../../model/kanel/public/Service';
 
 const serviceName = 'name_community_test';
 const serviceDescription = 'short description test';
@@ -160,6 +168,13 @@ const getCommunitiesTestQuery = () => ({
             type
             subscription_service_type
             creation_status
+            subscription {
+              id
+              status
+              organization {
+                name
+              }
+            }
           }
         }
       }
@@ -174,6 +189,14 @@ const getCommunitiesTestQuery = () => ({
 
 describe('Should return community list', async () => {
   const userAdmin = await getAdminAgent();
+  const createThalesSubscription = {
+    id: uuidv4() as SubscriptionId,
+    organization_id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c' as OrganizationId,
+    service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf' as ServiceId,
+  };
+  beforeAll(async () => {
+    await insertUnsecureSubscription(createThalesSubscription);
+  });
   it('should return communities', async () => {
     const response = await userAdmin
       .post('/graphql-api')
@@ -181,5 +204,11 @@ describe('Should return community list', async () => {
     const transform = JSON.parse(response.text);
     expect(transform.data.communities.edges.length).toEqual(1);
     expect(transform.data.communities.totalCount).toEqual(1);
+    expect(
+      transform.data.communities.edges[0].node.subscription.length
+    ).toEqual(2);
+  });
+  afterAll(async () => {
+    await deleteSubscriptionUnsecure(createThalesSubscription.id);
   });
 });
