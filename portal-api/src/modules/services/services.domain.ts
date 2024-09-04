@@ -17,17 +17,17 @@ import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
-import {
-  insertSubscription,
-  loadSubscription,
-} from '../subcription/subscription.domain';
+import { loadSubscription } from '../subcription/subscription.domain';
 import {
   insertUserService,
   loadUnsecureUserServiceBy,
 } from '../user_service/user_service.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 import User from '../../model/kanel/public/User';
-import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
+import {
+  insertSubscription,
+  loadUnsecureSubscriptionBy,
+} from '../subcription/subscription.helper';
 
 export const loadCommunities = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
@@ -37,8 +37,25 @@ export const loadCommunities = async (context: PortalContext, opts) => {
     orderMode,
     orderBy,
   })
+    .leftJoin(
+      'Subscription as subscription',
+      'subscription.service_id',
+      '=',
+      'Service.id'
+    )
+    .leftJoin(
+      'Organization as org',
+      'org.id',
+      '=',
+      'subscription.organization_id'
+    )
     .where('type', '=', 'COMMUNITY')
-    .select('Service.*')
+    .select(
+      'Service.*',
+      dbRaw(
+        "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date,'organization', json_build_object('id',\"org\".id, 'name', \"org\".name), 'justification', \"subscription\".justification, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
+      )
+    )
     .groupBy(['Service.id'])
     .asConnection<ServiceConnection>();
 
