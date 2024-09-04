@@ -24,6 +24,7 @@ export const organizationItem = graphql`
   fragment organizationItem_fragment on Organization {
     id
     name
+    domains
   }
 `;
 export const organizationFetch = graphql`

@@ -49,8 +49,9 @@ export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
       triggerElement={
         <Button
           variant="ghost"
+          className="w-full justify-start"
           aria-label="Delete Organization">
-          <DeleteIcon className="h-4 w-4" />
+          Delete
         </Button>
       }
       onClickContinue={() => onDeletedOrganization(organization.id)}>
