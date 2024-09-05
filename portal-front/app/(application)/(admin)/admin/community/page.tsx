@@ -8,8 +8,12 @@ import Loader from '@/components/loader';
 import { serviceCommunitiesQuery } from '../../../../../__generated__/serviceCommunitiesQuery.graphql';
 import CommunityList from '@/components/service/community/community-list';
 import { useLocalStorage } from 'usehooks-ts';
-import { Breadcrumb } from 'filigran-ui/servers';
+import { Badge, Breadcrumb } from 'filigran-ui/servers';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
+import { ColumnDef } from '@tanstack/react-table';
+import { serviceCommunityList_fragment$data } from '../../../../../__generated__/serviceCommunityList_fragment.graphql';
+import { DataTable } from 'filigran-ui/clients';
 
 // Component interface
 interface PageProps {}
@@ -20,6 +24,57 @@ const breadcrumbValue = [
   },
   {
     label: 'Communities',
+  },
+];
+
+const columns: ColumnDef<serviceCommunityList_fragment$data>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center space-x-2">{row.original.name}</div>
+      );
+    },
+  },
+  {
+    id: 'type',
+    size: 30,
+    header: 'Type',
+    cell: ({ row }) => (
+      <>
+        {row.original.type && (
+          <ServiceTypeBadge type={row.original.type as ServiceTypeBadge} />
+        )}
+      </>
+    ),
+  },
+  {
+    size: 300,
+    accessorKey: 'description',
+    id: 'description',
+    header: 'Description',
+  },
+  {
+    id: 'status',
+    size: 30,
+    header: 'Status',
+    cell: ({ row }) => (
+      <Badge
+        variant={
+          row.original?.subscription &&
+          row.original?.subscription[0] &&
+          row.original?.subscription[0].status === 'REQUESTED'
+            ? 'warning'
+            : 'secondary'
+        }
+        className={'cursor-default'}>
+        {(row.original?.subscription &&
+          row.original?.subscription[0] &&
+          row.original?.subscription[0].status) ??
+          'ACCEPTED'}
+      </Badge>
+    ),
   },
 ];
 // Component
@@ -42,7 +97,18 @@ const Page: React.FunctionComponent<PageProps> = () => {
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <h2 className="text-title">Communities</h2>
-      {queryRef ? <CommunityList queryRef={queryRef} /> : <Loader />}
+      {queryRef ? (
+        <CommunityList
+          queryRef={queryRef}
+          columns={columns}
+        />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={[]}
+          isLoading={true}
+        />
+      )}
     </>
   );
 };
