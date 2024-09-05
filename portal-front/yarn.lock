@@ -2884,6 +2884,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-tabs@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@radix-ui/react-tabs@npm:1.1.0"
+  dependencies:
+    "@radix-ui/primitive": 1.1.0
+    "@radix-ui/react-context": 1.1.0
+    "@radix-ui/react-direction": 1.1.0
+    "@radix-ui/react-id": 1.1.0
+    "@radix-ui/react-presence": 1.1.0
+    "@radix-ui/react-primitive": 2.0.0
+    "@radix-ui/react-roving-focus": 1.1.0
+    "@radix-ui/react-use-controllable-state": 1.1.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 68200d65f02f1aa9d8c06f9a587dbf169e0a4efa715eb855d98f9dd8e3c0ba32981f431f4e306d2ff85005dfe2b0a905c8d5f9ee50f7a80abc1e4eb59ecd56d7
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-toast@npm:1.2.1":
   version: 1.2.1
   resolution: "@radix-ui/react-toast@npm:1.2.1"
@@ -6031,9 +6057,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.16.0":
-  version: 0.16.0
-  resolution: "filigran-ui@npm:0.16.0"
+"filigran-ui@npm:^0.18.0":
+  version: 0.18.0
+  resolution: "filigran-ui@npm:0.18.0"
   dependencies:
     "@dnd-kit/core": 6.1.0
     "@dnd-kit/modifiers": 7.0.0
@@ -6049,6 +6075,7 @@ __metadata:
     "@radix-ui/react-select": 2.1.1
     "@radix-ui/react-separator": 1.1.0
     "@radix-ui/react-slot": 1.1.0
+    "@radix-ui/react-tabs": 1.1.0
     "@radix-ui/react-toast": 1.2.1
     "@tanstack/react-table": 8.19.2
     class-variance-authority: 0.7.0
@@ -6062,7 +6089,7 @@ __metadata:
   peerDependencies:
     react: 18.2.0
     react-dom: 18.2.0
-  checksum: a10ea740c9a249eb11cb3266b590ed700df89f1095bbaa6e71c7b82e53e8cf9a6442eb9b71296dcbd85321408eed3e677abf607af1ddb956216e4aa82cd8b2e3
+  checksum: 643334037e767448add58d46f430e04015bf5e5d19fd66d6b456cf6f2d0c42538d0f4104a5d979effbbecbc89e5fe6cde7649d189746c772866ea3c9fc36571f
   languageName: node
   linkType: hard
 
@@ -8457,7 +8484,7 @@ __metadata:
     eslint-config-prettier: 9.1.0
     extract-files: 13.0.0
     filigran-icon: 0.7.0
-    filigran-ui: 0.16.0
+    filigran-ui: ^0.18.0
     graphql: 16.9.0
     graphql-sse: 2.5.3
     husky: 9.1.5

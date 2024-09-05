@@ -20,7 +20,8 @@ const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   if (!authorized && displayError) {
     return (
       <>
-        <h1>Error</h1>You are not authorized to get this page.
+        <h2 className={'txt-title'}>Error</h2>You are not authorized to get this
+        page.
       </>
     );
   } else if (!authorized) {
