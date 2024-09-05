@@ -15,10 +15,7 @@ import { loadServiceBy } from '../services/services.domain';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import {
-  loadSubscriptionBy,
-  loadUnsecureSubscriptionBy,
-} from './subscription.helper';
+import { loadUnsecureSubscriptionBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
   Query: {

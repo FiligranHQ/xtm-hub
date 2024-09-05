@@ -16,9 +16,9 @@ const menuUserLink = [
     text: 'Services',
   },
   {
-    href: '/communities',
+    href: '/manage-services',
     icon: ForumIcon,
-    text: 'Communities',
+    text: 'Manage',
   },
 ];
 

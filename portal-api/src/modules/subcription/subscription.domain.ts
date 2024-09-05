@@ -90,6 +90,18 @@ export const loadSubscriptionsByOrganization = async (
     )
     .leftJoin('Service as serv', 'Subscription.service_id', '=', 'serv.id')
     .leftJoin('Service_Link as link', 'serv.id', '=', 'link.service_id')
+    .leftJoin(
+      'User_Service as user_service',
+      'Subscription.id',
+      '=',
+      'user_service.subscription_id'
+    )
+    .leftJoin(
+      'Service_Capability as service_capa',
+      'user_service.id',
+      '=',
+      'service_capa.user_service_id'
+    )
     .select([
       'Subscription.*',
       dbRaw('(json_agg(org.*) ->> 0)::json as organization'),
@@ -101,6 +113,9 @@ export const loadSubscriptionsByOrganization = async (
       dbRaw('(link."url") as service_url'),
     ])
     .where('organization_id', context.user.organization_id)
+    .where('serv.type', '=', 'COMMUNITY')
+    .where('user_service.user_id', '=', context.user.id)
+    .where('service_capa.service_capability_name', '=', 'MANAGE_ACCESS')
     .groupBy([
       'Subscription.id',
       'serv.name',
@@ -110,6 +125,7 @@ export const loadSubscriptionsByOrganization = async (
       'link.url',
     ])
     .asConnection<SubscriptionConnection>();
+
   const { totalCount } = await db<Service>(context, 'Subscription', opts)
     .countDistinct('id as totalCount')
     .where('organization_id', context.user.organization_id)

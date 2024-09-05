@@ -49,6 +49,7 @@ import { ServicePriceCreateMutation } from '@/components/service/service-price.g
 import { servicePriceMutation } from '../../../../__generated__/servicePriceMutation.graphql';
 import { RESTRICTION } from '@/utils/constant';
 import { serviceCommunityAcceptMutation } from '../../../../__generated__/serviceCommunityAcceptMutation.graphql';
+import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -182,7 +183,11 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
         size: 30,
         header: 'Type',
         cell: ({ row }) => (
-          <Badge className={'cursor-default'}>{row.original.type}</Badge>
+          <>
+            {row.original.type && (
+              <ServiceTypeBadge type={row.original.type as ServiceTypeBadge} />
+            )}
+          </>
         ),
       },
       {
@@ -208,7 +213,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
               row.original?.subscription &&
               row.original?.subscription[0] &&
               row.original?.subscription[0].status === 'REQUESTED'
-                ? 'destructive'
+                ? 'warning'
                 : 'secondary'
             }
             className={'cursor-default'}>
@@ -445,9 +450,8 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
             open={openSheet}
             setOpen={setOpenSheet}
             mainOrganization={mainOrganization}
-            validationSchema={
-              communityAcceptFormSchema
-            }></CommunityAcceptFormSheet>
+            validationSchema={communityAcceptFormSchema}
+          />
         </>
       )}
     </>
