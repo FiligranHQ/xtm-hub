@@ -1,13 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { useQueryLoader } from 'react-relay';
+import {useQueryLoader} from 'react-relay';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import Loader from '@/components/loader';
 import ServiceSlug from '@/components/service/[slug]/service-slug';
-import { serviceUserSlugQuery } from '../../../../../../__generated__/serviceUserSlugQuery.graphql';
-import { ServiceUserSlugQuery } from '@/components/service/service.graphql';
-import { useLocalStorage } from 'usehooks-ts';
+import {SubscriptionsByService} from '@/components/subcription/subscription.graphql';
+import {subscriptionByServiceQuery} from '../../../../../../__generated__/subscriptionByServiceQuery.graphql';
+import {serviceByIdQuery} from '../../../../../../__generated__/serviceByIdQuery.graphql';
+import {ServiceById} from '@/components/service/service.graphql';
 
 // Component interface
 interface PreloaderProps {
@@ -16,19 +17,23 @@ interface PreloaderProps {
 
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
-  const [count, setCount] = useLocalStorage('countServiceSlug', 50);
-  const [orderMode, setOrderMode] = useLocalStorage(
-    'orderModeServiceSlug',
-    'asc'
+  const [queryRef, loadQuery] = useQueryLoader<subscriptionByServiceQuery>(
+    SubscriptionsByService
   );
-  const [orderBy, setOrderBy] = useLocalStorage(
-    'orderByServiceSlug',
-    'first_name'
+  useMountingLoader(loadQuery, { service_id: id });
+  const [queryRefService, loadQueryService] =
+    useQueryLoader<serviceByIdQuery>(ServiceById);
+  useMountingLoader(loadQueryService, { service_id: id });
+  return queryRef && queryRefService ? (
+    <ServiceSlug
+      queryRefService={queryRefService}
+      loadQuery={loadQuery}
+      queryRef={queryRef}
+      serviceId={id}
+    />
+  ) : (
+    <Loader />
   );
-  const [queryRef, loadQuery] =
-    useQueryLoader<serviceUserSlugQuery>(ServiceUserSlugQuery);
-  useMountingLoader(loadQuery, { id, count, orderBy, orderMode });
-  return queryRef ? <ServiceSlug queryRef={queryRef} /> : <Loader />;
 };
 
 // Component export

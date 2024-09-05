@@ -1,15 +1,15 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import {db, dbUnsecure} from '../../../knexfile';
 import Subscription, {
   SubscriptionId,
   SubscriptionInitializer,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { PortalContext } from '../../model/portal-context';
+import {PortalContext} from "../../model/portal-context";
 
-export const deleteSubscriptionUnsecure = async (subscriptionId: string) => {
+export const deleteSubscriptionUnsecure = async (serviceId: string) => {
   return dbUnsecure<Subscription>('Subscription')
-    .where('Subscription.id', '=', subscriptionId)
+    .where('Subscription.service_id', '=', serviceId)
     .delete('*')
     .returning('*');
 };

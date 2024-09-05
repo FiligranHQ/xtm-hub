@@ -5,6 +5,7 @@ import {
   fillUserServiceData,
   loadSubscriptions,
   loadSubscriptionsByOrganization,
+  loadSubscriptionsByService,
 } from './subscription.domain';
 import { v4 as uuidv4 } from 'uuid';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
@@ -29,6 +30,12 @@ const resolvers: Resolvers = {
         orderMode,
         orderBy,
       });
+    },
+    subscriptionsByServiceId: async (_, { service_id }, context) => {
+      return await loadSubscriptionsByService(
+        context,
+        fromGlobalId(service_id).id
+      );
     },
     subscriptionsByOrganization: async (
       _,

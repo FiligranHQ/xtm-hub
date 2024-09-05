@@ -37,11 +37,19 @@ interface ServiceSlugAddOrgaFormSheetProps {
   trigger: ReactNode;
   connectionId: string;
   serviceId: string;
+  insertedOrganization: (organization: any) => void;
 }
 
 export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ open, setOpen, trigger, connectionId, serviceId }) => {
+> = ({
+  open,
+  setOpen,
+  trigger,
+  connectionId,
+  serviceId,
+  insertedOrganization,
+}) => {
   const [organizations] = getOrganizations();
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
@@ -56,11 +64,12 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
         service_id: serviceId,
         organization_id: inputValue.organization_id,
       },
-      onCompleted: () => {
+      onCompleted: (response) => {
         toast({
           title: 'Success',
           description: <>{'Organization added'}</>,
         });
+        insertedOrganization(response);
       },
       onError: (error: Error) => {
         toast({

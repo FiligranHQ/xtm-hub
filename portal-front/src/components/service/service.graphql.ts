@@ -9,6 +9,16 @@ export const ServiceListCreateMutation = graphql`
   }
 `;
 
+export const ServiceById = graphql`
+  query serviceByIdQuery($service_id: ID) {
+    serviceById(service_id: $service_id) {
+      id
+      name
+      description
+    }
+  }
+`;
+
 export const ServiceCommunityListCreateMutation = graphql`
   mutation serviceCommunityListMutation(
     $input: AddServiceCommunityInput
@@ -24,7 +34,7 @@ export const ServiceCommunityListCreateMutation = graphql`
 export const ServiceCommunityAcceptMutation = graphql`
   mutation serviceCommunityAcceptMutation($input: ServiceCommunityAcceptInput) {
     acceptCommunity(input: $input) {
-      ...subscription_fragment
+      id
     }
   }
 `;
@@ -144,6 +154,17 @@ export const communitiesListFragment = graphql`
   }
 `;
 
+export const ServiceListQuery = graphql`
+  query serviceQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: ServiceOrdering!
+    $orderMode: OrderingMode!
+  ) {
+    ...serviceList_services
+  }
+`;
+
 export const serviceUsersFragment = graphql`
   fragment serviceUser on Query
   @refetchable(queryName: "ServiceUserPaginationQuery") {
@@ -171,7 +192,6 @@ export const serviceUsersFragment = graphql`
           }
           subscription {
             id
-            billing
             organization {
               name
               id
@@ -199,18 +219,6 @@ export const ServiceUserSlugQuery = graphql`
     ...serviceUser
   }
 `;
-
-export const ServiceListQuery = graphql`
-  query serviceQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: ServiceOrdering!
-    $orderMode: OrderingMode!
-  ) {
-    ...serviceList_services
-  }
-`;
-
 export const ServiceCommunityListQuery = graphql`
   query serviceCommunitiesQuery(
     $count: Int!

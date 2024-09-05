@@ -1,6 +1,5 @@
 import { Resolvers } from '../../__generated__/resolvers-types';
 import {
-  loadUsersBySubscription,
   loadUserServiceById,
   loadUserServiceByUser,
 } from './user_service.domain';
@@ -22,18 +21,6 @@ import { isOrgMatchingSub } from '../subcription/subscription.helper';
 
 const resolvers: Resolvers = {
   Query: {
-    serviceUsers: async (
-      _,
-      { id, first, after, orderMode, orderBy },
-      context
-    ) => {
-      return loadUsersBySubscription(context, id, {
-        first,
-        after,
-        orderMode,
-        orderBy,
-      });
-    },
     userServiceOwned: async (
       _,
       { first, after, orderMode, orderBy },
