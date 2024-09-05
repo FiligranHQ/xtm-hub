@@ -3,17 +3,12 @@
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import Loader from '@/components/loader';
-import { ServiceCommunityListQuery } from '@/components/service/service.graphql';
-import { serviceCommunitiesQuery } from '../../../../__generated__/serviceCommunitiesQuery.graphql';
-import CommunityList from '@/components/service/community/community-list';
 import { useLocalStorage } from 'usehooks-ts';
 import { subscriptionsByOrganizationFetch } from '@/components/subcription/subscription.graphql';
 import ManageServicesList from '@/components/manage-services-list/manage-services-list';
 import { subscriptionsByOrganizationSelectQuery } from '../../../../__generated__/subscriptionsByOrganizationSelectQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
 import { subscriptionItem_fragment$data } from '../../../../__generated__/subscriptionItem_fragment.graphql';
-import { useMemo } from 'react';
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
 import { Badge } from 'filigran-ui/servers';
 import { DataTable } from 'filigran-ui/clients';

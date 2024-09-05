@@ -172,12 +172,14 @@ const ManageServicesList: React.FunctionComponent<RequestListProps> = ({
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
           RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
         ]}>
-        <CreateCommunity
-          connectionId={connectionId}
-          adminForm={me.capabilities.some(
-            (capability) => capability.name === 'BYPASS'
-          )}
-        />
+        <div className="flex justify-end pb-m">
+          <CreateCommunity
+            connectionId={connectionId}
+            adminForm={me.capabilities.some(
+              (capability) => capability.name === 'BYPASS'
+            )}
+          />
+        </div>
       </GuardCapacityComponent>
       <DataTable
         data={requestsData}
