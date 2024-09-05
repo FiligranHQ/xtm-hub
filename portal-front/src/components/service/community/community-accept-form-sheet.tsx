@@ -32,7 +32,6 @@ interface CommunityAcceptFormSheetProps {
   setOpen: (open: boolean) => void;
   title: string;
   description: string;
-  justification: string;
   mainOrganization: { id: string; name: string };
   handleSubmit: (values: z.infer<typeof communityAcceptFormSchema>) => void;
   validationSchema: ZodSchema;
@@ -45,7 +44,6 @@ export const CommunityAcceptFormSheet: FunctionComponent<
   setOpen,
   title,
   description,
-  justification,
   handleSubmit,
   mainOrganization,
   validationSchema,
@@ -56,7 +54,6 @@ export const CommunityAcceptFormSheet: FunctionComponent<
   });
 
   const [organizations] = getOrganizations();
-
   const organizationsData =
     organizations.organizations.edges
       .filter(({ node }) => !node.id.includes(mainOrganization.id))
@@ -64,7 +61,6 @@ export const CommunityAcceptFormSheet: FunctionComponent<
         label: node.name,
         value: node.id,
       })) ?? [];
-
   const onSubmit = (values: z.infer<typeof validationSchema>) => {
     handleSubmit({
       ...values,
@@ -81,7 +77,6 @@ export const CommunityAcceptFormSheet: FunctionComponent<
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        {justification}
 
         <Form {...form}>
           <form

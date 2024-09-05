@@ -16,7 +16,7 @@ import {
   subscriptionsSelectQuery,
 } from '../../../__generated__/subscriptionsSelectQuery.graphql';
 import { Button } from 'filigran-ui/servers';
-import { AddIcon, CheckIcon, LittleArrowIcon } from 'filigran-icon';
+import { CheckIcon, LittleArrowIcon } from 'filigran-icon';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
@@ -171,7 +171,7 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
     });
   };
   const editSubscription = useCallback(
-    (status: string, subscription: subscriptionItem_fragment$data) => {
+    (status: string, subscription: any) => {
       if (!subscription.organization || !subscription.service) {
         toast({
           variant: 'destructive',

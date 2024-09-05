@@ -69,6 +69,44 @@ export const loadSubscription = (userId, serviceId) => {
     .select('sub.id');
 };
 
+export const loadSubscriptionsByService = async (
+  context: PortalContext,
+  service_id
+) => {
+  const queryUserServiceWithCapa = db<UserService>(context, 'User_Service')
+    .leftJoin(
+      'Service_Capability',
+      'User_Service.id',
+      '=',
+      'Service_Capability.user_service_id'
+    )
+    .select(
+      'User_Service.*',
+      dbRaw(
+        `CASE WHEN COUNT("Service_Capability".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "Service_Capability".id, 'service_capability_name', "Service_Capability".service_capability_name)))::json END AS service_capabilities`
+      )
+    )
+    .groupBy(['User_Service.id']);
+  return db<Subscription>(context, 'Subscription')
+    .where('Subscription.service_id', '=', service_id)
+    .leftJoin(
+      queryUserServiceWithCapa.as('userService'),
+      'userService.subscription_id',
+      '=',
+      'Subscription.id'
+    )
+    .leftJoin('User as user', 'user.id', '=', 'userService.user_id')
+    .leftJoin('Organization as org', 'org.id', '=', 'user.organization_id')
+    .select(
+      'Subscription.*',
+      dbRaw(
+        "(json_agg(json_build_object('id', \"userService\".id,'service_capability',\"userService\".service_capabilities ,'user', json_build_object('id', \"user\".id, 'email', \"user\".email, 'first_name', \"user\".first_name, 'last_name', \"user\".last_name, 'organization', json_build_object('id', \"org\".id, 'name', \"org\".name, '__typename', 'Organization'), '__typename', 'User'), '__typename', 'User_Service'))::json) as user_service"
+      )
+    )
+    .groupBy(['Subscription.id'])
+    .orderBy('Subscription.billing', 'desc');
+};
+
 export const loadSubscriptionsByOrganization = async (
   context: PortalContext,
   opts

@@ -7,8 +7,10 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { dbUnsecure } from '../../../knexfile';
 import UserService from '../../model/kanel/public/UserService';
 import { ServiceId } from '../../model/kanel/public/Service';
-import { loadUnsecureSubscriptionBy } from './subscription.domain';
-import { deleteSubscriptionUnsecure } from './subscription.helper';
+import {
+  deleteSubscriptionUnsecure,
+  loadUnsecureSubscriptionBy,
+} from './subscription.helper';
 
 const addSubscriptionTestQuery = (serviceId) => ({
   query: print(gql`
@@ -22,21 +24,45 @@ const addSubscriptionTestQuery = (serviceId) => ({
     service_id: toGlobalId('Service', serviceId),
   },
 });
+const getSubscriptionsByServiceIdTestQuery = {
+  query: print(gql`
+    query addSubscriptionMutation($service_id: ID) {
+      subscriptionsByServiceId(service_id: $service_id) {
+        status
+        justification
+        id
+        user_service {
+          id
+          user {
+            last_name
+            first_name
+            email
+            organization {
+              name
+            }
+          }
+        }
+      }
+    }
+  `),
+  variables: {
+    service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
+  },
+};
 
-describe('UserAdmin can subscribe to a service ', async () => {
+describe('UserAdmin can subscribe to a service', async () => {
   const userAdmin = await getAdminAgent();
 
   it.each`
     serviceId                                 | subscriptionType          | numberOfUserServiceAccess
     ${'c6343882-f609-4a3f-abe0-a34f8cb11302'} | ${'Subscriptable_direct'} | ${'2'}
   `(
-    'Should add service $subscriptionStatus for service $subscriptionType ',
+    'Should add service $subscriptionStatus for service $subscriptionTyp e',
     async ({ serviceId, numberOfUserServiceAccess }) => {
       const response = await userAdmin
         .post('/graphql-api')
         .send(addSubscriptionTestQuery(serviceId));
       const transform = JSON.parse(response.text);
-
       expect(response.status).toBe(200);
 
       const [subscription] = await loadUnsecureSubscriptionBy({
@@ -51,11 +77,34 @@ describe('UserAdmin can subscribe to a service ', async () => {
         .first();
 
       expect(userService.totalCount).toEqual(numberOfUserServiceAccess);
-
       // Clean everything
       deleteSubscriptionUnsecure(
         fromGlobalId(transform.data.addSubscription.id).id
       );
     }
   );
+});
+
+describe('Should return Subscriptions by serviceId', async () => {
+  const userAdmin = await getAdminAgent();
+
+  it('Should return all subscriptions ', async () => {
+    const response = await userAdmin
+      .post('/graphql-api')
+      .send(getSubscriptionsByServiceIdTestQuery);
+    const transform = JSON.parse(response.text);
+
+    expect(response.status).toBe(200);
+    expect(transform.data.subscriptionsByServiceId.length).toEqual(2);
+    expect(
+      transform.data.subscriptionsByServiceId[0].user_service.id
+    ).not.toBeNull();
+    expect(
+      transform.data.subscriptionsByServiceId[0].user_service[0].user.email
+    ).not.toBeNull();
+    expect(
+      transform.data.subscriptionsByServiceId[0].user_service[0].user
+        .organization.name
+    ).not.toBeNull();
+  });
 });

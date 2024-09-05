@@ -32,6 +32,26 @@ export const userServiceOwnedFragment = graphql`
   }
 `;
 
+export const userServiceFragment = graphql`
+  fragment userService_fragment on UserService {
+    id
+    service_capability {
+      id
+      service_capability_name
+    }
+    user {
+      id
+      last_name
+      first_name
+      email
+      organization {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const userServicesOwnedFragment = graphql`
   fragment userServicesOwned_fragment on UserService {
     id

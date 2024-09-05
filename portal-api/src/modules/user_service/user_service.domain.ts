@@ -183,7 +183,7 @@ export const loadUsersBySubscription = async (
         "(json_agg(json_build_object('id', \"user\".id,'last_name', \"user\".last_name, 'first_name', \"user\".first_name,  'email', \"user\".email, '__typename', 'User')) ->> 0)::json as user"
       ),
       dbRaw(
-        "(json_agg(json_build_object('id', \"sub\".id,'billing', \"sub\".billing, 'service_id', \"sub\".service_id, 'organization', json_build_object('id', \"org\".id,'name', \"org\".name,'__typename', 'Organization'), 'service',json_build_object('id', \"service\".id,'name', \"service\".name,'__typename', 'Service'), '__typename', 'Subscription')) ->> 0)::json as subscription"
+        "(json_agg(json_build_object('id', \"sub\".id,'billing', \"sub\".billing, 'status', \"sub\".status,'justification', \"sub\".justification, 'service_id', \"sub\".service_id, 'organization', json_build_object('id', \"org\".id,'name', \"org\".name,'__typename', 'Organization'), 'service',json_build_object('id', \"service\".id,'name', \"service\".name, 'description', \"service\".description, '__typename', 'Service'), '__typename', 'Subscription')) ->> 0)::json as subscription"
       ),
       dbRaw(
         "(json_agg(json_build_object('id', \"servcapa\".id, 'service_capability_name', \"servcapa\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"

@@ -47,11 +47,13 @@ type Query {
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceById(service_id: ID): Service
   communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   settings: Settings!
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
   subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
+  subscriptionsByServiceId(service_id: ID): [Subscription]
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: User
@@ -108,6 +110,7 @@ type Subscription implements Node {
   joining: String
   justification: String
   billing: Int
+  user_service: [UserService]
   ActionTracking: TrackingSubscription
   User: UserSubscription
 }

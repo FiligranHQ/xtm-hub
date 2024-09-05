@@ -24,6 +24,7 @@ import {
   insertService,
   loadCommunities,
   loadPublicServices,
+  loadServiceBy,
   orgaCreateCommu,
 } from './services.domain';
 import { insertServicePrice } from './instances/service-price/service_price.helper';
@@ -40,6 +41,9 @@ const resolvers: Resolvers = {
     },
     communities: async (_, opt, context) => {
       return loadCommunities(context, opt);
+    },
+    serviceById: async (_, { service_id }, context) => {
+      return await loadServiceBy(context, 'id', fromGlobalId(service_id).id);
     },
   },
   Mutation: {
@@ -264,6 +268,7 @@ const resolvers: Resolvers = {
           users.map(({ id }) => id),
           adminsSubscription.id
         );
+
         return addedSubscriptions;
       } catch (error) {
         await trx.rollback();

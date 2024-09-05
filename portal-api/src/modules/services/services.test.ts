@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getAdminAgent } from '../../../tests/test.util';
-import { toGlobalId } from 'graphql-relay/node/node.js';
+import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { loadUnsecureServiceBy } from './services.domain';
 import { loadUnsecureServicePriceBy } from './instances/service-price/service_price.helper';
 import {
@@ -28,6 +28,20 @@ const organizationList = [
   toGlobalId('Organization', 'ba091095-418f-4b4f-b150-6c9295e232c4'),
   toGlobalId('Organization', '681fb117-e2c3-46d3-945a-0e921b5d4b6c'),
 ];
+
+const getServiceTestQuery = (serviceId) => ({
+  query: print(gql`
+    query serviceByIdQuery($service_id: ID) {
+      serviceById(service_id: $service_id) {
+        id
+        name
+      }
+    }
+  `),
+  variables: {
+    service_id: serviceId,
+  },
+});
 const addServiceTestQuery = {
   query: print(gql`
     mutation serviceCommunityListMutation($input: AddServiceCommunityInput) {
@@ -212,6 +226,26 @@ describe('Should return community list', async () => {
   });
   afterAll(async () => {
     await deleteSubscriptionUnsecure(createThalesSubscription.id);
+  });
+});
+
+describe('Should return service By Id', async () => {
+  const userAdmin = await getAdminAgent();
+  it('should return the right service ', async () => {
+    const response = await userAdmin
+      .post('/graphql-api')
+      .send(
+        getServiceTestQuery(
+          toGlobalId('Service', 'c6343882-f609-4a3f-abe0-a34f8cb11302')
+        )
+      );
+    expect(response.status).toBe(200);
+
+    const transform = JSON.parse(response.text);
+    expect(transform.data.serviceById.name).toEqual('CyberWeather');
+    expect(fromGlobalId(transform.data.serviceById.id).id).toEqual(
+      'c6343882-f609-4a3f-abe0-a34f8cb11302'
+    );
   });
 });
 
