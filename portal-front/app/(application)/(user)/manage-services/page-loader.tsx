@@ -10,8 +10,11 @@ import { subscriptionsByOrganizationSelectQuery } from '../../../../__generated_
 import { ColumnDef } from '@tanstack/react-table';
 import { subscriptionItem_fragment$data } from '../../../../__generated__/subscriptionItem_fragment.graphql';
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
-import { Badge } from 'filigran-ui/servers';
 import { DataTable } from 'filigran-ui/clients';
+import {
+  SubscriptionStatusBadge,
+  SubscriptionStatusTypeBadge,
+} from '@/components/ui/subscription-status-badge';
 
 // Component interface
 interface PageProps {}
@@ -47,27 +50,23 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
     id: 'provider',
     size: 30,
     header: 'Provider',
+    enableSorting: false,
   },
   {
     size: 300,
     accessorKey: 'service.description',
     id: 'description',
     header: 'Description',
+    enableSorting: false,
   },
   {
     id: 'status',
     size: 30,
     header: 'Status',
     cell: ({ row }) => (
-      <Badge
-        variant={
-          row.original?.status && row.original?.status === 'REQUESTED'
-            ? 'warning'
-            : 'secondary'
-        }
-        className={'cursor-default'}>
-        {row.original?.status ?? 'ACCEPTED'}
-      </Badge>
+      <SubscriptionStatusBadge
+        type={row.original?.status as SubscriptionStatusTypeBadge}
+      />
     ),
   },
 ];
@@ -76,7 +75,7 @@ const PageLoader: React.FunctionComponent<PageProps> = () => {
   const [count, setCount] = useLocalStorage('countRequestsList', 50);
   const [orderMode, setOrderMode] = useLocalStorage(
     'orderModeRequestsList',
-    'asc'
+    'desc'
   );
   const [orderBy, setOrderBy] = useLocalStorage(
     'orderByRequestsList',

@@ -1,0 +1,21 @@
+import { Badge } from 'filigran-ui/servers';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { FunctionComponent } from 'react';
+
+export type SubscriptionStatusTypeBadge = 'ACCEPTED' | 'REQUESTED' | 'REFUSED';
+
+interface SubscriptionStatusBadgeProps {
+  type: SubscriptionStatusTypeBadge;
+}
+
+export const SubscriptionStatusBadge: FunctionComponent<
+  SubscriptionStatusBadgeProps
+> = ({ type }) => {
+  const badgeColor = {
+    REFUSED: 'text-red',
+    REQUESTED: 'text-orange',
+    ACCEPTED: 'text-green',
+  };
+  return <Badge className={cn('uppercase', badgeColor[type])}>{type}</Badge>;
+};

@@ -14,6 +14,10 @@ import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { serviceCommunityList_fragment$data } from '../../../../../__generated__/serviceCommunityList_fragment.graphql';
 import { DataTable } from 'filigran-ui/clients';
+import {
+  SubscriptionStatusBadge,
+  SubscriptionStatusTypeBadge,
+} from '@/components/ui/subscription-status-badge';
 
 // Component interface
 interface PageProps {}
@@ -54,26 +58,24 @@ const columns: ColumnDef<serviceCommunityList_fragment$data>[] = [
     accessorKey: 'description',
     id: 'description',
     header: 'Description',
+    enableSorting: false,
   },
   {
     id: 'status',
     size: 30,
     header: 'Status',
     cell: ({ row }) => (
-      <Badge
-        variant={
-          row.original?.subscription &&
-          row.original?.subscription[0] &&
-          row.original?.subscription[0].status === 'REQUESTED'
-            ? 'warning'
-            : 'secondary'
-        }
-        className={'cursor-default'}>
-        {(row.original?.subscription &&
-          row.original?.subscription[0] &&
-          row.original?.subscription[0].status) ??
-          'ACCEPTED'}
-      </Badge>
+      <>
+        {' '}
+        {row.original?.subscription && row.original?.subscription[0] && (
+          <SubscriptionStatusBadge
+            type={
+              row.original?.subscription[0]
+                .status as SubscriptionStatusTypeBadge
+            }
+          />
+        )}
+      </>
     ),
   },
 ];
