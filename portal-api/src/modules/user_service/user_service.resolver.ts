@@ -10,14 +10,20 @@ import {
   createUserAccessForOtherOrg,
   createUserServiceAccess,
   isUserServiceExist,
+  loadUnsecureUserServiceBy,
 } from './user-service.helper';
 import { UserId } from '../../model/kanel/public/User';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import Subscription, {
+  SubscriptionId,
+} from '../../model/kanel/public/Subscription';
 import { GraphQLError } from 'graphql/error/index.js';
 import { getOrCreateUser } from '../users/users.helper';
 import UserService from '../../model/kanel/public/UserService';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { isOrgMatchingSub } from '../subcription/subscription.helper';
+import {
+  isOrgMatchingSub,
+  loadSubscriptionBy,
+} from '../subcription/subscription.helper';
 
 const resolvers: Resolvers = {
   Query: {
@@ -81,6 +87,22 @@ const resolvers: Resolvers = {
         .where('user_id', '=', userToDelete.id)
         .delete('*')
         .returning('*');
+
+      // Find subscription and remove it if no other userServices
+      const usersServices = await loadUnsecureUserServiceBy({
+        subscription_id: deletedUserService.subscription_id,
+      });
+
+      if (usersServices.length === 0) {
+        const [subscription] = await loadSubscriptionBy(
+          'id',
+          deletedUserService.subscription_id
+        );
+        await db<Subscription>(context, 'Subscription')
+          .where('id', '=', subscription.id)
+          .delete('*')
+          .returning('*');
+      }
 
       return deletedUserService;
     },

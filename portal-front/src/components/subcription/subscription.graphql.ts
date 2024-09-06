@@ -23,27 +23,7 @@ export const subscriptionsFragment = graphql`
 export const SubscriptionsByService = graphql`
   query subscriptionByServiceQuery($service_id: ID) {
     subscriptionsByServiceId(service_id: $service_id) {
-      status
-      justification
-      id
-      billing
-      user_service {
-        id
-        service_capability {
-          id
-          service_capability_name
-        }
-        user {
-          id
-          last_name
-          first_name
-          email
-          organization {
-            id
-            name
-          }
-        }
-      }
+      ...subscriptionByService_fragment @relay(mask: false)
     }
   }
 `;

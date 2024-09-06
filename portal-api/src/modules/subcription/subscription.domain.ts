@@ -100,7 +100,7 @@ export const loadSubscriptionsByService = async (
     .select(
       'Subscription.*',
       dbRaw(
-        "(json_agg(json_build_object('id', \"userService\".id,'service_capability',\"userService\".service_capabilities ,'user', json_build_object('id', \"user\".id, 'email', \"user\".email, 'first_name', \"user\".first_name, 'last_name', \"user\".last_name, 'organization', json_build_object('id', \"org\".id, 'name', \"org\".name, '__typename', 'Organization'), '__typename', 'User'), '__typename', 'User_Service'))::json) as user_service"
+        `CASE WHEN COUNT (\"userService\".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', \"userService\".id,'service_capability',\"userService\".service_capabilities ,'user', json_build_object('id', \"user\".id, 'email', \"user\".email, 'first_name', \"user\".first_name, 'last_name', \"user\".last_name, 'organization', json_build_object('id', \"org\".id, 'name', \"org\".name, '__typename', 'Organization'), '__typename', 'User'), '__typename', 'User_Service'))::json) END AS user_service`
       )
     )
     .groupBy(['Subscription.id'])

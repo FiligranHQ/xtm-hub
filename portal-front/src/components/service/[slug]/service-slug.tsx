@@ -296,6 +296,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               serviceId={queryDataService.serviceById?.id ?? ''}
               trigger={
                 <Button
+                  variant="ghost"
                   className="mb-5 min-h-[55px]"
                   aria-label="Add organization">
                   <AddIcon className="mr-2 h-4 w-4" />
@@ -314,7 +315,10 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 className="ml-1 mt-0 bg-white p-10">
                 <DataTable
                   columns={columns}
-                  data={subscription?.user_service ?? []}
+                  data={
+                    (subscription?.user_service as userService_fragment$data[]) ??
+                    []
+                  }
                 />
               </TabsContent>
             );
