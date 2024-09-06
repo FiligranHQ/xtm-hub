@@ -31,6 +31,7 @@ import { insertServicePrice } from './instances/service-price/service_price.help
 import { isAdmin } from '../role-portal/role-portal.domain';
 import { loadUsersByOrganization } from '../users/users.domain';
 import User from '../../model/kanel/public/User';
+import { GraphQLError } from 'graphql/error/index.js';
 
 const resolvers: Resolvers = {
   Query: {
@@ -174,19 +175,38 @@ const resolvers: Resolvers = {
         const userId = input.billing_manager
           ? fromGlobalId(JSON.parse(input.billing_manager).id).id
           : context.user.id;
-        isUserAdmin
-          ? await adminCreateCommu(
-              context,
-              input.organizations_id ?? [],
-              addedService.id as ServiceId,
-              userId
-            )
-          : await orgaCreateCommu(
-              context,
-              [toGlobalId('Organization', context.user.organization_id)],
-              addedService.id as ServiceId,
-              input.justification
-            );
+
+        if (
+          input.billing_manager &&
+          !input.organizations_id.some(
+            (id) =>
+              fromGlobalId(JSON.parse(input.billing_manager).organization_id)
+                .id === fromGlobalId(id).id
+          )
+        ) {
+          throw new GraphQLError(
+            'The billing manager and the organization should be the same.',
+            {
+              extensions: { code: '[Services] addServiceCommunity' },
+            }
+          );
+        }
+
+        if (isUserAdmin) {
+          await adminCreateCommu(
+            context,
+            input.organizations_id ?? [],
+            addedService.id as ServiceId,
+            userId
+          );
+        } else {
+          await orgaCreateCommu(
+            context,
+            [toGlobalId('Organization', context.user.organization_id)],
+            addedService.id as ServiceId,
+            input.justification
+          );
+        }
 
         await grantServiceAdminAccess(context, userId, addedService.id);
 
@@ -232,7 +252,6 @@ const resolvers: Resolvers = {
           .update({ billing: 100, status: 'ACCEPTED' })
           .returning('*');
 
-        // Grant all users access in admin's organization.
         // Grant all users access in admin's organization.
         const users = (await loadUsersByOrganization(
           adminsSubscription.organization_id,

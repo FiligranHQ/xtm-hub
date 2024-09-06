@@ -49,7 +49,9 @@ const addServiceTestQuery = {
       price: servicePrice,
       fee_type: serviceFeeType,
       organizations_id: organizationList,
-      billing_manager: `{"id": "${toGlobalId('User', 'ba091095-418f-4b4f-b150-6c9295e232c3')}", "organization_id": "${toGlobalId('Organization', 'ba091095-418f-4b4f-b150-6c9295e232c4')}" }`,
+      billing_manager: `{
+      "id": "${toGlobalId('User', 'ba091095-418f-4b4f-b150-6c9295e232c3')}", 
+      "organization_id": "${toGlobalId('Organization', 'ba091095-418f-4b4f-b150-6c9295e232c4')}" }`,
     },
   },
 };
@@ -210,5 +212,90 @@ describe('Should return community list', async () => {
   });
   afterAll(async () => {
     await deleteSubscriptionUnsecure(createThalesSubscription.id);
+  });
+});
+
+describe('Admin should create Community for another organization', async () => {
+  let response;
+  let result;
+  const userAdmin = await getAdminAgent();
+  const community_name = 'Create community for Thales';
+  const community_description =
+    'Create community for Thales from the Admin Internal';
+  beforeAll(async () => {
+    response = await userAdmin.post('/graphql-api').send({
+      ...addServiceTestQuery,
+      variables: {
+        ...addServiceTestQuery.variables,
+        input: {
+          ...addServiceTestQuery.variables.input,
+          community_name,
+          community_description,
+          organizations_id: [
+            toGlobalId('Organization', '681fb117-e2c3-46d3-945a-0e921b5d4b6c'),
+          ],
+          billing_manager: `{
+            "id": "${toGlobalId('User', '015c0488-848d-4c89-95e3-8a243971f594')}", 
+            "organization_id": "${toGlobalId('Organization', '681fb117-e2c3-46d3-945a-0e921b5d4b6c')}" }`,
+        },
+      },
+    });
+    result = JSON.parse(response.text);
+  });
+  it('Should return 200', () => {
+    expect(response.status).toBe(200);
+  });
+  it('Should insert service with type community ', async () => {
+    const community = result.data.addServiceCommunity;
+    expect(community).toEqual(
+      expect.objectContaining({
+        name: community_name,
+        description: community_description,
+        provider: 'SCRED_ONDEMAND',
+        type: 'COMMUNITY',
+        subscription_service_type: 'SUBSCRIPTABLE_DIRECT',
+      })
+    );
+  });
+  afterAll(async () => {
+    await deleteServiceUnsecure({ name: community_name });
+  });
+});
+
+describe('Admin should not create Community for organization with billing manager that having a different organization', async () => {
+  let response;
+  let result;
+  const userAdmin = await getAdminAgent();
+  const community_name = 'Create community for Thales';
+  const community_description =
+    'Create community for Thales from the Admin Internal and billing Internal';
+  beforeAll(async () => {
+    response = await userAdmin.post('/graphql-api').send({
+      ...addServiceTestQuery,
+      variables: {
+        ...addServiceTestQuery.variables,
+        input: {
+          ...addServiceTestQuery.variables.input,
+          community_name,
+          community_description,
+          organizations_id: [
+            toGlobalId('Organization', '681fb117-e2c3-46d3-945a-0e921b5d4b6c'),
+          ],
+        },
+      },
+    });
+    result = JSON.parse(response.text);
+  });
+  it('Should return 200', () => {
+    expect(response.status).toBe(200);
+  });
+  it('Should not insert service with type community and throw error', async () => {
+    const community = result.data.addServiceCommunity;
+    expect(community).toEqual(null);
+    expect(result.errors[0]).toEqual(
+      expect.objectContaining({
+        message: 'The billing manager and the organization should be the same.',
+      })
+    );
   });
 });
