@@ -17,13 +17,15 @@ import Loader from '@/components/loader';
 import TriggerButton from '@/components/ui/trigger-button';
 
 interface CreateCommunityProps {
-  connectionId: string;
+  connectionId?: string;
   adminForm: boolean;
+  onCompleted?: () => void;
 }
 
 export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
   connectionId,
   adminForm = false,
+  onCompleted,
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
 
@@ -45,9 +47,14 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
             typeof communityFormSchemaOrga | typeof communityFormSchemaAdmin
           >),
         },
-        connections: [connectionId],
+        connections: connectionId ? [connectionId] : [],
       },
-      onCompleted: () => {},
+      onCompleted: () => {
+        setOpenSheet(false);
+        if (onCompleted) {
+          onCompleted();
+        }
+      },
       onError: (error) => {
         toast({
           variant: 'destructive',
@@ -56,7 +63,6 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
         });
       },
     });
-    setOpenSheet(false);
   };
 
   const [queryRef, loadQuery] = useQueryLoader<userQuery>(UserListQuery);

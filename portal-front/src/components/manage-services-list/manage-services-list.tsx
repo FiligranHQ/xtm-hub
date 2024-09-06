@@ -115,7 +115,6 @@ const ManageServicesList: React.FunctionComponent<RequestListProps> = ({
     subscriptionListByOrganization_subscriptions$key
   >(subscriptionsByOrganizationFragment, queryData);
 
-  const connectionId = data.subscriptionsByOrganization.__id;
   const handleRefetchData = (
     args?: Partial<subscriptionsByOrganizationSelectQuery$variables>
   ) => {
@@ -174,7 +173,7 @@ const ManageServicesList: React.FunctionComponent<RequestListProps> = ({
         ]}>
         <div className="flex justify-end pb-m">
           <CreateCommunity
-            connectionId={connectionId}
+            onCompleted={() => handleRefetchData()}
             adminForm={me.capabilities.some(
               (capability) => capability.name === 'BYPASS'
             )}
