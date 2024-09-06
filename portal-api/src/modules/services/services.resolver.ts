@@ -184,6 +184,7 @@ const resolvers: Resolvers = {
                 .id === fromGlobalId(id).id
           )
         ) {
+          await trx.rollback();
           throw new GraphQLError(
             'The billing manager and the organization should be the same.',
             {
