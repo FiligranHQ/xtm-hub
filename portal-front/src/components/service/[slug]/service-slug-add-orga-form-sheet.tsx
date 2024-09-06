@@ -67,7 +67,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       onCompleted: (response) => {
         toast({
           title: 'Success',
-          description: <>{'Organization added'}</>,
+          description: 'Organization added',
         });
         insertedOrganization(response);
       },

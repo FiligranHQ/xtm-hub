@@ -123,47 +123,48 @@ const AcceptCommunity: FunctionComponent<AcceptCommunityProps> = ({
 
   return (
     <>
-      {subscription.status === 'REQUESTED' ? (
-        <div className="mb-3 mt-3">
-          <div className="mb-3 bg-white p-3">
+      {subscription.status && (
+        <div className="space-y-m">
+          <div className="bg-white p-3">
             <h3>Why do I want this community:</h3>
             <div className="flex flex-row">
               <UnknownIcon className="mr-2 h-6 w-6" />
               {subscription.justification}
             </div>
           </div>
-          <div className="mb-3">
+          <div className="space-x-m">
             <Button
               variant="destructive"
               onClick={() => editSubscriptions('REFUSED')}>
               Deny
             </Button>
             <Button
-              className="ml-3"
               variant="secondary"
               onClick={() => editSubscriptions('ACCEPTED')}>
               Accept
             </Button>
           </div>
         </div>
-      ) : (
-        <></>
       )}
-      <CommunityAcceptFormSheet
-        title={'Accept a new community'}
-        description={
-          'Insert the billing here. Click Validate when you are done. The subscriptions will be accepted.'
-        }
-        handleSubmit={handleAcceptCommunity}
-        open={openSheetAcceptCommunity}
-        setOpen={setOpenSheetAcceptCommunity}
-        mainOrganization={
-          subscription.user_service?.[0]?.user?.organization ?? {
-            id: '',
-            name: '',
+      {subscription.user_service?.[0]?.user?.organization && (
+        <CommunityAcceptFormSheet
+          title={'Accept a new community'}
+          description={
+            'Insert the billing here. Click Validate when you are done. The subscriptions will be accepted.'
           }
-        }
-        validationSchema={communityAcceptFormSchema}></CommunityAcceptFormSheet>
+          handleSubmit={handleAcceptCommunity}
+          open={openSheetAcceptCommunity}
+          setOpen={setOpenSheetAcceptCommunity}
+          mainOrganization={
+            subscription.user_service?.[0]?.user?.organization ?? {
+              id: '',
+              name: '',
+            }
+          }
+          validationSchema={
+            communityAcceptFormSchema
+          }></CommunityAcceptFormSheet>
+      )}
     </>
   );
 };
