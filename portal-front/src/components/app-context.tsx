@@ -23,7 +23,7 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
           content="initial-scale=1.0, width=device-width"
         />
       </Head>
-      <body className="flex h-screen flex-col">
+      <body className="flex min-h-screen flex-col">
         <RelayProvider>{children}</RelayProvider>
         <Toaster />
       </body>

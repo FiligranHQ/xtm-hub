@@ -114,7 +114,6 @@ export const loadSubscriptionsByOrganization = async (
     ])
     .where('organization_id', context.user.organization_id)
     .where('serv.type', '=', 'COMMUNITY')
-    .where('user_service.user_id', '=', context.user.id)
     .where('service_capa.service_capability_name', '=', 'MANAGE_ACCESS')
     .groupBy([
       'Subscription.id',

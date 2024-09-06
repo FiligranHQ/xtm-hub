@@ -47,7 +47,7 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
   const [pageSize, setPageSize] = useLocalStorage('countSubscriptionList', 50);
   const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
     'orderModeSubscriptionList',
-    'desc'
+    'asc'
   );
   const [orderBy, setOrderBy] = useLocalStorage<SubscriptionOrdering>(
     'countSubscriptionList',

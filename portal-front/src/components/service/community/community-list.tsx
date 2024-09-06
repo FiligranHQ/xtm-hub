@@ -68,44 +68,41 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
     return;
   }
 
-  const columnsAdmin: ColumnDef<serviceCommunityList_fragment$data>[] = useMemo(
-    () => [
-      {
-        id: 'action',
-        size: 30,
-        enableHiding: false,
-        enableSorting: false,
-        enableResizing: false,
-        cell: ({ row }) => {
-          return (
-            <>
-              <GuardCapacityComponent
-                capacityRestriction={['BCK_MANAGE_SERVICES']}>
-                <Button
-                  asChild
-                  size="icon"
-                  variant="ghost">
-                  <Link href={`/admin/service/${row.original.id}`}>
-                    <ChevronIcon className="h-5 w-5" />
-                  </Link>
-                </Button>
-              </GuardCapacityComponent>
-            </>
-          );
-        },
-      },
-    ],
-    []
-  );
+  const columnsAdmin: ColumnDef<serviceCommunityList_fragment$data>[] =
+    useGranted('FRT_SERVICE_SUBSCRIBER')
+      ? useMemo(
+          () => [
+            {
+              id: 'action',
+              size: 30,
+              enableHiding: false,
+              enableSorting: false,
+              enableResizing: false,
+              cell: ({ row }) => {
+                return (
+                  <>
+                    <GuardCapacityComponent
+                      capacityRestriction={['BCK_MANAGE_SERVICES']}>
+                      <Button
+                        asChild
+                        size="icon"
+                        variant="ghost">
+                        <Link href={`/admin/service/${row.original.id}`}>
+                          <ChevronIcon className="h-5 w-5" />
+                        </Link>
+                      </Button>
+                    </GuardCapacityComponent>
+                  </>
+                );
+              },
+            },
+          ],
+          []
+        )
+      : [];
 
   const communityColumns: ColumnDef<serviceCommunityList_fragment$data>[] =
-    useMemo(
-      () => [
-        ...columns,
-        ...(useGranted('FRT_SERVICE_SUBSCRIBER') ? columnsAdmin : []),
-      ],
-      [columnsAdmin]
-    );
+    useMemo(() => [...columns, ...columnsAdmin], [columnsAdmin]);
 
   const queryData = usePreloadedQuery<serviceCommunitiesQuery>(
     ServiceCommunityListQuery,
