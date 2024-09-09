@@ -12,6 +12,7 @@ import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { initTracking } from '../../modules/tracking/tracking.domain';
 import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
 import { TrackingConst } from '../../modules/tracking/tracking.const';
+import { mapCommunityAWX } from './community/awx-community.helper';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
   const awx = config.get('awx.activate');
@@ -62,7 +63,9 @@ const buildWorkflowInput = async (
   const workflowInput: AWXActionFunctionMap = {
     [AWXAction.CREATE_USER]: buildCreateUserInput,
     [AWXAction.DISABLE_USER]: buildCreateUserInput,
+    [AWXAction.CREATE_COMMUNITY]: mapCommunityAWX,
   };
+
   const selectedFunction = workflowInput[action.type];
   if (!selectedFunction) {
     throw new Error(`Unsupported action type: ${action.type}`);

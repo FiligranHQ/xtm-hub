@@ -1,5 +1,6 @@
 import User from '../../model/kanel/public/User';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
+import { InputCommunity } from './community/awx-community.helper';
 
 export interface AWXAddUserInput {
   awx_client_request_id: ActionTrackingId;
@@ -18,10 +19,11 @@ export interface AWUserInput extends User {
 export enum AWXAction {
   CREATE_USER = 'CREATE_USER',
   DISABLE_USER = 'DISABLE_USER',
+  CREATE_COMMUNITY = 'CREATE_COMMUNITY',
 }
 
 export type AWXActionFunctionMap = {
-  [key in AWXAction]: (...args: unknown[]) => Promise<unknown>;
+  [key in AWXAction]: (...args: unknown[]) => Promise<unknown> | unknown;
 };
 
 interface AwxCreateUserAction {
@@ -33,8 +35,15 @@ interface AwxDisableUserAction {
   type: AWXAction.DISABLE_USER;
   input: UserInput;
 }
+interface AwxCreateCommunityAction {
+  type: AWXAction.CREATE_COMMUNITY;
+  input: InputCommunity;
+}
 
-export type AWXWorkflowAction = AwxCreateUserAction | AwxDisableUserAction;
+export type AWXWorkflowAction =
+  | AwxCreateUserAction
+  | AwxDisableUserAction
+  | AwxCreateCommunityAction;
 
 export interface AwxResponse {
   count: number;
