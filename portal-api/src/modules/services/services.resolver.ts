@@ -33,6 +33,8 @@ import { loadUsersByOrganization } from '../users/users.domain';
 import User from '../../model/kanel/public/User';
 import { GraphQLError } from 'graphql/error/index.js';
 import { addSubscriptions } from '../subcription/subscription.domain';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { AWXAction } from '../../managers/awx/awx.model';
 
 const resolvers: Resolvers = {
   Query: {
@@ -204,6 +206,13 @@ const resolvers: Resolvers = {
             addedService.id as ServiceId,
             userId
           );
+          await launchAWXWorkflow({
+            type: AWXAction.CREATE_COMMUNITY,
+            input: {
+              id: addedService.id as ServiceId,
+              adminCommuId: userId,
+            },
+          });
         } else {
           await orgaCreateCommu(
             context,
@@ -271,6 +280,14 @@ const resolvers: Resolvers = {
           users.map(({ id }) => id),
           adminsSubscription.id
         );
+
+        await launchAWXWorkflow({
+          type: AWXAction.CREATE_COMMUNITY,
+          input: {
+            id: fromGlobalId(input.serviceId).id as ServiceId,
+            adminCommuId,
+          },
+        });
 
         return addedSubscriptions ?? [];
       } catch (error) {
