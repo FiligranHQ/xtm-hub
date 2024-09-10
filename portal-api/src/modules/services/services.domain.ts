@@ -55,7 +55,7 @@ export const loadCommunities = async (context: PortalContext, opts) => {
         "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date,'organization', json_build_object('id',\"org\".id, 'name', \"org\".name), 'justification', \"subscription\".justification, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
       )
     )
-    .groupBy(['Service.id', 'subscription.id'])
+    .groupBy(['Service.id'])
     .asConnection<ServiceConnection>();
 
   const { totalCount } = await db<Service>(context, 'Service', opts)
