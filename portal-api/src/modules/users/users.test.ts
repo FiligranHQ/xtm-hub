@@ -1,4 +1,4 @@
-import { afterAll, describe, expect } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { v4 as uuidv4 } from 'uuid';
 import {
   createNewUserFromInvitation,
@@ -57,8 +57,9 @@ describe('User helpers - createNewUserFromInvitation', async () => {
 });
 
 describe('User should be log with all the capacity', () => {
+  let newUser;
   it('should be log with all the capacity with role ADMIN_ORGA and USER', async () => {
-    const newUser = await createUser({
+    newUser = await createUser({
       email: 'testCreateNewUserFromInvitation@filigran.io',
       first_name: 'test',
       roles: ['ADMIN_ORGA', 'USER'],
@@ -74,9 +75,9 @@ describe('User should be log with all the capacity', () => {
     expect(
       newUser.roles_portal_id.some(({ id }) => id === ROLE_ADMIN_ORGA.id)
     ).toBeTruthy();
+  });
 
-    afterAll(async () => {
-      await deleteUserById(newUser.id as UserId);
-    });
+  afterAll(async () => {
+    await deleteUserById(newUser.id as UserId);
   });
 });
