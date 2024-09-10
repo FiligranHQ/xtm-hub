@@ -26,7 +26,7 @@ const addSubscriptionTestQuery = (serviceId) => ({
 });
 const getSubscriptionsByServiceIdTestQuery = {
   query: print(gql`
-    query addSubscriptionMutation($service_id: ID) {
+    query subscriptionsByServiceIdQuery($service_id: ID) {
       subscriptionsByServiceId(service_id: $service_id) {
         status
         justification
@@ -46,7 +46,7 @@ const getSubscriptionsByServiceIdTestQuery = {
     }
   `),
   variables: {
-    service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
+    service_id: toGlobalId('Service', '575d37c8-53ed-4c63-ae86-2d8d10f14eaf'),
   },
 };
 
@@ -87,24 +87,24 @@ describe('UserAdmin can subscribe to a service', async () => {
 
 describe('Should return Subscriptions by serviceId', async () => {
   const userAdmin = await getAdminAgent();
-
+  const response = await userAdmin
+    .post('/graphql-api')
+    .send(getSubscriptionsByServiceIdTestQuery);
+  const transform = JSON.parse(response.text);
   it('Should return all subscriptions ', async () => {
-    const response = await userAdmin
-      .post('/graphql-api')
-      .send(getSubscriptionsByServiceIdTestQuery);
-    const transform = JSON.parse(response.text);
-
     expect(response.status).toBe(200);
     expect(transform.data.subscriptionsByServiceId.length).toEqual(2);
+  });
+  it('Should return correct user_service object', async () => {
+    const userServiceTest = transform.data.subscriptionsByServiceId.find(
+      ({ user_service }) => {
+        return user_service.length > 0;
+      }
+    );
+    expect(userServiceTest.id).not.toBeNull();
+    expect(userServiceTest.user_service[0].user.email).not.toBeNull();
     expect(
-      transform.data.subscriptionsByServiceId[0].user_service.id
-    ).not.toBeNull();
-    expect(
-      transform.data.subscriptionsByServiceId[0].user_service[0].user.email
-    ).not.toBeNull();
-    expect(
-      transform.data.subscriptionsByServiceId[0].user_service[0].user
-        .organization.name
+      userServiceTest.user_service[0].user.organization.name
     ).not.toBeNull();
   });
 });
