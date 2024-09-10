@@ -1,9 +1,15 @@
-import User from '../../model/kanel/public/User';
-import { loadUnsecureOrganizationBy } from '../../modules/organizations/organizations.helper';
-import { AWUserInput, AWXAddUserInput, UserInput } from './awx.model';
-import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
-import { loadAllRolePortalBy } from '../../modules/role-portal/role-portal.domain';
-import { getRoleMappingReverse } from '../../auth/mapping-roles';
+import User from '../../../model/kanel/public/User';
+import { loadUnsecureOrganizationBy } from '../../../modules/organizations/organizations.helper';
+import {
+  AWUserInput,
+  AWXAddUserInput,
+  UserCommu,
+  UserInput,
+} from '../awx.model';
+import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
+import { loadAllRolePortalBy } from '../../../modules/role-portal/role-portal.domain';
+import { getRoleMappingReverse } from '../../../auth/mapping-roles';
+import { loadUnsecureUserServiceBy } from '../../../modules/user_service/user-service.helper';
 
 export const buildCreateUserInput = async (
   user: UserInput,
@@ -18,15 +24,40 @@ export const buildCreateUserInput = async (
   const roleMapping = getRoleMappingReverse();
   const user_roles = loadUserRoles.map(({ name }) => roleMapping[name]);
 
-  const awxAddUserInput: AWXAddUserInput = {
+  let awxAddUserInput: AWXAddUserInput = {
     awx_client_request_id: awxUUID,
     organization_name: orgInfo.name,
     user_email_address: user.email,
     user_firstname: user.first_name,
     user_lastname: user.last_name,
-    user_reset_password: user.password,
-    user_roles,
   };
+  if (user_roles.includes('admin')) {
+    awxAddUserInput = { ...awxAddUserInput, user_role_admin_ptf: true };
+  }
+  const subscriptions = await loadUnsecureUserServiceBy({ user_id: user.id });
+  console.log('subscriptions', subscriptions);
+  if (subscriptions.length > 0) {
+    const userCommuList: UserCommu[] = [];
+    const userServiceList: string[] = [];
+    for (let sub of subscriptions) {
+      sub.service.type === 'COMMUNITY'
+        ? userCommuList.push({
+            community_id: sub.service.id,
+            role: sub.service_capability.every(
+              (service_capability) =>
+                service_capability.service_capability_name === 'ACCESS_SERVICE'
+            )
+              ? 'user'
+              : 'admin',
+          })
+        : userServiceList.push(sub.service.id);
+    }
+    awxAddUserInput = {
+      ...awxAddUserInput,
+      user_community_list: userCommuList,
+      user_subscription_list: userServiceList,
+    };
+  }
   return awxAddUserInput;
 };
 

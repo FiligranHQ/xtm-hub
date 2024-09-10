@@ -218,6 +218,7 @@ describe('Should return community list', async () => {
       .post('/graphql-api')
       .send(getCommunitiesTestQuery());
     const transform = JSON.parse(response.text);
+    console.log('transform ', transform);
     expect(transform.data.communities.edges.length).toEqual(1);
     expect(transform.data.communities.totalCount).toEqual(1);
     expect(

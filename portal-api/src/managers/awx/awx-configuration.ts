@@ -7,7 +7,7 @@ import {
   AWXWorkflowConfig,
 } from './awx.model';
 import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
-import { buildCreateUserInput } from './awx-user-mapping';
+import { buildCreateUserInput } from './user/awx-user-mapping';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { initTracking } from '../../modules/tracking/tracking.domain';
 import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
