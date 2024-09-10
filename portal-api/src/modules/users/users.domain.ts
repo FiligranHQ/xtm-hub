@@ -77,7 +77,7 @@ export const loadUserBy = async (
         "case when count(distinct \"user_RolePortal\".role_portal_id) = 0 then '[]' else json_agg( json_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal')) end as roles_portal_id"
       ),
     ])
-    .groupBy(['User.id', 'user_RolePortal.role_portal_id'])
+    .groupBy(['User.id'])
     .first();
 
   const user = await userQuery;
@@ -89,7 +89,8 @@ export const loadUserBy = async (
         (capability: CapabilityPortal) => !!capability
       ),
       roles_portal_id: user.roles_portal_id.filter(
-        (role_id: string) => !!role_id
+        (role, index, self) =>
+          role.id !== null && index === self.findIndex((r) => r.id === role.id)
       ),
     };
 
