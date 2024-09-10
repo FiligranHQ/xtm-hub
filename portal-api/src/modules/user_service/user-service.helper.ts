@@ -3,7 +3,7 @@ import UserService, {
   UserServiceInitializer,
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
-import { db, dbUnsecure } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import { UserId } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,7 +18,31 @@ import {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 
 export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
-  return dbUnsecure<UserService>('User_Service').where(field);
+  return dbUnsecure<UserService>('User_Service')
+    .where(field)
+    .leftJoin(
+      'Service_Capability',
+      'User_Service.id',
+      '=',
+      'Service_Capability.user_service_id'
+    )
+    .leftJoin(
+      'Subscription',
+      'Subscription.id',
+      '=',
+      'User_Service.subscription_id'
+    )
+    .leftJoin('Service', 'Service.id', '=', 'Subscription.service_id')
+    .select(
+      'User_Service.*',
+      dbRaw(
+        "(json_agg(json_build_object('id', \"Service_Capability\".id, 'service_capability_name', \"Service_Capability\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
+      ),
+      dbRaw(
+        '(json_agg(json_build_object(\'id\', "Service".id, \'type\', "Service".type))->>0)::json as service'
+      )
+    )
+    .groupBy(['User_Service.id']);
 };
 
 export const isUserServiceExist = async (

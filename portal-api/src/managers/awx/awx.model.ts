@@ -8,8 +8,15 @@ export interface AWXAddUserInput {
   user_email_address: string;
   user_firstname: string;
   user_lastname: string;
-  user_roles: string[];
-  user_reset_password: string;
+  user_subscription_list?: string[];
+  user_community_list?: UserCommu[];
+  user_reset_password?: string;
+  user_role_admin_ptf?: boolean;
+}
+
+export interface UserCommu {
+  community_id: string;
+  role: string;
 }
 
 export interface AWUserInput extends User {
@@ -35,6 +42,7 @@ interface AwxDisableUserAction {
   type: AWXAction.DISABLE_USER;
   input: UserInput;
 }
+
 interface AwxCreateCommunityAction {
   type: AWXAction.CREATE_COMMUNITY;
   input: InputCommunity;

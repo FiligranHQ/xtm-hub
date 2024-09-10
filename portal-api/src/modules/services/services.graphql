@@ -56,9 +56,9 @@ input ServiceCommunityAcceptInput {
 }
 type Mutation {
   editService(id: ID!, name: String!): Service
-    @auth(requires: [BCK_MANAGE_SERVICES])
+    @auth(requires: [BCK_MANAGE_COMMUNITIES])
   addService(input: AddServiceInput): Subscription
-    @auth(requires: [BCK_MANAGE_SERVICES])
+    @auth(requires: [BCK_MANAGE_COMMUNITIES])
   addServiceCommunity(input: AddServiceCommunityInput): Service
     @auth(requires: [BCK_MANAGE_COMMUNITIES])
   acceptCommunity(input: ServiceCommunityAcceptInput): [Subscription]
@@ -80,15 +80,15 @@ type Query {
         BCK_MANAGE_COMMUNITIES
       ]
     )
-  serviceById(service_id: ID): Service
-    @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
-    @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
+  serviceById(service_id: ID): Service @auth
+  @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
   communities(
     first: Int!
     after: ID
     orderBy: ServiceOrdering!
     orderMode: OrderingMode!
-  ): ServiceConnection! @auth(requires: [BYPASS])
+  ): ServiceConnection!
+    @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_COMMUNITIES])
 }
 
 type ServiceSubscription {
