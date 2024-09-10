@@ -39,28 +39,13 @@ export const addOIDCStrategy = (passport) => {
       const openIDStrategy = new OpenIDStrategy(
         options,
         async (_, tokenSet, userinfo, done) => {
-          const decodedUser = config.get('user_management.read_userinfo')
-            ? userinfo
-            : jwtDecode(tokenSet.access_token);
-          // const addRoleUserInLocal = {
-          //   ...decodedUser,
-          //   resource_access: {
-          //     'scred-portal-dev': {
-          //       roles: ['admin'],
-          //     },
-          //   },
-          // };
-          console.log(JSON.stringify(decodedUser));
-          const roles = extractRole(decodedUser);
-          console.info('[OPENID] Successfully logged', { decodedUser });
-          console.info('[OPENID] User role', { roles });
+          console.info('[OPENID] Successfully logged', { userinfo });
           const {
             email,
-            given_name: first_name,
-            family_name: last_name,
+            nickname: first_name,
           } = userinfo;
           await providerLoginHandler(
-            { email, first_name, last_name, roles },
+            { email, first_name, last_name: '', roles: ['ADMIN', 'ADMIN_ORGA','USER'] },
             done
           );
           done(null, tokenSet.claims());
