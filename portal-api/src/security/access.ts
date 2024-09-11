@@ -92,8 +92,11 @@ export const applyDbSecurity = <T>(
   }
   // Standard user can access to all users from its own organization
   if (type === 'User') {
-    const organizationId = context.user.organization_id;
-    queryContext.where('User.organization_id', '=', organizationId);
+    queryContext.where(
+      'User.organization_id',
+      'LIKE',
+      context.user.organization.id
+    );
     return queryContext;
   }
   // Standard user can access only its own organization
