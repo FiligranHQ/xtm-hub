@@ -200,18 +200,22 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
         ]}>
-        <AcceptCommunity
-          insertedUserServices={() =>
-            loadQuery(
-              { service_id: serviceId },
-              { fetchPolicy: 'network-only' }
-            )
-          }
-          serviceId={serviceId}
-          subscription={
-            queryData
-              .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data
-          }></AcceptCommunity>
+        {queryData.subscriptionsByServiceId[0]?.status === 'REQUESTED' ? (
+          <AcceptCommunity
+            insertedUserServices={() =>
+              loadQuery(
+                { service_id: serviceId },
+                { fetchPolicy: 'network-only' }
+              )
+            }
+            serviceId={serviceId}
+            subscription={
+              queryData
+                .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data
+            }></AcceptCommunity>
+        ) : (
+          <></>
+        )}
         <div className="flex justify-end gap-m pb-s">
           <ServiceSlugFormSheet
             open={openSheet}
