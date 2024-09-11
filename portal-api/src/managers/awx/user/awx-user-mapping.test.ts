@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AWXAddUserInput, UserInput } from '../awx.model';
-import { buildCreateUserInput } from './awx-user-mapping';
+import { mapUserInputAWX } from './awx-user-mapping';
 import { UserId } from '../../../model/kanel/public/User';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
@@ -73,7 +73,7 @@ describe('Api create-user', async () => {
       first_name: 'firstname',
       last_name: 'lastname',
     };
-    const result = await buildCreateUserInput(
+    const result = await mapUserInputAWX(
       user,
       'f9d44cd9-ee4f-48af-ac8f-544c6022106c' as ActionTrackingId
     );
@@ -106,7 +106,7 @@ describe('Api create-user', async () => {
       first_name: '',
       last_name: '',
     };
-    const result = await buildCreateUserInput(
+    const result = await mapUserInputAWX(
       user,
       'f9d44cd9-ee4f-48af-ac8f-544c6022104c' as ActionTrackingId
     );
@@ -138,7 +138,7 @@ describe('Api create-user', async () => {
       first_name: '',
       last_name: '',
     };
-    const result = await buildCreateUserInput(
+    const result = await mapUserInputAWX(
       user,
       'f9d44cd9-ee4f-48af-ac8f-544c6022105c' as ActionTrackingId
     );
