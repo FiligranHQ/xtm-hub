@@ -7,12 +7,28 @@ import {
   AWXWorkflowConfig,
 } from './awx.model';
 import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
-import { buildCreateUserInput } from './user/awx-user-mapping';
+import { mapUserInputAWX, mapUserEmailAWX } from './user/awx-user-mapping';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { initTracking } from '../../modules/tracking/tracking.domain';
 import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
 import { TrackingConst } from '../../modules/tracking/tracking.const';
-import { mapCommunityAWX } from './community/awx-community.helper';
+import {
+  mapCommunityIdAWX,
+  mapCreateCommunityAWX,
+  mapUpdateCommunityAWX,
+} from './community/awx-community.helper';
+import {
+  mapAddServiceCommunityAWX,
+  mapDeleteServiceCommunityAWX,
+  mapUpdateServiceCommunityAWX,
+} from './community/awx-service-community.helper';
+import { mapUserCommunityAWX } from './community/awx-user-community.helper';
+import {
+  mapAddServiceOrganizationAWX,
+  mapUserInServiceOrganizationAWX,
+  mapDeleteServiceOrganizationAWX,
+  mapUpdateServiceOrganizationAWX,
+} from './organization/awx-service-organization.helper';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
   const awx = config.get('awx.activate');
@@ -61,9 +77,25 @@ const buildWorkflowInput = async (
   keys: string[]
 ) => {
   const workflowInput: AWXActionFunctionMap = {
-    [AWXAction.CREATE_USER]: buildCreateUserInput,
-    [AWXAction.DISABLE_USER]: buildCreateUserInput,
-    [AWXAction.CREATE_COMMUNITY]: mapCommunityAWX,
+    [AWXAction.CREATE_USER]: mapUserInputAWX,
+    [AWXAction.UPDATE_USER]: mapUserInputAWX,
+    [AWXAction.DISABLE_USER]: mapUserEmailAWX,
+    [AWXAction.ADD_PLTF_USER]: mapUserEmailAWX,
+    [AWXAction.REMOVE_PLTF_USER]: mapUserEmailAWX,
+    [AWXAction.CREATE_COMMUNITY]: mapCreateCommunityAWX,
+    [AWXAction.UPDATE_COMMUNITY]: mapUpdateCommunityAWX,
+    [AWXAction.DELETE_COMMUNITY]: mapCommunityIdAWX,
+    // TODO: Verify input
+    [AWXAction.COMMUNITY_ADD_SERVICE]: mapAddServiceCommunityAWX,
+    [AWXAction.COMMUNITY_UPDATE_SERVICE]: mapUpdateServiceCommunityAWX,
+    [AWXAction.COMMUNITY_DELETE_SERVICE]: mapDeleteServiceCommunityAWX,
+    [AWXAction.COMMUNITY_ADD_USERS]: mapUserCommunityAWX,
+    [AWXAction.COMMUNITY_REMOVE_USERS]: mapUserCommunityAWX,
+    [AWXAction.ORGANIZATION_ADD_SERVICE]: mapAddServiceOrganizationAWX,
+    [AWXAction.ORGANIZATION_UPDATE_SERVICE]: mapUpdateServiceOrganizationAWX,
+    [AWXAction.ORGANIZATION_DELETE_SERVICE]: mapDeleteServiceOrganizationAWX,
+    [AWXAction.ORGANIZATION_ADD_USERS]: mapUserInServiceOrganizationAWX,
+    [AWXAction.ORGANIZATION_REMOVE_USERS]: mapUserInServiceOrganizationAWX,
   };
 
   const selectedFunction = workflowInput[action.type];

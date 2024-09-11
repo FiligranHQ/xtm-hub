@@ -1,17 +1,11 @@
-import User from '../../../model/kanel/public/User';
 import { loadUnsecureOrganizationBy } from '../../../modules/organizations/organizations.helper';
-import {
-  AWUserInput,
-  AWXAddUserInput,
-  UserCommu,
-  UserInput,
-} from '../awx.model';
+import { AWXAddUserInput, UserCommu, UserInput } from '../awx.model';
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
 import { loadAllRolePortalBy } from '../../../modules/role-portal/role-portal.domain';
 import { getRoleMappingReverse } from '../../../auth/mapping-roles';
 import { loadUnsecureUserServiceBy } from '../../../modules/user_service/user-service.helper';
 
-export const buildCreateUserInput = async (
+export const mapUserInputAWX = async (
   user: UserInput,
   awxUUID: ActionTrackingId
 ) => {
@@ -35,11 +29,10 @@ export const buildCreateUserInput = async (
     awxAddUserInput = { ...awxAddUserInput, user_role_admin_ptf: true };
   }
   const subscriptions = await loadUnsecureUserServiceBy({ user_id: user.id });
-  console.log('subscriptions', subscriptions);
   if (subscriptions.length > 0) {
     const userCommuList: UserCommu[] = [];
     const userServiceList: string[] = [];
-    for (let sub of subscriptions) {
+    for (const sub of subscriptions) {
       sub.service.type === 'COMMUNITY'
         ? userCommuList.push({
             community_id: sub.service.id,
@@ -61,42 +54,9 @@ export const buildCreateUserInput = async (
   return awxAddUserInput;
 };
 
-export const completeUserInput = async (
-  user: AWUserInput,
-  keys: string[] = []
-) => {
-  let completeUser = {
-    ...user,
-  };
-  for (const key of keys) {
-    completeUser = await addProperty(key, completeUser);
-  }
-  return completeUser;
-};
-
-const addProperty = async (key: string, user: User) => {
-  const mappingProperty = {
-    organization: getUserOrganization,
-    roles: getUserRole,
-  };
-  const addFunction = mappingProperty[key];
-  if (addFunction) {
-    return await addFunction(user);
-  }
-  return user;
-};
-
-const getUserOrganization = async (user: AWUserInput) => {
-  const orgInfo = await loadUnsecureOrganizationBy('id', user.organization_id);
+export const mapUserEmailAWX = (email: string, awxUUID: ActionTrackingId) => {
   return {
-    ...user,
-    ...orgInfo,
-  };
-};
-const getUserRole = async (user: AWUserInput) => {
-  // TODO Need to implement roles in the form
-  return {
-    ...user,
-    roles: ['admin'],
+    awx_client_request_id: awxUUID,
+    user_email_address: email,
   };
 };
