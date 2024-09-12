@@ -17,9 +17,13 @@ import {
   loadSubscriptionBy,
   loadUnsecureSubscriptionBy,
 } from './subscription.helper';
-import { grantServiceAccessUsers } from '../services/services.domain';
+import {
+  grantServiceAccessUsers,
+  loadServiceBy,
+} from '../services/services.domain';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceId } from '../../model/kanel/public/Service';
+import { GraphQLError } from 'graphql/error/index.js';
 
 const resolvers: Resolvers = {
   Query: {
@@ -60,8 +64,25 @@ const resolvers: Resolvers = {
           context.user.organization_id,
           fromGlobalId(service_id).id
         );
+
+        const service = await loadServiceBy(
+          context,
+          'id',
+          fromGlobalId(service_id).id
+        );
+        if (service.type === 'COMMUNITY') {
+          throw new GraphQLError(
+            'You cannot subscribe directly to an community.',
+            {
+              extensions: { code: '[Subscription] addSubscription' },
+            }
+          );
+        }
+
         if (subscription) {
-          throw new Error(`You have already subscribed this service.`);
+          throw new GraphQLError('You have already subscribed this service.', {
+            extensions: { code: '[Subscription] addSubscription' },
+          });
         }
 
         const subscriptionData = {

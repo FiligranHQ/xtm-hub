@@ -111,3 +111,29 @@ describe('Should return Subscriptions by serviceId ', async () => {
     ).not.toBeNull();
   });
 });
+
+describe('Should not add subscription on Community service', async () => {
+  const addCommunitySubscriptiontQuery = {
+    query: print(gql`
+      mutation addSubscriptionMutation($service_id: String) {
+        addSubscription(service_id: $service_id) {
+          id
+        }
+      }
+    `),
+    variables: {
+      service_id: toGlobalId('Service', '575d37c8-53ed-4c63-ae86-2d8d10f14eaf'),
+    },
+  };
+  const userAdmin = await getAdminAgent();
+  const response = await userAdmin
+    .post('/graphql-api')
+    .send(addCommunitySubscriptiontQuery);
+  const transform = JSON.parse(response.text);
+
+  it('Should return error on addSubscription', async () => {
+    expect(transform.errors[0].message).toBe(
+      `You cannot subscribe directly to an community.`
+    );
+  });
+});
