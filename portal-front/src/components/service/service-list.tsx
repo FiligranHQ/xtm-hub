@@ -176,8 +176,8 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                 triggerElement={
                   <Button
                     aria-label="Subscribe service"
-                    variant="ghost"
-                    className="p-0 text-primary">
+                    variant="outline"
+                    className="py-0 text-primary">
                     Subscribe
                   </Button>
                 }
