@@ -212,18 +212,20 @@ export const grantServiceAccessUsers = async (
   organizationId: OrganizationId,
   adminId: string,
   subscriptionId: string
-) => {
+): Promise<UserService[]> => {
   const usersInOrga = (await loadUsersByOrganization(
     organizationId,
     adminId
   )) as User[];
 
-  return await grantServiceAccess(
-    context,
-    ['ACCESS_SERVICE'],
-    usersInOrga.map(({ id }) => id),
-    subscriptionId
-  );
+  return usersInOrga.length > 0
+    ? await grantServiceAccess(
+        context,
+        ['ACCESS_SERVICE'],
+        usersInOrga.map(({ id }) => id),
+        subscriptionId
+      )
+    : [];
 };
 
 export const grantServiceAccess = async (

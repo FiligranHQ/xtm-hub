@@ -236,7 +236,7 @@ export const addSubscriptions = async (
 };
 
 export const fillUserServiceData = async (
-  userServices: [UserService],
+  userServices: UserService[],
   service_id: ServiceId
 ) => {
   const userServicesData = [];
