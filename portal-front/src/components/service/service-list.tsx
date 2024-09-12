@@ -147,7 +147,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                       <Button
                         asChild
                         variant={'ghost'}
-                        size={'icon'}>
+                        className="flex h-4 w-4 p-0">
                         <Link href={`/admin/service/${row.original.id}`}>
                           <EditIcon className="h-4 w-4" />
                         </Link>
@@ -172,7 +172,8 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
               enableSorting: false,
               enableResizing: false,
               cell: ({ row }) => {
-                return row.original.subscribed ? null : (
+                return row.original.subscribed ||
+                  row.original.type === 'COMMUNITY' ? null : (
                   <AlertDialogComponent
                     AlertTitle={'Subscribe service'}
                     actionButtonText={'Continue'}
