@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PortalContext } from '../../model/portal-context';
 import { hashPassword } from '../../utils/hash-password.util';
 import CapabilityPortal from '../../model/kanel/public/CapabilityPortal';
-import User, { UserId } from '../../model/kanel/public/User';
+import User, {UserId, UserMutator} from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserInfo } from '../../model/user';
 import {
@@ -40,11 +40,10 @@ export const loadUsersByOrganization = async (
 };
 
 export const loadUserBy = async (
-  field: string,
-  value: string
+  field: UserMutator
 ): Promise<UserWithAuthentication> => {
   const userQuery = dbUnsecure<User>('User')
-    .where(field, value)
+    .where(field)
     .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
     .leftJoin(
       'User_RolePortal as user_RolePortal',
@@ -174,15 +173,5 @@ export const createUser = async (
   };
   // Use insert with returning to get the newly created user
   await addNewUserWithRoles(data, roles);
-  return await loadUserBy('User.email', email);
-};
-
-export const updateUserRoles = async (userInfo: UserInfo, userId: UserId) => {
-  const { email, roles } = userInfo;
-
-  // Remove all the role of the User
-  await deleteUserRolePortalByUserId(userId);
-  await addRolesToUser(userId, roles);
-
-  return await loadUserBy('User.email', email);
+  return await loadUserBy({email: email});
 };

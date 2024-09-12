@@ -107,7 +107,7 @@
     "token_reference": "access_token",
     "read_userinfo": false,
     "roles_path": "resource_access.scred-portal-dev.roles",
-    "role_mappings": ["admin:ADMIN", "user:USER", "admin_orga:ADMIN_ORGA"]
+    "role_mappings": ["XTMHubAdmin:ADMIN", "User:USER", "admin_orga:ADMIN_ORGA"]
   },
   "awx": {
     "activate": false,
