@@ -49,6 +49,7 @@ export const serviceListFragment = graphql`
     subscription_service_type
     creation_status
     subscribed
+    capabilities
   }
 `;
 

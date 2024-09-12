@@ -189,6 +189,7 @@ type Service implements Node {
   links: [ServiceLink]
   organization: [Organization]
   subscription: [Subscription]
+  capabilities: [String]
 }
 
 type ServiceEdge {
