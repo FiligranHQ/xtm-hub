@@ -161,9 +161,8 @@ const AcceptCommunity: FunctionComponent<AcceptCommunityProps> = ({
               name: '',
             }
           }
-          validationSchema={
-            communityAcceptFormSchema
-          }></CommunityAcceptFormSheet>
+          validationSchema={communityAcceptFormSchema}
+        />
       )}
     </>
   );

@@ -44,6 +44,10 @@ import AcceptCommunity from '@/components/service/[slug]/accept-community';
 import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
 import { ColumnDef } from '@tanstack/react-table';
 import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
+import {
+  SubscriptionStatusBadge,
+  SubscriptionStatusTypeBadge,
+} from '@/components/ui/subscription-status-badge';
 
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<subscriptionByServiceQuery>;
@@ -187,12 +191,18 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   return (
     <>
-      <h2>Community {queryDataService.serviceById?.name}</h2>
-      <Badge className={'cursor-default'}>
-        {queryData.subscriptionsByServiceId
-          ? queryData.subscriptionsByServiceId[0]?.status
-          : ''}
-      </Badge>
+      <div className="flex items-center gap-s">
+        <h2>Community - {queryDataService.serviceById?.name}</h2>
+        {queryData.subscriptionsByServiceId && (
+          <SubscriptionStatusBadge
+            type={
+              queryData.subscriptionsByServiceId[0]
+                ?.status as SubscriptionStatusTypeBadge
+            }
+          />
+        )}
+      </div>
+
       <div>{queryDataService.serviceById?.description}</div>
       <GuardCapacityComponent
         capacityRestriction={[
@@ -200,7 +210,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
         ]}>
-        {queryData.subscriptionsByServiceId[0]?.status === 'REQUESTED' ? (
+        {queryData.subscriptionsByServiceId &&
+        queryData.subscriptionsByServiceId[0]?.status === 'REQUESTED' ? (
           <AcceptCommunity
             insertedUserServices={() =>
               loadQuery(
@@ -212,7 +223,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             subscription={
               queryData
                 .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data
-            }></AcceptCommunity>
+            }
+          />
         ) : (
           <></>
         )}
