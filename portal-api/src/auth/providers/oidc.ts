@@ -6,17 +6,16 @@ import {
 } from 'openid-client';
 import { providerLoginHandler } from '../login-handle';
 import config from 'config';
-import { jwtDecode } from 'jwt-decode';
 import { extractRole } from '../mapping-roles';
 
 export const addOIDCStrategy = (passport) => {
   const AUTH_SSO = 'SSO';
   const STRATEGY_OPENID = 'OpenIDConnectStrategy';
   const providers = [];
-
   const oidcConfig = config.get('oidc_provider') as ClientMetadata & {
     issuer: string;
   };
+
   const providerRef = 'oidc';
   // Here we use directly the config and not the mapped one.
   // All config of openid lib use snake case.
@@ -25,7 +24,9 @@ export const addOIDCStrategy = (passport) => {
   OpenIDIssuer.discover(oidcConfig.issuer)
     .then((issuer) => {
       const { Client } = issuer;
+
       const client = new Client(oidcConfig);
+
       // region scopes generation
       const openIdScopes = ['openid', 'email', 'profile'];
       // endregion
@@ -39,6 +40,16 @@ export const addOIDCStrategy = (passport) => {
       const openIDStrategy = new OpenIDStrategy(
         options,
         async (_, tokenSet, userinfo, done) => {
+          const addRoleUserInLocal = {
+            ...userinfo,
+            resource_access: {
+              'scred-portal-dev': {
+                roles: userinfo['https://xtm-hub-development/roles'],
+              },
+            },
+          };
+          const roles: string[] = extractRole(addRoleUserInLocal);
+
           console.info('[OPENID] Successfully logged', { userinfo });
           const {
             email,
@@ -61,13 +72,18 @@ export const addOIDCStrategy = (passport) => {
       //     callback(null, endpointUri);
       //   }
       // };
+        console.log("tres before")
       passport.use(providerRef, openIDStrategy);
+        console.log("before")
+
       passport.serializeUser(function (user, done) {
         done(null, user);
       });
+      console.log("between")
       passport.deserializeUser(function (user, done) {
         done(null, user);
       });
+      console.log("passport", passport)
       providers.push({
         name: 'keycloak-express',
         type: AUTH_SSO,

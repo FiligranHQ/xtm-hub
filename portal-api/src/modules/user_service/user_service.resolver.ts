@@ -78,7 +78,7 @@ const resolvers: Resolvers = {
       return await loadUserServiceById(context, addedUserService.id);
     },
     deleteUserService: async (_, { input }, context) => {
-      const userToDelete = await loadUserBy('email', input.email);
+      const userToDelete = await loadUserBy({email: input.email});
 
       const [deletedUserService] = await db<UserService>(
         context,

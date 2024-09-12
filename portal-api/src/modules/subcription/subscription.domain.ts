@@ -241,7 +241,7 @@ export const fillUserServiceData = async (
 ) => {
   const userServicesData = [];
   for (const userService of userServices) {
-    const user = await loadUserBy('User.id', userService.user_id);
+    const user = await loadUserBy({id: userService.user_id});
     const [subscription] = await loadSubscriptionBy(
       'Subscription.id',
       userService.subscription_id

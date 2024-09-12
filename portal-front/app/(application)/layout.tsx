@@ -13,6 +13,7 @@ import { ContentLayout } from '@/components/content-layout';
 import meLoaderQueryNode, {
   meLoaderQuery,
 } from '../../__generated__/meLoaderQuery.graphql';
+import NotAuthorized from "@/components/login/not-authorized";
 
 // Component interface
 interface RootLayoutProps {
@@ -39,7 +40,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
   } catch (e) {
     return (
       <AppContext>
-        <Login />
+        {e.toString().includes('The provided role does not meet schema requirements') ? <NotAuthorized/> : <Login/>}
       </AppContext>
     );
   }
