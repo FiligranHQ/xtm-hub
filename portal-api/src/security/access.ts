@@ -94,7 +94,7 @@ export const applyDbSecurity = <T>(
   if (type === 'User') {
     queryContext.where(
       'User.organization_id',
-      'LIKE',
+      '=',
       context.user.organization.id
     );
     return queryContext;

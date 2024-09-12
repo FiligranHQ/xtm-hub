@@ -78,15 +78,16 @@ const ManageServicesList: React.FunctionComponent<RequestListProps> = ({
             <>
               <GuardCapacityComponent
                 capacityRestriction={['BCK_MANAGE_SERVICES']}>
-                <Button
-                  asChild
-                  variant={'ghost'}
-                  size={'icon'}
-                  className="w-3/4">
-                  <Link href={`/admin/service/${row.original.id}`}>
-                    <ChevronIcon className="h-5 w-5" />
-                  </Link>
-                </Button>
+                {row.original.status === 'ACCEPTED' && (
+                  <Button
+                    asChild
+                    className="flex h-4 w-4 p-0"
+                    variant={'ghost'}>
+                    <Link href={`/admin/service/${row.original.id}`}>
+                      <ChevronIcon className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
               </GuardCapacityComponent>
             </>
           );
@@ -161,7 +162,9 @@ const ManageServicesList: React.FunctionComponent<RequestListProps> = ({
   ) as unknown as subscriptionItem_fragment$data[];
 
   const onClickRow = (row: Row<subscriptionItem_fragment$data>) => {
-    router.push(`/admin/service/${row.original.id}`);
+    if (row.original.status === 'ACCEPTED') {
+      router.push(`/admin/service/${row.original.id}`);
+    }
   };
   return (
     <>

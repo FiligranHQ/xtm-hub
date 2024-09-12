@@ -230,24 +230,27 @@ const resolvers: Resolvers = {
             fromGlobalId(input.serviceId).id as ServiceId
           );
 
-        const addedSubscriptions = await addSubscriptions(
-          context,
-          fromGlobalId(input.serviceId).id as ServiceId,
-          input.organizationsId,
-          'ACCEPTED'
-        );
-
-        for (const addedSubscription of addedSubscriptions) {
-          const users = (await loadUsersByOrganization(
-            addedSubscription.organization_id,
-            adminCommuId
-          )) as User[];
-          await grantServiceAccess(
+        let addedSubscriptions;
+        if (input.organizationsId) {
+          addedSubscriptions = await addSubscriptions(
             context,
-            ['ACCESS_SERVICE'],
-            users.map(({ id }) => id),
-            addedSubscription.id
+            fromGlobalId(input.serviceId).id as ServiceId,
+            input.organizationsId,
+            'ACCEPTED'
           );
+
+          for (const addedSubscription of addedSubscriptions) {
+            const users = (await loadUsersByOrganization(
+              addedSubscription.organization_id,
+              adminCommuId
+            )) as User[];
+            await grantServiceAccess(
+              context,
+              ['ACCESS_SERVICE'],
+              users.map(({ id }) => id),
+              addedSubscription.id
+            );
+          }
         }
 
         // ADMIN
@@ -269,7 +272,7 @@ const resolvers: Resolvers = {
           adminsSubscription.id
         );
 
-        return addedSubscriptions;
+        return addedSubscriptions ?? [];
       } catch (error) {
         await trx.rollback();
         console.log('Error while accepting the service.', error);
