@@ -220,21 +220,10 @@ export const grantServiceAccess = async (
     user_id: userId,
     subscription_id: subscriptionId,
   }));
-
   const insertedUserServices = (await insertUserService(
     context,
     dataUserServices
   )) as [UserService];
-
-  for (const insertedUserService of insertedUserServices) {
-    const dataServiceCapabilities = capabilities.map((capability) => ({
-      id: uuidv4() as ServiceCapabilityId,
-      user_service_id: insertedUserService.id,
-      service_capability_name: capability,
-    }));
-
-    await insertServiceCapability(context, dataServiceCapabilities);
-  }
 
   for (const capability of capabilities) {
     const dataServiceCapabilities = insertedUserServices.map(
