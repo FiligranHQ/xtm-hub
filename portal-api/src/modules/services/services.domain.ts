@@ -78,6 +78,7 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
     orderBy,
   });
   const organizationId = context.user.organization_id;
+  const userId = context.user.id;
   const servicesConnection = await query
     .leftJoin('Subscription as subscription', function () {
       this.on('subscription.service_id', '=', 'Service.id').andOn(
@@ -86,13 +87,29 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
         dbRaw('?', [organizationId])
       );
     })
+    .leftJoin('User_Service as userService', function () {
+      this.on('userService.subscription_id', '=', 'subscription.id').andOn(
+        'userService.user_id',
+        '=',
+        dbRaw('?', [userId])
+      );
+    })
+    .leftJoin(
+      'Service_Capability as serviceCapability',
+      'serviceCapability.user_service_id',
+      '=',
+      'userService.id'
+    )
     .select([
       'Service.*',
       dbRaw(`
-      CASE
-        WHEN "subscription"."id" IS NOT NULL THEN true
-        ELSE false
-      END AS subscribed
+        CASE
+          WHEN "subscription"."id" IS NOT NULL THEN true
+          ELSE false
+        END AS subscribed
+        `),
+      dbRaw(`
+      COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
     `),
     ])
     .groupBy(['Service.id', 'subscription.id'])
