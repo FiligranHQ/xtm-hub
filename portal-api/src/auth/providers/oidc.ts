@@ -72,18 +72,14 @@ export const addOIDCStrategy = (passport) => {
       //     callback(null, endpointUri);
       //   }
       // };
-        console.log("tres before")
       passport.use(providerRef, openIDStrategy);
-        console.log("before")
 
       passport.serializeUser(function (user, done) {
         done(null, user);
       });
-      console.log("between")
       passport.deserializeUser(function (user, done) {
         done(null, user);
       });
-      console.log("passport", passport)
       providers.push({
         name: 'keycloak-express',
         type: AUTH_SSO,
