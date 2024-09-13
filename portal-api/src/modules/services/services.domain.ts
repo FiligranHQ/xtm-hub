@@ -112,10 +112,33 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
       COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
     `),
     ])
+    .whereRaw(
+      `
+    (
+      "Service"."type" != 'COMMUNITY' OR 
+      ("Service"."type" = 'COMMUNITY' AND "subscription"."status" = 'ACCEPTED')
+    )
+  `
+    )
     .groupBy(['Service.id', 'subscription.id'])
     .asConnection<ServiceConnection>();
 
   const { totalCount } = await db<Service>(context, 'Service', opts)
+    .leftJoin('Subscription as subscription', function () {
+      this.on('subscription.service_id', '=', 'Service.id').andOn(
+        'subscription.organization_id',
+        '=',
+        dbRaw('?', [organizationId])
+      );
+    })
+    .whereRaw(
+      `
+    (
+      "Service"."type" != 'COMMUNITY' OR 
+      ("Service"."type" = 'COMMUNITY' AND "subscription"."status" = 'ACCEPTED')
+    )
+  `
+    )
     .countDistinct('Service.id as totalCount')
     .first();
 
