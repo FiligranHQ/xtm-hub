@@ -21,8 +21,7 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   if (!user && userInfo.roles.includes(ROLE_ADMIN.name)) {
     return await createUser(userInfo);
   } else if(!user) {
-    return await createUser(userInfo);
-
+    throw ForbiddenAccess('User account not provided');
   } else if(user && !user.roles_portal_id.includes(ROLE_ADMIN.id as unknown as RolePortalId) && userInfo.roles.includes(ROLE_ADMIN.name)) {
     await ensureUserRoleExist(user.id, ROLE_ADMIN.id)
   }

@@ -2,7 +2,7 @@
 
 import React, { FunctionComponent } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
-import { useRouter } from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import Image from 'next/image';
 import { Button, Input } from 'filigran-ui/servers';
 import {
@@ -50,6 +50,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
       },
     });
   };
+  const searchParams = useSearchParams()
 
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
@@ -60,7 +61,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
           height={500}
           alt="Filigran logo"
         />
-        <h1 className="pt-10 text-2xl">- Sign in -</h1>
+        {searchParams?.get('data')?.includes('not-provided') ?<><h1 className="pt-10 txt-title text-center text-red">Your account has not been provided!</h1> <p className="txt-subtitle text-center text-red"> This platform is dedicated to Filigran's closest partners for now. </p>  </> : <h1 className="pt-10 txt-title">- Sign in -</h1>}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
