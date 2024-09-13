@@ -49,7 +49,9 @@ type Query {
     orderBy: SubscriptionOrdering!
     orderMode: OrderingMode!
   ): SubscriptionConnection! @auth
-  subscriptionsByServiceId(service_id: ID): [Subscription] @auth
+  subscriptionsByServiceId(service_id: ID): [Subscription]
+  @auth
+  @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
 }
 
 input EditSubscriptionInput {
@@ -63,8 +65,10 @@ type Mutation {
     service_id: String
     organization_id: ID
   ): [UserService] @auth
+    @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
   deleteSubscription(subscription_id: ID!): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES, BCK_MANAGE_COMMUNITIES])
+  @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
 }

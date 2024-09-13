@@ -1,5 +1,7 @@
 directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
+directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+
 scalar JSON
 
 scalar Date
@@ -414,6 +416,12 @@ enum Restriction {
   FRT_ACCESS_BILLING
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
+}
+
+enum ServiceRestriction {
+  ACCESS_USER
+  ADMIN_SUBSCRIPTION
+  MANAGE_ACCESS
 }
 
 interface Node {
