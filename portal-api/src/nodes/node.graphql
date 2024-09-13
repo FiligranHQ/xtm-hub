@@ -13,6 +13,17 @@ enum Restriction {
   FRT_ACCESS_SERVICES
 }
 
+
+directive @service_capa(
+  requires: [ServiceRestriction] = []
+) repeatable on OBJECT | FIELD_DEFINITION
+
+enum ServiceRestriction {
+  ACCESS_USER
+  ADMIN_SUBSCRIPTION
+  MANAGE_ACCESS
+}
+
 interface Node {
   id: ID!
 }
