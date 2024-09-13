@@ -101,6 +101,14 @@ export const loadUserServiceByUser = async (
       '=',
       'servcapa.user_service_id'
     )
+    .whereRaw(
+      `
+    (
+      "service"."type" != 'COMMUNITY' OR 
+      ("service"."type" = 'COMMUNITY' AND "sub"."status" = 'ACCEPTED')
+    )
+  `
+    )
     .where('user.id', userId)
     .select([
       'User_Service.*',
