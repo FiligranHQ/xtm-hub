@@ -166,8 +166,23 @@ export const loadSubscriptionsByOrganization = async (
     .asConnection<SubscriptionConnection>();
 
   const { totalCount } = await db<Service>(context, 'Subscription', opts)
-    .countDistinct('id as totalCount')
+    .leftJoin('Service as serv', 'Subscription.service_id', '=', 'serv.id')
+    .leftJoin(
+      'User_Service as user_service',
+      'Subscription.id',
+      '=',
+      'user_service.subscription_id'
+    )
+    .leftJoin(
+      'Service_Capability as service_capa',
+      'user_service.id',
+      '=',
+      'service_capa.user_service_id'
+    )
+    .countDistinct('Subscription.id as totalCount')
     .where('organization_id', context.user.organization_id)
+    .where('serv.type', '=', 'COMMUNITY')
+    .where('service_capa.service_capability_name', '=', 'MANAGE_ACCESS')
     .first();
 
   return {
