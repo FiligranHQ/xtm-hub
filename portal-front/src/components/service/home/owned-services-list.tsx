@@ -16,7 +16,7 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
     <>
       <h2 className="pb-m txt-title">Your services</h2>
       <ul
-        className={'grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-m'}>
+        className={'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'}>
         {services.map(({ subscription }) => {
           return (
             <li
