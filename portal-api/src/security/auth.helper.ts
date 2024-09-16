@@ -1,6 +1,10 @@
 import { User } from '../model/user';
 import { dbRaw, dbUnsecure } from '../../knexfile';
 import Service from '../model/kanel/public/Service';
+import { CAPABILITY_BYPASS } from '../portal.const';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { loadSubscriptionBy } from '../modules/subcription/subscription.helper';
+import { ServiceCapabilityArgs } from './directive-auth';
 
 export const loadCapabilitiesByServiceId = async (
   user: User,
@@ -38,3 +42,16 @@ export const loadCapabilitiesByServiceId = async (
     .groupBy(['Service.id', 'subscription.id'])
     .first();
 };
+
+export const userHasBypassCapability = (user: User): boolean => {
+  const userCapabilities = user.capabilities.map((c) => c.name);
+  return userCapabilities.includes(CAPABILITY_BYPASS.name);
+};
+
+export const getCapabilityUser = (user: User, args: ServiceCapabilityArgs) =>
+  args.service_id
+    ? loadCapabilitiesByServiceId(user, fromGlobalId(args.service_id).id)
+    : loadSubscriptionBy('id', fromGlobalId(args.subscription_id).id).then(
+        ([subscription]) =>
+          loadCapabilitiesByServiceId(user, subscription.service_id)
+      );

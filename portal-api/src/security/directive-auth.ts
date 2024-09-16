@@ -2,15 +2,15 @@ import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { User } from '../model/user';
 import { PortalContext } from '../model/portal-context';
-import { CAPABILITY_BYPASS } from '../portal.const';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { loadCapabilitiesByServiceId } from './auth.util';
-import { loadSubscriptionBy } from '../modules/subcription/subscription.helper';
+import { getCapabilityUser, userHasBypassCapability } from './auth.helper';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
 export const SERVICE_DIRECTIVE_NAME = 'service_capa';
 
-type ServiceCapabilityArgs = { service_id?: string; subscription_id?: string };
+export type ServiceCapabilityArgs = {
+  service_id?: string;
+  subscription_id?: string;
+};
 
 type AuthFn = (user: User) => boolean;
 type RoleFn = (user: User, roleRequiredInSchema: string[]) => boolean;
@@ -92,16 +92,14 @@ const isAuthenticated = (user: User) => {
 };
 
 const hasCapability = (user: User, capabilitiesRequired: string[]) => {
+  if (userHasBypassCapability(user)) {
+    return true;
+  }
   const { capabilities } = user;
   const capabilityNames = capabilities.map((c) => c.name);
-  if (capabilityNames.includes(CAPABILITY_BYPASS.name)) {
-    return true;
-  }
-  // In case the user has some capability but there is not requiredRole
-  if (capabilityNames.length > 0 && capabilitiesRequired.length === 0) {
-    return true;
-  }
-  return capabilityNames.some((id) => capabilitiesRequired.includes(id));
+  return capabilityNames.length > 0 && capabilitiesRequired.length === 0
+    ? true
+    : capabilityNames.some((name) => capabilitiesRequired.includes(name));
 };
 
 const hasServiceCapability = async (
@@ -109,35 +107,21 @@ const hasServiceCapability = async (
   args: ServiceCapabilityArgs,
   capabilitiesRequired: string[]
 ) => {
-  const { capabilities } = user;
-
-  const capabilityNames = capabilities.map((c) => c.name);
-  if (capabilityNames.includes(CAPABILITY_BYPASS.name)) {
+  if (userHasBypassCapability(user)) {
     return true;
   }
 
-  let capabilityUser: { capabilities: string[] };
-  if (args.service_id) {
-    capabilityUser = await loadCapabilitiesByServiceId(
-      user,
-      fromGlobalId(args.service_id).id
-    );
-  } else if (args.subscription_id) {
-    const [subscription] = await loadSubscriptionBy(
-      'id',
-      fromGlobalId(args.subscription_id).id
-    );
-    capabilityUser = await loadCapabilitiesByServiceId(
-      user,
-      subscription.service_id
+  if (!args.service_id && !args.subscription_id) {
+    throw new Error(
+      `Service_id or subscription_id is undefined, please provide one of them to use this directive`
     );
   }
 
-  if (!capabilityUser?.capabilities) {
-    return false;
-  }
-  return capabilitiesRequired.some((element) =>
-    capabilityUser.capabilities.includes(element)
+  return await getCapabilityUser(user, args).then(
+    (capabilityUser) =>
+      capabilityUser?.capabilities?.some((capability) =>
+        capabilitiesRequired.includes(capability)
+      ) ?? false
   );
 };
 

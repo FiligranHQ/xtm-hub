@@ -1,4 +1,4 @@
-import { db, dbRaw, dbUnsecure } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import Subscription, {
   SubscriptionId,
   SubscriptionInitializer,
@@ -6,8 +6,6 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
-import { User } from '../../model/user';
-import Service from '../../model/kanel/public/Service';
 
 export const deleteSubscriptionUnsecure = async (serviceId: string) => {
   return dbUnsecure<Subscription>('Subscription')
