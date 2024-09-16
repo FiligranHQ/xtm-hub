@@ -5,7 +5,6 @@ import {
   UseQueryLoaderLoadQueryOptions,
 } from 'react-relay';
 import {
-  DataTable,
   Tabs,
   TabsContent,
   TabsList,
@@ -13,16 +12,9 @@ import {
   useToast,
 } from 'filigran-ui/clients';
 import * as React from 'react';
-import { FunctionComponent, useMemo, useState } from 'react';
-import { Badge, Button } from 'filigran-ui/servers';
-import {
-  AddIcon,
-  ChevronIcon,
-  DeleteIcon,
-  LittleArrowIcon,
-} from 'filigran-icon';
-import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
-import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
+import { FunctionComponent, useState } from 'react';
+import { Button } from 'filigran-ui/servers';
+import { AddIcon, DeleteIcon } from 'filigran-icon';
 import { RESTRICTION } from '@/utils/constant';
 import GuardCapacityComponent from '@/components/admin-guard';
 import {
@@ -42,12 +34,12 @@ import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import AcceptCommunity from '@/components/service/[slug]/accept-community';
 import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
-import { ColumnDef } from '@tanstack/react-table';
 import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 import {
   SubscriptionStatusBadge,
   SubscriptionStatusTypeBadge,
 } from '@/components/ui/subscription-status-badge';
+import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
 
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<subscriptionByServiceQuery>;
@@ -70,23 +62,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
 
-  const [commitUserServiceDeletingMutation] =
-    useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
-
   const { toast } = useToast();
-  const deleteCurrentUser = (userService: any) => {
-    commitUserServiceDeletingMutation({
-      variables: {
-        input: {
-          email: userService.user.email,
-          subscriptionId: '',
-        },
-      },
-      onCompleted() {
-        loadQuery({ service_id: serviceId }, { fetchPolicy: 'network-only' });
-      },
-    });
-  };
 
   const queryData = usePreloadedQuery<subscriptionByServiceQuery>(
     SubscriptionsByService,
@@ -124,70 +100,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       },
     });
   };
-
-  const columns: ColumnDef<userService_fragment$data>[] = useMemo(
-    () => [
-      {
-        accessorKey: 'user.first_name',
-        id: 'first_name',
-        header: 'First Name',
-      },
-      {
-        accessorKey: 'user.last_name',
-        id: 'last_name',
-        header: 'Last Name',
-      },
-      {
-        accessorKey: 'user.email',
-        id: 'email',
-        header: 'Email',
-      },
-      {
-        accessorKey: 'service_capability_names',
-        id: 'service_capability_names',
-        header: 'Capabilities',
-        enableSorting: false,
-        cell: ({ row }) => {
-          return (
-            <>
-              {row.original?.service_capability?.map((service_capa) => (
-                <Badge
-                  key={service_capa?.id}
-                  className="mb-2 mr-2 mt-2">
-                  {service_capa?.service_capability_name}
-                </Badge>
-              ))}
-            </>
-          );
-        },
-      },
-      {
-        id: 'actions',
-        cell: ({ row }) => {
-          return (
-            <>
-              <Button
-                variant={'ghost'}
-                onClick={() => {
-                  setCurrentUser(row.original);
-                  setOpenSheet(true);
-                }}>
-                <ChevronIcon className="h-4 w-4"></ChevronIcon>
-              </Button>
-              <Button
-                variant={'ghost'}
-                onClick={() => {
-                  deleteCurrentUser(row.original);
-                }}>
-                <LittleArrowIcon className="h-4 w-4"></LittleArrowIcon>
-              </Button>
-            </>
-          );
-        },
-      },
-    ],
-    []
-  );
 
   return (
     <>
@@ -270,7 +182,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                     subscription?.user_service?.[0]?.user?.organization.name ??
                     ''
                   }
-                  className="mb-5 min-h-[55px] data-[state=active]:bg-white">
+                  className="mb-8 min-h-[56px] data-[state=active]:bg-white">
                   {subscription?.user_service?.[0]?.user?.organization.name}{' '}
                   (billing: {subscription?.billing} % )
                   {subscription?.billing === 0 ? (
@@ -329,11 +241,19 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                   subscription?.user_service?.[0]?.user?.organization.name ?? ''
                 }
                 className="ml-1 mt-0 bg-white p-10">
-                <DataTable
-                  columns={columns}
+                <ServiceUserServiceSlug
+                  subscriptionId={subscription?.id ?? ''}
                   data={
                     (subscription?.user_service as userService_fragment$data[]) ??
                     []
+                  }
+                  setOpenSheet={(open) => setOpenSheet(open)}
+                  setCurrentUser={(user) => setCurrentUser(user)}
+                  loadQuery={() =>
+                    loadQuery(
+                      { service_id: serviceId },
+                      { fetchPolicy: 'network-only' }
+                    )
                   }
                 />
               </TabsContent>
