@@ -19,15 +19,14 @@ import User, { UserId } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { AWXAction } from '../../managers/awx/awx.model';
 import { loadTrackingDataBy } from '../tracking/tracking.domain';
-import {
-  createUserRolePortal,
-  deleteUserRolePortalByUserId,
-} from '../common/user-role-portal';
+import { createUserRolePortal } from '../common/user-role-portal';
 import { loadSubscriptionsByOrganization } from '../subcription/subscription.domain';
 import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from '../subcription/service_capability.domain';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import { UserServiceId } from '../../model/kanel/public/UserService';
+import { updateUser } from './users.helper';
+import { ROLE_ADMIN } from '../../portal.const';
 
 const validPassword = (
   user: UserWithAuthentication,
@@ -161,39 +160,44 @@ const resolvers: Resolvers = {
     editUser: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        const organization_id = extractId(input.organization_id);
-        const { roles_id, ...inputWithoutRoles } = input;
-        const extracted_roles_portal_id = roles_id.map((role_portal_id) =>
-          extractId(role_portal_id)
-        );
-        const update = { ...inputWithoutRoles, organization_id };
-        const [updatedUser] = await db<GeneratedUser>(context, 'User')
-          .where({ id })
-          .update(update)
-          .returning('*');
-        await deleteUserRolePortalByUserId(updatedUser.id);
-        extracted_roles_portal_id.map(async (role_id) => {
-          await createUserRolePortal(
-            updatedUser.id as UserId,
-            role_id as RolePortalId
-          );
-          return {
-            id: role_id,
-          };
+        const userBeforeUpdate = await loadUserBy('User.id', id);
+        const completedUser = await updateUser(context, id, input);
+
+        await dispatch('User', 'edit', completedUser);
+
+        await launchAWXWorkflow({
+          type: AWXAction.UPDATE_USER,
+          input: {
+            id: completedUser.id,
+            ...completedUser,
+            roles: completedUser.roles_portal_id.map(({ id }) => id),
+          },
         });
-        const roles_portal_id = extracted_roles_portal_id.map((role_id) => {
-          return {
-            id: role_id,
-          };
-        });
-        updatedUser.organization = await loadOrganizationBy(
-          context,
-          'Organization.id',
-          organization_id
-        );
-        updatedUser.roles_portal_id = roles_portal_id;
-        await dispatch('User', 'edit', updatedUser);
-        return updatedUser;
+        const hasAdminRole = (user) =>
+          user.roles_portal_id.some(({ id }) => id === ROLE_ADMIN.id);
+
+        const hadAdminRoleBefore = hasAdminRole(userBeforeUpdate);
+        const hasAdminRoleNow = hasAdminRole(completedUser);
+
+        if (hadAdminRoleBefore && !hasAdminRoleNow) {
+          await launchAWXWorkflow({
+            type: AWXAction.REMOVE_PLTF_USER,
+            input: {
+              id: completedUser.id,
+              email: completedUser.email,
+            },
+          });
+        } else if (!hadAdminRoleBefore && hasAdminRoleNow) {
+          // add admin role
+          await launchAWXWorkflow({
+            type: AWXAction.ADD_PLTF_USER,
+            input: {
+              id: completedUser.id,
+              email: completedUser.email,
+            },
+          });
+        }
+        return completedUser as unknown as GeneratedUser;
       } catch (error) {
         await trx.rollback();
         console.log('Error while editing the new user.');
@@ -205,6 +209,13 @@ const resolvers: Resolvers = {
         .where({ id })
         .delete('*');
       await dispatch('User', 'delete', deletedUser);
+      await launchAWXWorkflow({
+        type: AWXAction.DISABLE_USER,
+        input: {
+          id: deletedUser.id,
+          email: deletedUser.email,
+        },
+      });
       return deletedUser;
     },
     // Login / logout

@@ -1,23 +1,9 @@
 import User from '../../model/kanel/public/User';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { InputCreateCommunity } from './community/awx-community.helper';
-
-export interface AWXAddUserInput {
-  awx_client_request_id: ActionTrackingId;
-  organization_name: string;
-  user_email_address: string;
-  user_firstname: string;
-  user_lastname: string;
-  user_subscription_list?: string[];
-  user_community_list?: UserCommu[];
-  user_reset_password?: string;
-  user_role_admin_ptf?: boolean;
-}
-
-export interface UserCommu {
-  community_id: string;
-  role: string;
-}
+import { InputUserCommunity } from './community/awx-user-community.helper';
+import { InputAddServiceCommunityAWX } from './community/awx-service-community.helper';
+import { UserEmailInput, UserInput } from './user/awx-user-mapping';
 
 export interface AWUserInput extends User {
   awx_client_request_id: ActionTrackingId;
@@ -52,10 +38,23 @@ interface AwxCreateUserAction {
   type: AWXAction.CREATE_USER;
   input: UserInput;
 }
+interface AwxUpdateUserAction {
+  type: AWXAction.UPDATE_USER;
+  input: UserInput;
+}
 
 interface AwxDisableUserAction {
   type: AWXAction.DISABLE_USER;
-  input: UserInput;
+  input: UserEmailInput;
+}
+
+interface AwxAddAdminPlfAction {
+  type: AWXAction.ADD_PLTF_USER;
+  input: UserEmailInput;
+}
+interface AwxDeleteAdminPlfAction {
+  type: AWXAction.REMOVE_PLTF_USER;
+  input: UserEmailInput;
 }
 
 interface AwxCreateCommunityAction {
@@ -63,10 +62,46 @@ interface AwxCreateCommunityAction {
   input: InputCreateCommunity;
 }
 
+interface AwxDeleteCommunityAction {
+  type: AWXAction.DELETE_COMMUNITY;
+  input: {
+    community_id: string;
+  };
+}
+
+interface AwxAddUsersInCommunityAction {
+  type: AWXAction.COMMUNITY_ADD_USERS;
+  input: InputUserCommunity;
+}
+
+interface AwxRemoveUsersInCommunityAction {
+  type: AWXAction.COMMUNITY_REMOVE_USERS;
+  input: InputUserCommunity;
+}
+
+interface AwxAddServiceInCommunityAction {
+  type: AWXAction.COMMUNITY_ADD_SERVICE;
+  input: InputAddServiceCommunityAWX;
+}
+
+interface AwxDeleteServiceInCommunityAction {
+  type: AWXAction.COMMUNITY_DELETE_SERVICE;
+  input: InputAddServiceCommunityAWX;
+}
+
 export type AWXWorkflowAction =
   | AwxCreateUserAction
+  | AwxUpdateUserAction
   | AwxDisableUserAction
-  | AwxCreateCommunityAction;
+  // Integrate the different function
+  | AwxCreateCommunityAction
+  | AwxDeleteCommunityAction
+  | AwxAddAdminPlfAction
+  | AwxDeleteAdminPlfAction
+  | AwxAddUsersInCommunityAction
+  | AwxRemoveUsersInCommunityAction
+  | AwxAddServiceInCommunityAction
+  | AwxDeleteServiceInCommunityAction;
 
 export interface AwxResponse {
   count: number;
@@ -86,8 +121,4 @@ interface AwxResult {
 export interface AWXWorkflowConfig {
   path: string;
   keys: string[];
-}
-
-export interface UserInput extends User {
-  roles: string[];
 }

@@ -7,7 +7,11 @@ import {
   AWXWorkflowConfig,
 } from './awx.model';
 import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
-import { mapUserInputAWX, mapUserEmailAWX } from './user/awx-user-mapping';
+import {
+  mapUserInputAWX,
+  mapUserEmailAWX,
+  mapUpdateUserInputAWX,
+} from './user/awx-user-mapping';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { initTracking } from '../../modules/tracking/tracking.domain';
 import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
@@ -78,19 +82,20 @@ const buildWorkflowInput = async (
 ) => {
   const workflowInput: AWXActionFunctionMap = {
     [AWXAction.CREATE_USER]: mapUserInputAWX,
-    [AWXAction.UPDATE_USER]: mapUserInputAWX,
+    [AWXAction.UPDATE_USER]: mapUpdateUserInputAWX,
     [AWXAction.DISABLE_USER]: mapUserEmailAWX,
     [AWXAction.ADD_PLTF_USER]: mapUserEmailAWX,
     [AWXAction.REMOVE_PLTF_USER]: mapUserEmailAWX,
     [AWXAction.CREATE_COMMUNITY]: mapCreateCommunityAWX,
     [AWXAction.UPDATE_COMMUNITY]: mapUpdateCommunityAWX,
     [AWXAction.DELETE_COMMUNITY]: mapCommunityIdAWX,
-    // TODO: Verify input
-    [AWXAction.COMMUNITY_ADD_SERVICE]: mapAddServiceCommunityAWX,
-    [AWXAction.COMMUNITY_UPDATE_SERVICE]: mapUpdateServiceCommunityAWX,
-    [AWXAction.COMMUNITY_DELETE_SERVICE]: mapDeleteServiceCommunityAWX,
     [AWXAction.COMMUNITY_ADD_USERS]: mapUserCommunityAWX,
     [AWXAction.COMMUNITY_REMOVE_USERS]: mapUserCommunityAWX,
+    [AWXAction.COMMUNITY_ADD_SERVICE]: mapAddServiceCommunityAWX,
+
+    // TODO: Need to be Implemented
+    [AWXAction.COMMUNITY_UPDATE_SERVICE]: mapUpdateServiceCommunityAWX,
+    [AWXAction.COMMUNITY_DELETE_SERVICE]: mapDeleteServiceCommunityAWX,
     [AWXAction.ORGANIZATION_ADD_SERVICE]: mapAddServiceOrganizationAWX,
     [AWXAction.ORGANIZATION_UPDATE_SERVICE]: mapUpdateServiceOrganizationAWX,
     [AWXAction.ORGANIZATION_DELETE_SERVICE]: mapDeleteServiceOrganizationAWX,
@@ -121,7 +126,10 @@ const executeAWXWorkflow = async (
   awxUUID: ActionTrackingId,
   keys: string[]
 ) => {
+  console.log('executeAWXWorkflow');
   const extraVars = await buildWorkflowInput(action, awxUUID, keys);
+  console.log({ action });
+  console.log({ extraVars });
   const response = await awxLaunchWorkflowId(workflow, {
     extra_vars: extraVars,
   });
@@ -130,5 +138,6 @@ const executeAWXWorkflow = async (
     tracking_id: awxUUID,
     tracking_info: response,
   });
+  console.log({ response });
   return response;
 };

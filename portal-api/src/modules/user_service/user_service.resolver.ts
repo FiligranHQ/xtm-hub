@@ -24,6 +24,8 @@ import {
   isOrgMatchingSub,
   loadSubscriptionBy,
 } from '../subcription/subscription.helper';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { AWXAction } from '../../managers/awx/awx.model';
 
 const resolvers: Resolvers = {
   Query: {
@@ -75,11 +77,27 @@ const resolvers: Resolvers = {
             capabilities: input.capabilities,
             organization_id: user.organization_id as OrganizationId,
           }));
+
+      const [subscription] = await loadSubscriptionBy('id', subscription_id);
+      await launchAWXWorkflow({
+        type: AWXAction.COMMUNITY_ADD_USERS,
+        input: {
+          id: subscription.service_id,
+          users: [
+            {
+              ...user,
+              admin: input.capabilities.some(
+                (c) => c === 'ADMIN_SUBSCRIPTION' || c === 'MANAGE_ACCESS'
+              ),
+            },
+          ],
+        },
+      });
       return await loadUserServiceById(context, addedUserService.id);
     },
     deleteUserService: async (_, { input }, context) => {
       const userToDelete = await loadUserBy('email', input.email);
-      const [deletedUserService] = await db<UserService>(
+      const [deletedUserService] = await db<UserService & Subscription>(
         context,
         'User_Service'
       )
@@ -103,6 +121,14 @@ const resolvers: Resolvers = {
           .delete('*')
           .returning('*');
       }
+
+      await launchAWXWorkflow({
+        type: AWXAction.COMMUNITY_REMOVE_USERS,
+        input: {
+          id: deletedUserService.service_id,
+          users: [{ ...userToDelete, admin: false }],
+        },
+      });
 
       return deletedUserService;
     },
