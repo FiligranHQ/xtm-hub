@@ -114,6 +114,7 @@ const middlewareExpress = expressMiddleware(server, {
   context: async ({ req, res }) => {
     const { user } = req.session;
     // extract id, only done for request with id directly
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     req?.body?.variables?.id &&
       (req.body.variables.id = extractId(req.body.variables.id));
 
