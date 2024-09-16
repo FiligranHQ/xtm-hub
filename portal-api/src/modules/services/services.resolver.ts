@@ -30,7 +30,7 @@ import {
 import { insertServicePrice } from './instances/service-price/service_price.helper';
 import { isAdmin } from '../role-portal/role-portal.domain';
 import { loadUsersByOrganization } from '../users/users.domain';
-import User from '../../model/kanel/public/User';
+import User, { UserId } from '../../model/kanel/public/User';
 import { GraphQLError } from 'graphql/error/index.js';
 import { addSubscriptions } from '../subcription/subscription.domain';
 import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
@@ -210,7 +210,7 @@ const resolvers: Resolvers = {
             type: AWXAction.CREATE_COMMUNITY,
             input: {
               id: addedService.id as ServiceId,
-              adminCommuId: userId,
+              adminCommuId: userId as UserId,
             },
           });
         } else {
