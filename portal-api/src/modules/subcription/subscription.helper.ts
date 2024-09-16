@@ -1,4 +1,4 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import Subscription, {
   SubscriptionId,
   SubscriptionInitializer,
@@ -49,4 +49,33 @@ export const insertUnsecureSubscription = async (
   return dbUnsecure<Subscription>('Subscription')
     .insert(dataSubscription)
     .returning('*');
+};
+
+export const loadUsersBySubscriptionForAWX = async (id: SubscriptionId) => {
+  return dbUnsecure<Subscription>('Subscription')
+    .leftJoin(
+      'User_Service',
+      'User_Service.subscription_id',
+      '=',
+      'Subscription.id'
+    )
+    .leftJoin('User', 'User_Service.user_id', '=', 'User.id')
+    .leftJoin(
+      'Service_Capability',
+      'Service_Capability.user_service_id',
+      '=',
+      'User_Service.id'
+    )
+    .where('Subscription.id', id)
+    .select([
+      'User.email',
+      dbRaw(`
+      CASE 
+        WHEN array_agg("Service_Capability".service_capability_name) @> ARRAY['MANAGE_ACCESS', 'ADMIN_SUBSCRIPTION'] 
+        THEN true 
+        ELSE false 
+      END as admin
+    `),
+    ])
+    .groupBy('User.id');
 };

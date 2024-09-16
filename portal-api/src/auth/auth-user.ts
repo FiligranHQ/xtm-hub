@@ -1,12 +1,7 @@
 import { isEmptyField } from '../utils/utils';
 import { ForbiddenAccess } from '../utils/error.util';
-import {
-  createUser,
-  loadUserBy,
-  updateUserRoles,
-} from '../modules/users/users.domain';
+import { loadUserBy } from '../modules/users/users.domain';
 import { UserInfo } from '../model/user';
-import { UserId } from '../model/kanel/public/User';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {
   // region test the groups existence and eventually auto create groups
@@ -15,12 +10,11 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   if (isEmptyField(email)) {
     throw ForbiddenAccess('User email not provided');
   }
-  // TODO rewrite the correct loadUSerBy typing
   const user = await loadUserBy('User.email', email);
   if (!user) {
-    return await createUser(userInfo);
+    throw ForbiddenAccess('User not found');
   }
-  return await updateUserRoles(userInfo, user.id as UserId);
+  return user;
 };
 
 export const authenticateUser = async (req, user) => {

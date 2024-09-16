@@ -124,10 +124,10 @@
       "DISABLE_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_disable-user"
       },
-      "ADD_PLTF_USER" : {
+      "ADD_PLTF_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_admin-ptf-add-user"
       },
-      "REMOVE_PLTF_USER" : {
+      "REMOVE_PLTF_USER": {
         "path": "/api/v2/workflow_job_templates/?name=api_admin-ptf-remove-user"
       },
       "CREATE_COMMUNITY": {

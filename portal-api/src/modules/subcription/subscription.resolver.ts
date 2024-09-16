@@ -16,6 +16,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import {
   loadSubscriptionBy,
   loadUnsecureSubscriptionBy,
+  loadUsersBySubscriptionForAWX,
 } from './subscription.helper';
 import {
   grantServiceAccessUsers,
@@ -24,6 +25,8 @@ import {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceId } from '../../model/kanel/public/Service';
 import { GraphQLError } from 'graphql/error/index.js';
+import { AWXAction } from '../../managers/awx/awx.model';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
 
 const resolvers: Resolvers = {
   Query: {
@@ -177,10 +180,23 @@ const resolvers: Resolvers = {
           addedSubscription.id
         );
 
-        return fillUserServiceData(
+        const userServiceData = await fillUserServiceData(
           userServices,
           fromGlobalId(service_id).id as ServiceId
         );
+
+        await launchAWXWorkflow({
+          type: AWXAction.COMMUNITY_ADD_USERS,
+          input: {
+            id: fromGlobalId(service_id).id,
+            users: userServiceData.map(({ user }) => ({
+              email: user.email,
+              admin: false,
+            })),
+          },
+        });
+
+        return userServiceData;
       } catch (error) {
         await trx.rollback();
         console.log('Error while subscribing the service.', error);
@@ -220,6 +236,8 @@ const resolvers: Resolvers = {
         'id',
         fromGlobalId(subscription_id).id
       );
+      //Need to save users in variable before deleting subscription
+      const users = await loadUsersBySubscriptionForAWX(subscription.id);
 
       if (subscription.billing !== 0) {
         throw new Error('You can not delete a subscription with billing.');
@@ -231,6 +249,14 @@ const resolvers: Resolvers = {
         .where({ id: fromGlobalId(subscription_id).id })
         .delete('*');
 
+      console.log('deleteSubscription users', users);
+      await launchAWXWorkflow({
+        type: AWXAction.COMMUNITY_REMOVE_USERS,
+        input: {
+          id: subscription.service_id,
+          users,
+        },
+      });
       return deletedSubscription;
     },
   },

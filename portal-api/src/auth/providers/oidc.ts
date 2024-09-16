@@ -7,7 +7,6 @@ import {
 import { providerLoginHandler } from '../login-handle';
 import config from 'config';
 import { jwtDecode } from 'jwt-decode';
-import { extractRole } from '../mapping-roles';
 
 export const addOIDCStrategy = (passport) => {
   const AUTH_SSO = 'SSO';
@@ -50,17 +49,14 @@ export const addOIDCStrategy = (passport) => {
           //     },
           //   },
           // };
-          console.log(JSON.stringify(decodedUser));
-          const roles = extractRole(decodedUser);
           console.info('[OPENID] Successfully logged', { decodedUser });
-          console.info('[OPENID] User role', { roles });
           const {
             email,
             given_name: first_name,
             family_name: last_name,
           } = userinfo;
           await providerLoginHandler(
-            { email, first_name, last_name, roles },
+            { email, first_name, last_name, roles: [] },
             done
           );
           done(null, tokenSet.claims());
