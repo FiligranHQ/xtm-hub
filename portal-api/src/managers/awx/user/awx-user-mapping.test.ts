@@ -9,11 +9,13 @@ import { dbUnsecure } from '../../../../knexfile';
 import { Subscription } from '../../../__generated__/resolvers-types';
 import UserService, {
   UserServiceId,
+  UserServiceInitializer,
 } from '../../../model/kanel/public/UserService';
 import ServiceCapability, {
   ServiceCapabilityId,
 } from '../../../model/kanel/public/ServiceCapability';
 import { deleteSubscriptionUnsecure } from '../../../modules/subcription/subscription.helper';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 
 describe('Api create-user', async () => {
   beforeAll(async () => {
@@ -30,10 +32,10 @@ describe('Api create-user', async () => {
     const [addedSubscription] = await dbUnsecure<Subscription>('Subscription')
       .insert(subscriptionData)
       .returning('*');
-    const dataUserService = {
+    const dataUserService: UserServiceInitializer = {
       id: uuidv4() as UserServiceId,
       user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3' as UserId,
-      subscription_id: addedSubscription.id,
+      subscription_id: addedSubscription.id as SubscriptionId,
     };
     const [userService] = await dbUnsecure<UserService>('User_Service')
       .insert(dataUserService)
