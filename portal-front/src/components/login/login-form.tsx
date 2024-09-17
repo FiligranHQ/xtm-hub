@@ -60,7 +60,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
           height={500}
           alt="Filigran logo"
         />
-        <h2 className="pt-10 text-2xl">- Sign in -</h2>
+        <h1 className="pt-10 text-2xl">- Sign in -</h1>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
