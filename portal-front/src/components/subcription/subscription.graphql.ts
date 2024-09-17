@@ -189,13 +189,7 @@ export const AddSubscriptionMutation = graphql`
         connections: $connections
         edgeTypeName: "SubscriptionEdge"
       ) {
-      id
-      name
-      description
-      provider
-      type
-      subscription_service_type
-      creation_status
+      ...serviceList_fragment
     }
   }
 `;

@@ -1,16 +1,22 @@
 import * as React from 'react';
 import PageLoader from './page-loader';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 
 export const dynamic = 'force-dynamic';
 
 // Component interface
 interface PageProps {}
 
+const breadcrumbValue = [
+  {
+    label: 'Manage',
+  },
+];
 // Component
 const Page: React.FunctionComponent<PageProps> = async () => {
   return (
     <>
-      <h2>Manage services</h2>
+      <BreadcrumbNav value={breadcrumbValue} />
       <PageLoader />
     </>
   );

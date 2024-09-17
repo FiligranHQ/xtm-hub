@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FunctionComponent, useMemo } from 'react';
 import { useMutation } from 'react-relay';
 import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { Badge, Button } from 'filigran-ui/servers';
 import { ChevronIcon, LittleArrowIcon } from 'filigran-icon';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
@@ -11,16 +11,16 @@ import { UserServiceDeleteMutation } from '@/components/service/user_service.gra
 import { DataTable } from 'filigran-ui/clients';
 
 interface ServiceUserServiceProps {
-  subscriptionId: string;
-  data: userService_fragment$data[];
+  subscriptionId?: string;
+  data?: userService_fragment$data[];
   setOpenSheet: (open: boolean) => void;
   setCurrentUser: (user: userService_fragment$data) => void;
   loadQuery: () => void;
 }
 
 const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
-  subscriptionId,
-  data,
+  subscriptionId = '',
+  data = [],
   setOpenSheet,
   setCurrentUser,
   loadQuery,
@@ -124,11 +124,15 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
     ],
     []
   );
-
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 50,
+  });
   return (
     <DataTable
       columns={columns}
       data={data}
+      tableState={{ pagination }}
     />
   );
 };
