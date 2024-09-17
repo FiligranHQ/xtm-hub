@@ -44,7 +44,7 @@ export const initAuthPlatform = async (app) => {
       } catch (err) {
         console.error(err, { provider });
         if(err.message === 'User not provided') {
-          referer = referer+'?data=not-provided'
+          referer = referer+'?error=not-provided'
         }
 
         setCookieError(

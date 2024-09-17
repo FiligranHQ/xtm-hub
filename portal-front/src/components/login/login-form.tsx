@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
 import { SettingsQuery } from '@/components/login/settings.graphql';
 import { LoginFormMutation } from '@/components/login/login.graphql';
+import LoginTitleForm from "@/components/login/login-title";
 
 interface LoginFormProps {
   queryRef: PreloadedQuery<settingsQuery>;
@@ -61,7 +62,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
           height={500}
           alt="Filigran logo"
         />
-        {searchParams?.get('data')?.includes('not-provided') ?<><h1 className="pt-10 txt-title text-center text-red">Your account has not been provided!</h1> <p className="txt-subtitle text-center text-red"> This platform is dedicated to Filigran's closest partners for now. </p>  </> : <h1 className="pt-10 txt-title">- Sign in -</h1>}
+        <LoginTitleForm/>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}

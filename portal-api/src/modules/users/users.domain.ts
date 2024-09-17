@@ -173,5 +173,5 @@ export const createUser = async (
   };
   // Use insert with returning to get the newly created user
   await addNewUserWithRoles(data, roles);
-  return await loadUserBy({email: email});
+  return await loadUserBy({email});
 };

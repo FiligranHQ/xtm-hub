@@ -12,9 +12,8 @@ export const addOIDCStrategy = (passport) => {
   const AUTH_SSO = 'SSO';
   const STRATEGY_OPENID = 'OpenIDConnectStrategy';
   const providers = [];
-  const oidcConfig = config.get('oidc_provider') as ClientMetadata & {
-    issuer: string;
-  };
+
+  const oidcConfig = getOidcConfig();
 
   const providerRef = 'oidc';
   // Here we use directly the config and not the mapped one.
@@ -40,26 +39,20 @@ export const addOIDCStrategy = (passport) => {
       const openIDStrategy = new OpenIDStrategy(
         options,
         async (_, tokenSet, userinfo, done) => {
-          const addRoleUserInLocal = {
-            ...userinfo,
-            resource_access: {
-              'scred-portal-dev': {
-                roles: userinfo['https://xtm-hub-development/roles'],
-              },
-            },
-          };
-          const roles: string[] = extractRole(addRoleUserInLocal);
 
-          console.info('[OPENID] Successfully logged', { userinfo });
+          const roles = extractRole(userinfo['https://xtm-hub-development/roles']);
+
           const {
             email,
             nickname: first_name,
           } = userinfo;
           await providerLoginHandler(
-            { email, first_name, last_name: '', roles: ['ADMIN', 'ADMIN_ORGA','USER'] },
+            { email, first_name, last_name: '', roles },
             done
           );
-          done(null, tokenSet.claims());
+            console.info('[OPENID] Successfully logged', { userinfo });
+
+            done(null, tokenSet.claims());
         }
       );
       // openIDStrategy.logout = (_, callback) => {
@@ -94,3 +87,19 @@ export const addOIDCStrategy = (passport) => {
       });
     });
 };
+
+export const getOidcConfig = () => {
+    const oidcConfigFromLocal = config.get('oidc_provider') as ClientMetadata & {
+        issuer: string;
+    };
+    const oidcConfigFromCi = {
+        issuer: process.env.OIDC_ISSUER,
+        client_id: process.env.OIDC_CLIENT_ID,
+        client_secret: process.env.OIDC_CLIENT_SECRET,
+        redirect_uris: process.env.OIDC_REDIRECT_URIS,
+        logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL,
+        response_types: ["code"]
+    }
+
+    return process.env.OIDC_ISSUER ? oidcConfigFromCi : oidcConfigFromLocal;
+}
