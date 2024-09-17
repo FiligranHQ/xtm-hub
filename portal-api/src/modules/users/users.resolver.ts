@@ -28,6 +28,7 @@ import { insertUserService } from '../user_service/user_service.domain';
 import { insertCapa } from '../subcription/service_capability.domain';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import { UserServiceId } from '../../model/kanel/public/UserService';
+import {sendMail} from "../../server/mail-service";
 
 const validPassword = (
   user: UserWithAuthentication,
@@ -123,6 +124,9 @@ const resolvers: Resolvers = {
             password: input.password,
           },
         });
+
+        // Send email to user
+        sendMail('no-reply@scredplatform.io', input.email, 'XTM Hub invitation', 'An administrator has invited you to create your account on the Filigran\'s XTM Hub platform ! Register. ')
 
         // Add access to free services of its organization
         const subscriptions = await loadSubscriptionsByOrganization(context, {
