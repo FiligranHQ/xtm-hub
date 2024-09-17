@@ -40,6 +40,7 @@ import {
   SubscriptionStatusTypeBadge,
 } from '@/components/ui/subscription-status-badge';
 import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<subscriptionByServiceQuery>;
@@ -101,10 +102,25 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     });
   };
 
+  const breadcrumbValue = [
+    {
+      label: 'Services',
+      href: '/service',
+    },
+    {
+      label: queryDataService.serviceById?.name,
+    },
+  ];
   return (
     <>
+      <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex items-center gap-s">
-        <h2>Community - {queryDataService.serviceById?.name}</h2>
+        <h2>
+          <span className="capitalize">
+            {queryDataService.serviceById?.type?.toLowerCase()}
+          </span>{' '}
+          - {queryDataService.serviceById?.name}
+        </h2>
         {queryData.subscriptionsByServiceId && (
           <SubscriptionStatusBadge
             type={
@@ -140,38 +156,40 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         ) : (
           <></>
         )}
-        <div className="flex justify-end gap-m pb-s">
-          <ServiceSlugFormSheet
-            open={openSheet}
-            setOpen={setOpenSheet}
-            userService={currentUser}
-            connectionId={''}
-            refetch={() =>
-              loadQuery(
-                { service_id: serviceId },
-                { fetchPolicy: 'network-only' }
-              )
-            }
-            subscriptionId={queryData.subscriptionsByServiceId?.[0]?.id ?? ''}
-            trigger={
-              <TriggerButton
-                disabled={
-                  queryData.subscriptionsByServiceId?.[0]?.status ===
-                    'REQUESTED' ?? false
-                }
-                onClick={() => setCurrentUser({})}
-                label="Invite user"
-              />
-            }
-          />
-        </div>
+        {queryDataService.serviceById?.type === 'COMMUNITY' && (
+          <div className="flex justify-end gap-m pb-s">
+            <ServiceSlugFormSheet
+              open={openSheet}
+              setOpen={setOpenSheet}
+              userService={currentUser}
+              connectionId={''}
+              refetch={() =>
+                loadQuery(
+                  { service_id: serviceId },
+                  { fetchPolicy: 'network-only' }
+                )
+              }
+              subscriptionId={queryData.subscriptionsByServiceId?.[0]?.id ?? ''}
+              trigger={
+                <TriggerButton
+                  disabled={
+                    queryData.subscriptionsByServiceId?.[0]?.status ===
+                      'REQUESTED' ?? false
+                  }
+                  onClick={() => setCurrentUser({})}
+                  label="Invite user"
+                />
+              }
+            />
+          </div>
+        )}
 
         <Tabs
           defaultValue={
             queryData.subscriptionsByServiceId?.[0]?.user_service?.[0]?.user
               ?.organization.name ?? ''
           }>
-          <TabsList>
+          <TabsList className="h-12">
             {queryData.subscriptionsByServiceId?.map((subscription) => {
               return (
                 <TabsTrigger
@@ -182,7 +200,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                     subscription?.user_service?.[0]?.user?.organization.name ??
                     ''
                   }
-                  className="mb-8 min-h-[56px] data-[state=active]:bg-white">
+                  className="h-12 data-[state=active]:bg-white">
                   {subscription?.user_service?.[0]?.user?.organization.name}{' '}
                   (billing: {subscription?.billing} % )
                   {subscription?.billing === 0 ? (
@@ -194,7 +212,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                         <Button
                           className="ml-2"
                           variant="ghost"
-                          aria-label="Delete Organization from Community">
+                          aria-label="Delete Organization from the service">
                           <DeleteIcon className="h-4 w-4" />
                         </Button>
                       }
@@ -203,7 +221,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                       }>
                       Are you sure you want to delete this organization{' '}
                       {subscription?.user_service?.[0]?.user?.organization.name}{' '}
-                      from this community? This action can not be undone.
+                      from this service ? This action can not be undone.
                     </AlertDialogComponent>
                   ) : (
                     <></>
@@ -211,28 +229,35 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 </TabsTrigger>
               );
             })}
-            <ServiceSlugAddOrgaFormSheet
-              open={openSheetAddOrga}
-              setOpen={setOpenSheetAddOrga}
-              insertedOrganization={() =>
-                loadQuery(
-                  { service_id: serviceId },
-                  { fetchPolicy: 'network-only' }
-                )
-              }
-              connectionId={''}
-              serviceId={queryDataService.serviceById?.id ?? ''}
-              trigger={
-                <Button
-                  variant="ghost"
-                  className="mb-5 min-h-[55px]"
-                  aria-label="Add organization">
-                  <AddIcon className="mr-2 h-4 w-4" />
-                  Add organization
-                </Button>
-              }
-            />
+            {queryDataService.serviceById?.type === 'COMMUNITY' && (
+              <ServiceSlugAddOrgaFormSheet
+                open={openSheetAddOrga}
+                setOpen={setOpenSheetAddOrga}
+                insertedOrganization={() =>
+                  loadQuery(
+                    { service_id: serviceId },
+                    { fetchPolicy: 'network-only' }
+                  )
+                }
+                connectionId={''}
+                serviceId={queryDataService.serviceById?.id ?? ''}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    className="h-12"
+                    aria-label="Add organization">
+                    <AddIcon className="mr-2 h-4 w-4" />
+                    Add organization
+                  </Button>
+                }
+              />
+            )}
           </TabsList>
+          {queryData.subscriptionsByServiceId?.length === 0 && (
+            <div className="border bg-white p-xl">
+              There is no subscription yet on this service...
+            </div>
+          )}
           {queryData.subscriptionsByServiceId?.map((subscription) => {
             return (
               <TabsContent
@@ -240,12 +265,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 value={
                   subscription?.user_service?.[0]?.user?.organization.name ?? ''
                 }
-                className="ml-1 mt-0 bg-white p-10">
+                className="ml-1 mt-0 bg-white p-xl">
                 <ServiceUserServiceSlug
-                  subscriptionId={subscription?.id ?? ''}
+                  subscriptionId={subscription?.id}
                   data={
-                    (subscription?.user_service as userService_fragment$data[]) ??
-                    []
+                    subscription?.user_service as userService_fragment$data[]
                   }
                   setOpenSheet={(open) => setOpenSheet(open)}
                   setCurrentUser={(user) => setCurrentUser(user)}

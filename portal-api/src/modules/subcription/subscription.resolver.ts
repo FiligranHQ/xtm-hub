@@ -119,7 +119,15 @@ const resolvers: Resolvers = {
           filledSubscription.id
         );
 
-        return filledSubscription.service;
+        return {
+          ...filledSubscription.service,
+          subscribed: true,
+          capabilities: [
+            'ACCESS_SERVICE',
+            'MANAGE_ACCESS',
+            'ADMIN_SUBSCRIPTION',
+          ],
+        };
       } catch (error) {
         await trx.rollback();
         console.log('Error while subscribing the service.', error);
