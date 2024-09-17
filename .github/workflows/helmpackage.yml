@@ -10,12 +10,13 @@ jobs:
   helm-suite:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: "Helm publish"
-      uses: mbovo/action-helm-artifactory@v1.0.5
+      uses: mbovo/action-helm-artifactory@v1.0.6
       with:
         action: "push"
+        skip_reindex: "true"
       env:
         CHART_DIR: chart
         ARTIFACTORY_URL: https://filigran.jfrog.io/artifactory/charts-helm/
