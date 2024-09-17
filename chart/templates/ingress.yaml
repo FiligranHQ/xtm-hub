@@ -31,7 +31,18 @@ spec:
               number: 3000
         path: /
         pathType: Prefix
+  - host: pgadmin.{{ .Values.cloudportal.host }}
+    http:
+      paths:
+        - backend:
+            service:
+              name: {{ .Release.Name }}-pgadmin
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
   tls:
   - hosts:
     - {{ .Values.cloudportal.host }}
+    - pgadmin.{{ .Values.cloudportal.host }}
     secretName: cloudportal-cert
