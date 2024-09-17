@@ -214,7 +214,7 @@ const resolvers: Resolvers = {
     // Login / logout
     login: async (_, { email, password }, context) => {
       const { req } = context;
-      const logged = await loadUserBy({email: email});
+      const logged = await loadUserBy({email});
 
       if (logged && validPassword(logged, password)) {
         req.session.user = logged;

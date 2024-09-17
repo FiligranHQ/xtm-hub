@@ -73,7 +73,7 @@ type Mutation {
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
   # Login
   login(email: String!, password: String): User
-  logout: ID!
+  logout: ID! @auth
 }
 
 type UserSubscription {
