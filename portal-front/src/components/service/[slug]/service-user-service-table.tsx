@@ -89,12 +89,12 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                   setCurrentUser(row.original);
                   setOpenSheet(true);
                 }}>
-                <ChevronIcon className="h-4 w-4"></ChevronIcon>
+                <ChevronIcon className="h-4 w-4" />
               </Button>
               {row.original.service_capability?.some(
                 (serv_capa) =>
                   serv_capa?.service_capability_name !== 'ADMIN_SUBSCRIPTION'
-              ) ? (
+              ) && (
                 <AlertDialogComponent
                   AlertTitle={"Remove user's rights"}
                   actionButtonText={'Remove rights'}
@@ -114,8 +114,6 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                   {row.original.user?.first_name} {row.original.user?.last_name}{' '}
                   for this service ?
                 </AlertDialogComponent>
-              ) : (
-                <></>
               )}
             </>
           );
