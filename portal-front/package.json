@@ -55,7 +55,7 @@
     "@types/relay-test-utils": "17.0.0",
     "@vitejs/plugin-react": "4.3.1",
     "babel-plugin-relay": "17.0.0",
-    "concurrently": "8.2.2",
+    "concurrently": "9.0.1",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.12",
     "eslint-config-prettier": "9.1.0",
