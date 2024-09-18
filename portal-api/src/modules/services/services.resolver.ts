@@ -177,8 +177,10 @@ const resolvers: Resolvers = {
           // TODO Call AWX to add service to community
           await addServiceLink(context, dataServiceLink);
         }
-        const billingManager = await loadUserBy('email', input.billing_manager);
-        const userId = input.billing_manager
+        const billingManager = input?.billing_manager
+          ? await loadUserBy('email', input.billing_manager)
+          : undefined;
+        const userId = input?.billing_manager
           ? billingManager.id
           : context.user.id;
 
