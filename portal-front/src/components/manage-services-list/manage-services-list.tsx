@@ -163,7 +163,7 @@ const ManageServicesList: React.FunctionComponent<RequestListProps> = ({
 
   const onClickRow = (row: Row<subscriptionItem_fragment$data>) => {
     if (row.original.status === 'ACCEPTED') {
-      router.push(`/admin/service/${row.original.id}`);
+      router.push(`/admin/service/${row.original.service?.id}`);
     }
   };
   return (
