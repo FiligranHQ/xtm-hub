@@ -29,7 +29,7 @@ import {
 } from './services.domain';
 import { insertServicePrice } from './instances/service-price/service_price.helper';
 import { isAdmin } from '../role-portal/role-portal.domain';
-import { loadUsersByOrganization } from '../users/users.domain';
+import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import User, { UserId } from '../../model/kanel/public/User';
 import { GraphQLError } from 'graphql/error/index.js';
 import { addSubscriptions } from '../subcription/subscription.domain';
@@ -177,17 +177,15 @@ const resolvers: Resolvers = {
           // TODO Call AWX to add service to community
           await addServiceLink(context, dataServiceLink);
         }
-
+        const billingManager = await loadUserBy('email', input.billing_manager);
         const userId = input.billing_manager
-          ? fromGlobalId(JSON.parse(input.billing_manager).id).id
+          ? billingManager.id
           : context.user.id;
 
         if (
           input.billing_manager &&
           !input.organizations_id.some(
-            (id) =>
-              fromGlobalId(JSON.parse(input.billing_manager).organization_id)
-                .id === fromGlobalId(id).id
+            (id) => billingManager.organization_id === fromGlobalId(id).id
           )
         ) {
           await trx.rollback();
