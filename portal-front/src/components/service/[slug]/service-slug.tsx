@@ -154,7 +154,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 <TriggerButton
                   disabled={
                     queryData.subscriptionsByServiceId?.[0]?.status ===
-                      'REQUESTED' ?? false
+                    'REQUESTED'
                   }
                   onClick={() => setCurrentUser({})}
                   label="Invite user"
