@@ -39,20 +39,18 @@ export const addOIDCStrategy = (passport) => {
       const openIDStrategy = new OpenIDStrategy(
         options,
         async (_, tokenSet, userinfo, done) => {
+          const roles = extractRole(
+            userinfo['https://xtm-hub-development/roles']
+          );
 
-          const roles = extractRole(userinfo['https://xtm-hub-development/roles']);
-
-          const {
-            email,
-            nickname: first_name,
-          } = userinfo;
+          const { email, nickname: first_name } = userinfo;
           await providerLoginHandler(
             { email, first_name, last_name: '', roles },
             done
           );
-            console.info('[OPENID] Successfully logged', { userinfo });
+          console.info('[OPENID] Successfully logged', { userinfo });
 
-            done(null, tokenSet.claims());
+          done(null, tokenSet.claims());
         }
       );
       // openIDStrategy.logout = (_, callback) => {
@@ -89,17 +87,17 @@ export const addOIDCStrategy = (passport) => {
 };
 
 export const getOidcConfig = () => {
-    const oidcConfigFromLocal = config.get('oidc_provider') as ClientMetadata & {
-        issuer: string;
-    };
-    const oidcConfigFromCi = {
-        issuer: process.env.OIDC_ISSUER,
-        client_id: process.env.OIDC_CLIENT_ID,
-        client_secret: process.env.OIDC_CLIENT_SECRET,
-        redirect_uris: process.env.OIDC_REDIRECT_URIS,
-        logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL,
-        response_types: ["code"]
-    }
+  const oidcConfigFromLocal = config.get('oidc_provider') as ClientMetadata & {
+    issuer: string;
+  };
+  const oidcConfigFromCi = {
+    issuer: process.env.OIDC_ISSUER,
+    client_id: process.env.OIDC_CLIENT_ID,
+    client_secret: process.env.OIDC_CLIENT_SECRET,
+    redirect_uris: process.env.OIDC_REDIRECT_URIS.split(','),
+    logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL.split(','),
+    response_types: ['code'],
+  };
 
-    return process.env.OIDC_ISSUER ? oidcConfigFromCi : oidcConfigFromLocal;
-}
+  return process.env.OIDC_ISSUER ? oidcConfigFromCi : oidcConfigFromLocal;
+};
