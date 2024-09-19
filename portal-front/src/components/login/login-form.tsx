@@ -33,6 +33,8 @@ const formSchema = z.object({
 // Component
 const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
   const router = useRouter();
+  const essai = process.env.OIDC_ISSUER
+  const coucou = process.env.ESSAI
   usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,6 +58,8 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
       <div className="mt-2 flex flex-col items-center">
+        ICI {essai} LA
+        ICI {coucou} LA
         <Image
           src="/filigran_logo.svg"
           width={500}
