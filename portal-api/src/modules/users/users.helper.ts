@@ -99,7 +99,7 @@ export const deleteUserById = async (userId: UserId) => {
 };
 
 export const getOrCreateUser = async (email: string) => {
-  const user = await loadUserBy('email', email);
+  const user = await loadUserBy({email});
   return user ? user : await createNewUserFromInvitation(email);
 };
 

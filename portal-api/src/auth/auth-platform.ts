@@ -25,12 +25,14 @@ export const initAuthPlatform = async (app) => {
     urlencodedParser,
     async (req, res, next) => {
       const { provider } = req.params;
-      const referer = req.session.referer;
-
+      let referer = req.session.referer;
       try {
         const user = await new Promise((resolve, reject) => {
           passport.authenticate(provider, {}, (err, user) => {
-            if (err || !user) {
+            if(!user) {
+              reject(new Error('User not provided'))
+            }
+            if (err) {
               reject(err || new Error('Invalid authentication'));
             } else {
               resolve(user);
@@ -41,6 +43,10 @@ export const initAuthPlatform = async (app) => {
         await authenticateUser(req, user);
       } catch (err) {
         console.error(err, { provider });
+        if(err.message === 'User not provided') {
+          referer = referer+'?error=not-provided'
+        }
+
         setCookieError(
           res,
           'Invalid authentication, please ask your administrator'

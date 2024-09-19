@@ -2,7 +2,7 @@
 
 import React, { FunctionComponent } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
-import { useRouter } from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import Image from 'next/image';
 import { Button, Input } from 'filigran-ui/servers';
 import {
@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
 import { SettingsQuery } from '@/components/login/settings.graphql';
 import { LoginFormMutation } from '@/components/login/login.graphql';
+import LoginTitleForm from "@/components/login/login-title";
 
 interface LoginFormProps {
   queryRef: PreloadedQuery<settingsQuery>;
@@ -50,6 +51,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
       },
     });
   };
+  const searchParams = useSearchParams()
 
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
@@ -60,7 +62,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
           height={500}
           alt="Filigran logo"
         />
-        <h1 className="pt-10 text-2xl">- Sign in -</h1>
+        <LoginTitleForm/>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
