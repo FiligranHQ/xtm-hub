@@ -67,8 +67,14 @@ spec:
               optional: false
         - name: DATABASE_BASE
           value: "cloudportal"
-        - OIDC_ISSUER: ${{secrets.OIDC_ISSUER}}
-        - OIDC_CLIENT_ID: ${{secrets.OIDC_CLIENT_ID}}
-        - OIDC_CLIENT_SECRET: ${{secrets.OIDC_CLIENT_SECRET}}
-        - OIDC_REDIRECT_URIS: ${{secrets.OIDC_REDIRECT_URIS}}
-        - OIDC_LOGOUT_CALLBACK_URL: ${{secrets.OIDC_LOGOUT_CALLBACK_URL}}
+        - ESSAI: 'coucou'
+        - name: OIDC_ISSUER
+          value: ${{secrets.OIDC_ISSUER}}
+        - name: OIDC_CLIENT_ID
+          value: ${{secrets.OIDC_CLIENT_ID}}
+        - name: OIDC_CLIENT_SECRET
+          value: ${{secrets.OIDC_CLIENT_SECRET}}
+        - name: OIDC_REDIRECT_URIS
+          value: ${{secrets.OIDC_REDIRECT_URIS}}
+        - name: OIDC_LOGOUT_CALLBACK_URL
+          value: ${{secrets.OIDC_LOGOUT_CALLBACK_URL}}
