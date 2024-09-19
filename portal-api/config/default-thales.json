@@ -116,28 +116,58 @@
     "workflow": "/api/v2/workflow_job_templates/${workflowId}/launch/",
     "action_mapping": {
       "CREATE_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_create-user",
-        "keys": ["roles", "organization_name"]
+        "path": "/api/v2/workflow_job_templates/?name=api_create-user"
+      },
+      "UPDATE_USER": {
+        "path": "/api/v2/workflow_job_templates/?name=api_update-user"
       },
       "DISABLE_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_disable-user",
-        "keys": ["roles", "organization_name"]
+        "path": "/api/v2/workflow_job_templates/?name=api_disable-user"
       },
-      "CREATE_COMMUNITY_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_create-community",
-        "keys": ["roles", "organization_name"]
+      "ADD_PLTF_USER" : {
+        "path": "/api/v2/workflow_job_templates/?name=api_admin-ptf-add-user"
       },
-      "DELETE_COMMUNITY_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_delete-community",
-        "keys": ["roles", "organization_name"]
+      "REMOVE_PLTF_USER" : {
+        "path": "/api/v2/workflow_job_templates/?name=api_admin-ptf-remove-user"
       },
-      "COMMUNITY_ADD_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_community-add-user",
-        "keys": ["roles", "organization_name"]
+      "CREATE_COMMUNITY": {
+        "path": "/api/v2/workflow_job_templates/?name=api_create-community"
       },
-      "COMMUNITY_REMOVE_USER": {
-        "path": "/api/v2/workflow_job_templates/?name=api_community-remove-user",
-        "keys": ["roles", "organization_name"]
+      "UPDATE_COMMUNITY": {
+        "path": "/api/v2/workflow_job_templates/?name=api_update-community"
+      },
+      "DELETE_COMMUNITY": {
+        "path": "/api/v2/workflow_job_templates/?name=api_delete-community"
+      },
+      "COMMUNITY_ADD_SERVICE": {
+        "path": "/api/v2/workflow_job_templates/?name=api_community-add-service"
+      },
+      "COMMUNITY_UPDATE_SERVICE": {
+        "path": "/api/v2/workflow_job_templates/?name=api_community-update-service"
+      },
+      "COMMUNITY_DELETE_SERVICE": {
+        "path": "/api/v2/workflow_job_templates/?name=api_community-delete-service"
+      },
+      "COMMUNITY_ADD_USERS": {
+        "path": "/api/v2/workflow_job_templates/?name=api_community-add-users"
+      },
+      "COMMUNITY_REMOVE_USERS": {
+        "path": "/api/v2/workflow_job_templates/?name=api_community-remove-users"
+      },
+      "ORGANIZATION_ADD_SERVICE": {
+        "path": "/api/v2/workflow_job_templates/?name=api_organization-add-service/"
+      },
+      "ORGANIZATION_UPDATE_SERVICE": {
+        "path": "/api/v2/workflow_job_templates/?name=api_organization-update-service/"
+      },
+      "ORGANIZATION_DELETE_SERVICE": {
+        "path": "/api/v2/workflow_job_templates/?name=api_organization-delete-service/"
+      },
+      "ORGANIZATION_ADD_USERS": {
+        "path": "/api/v2/workflow_job_templates/?name=api_organization-add-users/"
+      },
+      "ORGANIZATION_REMOVE_USERS": {
+        "path": "/api/v2/workflow_job_templates/?name=api_organization-add-users/"
       }
     }
   },

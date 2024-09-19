@@ -10,9 +10,10 @@ import useMountingLoader from '@/hooks/useMountingLoader';
 import { DataTable } from 'filigran-ui/clients';
 import { ColumnDef } from '@tanstack/react-table';
 import { subscriptionItem_fragment$data } from '../../../../../__generated__/subscriptionItem_fragment.graphql';
-import { Badge } from 'filigran-ui/servers';
+import { Badge, Breadcrumb } from 'filigran-ui/servers';
 import { useLocalStorage } from 'usehooks-ts';
 import { cn } from '@/lib/utils';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 
 // Component interface
 interface PageProps {}
@@ -54,6 +55,15 @@ const columns: ColumnDef<subscriptionItem_fragment$data>[] = [
   },
 ];
 
+const breadcrumbValue = [
+  {
+    label: 'Backoffice',
+  },
+  {
+    label: 'Subscriptions',
+  },
+];
+
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {
   const [count, setCount] = useLocalStorage('countSubscriptionList', 50);
@@ -71,21 +81,24 @@ const Page: React.FunctionComponent<PageProps> = () => {
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
 
   return (
-    <GuardCapacityComponent
-      capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-      {queryRef ? (
-        <SubscriptionPage
-          columns={columns}
-          queryRef={queryRef}
-        />
-      ) : (
-        <DataTable
-          data={[]}
-          columns={columns}
-          isLoading={true}
-        />
-      )}
-    </GuardCapacityComponent>
+    <>
+      <BreadcrumbNav value={breadcrumbValue} />
+      <GuardCapacityComponent
+        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+        {queryRef ? (
+          <SubscriptionPage
+            columns={columns}
+            queryRef={queryRef}
+          />
+        ) : (
+          <DataTable
+            data={[]}
+            columns={columns}
+            isLoading={true}
+          />
+        )}
+      </GuardCapacityComponent>
+    </>
   );
 };
 

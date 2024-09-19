@@ -6,7 +6,7 @@ import { FunctionComponent } from 'react';
 export type SubscriptionStatusTypeBadge = 'ACCEPTED' | 'REQUESTED' | 'REFUSED';
 
 interface SubscriptionStatusBadgeProps {
-  type: SubscriptionStatusTypeBadge;
+  type?: SubscriptionStatusTypeBadge;
 }
 
 export const SubscriptionStatusBadge: FunctionComponent<
@@ -17,5 +17,11 @@ export const SubscriptionStatusBadge: FunctionComponent<
     REQUESTED: 'text-orange',
     ACCEPTED: 'text-green',
   };
-  return <Badge className={cn('uppercase', badgeColor[type])}>{type}</Badge>;
+  return (
+    <>
+      {type && (
+        <Badge className={cn('uppercase', badgeColor[type])}>{type}</Badge>
+      )}
+    </>
+  );
 };

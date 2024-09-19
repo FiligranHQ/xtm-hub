@@ -15,6 +15,7 @@ export const ServiceById = graphql`
       id
       name
       description
+      type
     }
   }
 `;
@@ -49,6 +50,7 @@ export const serviceListFragment = graphql`
     subscription_service_type
     creation_status
     subscribed
+    capabilities
   }
 `;
 
