@@ -8,12 +8,10 @@ import {LogoutIcon} from 'filigran-icon';
 import {LogoutMutation} from '@/components/logout.graphql';
 
 // Component interface
-interface LogoutProps {
-  open: boolean;
-}
+interface LogoutProps {}
 
 // Component
-const Logout: React.FunctionComponent<LogoutProps> = ({ open }) => {
+const Logout: React.FunctionComponent<LogoutProps> = ({}) => {
   const router = useRouter();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
   const logout = () => {
