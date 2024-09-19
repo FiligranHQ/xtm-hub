@@ -4,6 +4,16 @@ cloudportal:
   api:
     resources: {}
     replicas: 1
+    admin:
+      email: ""
+      password: ""
+    env:
+      OIDC_ISSUER: ""
+      OIDC_CLIENT_ID: ""
+      OIDC_REDIRECT_URIS: ""
+      OIDC_LOGOUT_CALLBACK_URL: ""
+    secret:
+      OIDC_CLIENT_SECRET: ""
   front:
     resources: {}
     replicas: 1
