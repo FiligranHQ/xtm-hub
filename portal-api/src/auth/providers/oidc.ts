@@ -6,7 +6,6 @@ import {
 } from 'openid-client';
 import { providerLoginHandler } from '../login-handle';
 import config from 'config';
-import { jwtDecode } from 'jwt-decode';
 import { extractRole } from '../mapping-roles';
 
 export const addOIDCStrategy = (passport) => {
@@ -14,9 +13,8 @@ export const addOIDCStrategy = (passport) => {
   const STRATEGY_OPENID = 'OpenIDConnectStrategy';
   const providers = [];
 
-  const oidcConfig = config.get('oidc_provider') as ClientMetadata & {
-    issuer: string;
-  };
+  const oidcConfig = getOidcConfig();
+
   const providerRef = 'oidc';
   // Here we use directly the config and not the mapped one.
   // All config of openid lib use snake case.
@@ -25,7 +23,9 @@ export const addOIDCStrategy = (passport) => {
   OpenIDIssuer.discover(oidcConfig.issuer)
     .then((issuer) => {
       const { Client } = issuer;
+
       const client = new Client(oidcConfig);
+
       // region scopes generation
       const openIdScopes = ['openid', 'email', 'profile'];
       // endregion
@@ -39,16 +39,20 @@ export const addOIDCStrategy = (passport) => {
       const openIDStrategy = new OpenIDStrategy(
         options,
         async (_, tokenSet, userinfo, done) => {
-          console.info('[OPENID] Successfully logged', { userinfo });
+
+          const roles = extractRole(userinfo['https://xtm-hub-development/roles']);
+
           const {
             email,
             nickname: first_name,
           } = userinfo;
           await providerLoginHandler(
-            { email, first_name, last_name: '', roles: ['ADMIN', 'ADMIN_ORGA','USER'] },
+            { email, first_name, last_name: '', roles },
             done
           );
-          done(null, tokenSet.claims());
+            console.info('[OPENID] Successfully logged', { userinfo });
+
+            done(null, tokenSet.claims());
         }
       );
       // openIDStrategy.logout = (_, callback) => {
@@ -62,6 +66,7 @@ export const addOIDCStrategy = (passport) => {
       //   }
       // };
       passport.use(providerRef, openIDStrategy);
+
       passport.serializeUser(function (user, done) {
         done(null, user);
       });
@@ -82,3 +87,19 @@ export const addOIDCStrategy = (passport) => {
       });
     });
 };
+
+export const getOidcConfig = () => {
+    const oidcConfigFromLocal = config.get('oidc_provider') as ClientMetadata & {
+        issuer: string;
+    };
+    const oidcConfigFromCi = {
+        issuer: process.env.OIDC_ISSUER,
+        client_id: process.env.OIDC_CLIENT_ID,
+        client_secret: process.env.OIDC_CLIENT_SECRET,
+        redirect_uris: process.env.OIDC_REDIRECT_URIS,
+        logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL,
+        response_types: ["code"]
+    }
+
+    return process.env.OIDC_ISSUER ? oidcConfigFromCi : oidcConfigFromLocal;
+}

@@ -1,5 +1,6 @@
 import { loginFromProvider } from './auth-user';
 import { UserInfo } from '../model/user';
+import {FORBIDDEN_ACCESS, ForbiddenAccess} from "../utils/error.util";
 
 export const providerLoginHandler = async (userInfo: UserInfo, done) => {
   await loginFromProvider(userInfo)
@@ -7,6 +8,10 @@ export const providerLoginHandler = async (userInfo: UserInfo, done) => {
       done(null, user);
     })
     .catch((err) => {
-      done(err);
+        if(err.name === FORBIDDEN_ACCESS) {
+            done(null, null)
+        }
+        done(err)
+
     });
 };

@@ -5,9 +5,8 @@ import {
   parseKeyValueArrayToObjectReverse,
 } from '../utils/utils';
 
-export const extractRole = (decodedUser) => {
+export const extractRole = (roles): string[] => {
   const roleMapping = getRoleMapping();
-  const roles = getUserRoles(decodedUser);
   return roles.map((role) => roleMapping[role]).filter((role) => !!role);
 };
 
@@ -25,7 +24,3 @@ export const getRoleMappingReverse = () => {
   return parseKeyValueArrayToObjectReverse(roleMappingConfig);
 };
 
-const getUserRoles = (decodedUser) => {
-  const rolesPath = config.get('user_management.roles_path') as string;
-  return getNestedPropertyValue(decodedUser, rolesPath);
-};

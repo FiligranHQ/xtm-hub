@@ -39,7 +39,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
   } catch (e) {
     return (
       <AppContext>
-        <Login />
+         <Login/>
       </AppContext>
     );
   }
