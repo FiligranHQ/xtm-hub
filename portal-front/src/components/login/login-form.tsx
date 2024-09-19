@@ -2,7 +2,7 @@
 
 import React, { FunctionComponent } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
-import {useRouter, useSearchParams} from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button, Input } from 'filigran-ui/servers';
 import {
@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
 import { SettingsQuery } from '@/components/login/settings.graphql';
 import { LoginFormMutation } from '@/components/login/login.graphql';
-import LoginTitleForm from "@/components/login/login-title";
+import LoginTitleForm from '@/components/login/login-title';
 
 interface LoginFormProps {
   queryRef: PreloadedQuery<settingsQuery>;
@@ -33,8 +33,6 @@ const formSchema = z.object({
 // Component
 const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
   const router = useRouter();
-  const essai = process.env.OIDC_ISSUER
-  const coucou = process.env.ESSAI
   usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,20 +51,18 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
       },
     });
   };
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
 
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
       <div className="mt-2 flex flex-col items-center">
-        ICI {essai} LA
-        ICI {coucou} LA
         <Image
           src="/filigran_logo.svg"
           width={500}
           height={500}
           alt="Filigran logo"
         />
-        <LoginTitleForm/>
+        <LoginTitleForm />
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
