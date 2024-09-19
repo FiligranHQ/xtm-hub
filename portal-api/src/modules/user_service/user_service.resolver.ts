@@ -85,6 +85,7 @@ const resolvers: Resolvers = {
         'User_Service'
       )
         .where('user_id', '=', userToDelete.id)
+        .where('subscription_id', '=', fromGlobalId(input.subscriptionId).id)
         .delete('*')
         .returning('*');
 

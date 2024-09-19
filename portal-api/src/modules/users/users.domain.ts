@@ -12,10 +12,6 @@ import CapabilityPortal from '../../model/kanel/public/CapabilityPortal';
 import User, {UserId, UserMutator} from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserInfo } from '../../model/user';
-import {
-  addRolesToUser,
-  deleteUserRolePortalByUserId,
-} from '../common/user-role-portal';
 import { addNewUserWithRoles } from './users.helper';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 
@@ -76,7 +72,7 @@ export const loadUserBy = async (
         "case when count(distinct \"user_RolePortal\".role_portal_id) = 0 then '[]' else json_agg( json_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal')) end as roles_portal_id"
       ),
     ])
-    .groupBy(['User.id', 'user_RolePortal.role_portal_id'])
+    .groupBy(['User.id'])
     .first();
 
   const user = await userQuery;
@@ -88,7 +84,8 @@ export const loadUserBy = async (
         (capability: CapabilityPortal) => !!capability
       ),
       roles_portal_id: user.roles_portal_id.filter(
-        (role_id: string) => !!role_id
+        (role, index, self) =>
+          role.id !== null && index === self.findIndex((r) => r.id === role.id)
       ),
     };
 
@@ -174,4 +171,8 @@ export const createUser = async (
   // Use insert with returning to get the newly created user
   await addNewUserWithRoles(data, roles);
   return await loadUserBy({email});
+};
+
+export const loadUnsecureUserBy = async (field: UserMutator) => {
+  return dbUnsecure<User>('User').where(field);
 };

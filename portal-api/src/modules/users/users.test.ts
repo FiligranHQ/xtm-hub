@@ -1,12 +1,12 @@
-import { describe, expect } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { v4 as uuidv4 } from 'uuid';
 import {
   createNewUserFromInvitation,
   deleteUserById,
   loadUserRoles,
 } from './users.helper';
-import { ROLE_USER } from '../../portal.const';
-import { loadUserBy } from './users.domain';
+import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
+import { createUser, loadUserBy } from './users.domain';
 import { UserId } from '../../model/kanel/public/User';
 import {
   deleteOrganizationByName,
@@ -53,5 +53,31 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     const testUserDeletion = await loadUserBy({email: testMail});
     expect(testUserDeletion).toBeFalsy();
     deleteOrganizationByName('test-new-organization');
+  });
+});
+
+describe('User should be log with all the capacity', () => {
+  let newUser;
+  it('should be log with all the capacity with role ADMIN_ORGA and USER', async () => {
+    newUser = await createUser({
+      email: 'testCreateNewUserFromInvitation@filigran.io',
+      first_name: 'test',
+      roles: ['ADMIN_ORGA', 'USER'],
+      last_name: 'test',
+    });
+
+    expect(newUser).toBeTruthy();
+    expect(newUser.capabilities.length).toBe(7);
+    expect(newUser.roles_portal_id.length).toBe(2);
+    expect(
+      newUser.roles_portal_id.some(({ id }) => id === ROLE_USER.id)
+    ).toBeTruthy();
+    expect(
+      newUser.roles_portal_id.some(({ id }) => id === ROLE_ADMIN_ORGA.id)
+    ).toBeTruthy();
+  });
+
+  afterAll(async () => {
+    await deleteUserById(newUser.id as UserId);
   });
 });

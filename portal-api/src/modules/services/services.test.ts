@@ -222,7 +222,7 @@ describe('Should return community list', async () => {
     expect(transform.data.communities.totalCount).toEqual(1);
     expect(
       transform.data.communities.edges[0].node.subscription.length
-    ).toEqual(2);
+    ).toEqual(3);
   });
   afterAll(async () => {
     await deleteSubscriptionUnsecure(createThalesSubscription.id);

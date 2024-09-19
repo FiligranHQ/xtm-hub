@@ -129,69 +129,69 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
       : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
   };
 
-  const editColumn: ColumnDef<serviceList_fragment$data>[] = useMemo(
-    () =>
-      useGranted('BCK_MANAGE_SERVICES')
-        ? [
-            {
-              id: 'edit',
-              size: 30,
-              enableHiding: false,
-              enableSorting: false,
-              enableResizing: false,
-              cell: ({ row }) => {
-                return (
-                  <>
-                    <GuardCapacityComponent
-                      capacityRestriction={['BCK_MANAGE_SERVICES']}>
-                      <Button
-                        asChild
-                        variant={'ghost'}
-                        size={'icon'}>
-                        <Link href={`/admin/service/${row.original.id}`}>
-                          <EditIcon className="h-4 w-4" />
-                        </Link>
-                      </Button>{' '}
-                    </GuardCapacityComponent>
-                  </>
-                );
-              },
-            },
-          ]
-        : [],
-    []
-  );
-  const subscribeColumns: ColumnDef<serviceList_fragment$data>[] = useMemo(
-    () =>
-      useGranted('FRT_SERVICE_SUBSCRIBER')
-        ? [
-            {
-              id: 'action',
-              size: 30,
-              enableHiding: false,
-              enableSorting: false,
-              enableResizing: false,
-              cell: ({ row }) => {
-                return row.original.subscribed ? null : (
-                  <AlertDialogComponent
-                    AlertTitle={'Subscribe service'}
-                    actionButtonText={'Continue'}
-                    triggerElement={
-                      <Button aria-label="Subscribe service">Subscribe</Button>
-                    }
-                    onClickContinue={useCallback(
-                      () => addSubscriptionInDb(row.original),
-                      []
-                    )}>
-                    {generateAlertText(row.original)}
-                  </AlertDialogComponent>
-                );
-              },
-            },
-          ]
-        : [],
-    []
-  );
+  const editColumn: ColumnDef<serviceList_fragment$data>[] = [
+    {
+      id: 'edit',
+      size: 30,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => {
+        return (
+          <>
+            {(row.original?.capabilities?.some(
+              (capa) => capa === 'MANAGE_ACCESS'
+            ) ||
+              useGranted('BYPASS')) && (
+              <Button
+                asChild
+                variant={'ghost'}
+                className="flex h-4 w-4 p-0">
+                <Link href={`/admin/service/${row.original.id}`}>
+                  <EditIcon className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
+          </>
+        );
+      },
+    },
+  ];
+  const subscribeColumns: ColumnDef<serviceList_fragment$data>[] = useGranted(
+    'FRT_SERVICE_SUBSCRIBER'
+  )
+    ? [
+        {
+          id: 'action',
+          size: 30,
+          enableHiding: false,
+          enableSorting: false,
+          enableResizing: false,
+          cell: ({ row }) => {
+            return row.original.subscribed ||
+              row.original.type === 'COMMUNITY' ? null : (
+              <AlertDialogComponent
+                AlertTitle={'Subscribe service'}
+                actionButtonText={'Continue'}
+                triggerElement={
+                  <Button
+                    aria-label="Subscribe service"
+                    variant="outline"
+                    className="py-0 text-primary">
+                    Subscribe
+                  </Button>
+                }
+                onClickContinue={useCallback(
+                  () => addSubscriptionInDb(row.original),
+                  []
+                )}>
+                {generateAlertText(row.original)}
+              </AlertDialogComponent>
+            );
+          },
+        },
+      ]
+    : [];
 
   const servicesData = data.services.edges.map(
     ({ node }) => node

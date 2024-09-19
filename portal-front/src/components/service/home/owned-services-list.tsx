@@ -4,19 +4,28 @@ import Link from 'next/link';
 import { Button } from 'filigran-ui/servers';
 import { LinkIcon } from 'lucide-react';
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import * as React from 'react';
 
 interface ServicesListProps {
   services: userServicesOwned_fragment$data[];
 }
+
+const breadcrumbValue = [
+  {
+    label: 'Home',
+  },
+];
 
 export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
   services,
 }) => {
   return (
     <>
-      <h2 className="pb-m txt-title">Your services</h2>
+      <BreadcrumbNav value={breadcrumbValue} />
+      <h2 className="pb-m">Your services</h2>
       <ul
-        className={'grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-m'}>
+        className={'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'}>
         {services.map(({ subscription }) => {
           return (
             <li

@@ -87,10 +87,10 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
                       capacityRestriction={['BCK_MANAGE_SERVICES']}>
                       <Button
                         asChild
-                        size="icon"
-                        variant="ghost">
+                        className="flex h-4 w-4 p-0"
+                        variant={'ghost'}>
                         <Link href={`/admin/service/${row.original.id}`}>
-                          <ChevronIcon className="h-5 w-5" />
+                          <ChevronIcon className="h-4 w-4" />
                         </Link>
                       </Button>
                     </GuardCapacityComponent>

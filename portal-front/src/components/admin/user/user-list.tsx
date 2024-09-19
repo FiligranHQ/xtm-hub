@@ -1,31 +1,17 @@
 import * as React from 'react';
-import { useState } from 'react';
-import {
-  PreloadedQuery,
-  usePreloadedQuery,
-  useRefetchableFragment,
-} from 'react-relay';
-import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
-import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { DataTable } from 'filigran-ui/clients';
-import {
-  mapToSortingTableValue,
-  transformSortingValueToParams,
-} from '@/components/ui/handle-sorting.utils';
-import { CreateUser } from '@/components/admin/user/user-create';
-import {
-  UserListQuery,
-  usersFragment,
-} from '@/components/admin/user/user.graphql';
-import {
-  OrderingMode,
-  UserOrdering,
-  userQuery,
-  userQuery$variables,
-} from '../../../../__generated__/userQuery.graphql';
-import { useLocalStorage } from 'usehooks-ts';
-import { useRouter } from 'next/navigation';
+import {useState} from 'react';
+import {PreloadedQuery, usePreloadedQuery, useRefetchableFragment,} from 'react-relay';
+import {userList_users$key} from '../../../../__generated__/userList_users.graphql';
+import {ColumnDef, PaginationState, Row} from '@tanstack/react-table';
+import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
+import {DataTable} from 'filigran-ui/clients';
+import {mapToSortingTableValue, transformSortingValueToParams,} from '@/components/ui/handle-sorting.utils';
+import {CreateUser} from '@/components/admin/user/user-create';
+import {UserListQuery, usersFragment,} from '@/components/admin/user/user.graphql';
+import {OrderingMode, UserOrdering, userQuery, userQuery$variables,} from '../../../../__generated__/userQuery.graphql';
+import {useLocalStorage} from 'usehooks-ts';
+import {useRouter} from 'next/navigation';
+import {Input} from 'filigran-ui/servers';
 
 // Component interface
 interface ServiceProps {
@@ -87,6 +73,12 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     usersFragment,
     queryData
   );
+  const usersFilterData = data.users.edges.map((user) => {
+    return {
+      value: user.node.email,
+      label: user.node.email,
+    };
+  });
 
   const userData = data.users.edges.map(({ node }) => ({
     ...node,
@@ -132,12 +124,22 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   const onClickRow = (row: Row<UserData>) => {
     router.push(`/admin/user/${row.original.id}`);
   };
+  const handleInputChange = (inputValue: string) => {
+    console.log('inputValue', inputValue);
+    refetch({
+      filter: inputValue,
+    });
+  };
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex justify-end pb-s">
         <CreateUser connectionId={data?.users?.__id} />
       </div>
+      <Input
+        className="mb-xs"
+        placeholder={'Search with email'}
+        onChange={(e) => handleInputChange(e.target.value)}></Input>
       <DataTable
         columns={columns}
         data={userData}

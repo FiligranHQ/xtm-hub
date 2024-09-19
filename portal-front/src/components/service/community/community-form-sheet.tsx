@@ -104,7 +104,7 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
 
   const usersData = data.users.edges.map((user) => {
     return {
-      value: `{"id": "${user.node?.id}", "organization_id": "${user.node?.organization.id}" }`,
+      value: user.node.email,
       label: user.node.email,
     };
   });

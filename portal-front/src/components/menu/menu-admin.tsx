@@ -12,9 +12,7 @@ import * as React from 'react';
 import { ElementType, FunctionComponent, useEffect, useState } from 'react';
 import useGranted from '@/hooks/useGranted';
 import {
-  ExternalReferenceIcon,
   ForumIcon,
-  GradeIcon,
   GroupIcon,
   OrganizationIcon,
   SettingsIcon,
@@ -23,6 +21,7 @@ import { usePathname } from 'next/navigation';
 import { RESTRICTION } from '@/utils/constant';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import GuardCapacityComponent from '@/components/admin-guard';
 
 export interface MenuAdminProps {
   open: boolean;
@@ -84,7 +83,12 @@ const ClosedMenuAdmin = () => {
 };
 const adminLinksData = [
   { href: '/admin/community', icon: ForumIcon, label: 'Communities' },
-  { href: '/admin/user', icon: GroupIcon, label: 'User' },
+  {
+    href: '/admin/user',
+    icon: GroupIcon,
+    label: 'User',
+    restriction: [RESTRICTION.CAPABILITY_FRT_MANAGE_USER],
+  },
   {
     href: '/admin/organizations',
     icon: OrganizationIcon,
@@ -94,14 +98,18 @@ const adminLinksData = [
 
 const AdminLinks = ({ className }: { className?: string }) => (
   <>
-    {adminLinksData.map(({ href, icon, label }) => (
-      <AdminButton
+    {adminLinksData.map(({ href, icon, label, restriction = [] }) => (
+      <GuardCapacityComponent
         key={href}
-        className={className}
-        href={href}
-        icon={icon}
-        label={label}
-      />
+        displayError={false}
+        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS, ...restriction]}>
+        <AdminButton
+          className={className}
+          href={href}
+          icon={icon}
+          label={label}
+        />
+      </GuardCapacityComponent>
     ))}
   </>
 );

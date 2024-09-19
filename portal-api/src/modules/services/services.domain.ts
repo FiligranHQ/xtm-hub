@@ -55,7 +55,7 @@ export const loadCommunities = async (context: PortalContext, opts) => {
         "(json_agg(CASE WHEN 'subscription.id' IS NOT NULL THEN json_build_object('id', \"subscription\".id, 'status', \"subscription\".status, 'start_date', \"subscription\".start_date, 'end_date', \"subscription\".end_date,'organization', json_build_object('id',\"org\".id, 'name', \"org\".name), 'justification', \"subscription\".justification, '__typename', 'Subscription') ELSE NULL END) FILTER (WHERE \"subscription\".id IS NOT NULL))::json as subscription"
       )
     )
-    .groupBy(['Service.id', 'subscription.id'])
+    .groupBy(['Service.id'])
     .asConnection<ServiceConnection>();
 
   const { totalCount } = await db<Service>(context, 'Service', opts)
@@ -78,6 +78,7 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
     orderBy,
   });
   const organizationId = context.user.organization_id;
+  const userId = context.user.id;
   const servicesConnection = await query
     .leftJoin('Subscription as subscription', function () {
       this.on('subscription.service_id', '=', 'Service.id').andOn(
@@ -86,19 +87,58 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
         dbRaw('?', [organizationId])
       );
     })
+    .leftJoin('User_Service as userService', function () {
+      this.on('userService.subscription_id', '=', 'subscription.id').andOn(
+        'userService.user_id',
+        '=',
+        dbRaw('?', [userId])
+      );
+    })
+    .leftJoin(
+      'Service_Capability as serviceCapability',
+      'serviceCapability.user_service_id',
+      '=',
+      'userService.id'
+    )
     .select([
       'Service.*',
       dbRaw(`
-      CASE
-        WHEN "subscription"."id" IS NOT NULL THEN true
-        ELSE false
-      END AS subscribed
+        CASE
+          WHEN "subscription"."id" IS NOT NULL THEN true
+          ELSE false
+        END AS subscribed
+        `),
+      dbRaw(`
+      COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
     `),
     ])
+    .whereRaw(
+      `
+    (
+      "Service"."type" != 'COMMUNITY' OR 
+      ("Service"."type" = 'COMMUNITY' AND "subscription"."status" = 'ACCEPTED')
+    )
+  `
+    )
     .groupBy(['Service.id', 'subscription.id'])
     .asConnection<ServiceConnection>();
 
   const { totalCount } = await db<Service>(context, 'Service', opts)
+    .leftJoin('Subscription as subscription', function () {
+      this.on('subscription.service_id', '=', 'Service.id').andOn(
+        'subscription.organization_id',
+        '=',
+        dbRaw('?', [organizationId])
+      );
+    })
+    .whereRaw(
+      `
+    (
+      "Service"."type" != 'COMMUNITY' OR 
+      ("Service"."type" = 'COMMUNITY' AND "subscription"."status" = 'ACCEPTED')
+    )
+  `
+    )
     .countDistinct('Service.id as totalCount')
     .first();
 
@@ -195,18 +235,20 @@ export const grantServiceAccessUsers = async (
   organizationId: OrganizationId,
   adminId: string,
   subscriptionId: string
-) => {
+): Promise<UserService[]> => {
   const usersInOrga = (await loadUsersByOrganization(
     organizationId,
     adminId
   )) as User[];
 
-  return await grantServiceAccess(
-    context,
-    ['ACCESS_SERVICE'],
-    usersInOrga.map(({ id }) => id),
-    subscriptionId
-  );
+  return usersInOrga.length > 0
+    ? await grantServiceAccess(
+        context,
+        ['ACCESS_SERVICE'],
+        usersInOrga.map(({ id }) => id),
+        subscriptionId
+      )
+    : [];
 };
 
 export const grantServiceAccess = async (
@@ -220,21 +262,10 @@ export const grantServiceAccess = async (
     user_id: userId,
     subscription_id: subscriptionId,
   }));
-
   const insertedUserServices = (await insertUserService(
     context,
     dataUserServices
   )) as [UserService];
-
-  for (const insertedUserService of insertedUserServices) {
-    const dataServiceCapabilities = capabilities.map((capability) => ({
-      id: uuidv4() as ServiceCapabilityId,
-      user_service_id: insertedUserService.id,
-      service_capability_name: capability,
-    }));
-
-    await insertServiceCapability(context, dataServiceCapabilities);
-  }
 
   for (const capability of capabilities) {
     const dataServiceCapabilities = insertedUserServices.map(

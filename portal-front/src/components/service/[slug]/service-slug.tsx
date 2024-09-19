@@ -4,25 +4,9 @@ import {
   usePreloadedQuery,
   UseQueryLoaderLoadQueryOptions,
 } from 'react-relay';
-import {
-  DataTable,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  useToast,
-} from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui/clients';
 import * as React from 'react';
-import { FunctionComponent, useMemo, useState } from 'react';
-import { Badge, Button } from 'filigran-ui/servers';
-import {
-  AddIcon,
-  ChevronIcon,
-  DeleteIcon,
-  LittleArrowIcon,
-} from 'filigran-icon';
-import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
-import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
+import { FunctionComponent, useContext, useState } from 'react';
 import { RESTRICTION } from '@/utils/constant';
 import GuardCapacityComponent from '@/components/admin-guard';
 import {
@@ -38,12 +22,14 @@ import { serviceByIdQuery } from '../../../../__generated__/serviceByIdQuery.gra
 import { ServiceById } from '@/components/service/service.graphql';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
 import TriggerButton from '@/components/ui/trigger-button';
-import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import AcceptCommunity from '@/components/service/[slug]/accept-community';
 import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
-import { ColumnDef } from '@tanstack/react-table';
-import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
+import { SubscriptionStatusTypeBadge } from '@/components/ui/subscription-status-badge';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { SubscriptionTabs } from '@/components/service/[slug]/subscription-tabs';
+import { ServiceHeader } from '@/components/service/[slug]/service-header';
+import { Portal, portalContext } from '@/components/portal-context';
+import useGranted from '@/hooks/useGranted';
 
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<subscriptionByServiceQuery>;
@@ -62,27 +48,10 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   serviceId,
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
-
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
 
-  const [commitUserServiceDeletingMutation] =
-    useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
-
   const { toast } = useToast();
-  const deleteCurrentUser = (userService: any) => {
-    commitUserServiceDeletingMutation({
-      variables: {
-        input: {
-          email: userService.user.email,
-          subscriptionId: '',
-        },
-      },
-      onCompleted() {
-        loadQuery({ service_id: serviceId }, { fetchPolicy: 'network-only' });
-      },
-    });
-  };
 
   const queryData = usePreloadedQuery<subscriptionByServiceQuery>(
     SubscriptionsByService,
@@ -121,78 +90,27 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     });
   };
 
-  const columns: ColumnDef<userService_fragment$data>[] = useMemo(
-    () => [
-      {
-        accessorKey: 'user.first_name',
-        id: 'first_name',
-        header: 'First Name',
-      },
-      {
-        accessorKey: 'user.last_name',
-        id: 'last_name',
-        header: 'Last Name',
-      },
-      {
-        accessorKey: 'user.email',
-        id: 'email',
-        header: 'Email',
-      },
-      {
-        accessorKey: 'service_capability_names',
-        id: 'service_capability_names',
-        header: 'Capabilities',
-        enableSorting: false,
-        cell: ({ row }) => {
-          return (
-            <>
-              {row.original?.service_capability?.map((service_capa) => (
-                <Badge
-                  key={service_capa?.id}
-                  className="mb-2 mr-2 mt-2">
-                  {service_capa?.service_capability_name}
-                </Badge>
-              ))}
-            </>
-          );
-        },
-      },
-      {
-        id: 'actions',
-        cell: ({ row }) => {
-          return (
-            <>
-              <Button
-                variant={'ghost'}
-                onClick={() => {
-                  setCurrentUser(row.original);
-                  setOpenSheet(true);
-                }}>
-                <ChevronIcon className="h-4 w-4"></ChevronIcon>
-              </Button>
-              <Button
-                variant={'ghost'}
-                onClick={() => {
-                  deleteCurrentUser(row.original);
-                }}>
-                <LittleArrowIcon className="h-4 w-4"></LittleArrowIcon>
-              </Button>
-            </>
-          );
-        },
-      },
-    ],
-    []
-  );
-
+  const breadcrumbValue = [
+    {
+      label: 'Services',
+      href: '/service',
+    },
+    {
+      label: queryDataService.serviceById?.name,
+    },
+  ];
   return (
     <>
-      <h2>Community {queryDataService.serviceById?.name}</h2>
-      <Badge className={'cursor-default'}>
-        {queryData.subscriptionsByServiceId
-          ? queryData.subscriptionsByServiceId[0]?.status
-          : ''}
-      </Badge>
+      <BreadcrumbNav value={breadcrumbValue} />
+      <ServiceHeader
+        serviceType={queryDataService.serviceById?.type}
+        serviceName={queryDataService.serviceById?.name}
+        subscriptionStatus={
+          queryData.subscriptionsByServiceId?.[0]
+            ?.status as SubscriptionStatusTypeBadge
+        }
+      />
+
       <div>{queryDataService.serviceById?.description}</div>
       <GuardCapacityComponent
         capacityRestriction={[
@@ -200,19 +118,24 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
         ]}>
-        <AcceptCommunity
-          insertedUserServices={() =>
-            loadQuery(
-              { service_id: serviceId },
-              { fetchPolicy: 'network-only' }
-            )
-          }
-          serviceId={serviceId}
-          subscription={
-            queryData
-              .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data
-          }></AcceptCommunity>
-        <div className="flex justify-end gap-m pb-s">
+        {queryData.subscriptionsByServiceId &&
+          queryData.subscriptionsByServiceId[0]?.status === 'REQUESTED' && (
+            <AcceptCommunity
+              insertedUserServices={() =>
+                loadQuery(
+                  { service_id: serviceId },
+                  { fetchPolicy: 'network-only' }
+                )
+              }
+              serviceId={serviceId}
+              subscription={
+                queryData
+                  .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data
+              }
+            />
+          )}
+
+        <div className="flex justify-end pt-s">
           <ServiceSlugFormSheet
             open={openSheet}
             setOpen={setOpenSheet}
@@ -226,104 +149,39 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             }
             subscriptionId={queryData.subscriptionsByServiceId?.[0]?.id ?? ''}
             trigger={
-              <TriggerButton
-                disabled={
-                  queryData.subscriptionsByServiceId?.[0]?.status ===
-                    'REQUESTED' ?? false
-                }
-                onClick={() => setCurrentUser({})}
-                label="Invite user"
-              />
+              (queryDataService.serviceById?.type === 'COMMUNITY' ||
+                useGranted('BYPASS')) && (
+                <TriggerButton
+                  disabled={
+                    queryData.subscriptionsByServiceId?.[0]?.status ===
+                    'REQUESTED'
+                  }
+                  onClick={() => setCurrentUser({})}
+                  label="Invite user"
+                />
+              )
             }
           />
         </div>
-
-        <Tabs
-          defaultValue={
-            queryData.subscriptionsByServiceId?.[0]?.user_service?.[0]?.user
-              ?.organization.name ?? ''
-          }>
-          <TabsList>
-            {queryData.subscriptionsByServiceId?.map((subscription) => {
-              return (
-                <TabsTrigger
-                  key={
-                    subscription?.user_service?.[0]?.user?.organization?.name
-                  }
-                  value={
-                    subscription?.user_service?.[0]?.user?.organization.name ??
-                    ''
-                  }
-                  className="mb-5 min-h-[55px] data-[state=active]:bg-white">
-                  {subscription?.user_service?.[0]?.user?.organization.name}{' '}
-                  (billing: {subscription?.billing} % )
-                  {subscription?.billing === 0 ? (
-                    <AlertDialogComponent
-                      actionButtonText={'Remove'}
-                      variantName={'destructive'}
-                      AlertTitle={'Remove organization'}
-                      triggerElement={
-                        <Button
-                          className="ml-2"
-                          variant="ghost"
-                          aria-label="Delete Organization from Community">
-                          <DeleteIcon className="h-4 w-4" />
-                        </Button>
-                      }
-                      onClickContinue={() =>
-                        onRemoveOrganization(subscription?.id ?? '')
-                      }>
-                      Are you sure you want to delete this organization{' '}
-                      {subscription?.user_service?.[0]?.user?.organization.name}{' '}
-                      from this community? This action can not be undone.
-                    </AlertDialogComponent>
-                  ) : (
-                    <></>
-                  )}
-                </TabsTrigger>
-              );
-            })}
-            <ServiceSlugAddOrgaFormSheet
-              open={openSheetAddOrga}
-              setOpen={setOpenSheetAddOrga}
-              insertedOrganization={() =>
-                loadQuery(
-                  { service_id: serviceId },
-                  { fetchPolicy: 'network-only' }
-                )
-              }
-              connectionId={''}
-              serviceId={queryDataService.serviceById?.id ?? ''}
-              trigger={
-                <Button
-                  variant="ghost"
-                  className="mb-5 min-h-[55px]"
-                  aria-label="Add organization">
-                  <AddIcon className="mr-2 h-4 w-4" />
-                  Add organization
-                </Button>
-              }
-            />
-          </TabsList>
-          {queryData.subscriptionsByServiceId?.map((subscription) => {
-            return (
-              <TabsContent
-                key={subscription?.user_service?.[0]?.user?.organization.name}
-                value={
-                  subscription?.user_service?.[0]?.user?.organization.name ?? ''
-                }
-                className="ml-1 mt-0 bg-white p-10">
-                <DataTable
-                  columns={columns}
-                  data={
-                    (subscription?.user_service as userService_fragment$data[]) ??
-                    []
-                  }
-                />
-              </TabsContent>
-            );
-          })}
-        </Tabs>
+        <SubscriptionTabs
+          subscriptions={
+            queryData.subscriptionsByServiceId as subscriptionByService_fragment$data[]
+          }
+          serviceType={queryDataService.serviceById?.type}
+          serviceId={serviceId}
+          onRemoveOrganization={onRemoveOrganization}
+          openSheet={openSheet}
+          setOpenSheet={setOpenSheet}
+          setCurrentUser={setCurrentUser}
+          openSheetAddOrga={openSheetAddOrga}
+          setOpenSheetAddOrga={setOpenSheetAddOrga}
+          loadQuery={() =>
+            loadQuery(
+              { service_id: serviceId },
+              { fetchPolicy: 'network-only' }
+            )
+          }
+        />
       </GuardCapacityComponent>
     </>
   );

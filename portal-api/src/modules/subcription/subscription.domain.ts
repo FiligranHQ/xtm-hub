@@ -87,7 +87,7 @@ export const loadSubscriptionsByService = async (
       )
     )
     .groupBy(['User_Service.id']);
-  return db<Subscription>(context, 'Subscription')
+  const query = db<Subscription>(context, 'Subscription')
     .where('Subscription.service_id', '=', service_id)
     .leftJoin(
       queryUserServiceWithCapa.as('userService'),
@@ -95,16 +95,38 @@ export const loadSubscriptionsByService = async (
       '=',
       'Subscription.id'
     )
+    .leftJoin(
+      'Service as service',
+      'service.id',
+      '=',
+      'Subscription.service_id'
+    )
     .leftJoin('User as user', 'user.id', '=', 'userService.user_id')
     .leftJoin('Organization as org', 'org.id', '=', 'user.organization_id')
     .select(
       'Subscription.*',
+      'service.type as service_type',
       dbRaw(
-        `CASE WHEN COUNT (\"userService\".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', \"userService\".id,'service_capability',\"userService\".service_capabilities ,'user', json_build_object('id', \"user\".id, 'email', \"user\".email, 'first_name', \"user\".first_name, 'last_name', \"user\".last_name, 'organization', json_build_object('id', \"org\".id, 'name', \"org\".name, '__typename', 'Organization'), '__typename', 'User'), '__typename', 'User_Service'))::json) END AS user_service`
+        `CASE WHEN COUNT ("userService".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "userService".id,'service_capability',"userService".service_capabilities ,'user', json_build_object('id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, 'organization', json_build_object('id', "org".id, 'name', "org".name, '__typename', 'Organization'), '__typename', 'User'), '__typename', 'User_Service'))::json) END AS user_service`
       )
     )
-    .groupBy(['Subscription.id'])
+    .groupBy(['Subscription.id', 'service.type'])
     .orderBy('Subscription.billing', 'desc');
+
+  const result = await query;
+  const isAdmin = context.user.capabilities.find(
+    (capability) => capability?.name === 'BYPASS'
+  );
+  // In case the service is a community service we return all the organization
+  if (result[0]?.service_type === 'COMMUNITY' || isAdmin) {
+    return result;
+  }
+
+  // In case we got a normal service return only the organization of the user
+  const userSubOrga = result.find(
+    ({ organization_id }) => organization_id === context.user.organization_id
+  );
+  return [userSubOrga];
 };
 
 export const loadSubscriptionsByOrganization = async (
@@ -166,8 +188,23 @@ export const loadSubscriptionsByOrganization = async (
     .asConnection<SubscriptionConnection>();
 
   const { totalCount } = await db<Service>(context, 'Subscription', opts)
-    .countDistinct('id as totalCount')
+    .leftJoin('Service as serv', 'Subscription.service_id', '=', 'serv.id')
+    .leftJoin(
+      'User_Service as user_service',
+      'Subscription.id',
+      '=',
+      'user_service.subscription_id'
+    )
+    .leftJoin(
+      'Service_Capability as service_capa',
+      'user_service.id',
+      '=',
+      'service_capa.user_service_id'
+    )
+    .countDistinct('Subscription.id as totalCount')
     .where('organization_id', context.user.organization_id)
+    .where('serv.type', '=', 'COMMUNITY')
+    .where('service_capa.service_capability_name', '=', 'MANAGE_ACCESS')
     .first();
 
   return {
@@ -236,7 +273,7 @@ export const addSubscriptions = async (
 };
 
 export const fillUserServiceData = async (
-  userServices: [UserService],
+  userServices: UserService[],
   service_id: ServiceId
 ) => {
   const userServicesData = [];

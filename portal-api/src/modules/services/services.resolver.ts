@@ -29,10 +29,12 @@ import {
 } from './services.domain';
 import { insertServicePrice } from './instances/service-price/service_price.helper';
 import { isAdmin } from '../role-portal/role-portal.domain';
-import { loadUsersByOrganization } from '../users/users.domain';
-import User from '../../model/kanel/public/User';
+import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
+import User, { UserId } from '../../model/kanel/public/User';
 import { GraphQLError } from 'graphql/error/index.js';
 import { addSubscriptions } from '../subcription/subscription.domain';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { AWXAction } from '../../managers/awx/awx.model';
 
 const resolvers: Resolvers = {
   Query: {
@@ -175,17 +177,17 @@ const resolvers: Resolvers = {
           // TODO Call AWX to add service to community
           await addServiceLink(context, dataServiceLink);
         }
-
-        const userId = input.billing_manager
-          ? fromGlobalId(JSON.parse(input.billing_manager).id).id
+        const billingManager = input?.billing_manager
+          ? await loadUserBy('email', input.billing_manager)
+          : undefined;
+        const userId = input?.billing_manager
+          ? billingManager.id
           : context.user.id;
 
         if (
           input.billing_manager &&
           !input.organizations_id.some(
-            (id) =>
-              fromGlobalId(JSON.parse(input.billing_manager).organization_id)
-                .id === fromGlobalId(id).id
+            (id) => billingManager.organization_id === fromGlobalId(id).id
           )
         ) {
           await trx.rollback();
@@ -204,6 +206,13 @@ const resolvers: Resolvers = {
             addedService.id as ServiceId,
             userId
           );
+          await launchAWXWorkflow({
+            type: AWXAction.CREATE_COMMUNITY,
+            input: {
+              id: addedService.id as ServiceId,
+              adminCommuId: userId as UserId,
+            },
+          });
         } else {
           await orgaCreateCommu(
             context,
@@ -230,24 +239,27 @@ const resolvers: Resolvers = {
             fromGlobalId(input.serviceId).id as ServiceId
           );
 
-        const addedSubscriptions = await addSubscriptions(
-          context,
-          fromGlobalId(input.serviceId).id as ServiceId,
-          input.organizationsId,
-          'ACCEPTED'
-        );
-
-        for (const addedSubscription of addedSubscriptions) {
-          const users = (await loadUsersByOrganization(
-            addedSubscription.organization_id,
-            adminCommuId
-          )) as User[];
-          await grantServiceAccess(
+        let addedSubscriptions;
+        if (input.organizationsId) {
+          addedSubscriptions = await addSubscriptions(
             context,
-            ['ACCESS_SERVICE'],
-            users.map(({ id }) => id),
-            addedSubscription.id
+            fromGlobalId(input.serviceId).id as ServiceId,
+            input.organizationsId,
+            'ACCEPTED'
           );
+
+          for (const addedSubscription of addedSubscriptions) {
+            const users = (await loadUsersByOrganization(
+              addedSubscription.organization_id,
+              adminCommuId
+            )) as User[];
+            await grantServiceAccess(
+              context,
+              ['ACCESS_SERVICE'],
+              users.map(({ id }) => id),
+              addedSubscription.id
+            );
+          }
         }
 
         // ADMIN
@@ -269,7 +281,15 @@ const resolvers: Resolvers = {
           adminsSubscription.id
         );
 
-        return addedSubscriptions;
+        await launchAWXWorkflow({
+          type: AWXAction.CREATE_COMMUNITY,
+          input: {
+            id: fromGlobalId(input.serviceId).id as ServiceId,
+            adminCommuId,
+          },
+        });
+
+        return addedSubscriptions ?? [];
       } catch (error) {
         await trx.rollback();
         console.log('Error while accepting the service.', error);

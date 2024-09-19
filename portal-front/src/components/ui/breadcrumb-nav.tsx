@@ -25,7 +25,7 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
   value,
 }) => {
   return (
-    <Breadcrumb className="pb-2">
+    <Breadcrumb className="pb-l">
       <BreadcrumbList>
         {value.map(({ href, label }, index) => {
           const lastIndex = value.length - 1 === index;
