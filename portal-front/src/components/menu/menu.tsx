@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { ElementType, FunctionComponent, useCallback, useState } from 'react';
-import Logout from '@/components/logout';
 import MenuUser from '@/components/menu/menu-user';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { HomeIcon, KeyboardArrowLeftIcon } from 'filigran-icon';
@@ -74,8 +73,6 @@ const Menu = () => {
         </ul>
       </nav>
       <div>
-        <Separator className="my-2" />
-        <Logout open={open} />
         <Separator className="my-2" />
         <Button
           variant="ghost"

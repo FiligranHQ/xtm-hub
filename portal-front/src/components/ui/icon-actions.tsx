@@ -5,13 +5,15 @@ import {
   DropdownMenuTrigger,
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
-import { Ellipsis } from 'lucide-react';
 
-interface ThreeDotsActionsProps {
+interface IconActionsProps {
   children: ReactNode;
+  icon: ReactNode;
 }
-export const ThreeDotsActions: FunctionComponent<ThreeDotsActionsProps> = ({
+
+export const IconActions: FunctionComponent<IconActionsProps> = ({
   children,
+  icon,
 }) => {
   return (
     <DropdownMenu>
@@ -19,8 +21,7 @@ export const ThreeDotsActions: FunctionComponent<ThreeDotsActionsProps> = ({
         <Button
           variant="ghost"
           className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
-          <Ellipsis className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
+          {icon}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
