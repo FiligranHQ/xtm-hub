@@ -2,8 +2,7 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { LinkMenu } from '@/components/menu/menu';
 import useGranted from '@/hooks/useGranted';
-import { ChecklistRtlIcon, ForumIcon, GradeIcon } from 'filigran-icon';
-import { usePathname } from 'next/navigation';
+import { ConstructionIcon, GroupingIcon } from 'filigran-icon';
 
 export interface MenuUserProps {
   open: boolean;
@@ -12,12 +11,12 @@ export interface MenuUserProps {
 const menuUserLink = [
   {
     href: '/service',
-    icon: GradeIcon,
+    icon: GroupingIcon,
     text: 'Services',
   },
   {
     href: '/manage-services',
-    icon: ForumIcon,
+    icon: ConstructionIcon,
     text: 'Manage',
   },
 ];
