@@ -7,6 +7,7 @@ export const dataTrackingFragment = graphql`
     created_at
     ended_at
     status
+    type
     message_tracking {
       ...trackingMessage_fragment
     }
