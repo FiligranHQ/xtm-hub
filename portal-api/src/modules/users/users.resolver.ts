@@ -8,14 +8,14 @@ import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import crypto from 'node:crypto';
 import { PORTAL_COOKIE_NAME } from '../../index';
-import { loadUserBy, loadUsers } from './users.domain';
+import {loadUserBy, loadUsers} from './users.domain';
 import { dispatch, listen } from '../../pub';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { hashPassword } from '../../utils/hash-password.util';
 import { GraphQLError } from 'graphql/error/index.js';
 import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
-import User, { UserId } from '../../model/kanel/public/User';
+import User, {UserId, UserMutator} from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { AWXAction } from '../../managers/awx/awx.model';
 import { loadTrackingDataBy } from '../tracking/tracking.domain';
@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      return loadUserBy({ id: id as UserId });
+      return loadUserBy({ 'User.id': id as UserId } as UserMutator);
     },
     users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
       if (!context.user)
