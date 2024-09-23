@@ -80,8 +80,9 @@ type Query {
         BCK_MANAGE_COMMUNITIES
       ]
     )
-  serviceById(service_id: ID): Service @auth
-  @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
+  serviceById(service_id: ID): Service
+    @auth
+    @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
   communities(
     first: Int!
     after: ID

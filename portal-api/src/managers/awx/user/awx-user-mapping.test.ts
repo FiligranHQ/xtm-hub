@@ -1,6 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { AWXAddUserInput, UserInput } from '../awx.model';
-import { mapUserInputAWX } from './awx-user-mapping';
+import {
+  AWXAddUserInput,
+  mapUserInputAWX,
+  UserInput,
+} from './awx-user-mapping';
 import { UserId } from '../../../model/kanel/public/User';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
@@ -90,11 +93,13 @@ describe('Api create-user', async () => {
       user_email_address: 'admin@filigran.io',
       user_firstname: '',
       user_lastname: '',
-      user_role_admin_ptf: true,
-      user_subscription_list: ['c6343882-f609-4a3f-abe0-a34f8cb11302'],
-      user_community_list: [
+      user_role_admin_ptf: 'true',
+      user_subscription_list: JSON.stringify([
+        'c6343882-f609-4a3f-abe0-a34f8cb11302',
+      ]),
+      user_community_list: JSON.stringify([
         { community_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf', role: 'admin' },
-      ],
+      ]),
     };
 
     const user: UserInput = {
@@ -123,10 +128,10 @@ describe('Api create-user', async () => {
       user_email_address: 'admin@filigran.io',
       user_firstname: '',
       user_lastname: '',
-      user_role_admin_ptf: true,
-      user_community_list: [
+      user_role_admin_ptf: 'true',
+      user_community_list: JSON.stringify([
         { community_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf', role: 'admin' },
-      ],
+      ]),
     };
 
     const user: UserInput = {

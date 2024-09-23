@@ -53,7 +53,7 @@ export const isNodeAccessible = async (
   if (type === 'MalwareAnalysis') {
     // TODO Dispatch only if user is part of the same organization
     const malwareObj = node as unknown as MalwareAnalysis;
-    const userFromMalwareObj = await loadUserBy({id: malwareObj.user_id});
+    const userFromMalwareObj = await loadUserBy({ id: malwareObj.user_id });
     return user.organization_id === userFromMalwareObj.organization_id;
   }
   if (availableTypes.includes(type)) {

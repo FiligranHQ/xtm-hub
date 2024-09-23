@@ -1,10 +1,14 @@
-import { dbRaw, dbUnsecure } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import User, {
   UserId,
   UserInitializer,
   UserMutator,
 } from '../../model/kanel/public/User';
-import { addRolesToUser } from '../common/user-role-portal';
+import {
+  addRolesToUser,
+  createUserRolePortal,
+  deleteUserRolePortalByUserId,
+} from '../common/user-role-portal';
 import { hashPassword } from '../../utils/hash-password.util';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -17,14 +21,23 @@ import {
 } from '../../utils/verify-email.util';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { loadUserBy } from './users.domain';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { AWXAction } from '../../managers/awx/awx.model';
+import { ROLE_ADMIN, ROLE_USER } from '../../portal.const';
+import { RolePortalId } from '../../model/kanel/public/RolePortal';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { PortalContext } from '../../model/portal-context';
+import { extractId } from '../../utils/utils';
+import { EditUserInput } from '../../__generated__/resolvers-types';
 
 export const addNewUserWithRoles = async (
   data: UserInitializer,
   roles: string[]
-) => {
+): Promise<User> => {
   const [addedUser] = await dbUnsecure<User>('User')
     .insert(data)
     .returning('*');
+
   await addRolesToUser(data.id, roles);
   return addedUser;
 };
@@ -58,7 +71,7 @@ async function createOrganisationWithAdminUser(
       password: hash,
       organization_id: newOrganization.id,
     },
-    ['ADMIN_ORGA', 'USER']
+    [ROLE_ADMIN.id, ROLE_USER.name]
   );
 }
 
@@ -75,20 +88,30 @@ export const createNewUserFromInvitation = async (email: string) => {
 
   const [organization] = await loadOrganizationsFromEmail(email);
 
-  if (!organization) {
-    return await createOrganisationWithAdminUser(email, salt, hash);
-  }
+  const userWithRoles: User = !organization
+    ? await createOrganisationWithAdminUser(email, salt, hash)
+    : await addNewUserWithRoles(
+        {
+          id: uuidv4() as UserId,
+          email,
+          salt,
+          password: hash,
+          organization_id: organization.id,
+        },
+        [ROLE_USER.name]
+      );
 
-  return await addNewUserWithRoles(
-    {
-      id: uuidv4() as UserId,
-      email,
+  await launchAWXWorkflow({
+    type: AWXAction.CREATE_USER,
+    input: {
+      ...userWithRoles,
       salt,
-      password: hash,
-      organization_id: organization.id,
+      password: 'temporaryPassword',
+      roles: !organization ? [ROLE_ADMIN.id, ROLE_USER.id] : [ROLE_USER.id],
     },
-    ['USER']
-  );
+  });
+
+  return userWithRoles;
 };
 
 export const deleteUserById = async (userId: UserId) => {
@@ -99,7 +122,7 @@ export const deleteUserById = async (userId: UserId) => {
 };
 
 export const getOrCreateUser = async (email: string) => {
-  const user = await loadUserBy({email});
+  const user = await loadUserBy({ email });
   return user ? user : await createNewUserFromInvitation(email);
 };
 
@@ -114,4 +137,42 @@ export const loadUserRoles = async (userId: UserId) => {
     ])
     .groupBy('User.id') // Group by User.id to ensure proper aggregation
     .first();
+};
+
+export const updateUser = async (
+  context: PortalContext,
+  id: string,
+  input: EditUserInput
+) => {
+  const organization_id = extractId(input.organization_id);
+  const { roles_id, ...inputWithoutRoles } = input;
+  const rolePortalIds = roles_id.map(extractId);
+  const update = { ...inputWithoutRoles, organization_id } as User;
+  const [updatedUser] = await db<User>(context, 'User')
+    .where({ id: id as UserId })
+    .update(update)
+    .returning('*');
+
+  await deleteUserRolePortalByUserId(updatedUser.id);
+
+  const roles_portal_id = await Promise.all(
+    rolePortalIds.map(async (rolePortalId) => {
+      await createUserRolePortal(
+        updatedUser.id as UserId,
+        rolePortalId as RolePortalId
+      );
+      return { id: rolePortalId };
+    })
+  );
+  const organization = await loadOrganizationBy(
+    context,
+    'Organization.id',
+    organization_id
+  );
+
+  return {
+    ...updatedUser,
+    organization,
+    roles_portal_id,
+  };
 };

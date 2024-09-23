@@ -18,6 +18,7 @@ export const initTracking = async (action: AWXWorkflowAction) => {
     created_at,
     status: 'IN_PROGRESS',
     contextual_id: action.input.id,
+    type: action.type,
   });
   await addNewMessageTracking({
     tracking_id: id,
@@ -70,7 +71,8 @@ export const loadTrackingDataBy = (
       'ActionTracking.id'
     )
     .where({ [field]: value })
-    .groupBy('ActionTracking.id');
+    .groupBy('ActionTracking.id')
+    .orderBy('ActionTracking.created_at', 'desc');
 };
 
 export const unsecureLoadTrackingDataBy = (field: string, value: string) => {
@@ -88,5 +90,6 @@ export const unsecureLoadTrackingDataBy = (field: string, value: string) => {
       'ActionTracking.id'
     )
     .where({ [field]: value })
-    .groupBy('ActionTracking.id');
+    .groupBy('ActionTracking.id')
+    .orderBy('ActionTracking.created_at', 'desc');
 };

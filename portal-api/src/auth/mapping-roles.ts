@@ -1,6 +1,5 @@
 import config from 'config';
 import {
-  getNestedPropertyValue,
   parseKeyValueArrayToObject,
   parseKeyValueArrayToObjectReverse,
 } from '../utils/utils';
@@ -23,4 +22,3 @@ export const getRoleMappingReverse = () => {
   );
   return parseKeyValueArrayToObjectReverse(roleMappingConfig);
 };
-

@@ -4,6 +4,7 @@ type ActionTracking implements Node {
   status: String
   created_at: Date!
   ended_at: Date
+  type: String!
   message_tracking: [MessageTracking!]!
 }
 type MessageTracking implements Node {

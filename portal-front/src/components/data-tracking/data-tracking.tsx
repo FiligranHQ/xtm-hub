@@ -71,7 +71,7 @@ export const DataTracking: FunctionComponent<DataTrackingProps> = ({
       ...t,
       created_at: FormatDate(t.created_at),
       ended_at: FormatDate(t.ended_at),
-      type: 'CREATE_USER', // Need to add in the env in postgres table
+      type: t.type,
       message_tracking:
         t.message_tracking as unknown as trackingMessage_fragment$key,
     })) ?? [];
