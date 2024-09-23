@@ -6,7 +6,7 @@ import {
 } from 'react-relay';
 import { useToast } from 'filigran-ui/clients';
 import * as React from 'react';
-import { FunctionComponent, useContext, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { RESTRICTION } from '@/utils/constant';
 import GuardCapacityComponent from '@/components/admin-guard';
 import {
@@ -28,7 +28,6 @@ import { SubscriptionStatusTypeBadge } from '@/components/ui/subscription-status
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { SubscriptionTabs } from '@/components/service/[slug]/subscription-tabs';
 import { ServiceHeader } from '@/components/service/[slug]/service-header';
-import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 
 interface ServiceSlugProps {

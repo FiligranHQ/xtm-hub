@@ -9,8 +9,6 @@ import {
   userFormSchema,
 } from '@/components/admin/user/user-form.schema';
 import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
-import { AddIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
 import { useToast } from 'filigran-ui/clients';
 import useGranted from '@/hooks/useGranted';
 import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
@@ -61,7 +59,6 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
   return (
     <UserFormSheet
       title={'Create a new user'}
-      description={'Create the profile here. Click Validate when you are done.'}
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}
