@@ -5,8 +5,6 @@ import { z } from 'zod';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
-import { EditIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
 import { useToast } from 'filigran-ui/clients';
 import { userSlugEditMutation } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
