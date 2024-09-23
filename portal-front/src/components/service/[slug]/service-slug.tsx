@@ -101,6 +101,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
+      <h1>{queryDataService.serviceById?.type} management</h1>
       <ServiceHeader
         serviceType={queryDataService.serviceById?.type}
         serviceName={queryDataService.serviceById?.name}
@@ -134,7 +135,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             />
           )}
 
-        <div className="flex justify-end pt-s">
+        <div className="flex justify-end">
           <ServiceSlugFormSheet
             open={openSheet}
             setOpen={setOpenSheet}
@@ -163,6 +164,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           />
         </div>
         <SubscriptionTabs
+            className="pt-xs"
           subscriptions={
             queryData.subscriptionsByServiceId as subscriptionByService_fragment$data[]
           }

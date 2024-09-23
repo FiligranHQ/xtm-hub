@@ -177,7 +177,7 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
           RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
         ]}>
-        <div className="flex justify-end pb-m">
+        <div className="flex justify-end pb-xs">
           <CreateCommunity
             connectionId={connectionID}
             adminForm={me.capabilities.some(

@@ -133,12 +133,13 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
+      <h1>Users list</h1>
       <div className="flex justify-end pb-s">
         <CreateUser connectionId={data?.users?.__id} />
       </div>
       <Input
-        className="mb-xs"
-        placeholder={'Search with email'}
+        className="mb-xs w-1/3"
+        placeholder={'Search with email...'}
         onChange={(e) => handleInputChange(e.target.value)}></Input>
       <DataTable
         columns={columns}

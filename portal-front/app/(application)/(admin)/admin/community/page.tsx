@@ -98,6 +98,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
+      <h1>Communities list</h1>
       {queryRef ? (
         <CommunityList
           queryRef={queryRef}
