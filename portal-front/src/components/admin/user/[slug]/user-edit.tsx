@@ -40,7 +40,6 @@ export const EditUser: FunctionComponent<EditUserProps> = ({ user }) => {
   return (
     <UserFormSheet
       title={'Edit user'}
-      description={'Edit the profile here. Click Validate when you are done.'}
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}

@@ -58,9 +58,6 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
         </Button>
       }
       title={"Edit the organization's name"}
-      description={
-        "Edit the organization's name here. Click on Validate when you are done."
-      }
       handleSubmit={handleSubmit}
     />
   );
