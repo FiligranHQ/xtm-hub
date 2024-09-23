@@ -11,8 +11,6 @@ import {Skeleton} from 'filigran-ui';
 
 // Component interface
 interface HeaderComponentProps {}
-
-// Component
 const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
   const { me } = useContext<Portal>(portalContext);
   return (

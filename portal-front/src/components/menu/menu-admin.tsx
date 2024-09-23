@@ -38,7 +38,7 @@ const OpenedMenuAdmin = () => (
         <span className="flex w-8 flex-shrink-0 justify-center">
           <SettingsIcon className="h-4 w-4" />
         </span>
-        <span className="flex-1 px-2 text-left txt-default">Backoffice</span>
+        <span className="flex-1 px-2 text-left txt-default">Settings</span>
       </AccordionTrigger>
       <AccordionContent>
         <AdminLinks className="h-8 txt-sub-content" />
