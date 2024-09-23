@@ -271,6 +271,7 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,
+          columnPinning: {right: ['action']}
         }}
       />
 

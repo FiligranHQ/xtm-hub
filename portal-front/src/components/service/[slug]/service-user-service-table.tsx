@@ -140,7 +140,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
     <DataTable
       columns={columns}
       data={data}
-      tableState={{ pagination }}
+      tableState={{ pagination, columnPinning: { right: ['actions']}}}
     />
   );
 };
