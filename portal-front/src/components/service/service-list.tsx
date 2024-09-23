@@ -27,7 +27,6 @@ import {
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { subscriptionCreateMutation } from '../../../__generated__/subscriptionCreateMutation.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
-import GuardCapacityComponent from '@/components/admin-guard';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { EditIcon } from 'filigran-icon';
 import {
@@ -125,7 +124,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
 
   const generateAlertText = (service: serviceList_fragment$data) => {
     return service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
-      ? 'Are you really sure you want to subscribe this service ? This action can not be undone.'
+      ? 'Are you really sure you want to subscribe this service ? This action can not be canceled later.'
       : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
   };
 

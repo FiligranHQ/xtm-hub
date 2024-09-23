@@ -29,8 +29,8 @@ export const initAuthPlatform = async (app) => {
       try {
         const user = await new Promise((resolve, reject) => {
           passport.authenticate(provider, {}, (err, user) => {
-            if(!user) {
-              reject(new Error('User not provided'))
+            if (!user) {
+              reject(new Error('User not provided'));
             }
             if (err) {
               reject(err || new Error('Invalid authentication'));
@@ -43,8 +43,8 @@ export const initAuthPlatform = async (app) => {
         await authenticateUser(req, user);
       } catch (err) {
         console.error(err, { provider });
-        if(err.message === 'User not provided') {
-          referer = referer+'?error=not-provided'
+        if (err.message === 'User not provided') {
+          referer = referer + '?error=not-provided';
         }
 
         setCookieError(

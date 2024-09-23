@@ -15,6 +15,8 @@ export default interface ActionTracking {
   created_at: Date;
 
   ended_at: Date | null;
+
+  type: string;
 }
 
 /** Represents the initializer for the table public.ActionTracking */
@@ -30,6 +32,8 @@ export interface ActionTrackingInitializer {
   created_at?: Date;
 
   ended_at?: Date | null;
+
+  type: string;
 }
 
 /** Represents the mutator for the table public.ActionTracking */
@@ -43,4 +47,6 @@ export interface ActionTrackingMutator {
   created_at?: Date;
 
   ended_at?: Date | null;
+
+  type?: string;
 }

@@ -1,7 +1,10 @@
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
 
-interface InputAddServiceCommunityAWX {
+export interface InputAddServiceCommunityAWX {
   id: string;
+  service_type: string;
+  service_id: string;
+  service_display_name: string;
 }
 
 interface AWXServiceCommunity {
@@ -13,37 +16,48 @@ interface AWXServiceCommunity {
 }
 
 export const mapAddServiceCommunityAWX = (
-  { id: community_id }: InputAddServiceCommunityAWX,
+  {
+    id,
+    service_type,
+    service_id,
+    service_display_name,
+  }: InputAddServiceCommunityAWX,
   awx_client_request_id: ActionTrackingId
 ): AWXServiceCommunity => {
   return {
     awx_client_request_id,
-    community_id,
-    service_type: 'weather',
-    service_id: 'weather',
-    service_display_name: 'Weather',
+    community_id: id,
+    service_type,
+    service_id,
+    service_display_name,
   };
 };
 
 export const mapUpdateServiceCommunityAWX = (
-  { id: community_id }: InputAddServiceCommunityAWX,
+  {
+    id,
+    service_id,
+    service_display_name,
+  }: Omit<InputAddServiceCommunityAWX, 'service_type'>,
   awx_client_request_id: ActionTrackingId
 ): Omit<AWXServiceCommunity, 'service_type'> => {
   return {
     awx_client_request_id,
-    community_id,
-    service_id: 'weather',
-    service_display_name: 'Weather',
+    community_id: id,
+    service_id,
+    service_display_name,
   };
 };
 export const mapDeleteServiceCommunityAWX = (
-  { id: community_id }: InputAddServiceCommunityAWX,
+  {
+    id,
+    service_id,
+  }: Omit<InputAddServiceCommunityAWX, 'service_type' | 'service_display_name'>,
   awx_client_request_id: ActionTrackingId
-): Omit<AWXServiceCommunity, 'service_type'> => {
+): Omit<AWXServiceCommunity, 'service_type' | 'service_display_name'> => {
   return {
     awx_client_request_id,
-    community_id,
-    service_id: 'weather',
-    service_display_name: 'Weather',
+    community_id: id,
+    service_id,
   };
 };

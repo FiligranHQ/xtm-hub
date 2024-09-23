@@ -1,6 +1,9 @@
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
-import { User } from '../../../model/user';
 
+export interface UserWithRoleCommunity {
+  email: string;
+  admin: boolean;
+}
 export interface AWXUserCommunity {
   awx_client_request_id: string;
   community_id: string;
@@ -12,8 +15,8 @@ interface UserCommunity {
 }
 
 export interface InputUserCommunity {
-  community_id: string;
-  user: User[];
+  id: string;
+  users: UserWithRoleCommunity[];
 }
 
 export interface AWXUserCommunityFormatted
@@ -22,20 +25,18 @@ export interface AWXUserCommunityFormatted
 }
 
 export const mapUserCommunityAWX = (
-  { community_id, user }: InputUserCommunity,
+  { id, users }: InputUserCommunity,
   awx_client_request_id: ActionTrackingId
 ): AWXUserCommunityFormatted => {
-  const userList = user.map(({ email, roles_portal_id }) => {
+  const userList = users.map(({ email, admin }) => {
     return {
       user_email_address: email,
-      role: roles_portal_id.some(({ name }) => name === 'ADMIN_ORGA')
-        ? 'admin'
-        : 'user',
+      role: admin ? 'admin' : 'user',
     };
   });
   return {
     awx_client_request_id,
-    community_id,
+    community_id: id,
     community_user_list: JSON.stringify(userList),
   };
 };

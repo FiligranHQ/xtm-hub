@@ -128,7 +128,7 @@ describe('Services GraphQL Endpoint', async () => {
           },
         },
       });
-      const createdUser = await loadUserBy({email: testEmail});
+      const createdUser = await loadUserBy({ email: testEmail });
 
       it('the user should be created', async () => {
         expect(createdUser).toBeTruthy();
@@ -168,7 +168,7 @@ describe('Services GraphQL Endpoint', async () => {
         },
       });
       const transform = JSON.parse(response.text);
-      const createdUser = await loadUserBy({email: testEmail});
+      const createdUser = await loadUserBy({ email: testEmail });
       const newOrganization = await loadUnsecureOrganizationBy(
         'name',
         'tripadvisor'

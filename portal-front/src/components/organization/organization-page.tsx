@@ -21,7 +21,8 @@ import {
 import { OrganizationOrdering } from '../../../__generated__/organizationSelectQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
 import { Badge } from 'filigran-ui/servers';
-import { ThreeDotsActions } from '@/components/ui/three-dots-actions';
+import { IconActions } from '@/components/ui/icon-actions';
+import { Ellipsis } from 'lucide-react';
 
 const breadcrumbValue = [
   {
@@ -123,13 +124,19 @@ const OrganizationPage: React.FunctionComponent = () => {
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => (
-        <ThreeDotsActions>
+        <IconActions
+          icon={
+            <>
+              <Ellipsis className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </>
+          }>
           <EditOrganization organization={row.original} />
           <DeleteOrganization
             connectionId={organizationData.organizations.__id}
             organization={row.original}
           />
-        </ThreeDotsActions>
+        </IconActions>
       ),
     },
   ];

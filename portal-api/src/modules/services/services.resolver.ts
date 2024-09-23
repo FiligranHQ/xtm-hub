@@ -178,7 +178,7 @@ const resolvers: Resolvers = {
           await addServiceLink(context, dataServiceLink);
         }
         const billingManager = input?.billing_manager
-          ? await loadUserBy('email', input.billing_manager)
+          ? await loadUserBy({ email: input.billing_manager })
           : undefined;
         const userId = input?.billing_manager
           ? billingManager.id

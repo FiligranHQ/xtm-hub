@@ -3,6 +3,7 @@ import {
   unsecureLoadTrackingDataBy,
 } from '../../modules/tracking/tracking.domain';
 import { dispatch } from '../../pub';
+import { manageAwxCallback } from './helper/manage-awx-callback';
 
 export const awxEndpoint = (app) => {
   app.post(`/awx/callback`, async (req, res) => {
@@ -14,6 +15,8 @@ export const awxEndpoint = (app) => {
         'ActionTracking.id',
         awxUUID
       );
+
+      await manageAwxCallback(tracking, req.body.outputs);
       await dispatch('ActionTracking', 'edit', tracking);
     }
     res.sendStatus(200);

@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PortalContext } from '../../model/portal-context';
 import { hashPassword } from '../../utils/hash-password.util';
 import CapabilityPortal from '../../model/kanel/public/CapabilityPortal';
-import User, {UserId, UserMutator} from '../../model/kanel/public/User';
+import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserInfo } from '../../model/user';
 import { addNewUserWithRoles } from './users.helper';
@@ -170,7 +170,7 @@ export const createUser = async (
   };
   // Use insert with returning to get the newly created user
   await addNewUserWithRoles(data, roles);
-  return await loadUserBy({email});
+  return await loadUserBy({ email });
 };
 
 export const loadUnsecureUserBy = async (field: UserMutator) => {

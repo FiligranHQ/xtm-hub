@@ -13,7 +13,6 @@ enum Restriction {
   FRT_ACCESS_SERVICES
 }
 
-
 directive @service_capa(
   requires: [ServiceRestriction] = []
 ) repeatable on OBJECT | FIELD_DEFINITION
