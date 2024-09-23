@@ -90,14 +90,17 @@ export const getOidcConfig = () => {
   const oidcConfigFromLocal = config.get('oidc_provider') as ClientMetadata & {
     issuer: string;
   };
-  const oidcConfigFromCi = {
-    issuer: process.env.OIDC_ISSUER,
-    client_id: process.env.OIDC_CLIENT_ID,
-    client_secret: process.env.OIDC_CLIENT_SECRET,
-    redirect_uris: process.env.OIDC_REDIRECT_URIS.split(','),
-    logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL.split(','),
-    response_types: ['code'],
-  };
+  let oidcConfigFromCi;
+  if(process.env.OIDC_REDIRECT_URIS) {
+      oidcConfigFromCi = {
+          issuer: process.env.OIDC_ISSUER,
+          client_id: process.env.OIDC_CLIENT_ID,
+          client_secret: process.env.OIDC_CLIENT_SECRET,
+          redirect_uris: process.env.OIDC_REDIRECT_URIS.split(','),
+          logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL.split(','),
+          response_types: ['code'],
+      };
+  }
 
   return process.env.OIDC_ISSUER ? oidcConfigFromCi : oidcConfigFromLocal;
 };
