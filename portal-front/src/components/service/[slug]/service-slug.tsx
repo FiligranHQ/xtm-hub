@@ -163,8 +163,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             }
           />
         </div>
+        <div className="pt-xs">
         <SubscriptionTabs
-            className="pt-xs"
           subscriptions={
             queryData.subscriptionsByServiceId as subscriptionByService_fragment$data[]
           }
@@ -183,6 +183,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             )
           }
         />
+        </div>
       </GuardCapacityComponent>
     </>
   );

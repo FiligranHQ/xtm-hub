@@ -17,8 +17,8 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
     <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center justify-between bg-background bg-white px-4 shadow-md">
       <Logo className="mr-2 h-8 w-8" />
 
-      <div className="flex">
-        <p className="mr-m text-xl">
+      <div className="flex items-center">
+        <p className="gap-s text-xl">
           {me?.email ? (
             <span> {me.email}</span>
           ) : (
