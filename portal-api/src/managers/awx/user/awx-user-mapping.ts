@@ -55,17 +55,19 @@ export const mapUserInputAWX = async (
     const userCommuList: UserCommu[] = [];
     const userServiceList: string[] = [];
     for (const sub of subscriptions) {
-      sub.service.type === 'COMMUNITY'
-        ? userCommuList.push({
-            community_id: sub.service.id,
-            role: sub.service_capability.every(
-              (service_capability) =>
-                service_capability.service_capability_name === 'ACCESS_SERVICE'
-            )
-              ? 'user'
-              : 'admin',
-          })
-        : userServiceList.push(sub.service.id);
+      if (sub.service.type === 'COMMUNITY') {
+        userCommuList.push({
+          community_id: sub.service.id,
+          role: sub.service_capability.every(
+            (service_capability) =>
+              service_capability.service_capability_name === 'ACCESS_SERVICE'
+          )
+            ? 'user'
+            : 'admin',
+        });
+      } else {
+        userServiceList.push(sub.service.id);
+      }
     }
     awxAddUserInput = {
       ...awxAddUserInput,
