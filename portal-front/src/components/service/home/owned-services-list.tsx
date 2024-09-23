@@ -11,18 +11,12 @@ interface ServicesListProps {
   services: userServicesOwned_fragment$data[];
 }
 
-const breadcrumbValue = [
-  {
-    label: 'Home',
-  },
-];
-
 export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
   services,
 }) => {
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue} />
+        <h1>Homepage</h1>
       <h2 className="pb-m">Your services</h2>
       <ul
         className={'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'}>

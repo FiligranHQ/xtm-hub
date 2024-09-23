@@ -144,6 +144,7 @@ const OrganizationPage: React.FunctionComponent = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
+      <h1>Organizations list</h1>
       <div className="flex justify-end pb-s">
         <CreateOrganization
           connectionId={organizationData.organizations.__id}

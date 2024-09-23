@@ -34,7 +34,7 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
 }) => {
   return (
     <Tabs
-      className="pt-l"
+
       defaultValue={
         subscriptions?.[0]?.user_service?.[0]?.user?.organization.name ?? ''
       }>
