@@ -73,12 +73,6 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     usersFragment,
     queryData
   );
-  const usersFilterData = data.users.edges.map((user) => {
-    return {
-      value: user.node.email,
-      label: user.node.email,
-    };
-  });
 
   const userData = data.users.edges.map(({ node }) => ({
     ...node,

@@ -1,7 +1,5 @@
-import { AddIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui/servers';
 import * as React from 'react';
-import { ReactNode } from 'react';
 
 interface CreateButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
