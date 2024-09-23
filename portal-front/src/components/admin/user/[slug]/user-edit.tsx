@@ -50,7 +50,6 @@ export const EditUser: FunctionComponent<EditUserProps> = ({ user }) => {
       validationSchema={userEditFormSchema}
       trigger={
         <TriggerButton
-          icon={<EditIcon className="mr-2 h-4 w-4" />}
           label="Edit"
         />
       }></UserFormSheet>
