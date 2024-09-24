@@ -32,4 +32,10 @@
   body {
     @apply bg-background text-foreground;
   }
+  :root {
+    --page-background: 0 0% 100%;
+  }
+  .dark {
+    --page-background: var(--dark-100);
+  }
 }

@@ -125,7 +125,7 @@ const AcceptCommunity: FunctionComponent<AcceptCommunityProps> = ({
     <>
       {subscription.status && (
         <div className="space-y-m">
-          <div className="bg-white p-3">
+          <div className="bg-page-background p-3">
             <h3>Why do I want this community:</h3>
             <div className="flex flex-row">
               <UnknownIcon className="mr-2 h-6 w-6" />

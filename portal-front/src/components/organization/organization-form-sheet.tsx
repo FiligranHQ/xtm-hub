@@ -63,7 +63,7 @@ export const OrganizationFormSheet: FunctionComponent<
       onOpenChange={setOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
-        <SheetHeader className="bg-white">
+        <SheetHeader className="bg-page-background">
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
         <Form {...form}>

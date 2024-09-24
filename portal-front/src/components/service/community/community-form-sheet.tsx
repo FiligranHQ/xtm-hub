@@ -119,7 +119,7 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
       onOpenChange={setOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
-        <SheetHeader className="bg-white">
+        <SheetHeader className="bg-page-background">
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
 

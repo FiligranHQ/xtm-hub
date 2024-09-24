@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { geologica, ibmPlexSans } from '../../app/font';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { Toaster } from 'filigran-ui';
+import { ThemeProvider } from 'next-themes';
 
 // Component interface
 interface AppProps {
@@ -24,7 +25,13 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
         />
       </Head>
       <body className="flex min-h-screen flex-col">
-        <RelayProvider>{children}</RelayProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange>
+          <RelayProvider>{children}</RelayProvider>
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>

@@ -135,7 +135,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
       onOpenChange={setOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
-        <SheetHeader className="bg-white">
+        <SheetHeader className="bg-page-background">
           <SheetTitle>{'Capabilities'}</SheetTitle>
           <SheetDescription>
             {'Set the access rights here. Click Validate when you are done.'}
