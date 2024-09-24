@@ -13,6 +13,7 @@ import { ContentLayout } from '@/components/content-layout';
 import meLoaderQueryNode, {
   meLoaderQuery,
 } from '../../__generated__/meLoaderQuery.graphql';
+import I18nContext from '@/i18n/i18n-context';
 
 // Component interface
 interface RootLayoutProps {
@@ -29,18 +30,22 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
       {}
     );
     return (
-      <AppContext>
-        <PageLoader>
-          <HeaderComponent />
-          <ContentLayout>{children}</ContentLayout>
-        </PageLoader>
-      </AppContext>
+      <I18nContext>
+        <AppContext>
+          <PageLoader>
+            <HeaderComponent />
+            <ContentLayout>{children}</ContentLayout>
+          </PageLoader>
+        </AppContext>
+      </I18nContext>
     );
   } catch (e) {
     return (
-      <AppContext>
-         <Login/>
-      </AppContext>
+      <I18nContext>
+        <AppContext>
+          <Login />
+        </AppContext>
+      </I18nContext>
     );
   }
 };

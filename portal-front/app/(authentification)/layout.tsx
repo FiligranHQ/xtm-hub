@@ -1,4 +1,5 @@
 import AppContext from '@/components/app-context';
+import I18nContext from '@/i18n/i18n-context';
 import * as React from 'react';
 
 export const metadata = {
@@ -11,5 +12,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AppContext>{children}</AppContext>;
+  return (
+    <I18nContext>
+      <AppContext>{children}</AppContext>
+    </I18nContext>
+  );
 }
