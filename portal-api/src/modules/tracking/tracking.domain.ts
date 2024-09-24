@@ -13,10 +13,13 @@ import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 export const initTracking = async (action: AWXWorkflowAction) => {
   const id = uuidv4() as ActionTrackingId;
   const created_at = new Date();
+
   await addNewActionTracking({
     id,
     created_at,
     status: 'IN_PROGRESS',
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     contextual_id: action.input.id,
     type: action.type,
   });

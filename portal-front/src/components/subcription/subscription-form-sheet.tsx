@@ -94,7 +94,7 @@ export const SubscriptionFormSheet: FunctionComponent<
       onOpenChange={setOpenSheet}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
-        <SheetHeader className="bg-white">
+        <SheetHeader className="bg-page-background">
           <SheetTitle>{'Add new onDemand service here'}</SheetTitle>
           <SheetDescription>
             {'Fill the form about this new onDemand service.'}

@@ -73,7 +73,7 @@ export const CommunityAcceptFormSheet: FunctionComponent<
       open={open}
       onOpenChange={setOpen}>
       <SheetContent side={'right'}>
-        <SheetHeader className="bg-white">
+        <SheetHeader className="bg-page-background">
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
