@@ -94,8 +94,8 @@ export const getOidcConfig = () => {
     issuer: process.env.OIDC_ISSUER,
     client_id: process.env.OIDC_CLIENT_ID,
     client_secret: process.env.OIDC_CLIENT_SECRET,
-    redirect_uris: process.env.OIDC_REDIRECT_URIS.split(','),
-    logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL.split(','),
+    redirect_uris: process.env.OIDC_REDIRECT_URIS?.split(','),
+    logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL?.split(','),
     response_types: ['code'],
   };
 

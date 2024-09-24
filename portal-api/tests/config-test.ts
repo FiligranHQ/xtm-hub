@@ -10,13 +10,14 @@ const getDbConnection = () => {
     client: 'pg',
     connection: {
       host: portalConfig.database.host,
-      port: portalConfig.database.port,
+      port: 5432,
       user: portalConfig.database.user,
       password: portalConfig.database.password,
       database: config.get<string>('database.database'),
     },
   });
-};
+}
+
 
 const configTest: Knex.Config = {
   client: 'pg',
@@ -41,7 +42,7 @@ export const getDbTestConnection = () => {
   return pkg(configTest);
 };
 
-export async function createDatabase() {
+export const createDatabase = async() => {
   const dbConnection = getDbConnection();
   try {
     await dbConnection.raw(

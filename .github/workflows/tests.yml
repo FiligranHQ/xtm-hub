@@ -1,0 +1,55 @@
+name: Run Backend Tests
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'portal-api/**'
+      - 'portal-front/**'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'portal-api/**'
+      - 'portal-front/**'
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - path: portal-api
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.path }}
+          yarn install
+
+      - name: Create test database
+        run: |
+          cd ${{ matrix.path }}
+          yarn init-db-test
+
+      - name: Build backend
+        run: |
+          cd ${{ matrix.path }}
+          yarn build
+
+      - name: Start test backend
+        run: |
+          cd ${{ matrix.path }}
+          yarn start-test
+
+      - name: Launch tests backend
+        run: |
+          cd ${{ matrix.path }}
+          yarn test

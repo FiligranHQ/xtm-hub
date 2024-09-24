@@ -1,13 +1,11 @@
 // https://github.com/node-config/node-config
 import config from 'config';
-
 interface Services {
   name: string;
   provider: string;
   type: string;
   description: string;
 }
-
 interface PortalConfig {
   port: number;
   admin: {
@@ -37,13 +35,13 @@ const portalConfig: PortalConfig = {
     user: config.get<string>('database.user'),
     password: config.get<string>('database.password'),
     database:
-      process.env.TEST_MODE || process.env.NODE_ENV === 'test'
-        ? config.get<string>('database-test.database')
-        : config.get<string>('database.database'),
+        process.env.TEST_MODE || process.env.NODE_ENV === 'test'
+            ? config.get<string>('database-test.database')
+            : config.get<string>('database.database'),
     seeds:
-      process.env.TEST_MODE || process.env.NODE_ENV === 'test'
-        ? config.get<string>('database-test.seeds')
-        : 'src/seeds',
+        process.env.TEST_MODE || process.env.NODE_ENV === 'test'
+            ? config.get<string>('database-test.seeds')
+            : 'src/seeds',
   },
   services: config.get('init_services'),
 };
