@@ -1,0 +1,10 @@
+{
+  "HomePage": {
+    "Homepage": "Homepage"
+  },
+  "LocaleSwitcher": {
+    "fr": "Français",
+    "en": "English",
+    "label": "Language"
+  }
+}
