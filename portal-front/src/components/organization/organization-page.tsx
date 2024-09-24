@@ -5,7 +5,12 @@ import { useState } from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
-import { DataTable } from 'filigran-ui/clients';
+import {
+  DataTable,
+  DataTablePagination,
+  DataTableRowPerPage,
+  DataTableSelectColumnVisibility
+} from 'filigran-ui/clients';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { CreateOrganization } from '@/components/organization/create-organization';
 import { EditOrganization } from '@/components/organization/edit-organization';
@@ -144,11 +149,8 @@ const OrganizationPage: React.FunctionComponent = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <div className="flex justify-end pb-s">
-        <CreateOrganization
-          connectionId={organizationData.organizations.__id}
-        />
-      </div>
+      <h1>Organizations list</h1>
+
       <DataTable
         columns={columns}
         data={organizationDataTable}
@@ -158,6 +160,18 @@ const OrganizationPage: React.FunctionComponent = () => {
           manualSorting: true,
           manualPagination: true,
         }}
+        toolbar={
+          <div className="flex items-center justify-between gap-s">
+            <DataTableRowPerPage />
+            <div className="flex items-center gap-s">
+              <DataTablePagination />
+              <DataTableSelectColumnVisibility />
+                <CreateOrganization
+                    connectionId={organizationData.organizations.__id}
+                />
+            </div>
+          </div>
+        }
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,

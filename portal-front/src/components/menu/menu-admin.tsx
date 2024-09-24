@@ -34,11 +34,11 @@ const OpenedMenuAdmin = () => (
     <AccordionItem
       className="border-none"
       value="item-1">
-      <AccordionTrigger className="h-9 justify-normal px-4 py-2">
+      <AccordionTrigger className="h-9 justify-normal px-4 py-2 hover:bg-hover hover:no-underline">
         <span className="flex w-8 flex-shrink-0 justify-center">
           <SettingsIcon className="h-4 w-4" />
         </span>
-        <span className="flex-1 px-2 text-left txt-default">Backoffice</span>
+        <span className="flex-1 px-2 text-left txt-default">Settings</span>
       </AccordionTrigger>
       <AccordionContent>
         <AdminLinks className="h-8 txt-sub-content" />

@@ -12,7 +12,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from 'filigran-ui/clients';
-import { SheetDescription } from 'filigran-ui';
 import { Button, Input } from 'filigran-ui/servers';
 import * as React from 'react';
 import { FunctionComponent, ReactNode, useEffect } from 'react';
@@ -28,7 +27,6 @@ interface OrganizationFormSheetProps {
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
   title: string;
-  description: string;
   handleSubmit: (values: z.infer<typeof organizationFormSchema>) => void;
 }
 
@@ -40,7 +38,6 @@ export const OrganizationFormSheet: FunctionComponent<
   setOpen,
   trigger,
   title,
-  description,
   handleSubmit,
 }) => {
   const form = useForm<z.infer<typeof organizationFormSchema>>({
@@ -52,7 +49,7 @@ export const OrganizationFormSheet: FunctionComponent<
   });
   useEffect(
     () => form.reset({ name: organization?.name ?? '' }),
-    [organization]
+    [organization, form]
   );
   const onSubmit = (values: z.infer<typeof organizationFormSchema>) => {
     handleSubmit({
@@ -68,7 +65,6 @@ export const OrganizationFormSheet: FunctionComponent<
       <SheetContent side={'right'}>
         <SheetHeader className="bg-white">
           <SheetTitle>{title}</SheetTitle>
-          <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
         <Form {...form}>
           <form

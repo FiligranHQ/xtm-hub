@@ -76,7 +76,7 @@
     "@types/uuid": "10.0.0",
     "@typescript-eslint/eslint-plugin": "8.6.0",
     "@typescript-eslint/parser": "8.6.0",
-    "chokidar": "4.0.0",
+    "chokidar": "3.6.0",
     "concurrently": "9.0.1",
     "esbuild": "0.23.1",
     "eslint": "9.x",

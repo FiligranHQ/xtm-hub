@@ -188,7 +188,7 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
         insertSubscription(subscription, status);
       }
     },
-    [commitSubscriptionMutation, toast]
+    [commitSubscriptionMutation, toast, insertSubscription]
   );
   const handleAcceptSubscription = (
     values: z.infer<typeof subscriptionAcceptFormSchema>
@@ -246,7 +246,7 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
         },
       },
     ],
-    []
+    [columns, editSubscription]
   );
 
   return (
@@ -271,6 +271,7 @@ const SubscriptionPage: React.FunctionComponent<SubscriptionListProps> = ({
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,
+          columnPinning: {right: ['action']}
         }}
       />
 

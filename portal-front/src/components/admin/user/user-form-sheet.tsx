@@ -18,7 +18,6 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -40,7 +39,6 @@ interface UserFormSheetProps {
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
   title: string;
-  description: string;
   handleSubmit: (
     values: z.infer<typeof userEditFormSchema> | z.infer<typeof userFormSchema>
   ) => void;
@@ -53,7 +51,6 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   setOpen,
   trigger,
   title,
-  description,
   handleSubmit,
   validationSchema,
 }) => {
@@ -103,7 +100,6 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
       <SheetContent side={'right'}>
         <SheetHeader className="bg-white">
           <SheetTitle>{title}</SheetTitle>
-          <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
 
         <Form {...form}>

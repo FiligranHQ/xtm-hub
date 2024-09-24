@@ -19,7 +19,6 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -55,7 +54,6 @@ interface CommunityFormSheetProps {
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
   title: string;
-  description: string;
   handleSubmit: (
     values: z.infer<
       typeof communityFormSchemaOrga | typeof communityFormSchemaAdmin
@@ -70,7 +68,6 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
   setOpen,
   trigger,
   title,
-  description,
   handleSubmit,
   adminForm = false,
 }) => {
@@ -124,7 +121,6 @@ export const CommunityFormSheet: FunctionComponent<CommunityFormSheetProps> = ({
       <SheetContent side={'right'}>
         <SheetHeader className="bg-white">
           <SheetTitle>{title}</SheetTitle>
-          <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
 
         <Form {...form}>

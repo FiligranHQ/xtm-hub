@@ -1,11 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { Badge, Button } from 'filigran-ui/servers';
-import Link from 'next/link';
-import { CourseOfActionIcon } from 'filigran-icon';
-import GuardCapacityComponent from '@/components/admin-guard';
 import {
   PreloadedQuery,
   usePreloadedQuery,

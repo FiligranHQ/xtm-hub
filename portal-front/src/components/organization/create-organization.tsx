@@ -4,8 +4,6 @@ import { useMutation } from 'react-relay';
 import { organizationCreateMutation } from '../../../__generated__/organizationCreateMutation.graphql';
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
 import { OrganizationFormSheet } from '@/components/organization/organization-form-sheet';
-import { AddIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
 import { z } from 'zod';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { useToast } from 'filigran-ui/clients';
@@ -51,9 +49,7 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
       setOpen={setOpenSheet}
       trigger={<TriggerButton label="Create organization" />}
       title={'Create a new organization'}
-      description={
-        'Create the organization here. Click on Validate when you are done.'
-      }
+
       handleSubmit={handleSubmit}
     />
   );
