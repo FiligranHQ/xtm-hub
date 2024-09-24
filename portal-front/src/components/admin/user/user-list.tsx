@@ -12,6 +12,11 @@ import {OrderingMode, UserOrdering, userQuery, userQuery$variables,} from '../..
 import {useLocalStorage} from 'usehooks-ts';
 import {useRouter} from 'next/navigation';
 import {Input} from 'filigran-ui/servers';
+import {
+  DataTablePagination,
+  DataTableRowPerPage,
+  DataTableSelectColumnVisibility
+} from "filigran-ui/clients";
 
 // Component interface
 interface ServiceProps {
@@ -128,13 +133,8 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <h1>Users list</h1>
-      <div className="flex justify-end pb-s">
-        <CreateUser connectionId={data?.users?.__id} />
-      </div>
-      <Input
-        className="mb-xs w-1/3"
-        placeholder={'Search with email...'}
-        onChange={(e) => handleInputChange(e.target.value)}></Input>
+
+
       <DataTable
         columns={columns}
         data={userData}
@@ -145,6 +145,22 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
           manualPagination: true,
           rowCount: data.users.totalCount,
         }}
+        toolbar={
+          <div className="flex items-center justify-between gap-s">
+
+            <Input
+                className="w-1/3"
+                placeholder={'Search with email...'}
+                onChange={(e) => handleInputChange(e.target.value)}></Input>
+
+            <div className="flex items-center gap-s">
+              <DataTableRowPerPage />
+              <DataTablePagination />
+              <DataTableSelectColumnVisibility />
+              <CreateUser connectionId={data?.users?.__id} />
+            </div>
+          </div>
+        }
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,

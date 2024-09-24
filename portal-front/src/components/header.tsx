@@ -18,13 +18,13 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
       <Logo className="mr-2 h-8 w-8" />
 
       <div className="flex items-center">
-        <p className="gap-s text-xl">
+        <span className="gap-s text-xl">
           {me?.email ? (
             <span> {me.email}</span>
           ) : (
             <Skeleton className="h-6 w-56" />
           )}
-        </p>
+        </span>
         <IconActions
           icon={
             <>

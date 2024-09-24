@@ -37,6 +37,11 @@ import { useLocalStorage } from 'usehooks-ts';
 import { CreateCommunity } from '@/components/service/community/community-create';
 import { RESTRICTION } from '@/utils/constant';
 import { useRouter } from 'next/navigation';
+import {
+  DataTablePagination,
+  DataTableRowPerPage,
+  DataTableSelectColumnVisibility
+} from "filigran-ui/clients";
 
 interface CommunityProps {
   queryRef: PreloadedQuery<serviceCommunitiesQuery>;
@@ -168,25 +173,34 @@ const CommunityList: React.FunctionComponent<CommunityProps> = ({
   };
   return (
     <>
-      <GuardCapacityComponent
-        displayError={false}
-        capacityRestriction={[
-          RESTRICTION.CAPABILITY_BYPASS,
-          RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
-          RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
-        ]}>
-        <div className="flex justify-end pb-xs">
-          <CreateCommunity
-            connectionId={connectionID}
-            adminForm={me.capabilities.some(
-              (capability) => capability.name === 'BYPASS'
-            )}
-          />
-        </div>
-      </GuardCapacityComponent>
+
       <DataTable
         data={servicesData}
         columns={communityColumns}
+        toolbar={
+          <div className="flex items-center justify-between gap-s">
+            <DataTableRowPerPage />
+            <div className="flex items-center gap-s">
+              <DataTablePagination />
+              <DataTableSelectColumnVisibility />
+              <GuardCapacityComponent
+                  displayError={false}
+                  capacityRestriction={[
+                    RESTRICTION.CAPABILITY_BYPASS,
+                    RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
+                    RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER,
+                  ]}>
+                  <CreateCommunity
+                      connectionId={connectionID}
+                      adminForm={me.capabilities.some(
+                          (capability) => capability.name === 'BYPASS'
+                      )}
+                  />
+              </GuardCapacityComponent>
+            </div>
+          </div>
+        }
+
         tableOptions={{
           onSortingChange: onSortingChange,
           onPaginationChange: onPaginationChange,
