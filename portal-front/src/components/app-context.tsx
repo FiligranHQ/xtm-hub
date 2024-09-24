@@ -5,6 +5,8 @@ import { geologica, ibmPlexSans } from '../../app/font';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { Toaster } from 'filigran-ui';
 import { ThemeProvider } from 'next-themes';
+import { getUserLocale } from '@/i18n/locale';
+import { useLocale } from 'next-intl';
 
 // Component interface
 interface AppProps {
@@ -13,9 +15,10 @@ interface AppProps {
 
 // Component
 const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
+  const locale = useLocale();
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${geologica.variable} ${ibmPlexSans.variable}`}>
       <Head>
         <title>Filigran Cloud Portal</title>

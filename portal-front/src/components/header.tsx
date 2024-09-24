@@ -8,7 +8,8 @@ import { IndividualIcon } from 'filigran-icon';
 import { IconActions } from '@/components/ui/icon-actions';
 import Logout from '@/components/logout';
 import { Skeleton } from 'filigran-ui';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { ThemeToggle } from '@/components/theme-toggle';
+import I18nSelect from '@/components/i18n-select';
 
 // Component interface
 interface HeaderComponentProps {}
@@ -36,6 +37,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
           <Logout />
         </IconActions>
         <ThemeToggle />
+        <I18nSelect />
       </div>
     </header>
   );

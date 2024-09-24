@@ -1,0 +1,58 @@
+'use client';
+
+import { Locale } from '@/i18n/config';
+import { setUserLocale } from '@/i18n/locale';
+import { CheckIcon, LanguageIcon } from 'filigran-icon';
+import { useLocale, useTranslations } from 'next-intl';
+import { DropdownMenuItem } from 'filigran-ui/clients';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from 'filigran-ui';
+import { Button } from 'filigran-ui/servers';
+
+export default function I18nSelect() {
+  const t = useTranslations('LocaleSwitcher');
+  const defaultValue = useLocale();
+  const items = [
+    {
+      value: 'en',
+      label: t('en'),
+    },
+    {
+      value: 'fr',
+      label: t('fr'),
+    },
+  ];
+  function onChange(value: string) {
+    const locale = value as Locale;
+    setUserLocale(locale);
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="w-9 px-0">
+          <LanguageIcon className="h-4 w-4" />
+          <span className="sr-only">{t('label')}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {items.map((item) => (
+          <DropdownMenuItem
+            key={item.value}
+            onClick={() => onChange(item.value)}>
+            <div className="mr-2 w-[1rem]">
+              {item.value === defaultValue && <CheckIcon className="h-4 w-4" />}
+            </div>
+            <span>{item.label}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
