@@ -102,7 +102,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       onOpenChange={setOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
-        <SheetHeader className="bg-white">
+        <SheetHeader className="bg-page-background">
           <SheetTitle className="txt-title">{'Add organization'}</SheetTitle>
         </SheetHeader>
         <SheetDescription>

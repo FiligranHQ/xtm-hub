@@ -23,7 +23,7 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
         {services.map(({ subscription }) => {
           return (
             <li
-              className="border-light flex flex-col bg-white p-s"
+              className="border-light flex flex-col rounded border bg-page-background p-s"
               key={subscription?.id}>
               <div className="flex-1 p-m pb-xl">
                 <div className="flex items-center justify-between">
@@ -43,7 +43,9 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
                 {subscription?.service?.links?.map((link) => (
                   <li key={link?.name}>
                     <Button
-                      className={'h-6 bg-gray-100 p-s txt-sub-content'}
+                      className={
+                        'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800'
+                      }
                       variant={'ghost'}>
                       <LinkIcon className="mr-3 h-3 w-2" />{' '}
                       <Link href={link?.url ?? ''}>{link?.name}</Link>

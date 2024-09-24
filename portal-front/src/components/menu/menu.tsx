@@ -53,7 +53,7 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'z-9 sticky top-[4rem] flex h-[calc(100vh-4rem)] flex-col justify-between overflow-y-auto overflow-x-hidden border-r bg-background bg-white py-2 duration-300 ease-in-out',
+        'z-9 sticky top-[4rem] flex h-[calc(100vh-4rem)] flex-col justify-between overflow-y-auto overflow-x-hidden border-r bg-background bg-page-background py-2 duration-300 ease-in-out',
         open ? 'w-48' : 'w-16'
       )}>
       <nav>
