@@ -6,7 +6,7 @@ import {
 } from 'react-relay';
 import { useToast } from 'filigran-ui/clients';
 import * as React from 'react';
-import { FunctionComponent, useContext, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { RESTRICTION } from '@/utils/constant';
 import GuardCapacityComponent from '@/components/admin-guard';
 import {
@@ -28,7 +28,6 @@ import { SubscriptionStatusTypeBadge } from '@/components/ui/subscription-status
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { SubscriptionTabs } from '@/components/service/[slug]/subscription-tabs';
 import { ServiceHeader } from '@/components/service/[slug]/service-header';
-import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 
 interface ServiceSlugProps {
@@ -102,6 +101,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
+      <h1>{queryDataService.serviceById?.type} management</h1>
       <ServiceHeader
         serviceType={queryDataService.serviceById?.type}
         serviceName={queryDataService.serviceById?.name}
@@ -135,7 +135,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             />
           )}
 
-        <div className="flex justify-end pt-s">
+        <div className="flex justify-end">
           <ServiceSlugFormSheet
             open={openSheet}
             setOpen={setOpenSheet}
@@ -163,6 +163,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             }
           />
         </div>
+        <div className="pt-xs">
         <SubscriptionTabs
           subscriptions={
             queryData.subscriptionsByServiceId as subscriptionByService_fragment$data[]
@@ -182,6 +183,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             )
           }
         />
+        </div>
       </GuardCapacityComponent>
     </>
   );

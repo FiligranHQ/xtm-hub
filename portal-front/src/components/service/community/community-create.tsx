@@ -76,9 +76,6 @@ export const CreateCommunity: FunctionComponent<CreateCommunityProps> = ({
     <CommunityFormSheet
       queryRef={queryRef}
       title={'Create a new community'}
-      description={
-        'Create the community here. Click Validate when you are done.'
-      }
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}
