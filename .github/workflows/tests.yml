@@ -1,0 +1,65 @@
+name: Run Backend Tests
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'portal-api/**'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'portal-api/**'
+
+jobs:
+  backend-tests:
+    env:
+      HOSTNAME: 0.0.0.0
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - path: portal-api
+    container: node:latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: cloud-portal
+          POSTGRES_PASSWORD: portal-password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: portal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.path }}
+          yarn install
+      - name: Build backend
+        run: |
+          cd ${{ matrix.path }}
+          yarn build
+      - name: Init Test DB
+        run: |
+          cd ${{ matrix.path }}
+          yarn init-db-test
+      - name: Start test backend
+        run: |
+          cd ${{ matrix.path }}
+          yarn start-test &
+      - name: Launch tests backend
+        run: |
+          cd ${{ matrix.path }}
+          yarn test

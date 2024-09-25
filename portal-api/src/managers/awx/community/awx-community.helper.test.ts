@@ -8,7 +8,7 @@ describe('Api create-community', async () => {
   it('Should return correct mapping', async () => {
     const expectedResult: AWXCommunity = {
       awx_client_request_id: 'f9d44cd9-ee4f-48af-ac8f-544c6022107b',
-      community_id: 'Test',
+      community_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
       community_display_name: 'Test',
       creator_email_address: 'admin@filigran.io',
     };

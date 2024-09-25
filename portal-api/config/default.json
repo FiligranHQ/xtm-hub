@@ -5,7 +5,7 @@
     "password": "admin"
   },
   "database": {
-    "host": "127.0.0.1",
+    "host": "postgres",
     "port": 5432,
     "user": "portal",
     "password": "portal-password",

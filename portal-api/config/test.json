@@ -1,0 +1,9 @@
+{
+  "database": {
+    "host": "postgres",
+    "port": 5432,
+    "user": "portal",
+    "password": "portal-password",
+    "database": "cloud-portal"
+  }
+}

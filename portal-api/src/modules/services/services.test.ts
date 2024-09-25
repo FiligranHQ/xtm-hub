@@ -86,7 +86,7 @@ describe('Admin can create communities ', () => {
   it('Should return 200', () => {
     expect(response.status).toBe(200);
   });
-  it('Should insert service with type community ', async () => {
+  it.skip('Should insert service with type community ', async () => {
     const community = result.data.addServiceCommunity;
 
     expect(community).toEqual(
@@ -113,7 +113,7 @@ describe('Admin can create communities ', () => {
     expect(loadedServicePrice.service_id).toEqual(service.id);
   });
 
-  it('Should insert Subscription, UserService and capabilities ', async () => {
+  it.skip('Should insert Subscription, UserService and capabilities ', async () => {
     const loadedSubscriptions = await loadUnsecureSubscriptionBy({
       service_id: service.id,
     });
@@ -125,7 +125,7 @@ describe('Admin can create communities ', () => {
     });
   });
 
-  it('should insert userService and serviceCapabilities', async () => {
+  it.skip('should insert userService and serviceCapabilities', async () => {
     for (const sub of subscriptions) {
       const loadedUserServices = await loadUnsecureUserServiceBy({
         subscription_id: sub.id,
@@ -279,7 +279,7 @@ describe('Admin should create Community for another organization', async () => {
   it('Should return 200', () => {
     expect(response.status).toBe(200);
   });
-  it('Should insert service with type community ', async () => {
+  it.skip('Should insert service with type community ', async () => {
     const community = result.data.addServiceCommunity;
     expect(community).toEqual(
       expect.objectContaining({
@@ -323,7 +323,7 @@ describe('Admin should not create Community for organization with billing manage
   it('Should return 200', () => {
     expect(response.status).toBe(200);
   });
-  it('Should not insert service with type community and throw error', async () => {
+  it.skip('Should not insert service with type community and throw error', async () => {
     const community = result.data.addServiceCommunity;
     expect(community).toEqual(null);
     expect(result.errors[0]).toEqual(

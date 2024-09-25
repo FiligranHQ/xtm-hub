@@ -66,6 +66,8 @@ describe('Api create-user', async () => {
       user_email_address: 'test@email.com',
       user_firstname: 'firstname',
       user_lastname: 'lastname',
+      user_reset_password: 'temporaryPassword',
+      user_role_admin_ptf: 'false',
     };
 
     const user: UserInput = {
@@ -94,6 +96,7 @@ describe('Api create-user', async () => {
       user_firstname: '',
       user_lastname: '',
       user_role_admin_ptf: 'true',
+      user_reset_password: 'temporaryPassword',
       user_subscription_list: JSON.stringify([
         'c6343882-f609-4a3f-abe0-a34f8cb11302',
       ]),
