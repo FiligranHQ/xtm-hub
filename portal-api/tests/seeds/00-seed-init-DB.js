@@ -1,43 +1,69 @@
 export async function seed(knex) {
-  await knex('Organization').insert([
-    {
-      id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
-      name: 'Internal',
-      domains: ['filigran.io', 'internal.com'],
-    },
-  ]);
-  await knex('User').insert([
-    {
-      id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      email: 'admin@filigran.io',
-      salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
-      password:
-        'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
-      first_name: null,
-      last_name: null,
-      organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
-    },
-  ]);
-  await knex('RolePortal').insert([
-    {
-      id: '6b632cf2-9105-46ec-a463-ad59ab58c770',
-      name: 'ADMIN',
-    },
-    {
-      id: '40cfe630-c272-42f9-8fcf-f219e2f4277b',
-      name: 'USER',
-    },
-    {
-      id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-      name: 'ADMIN_ORGA',
-    },
-  ]);
-  await knex('User_RolePortal').insert([
-    {
-      user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      role_portal_id: '6b632cf2-9105-46ec-a463-ad59ab58c770',
-    },
-  ]);
+  const existingOrganization = await knex('Organization')
+      .where('id', 'ba091095-418f-4b4f-b150-6c9295e232c4')
+      .first();
+
+  if (!existingOrganization) {
+    await knex('Organization').insert([
+      {
+        id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+        name: 'Internal',
+        domains: ['filigran.io', 'internal.com'],
+      },
+    ]);
+  }
+  const existingUser = await knex('User')
+      .where('id', 'ba091095-418f-4b4f-b150-6c9295e232c3')
+      .first();
+  if(!existingUser) {
+    await knex('User').insert([
+      {
+        id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        email: 'admin@filigran.io',
+        salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
+        password:
+            'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
+        first_name: null,
+        last_name: null,
+        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      },
+    ]);
+  }
+
+  const existingRolePortals = await knex('RolePortal')
+      .where('id', '6b632cf2-9105-46ec-a463-ad59ab58c770')
+      .first();
+  if(!existingRolePortals) {
+    await knex('RolePortal').insert([
+      {
+        id: '6b632cf2-9105-46ec-a463-ad59ab58c770',
+        name: 'ADMIN',
+      },
+      {
+        id: '40cfe630-c272-42f9-8fcf-f219e2f4277b',
+        name: 'USER',
+      },
+      {
+        id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
+        name: 'ADMIN_ORGA',
+      },
+    ]);
+  }
+
+
+  const existingUserRolePortals = await knex('User_RolePortal')
+      .where('user_id', 'ba091095-418f-4b4f-b150-6c9295e232c3')
+      .first();
+  if(!existingUserRolePortals) {
+    await knex('User_RolePortal').insert([
+      {
+        user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        role_portal_id: '6b632cf2-9105-46ec-a463-ad59ab58c770',
+      },
+    ]);
+  }
+
+
   await knex('CapabilityPortal').insert([
     {
       id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09',

@@ -30,14 +30,11 @@ const portalConfig: PortalConfig = {
     password: config.get<string>('admin.password'),
   },
   database: {
-    host: config.get<string>('database.host'),
+    host: process.env.TEST_MODE ? "postgres" : config.get<string>('database.host'),
     port: config.get<number>('database.port'),
-    user: config.get<string>('database.user'),
-    password: config.get<string>('database.password'),
-    database:
-        process.env.TEST_MODE || process.env.NODE_ENV === 'test'
-            ? config.get<string>('database-test.database')
-            : config.get<string>('database.database'),
+    user: process.env.TEST_MODE ? "postgres_user" : config.get<string>('database.user'),
+    password: process.env.TEST_MODE ? "postgres_password" : config.get<string>('database.password'),
+    database: 'postgres_db',
     seeds:
         process.env.TEST_MODE || process.env.NODE_ENV === 'test'
             ? config.get<string>('database-test.seeds')

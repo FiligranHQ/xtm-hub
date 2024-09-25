@@ -2,18 +2,17 @@ import pkg, { Knex } from 'knex';
 import portalConfig from '../src/config';
 import config from 'config';
 
-const DATABASE_TEST: string =
-  config.get('database-test.database') || 'test_database';
+const DATABASE_TEST: string = 'postgres_db';
 
 const getDbConnection = () => {
   return pkg({
     client: 'pg',
     connection: {
-      host: portalConfig.database.host,
+      host: "postgres",
       port: 5432,
-      user: portalConfig.database.user,
-      password: portalConfig.database.password,
-      database: config.get<string>('database.database'),
+      user: "postgres_user",
+      password: "postgres_password",
+      database: process.env.TEST_MODE ? 'postgres_db' : 'cloud-portal',
     },
   });
 }
@@ -22,11 +21,11 @@ const getDbConnection = () => {
 const configTest: Knex.Config = {
   client: 'pg',
   connection: {
-    host: portalConfig.database.host,
-    port: portalConfig.database.port,
-    user: portalConfig.database.user,
-    password: portalConfig.database.password,
-    database: DATABASE_TEST,
+    host: "postgres",
+    port: 5432,
+    user: "postgres_user",
+    password: "postgres_password",
+    database: 'postgres_db',
   },
   migrations: {
     extension: 'js',
@@ -35,7 +34,7 @@ const configTest: Knex.Config = {
   },
   seeds: {
     extension: 'js',
-    directory: portalConfig.database.seeds,
+    directory: 'tests/seeds',
   },
 };
 export const getDbTestConnection = () => {
@@ -45,13 +44,22 @@ export const getDbTestConnection = () => {
 export const createDatabase = async() => {
   const dbConnection = getDbConnection();
   try {
-    await dbConnection.raw(
-      `DROP DATABASE IF EXISTS ${DATABASE_TEST} WITH (FORCE)`
-    );
+    console.log("*****************")
+    // await dbConnection.raw(
+    //   `DROP DATABASE IF EXISTS ${DATABASE_TEST} WITH (FORCE)`
+    // );
     await dbConnection.raw('CREATE DATABASE test_database');
     const database = getDbTestConnection();
+    console.log("----------------------------------------")
     await database.migrate.latest();
-    await database.seed.run();
+    try {
+      const result = await database.seed.run();
+      console.log("seeds applieds : ", result)
+
+    } catch (err) {
+      console.log("**** seed error : ", err)
+    }
+
     await database.destroy();
   } catch (err) {
     console.log(err);
