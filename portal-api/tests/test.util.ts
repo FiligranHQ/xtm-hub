@@ -2,7 +2,7 @@ import request from 'supertest';
 import { print } from 'graphql/language';
 import gql from 'graphql-tag';
 
-const ENDPOINT_URL = 'http://portal-api:4001';
+const ENDPOINT_URL = 'http://127.0.0.1:4001';
 
 export const logAdminUserTest = async (agent) => {
   return await agent.post('/graphql-api').send({
