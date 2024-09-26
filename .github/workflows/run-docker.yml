@@ -40,12 +40,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
 
-      - name: Init Test DB
+      - name: Install Docker Compose
         run: |
-          cd ${{ matrix.path }}
-          yarn init-db-test
-      - name: Launch tests backend
+          sudo apt-get update
+          sudo apt-get install -y docker
+          sudo apt-get install -y docker-compose
+      - name: Start local environment with Docker Compose
         run: |
-          cd ${{ matrix.path }}
-          yarn test
+          cd ./xtm-hub-dev
+          ls
+          docker compose up -d
