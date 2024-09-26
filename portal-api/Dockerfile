@@ -17,6 +17,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN #yarn test
+
 # Build the backend
 RUN yarn build
 
@@ -36,6 +38,7 @@ RUN chown graphql:nodejs .graphql
 COPY --from=builder --chown=graphql:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=graphql:nodejs /app/config ./config
 COPY --from=builder --chown=graphql:nodejs /app/package.json .
+COPY --from=builder --chown=graphql:nodejs /app/dist .
 COPY --from=builder --chown=graphql:nodejs /app/dist .
 
 USER graphql

@@ -19,6 +19,7 @@
     "seed:make": "yarn knex:run seed:make",
     "generate-pg-to-ts": "npx kanel",
     "build": "yarn copy && node builder/prod/prod.js",
+    "build-ci": "yarn copy && node builder/dev/dev.js",
     "start": "node dist/index.js",
     "start-test": "TEST_MODE=true node dist/index.js",
     "dev:tsc": "tsc --watch --preserveWatchOutput",
