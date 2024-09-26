@@ -16,8 +16,6 @@ on:
 
 jobs:
   backend-tests:
-    env:
-      HOSTNAME: 0.0.0.0
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -41,25 +39,28 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
+      - name: Enable corepack
+        run: corepack enable
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install dependencies
+      - name: Install Docker Compose
         run: |
-          cd ${{ matrix.path }}
-          yarn install
-      - name: Build backend
-        run: |
-          cd ${{ matrix.path }}
-          yarn build
-      - name: Init Test DB
-        run: |
-          cd ${{ matrix.path }}
-          yarn init-db-test
-      - name: Start test backend
-        run: |
-          cd ${{ matrix.path }}
-          yarn start-test &
-      - name: Launch tests backend
-        run: |
-          cd ${{ matrix.path }}
-          yarn test
+          apt-get update
+          apt-get install -y docker
+          apt-get install -y docker-compose
+      - name: Install locally
+        working-directory: ${{ matrix.path }}
+        run: yarn install
+      - name: Init db locally
+        working-directory: ${{ matrix.path }}
+        run: yarn init-db-test
+      - name: Build portal-api Docker image
+        working-directory: ${{ matrix.path }}
+        run: docker build -t portal-api .
+      - name: Run node
+        working-directory: ${{ matrix.path }}
+        run: docker run --name portal-api -p 4001:4001 --network=host -e TEST_MODE=true portal-api node index.js &
+      - name: Run tests
+        working-directory: ${{ matrix.path }}
+        run: docker exec portal-api vitest run
+
