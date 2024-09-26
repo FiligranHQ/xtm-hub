@@ -6,7 +6,6 @@ on:
       - 'main'
     paths:
       - 'portal-api/**'
-      - 'portal-front/**'
     tags:
       - 'v*'
   pull_request:
@@ -14,7 +13,6 @@ on:
       - 'main'
     paths:
       - 'portal-api/**'
-      - 'portal-front/**'
 
 jobs:
   backend-tests:
@@ -25,44 +23,20 @@ jobs:
         include:
           - path: portal-api
     container: node:latest
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_DB: postgres_db
-          POSTGRES_PASSWORD: postgres_password
-          POSTGRES_PORT: 5432
-          POSTGRES_USER: postgres_user
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
-      - name: Install PostgreSQL client
-        run: |
-          apt-get update
-          apt-get install --yes postgresql-client
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install dependencies
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+      - name: Start local environment with Docker Compose
         run: |
-          cd ${{ matrix.path }}
-          yarn install
-      - name: Build backend
-        run: |
-          cd ${{ matrix.path }}
-          yarn build
+          cd ./xtm-hub-dev
+          ls
+          docker compose up -d
       - name: Init Test DB
         run: |
           cd ${{ matrix.path }}
           yarn init-db-test
-      - name: Start test backend
-        run: |
-          cd ${{ matrix.path }}
-          yarn start-test &
       - name: Launch tests backend
         run: |
           cd ${{ matrix.path }}
