@@ -5,7 +5,7 @@
     "password": "admin"
   },
   "database": {
-    "host": "postgres",
+    "host": "portal-postgres",
     "port": 5432,
     "user": "portal",
     "password": "portal-password",
