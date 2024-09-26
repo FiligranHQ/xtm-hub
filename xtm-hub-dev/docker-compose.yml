@@ -1,12 +1,6 @@
 version: '3'
 services:
-  portal-api:
-    container_name: portal-api
-    build: ../portal-api/.
-    ports:
-      - "4001:4001"
-    depends_on:
-      - portal-postgres
+
 
   portal-postgres:
     container_name: portal-postgres

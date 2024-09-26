@@ -62,5 +62,5 @@ jobs:
         run: docker run --name portal-api -p 4001:4001 --network=host -e TEST_MODE=true portal-api node index.js &
       - name: Run tests
         working-directory: ${{ matrix.path }}
-        run: docker exec portal-api vitest run
+        run: docker exec portal-api npx vitest run
 
