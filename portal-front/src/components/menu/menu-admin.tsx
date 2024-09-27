@@ -86,7 +86,7 @@ const adminLinksData = [
   {
     href: '/admin/user',
     icon: GroupIcon,
-    label: 'User',
+    label: 'Users',
     restriction: [RESTRICTION.CAPABILITY_FRT_MANAGE_USER],
   },
   {

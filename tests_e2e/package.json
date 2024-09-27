@@ -1,0 +1,32 @@
+{
+  "name": "test_e2e",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test:e2e": "yarn playwright test",
+    "test:e2e:ui": "yarn playwright test --ui",
+    "generate-test-e2e": "npx playwright codegen http://localhost:3001/"
+  },
+  "dependencies": {
+    "pg": "^8.13.0",
+    "react": "18.3.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.47.2",
+    "monocart-reporter": "2.8.4",
+    "prettier": "3.3.3"
+  },
+  "packageManager": "yarn@3.6.3",
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "bracketSameLine": true,
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "singleQuote": true,
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "singleAttributePerLine": true
+  }
+}

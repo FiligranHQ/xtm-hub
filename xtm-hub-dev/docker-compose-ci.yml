@@ -1,0 +1,75 @@
+version: '3'
+services:
+  portal-front:
+    container_name: portal-front
+    build: ../portal-front/.
+    ports:
+      - "3000:3000"
+    depends_on:
+      portal-api:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://portal-front:3000/" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    environment:
+      - SERVER_HTTP_API=http://portal-api:4001
+
+  portal-api:
+    container_name: portal-api
+    build: ../portal-api/.
+    ports:
+      - "4001:4001"
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://portal-api:4001/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      portal-postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_HOST=portal-postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=portal
+      - DATABASE_BASE=cloud-portal
+      - DATABASE_PASSWORD=portal-password
+      - ADMIN_EMAIL=admin@filigran.io
+      - ADMIN_PASSWORD=admin
+      - E2E_TESTING=true
+
+  portal-postgres:
+    container_name: portal-postgres
+    image: postgres:16.0
+    volumes:
+      - pgdata:/data/postgres
+    environment:
+      - POSTGRES_USER=portal
+      - POSTGRES_PASSWORD=portal-password
+      - POSTGRES_DB=cloud-portal
+      - PGDATA=/data/postgres
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "cloud-portal" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  playwright-tests:
+    build: ../tests_e2e/.
+    depends_on:
+      portal-front:
+        condition: service_healthy
+    environment:
+      - E2E_BASE_URL=http://portal-front:3000
+      - POSTGRES_USER=portal
+      - DATABASE_HOST=portal-postgres
+      - POSTGRES_DB=cloud-portal
+      - POSTGRES_PASSWORD=portal-password
+      - DATABASE_PORT=5432
+
+
+volumes:
+  pgdata:
+    driver: local
