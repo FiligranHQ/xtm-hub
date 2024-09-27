@@ -7,7 +7,7 @@ import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadServiceBy } from '../services/services.domain';
-import User from '../../model/kanel/public/User';
+import User, {UserId, UserMutator} from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
@@ -278,7 +278,7 @@ export const fillUserServiceData = async (
 ) => {
   const userServicesData = [];
   for (const userService of userServices) {
-    const user = await loadUserBy({ id: userService.user_id });
+    const user = await loadUserBy({ 'User.id': userService.user_id });
     const [subscription] = await loadSubscriptionBy(
       'Subscription.id',
       userService.subscription_id
