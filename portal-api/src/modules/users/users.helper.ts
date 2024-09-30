@@ -23,7 +23,7 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { loadUserBy } from './users.domain';
 import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
 import { AWXAction } from '../../managers/awx/awx.model';
-import { ROLE_ADMIN, ROLE_USER } from '../../portal.const';
+import { ROLE_ADMIN, ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { PortalContext } from '../../model/portal-context';
@@ -71,7 +71,7 @@ async function createOrganisationWithAdminUser(
       password: hash,
       organization_id: newOrganization.id,
     },
-    [ROLE_ADMIN.id, ROLE_USER.name]
+    [ROLE_ADMIN_ORGA.name, ROLE_USER.name]
   );
 }
 

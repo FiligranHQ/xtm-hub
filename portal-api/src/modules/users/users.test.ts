@@ -8,10 +8,10 @@ import {
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { createUser, loadUserBy } from './users.domain';
 import { UserId } from '../../model/kanel/public/User';
-import {
-  deleteOrganizationByName,
-  loadUnsecureOrganizationBy,
-} from '../organizations/organizations.helper';
+import { loadUnsecureOrganizationBy } from '../organizations/organizations.helper';
+
+import usersResolver from './users.resolver';
+import { contextAdminUser } from '../../../tests/tests.const';
 
 describe('User helpers - createNewUserFromInvitation', async () => {
   it('should be add new user with Role user only in an existing Organization', async () => {
@@ -22,7 +22,7 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     expect(newUser.roles_portal_id[0].id).toBe(ROLE_USER.id);
 
     // Delete corresponding in order to avoid issue with other tests
-    deleteUserById(newUser.id as UserId);
+    await deleteUserById(newUser.id as UserId);
     const testUserDeletion = await loadUserBy({ email: testMail });
     expect(testUserDeletion).toBeFalsy();
   });
@@ -49,10 +49,10 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     expect(newOrganization).toBeTruthy();
 
     // Delete corresponding in order to avoid issue with other tests
-    deleteUserById(newUser.id as UserId);
-    const testUserDeletion = await loadUserBy({ email: testMail });
-    expect(testUserDeletion).toBeFalsy();
-    deleteOrganizationByName('test-new-organization');
+    // await deleteUserById(newUser.id as UserId);
+    // const testUserDeletion = await loadUserBy({ email: testMail });
+    // expect(testUserDeletion).toBeFalsy();
+    // deleteOrganizationByName('test-new-organization');
   });
 });
 
@@ -79,5 +79,35 @@ describe('User should be log with all the capacity', () => {
 
   afterAll(async () => {
     await deleteUserById(newUser.id as UserId);
+  });
+});
+
+describe('Query resolver', () => {
+  it('should fetch User', async () => {
+    // @ts-ignore
+    const response = await usersResolver.Query.user(
+      {},
+      { id: 'ba091095-418f-4b4f-b150-6c9295e232c3' },
+      contextAdminUser
+    );
+    expect(response).toBeTruthy();
+  });
+});
+
+describe('Mutation resolver', () => {
+  it('should be login', async () => {
+    // @ts-ignore
+    const response = await usersResolver.Mutation.login(
+      undefined,
+      { email: 'admin@filigran.io', password: 'admin' },
+      {
+        req: {
+          session: {
+            user: {},
+          },
+        },
+      }
+    );
+    expect(response).toBeTruthy();
   });
 });

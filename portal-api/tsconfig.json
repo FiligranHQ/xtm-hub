@@ -24,5 +24,8 @@
     "esm": true,
     "experimentalSpecifierResolution": "node",
     "transpileOnly": true
-  }
+  },
+  "exclude": [
+    "**/*.test.ts" // This will exclude all test files
+  ]
 }
