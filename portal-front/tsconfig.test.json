@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json", // Extend from your main config
+  "include": ["**/*.test.ts"], // Only include test files
+  "compilerOptions": {
+    "noEmit": true, // Do not emit any files
+    "skipLibCheck": true // Skip type checking of declaration files
+  }
+}

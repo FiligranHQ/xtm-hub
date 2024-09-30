@@ -1,6 +1,7 @@
 import { db, dbUnsecure } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
 import RolePortal from '../../model/kanel/public/RolePortal';
+import { ROLE_ADMIN } from '../../portal.const';
 
 export const loadRolePortalBy = async (
   context: PortalContext,
@@ -20,7 +21,5 @@ export const loadAllRolePortalBy = async (
 };
 
 export const isAdmin = async (context: PortalContext) => {
-  return context.user.roles_portal_id.some(
-    (role) => role.id === '6b632cf2-9105-46ec-a463-ad59ab58c770'
-  );
+  return context.user.roles_portal_id.some((role) => role.id === ROLE_ADMIN.id);
 };

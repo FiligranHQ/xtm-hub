@@ -6,6 +6,7 @@
     "dev": "concurrently \"relay-compiler\" \"next dev -p 3001\"",
     "build": "relay-compiler && next build",
     "check-ts": "tsc --noEmit",
+    "check-ts-test": "tsc --project tsconfig.test.json",
     "start": "next start",
     "lint": "next lint",
     "relay": "relay-compiler",
@@ -71,7 +72,7 @@
     "relay-test-utils": "18.0.0",
     "typescript": "5.6.2",
     "vite-plugin-relay": "2.1.0",
-    "vite-tsconfig-paths": "5.0.1",
+    "vite-tsconfig-paths": "4.3.2",
     "vitest": "2.1.1"
   },
   "packageManager": "yarn@3.6.3",

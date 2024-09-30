@@ -13,7 +13,12 @@ import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserInfo } from '../../model/user';
 import { addNewUserWithRoles } from './users.helper';
-import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
+import {
+  ADMIN_UUID,
+  CAPABILITY_BYPASS,
+  PLATFORM_ORGANIZATION_UUID,
+} from '../../portal.const';
+import { addPrefixToObject } from '../../utils/typescript';
 
 const completeUserCapability = (user: UserGenerated): UserGenerated => {
   if (user && user.id === ADMIN_UUID) {
@@ -36,7 +41,7 @@ export const loadUsersByOrganization = async (
 };
 
 export const loadUserBy = async (
-  field: UserMutator
+  field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<UserWithAuthentication> => {
   const userQuery = dbUnsecure<User>('User')
     .where(field)
@@ -155,7 +160,7 @@ export const loadUsers = async (
 
 export const createUser = async (
   userInfo: UserInfo,
-  organization_id: OrganizationId = 'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId
+  organization_id: OrganizationId = PLATFORM_ORGANIZATION_UUID as OrganizationId
 ) => {
   const { email, first_name, last_name, roles } = userInfo;
   const { salt, hash } = hashPassword('');
