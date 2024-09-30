@@ -16,7 +16,7 @@ export default [
     ignores: ['**/dist/**', '**/node_modules/**', '**/__generated__/**'],
   },
   {
-    files: ['**/*.test.ts'],
+    files: ['*.test.ts'],
     rules: {
       '@typescript-eslint/ban-ts-ignore': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
