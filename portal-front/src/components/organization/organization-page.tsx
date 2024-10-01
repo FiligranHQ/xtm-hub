@@ -132,7 +132,7 @@ const OrganizationPage: React.FunctionComponent = () => {
         <IconActions
           icon={
             <>
-              <Ellipsis className="h-4 w-4" />
+              <Ellipsis className="h-4 w-4 rotate-90" />
               <span className="sr-only">Open menu</span>
             </>
           }>

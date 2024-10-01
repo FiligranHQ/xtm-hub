@@ -55,6 +55,9 @@ export const userServiceFragment = graphql`
 export const userServicesOwnedFragment = graphql`
   fragment userServicesOwned_fragment on UserService {
     id
+    service_capability {
+      service_capability_name
+    }
     subscription {
       id
       status
