@@ -4,7 +4,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { ADMIN_UUID } from '../../portal.const';
 
 describe('Users domain', () => {
-  it('should be logged user', async () => {
+  it('should load user Admin', async () => {
     const response = await loadUserBy({
       'User.id': ADMIN_UUID as UserId,
     });
