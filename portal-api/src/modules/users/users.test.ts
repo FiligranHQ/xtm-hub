@@ -5,7 +5,7 @@ import {
   deleteUserById,
   loadUserRoles,
 } from './users.helper';
-import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
+import { ADMIN_UUID, ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { createUser, loadUserBy } from './users.domain';
 import { UserId } from '../../model/kanel/public/User';
 import {
@@ -90,7 +90,7 @@ describe('Query resolver', () => {
     // @ts-ignore
     const response = await usersResolver.Query.user(
       {},
-      { id: 'ba091095-418f-4b4f-b150-6c9295e232c3' },
+      { id: ADMIN_UUID },
       contextAdminUser
     );
     expect(response).toBeTruthy();
