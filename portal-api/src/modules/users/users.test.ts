@@ -8,7 +8,10 @@ import {
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { createUser, loadUserBy } from './users.domain';
 import { UserId } from '../../model/kanel/public/User';
-import { loadUnsecureOrganizationBy } from '../organizations/organizations.helper';
+import {
+  deleteOrganizationByName,
+  loadUnsecureOrganizationBy,
+} from '../organizations/organizations.helper';
 
 import usersResolver from './users.resolver';
 import { contextAdminUser } from '../../../tests/tests.const';
@@ -49,10 +52,10 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     expect(newOrganization).toBeTruthy();
 
     // Delete corresponding in order to avoid issue with other tests
-    // await deleteUserById(newUser.id as UserId);
-    // const testUserDeletion = await loadUserBy({ email: testMail });
-    // expect(testUserDeletion).toBeFalsy();
-    // deleteOrganizationByName('test-new-organization');
+    await deleteUserById(newUser.id as UserId);
+    const testUserDeletion = await loadUserBy({ email: testMail });
+    expect(testUserDeletion).toBeFalsy();
+    deleteOrganizationByName('test-new-organization');
   });
 });
 
