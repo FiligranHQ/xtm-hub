@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import {
   PreloadedQuery,
   useMutation,
@@ -25,8 +25,8 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import {
   serviceQuery,
 } from '../../../__generated__/serviceQuery.graphql';
-import {ServiceTypeBadge} from "@/components/ui/service-type-badge";
 import {useTranslations} from "next-intl";
+import ServiceCard from "@/components/service/service-card";
 
 interface ServiceProps {
   queryRef: PreloadedQuery<serviceQuery>;
@@ -37,6 +37,8 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   queryRef,
   onUpdate
 }) => {
+  const t = useTranslations();
+  const { toast } = useToast();
 
   const queryData = usePreloadedQuery<serviceQuery>(ServiceListQuery, queryRef);
   const [data, refetch] = useRefetchableFragment<
@@ -53,70 +55,60 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     [connectionID]
   );
   useSubscription(config);
-  const { toast } = useToast();
+
+
   const [commitSubscriptionCreateMutation] =
-    useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
-  const { me } = useContext<Portal>(portalContext);
-  if (!me) {
-    return;
-  }
+      useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
+
   const addSubscriptionInDb = useCallback(
-    (service: serviceList_fragment$data) => {
-      const handleSuccess = (message: string) => {
-        toast({
-          title: 'Success',
-          description: <>{message}</>,
-        });
-      };
-      const handleError = (error: Error) => {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: <>{error.message}</>,
-        });
-      };
+      (service: serviceList_fragment$data) => {
+        const handleSuccess = (message: string) => {
+          toast({
+            title: 'Success',
+            description: <>{message}</>,
+          });
+        };
+        const handleError = (error: Error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
+        };
 
-      const commitMutation = (status: string, successMessage: string) => {
-        commitSubscriptionCreateMutation({
-          variables: {
-            service_id: service.id,
-            connections: [connectionID],
-          },
-          onCompleted: () => {
-            handleSuccess(successMessage);
-            onUpdate();
-          },
-          onError: (error: Error) => handleError(error),
-        });
-      };
+        const commitMutation = (status: string, successMessage: string) => {
+          commitSubscriptionCreateMutation({
+            variables: {
+              service_id: service.id,
+              connections: [connectionID],
+            },
+            onCompleted: () => {
+              handleSuccess(successMessage);
+              onUpdate();
+            },
+            onError: (error: Error) => handleError(error),
+          });
+        };
 
-      if (service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT') {
-        commitMutation(
-          'ACCEPTED',
-            t('Service.SubscribeSuccessful')
-        );
-      } else {
-        commitMutation(
-          'REQUESTED',
-          t('Service.SubscriptionRequestSuccessful')
-        );
-      }
-    },
-    [connectionID]
+        if (service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT') {
+          commitMutation(
+              'ACCEPTED',
+              t('Service.SubscribeSuccessful')
+          );
+        } else {
+          commitMutation(
+              'REQUESTED',
+              t('Service.SubscriptionRequestSuccessful')
+          );
+        }
+      },
+      [connectionID]
   );
-
-  const generateAlertText = (service: serviceList_fragment$data) => {
-    return service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
-      ? t('Service.SureWantSubscriptionDirect')
-      : t('Service.SureWantSubscriptionUndirect');
-  };
-
 
   const servicesData = data.services.edges.map(
     ({ node }) => node
   ) as serviceList_fragment$data[];
 
-  const t = useTranslations();
   return (
     <>
       <h2 className="pb-m pt-m">{t('HomePage.AvailableServices')}</h2>
@@ -127,49 +119,32 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
               className={'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'}>
             {servicesData.map((service: serviceList_fragment$data) => {
               return (
-                  (!service.subscribed) && <li
-                      className="border-light flex flex-col rounded border bg-page-background p-s"
-                      key={service.id}>
-                    <div className="flex-1 p-m pb-xl flex justify-between items-center gap-s">
-                      <h3>{service.name}</h3>{' '}
-
-                      {service.subscribed ||
+                  (!service.subscribed) && <ServiceCard action={
+                    service.subscribed ||
                       service.type === 'COMMUNITY' ? null : (
-                      <AlertDialogComponent
-                          AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
-                          actionButtonText={t('Utils.Continue')}
-                          triggerElement={
-                            <Button
-                                aria-label="Subscribe service"
-                               >
-                              {t('Service.Subscribe')}
-                            </Button>
-                          }
-                          onClickContinue={() => addSubscriptionInDb(service)}>
-                        {generateAlertText(service)}
-                      </AlertDialogComponent>
-                      )}
-
-                    </div>
-                    <p className={'p-m pb-xl pt-s txt-sub-content'}>
-                      {service.description}
-                    </p>
-                    <ul className="flex justify-between items-center p-s gap-s flex-row">
-                      <li>
-                        <ServiceTypeBadge
-                            type={service.type as ServiceTypeBadge}
-                        />
-                      </li>
-
-                    </ul>
-                  </li>
+                          <AlertDialogComponent
+                              AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
+                              actionButtonText={t('Utils.Continue')}
+                              triggerElement={
+                                <Button
+                                    aria-label="Subscribe service"
+                                >
+                                  {t('Service.Subscribe')}
+                                </Button>
+                              }
+                              onClickContinue={() => addSubscriptionInDb(service)}>
+                            {t('Service.SureWantSubscriptionDirect')}
+                          </AlertDialogComponent>
+                      )} service={
+                  service
+                  } />
               );
             })}
           </ul>
 
         </React.Suspense>
       ) : (
-        'There is no service... Yet !'
+        t('Service.NoService')
       )}
     </>
   );
