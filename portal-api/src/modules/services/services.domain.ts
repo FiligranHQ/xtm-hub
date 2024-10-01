@@ -117,9 +117,10 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
     (
       "Service"."type" != 'COMMUNITY' OR 
       ("Service"."type" = 'COMMUNITY' AND "subscription"."status" = 'ACCEPTED')
+      
     )
   `
-    )
+    ).whereRaw(`"subscription"."id" IS NULL`)
     .groupBy(['Service.id', 'subscription.id'])
     .asConnection<ServiceConnection>();
 

@@ -91,8 +91,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const breadcrumbValue = [
     {
-      label: 'Services',
-      href: '/service',
+      label: 'Home',
+      href: '/',
     },
     {
       label: queryDataService.serviceById?.name,

@@ -1,6 +1,26 @@
 {
+  "Utils": {
+    "Cancel": "Cancel",
+    "Validate": "Validate",
+    "Continue": "Continue"
+  },
   "HomePage": {
-    "Homepage": "Homepage"
+    "Homepage": "Homepage",
+    "YourServices": "Your services",
+    "AvailableServices": "Available services",
+    "Manage": "Manage",
+    "OpenManagement": "Go to management page",
+    "Welcome": "Welcome on XTMHub!"
+  },
+  "Service": {
+    "Subscribe": "Subscribe",
+    "SubscribeService": "Subscribe service",
+    "NoOwnedService": "You don't have any services yet.",
+    "NoService": "There is no service... Yet!",
+    "SureWantSubscriptionDirect": "Are you really sure you want to subscribe this service? This action can not be undone.",
+    "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
+    "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
+    "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team."
   },
   "LocaleSwitcher": {
     "fr": "Français",
