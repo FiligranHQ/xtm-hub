@@ -32,14 +32,7 @@ interface OrganizationFormSheetProps {
 
 export const OrganizationFormSheet: FunctionComponent<
   OrganizationFormSheetProps
-> = ({
-  organization,
-  open,
-  setOpen,
-  trigger,
-  title,
-  handleSubmit,
-}) => {
+> = ({ organization, open, setOpen, trigger, title, handleSubmit }) => {
   const form = useForm<z.infer<typeof organizationFormSchema>>({
     resolver: zodResolver(organizationFormSchema),
     defaultValues: {
@@ -68,7 +61,7 @@ export const OrganizationFormSheet: FunctionComponent<
         </SheetHeader>
         <Form {...form}>
           <form
-            className="w-full space-y-s"
+            className="w-full space-y-xl"
             onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}

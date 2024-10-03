@@ -1,22 +1,33 @@
 import * as React from 'react';
-import {useState} from 'react';
-import {PreloadedQuery, usePreloadedQuery, useRefetchableFragment,} from 'react-relay';
-import {userList_users$key} from '../../../../__generated__/userList_users.graphql';
-import {ColumnDef, PaginationState, Row} from '@tanstack/react-table';
-import {BreadcrumbNav} from '@/components/ui/breadcrumb-nav';
-import {DataTable} from 'filigran-ui/clients';
-import {mapToSortingTableValue, transformSortingValueToParams,} from '@/components/ui/handle-sorting.utils';
-import {CreateUser} from '@/components/admin/user/user-create';
-import {UserListQuery, usersFragment,} from '@/components/admin/user/user.graphql';
-import {OrderingMode, UserOrdering, userQuery, userQuery$variables,} from '../../../../__generated__/userQuery.graphql';
-import {useLocalStorage} from 'usehooks-ts';
-import {useRouter} from 'next/navigation';
-import {Input} from 'filigran-ui/servers';
+import { useState } from 'react';
 import {
-  DataTablePagination,
-  DataTableRowPerPage,
-  DataTableSelectColumnVisibility
-} from "filigran-ui/clients";
+  PreloadedQuery,
+  usePreloadedQuery,
+  useRefetchableFragment,
+} from 'react-relay';
+import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
+import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { DataTable } from 'filigran-ui/clients';
+import {
+  mapToSortingTableValue,
+  transformSortingValueToParams,
+} from '@/components/ui/handle-sorting.utils';
+import { CreateUser } from '@/components/admin/user/user-create';
+import {
+  UserListQuery,
+  usersFragment,
+} from '@/components/admin/user/user.graphql';
+import {
+  OrderingMode,
+  UserOrdering,
+  userQuery,
+  userQuery$variables,
+} from '../../../../__generated__/userQuery.graphql';
+import { useLocalStorage } from 'usehooks-ts';
+import { useRouter } from 'next/navigation';
+import { Input } from 'filigran-ui/servers';
+import { DataTableHeadBarOptions } from 'filigran-ui/clients';
 
 // Component interface
 interface ServiceProps {
@@ -132,8 +143,7 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1>Users list</h1>
-
+      <h1 className="pb-s">Users list</h1>
 
       <DataTable
         columns={columns}
@@ -147,16 +157,13 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
         }}
         toolbar={
           <div className="flex items-center justify-between gap-s">
-
             <Input
-                className="w-1/3"
-                placeholder={'Search with email...'}
-                onChange={(e) => handleInputChange(e.target.value)}></Input>
+              className="w-1/3"
+              placeholder={'Search with email...'}
+              onChange={(e) => handleInputChange(e.target.value)}></Input>
 
             <div className="flex items-center gap-s">
-              <DataTableRowPerPage />
-              <DataTablePagination />
-              <DataTableSelectColumnVisibility />
+              <DataTableHeadBarOptions />
               <CreateUser connectionId={data?.users?.__id} />
             </div>
           </div>
