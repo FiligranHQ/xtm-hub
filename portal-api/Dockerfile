@@ -36,6 +36,7 @@ RUN chown graphql:nodejs .graphql
 COPY --from=builder --chown=graphql:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=graphql:nodejs /app/config ./config
 COPY --from=builder --chown=graphql:nodejs /app/package.json .
+COPY --from=builder --chown=graphql:nodejs /app/tests/seeds ./tests/seeds
 COPY --from=builder --chown=graphql:nodejs /app/dist .
 
 USER graphql

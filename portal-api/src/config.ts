@@ -40,7 +40,7 @@ const portalConfig: PortalConfig = {
       process.env.TEST_MODE || process.env.NODE_ENV === 'test'
         ? config.get<string>('database-test.database')
         : config.get<string>('database.database'),
-    seeds:
+    seeds:process.env.E2E_TESTING ? "tests/seeds" :
       process.env.TEST_MODE || process.env.NODE_ENV === 'test'
         ? config.get<string>('database-test.seeds')
         : 'src/seeds',
