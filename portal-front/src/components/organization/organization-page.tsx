@@ -5,12 +5,7 @@ import { useState } from 'react';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { getOrganizations } from '@/components/organization/organization.service';
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
-import {
-  DataTable,
-  DataTablePagination,
-  DataTableRowPerPage,
-  DataTableSelectColumnVisibility
-} from 'filigran-ui/clients';
+import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { CreateOrganization } from '@/components/organization/create-organization';
 import { EditOrganization } from '@/components/organization/edit-organization';
@@ -162,15 +157,11 @@ const OrganizationPage: React.FunctionComponent = () => {
           manualPagination: true,
         }}
         toolbar={
-          <div className="flex items-center justify-between gap-s">
-            <DataTableRowPerPage />
-            <div className="flex items-center gap-s">
-              <DataTablePagination />
-              <DataTableSelectColumnVisibility />
-                <CreateOrganization
-                    connectionId={organizationData.organizations.__id}
-                />
-            </div>
+          <div className="flex items-center justify-end gap-s">
+            <DataTableHeadBarOptions />
+            <CreateOrganization
+              connectionId={organizationData.organizations.__id}
+            />
           </div>
         }
         tableState={{

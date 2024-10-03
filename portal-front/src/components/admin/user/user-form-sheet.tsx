@@ -105,7 +105,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-s">
+            className="w-full space-y-xl">
             <FormField
               control={form.control}
               name="email"

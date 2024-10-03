@@ -142,7 +142,9 @@ export const ServiceSlugFormSheet: FunctionComponent<
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form
+            className="space-y-xl"
+            onSubmit={form.handleSubmit(onSubmit)}>
             {userService.id ? (
               <></>
             ) : (
