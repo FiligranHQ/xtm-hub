@@ -6,7 +6,7 @@ import {serviceList_fragment$data} from "../../../__generated__/serviceList_frag
 
 interface ServiceCardProps {
     service: serviceList_fragment$data;
-    topRightAction: ReactNode;
+    topRightAction: ReactNode | null;
     bottomLeftAction: ReactNode;
 }
 const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
@@ -20,16 +20,16 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
     return (<li
         className="border-light flex flex-col rounded border bg-page-background p-s"
         key={service.id}>
-        <div className="flex-1 p-m pb-xl flex justify-between items-center gap-s">
+        <div className="flex-1 pt-l pl-l flex justify-between items-center gap-s">
             <h3>{service.name}</h3>{' '}
 
             {topRightAction}
 
         </div>
-        <p className={'p-m pb-xl pt-s txt-sub-content'}>
+        <p className={'pt-l pl-l txt-sub-content'}>
             {service.description}
         </p>
-        <div className="flex justify-between items-center p-s gap-s flex-row">
+        <div className="flex justify-between items-center p-l gap-s flex-row">
             <div>
                 <ServiceTypeBadge
                     type={service.type as ServiceTypeBadge}
