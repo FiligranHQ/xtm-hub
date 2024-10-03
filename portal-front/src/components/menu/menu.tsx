@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { ElementType, FunctionComponent, useCallback, useState } from 'react';
-import MenuUser from '@/components/menu/menu-user';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { HomeIcon, KeyboardArrowLeftIcon } from 'filigran-icon';
 import { usePathname } from 'next/navigation';
@@ -66,8 +65,6 @@ const Menu = () => {
               text={'Home'}
             />
           </li>
-          <Separator className="my-2" />
-          <MenuUser open={open} />
           <Separator className="my-2" />
           <MenuAdmin open={open} />
         </ul>

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import {
   PreloadedQuery,
   useMutation,
@@ -17,45 +17,29 @@ import {
   subscription,
 } from '@/components/service/service.graphql';
 import { Button } from 'filigran-ui/servers';
-import { DataTable, useToast } from 'filigran-ui/clients';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import Link from 'next/link';
-import {
-  mapToSortingTableValue,
-  transformSortingValueToParams,
-} from '@/components/ui/handle-sorting.utils';
+import { useToast } from 'filigran-ui/clients';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { subscriptionCreateMutation } from '../../../__generated__/subscriptionCreateMutation.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { EditIcon } from 'filigran-icon';
 import {
-  OrderingMode,
-  ServiceOrdering,
   serviceQuery,
-  serviceQuery$variables,
 } from '../../../__generated__/serviceQuery.graphql';
-import { useLocalStorage } from 'usehooks-ts';
-import useGranted from '@/hooks/useGranted';
+import {useTranslations} from "next-intl";
+import ServiceCard from "@/components/service/service-card";
 
 interface ServiceProps {
   queryRef: PreloadedQuery<serviceQuery>;
-  columns: ColumnDef<serviceList_fragment$data>[];
+  onUpdate: () => void
 }
 
 const ServiceList: React.FunctionComponent<ServiceProps> = ({
   queryRef,
-  columns,
+  onUpdate
 }) => {
-  const [pageSize, setPageSize] = useLocalStorage('countServiceList', 50);
-  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
-    'orderModeServiceList',
-    'asc'
-  );
-  const [orderBy, setOrderBy] = useLocalStorage<ServiceOrdering>(
-    'orderByServiceList',
-    'name'
-  );
+  const t = useTranslations();
+  const { toast } = useToast();
+
   const queryData = usePreloadedQuery<serviceQuery>(ServiceListQuery, queryRef);
   const [data, refetch] = useRefetchableFragment<
     serviceQuery,
@@ -71,209 +55,96 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     [connectionID]
   );
   useSubscription(config);
-  const { toast } = useToast();
+
+
   const [commitSubscriptionCreateMutation] =
-    useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
-  const { me } = useContext<Portal>(portalContext);
-  if (!me) {
-    return;
-  }
+      useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
+
   const addSubscriptionInDb = useCallback(
-    (service: serviceList_fragment$data) => {
-      const handleSuccess = (message: string) => {
-        toast({
-          title: 'Success',
-          description: <>{message}</>,
-        });
-      };
-      const handleError = (error: Error) => {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: <>{error.message}</>,
-        });
-      };
+      (service: serviceList_fragment$data) => {
+        const handleSuccess = (message: string) => {
+          toast({
+            title: 'Success',
+            description: <>{message}</>,
+          });
+        };
+        const handleError = (error: Error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
+        };
 
-      const commitMutation = (status: string, successMessage: string) => {
-        commitSubscriptionCreateMutation({
-          variables: {
-            service_id: service.id,
-            connections: [connectionID],
-          },
-          onCompleted: () => {
-            handleSuccess(successMessage);
-          },
-          onError: (error: Error) => handleError(error),
-        });
-      };
+        const commitMutation = (status: string, successMessage: string) => {
+          commitSubscriptionCreateMutation({
+            variables: {
+              service_id: service.id,
+              connections: [connectionID],
+            },
+            onCompleted: () => {
+              handleSuccess(successMessage);
+              onUpdate();
+            },
+            onError: (error: Error) => handleError(error),
+          });
+        };
 
-      if (service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT') {
-        commitMutation(
-          'ACCEPTED',
-          'You have successfully subscribed to the service. You can now find it in your subscribed services.'
-        );
-      } else {
-        commitMutation(
-          'REQUESTED',
-          'Your request has been sent. You will soon be in touch with our team.'
-        );
-      }
-    },
-    [connectionID]
-  );
-
-  const generateAlertText = (service: serviceList_fragment$data) => {
-    return service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT'
-      ? 'Are you really sure you want to subscribe this service ? This action can not be canceled later.'
-      : 'You are going to be contacted by our commercial team to subscribe this service. Do you want to continue ?';
-  };
-
-  const editColumn: ColumnDef<serviceList_fragment$data>[] = [
-    {
-      id: 'edit',
-      size: 30,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => {
-        return (
-          <>
-            {(row.original?.capabilities?.some(
-              (capa) => capa === 'MANAGE_ACCESS'
-            ) ||
-              useGranted('BYPASS')) && (
-              <Button
-                asChild
-                variant={'ghost'}
-                className="flex h-4 w-4 p-0">
-                <Link href={`/admin/service/${row.original.id}`}>
-                  <EditIcon className="h-4 w-4" />
-                </Link>
-              </Button>
-            )}
-          </>
-        );
+        if (service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT') {
+          commitMutation(
+              'ACCEPTED',
+              t('Service.SubscribeSuccessful')
+          );
+        } else {
+          commitMutation(
+              'REQUESTED',
+              t('Service.SubscriptionRequestSuccessful')
+          );
+        }
       },
-    },
-  ];
-  const subscribeColumns: ColumnDef<serviceList_fragment$data>[] = useGranted(
-    'FRT_SERVICE_SUBSCRIBER'
-  )
-    ? [
-        {
-          id: 'action',
-          size: 30,
-          enableHiding: false,
-          enableSorting: false,
-          enableResizing: false,
-          cell: ({ row }) => {
-            return row.original.subscribed ||
-              row.original.type === 'COMMUNITY' ? null : (
-              <AlertDialogComponent
-                AlertTitle={'Subscribe service'}
-                actionButtonText={'Continue'}
-                triggerElement={
-                  <Button
-                    aria-label="Subscribe service"
-                    variant="outline"
-                    className="py-0 text-primary">
-                    Subscribe
-                  </Button>
-                }
-                onClickContinue={useCallback(
-                  () => addSubscriptionInDb(row.original),
-                  []
-                )}>
-                {generateAlertText(row.original)}
-              </AlertDialogComponent>
-            );
-          },
-        },
-      ]
-    : [];
+      [connectionID]
+  );
 
   const servicesData = data.services.edges.map(
     ({ node }) => node
   ) as serviceList_fragment$data[];
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-
-  const handleRefetchData = (args?: Partial<serviceQuery$variables>) => {
-    const sorting = mapToSortingTableValue(orderBy, orderMode);
-    refetch({
-      count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy,
-      orderMode,
-      ...transformSortingValueToParams(sorting),
-      ...args,
-    });
-  };
-
-  // https://tanstack.com/table/latest/docs/framework/react/guide/table-state#2-updaters-can-either-be-raw-values-or-callback-functions
-  const onSortingChange = (updater: unknown) => {
-    const sorting = mapToSortingTableValue(orderBy, orderMode);
-    const newSortingValue =
-      updater instanceof Function ? updater(sorting) : updater;
-    setOrderBy(newSortingValue[0].id);
-    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
-    handleRefetchData(transformSortingValueToParams(newSortingValue));
-  };
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
-  };
-
-  const dataColumns: ColumnDef<serviceList_fragment$data>[] = useMemo(
-    () => [...columns, ...subscribeColumns, ...editColumn],
-    [columns, subscribeColumns]
-  );
   return (
     <>
+      <h2 className="pb-m pt-m">{t('HomePage.AvailableServices')}</h2>
       {data.services.edges.length > 0 ? (
         <React.Suspense
-          fallback={
-            <DataTable
-              data={[]}
-              isLoading={true}
-              columns={dataColumns}
-            />
-          }>
-          <DataTable
-            data={servicesData}
-            columns={dataColumns}
-            tableOptions={{
-              onSortingChange: onSortingChange,
-              onPaginationChange: onPaginationChange,
-              manualPagination: true,
-              rowCount: data.services.totalCount,
-              manualSorting: true,
-            }}
-            tableState={{
-              sorting: mapToSortingTableValue(orderBy, orderMode),
-              columnPinning: {
-                right: ['action', 'edit'],
-              },
-              pagination,
-            }}
-          />
+          >
+          <ul
+              className={'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'}>
+            {servicesData.map((service: serviceList_fragment$data) => {
+              return (
+                  (!service.subscribed) && <ServiceCard topRightAction={null} bottomLeftAction={
+                    service.subscribed ||
+                      service.type === 'COMMUNITY' ? null : (
+                          <AlertDialogComponent
+                              AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
+                              actionButtonText={t('Utils.Continue')}
+                              triggerElement={
+                                <Button
+                                    aria-label="Subscribe service"
+                                >
+                                  {t('Service.Subscribe')}
+                                </Button>
+                              }
+                              onClickContinue={() => addSubscriptionInDb(service)}>
+                            {t('Service.SureWantSubscriptionDirect')}
+                          </AlertDialogComponent>
+                      )} service={
+                  service
+                  } />
+              );
+            })}
+          </ul>
+
         </React.Suspense>
       ) : (
-        'There is any service... Yet !'
+        t('Service.NoService')
       )}
     </>
   );

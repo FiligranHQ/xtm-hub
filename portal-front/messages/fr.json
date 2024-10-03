@@ -1,6 +1,30 @@
 {
+  "Utils": {
+    "Cancel": "Annuler",
+    "Validate": "Valider",
+    "Continue": "Continuer",
+    "Loading": "Chargement..."
+
+  },
   "HomePage": {
-    "Homepage": "Page d'accueil"
+    "Homepage": "Page d'accueil",
+    "YourServices": "Vos services",
+    "AvailableServices": "Services disponibles",
+    "Manage": "Manager",
+    "OpenManagement": "Aller vers la page de management",
+    "Welcome": "Bienvenue sur XTMHub !"
+
+  },
+  "Service": {
+    "Subscribe": "Souscrire",
+    "SubscribeService": "Souscrire au service",
+    "NoOwnedService": "Vous n'avez pas encore de service.",
+    "NoService": "Il n'y a pas encore de service...",
+    "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",
+    "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
+    "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
+    "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe."
+
   },
   "LocaleSwitcher": {
     "fr": "Français",

@@ -15,6 +15,7 @@ import { userServiceOwnedUser$key } from '../../../../__generated__/userServiceO
 import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
 import { EmptyServices } from '@/components/service/home/empty-services';
 import { OwnedServicesList } from '@/components/service/home/owned-services-list';
+import {useTranslations} from "next-intl";
 
 interface OwnedServicesProps {
   queryRef: PreloadedQuery<userServiceOwnedQuery>;
@@ -23,6 +24,7 @@ interface OwnedServicesProps {
 const OwnedServices: React.FunctionComponent<OwnedServicesProps> = ({
   queryRef,
 }) => {
+
   const queryData = usePreloadedQuery<userServiceOwnedQuery>(
     UserServiceOwnedQuery,
     queryRef

@@ -28,6 +28,7 @@ import { useLocalStorage } from 'usehooks-ts';
 import { Badge } from 'filigran-ui/servers';
 import { IconActions } from '@/components/ui/icon-actions';
 import { Ellipsis } from 'lucide-react';
+import {MoreVertIcon} from "filigran-icon";
 
 const breadcrumbValue = [
   {
@@ -132,7 +133,7 @@ const OrganizationPage: React.FunctionComponent = () => {
         <IconActions
           icon={
             <>
-              <Ellipsis className="h-4 w-4" />
+              <MoreVertIcon className="h-4 w-4" />
               <span className="sr-only">Open menu</span>
             </>
           }>
