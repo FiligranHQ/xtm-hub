@@ -104,16 +104,16 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       <SheetContent side={'right'}>
         <SheetHeader className="bg-page-background">
           <SheetTitle className="txt-title">{'Add organization'}</SheetTitle>
+          <SheetDescription>
+            Invite an organization in you community. Its members will have
+            access to all of this community services.
+          </SheetDescription>
         </SheetHeader>
-        <SheetDescription>
-          {
-            'Invite an organization in you community. Its members will have access to all of this community services.'
-          }
-        </SheetDescription>
+
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-s">
+            className="w-full space-y-xl">
             <FormField
               control={form.control}
               name="organization_id"
