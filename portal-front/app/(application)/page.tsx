@@ -58,17 +58,17 @@ const Page: React.FunctionComponent<PageProps> = () => {
   const [queryRefServiceList, loadQueryServiceList] = useQueryLoader<serviceQuery>(ServiceListQuery);
   useMountingLoader(loadQueryServiceList, { count: countServiceList, orderBy: orderByServiceList,orderMode: orderModeServiceList });
 
-  const t = useTranslations('HomePage');
+  const t = useTranslations();
 
 
-  return <><h1 className="mb-l">{t('Homepage')}</h1> {queryRef ? <OwnedServices queryRef={queryRef} /> : <Loader />}
+  return <><h1 className="mb-l">{t('HomePage.Homepage')}</h1> {queryRef ? <OwnedServices queryRef={queryRef} /> : <Loader />}
     {queryRefServiceList ? (
       <ServiceList
           queryRef={queryRefServiceList}
           onUpdate={handleUpdate}
       />
   ) : (
-      'Loading...'
+        <>{t('Utils.Loading')}</>
   )}
   </>
 };

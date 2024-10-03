@@ -22,7 +22,6 @@ import { serviceByIdQuery } from '../../../../__generated__/serviceByIdQuery.gra
 import { ServiceById } from '@/components/service/service.graphql';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
 import TriggerButton from '@/components/ui/trigger-button';
-import AcceptCommunity from '@/components/service/[slug]/accept-community';
 import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
 import { SubscriptionStatusTypeBadge } from '@/components/ui/subscription-status-badge';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
@@ -118,22 +117,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
         ]}>
-        {queryData.subscriptionsByServiceId &&
-          queryData.subscriptionsByServiceId[0]?.status === 'REQUESTED' && (
-            <AcceptCommunity
-              insertedUserServices={() =>
-                loadQuery(
-                  { service_id: serviceId },
-                  { fetchPolicy: 'network-only' }
-                )
-              }
-              serviceId={serviceId}
-              subscription={
-                queryData
-                  .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data
-              }
-            />
-          )}
 
         <div className="flex justify-end">
           <ServiceSlugFormSheet

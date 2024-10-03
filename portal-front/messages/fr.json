@@ -2,7 +2,9 @@
   "Utils": {
     "Cancel": "Annuler",
     "Validate": "Valider",
-    "Continue": "Continuer"
+    "Continue": "Continuer",
+    "Loading": "Chargement..."
+
   },
   "HomePage": {
     "Homepage": "Page d'accueil",

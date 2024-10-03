@@ -2,7 +2,8 @@
   "Utils": {
     "Cancel": "Cancel",
     "Validate": "Validate",
-    "Continue": "Continue"
+    "Continue": "Continue",
+    "Loading": "Loading..."
   },
   "HomePage": {
     "Homepage": "Homepage",
