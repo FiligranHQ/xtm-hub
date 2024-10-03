@@ -11,6 +11,7 @@ import {
   AlertDialogTrigger,
 } from 'filigran-ui/clients';
 import { buttonVariants } from 'filigran-ui/servers';
+import {useTranslations} from "next-intl";
 
 interface AlertDialogProps {
   triggerElement: ReactNode;
@@ -62,6 +63,7 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
   onClickContinue,
   variantName = 'default',
 }) => {
+  const t = useTranslations();
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{triggerElement}</AlertDialogTrigger>
@@ -74,7 +76,7 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
         </AlertDialogHeader>
         {children}
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t('Utils.Cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onClickContinue}
             className={buttonVariants({ variant: variantName })}>

@@ -82,7 +82,6 @@ const ClosedMenuAdmin = () => {
   );
 };
 const adminLinksData = [
-  { href: '/admin/community', icon: ForumIcon, label: 'Communities' },
   {
     href: '/admin/user',
     icon: GroupIcon,

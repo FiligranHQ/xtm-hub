@@ -119,7 +119,7 @@ export const loadUserServiceByUser = async (
         `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_id', "sub".service_id, 'service', json_build_object('id', "service".id, 'name', "service".name, 'type', "service".type, 'provider', "service".provider, 'description', "service".description, 'links', "service".services_link, '__typename', 'Service'), '__typename', 'Subscription')) ->> 0)::json as subscription`
       ),
       dbRaw(
-        "(json_agg(json_build_object('id', \"servcapa\".id, 'service_capability_name', \"servcapa\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
+          "(json_agg(json_build_object('id', \"servcapa\".id, 'service_capability_name', \"servcapa\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
       ),
       dbRaw('(service."name") as service_name'),
       dbRaw('(service."provider") as service_provider'),

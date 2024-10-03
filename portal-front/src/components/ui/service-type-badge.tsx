@@ -13,7 +13,7 @@ export const ServiceTypeBadge: FunctionComponent<ServiceTypeBadgeProps> = ({
   const badgeColor = {
     COMMUNITY: 'text-green',
     Intel: 'text-orange',
-    Feed: 'text-red-800',
+    Feed: 'text-yellow-500',
     Analysis: 'text-turquoise',
   };
   return <Badge className={cn('uppercase', badgeColor[type])}>{type}</Badge>;
