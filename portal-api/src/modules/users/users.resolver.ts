@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      return loadUserBy({ 'User.id': id as UserId } as UserMutator);
+      return loadUserBy({ 'User.id': id});
     },
     users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
       if (!context.user)
@@ -169,7 +169,7 @@ const resolvers: Resolvers = {
     editUser: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        const userBeforeUpdate = await loadUserBy({ id: id as UserId });
+        const userBeforeUpdate = await loadUserBy({ 'User.id': id as UserId } as UserMutator);
         const completedUser = await updateUser(context, id, input);
 
         await dispatch('User', 'edit', completedUser);

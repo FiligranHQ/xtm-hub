@@ -6,6 +6,7 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import cors from 'cors';
 import pkg from 'body-parser';
+import knexPkg, { Knex } from 'knex';
 import express from 'express';
 import createSchema from './server/graphql-schema';
 import { dbMigration } from '../knexfile';
@@ -152,6 +153,9 @@ awxEndpoint(app);
 
 // Ensure migrate the schema
 await dbMigration.migrate();
+if(process.env.E2E_TESTING) {
+  await dbMigration.seed();
+}
 await platformInit();
 console.log(
   '[Migration] Database version is now ' + (await dbMigration.version())
