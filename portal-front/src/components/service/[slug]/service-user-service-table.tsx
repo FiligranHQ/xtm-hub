@@ -8,8 +8,8 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import { DataTable } from 'filigran-ui/clients';
-import {Ellipsis} from "lucide-react";
 import {IconActions} from "@/components/ui/icon-actions";
+import {MoreVertIcon} from "filigran-icon";
 
 interface ServiceUserServiceProps {
   subscriptionId?: string;
@@ -90,7 +90,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
               ) && (
               <IconActions icon={
                 <>
-                  <Ellipsis className="h-4 w-4 rotate-90" />
+                  <MoreVertIcon className="h-4 w-4" />
                   <span className="sr-only">Open menu</span>
                 </>
               }>

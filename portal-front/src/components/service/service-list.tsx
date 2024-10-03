@@ -119,7 +119,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
               className={'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'}>
             {servicesData.map((service: serviceList_fragment$data) => {
               return (
-                  (!service.subscribed) && <ServiceCard action={
+                  (!service.subscribed) && <ServiceCard bottomLeftAction={
                     service.subscribed ||
                       service.type === 'COMMUNITY' ? null : (
                           <AlertDialogComponent
