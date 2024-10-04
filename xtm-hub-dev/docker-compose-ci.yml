@@ -5,8 +5,10 @@ services:
     build:
       context: ../portal-front/.
       cache_from:
-        - filigran/portal-front:main
-        - filigran/portal-front-deps:main
+        - type=registry,ref=filigran/portal-front:${GITHUB_REF_NAME}
+        - type=registry,ref=filigran/portal-front:main
+        - type=registry,ref=filigran/portal-front-deps:${GITHUB_REF_NAME}
+        - type=registry,ref=filigran/portal-front-deps:main
     ports:
       - "3000:3000"
     depends_on:
@@ -25,8 +27,10 @@ services:
     build:
       context: ../portal-api/.
       cache_from:
-        - filigran/portal-api:main
-        - filigran/portal-api-deps:main
+        - type=registry,ref=filigran/portal-api:${GITHUB_REF_NAME}
+        - type=registry,ref=filigran/portal-api:main
+        - type=registry,ref=filigran/portal-api-deps:${GITHUB_REF_NAME}
+        - type=registry,ref=filigran/portal-api-deps:main
     ports:
       - "4001:4001"
     healthcheck:
@@ -67,7 +71,9 @@ services:
   portal-e2e-tests:
     build:
       context: ../portal-e2e-tests/.
-      cache_from: ["filigran/portal-e2e-tests:main"]
+      cache_from: 
+      - "type=registry,ref=filigran/portal-e2e-tests:main"
+      - "type=registry,ref=filigran/portal-e2e-tests:${GITHUB_REF_NAME}"
     depends_on:
       portal-front:
         condition: service_healthy
