@@ -4,7 +4,9 @@ services:
     container_name: portal-front
     build:
       context: ../portal-front/.
-      cache_from: ["filigran/portal-front:main"]
+      cache_from:
+        - filigran/portal-front:main
+        - filigran/portal-front-deps:main
     ports:
       - "3000:3000"
     depends_on:
@@ -22,7 +24,9 @@ services:
     container_name: portal-api
     build:
       context: ../portal-api/.
-      cache_from: ["filigran/portal-api:main"]
+      cache_from:
+        - filigran/portal-api:main
+        - filigran/portal-api-deps:main
     ports:
       - "4001:4001"
     healthcheck:

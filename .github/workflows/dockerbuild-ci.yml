@@ -16,7 +16,30 @@ on:
       - 'portal-front/**'
 
 jobs:
+  build-deps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+        - image: portal-front
+        - image: portal-api
+    steps:
+      - name: Build and push portal deps
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.image }}-deps
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          image: filigran/${{ matrix.image }}-deps
+          cache-from: filigran/${{ matrix.image }}-deps
+          target: deps
   backend-tests:
+    needs: build-deps
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,6 +64,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          image: filigran/portal-api
           cache-from: xtm-hub-dev-portal-api
       - name: Build and push portal-front
         uses: docker/build-push-action@v5
