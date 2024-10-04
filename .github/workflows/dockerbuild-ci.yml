@@ -24,19 +24,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install Docker Compose
-        working-directory: portal-api
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Launch E2E Tests
-        working-directory: xtm-hub-dev
-        run: docker-compose -f docker-compose-ci.yml run portal-e2e-tests
+      - name: Launch docker compose
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "./xtm-hub-dev/docker-compose-ci.yml"
+          services: "portal-e2e-tests"
       - name: Build and push portal-api
         uses: docker/build-push-action@v5
         with:
