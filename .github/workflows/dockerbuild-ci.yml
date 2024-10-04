@@ -1,0 +1,66 @@
+name: Run XTM Hub CI/CD
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'portal-api/**'
+      - 'portal-front/**'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'portal-api/**'
+      - 'portal-front/**'
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Docker Compose
+        working-directory: portal-api
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Launch E2E Tests
+        working-directory: xtm-hub-dev
+        run: docker-compose -f docker-compose-ci.yml run portal-e2e-tests
+      - name: Build and push portal-api
+        uses: docker/build-push-action@v5
+        with:
+          context: portal-api
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: xtm-hub-dev-portal-api
+      - name: Build and push portal-front
+        uses: docker/build-push-action@v5
+        with:
+          context: portal-front
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: xtm-hub-dev-portal-front
+      - name: Build and push portal-e2e-tests
+        uses: docker/build-push-action@v5
+        with:
+          context: portal-e2e-tests
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: xtm-hub-dev-portal-e2e-tests
+      - name: restart deployment on staging
+        if: github.event_name != 'pull_request'
+        run: kubectl --server=https://api.staging.eu-west.filigran.io --token=${{ secrets.K8S_TOKEN }} -n wip-cloudportal rollout restart deployment

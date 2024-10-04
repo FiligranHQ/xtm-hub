@@ -1,8 +1,10 @@
-version: '3'
+version: '3.7'
 services:
   portal-front:
     container_name: portal-front
-    build: ../portal-front/.
+    build:
+      context: ../portal-front/.
+      cache_from: ["filigran/portal-front:main"]
     ports:
       - "3000:3000"
     depends_on:
@@ -18,7 +20,9 @@ services:
 
   portal-api:
     container_name: portal-api
-    build: ../portal-api/.
+    build:
+      context: ../portal-api/.
+      cache_from: ["filigran/portal-api:main"]
     ports:
       - "4001:4001"
     healthcheck:
@@ -56,8 +60,10 @@ services:
       timeout: 5s
       retries: 10
 
-  playwright-tests:
-    build: ../tests_e2e/.
+  portal-e2e-tests:
+    build:
+      context: ../portal-e2e-tests/.
+      cache_from: ["filigran/portal-e2e-tests:main"]
     depends_on:
       portal-front:
         condition: service_healthy
@@ -68,7 +74,6 @@ services:
       - POSTGRES_DB=cloud-portal
       - POSTGRES_PASSWORD=portal-password
       - DATABASE_PORT=5432
-
 
 volumes:
   pgdata:
