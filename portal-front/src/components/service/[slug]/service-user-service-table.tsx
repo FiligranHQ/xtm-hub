@@ -1,15 +1,15 @@
+import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { IconActions } from '@/components/ui/icon-actions';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { MoreVertIcon } from 'filigran-icon';
+import { DataTable } from 'filigran-ui/clients';
+import { Badge, Button } from 'filigran-ui/servers';
 import * as React from 'react';
 import { FunctionComponent, useMemo } from 'react';
 import { useMutation } from 'react-relay';
 import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { Badge, Button } from 'filigran-ui/servers';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
-import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
-import { DataTable } from 'filigran-ui/clients';
-import {IconActions} from "@/components/ui/icon-actions";
-import {MoreVertIcon} from "filigran-icon";
 
 interface ServiceUserServiceProps {
   subscriptionId?: string;
@@ -85,16 +85,17 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
           return (
             <>
               {row.original.service_capability?.some(
-                  (serv_capa) =>
-                      serv_capa?.service_capability_name !== 'ADMIN_SUBSCRIPTION'
+                (serv_capa) =>
+                  serv_capa?.service_capability_name !== 'ADMIN_SUBSCRIPTION'
               ) && (
-              <IconActions icon={
-                <>
-                  <MoreVertIcon className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
-                </>
-              }>
-                <Button
+                <IconActions
+                  icon={
+                    <>
+                      <MoreVertIcon className="h-4 w-4" />
+                      <span className="sr-only">Open menu</span>
+                    </>
+                  }>
+                  <Button
                     variant={'ghost'}
                     className="w-full justify-start"
                     aria-label="Edit user rights"
@@ -102,28 +103,28 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                       setCurrentUser(row.original);
                       setOpenSheet(true);
                     }}>
-                   Edit
-                </Button>
-                <AlertDialogComponent
+                    Edit
+                  </Button>
+                  <AlertDialogComponent
                     AlertTitle={"Remove user's rights"}
                     actionButtonText={'Remove rights'}
                     variantName={'destructive'}
                     triggerElement={
                       <Button
-                          variant="ghost"
-                          className="w-full justify-start"
-                          aria-label="Remove User's rights">
-                          Delete rights
+                        variant="ghost"
+                        className="w-full justify-start"
+                        aria-label="Remove User's rights">
+                        Delete rights
                       </Button>
                     }
                     onClickContinue={() =>
-                        deleteCurrentUser(row.original.user?.email ?? '')
+                      deleteCurrentUser(row.original.user?.email ?? '')
                     }>
-                  Are you sure you want to remove the access for the user
-                  {row.original.user?.first_name} {row.original.user?.last_name}{' '}
-                  for this service ?
-                </AlertDialogComponent>
-              </IconActions>
+                    Are you sure you want to remove the access for the user
+                    {row.original.user?.first_name}{' '}
+                    {row.original.user?.last_name} for this service ?
+                  </AlertDialogComponent>
+                </IconActions>
               )}
             </>
           );
@@ -140,7 +141,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
     <DataTable
       columns={columns}
       data={data}
-      tableState={{ pagination, columnPinning: { right: ['actions']}}}
+      tableState={{ pagination, columnPinning: { right: ['actions'] } }}
     />
   );
 };

@@ -1,33 +1,32 @@
+import GuardCapacityComponent from '@/components/admin-guard';
+import { ServiceHeader } from '@/components/service/[slug]/service-header';
+import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
+import { SubscriptionTabs } from '@/components/service/[slug]/subscription-tabs';
+import { ServiceById } from '@/components/service/service.graphql';
+import {
+  SubscriptionDeleteMutation,
+  SubscriptionsByService,
+} from '@/components/subcription/subscription.graphql';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { SubscriptionStatusTypeBadge } from '@/components/ui/subscription-status-badge';
+import TriggerButton from '@/components/ui/trigger-button';
+import useGranted from '@/hooks/useGranted';
+import { RESTRICTION } from '@/utils/constant';
+import { useToast } from 'filigran-ui/clients';
+import { FunctionComponent, useState } from 'react';
 import {
   PreloadedQuery,
   useMutation,
   usePreloadedQuery,
   UseQueryLoaderLoadQueryOptions,
 } from 'react-relay';
-import { useToast } from 'filigran-ui/clients';
-import * as React from 'react';
-import { FunctionComponent, useState } from 'react';
-import { RESTRICTION } from '@/utils/constant';
-import GuardCapacityComponent from '@/components/admin-guard';
-import {
-  SubscriptionDeleteMutation,
-  SubscriptionsByService,
-} from '@/components/subcription/subscription.graphql';
-import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
+import { serviceByIdQuery } from '../../../../__generated__/serviceByIdQuery.graphql';
+import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
 import {
   subscriptionByServiceQuery,
   subscriptionByServiceQuery$variables,
 } from '../../../../__generated__/subscriptionByServiceQuery.graphql';
-import { serviceByIdQuery } from '../../../../__generated__/serviceByIdQuery.graphql';
-import { ServiceById } from '@/components/service/service.graphql';
-import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
-import TriggerButton from '@/components/ui/trigger-button';
-import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
-import { SubscriptionStatusTypeBadge } from '@/components/ui/subscription-status-badge';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { SubscriptionTabs } from '@/components/service/[slug]/subscription-tabs';
-import { ServiceHeader } from '@/components/service/[slug]/service-header';
-import useGranted from '@/hooks/useGranted';
+import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
 
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<subscriptionByServiceQuery>;
@@ -117,7 +116,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
         ]}>
-
         <div className="flex justify-end">
           <ServiceSlugFormSheet
             open={openSheet}
@@ -147,25 +145,25 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           />
         </div>
         <div className="pt-xs">
-        <SubscriptionTabs
-          subscriptions={
-            queryData.subscriptionsByServiceId as subscriptionByService_fragment$data[]
-          }
-          serviceType={queryDataService.serviceById?.type}
-          serviceId={serviceId}
-          onRemoveOrganization={onRemoveOrganization}
-          openSheet={openSheet}
-          setOpenSheet={setOpenSheet}
-          setCurrentUser={setCurrentUser}
-          openSheetAddOrga={openSheetAddOrga}
-          setOpenSheetAddOrga={setOpenSheetAddOrga}
-          loadQuery={() =>
-            loadQuery(
-              { service_id: serviceId },
-              { fetchPolicy: 'network-only' }
-            )
-          }
-        />
+          <SubscriptionTabs
+            subscriptions={
+              queryData.subscriptionsByServiceId as subscriptionByService_fragment$data[]
+            }
+            serviceType={queryDataService.serviceById?.type}
+            serviceId={serviceId}
+            onRemoveOrganization={onRemoveOrganization}
+            openSheet={openSheet}
+            setOpenSheet={setOpenSheet}
+            setCurrentUser={setCurrentUser}
+            openSheetAddOrga={openSheetAddOrga}
+            setOpenSheetAddOrga={setOpenSheetAddOrga}
+            loadQuery={() =>
+              loadQuery(
+                { service_id: serviceId },
+                { fetchPolicy: 'network-only' }
+              )
+            }
+          />
         </div>
       </GuardCapacityComponent>
     </>

@@ -4,7 +4,6 @@
     "Validate": "Valider",
     "Continue": "Continuer",
     "Loading": "Chargement..."
-
   },
   "HomePage": {
     "Homepage": "Page d'accueil",
@@ -13,7 +12,6 @@
     "Manage": "Manager",
     "OpenManagement": "Aller vers la page de management",
     "Welcome": "Bienvenue sur XTMHub !"
-
   },
   "Service": {
     "Subscribe": "Souscrire",
@@ -24,7 +22,6 @@
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe."
-
   },
   "LocaleSwitcher": {
     "fr": "Français",
@@ -32,4 +29,3 @@
     "label": "Langage"
   }
 }
-

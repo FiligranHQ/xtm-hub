@@ -1,5 +1,6 @@
-import * as React from 'react';
-import { FunctionComponent, ReactNode } from 'react';
+import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
+import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -16,15 +17,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from 'filigran-ui/clients';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z, ZodSchema } from 'zod';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
+import { FunctionComponent, ReactNode } from 'react';
+import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
-import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
+import { z, ZodSchema } from 'zod';
 import { serviceCapabilityMutation } from '../../../../__generated__/serviceCapabilityMutation.graphql';
 import { userServiceCreateMutation } from '../../../../__generated__/userServiceCreateMutation.graphql';
-import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 
 interface ServiceSlugFormSheetProps {
   open: boolean;

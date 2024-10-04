@@ -1,7 +1,7 @@
 'use client';
 
-import * as React from 'react';
 import useGranted from '@/hooks/useGranted';
+import * as React from 'react';
 import { Restriction } from '../../__generated__/meContext_fragment.graphql';
 
 // Component interface

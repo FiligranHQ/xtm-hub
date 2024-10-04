@@ -1,27 +1,25 @@
+import {
+  organizationFetch,
+  organizationsFragment,
+} from '@/components/organization/organization.graphql';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
 import {
   OrderingMode,
   OrganizationOrdering,
   organizationSelectQuery,
 } from '../../../__generated__/organizationSelectQuery.graphql';
-import {
-  organizationFetch,
-  organizationsFragment,
-} from '@/components/organization/organization.graphql';
-import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
-import { useLocalStorage } from 'usehooks-ts';
 
-export const getOrganizations = () => {
-  const [count, setCount] = useLocalStorage('countOrganizationList', 50);
-  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
-    'orderModeOrganizationList',
-    'asc'
-  );
-  const [orderBy, setOrderBy] = useLocalStorage<OrganizationOrdering>(
-    'orderByOrganizationList',
-    'name'
-  );
-
+interface OrganizationParamsQuery {
+  count: number;
+  orderBy: OrganizationOrdering;
+  orderMode: OrderingMode;
+}
+export const getOrganizations = ({
+  count = 50,
+  orderBy = 'name',
+  orderMode = 'asc',
+}: Partial<OrganizationParamsQuery> = {}) => {
   const organizationData = useLazyLoadQuery<organizationSelectQuery>(
     organizationFetch,
     {

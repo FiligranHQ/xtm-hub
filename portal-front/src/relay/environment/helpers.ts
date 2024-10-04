@@ -1,8 +1,8 @@
 import {
+  GraphQLResponse,
+  Observable,
   RequestParameters,
   Variables,
-  Observable,
-  GraphQLResponse,
 } from 'relay-runtime';
 
 export function buildQueryId(request: RequestParameters, variables: Variables) {

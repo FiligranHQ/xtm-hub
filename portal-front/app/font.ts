@@ -1,4 +1,4 @@
-import { IBM_Plex_Sans, Geologica } from 'next/font/google';
+import { Geologica, IBM_Plex_Sans } from 'next/font/google';
 
 export const geologica = Geologica({
   subsets: ['latin'],

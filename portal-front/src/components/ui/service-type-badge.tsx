@@ -1,6 +1,6 @@
+import { cn } from '@/lib/utils';
 import { Badge } from 'filigran-ui/servers';
 import { FunctionComponent } from 'react';
-import { cn } from '@/lib/utils';
 
 export type ServiceTypeBadge = 'COMMUNITY' | 'Intel' | 'Feed' | 'Analysis';
 

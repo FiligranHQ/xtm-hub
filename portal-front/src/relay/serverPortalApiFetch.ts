@@ -1,7 +1,7 @@
+import { cookies } from 'next/headers';
 import { GraphQLResponse, OperationType, VariablesOf } from 'relay-runtime';
 import { ConcreteRequest } from 'relay-runtime/lib/util/RelayConcreteNode';
 import { getGraphqlApi, networkFetch } from './environment/fetchFn';
-import { cookies } from 'next/headers';
 
 // Call into raw network fetch to get serializable GraphQL query response
 // This response will be sent to the client to "warm" the QueryResponseCache

@@ -1,10 +1,10 @@
 'use client';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 
 import LoginForm from '@/components/login/login-form';
-import { useQueryLoader } from 'react-relay';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { SettingsQuery } from '@/components/login/settings.graphql';
+import useMountingLoader from '@/hooks/useMountingLoader';
+import { useQueryLoader } from 'react-relay';
 import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
 
 // Component

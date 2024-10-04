@@ -1,7 +1,7 @@
+import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
+import { TabsContent } from 'filigran-ui/clients';
 import { FunctionComponent } from 'react';
 import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
-import { TabsContent } from 'filigran-ui/clients';
-import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
 import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 
 interface SubscriptionTabContentProps {

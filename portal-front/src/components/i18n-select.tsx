@@ -3,14 +3,14 @@
 import { Locale } from '@/i18n/config';
 import { setUserLocale } from '@/i18n/locale';
 import { CheckIcon, LanguageIcon } from 'filigran-icon';
-import { useLocale, useTranslations } from 'next-intl';
-import { DropdownMenuItem } from 'filigran-ui/clients';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from 'filigran-ui';
+import { DropdownMenuItem } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function I18nSelect() {
   const t = useTranslations('LocaleSwitcher');

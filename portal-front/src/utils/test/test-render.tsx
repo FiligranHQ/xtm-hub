@@ -1,11 +1,11 @@
-import { RelayEnvironmentProvider } from 'react-relay/hooks';
-import React, { FunctionComponent, ReactNode } from 'react';
-import { render } from '@testing-library/react';
-import { createMockEnvironment } from 'relay-test-utils';
-import { EnvironmentConfig } from 'relay-runtime';
-import userEvent from '@testing-library/user-event';
-import { meContext_fragment$data } from '../../../__generated__/meContext_fragment.graphql';
 import { PortalContext } from '@/components/portal-context';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { FunctionComponent, ReactNode } from 'react';
+import { RelayEnvironmentProvider } from 'react-relay/hooks';
+import { EnvironmentConfig } from 'relay-runtime';
+import { createMockEnvironment } from 'relay-test-utils';
+import { meContext_fragment$data } from '../../../__generated__/meContext_fragment.graphql';
 
 export interface ProvidersWrapperProps {
   children: ReactNode;

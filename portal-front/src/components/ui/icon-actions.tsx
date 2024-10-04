@@ -1,10 +1,10 @@
-import { FunctionComponent, ReactNode } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
+import { FunctionComponent, ReactNode } from 'react';
 
 interface IconActionsProps {
   children: ReactNode;

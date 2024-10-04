@@ -1,13 +1,12 @@
-import * as React from 'react';
+import { OrganizationFormSheet } from '@/components/organization/organization-form-sheet';
+import { organizationFormSchema } from '@/components/organization/organization-form.schema';
+import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
+import TriggerButton from '@/components/ui/trigger-button';
+import { useToast } from 'filigran-ui/clients';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
-import { organizationCreateMutation } from '../../../__generated__/organizationCreateMutation.graphql';
-import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
-import { OrganizationFormSheet } from '@/components/organization/organization-form-sheet';
 import { z } from 'zod';
-import { organizationFormSchema } from '@/components/organization/organization-form.schema';
-import { useToast } from 'filigran-ui/clients';
-import TriggerButton from '@/components/ui/trigger-button';
+import { organizationCreateMutation } from '../../../__generated__/organizationCreateMutation.graphql';
 
 interface CreateOrganizationProps {
   connectionId: string;
@@ -47,9 +46,13 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
     <OrganizationFormSheet
       open={openSheet}
       setOpen={setOpenSheet}
-      trigger={<TriggerButton label="Create organization" />}
+      trigger={
+        <TriggerButton
+          className="truncate inline-block "
+          label="Create organization"
+        />
+      }
       title={'Create a new organization'}
-
       handleSubmit={handleSubmit}
     />
   );

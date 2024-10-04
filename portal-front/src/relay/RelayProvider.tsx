@@ -1,14 +1,14 @@
 'use client';
 
 //For more informations check : https://github.com/tobias-tengler/nextjs-relay-streaming-ssr
-import { useStream } from './useStream';
-import { useServerInsertedHTML } from 'next/navigation';
-import React, { ReactNode, useMemo, useRef } from 'react';
-import { RelayEnvironmentProvider } from 'react-relay';
 import {
   createClientSideRelayEnvironment,
   createServerSideRelayEnvironment,
 } from '@/relay/environment';
+import { useServerInsertedHTML } from 'next/navigation';
+import { ReactNode, useMemo, useRef } from 'react';
+import { RelayEnvironmentProvider } from 'react-relay';
+import { useStream } from './useStream';
 
 interface RelayProviderProps {
   children: ReactNode;
