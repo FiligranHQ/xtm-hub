@@ -1,21 +1,20 @@
 'use client';
 
+import { EmptyServices } from '@/components/service/home/empty-services';
+import { OwnedServicesList } from '@/components/service/home/owned-services-list';
+import {
+  userServiceOwnedFragment,
+  UserServiceOwnedQuery,
+} from '@/components/service/user_service.graphql';
 import * as React from 'react';
 import {
   PreloadedQuery,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import {
-  userServiceOwnedFragment,
-  UserServiceOwnedQuery,
-} from '@/components/service/user_service.graphql';
 import { userServiceOwnedQuery } from '../../../../__generated__/userServiceOwnedQuery.graphql';
 import { userServiceOwnedUser$key } from '../../../../__generated__/userServiceOwnedUser.graphql';
 import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
-import { EmptyServices } from '@/components/service/home/empty-services';
-import { OwnedServicesList } from '@/components/service/home/owned-services-list';
-import {useTranslations} from "next-intl";
 
 interface OwnedServicesProps {
   queryRef: PreloadedQuery<userServiceOwnedQuery>;
@@ -24,7 +23,6 @@ interface OwnedServicesProps {
 const OwnedServices: React.FunctionComponent<OwnedServicesProps> = ({
   queryRef,
 }) => {
-
   const queryData = usePreloadedQuery<userServiceOwnedQuery>(
     UserServiceOwnedQuery,
     queryRef

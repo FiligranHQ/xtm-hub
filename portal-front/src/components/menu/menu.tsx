@@ -1,13 +1,12 @@
 'use client';
-import { Button, buttonVariants } from 'filigran-ui/servers';
-import { Separator } from 'filigran-ui/clients';
-import Link from 'next/link';
+import { NavigationApp } from '@/components/navigation';
 import { cn } from '@/lib/utils';
-import * as React from 'react';
-import { ElementType, FunctionComponent, useCallback, useState } from 'react';
-import MenuAdmin from '@/components/menu/menu-admin';
-import { HomeIcon, KeyboardArrowLeftIcon } from 'filigran-icon';
+import { KeyboardArrowLeftIcon } from 'filigran-icon';
+import { Separator } from 'filigran-ui/clients';
+import { Button, buttonVariants } from 'filigran-ui/servers';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ElementType, FunctionComponent, useCallback, useState } from 'react';
 
 interface LinkMenuProps {
   open: boolean;
@@ -52,23 +51,10 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'z-9 sticky top-[4rem] flex h-[calc(100vh-4rem)] flex-col justify-between overflow-y-auto overflow-x-hidden border-r bg-background bg-page-background py-2 duration-300 ease-in-out',
+        'mobile:hidden z-9 sticky top-[4rem] flex h-[calc(100vh-4rem)] flex-col justify-between overflow-y-auto overflow-x-hidden border-r bg-page-background py-2 duration-300 ease-in-out',
         open ? 'w-48' : 'w-16'
       )}>
-      <nav>
-        <ul>
-          <li>
-            <LinkMenu
-              open={open}
-              href={'/'}
-              icon={HomeIcon}
-              text={'Home'}
-            />
-          </li>
-          <Separator className="my-2" />
-          <MenuAdmin open={open} />
-        </ul>
-      </nav>
+      <NavigationApp open={open} />
       <div>
         <Separator className="my-2" />
         <Button
@@ -83,7 +69,6 @@ const Menu = () => {
               )}
             />
           </span>
-
           <span className={cn(open ? 'ml-2' : 'sr-only')}>Collapse</span>
         </Button>
       </div>

@@ -1,6 +1,5 @@
 'use client';
-import * as React from 'react';
-import { Fragment, FunctionComponent, ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,7 +9,7 @@ import {
   BreadcrumbSeparator,
 } from 'filigran-ui/servers';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import { Fragment, FunctionComponent, ReactNode } from 'react';
 
 interface BreadcrumbProps {
   value: BreadcrumbNavLink[];
@@ -25,7 +24,7 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
   value,
 }) => {
   return (
-    <Breadcrumb className="pb-l">
+    <Breadcrumb className="pb-s sm:pb-l">
       <BreadcrumbList>
         {value.map(({ href, label }, index) => {
           const lastIndex = value.length - 1 === index;

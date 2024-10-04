@@ -1,5 +1,5 @@
-import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
+import { RequestParameters, Variables } from 'relay-runtime';
 
 export const fetchFormData = async (
   apiUri: string,

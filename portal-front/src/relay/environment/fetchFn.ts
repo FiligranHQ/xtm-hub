@@ -1,11 +1,11 @@
+import { createClient } from 'graphql-sse';
+import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import {
   GraphQLResponse,
   Observable,
   RequestParameters,
   Variables,
 } from 'relay-runtime';
-import { createClient } from 'graphql-sse';
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
 function prepareUri(uri: string | undefined) {
   if (uri) {

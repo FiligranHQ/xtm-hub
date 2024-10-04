@@ -54,7 +54,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
 
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
-      <div className="flex flex-col items-center p-xl sm:p-0">
+      <div className="flex flex-col items-center p-l sm:p-0">
         <FiligranLogo className="text-primary px-xl" />
         <LoginTitleForm />
         <Form {...form}>

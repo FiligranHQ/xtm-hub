@@ -1,15 +1,13 @@
-import * as React from 'react';
+import { OrganizationFormSheet } from '@/components/organization/organization-form-sheet';
+import { organizationFormSchema } from '@/components/organization/organization-form.schema';
+import { OrganizationEditMutation } from '@/components/organization/organization.graphql';
+import { useToast } from 'filigran-ui/clients';
+import { Button } from 'filigran-ui/servers';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
-import { OrganizationEditMutation } from '@/components/organization/organization.graphql';
-import { OrganizationFormSheet } from '@/components/organization/organization-form-sheet';
-import { EditIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
-import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
-import { organizationEditMutation } from '../../../__generated__/organizationEditMutation.graphql';
 import { z } from 'zod';
-import { organizationFormSchema } from '@/components/organization/organization-form.schema';
-import { useToast } from 'filigran-ui/clients';
+import { organizationEditMutation } from '../../../__generated__/organizationEditMutation.graphql';
+import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
 
 interface EditOrganizationProps {
   organization: organizationItem_fragment$data;

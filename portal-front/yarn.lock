@@ -6437,9 +6437,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.19.2":
-  version: 0.19.2
-  resolution: "filigran-ui@npm:0.19.2"
+"filigran-ui@npm:0.19.4":
+  version: 0.19.4
+  resolution: "filigran-ui@npm:0.19.4"
   dependencies:
     "@dnd-kit/core": 6.1.0
     "@dnd-kit/modifiers": 7.0.0
@@ -6470,7 +6470,7 @@ __metadata:
   peerDependencies:
     react: 18.2.0
     react-dom: 18.2.0
-  checksum: f1df7144f6ffc7cb49f3e3bff5cea8918c4b76b20120278baea74843dba22d56a4b2c2a6a6e036f6599228b61e3ca000878f25b4af66ac69c6df45c364d97fb2
+  checksum: c9dbd326896c083a36ebba5d140393cb80ec3d033e7866e35b8707ce2fa1a3d75c7cd3fdfe77f43abe0bcd2663ad25210e32c67077b156cd4d6d60ba44a9684b
   languageName: node
   linkType: hard
 
@@ -8209,9 +8209,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocart-reporter@npm:2.9.0":
-  version: 2.9.0
-  resolution: "monocart-reporter@npm:2.9.0"
+"monocart-reporter@npm:2.9.2":
+  version: 2.9.2
+  resolution: "monocart-reporter@npm:2.9.2"
   dependencies:
     console-grid: ^2.2.2
     eight-colors: ^1.3.1
@@ -8223,7 +8223,7 @@ __metadata:
     nodemailer: ^6.9.15
   bin:
     monocart: lib/cli.js
-  checksum: e091867e7f86a7a93543dccf5b1b764a23d58c60d07aa7296dbc382f7d08595604ee1ed6fb5e663a2248656bb4c5b7dd4bf5e80567b1d1d2b214dd67c0db5f6b
+  checksum: b671304f202d5f4663b1ac32ddc9f6669226ef3aba28ef4e3599dacad2ac607f7b670f2b8f9e1fb759d0e8ded5e0d1b29f487519577e4cf6a56136d49f406c0f
   languageName: node
   linkType: hard
 
@@ -8859,18 +8859,19 @@ __metadata:
     eslint-config-prettier: 9.1.0
     extract-files: 13.0.0
     filigran-icon: 0.9.0
-    filigran-ui: 0.19.2
+    filigran-ui: 0.19.4
     graphql: 16.9.0
     graphql-sse: 2.5.3
     husky: 9.1.6
     jsdom: 25.0.1
     lint-staged: 15.2.10
-    monocart-reporter: 2.9.0
+    monocart-reporter: 2.9.2
     next: 14.2.14
     next-intl: 3.20.0
     next-themes: 0.3.0
     postcss: 8.4.47
     prettier: 3.3.3
+    prettier-plugin-organize-imports: 4.1.0
     prettier-plugin-tailwindcss: 0.6.8
     react: 18.3.1
     react-dom: 18.3.1
@@ -8878,7 +8879,7 @@ __metadata:
     react-relay: 18.0.0
     relay-compiler: 18.0.0
     relay-test-utils: 18.0.0
-    tailwind-merge: 2.5.2
+    tailwind-merge: 2.5.3
     tailwindcss: 3.4.13
     tailwindcss-animate: 1.0.7
     typescript: 5.6.2
@@ -9004,6 +9005,20 @@ __metadata:
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
   checksum: cd192ec0d0a8e4c6da3bb80e4f62afe336df3f76271ac6deb0e6a36187133b6073a19e9727a1ff108cd8b9982e4768850d413baa71214dd80c7979617dca827a
+  languageName: node
+  linkType: hard
+
+"prettier-plugin-organize-imports@npm:4.1.0":
+  version: 4.1.0
+  resolution: "prettier-plugin-organize-imports@npm:4.1.0"
+  peerDependencies:
+    prettier: ">=2.0"
+    typescript: ">=2.9"
+    vue-tsc: ^2.1.0
+  peerDependenciesMeta:
+    vue-tsc:
+      optional: true
+  checksum: 43c917959170fa3e30e41f9b3bd314a31462ae34e5568b4dba6b1c8b8da758adf900fdf4999333ab2b60b3d1af541f9521396a5e19df03ab5400a50edc9a75f6
   languageName: node
   linkType: hard
 
@@ -10213,10 +10228,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-merge@npm:2.5.2":
-  version: 2.5.2
-  resolution: "tailwind-merge@npm:2.5.2"
-  checksum: af745fc16245ac14eb5d3f0b9d076c024321877ad45f43b324465f6aa7f8b5de3816640594fbf6ac8b3500f70ff2687345787888744196ff6f82dfe9a1f99b97
+"tailwind-merge@npm:2.5.3":
+  version: 2.5.3
+  resolution: "tailwind-merge@npm:2.5.3"
+  checksum: 2f91798d1b659911d37f3793b7729dc040e2520bc0ff118a6aa3041e7c003b4c63b45b89f2813b5a9da895c6271c253838f83b2932128e4b9cb87701d4442df2
   languageName: node
   linkType: hard
 

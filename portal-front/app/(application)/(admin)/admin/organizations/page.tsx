@@ -1,8 +1,8 @@
 'use client';
-import * as React from 'react';
 import GuardCapacityComponent from '@/components/admin-guard';
-import OrganizationPage from '@/components/organization/organization-page';
 import { RESTRICTION } from '@/utils/constant';
+import * as React from 'react';
+import PageLoader from './page-loader';
 
 interface PageProps {}
 
@@ -11,7 +11,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
   return (
     <GuardCapacityComponent
       capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-      <OrganizationPage />
+      <PageLoader />
     </GuardCapacityComponent>
   );
 };

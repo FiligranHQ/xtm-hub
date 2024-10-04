@@ -1,13 +1,13 @@
-import { useFragment } from 'react-relay';
-import { FunctionComponent } from 'react';
+import { messageTrackingFragment } from '@/components/data-tracking/tracking.graphql';
+import { FormatDate } from '@/utils/date';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from 'filigran-ui/clients';
-import { FormatDate } from '@/utils/date';
-import { messageTrackingFragment } from '@/components/data-tracking/tracking.graphql';
+import { FunctionComponent } from 'react';
+import { useFragment } from 'react-relay';
 import {
   trackingMessage_fragment$data,
   trackingMessage_fragment$key,

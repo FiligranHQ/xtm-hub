@@ -1,14 +1,13 @@
-import { useFragment } from 'react-relay';
-import * as React from 'react';
-import { FunctionComponent } from 'react';
-import { DataTable } from 'filigran-ui/clients';
-import { ColumnDef } from '@tanstack/react-table';
-import { FormatDate } from '@/utils/date';
 import { MessageTracking } from '@/components/data-tracking/message-tracking';
-import { DialogCloseButton } from '@/components/ui/dialog-close-button';
 import { dataTrackingFragment } from '@/components/data-tracking/tracking.graphql';
-import { trackingMessage_fragment$key } from '../../../__generated__/trackingMessage_fragment.graphql';
+import { DialogCloseButton } from '@/components/ui/dialog-close-button';
+import { FormatDate } from '@/utils/date';
+import { ColumnDef } from '@tanstack/react-table';
+import { DataTable } from 'filigran-ui/clients';
+import { FunctionComponent } from 'react';
+import { useFragment } from 'react-relay';
 import { trackingData_fragment$key } from '../../../__generated__/trackingData_fragment.graphql';
+import { trackingMessage_fragment$key } from '../../../__generated__/trackingMessage_fragment.graphql';
 
 interface DataTrackingObject {
   readonly contextual_id: string;

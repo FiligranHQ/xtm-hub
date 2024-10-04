@@ -1,14 +1,13 @@
-import * as React from 'react';
+import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
+import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
+import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
+import TriggerButton from '@/components/ui/trigger-button';
+import { useToast } from 'filigran-ui/clients';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
-import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
-import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
-import { useToast } from 'filigran-ui/clients';
 import { userSlugEditMutation } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
-import TriggerButton from '@/components/ui/trigger-button';
 
 interface EditUserProps {
   user: userSlug_fragment$data;
@@ -45,10 +44,6 @@ export const EditUser: FunctionComponent<EditUserProps> = ({ user }) => {
       setOpen={setOpenSheet}
       user={user}
       validationSchema={userEditFormSchema}
-      trigger={
-        <TriggerButton
-          label="Edit"
-        />
-      }></UserFormSheet>
+      trigger={<TriggerButton label="Edit" />}></UserFormSheet>
   );
 };

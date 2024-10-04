@@ -1,3 +1,17 @@
+import { CreateUser } from '@/components/admin/user/user-create';
+import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import {
+  UserListQuery,
+  usersFragment,
+} from '@/components/admin/user/user.graphql';
+import {
+  mapToSortingTableValue,
+  transformSortingValueToParams,
+} from '@/components/ui/handle-sorting.utils';
+import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
+import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
+import { Input } from 'filigran-ui/servers';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useState } from 'react';
 import {
@@ -6,32 +20,17 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
-import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { DataTable } from 'filigran-ui/clients';
-import {
-  mapToSortingTableValue,
-  transformSortingValueToParams,
-} from '@/components/ui/handle-sorting.utils';
-import { CreateUser } from '@/components/admin/user/user-create';
-import {
-  UserListQuery,
-  usersFragment,
-} from '@/components/admin/user/user.graphql';
 import {
   OrderingMode,
   UserOrdering,
   userQuery,
   userQuery$variables,
 } from '../../../../__generated__/userQuery.graphql';
-import { useLocalStorage } from 'usehooks-ts';
-import { useRouter } from 'next/navigation';
-import { Input } from 'filigran-ui/servers';
-import { DataTableHeadBarOptions } from 'filigran-ui/clients';
 
 // Component interface
 interface ServiceProps {
   queryRef: PreloadedQuery<userQuery>;
+  columns: ColumnDef<UserData>[];
 }
 
 export interface UserData {
@@ -41,45 +40,27 @@ export interface UserData {
   last_name: string | null | undefined;
 }
 
-const breadcrumbValue = [
-  {
-    label: 'Backoffice',
-  },
-  {
-    label: 'Users',
-  },
-];
-
-const columns: ColumnDef<UserData>[] = [
-  {
-    accessorKey: 'first_name',
-    id: 'first_name',
-    header: 'First name',
-  },
-  {
-    accessorKey: 'last_name',
-    id: 'last_name',
-    header: 'Last name',
-  },
-  {
-    accessorKey: 'email',
-    id: 'email',
-    header: 'Email',
-  },
-];
 // Component
-const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
+const UserList: React.FunctionComponent<ServiceProps> = ({
+  queryRef,
+  columns,
+}) => {
   const router = useRouter();
   const queryData = usePreloadedQuery<userQuery>(UserListQuery, queryRef);
-  const [pageSize, setPageSize] = useLocalStorage('countUserList', 50);
-  const [orderMode, setOrderMode] = useLocalStorage<OrderingMode>(
-    'orderModeUserList',
-    'asc'
-  );
-  const [orderBy, setOrderBy] = useLocalStorage<UserOrdering>(
-    'orderByUserList',
-    'email'
-  );
+  const {
+    pageSize,
+    setPageSize,
+    orderMode,
+    setOrderMode,
+    orderBy,
+    setOrderBy,
+    columnOrder,
+    setColumnOrder,
+    columnVisibility,
+    setColumnVisibility,
+    resetAll,
+  } = useUserListLocalstorage(columns);
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize,
@@ -135,46 +116,46 @@ const UserList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     router.push(`/admin/user/${row.original.id}`);
   };
   const handleInputChange = (inputValue: string) => {
-    console.log('inputValue', inputValue);
     refetch({
       filter: inputValue,
     });
   };
   return (
-    <>
-      <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">Users list</h1>
+    <DataTable
+      columns={columns}
+      data={userData}
+      onResetTable={resetAll}
+      tableOptions={{
+        onSortingChange: onSortingChange,
+        onPaginationChange: onPaginationChange,
+        onColumnOrderChange: setColumnOrder,
+        onColumnVisibilityChange: setColumnVisibility,
+        manualSorting: true,
+        manualPagination: true,
+        rowCount: data.users.totalCount,
+      }}
+      toolbar={
+        <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
+          <Input
+            className="w-full sm:w-1/3"
+            placeholder={'Search with email...'}
+            onChange={(e) => handleInputChange(e.target.value)}
+          />
 
-      <DataTable
-        columns={columns}
-        data={userData}
-        tableOptions={{
-          onSortingChange: onSortingChange,
-          onPaginationChange: onPaginationChange,
-          manualSorting: true,
-          manualPagination: true,
-          rowCount: data.users.totalCount,
-        }}
-        toolbar={
-          <div className="flex items-center justify-between gap-s">
-            <Input
-              className="w-1/3"
-              placeholder={'Search with email...'}
-              onChange={(e) => handleInputChange(e.target.value)}></Input>
-
-            <div className="flex items-center gap-s">
-              <DataTableHeadBarOptions />
-              <CreateUser connectionId={data?.users?.__id} />
-            </div>
+          <div className="justify-between flex w-full sm:w-auto items-center gap-s">
+            <DataTableHeadBarOptions />
+            <CreateUser connectionId={data?.users?.__id} />
           </div>
-        }
-        tableState={{
-          sorting: mapToSortingTableValue(orderBy, orderMode),
-          pagination,
-        }}
-        onClickRow={onClickRow}
-      />
-    </>
+        </div>
+      }
+      tableState={{
+        sorting: mapToSortingTableValue(orderBy, orderMode),
+        pagination,
+        columnOrder,
+        columnVisibility,
+      }}
+      onClickRow={onClickRow}
+    />
   );
 };
 

@@ -1,12 +1,11 @@
 'use client';
-import * as React from 'react';
-import Head from 'next/head';
-import { geologica, ibmPlexSans } from '../../app/font';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { Toaster } from 'filigran-ui';
-import { ThemeProvider } from 'next-themes';
-import { getUserLocale } from '@/i18n/locale';
 import { useLocale } from 'next-intl';
+import { ThemeProvider } from 'next-themes';
+import Head from 'next/head';
+import * as React from 'react';
+import { geologica, ibmPlexSans } from '../../app/font';
 
 // Component interface
 interface AppProps {

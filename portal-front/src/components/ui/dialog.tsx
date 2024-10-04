@@ -7,8 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from 'filigran-ui/clients';
-import { FunctionComponent, ReactNode } from 'react';
 import { Button } from 'filigran-ui/servers';
+import { FunctionComponent, ReactNode } from 'react';
 
 interface DialogInformativeProps {
   isOpen: boolean;

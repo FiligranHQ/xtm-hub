@@ -1,10 +1,10 @@
 'use client';
 
+import { MeContextFragment, MeQuery } from '@/components/me.graphql';
+import { PortalContext } from '@/components/portal-context';
 import * as React from 'react';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
-import { PortalContext } from '@/components/portal-context';
 import { meContext_fragment$key } from '../../__generated__/meContext_fragment.graphql';
-import { MeContextFragment, MeQuery } from '@/components/me.graphql';
 import { meLoaderQuery } from '../../__generated__/meLoaderQuery.graphql';
 
 // Component interface

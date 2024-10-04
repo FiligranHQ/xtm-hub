@@ -1,4 +1,3 @@
-import React, { FunctionComponent, ReactNode, useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +10,8 @@ import {
   AlertDialogTrigger,
 } from 'filigran-ui/clients';
 import { buttonVariants } from 'filigran-ui/servers';
-import {useTranslations} from "next-intl";
+import { useTranslations } from 'next-intl';
+import { FunctionComponent, ReactNode } from 'react';
 
 interface AlertDialogProps {
   triggerElement: ReactNode;
