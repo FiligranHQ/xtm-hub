@@ -1,8 +1,11 @@
-import * as React from 'react';
-import { FunctionComponent, ReactNode } from 'react';
-import { z, ZodSchema } from 'zod';
+import {
+  userEditFormSchema,
+  userFormSchema,
+} from '@/components/admin/user/user-form.schema';
+import { getOrganizations } from '@/components/organization/organization.service';
+import { getRolesPortal } from '@/components/role-portal/role-portal.service';
+import useGranted from '@/hooks/useGranted';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -24,14 +27,10 @@ import {
   SheetTrigger,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
-import { getRolesPortal } from '@/components/role-portal/role-portal.service';
-import { getOrganizations } from '@/components/organization/organization.service';
+import { FunctionComponent, ReactNode } from 'react';
+import { useForm } from 'react-hook-form';
+import { z, ZodSchema } from 'zod';
 import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
-import {
-  userEditFormSchema,
-  userFormSchema,
-} from '@/components/admin/user/user-form.schema';
-import useGranted from '@/hooks/useGranted';
 
 interface UserFormSheetProps {
   user?: userSlug_fragment$data;

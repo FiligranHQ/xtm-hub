@@ -1,3 +1,8 @@
+import GuardCapacityComponent from '@/components/admin-guard';
+import useGranted from '@/hooks/useGranted';
+import { cn } from '@/lib/utils';
+import { RESTRICTION } from '@/utils/constant';
+import { GroupIcon, OrganizationIcon, SettingsIcon } from 'filigran-icon';
 import {
   Accordion,
   AccordionContent,
@@ -8,20 +13,9 @@ import {
   PopoverTrigger,
 } from 'filigran-ui/clients';
 import { Button, buttonVariants } from 'filigran-ui/servers';
-import * as React from 'react';
-import { ElementType, FunctionComponent, useEffect, useState } from 'react';
-import useGranted from '@/hooks/useGranted';
-import {
-  ForumIcon,
-  GroupIcon,
-  OrganizationIcon,
-  SettingsIcon,
-} from 'filigran-icon';
-import { usePathname } from 'next/navigation';
-import { RESTRICTION } from '@/utils/constant';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import GuardCapacityComponent from '@/components/admin-guard';
+import { usePathname } from 'next/navigation';
+import { ElementType, FunctionComponent, useEffect, useState } from 'react';
 
 export interface MenuAdminProps {
   open: boolean;

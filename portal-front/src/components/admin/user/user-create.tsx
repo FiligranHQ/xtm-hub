@@ -1,19 +1,18 @@
-import * as React from 'react';
-import { FunctionComponent, useContext, useState } from 'react';
-import { useMutation } from 'react-relay';
-import { z } from 'zod';
-import { userListCreateMutation } from '../../../../__generated__/userListCreateMutation.graphql';
-import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
+import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
 import {
   userEditFormSchema,
   userFormSchema,
 } from '@/components/admin/user/user-form.schema';
-import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
-import { useToast } from 'filigran-ui/clients';
-import useGranted from '@/hooks/useGranted';
-import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
+import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
 import TriggerButton from '@/components/ui/trigger-button';
+import useGranted from '@/hooks/useGranted';
+import { useToast } from 'filigran-ui/clients';
+import { FunctionComponent, useContext, useState } from 'react';
+import { useMutation } from 'react-relay';
+import { z } from 'zod';
+import { userListCreateMutation } from '../../../../__generated__/userListCreateMutation.graphql';
+import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
 
 interface CreateUserProps {
   connectionId: string;

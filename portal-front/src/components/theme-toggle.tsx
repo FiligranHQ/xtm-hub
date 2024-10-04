@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { useTheme } from 'next-themes';
 
 import {
@@ -9,8 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from 'filigran-ui/clients';
-import { MoonIcon, SunIcon } from 'lucide-react';
 import { Button } from 'filigran-ui/servers';
+import { MoonIcon, SunIcon } from 'lucide-react';
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();

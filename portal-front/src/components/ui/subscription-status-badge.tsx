@@ -1,6 +1,5 @@
-import { Badge } from 'filigran-ui/servers';
-import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { Badge } from 'filigran-ui/servers';
 import { FunctionComponent } from 'react';
 
 export type SubscriptionStatusTypeBadge = 'ACCEPTED' | 'REQUESTED' | 'REFUSED';

@@ -5,15 +5,15 @@ import '../../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 
-import Login from '@/components/login/login';
 import AppContext from '@/components/app-context';
-import HeaderComponent from '@/components/header';
-import PageLoader from './page-loader';
 import { ContentLayout } from '@/components/content-layout';
+import HeaderComponent from '@/components/header';
+import Login from '@/components/login/login';
+import I18nContext from '@/i18n/i18n-context';
 import meLoaderQueryNode, {
   meLoaderQuery,
 } from '../../__generated__/meLoaderQuery.graphql';
-import I18nContext from '@/i18n/i18n-context';
+import PageLoader from './page-loader';
 
 // Component interface
 interface RootLayoutProps {

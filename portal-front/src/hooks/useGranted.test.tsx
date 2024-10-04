@@ -1,6 +1,6 @@
+import useGranted from '@/hooks/useGranted';
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
 import { renderHook } from '@testing-library/react-hooks';
-import useGranted from '@/hooks/useGranted';
 
 describe('useGranted', () => {
   it('user BYPASS should have all the rights', () => {

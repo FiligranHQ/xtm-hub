@@ -1,15 +1,14 @@
 'use client';
 
-import * as React from 'react';
-import { useQueryLoader } from 'react-relay';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import Loader from '@/components/loader';
 import ServiceSlug from '@/components/service/[slug]/service-slug';
-import { SubscriptionsByService } from '@/components/subcription/subscription.graphql';
-import { subscriptionByServiceQuery } from '../../../../../../__generated__/subscriptionByServiceQuery.graphql';
-import { serviceByIdQuery } from '../../../../../../__generated__/serviceByIdQuery.graphql';
 import { ServiceById } from '@/components/service/service.graphql';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { SubscriptionsByService } from '@/components/subcription/subscription.graphql';
+import useMountingLoader from '@/hooks/useMountingLoader';
+import * as React from 'react';
+import { useQueryLoader } from 'react-relay';
+import { serviceByIdQuery } from '../../../../../../__generated__/serviceByIdQuery.graphql';
+import { subscriptionByServiceQuery } from '../../../../../../__generated__/subscriptionByServiceQuery.graphql';
 
 // Component interface
 interface PreloaderProps {

@@ -1,12 +1,12 @@
-import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
-import { Tabs, TabsList, TabsTrigger } from 'filigran-ui/clients';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { Button } from 'filigran-ui/servers';
-import { AddIcon, DeleteIcon } from 'filigran-icon';
 import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import { SubscriptionTabContent } from '@/components/service/[slug]/subscription-tab-content';
-import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { AddIcon, DeleteIcon } from 'filigran-icon';
+import { Tabs, TabsList, TabsTrigger } from 'filigran-ui/clients';
+import { Button } from 'filigran-ui/servers';
 import { FunctionComponent } from 'react';
+import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
+import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 
 interface SubscriptionTabsProps {
   subscriptions: subscriptionByService_fragment$data[] | undefined;
@@ -34,7 +34,6 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
 }) => {
   return (
     <Tabs
-
       defaultValue={
         subscriptions?.[0]?.user_service?.[0]?.user?.organization.name ?? ''
       }>

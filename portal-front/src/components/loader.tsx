@@ -1,5 +1,4 @@
 import { FiligranLoader } from 'filigran-icon';
-import * as React from 'react';
 
 const Loader = () => {
   return (

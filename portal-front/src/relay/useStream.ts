@@ -1,7 +1,7 @@
-import { RELAY_WINDOW_KEY } from './environment/helpers';
-import { QueryResponsePayload } from './environment/server';
 import { useCallback, useMemo, useRef } from 'react';
 import { Observer } from 'relay-runtime';
+import { RELAY_WINDOW_KEY } from './environment/helpers';
+import { QueryResponsePayload } from './environment/server';
 
 export function useStream() {
   const responseStream = useRef<QueryResponsePayload[]>([]);
