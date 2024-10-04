@@ -47,6 +47,8 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
       - name: Build and push portal deps
         uses: docker/build-push-action@v5
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         with:
           context: ${{ matrix.image }}
           push: true
