@@ -37,14 +37,14 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
       defaultValue={
         subscriptions?.[0]?.user_service?.[0]?.user?.organization.name ?? ''
       }>
-      <TabsList className="h-12 p-0">
+      <TabsList className="justify-start min-12 p-0 h-auto overflow-auto w-full">
         {subscriptions?.map((subscription) => (
           <TabsTrigger
             key={subscription?.user_service?.[0]?.user?.organization.name}
             value={
               subscription?.user_service?.[0]?.user?.organization.name ?? ''
             }
-            className="h-12 data-[state=active]:bg-page-background">
+            className=" data-[state=active]:bg-page-background">
             {subscription?.user_service?.[0]?.user?.organization.name} (billing:{' '}
             {subscription?.billing} %)
             {subscription?.billing === 0 && (
@@ -79,8 +79,8 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
             serviceId={serviceId}
             trigger={
               <Button
+                className="text-nowrap"
                 variant="ghost"
-                className="h-12"
                 aria-label="Add organization">
                 <AddIcon className="mr-2 h-4 w-4" />
                 Add organization

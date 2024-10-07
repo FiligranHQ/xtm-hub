@@ -67,7 +67,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         enableSorting: false,
         cell: ({ row }) => {
           return (
-            <>
+            <div className="truncate">
               {row.original?.service_capability?.map((service_capa) => (
                 <Badge
                   key={service_capa?.id}
@@ -75,7 +75,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                   {service_capa?.service_capability_name}
                 </Badge>
               ))}
-            </>
+            </div>
           );
         },
       },

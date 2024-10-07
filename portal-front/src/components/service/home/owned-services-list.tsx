@@ -48,7 +48,7 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
                         buttonVariants({
                           variant: 'ghost',
                           className: cn(
-                            'h-9 w-full justify-start rounded-none border-none'
+                            'h-9 w-full justify-start rounded-none'
                           ),
                         })
                       )}

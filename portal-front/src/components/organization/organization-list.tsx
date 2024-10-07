@@ -36,6 +36,7 @@ const OrganizationList: FunctionComponent = () => {
       accessorKey: 'domains',
       id: 'domains',
       header: 'Domains',
+      enableSorting: false,
       cell: ({ row }) => {
         return (
           <div className="flex space-x-s">
@@ -156,9 +157,7 @@ const OrganizationList: FunctionComponent = () => {
         data={organizationDataTable}
         toolbar={
           <div className="flex items-center justify-between sm:justify-end gap-s">
-            <div className="flex-0 flex-shrink-0">
-              <DataTableHeadBarOptions />
-            </div>
+            <DataTableHeadBarOptions />
             <CreateOrganization
               connectionId={organizationData.organizations.__id}
             />
