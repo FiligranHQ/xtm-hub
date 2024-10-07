@@ -27,6 +27,9 @@ jobs:
         include:
         - image: portal-front
         - image: portal-api
+    outputs:
+      docker-tags: ${{ steps.meta.outputs.tags }}
+      docker-labels: ${{ steps.meta.outputs.labels }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -71,7 +74,7 @@ jobs:
       - name: Launch docker compose
         uses: hoverkraft-tech/compose-action@v2.0.2
         env:
-          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+          IMAGE_TAGS: ${{ needs.build-deps.outputs.docker-tags }}
         with:
           compose-file: "./xtm-hub-dev/docker-compose-ci.yml"
           services: "portal-e2e-tests"
@@ -80,8 +83,8 @@ jobs:
         with:
           context: portal-api
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ needs.build-deps.outputs.docker-tags }}
+          labels: ${{ needs.build-deps.outputs.docker-labels }}
           image: filigran/portal-api
           cache-from: xtm-hub-dev-portal-api
       - name: Build and push portal-front
@@ -89,16 +92,16 @@ jobs:
         with:
           context: portal-front
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ needs.build-deps.outputs.docker-tags }}
+          labels: ${{ needs.build-deps.outputs.docker-labels }}
           cache-from: xtm-hub-dev-portal-front
       - name: Build and push portal-e2e-tests
         uses: docker/build-push-action@v5
         with:
           context: portal-e2e-tests
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ needs.build-deps.outputs.docker-tags }}
+          labels: ${{ needs.build-deps.outputs.docker-labels }}
           cache-from: xtm-hub-dev-portal-e2e-tests
       - name: restart deployment on staging
         if: github.event_name != 'pull_request'
