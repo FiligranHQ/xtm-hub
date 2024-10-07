@@ -34,7 +34,6 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
   return (
     <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center justify-between border-b bg-page-background px-4 shadow-md">
       <Logo className="mr-2 h-8 w-8" />
-
       <div className="mobile:hidden flex items-center gap-s">
         <span className="text-xl">
           {me?.email ? (
@@ -55,7 +54,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
         <ThemeToggle />
         <I18nSelect />
       </div>
-      <div className="flex items-center sm:hidden">
+      <div className="flex gap-xs items-center sm:hidden">
         <ThemeToggle />
         <I18nSelect />
         <Sheet
