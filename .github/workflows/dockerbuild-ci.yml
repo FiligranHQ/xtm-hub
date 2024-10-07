@@ -71,7 +71,7 @@ jobs:
       - name: Launch docker compose
         uses: hoverkraft-tech/compose-action@v2.0.2
         env:
-          GITHUB_REF_NAME: ${{ github.ref_name }}
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
         with:
           compose-file: "./xtm-hub-dev/docker-compose-ci.yml"
           services: "portal-e2e-tests"
