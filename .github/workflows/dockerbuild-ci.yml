@@ -55,7 +55,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=filigran/${{ matrix.image }}-deps:main
+          cache-from: |
+            type=registry,ref=filigran/${{ matrix.image }}-deps:main
+            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           target: deps
   backend-tests:
     needs: build-deps
