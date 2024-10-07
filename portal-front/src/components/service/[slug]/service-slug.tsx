@@ -109,14 +109,14 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         }
       />
 
-      <div>{queryDataService.serviceById?.description}</div>
+      <div className="pb-s">{queryDataService.serviceById?.description}</div>
       <GuardCapacityComponent
         capacityRestriction={[
           RESTRICTION.CAPABILITY_BYPASS,
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
           RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
         ]}>
-        <div className="flex justify-end">
+        <div className="flex justify-end pb-s">
           <ServiceSlugFormSheet
             open={openSheet}
             setOpen={setOpenSheet}
@@ -144,27 +144,25 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             }
           />
         </div>
-        <div className="pt-xs">
-          <SubscriptionTabs
-            subscriptions={
-              queryData.subscriptionsByServiceId as subscriptionByService_fragment$data[]
-            }
-            serviceType={queryDataService.serviceById?.type}
-            serviceId={serviceId}
-            onRemoveOrganization={onRemoveOrganization}
-            openSheet={openSheet}
-            setOpenSheet={setOpenSheet}
-            setCurrentUser={setCurrentUser}
-            openSheetAddOrga={openSheetAddOrga}
-            setOpenSheetAddOrga={setOpenSheetAddOrga}
-            loadQuery={() =>
-              loadQuery(
-                { service_id: serviceId },
-                { fetchPolicy: 'network-only' }
-              )
-            }
-          />
-        </div>
+        <SubscriptionTabs
+          subscriptions={
+            queryData.subscriptionsByServiceId as subscriptionByService_fragment$data[]
+          }
+          serviceType={queryDataService.serviceById?.type}
+          serviceId={serviceId}
+          onRemoveOrganization={onRemoveOrganization}
+          openSheet={openSheet}
+          setOpenSheet={setOpenSheet}
+          setCurrentUser={setCurrentUser}
+          openSheetAddOrga={openSheetAddOrga}
+          setOpenSheetAddOrga={setOpenSheetAddOrga}
+          loadQuery={() =>
+            loadQuery(
+              { service_id: serviceId },
+              { fetchPolicy: 'network-only' }
+            )
+          }
+        />
       </GuardCapacityComponent>
     </>
   );

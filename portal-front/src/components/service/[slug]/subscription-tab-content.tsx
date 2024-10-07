@@ -16,7 +16,7 @@ export const SubscriptionTabContent: FunctionComponent<
 > = ({ subscription, setOpenSheet, loadQuery, setCurrentUser }) => (
   <TabsContent
     value={subscription?.user_service?.[0]?.user?.organization.name ?? ''}
-    className="m-0 bg-page-background p-xl">
+    className="m-0 bg-page-background pt-xl">
     <ServiceUserServiceSlug
       subscriptionId={subscription?.id}
       data={subscription?.user_service as userService_fragment$data[]}
