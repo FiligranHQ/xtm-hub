@@ -28,7 +28,7 @@ jobs:
         - image: portal-front
         - image: portal-api
     outputs:
-      docker-tags: ${{ steps.meta.outputs.tags }}
+      docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
       docker-labels: ${{ steps.meta.outputs.labels }}
     steps:
       - name: Checkout repository
@@ -49,7 +49,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
       - name: Build and push portal deps
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.image }}
           push: true
