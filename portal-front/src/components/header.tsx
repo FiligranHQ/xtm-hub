@@ -32,10 +32,10 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
     setOpen(false);
   }, [currentPath]);
   return (
-    <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center justify-between border-b bg-page-background px-4 shadow-md">
+    <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center justify-between border-b bg-page-background dark:bg-background px-4">
       <Logo className="mr-2 h-8 w-8" />
       <div className="mobile:hidden flex items-center gap-s">
-        <span className="text-xl">
+        <span>
           {me?.email ? (
             <span> {me.email}</span>
           ) : (

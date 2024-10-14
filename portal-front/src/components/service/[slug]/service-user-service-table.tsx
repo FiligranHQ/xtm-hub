@@ -114,7 +114,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                         variant="ghost"
                         className="w-full justify-start"
                         aria-label="Remove User's rights">
-                        Delete rights
+                        Delete
                       </Button>
                     }
                     onClickContinue={() =>
