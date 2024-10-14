@@ -44,7 +44,7 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
             value={
               subscription?.user_service?.[0]?.user?.organization.name ?? ''
             }
-            className=" data-[state=active]:bg-page-background">
+            className=" data-[state=active]:bg-page-background h-10">
             {subscription?.user_service?.[0]?.user?.organization.name} (billing:{' '}
             {subscription?.billing} %)
             {subscription?.billing === 0 && (
