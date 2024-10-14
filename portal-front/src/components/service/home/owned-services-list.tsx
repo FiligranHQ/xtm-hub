@@ -26,9 +26,10 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
         className={
           'grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'
         }>
-        {services.map(({ subscription, service_capability }) => {
+        {services.map(({ subscription, service_capability, id }) => {
           return (
             <ServiceCard
+              key={id}
               topRightAction={
                 (service_capability?.some(
                   (capa) => capa?.service_capability_name === 'MANAGE_ACCESS'
