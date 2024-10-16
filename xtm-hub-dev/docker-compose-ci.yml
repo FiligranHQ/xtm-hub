@@ -9,7 +9,6 @@ services:
         - type=registry,ref=filigran/portal-front:main
         - type=registry,ref=filigran/portal-front-deps:${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-front-deps:main
-        - type=registry,ref=/tmp/filigran/portal-front-deps:${IMAGE_TAGS}
     ports:
       - "3000:3000"
     depends_on:
@@ -32,7 +31,6 @@ services:
         - type=registry,ref=filigran/portal-api:main
         - type=registry,ref=filigran/portal-api-deps:${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-api-deps:main
-        - type=registry,ref=/tmp/filigran/portal-api-deps:${IMAGE_TAGS}
     ports:
       - "4001:4001"
     healthcheck:
