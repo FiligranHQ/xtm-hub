@@ -21,7 +21,15 @@
     "SureWantSubscriptionDirect": "Are you really sure you want to subscribe this service? This action can not be undone.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
-    "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team."
+    "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
+
+    "Vault": {
+      "VaultTitle": "Vault Administration",
+      "File": "File to send",
+      "DropFile": "Drop the file here",
+      "SelectFile": "New file in Vault"
+
+    }
   },
   "LocaleSwitcher": {
     "fr": "Français",

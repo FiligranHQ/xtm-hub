@@ -200,6 +200,7 @@ export type Mutation = {
   malwareAnalysis: MalwareAnalysis;
   malwareAnalysisResult?: Maybe<GlimpsCallbackTemporary>;
   mergeTest: Scalars['ID']['output'];
+  vaultFile?: Maybe<Scalars['Upload']['output']>;
 };
 
 export type MutationAcceptCommunityArgs = {
@@ -302,6 +303,11 @@ export type MutationMalwareAnalysisResultArgs = {
 export type MutationMergeTestArgs = {
   from: Scalars['ID']['input'];
   target: Scalars['ID']['input'];
+};
+
+
+export type MutationVaultFileArgs = {
+  file?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 export type Node = {
@@ -1294,6 +1300,7 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationMergeTestArgs, 'from' | 'target'>
   >;
+  vaultFile?: Resolver<Maybe<ResolversTypes['Upload']>, ParentType, ContextType, Partial<MutationVaultFileArgs>>;
 }>;
 
 export type NodeResolvers<
