@@ -84,10 +84,30 @@ export type AddUserInput = {
   roles_id: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
+export type AddVaultDataFileInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  fileName: Scalars['String']['input'];
+  minioName: Scalars['String']['input'];
+  shortName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Capability = Node & {
   __typename?: 'Capability';
   id: Scalars['ID']['output'];
   name: Restriction;
+};
+
+export type Document = Node & {
+  __typename?: 'Document';
+  active: Scalars['Boolean']['output'];
+  created_at: Scalars['Date']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  minio_name: Scalars['String']['output'];
+  service_id: Scalars['String']['output'];
+  short_name?: Maybe<Scalars['String']['output']>;
+  uploader_id: Scalars['String']['output'];
 };
 
 export type EditOrganizationInput = {
@@ -185,6 +205,8 @@ export type Mutation = {
   addSubscriptionInCommunity?: Maybe<Array<Maybe<UserService>>>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
+  addVaultDataFile: Document;
+  addVaultFile: Scalars['String']['output'];
   deleteOrganization?: Maybe<Organization>;
   deleteService?: Maybe<Service>;
   deleteSubscription?: Maybe<Subscription>;
@@ -200,7 +222,6 @@ export type Mutation = {
   malwareAnalysis: MalwareAnalysis;
   malwareAnalysisResult?: Maybe<GlimpsCallbackTemporary>;
   mergeTest: Scalars['ID']['output'];
-  vaultFile?: Maybe<Scalars['Upload']['output']>;
 };
 
 export type MutationAcceptCommunityArgs = {
@@ -239,6 +260,17 @@ export type MutationAddUserArgs = {
 export type MutationAddUserServiceArgs = {
   input: UserServiceInput;
 };
+
+
+export type MutationAddVaultDataFileArgs = {
+  input?: InputMaybe<AddVaultDataFileInput>;
+};
+
+
+export type MutationAddVaultFileArgs = {
+  file?: InputMaybe<Scalars['Upload']['input']>;
+};
+
 
 export type MutationDeleteOrganizationArgs = {
   id: Scalars['ID']['input'];
@@ -303,11 +335,6 @@ export type MutationMalwareAnalysisResultArgs = {
 export type MutationMergeTestArgs = {
   from: Scalars['ID']['input'];
   target: Scalars['ID']['input'];
-};
-
-
-export type MutationVaultFileArgs = {
-  file?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 export type Node = {
@@ -832,6 +859,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
     Node:
       | ActionTracking
       | Capability
+      | Document
       | MalwareAnalysis
       | MalwareAnalysisResult
       | MergeEvent
@@ -856,9 +884,11 @@ export type ResolversTypes = ResolversObject<{
   AddServiceInput: AddServiceInput;
   AddServicePriceInput: AddServicePriceInput;
   AddUserInput: AddUserInput;
+  AddVaultDataFileInput: AddVaultDataFileInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Capability: ResolverTypeWrapper<Capability>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
+  Document: ResolverTypeWrapper<Document>;
   EditOrganizationInput: EditOrganizationInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSubscriptionInput: EditSubscriptionInput;
@@ -926,9 +956,11 @@ export type ResolversParentTypes = ResolversObject<{
   AddServiceInput: AddServiceInput;
   AddServicePriceInput: AddServicePriceInput;
   AddUserInput: AddUserInput;
+  AddVaultDataFileInput: AddVaultDataFileInput;
   Boolean: Scalars['Boolean']['output'];
   Capability: Capability;
   Date: Scalars['Date']['output'];
+  Document: Document;
   EditOrganizationInput: EditOrganizationInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSubscriptionInput: EditSubscriptionInput;
@@ -1045,6 +1077,20 @@ export type GlimpsCallbackTemporaryResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type DocumentResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Document'] = ResolversParentTypes['Document']> = ResolversObject<{
+    active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+    created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+    description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+    file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+    id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+    minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+    service_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+    short_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+    uploader_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+    __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+
 export interface JsonScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
@@ -1156,131 +1202,29 @@ export type MessageTrackingResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type MutationResolvers<
-  ContextType = PortalContext,
-  ParentType extends
-    ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation'],
-> = ResolversObject<{
-  acceptCommunity?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['Subscription']>>>,
-    ParentType,
-    ContextType,
-    Partial<MutationAcceptCommunityArgs>
-  >;
-  addOrganization?: Resolver<
-    Maybe<ResolversTypes['Organization']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationAddOrganizationArgs, 'name'>
-  >;
-  addService?: Resolver<
-    Maybe<ResolversTypes['Subscription']>,
-    ParentType,
-    ContextType,
-    Partial<MutationAddServiceArgs>
-  >;
-  addServiceCommunity?: Resolver<
-    Maybe<ResolversTypes['Service']>,
-    ParentType,
-    ContextType,
-    Partial<MutationAddServiceCommunityArgs>
-  >;
-  addServicePrice?: Resolver<
-    Maybe<ResolversTypes['ServicePrice']>,
-    ParentType,
-    ContextType,
-    Partial<MutationAddServicePriceArgs>
-  >;
-  addSubscription?: Resolver<
-    Maybe<ResolversTypes['Service']>,
-    ParentType,
-    ContextType,
-    Partial<MutationAddSubscriptionArgs>
-  >;
-  addSubscriptionInCommunity?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['UserService']>>>,
-    ParentType,
-    ContextType,
-    Partial<MutationAddSubscriptionInCommunityArgs>
-  >;
-  addUser?: Resolver<
-    Maybe<ResolversTypes['User']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationAddUserArgs, 'input'>
-  >;
-  addUserService?: Resolver<
-    Maybe<ResolversTypes['UserService']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationAddUserServiceArgs, 'input'>
-  >;
-  deleteOrganization?: Resolver<
-    Maybe<ResolversTypes['Organization']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteOrganizationArgs, 'id'>
-  >;
-  deleteService?: Resolver<
-    Maybe<ResolversTypes['Service']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteServiceArgs, 'id'>
-  >;
-  deleteSubscription?: Resolver<
-    Maybe<ResolversTypes['Subscription']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>
-  >;
-  deleteUser?: Resolver<
-    Maybe<ResolversTypes['User']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteUserArgs, 'id'>
-  >;
-  deleteUserService?: Resolver<
-    Maybe<ResolversTypes['UserServiceDeleted']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteUserServiceArgs, 'input'>
-  >;
-  editOrganization?: Resolver<
-    Maybe<ResolversTypes['Organization']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>
-  >;
-  editService?: Resolver<
-    Maybe<ResolversTypes['Service']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationEditServiceArgs, 'id' | 'name'>
-  >;
-  editServiceCapability?: Resolver<
-    Maybe<ResolversTypes['UserService']>,
-    ParentType,
-    ContextType,
-    Partial<MutationEditServiceCapabilityArgs>
-  >;
-  editSubscription?: Resolver<
-    Maybe<ResolversTypes['Subscription']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationEditSubscriptionArgs, 'id' | 'input'>
-  >;
-  editUser?: Resolver<
-    Maybe<ResolversTypes['User']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationEditUserArgs, 'id' | 'input'>
-  >;
-  login?: Resolver<
-    Maybe<ResolversTypes['User']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationLoginArgs, 'email'>
-  >;
+export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  acceptCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType, Partial<MutationAcceptCommunityArgs>>;
+  addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
+  addService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationAddServiceArgs>>;
+  addServiceCommunity?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, Partial<MutationAddServiceCommunityArgs>>;
+  addServicePrice?: Resolver<Maybe<ResolversTypes['ServicePrice']>, ParentType, ContextType, Partial<MutationAddServicePriceArgs>>;
+  addSubscription?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
+  addSubscriptionInCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, Partial<MutationAddSubscriptionInCommunityArgs>>;
+  addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
+  addUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
+  addVaultDataFile?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationAddVaultDataFileArgs>>;
+  addVaultFile?: Resolver<ResolversTypes['String'], ParentType, ContextType, Partial<MutationAddVaultFileArgs>>;
+  deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
+  deleteService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationDeleteServiceArgs, 'id'>>;
+  deleteSubscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
+  deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
+  deleteUserService?: Resolver<Maybe<ResolversTypes['UserServiceDeleted']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
+  editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
+  editService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationEditServiceArgs, 'id' | 'name'>>;
+  editServiceCapability?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
+  editSubscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationEditSubscriptionArgs, 'id' | 'input'>>;
+  editUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationEditUserArgs, 'id' | 'input'>>;
+  login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   malwareAnalysis?: Resolver<
     ResolversTypes['MalwareAnalysis'],
@@ -1304,32 +1248,32 @@ export type MutationResolvers<
 }>;
 
 export type NodeResolvers<
-  ContextType = PortalContext,
-  ParentType extends
-    ResolversParentTypes['Node'] = ResolversParentTypes['Node'],
+    ContextType = PortalContext,
+    ParentType extends
+        ResolversParentTypes['Node'] = ResolversParentTypes['Node'],
 > = ResolversObject<{
-  __resolveType: TypeResolveFn<
-    | 'ActionTracking'
-    | 'Capability'
-    | 'MalwareAnalysis'
-    | 'MalwareAnalysisResult'
-    | 'MergeEvent'
-    | 'MessageTracking'
-    | 'Organization'
-    | 'RolePortal'
-    | 'RolePortalID'
-    | 'Service'
-    | 'ServiceCapability'
-    | 'ServiceLink'
-    | 'ServicePrice'
-    | 'Subscription'
-    | 'User'
-    | 'UserService'
-    | 'UserServiceDeleted',
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+    __resolveType: TypeResolveFn<
+        | 'ActionTracking'
+        | 'Capability'
+        | 'Document'
+        | 'MalwareAnalysis'
+        | 'MalwareAnalysisResult'
+        | 'MergeEvent'
+        | 'MessageTracking'
+        | 'Organization'
+        | 'RolePortal'
+        | 'RolePortalID'
+        | 'Service'
+        | 'ServiceCapability'
+        | 'ServiceLink'
+        | 'ServicePrice'
+        | 'Subscription'
+        | 'User'
+        | 'UserService'
+        | 'UserServiceDeleted',
+        ParentType,
+        ContextType
+    >; id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
 export type OrganizationResolvers<
@@ -1989,6 +1933,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  Document?: DocumentResolvers<ContextType>;
   GlimpsCallbackTemporary?: GlimpsCallbackTemporaryResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   MalwareAnalysis?: MalwareAnalysisResolvers<ContextType>;

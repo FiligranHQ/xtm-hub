@@ -76,7 +76,8 @@ type Mutation {
   addServiceCommunity(input: AddServiceCommunityInput): Service
   acceptCommunity(input: ServiceCommunityAcceptInput): [Subscription]
   deleteService(id: ID!): Service
-  vaultFile(file: Upload): Upload
+  addVaultFile(file: Upload): String!
+  addVaultDataFile(input: AddVaultDataFileInput): Document!
   addSubscription(service_id: String): Service
   addSubscriptionInCommunity(service_id: String, organization_id: ID): [UserService]
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
@@ -234,6 +235,25 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
+}
+
+input AddVaultDataFileInput {
+  shortName: String
+  description: String
+  fileName: String!
+  minioName: String!
+}
+
+type Document implements Node {
+  id: ID!
+  uploader_id: String!
+  service_id: String!
+  short_name: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
 }
 
 type PlatformProvider {

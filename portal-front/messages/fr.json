@@ -2,8 +2,16 @@
   "Utils": {
     "Cancel": "Annuler",
     "Validate": "Valider",
+    "Create": "Créer",
     "Continue": "Continuer",
-    "Loading": "Chargement..."
+    "Loading": "Chargement...",
+    "Success": "Succès",
+    "Error": "Erreur",
+    "Reset": "Effacer",
+    "Inserted": "L'élément a été inséré",
+    "Form": {
+      "ResetFile": "Supprimer l'actuel fichier sélectionné."
+    }
   },
   "HomePage": {
     "Homepage": "Page d'accueil",
@@ -26,7 +34,14 @@
       "VaultTitle": "Administration du Vault",
       "File": "Fichier à transmettre",
       "DropFile": "Lâchez le fichier ici",
-      "SelectFile": "Nouveau fichier dans le Vault"
+      "InsertedFile": "Fichier inséré",
+      "FileForm": {
+        "UploadNewFile": "Ajout d'un nouveau fichier dans le Vault",
+        "ShortNameLabel": "Nom simplifié",
+        "ShortNamePlaceholder": "Filigran Pricing",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Ceci est une courte description du fichier."
+      }
     }
   },
 
