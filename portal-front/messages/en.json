@@ -2,8 +2,16 @@
   "Utils": {
     "Cancel": "Cancel",
     "Validate": "Validate",
+    "Create": "Create",
     "Continue": "Continue",
-    "Loading": "Loading..."
+    "Loading": "Loading...",
+    "Success": "Success",
+    "Error": "Error",
+    "Reset": "Reset",
+    "Inserted": "The element has been added",
+    "Form": {
+      "ResetFile": "Remove the current selected file."
+    }
   },
   "HomePage": {
     "Homepage": "Homepage",
@@ -27,8 +35,13 @@
       "VaultTitle": "Vault Administration",
       "File": "File to send",
       "DropFile": "Drop the file here",
-      "SelectFile": "New file in Vault"
-
+      "FileForm": {
+        "UploadNewFile": "Upload a new file in Vault",
+        "ShortNameLabel": "Short name",
+        "ShortNamePlaceholder": "Filigran Pricing",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a short paragraph to describe the file."
+      }
     }
   },
   "LocaleSwitcher": {

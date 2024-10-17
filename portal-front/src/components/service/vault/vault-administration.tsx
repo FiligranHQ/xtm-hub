@@ -1,6 +1,5 @@
 'use client'
 import {useTranslations} from "next-intl";
-import {Button} from "filigran-ui/servers";
 import {VaultForm} from "@/components/service/vault/vault-form";
 
 

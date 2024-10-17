@@ -21,22 +21,13 @@ export interface UploadedFile {
         encoding: string;
 }
 
-export const insertInMinio = async (file: UploadedFile, userId: string) => {
-    const fullMetadata = {
-        mimetype: file.mimetype,
-        filename: file.filename,
-        encoding: file.encoding,
-        UploadingUserId: userId,
-    }
+export const insertFileInMinio = async (fileParams) => {
     const s3Upload = new S3Upload({
         client: s3Client,
-        params: {
-            Bucket: config.get('minio.bucketName'),
-            Key: file.filename,
-            Body: file.createReadStream(),
-            Metadata: fullMetadata
-        }
+        params: fileParams
     });
     await s3Upload.done();
-    console.log("inserted file ", file.filename + ' into Minio...')
+    console.log("inserted file ", fileParams.Key + ' into Minio...')
+
+    return await s3Upload.params.Key
 }

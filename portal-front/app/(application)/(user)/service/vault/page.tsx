@@ -1,5 +1,5 @@
 import * as React from "react";
-import {VaultAdministration} from "@/components/service/vault/vault";
+import {VaultAdministration} from "@/components/service/vault/vault-administration";
 interface PageProps {
 }
 

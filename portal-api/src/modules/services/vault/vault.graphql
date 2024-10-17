@@ -1,3 +1,23 @@
+input AddVaultDataFileInput {
+    shortName: String
+    description: String
+    fileName: String!
+    minioName: String!
+}
+
+type Document implements Node {
+    id: ID!
+    uploader_id: String!
+    service_id: String!
+    short_name: String
+    description: String
+    file_name: String!
+    minio_name: String!
+    active: Boolean!
+    created_at: Date!
+}
+
 type Mutation {
-    vaultFile(file: Upload): Upload @auth
+    addVaultFile(file: Upload): String! @auth
+    addVaultDataFile(input: AddVaultDataFileInput): Document! @auth
 }

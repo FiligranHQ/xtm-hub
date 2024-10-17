@@ -30,7 +30,8 @@ export type DatabaseType =
   | 'User_Service'
   | 'Service_Capability'
   | 'MalwareAnalysis'
-  | 'UserService';
+  | 'UserService'
+  | 'Document';
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {
