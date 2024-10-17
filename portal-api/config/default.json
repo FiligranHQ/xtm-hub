@@ -23,6 +23,13 @@
     "logout_callback_url": ["http://localhost:3001/oidc/callback"],
     "response_types": ["code"]
   },
+  "minio": {
+    "bucketName": "xtmhubbucket",
+    "region": "us-east-1",
+    "endpoint": "http://localhost:9000/",
+    "accessKeyId": "changeme",
+    "secretAccessKey": "changeme"
+  },
   "smtp_options": {
     "host": "changeMe",
     "port": 587,

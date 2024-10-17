@@ -21,8 +21,15 @@
     "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
-    "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe."
+    "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
+    "Vault": {
+      "VaultTitle": "Administration du Vault",
+      "File": "Fichier à transmettre",
+      "DropFile": "Lâchez le fichier ici",
+      "SelectFile": "Nouveau fichier dans le Vault"
+    }
   },
+
   "LocaleSwitcher": {
     "fr": "Français",
     "en": "English",

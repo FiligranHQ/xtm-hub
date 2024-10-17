@@ -76,6 +76,7 @@ type Mutation {
   addServiceCommunity(input: AddServiceCommunityInput): Service
   acceptCommunity(input: ServiceCommunityAcceptInput): [Subscription]
   deleteService(id: ID!): Service
+  vaultFile(file: Upload): Upload
   addSubscription(service_id: String): Service
   addSubscriptionInCommunity(service_id: String, organization_id: ID): [UserService]
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
