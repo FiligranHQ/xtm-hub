@@ -22,6 +22,43 @@ services:
     environment:
       - SERVER_HTTP_API=http://portal-api:4001
 
+  portal-front-test:
+    container_name: portal-front-deps
+    build:
+      context: ../portal-front/.
+      dockerfile: test.Dockerfile
+      cache_from:
+        - type=registry,ref=filigran/portal-front:${IMAGE_TAGS}
+        - type=registry,ref=filigran/portal-front:main
+        - type=registry,ref=filigran/portal-front-deps:${IMAGE_TAGS}
+        - type=registry,ref=filigran/portal-front-deps:main
+    environment:
+      - SERVER_HTTP_API=http://portal-api:4001
+
+  portal-api-test:
+    container_name: portal-api
+    build:
+      context: ../portal-api/.
+      dockerfile: test.Dockerfile
+      cache_from:
+        - type=registry,ref=filigran/portal-api:${IMAGE_TAGS}
+        - type=registry,ref=filigran/portal-api:main
+        - type=registry,ref=filigran/portal-api-deps:${IMAGE_TAGS}
+        - type=registry,ref=filigran/portal-api-deps:main
+    depends_on:
+      portal-postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_HOST=portal-postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=portal
+      - DATABASE_BASE=cloud-portal
+      - DATABASE_PASSWORD=portal-password
+      - ADMIN_EMAIL=admin@filigran.io
+      - ADMIN_PASSWORD=admin
+      - NODE_ENV=production
+
+
   portal-api:
     container_name: portal-api
     build:
@@ -49,7 +86,7 @@ services:
       - DATABASE_PASSWORD=portal-password
       - ADMIN_EMAIL=admin@filigran.io
       - ADMIN_PASSWORD=admin
-      - E2E_TESTING=true
+      - DATA_SEEDING=true
 
   portal-postgres:
     container_name: portal-postgres

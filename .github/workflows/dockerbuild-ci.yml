@@ -63,7 +63,7 @@ jobs:
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}-deps:main
             type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          cache-to: type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
           target: deps
       - name: Build and push portal image
         uses: docker/build-push-action@v6
@@ -77,7 +77,7 @@ jobs:
             type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
 
   run-tests:
     needs: build-images
@@ -105,8 +105,63 @@ jobs:
           export IMAGE_TAGS=${{ needs.build-images.outputs.docker-tags }}
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests
 
+  run-front-test:
+    needs: build-images
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Install docker compose
+        uses: KengoTODA/actions-setup-docker-compose@v1
+        with:
+          version: '2.29.6'
+      - name: Launch docker compose
+        run: |
+          export IMAGE_TAGS=${{ needs.build-images.outputs.docker-tags }}
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-front-test
+
+  run-api-test:
+    needs: build-images
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Install docker compose
+        uses: KengoTODA/actions-setup-docker-compose@v1
+        with:
+          version: '2.29.6'
+      - name: Launch docker compose
+        run: |
+          export IMAGE_TAGS=${{ needs.build-images.outputs.docker-tags }}
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
+
   restart-staging:
-      needs: run-tests
+      needs:
+        - run-tests
+        - run-front-test
+        - run-api-test
       runs-on: ubuntu-latest
       timeout-minutes: 20
       if: github.event_name != 'pull_request'
