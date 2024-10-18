@@ -30,8 +30,8 @@ jobs:
           - image: portal-api
           - image: portal-e2e-tests
     outputs:
-      docker-tags: ${{ fromJSON(steps.meta-deps.outputs.json).labels['org.opencontainers.image.version'] }}
-      docker-labels: ${{ steps.meta-deps.outputs.labels }}
+      docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+      docker-labels: ${{ steps.meta.outputs.labels }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -63,6 +63,7 @@ jobs:
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}-deps:main
             type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta-deps.outputs.json).labels['org.opencontainers.image.version'] }}
+          cache-to: type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta-deps.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
           target: deps
       - name: Docker meta deps
         id: meta-image
@@ -86,6 +87,7 @@ jobs:
             type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta-image.outputs.json).labels['org.opencontainers.image.version'] }}
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta-image.outputs.json).labels['org.opencontainers.image.version'] }}
+          cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta-image.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
 
   run-tests:
     needs: build-images
