@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta deps
-        id: meta-deps
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: filigran/${{ matrix.image }}-deps
@@ -58,36 +58,28 @@ jobs:
         with:
           context: ${{ matrix.image }}
           push: true
-          tags: ${{ steps.meta-deps.outputs.tags }}
-          labels: ${{ steps.meta-deps.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}-deps:main
-            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta-deps.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta-deps.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            type=registry,ref=filigran/${{ matrix.image }}:main
+            type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          cache-to: type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
           target: deps
-      - name: Docker meta deps
-        id: meta-image
-        uses: docker/metadata-action@v5
-        with:
-          images: filigran/${{ matrix.image }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
       - name: Build and push portal image
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.image }}
           push: true
-          tags: ${{ steps.meta-image.outputs.tags }}
-          labels: ${{ steps.meta-image.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}-deps:main
-            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta-image.outputs.json).labels['org.opencontainers.image.version'] }}
+            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
             type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta-image.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta-image.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+            type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
 
   run-tests:
     needs: build-images
