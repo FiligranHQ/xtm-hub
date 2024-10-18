@@ -37,11 +37,12 @@ const portalConfig: PortalConfig = {
     user: config.get<string>('database.user'),
     password: config.get<string>('database.password'),
     database:
-      process.env.TEST_MODE || process.env.NODE_ENV === 'test'
+      process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
         ? config.get<string>('database-test.database')
         : config.get<string>('database.database'),
-    seeds:process.env.E2E_TESTING ? "tests/seeds" :
-      process.env.TEST_MODE || process.env.NODE_ENV === 'test'
+    seeds: process.env.DATA_SEEDING
+      ? 'tests/seeds'
+      : process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
         ? config.get<string>('database-test.seeds')
         : 'src/seeds',
   },
