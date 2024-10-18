@@ -30,8 +30,8 @@ jobs:
           - image: portal-api
           - image: portal-e2e-tests
     outputs:
-      docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-      docker-labels: ${{ steps.meta.outputs.labels }}
+      docker-tags: ${{ fromJSON(steps.meta-deps.outputs.json).labels['org.opencontainers.image.version'] }}
+      docker-labels: ${{ steps.meta-deps.outputs.labels }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta deps
-        id: meta
+        id: meta-deps
         uses: docker/metadata-action@v5
         with:
           images: filigran/${{ matrix.image }}-deps
@@ -58,26 +58,34 @@ jobs:
         with:
           context: ${{ matrix.image }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-deps.outputs.tags }}
+          labels: ${{ steps.meta-deps.outputs.labels }}
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}-deps:main
-            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta-deps.outputs.json).labels['org.opencontainers.image.version'] }}
           target: deps
+      - name: Docker meta deps
+        id: meta-image
+        uses: docker/metadata-action@v5
+        with:
+          images: filigran/${{ matrix.image }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
       - name: Build and push portal image
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.image }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-image.outputs.tags }}
+          labels: ${{ steps.meta-image.outputs.labels }}
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}-deps:main
-            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta-image.outputs.json).labels['org.opencontainers.image.version'] }}
             type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+            type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta-image.outputs.json).labels['org.opencontainers.image.version'] }}
 
   run-tests:
     needs: build-images
