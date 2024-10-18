@@ -7,8 +7,6 @@ services:
       cache_from:
         - type=registry,ref=filigran/portal-front:${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-front:main
-        - type=registry,ref=filigran/portal-front-deps:${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-front-deps:main
     ports:
       - "3000:3000"
     depends_on:
@@ -23,28 +21,24 @@ services:
       - SERVER_HTTP_API=http://portal-api:4001
 
   portal-front-test:
-    container_name: portal-front-deps
+    container_name: portal-front-test
     build:
       context: ../portal-front/.
       dockerfile: test.Dockerfile
       cache_from:
         - type=registry,ref=filigran/portal-front:${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-front:main
-        - type=registry,ref=filigran/portal-front-deps:${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-front-deps:main
     environment:
       - SERVER_HTTP_API=http://portal-api:4001
 
   portal-api-test:
-    container_name: portal-api
+    container_name: portal-api-test
     build:
       context: ../portal-api/.
       dockerfile: test.Dockerfile
       cache_from:
         - type=registry,ref=filigran/portal-api:${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-api:main
-        - type=registry,ref=filigran/portal-api-deps:${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-api-deps:main
     depends_on:
       portal-postgres:
         condition: service_healthy
@@ -66,8 +60,6 @@ services:
       cache_from:
         - type=registry,ref=filigran/portal-api:${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-api:main
-        - type=registry,ref=filigran/portal-api-deps:${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-api-deps:main
     ports:
       - "4001:4001"
     healthcheck:

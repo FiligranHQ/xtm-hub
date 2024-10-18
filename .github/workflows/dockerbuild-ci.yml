@@ -46,27 +46,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: filigran/${{ matrix.image }}-deps
+          images: filigran/${{ matrix.image }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-      - name: Build and push portal deps
-        uses: docker/build-push-action@v6
-        if: ${{ matrix.image != 'portal-e2e-tests' }}
-        with:
-          context: ${{ matrix.image }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=registry,ref=filigran/${{ matrix.image }}-deps:main
-            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-            type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
-          target: deps
       - name: Build and push portal image
         uses: docker/build-push-action@v6
         with:
@@ -75,8 +60,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
-            type=registry,ref=filigran/${{ matrix.image }}-deps:main
-            type=registry,ref=filigran/${{ matrix.image }}-deps:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
