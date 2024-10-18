@@ -7,7 +7,7 @@ import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadServiceBy } from '../services/services.domain';
-import User, {UserId, UserMutator} from '../../model/kanel/public/User';
+import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { v4 as uuidv4 } from 'uuid';
 import { fromGlobalId } from 'graphql-relay/node/node.js';

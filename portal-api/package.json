@@ -28,12 +28,12 @@
     "lint:fix": "eslint --fix",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "test": "TEST_MODE=true && vitest run",
+    "test": "VITEST_MODE=true && vitest run",
     "prepare": "cd .. && husky ./.husky",
-    "seed:make:test": "TEST_MODE=true && yarn knex:run seed:make",
-    "start-dev-test": "TEST_MODE=true && yarn start-dev",
-    "test:w": "TEST_MODE=true && vitest",
-    "init-db-test": "NODE_OPTIONS='--loader ts-node/esm' TEST_MODE=true npx ts-node tests/script/create-database.ts"
+    "seed:make:test": "VITEST_MODE=true && yarn knex:run seed:make",
+    "start-dev-test": "VITEST_MODE=true && yarn start-dev",
+    "test:w": "VITEST_MODE=true && vitest",
+    "init-db-test": "NODE_OPTIONS='--loader ts-node/esm' VITEST_MODE=true npx ts-node tests/script/create-database.ts"
   },
   "dependencies": {
     "@apollo/server": "4.11.0",

@@ -150,7 +150,7 @@ export const paginate = <T>(
 export const dbMigration = {
   migrate: () => database.migrate.latest(),
   version: () => database.migrate.currentVersion(),
-  seed: () => database.seed.run()
+  seed: () => database.seed.run(),
 };
 
 export default config;

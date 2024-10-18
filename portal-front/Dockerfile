@@ -7,7 +7,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY .yarn ./.yarn
+COPY .yarn/releases ./.yarn/releases
 COPY .yarnrc.yml package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
@@ -23,7 +23,6 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN yarn build
-
 # If using npm comment out above and use below instead
 # RUN npm run build
 

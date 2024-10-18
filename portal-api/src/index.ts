@@ -6,7 +6,6 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import cors from 'cors';
 import pkg from 'body-parser';
-import knexPkg, { Knex } from 'knex';
 import express from 'express';
 import createSchema from './server/graphql-schema';
 import { dbMigration } from '../knexfile';
@@ -151,17 +150,20 @@ app.use(
 await initAuthPlatform(app);
 awxEndpoint(app);
 
-// Ensure migrate the schema
-await dbMigration.migrate();
-if(process.env.E2E_TESTING) {
-  await dbMigration.seed();
-}
-await platformInit();
-console.log(
-  '[Migration] Database version is now ' + (await dbMigration.version())
-);
 // Modified server startup
-await new Promise<void>((resolve) =>
-  httpServer.listen({ port: portalConfig.port }, resolve)
-);
+if (!process.env.VITEST_MODE) {
+  // Ensure migrate the schema
+  await dbMigration.migrate();
+  if (process.env.DATA_SEEDING) {
+    await dbMigration.seed();
+  }
+  await platformInit();
+  console.log(
+    '[Migration] Database version is now ' + (await dbMigration.version())
+  );
+  await new Promise<void>((resolve) =>
+    httpServer.listen({ port: portalConfig.port }, resolve)
+  );
+}
+
 console.log(`🚀 Server ready at http://localhost:` + portalConfig.port);
