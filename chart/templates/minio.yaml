@@ -1,0 +1,35 @@
+apiVersion: minio.min.io/v2
+kind: Tenant
+metadata:
+  annotations:
+  name: {{ .Release.Name }}-minio
+spec:
+  configuration:
+    name: minio-credentials
+  features:
+    bucketDNS: false
+    enableSFTP: false
+  image: "{{ .image.repository }}:{{ .image.digest | default .image.tag }}"
+  imagePullPolicy: IfNotPresent
+  logging:
+    anonymous: true
+    json: true
+    quiet: true
+  mountPath: /export
+  podManagementPolicy: Parallel
+  pools:
+  - name: portal
+    servers: {{ .Values.minio.server.count }}
+    volumeClaimTemplate:
+      metadata:
+        name: data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.minio.storage.diskSize }}
+    volumesPerServer: {{ .Values.minio.storage.diskCount }}
+  prometheusOperator: false
+  requestAutoCert: false
+  subPath: /data

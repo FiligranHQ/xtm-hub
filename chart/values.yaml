@@ -30,3 +30,13 @@ postgres:
     version: "8.8"
     username: xthmhub@filigran.io
     password: "CHANGEME--q5Y6NbtbeIu3qyjk0iPthl2hCUkAmB--CHANGEME"
+minio:
+  image:
+    repository: quay.io/minio/minio
+    tag: RELEASE.2024-08-03T04-33-23Z
+    pullPolicy: IfNotPresent
+  storage:
+    diskSize: 10Gi
+    diskCount: 2
+  server:
+    count: 3
