@@ -81,3 +81,17 @@ spec:
           value: {{.Values.cloudportal.api.env.OIDC_REDIRECT_URIS}}
         - name: OIDC_LOGOUT_CALLBACK_URL
           value: {{.Values.cloudportal.api.env.OIDC_LOGOUT_CALLBACK_URL}}
+        - name: S3_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-credentials
+              key: accessKey
+              optional: false
+        - name: S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-credentials
+              key: accessKey
+              optional: false
+        - name: S3_URL
+          value: minio
