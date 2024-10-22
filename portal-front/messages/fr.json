@@ -35,6 +35,7 @@
       "File": "Fichier à transmettre",
       "DropFile": "Lâchez le fichier ici",
       "InsertedFile": "Fichier inséré",
+      "FileExtension": "Le fichier doit avoir une extension",
       "FileForm": {
         "UploadNewFile": "Ajout d'un nouveau fichier dans le Vault",
         "ShortNameLabel": "Nom simplifié",

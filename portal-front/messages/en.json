@@ -35,6 +35,7 @@
       "VaultTitle": "Vault Administration",
       "File": "File to send",
       "DropFile": "Drop the file here",
+      "FileExtension": "The file must have an extension",
       "FileForm": {
         "UploadNewFile": "Upload a new file in Vault",
         "ShortNameLabel": "Short name",

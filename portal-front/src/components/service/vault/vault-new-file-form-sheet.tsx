@@ -1,8 +1,8 @@
-import {FunctionComponent} from "react";
+import {FunctionComponent, ReactNode} from "react";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
-import {Form, Sheet, SheetContent} from "filigran-ui/clients";
+import {Form, Sheet, SheetContent,FileInputDropZone} from "filigran-ui/clients";
 import {
     FormControl,
     FormField,
@@ -10,19 +10,23 @@ import {
     SheetClose,
     SheetFooter,
     SheetHeader,
-    SheetTitle
+    SheetTitle,
+    SheetTrigger
 } from "filigran-ui/clients";
 import {Button, Input, Textarea} from "filigran-ui/servers";
+import {FileInput} from "filigran-ui";
 import {useTranslations} from "next-intl";
 
 export const newFileSchema = z.object({
     shortName: z.string().optional(),
-    description: z.string().optional()
+    description: z.string().optional(),
+    file: z.custom<FileList>()
 })
 
 interface VaultNewFileFormSheetProps {
     open: boolean;
     setOpen: (open: boolean) => void;
+    trigger: ReactNode;
     fileExtension: string;
     fileName: string;
     handleSubmit: (
@@ -33,6 +37,7 @@ interface VaultNewFileFormSheetProps {
 export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps> = ({
      open,
      setOpen,
+    trigger,
      fileExtension,
      fileName,
      handleSubmit
@@ -43,7 +48,8 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
         resolver: zodResolver(newFileSchema),
         defaultValues: {
             shortName: '',
-            description: ''
+            description: '',
+            file: undefined
         }
     })
 
@@ -56,20 +62,41 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
         });
     };
 
+
+
     return (
         <Sheet key={'right'}
     open={open}
     onOpenChange={setOpen}>
+            <SheetTrigger asChild>{trigger}</SheetTrigger>
 
             <SheetContent side={'right'}>
                 <SheetHeader className="bg-page-background">
                     <SheetTitle>{t('Service.Vault.FileForm.UploadNewFile')}: {fileName}</SheetTitle>
                 </SheetHeader>
-
+                <FileInputDropZone className="absolute inset-0 p-xl pt-[5rem]">
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="w-full space-y-xl">
+                        <FormField
+                            control={form.control}
+                            name="file"
+                            render={({field}) => {
+                                return (
+                                    <FormItem>
+                                        <FormLabel>File</FormLabel>
+                                        <FormControl>
+                                            <FileInput
+                                                {...field}
+                                                allowedTypes={'image/png, applicatiion/pdf'}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                );
+                            }}
+                        />
                         <FormField
                             control={form.control}
                             name="shortName"
@@ -117,6 +144,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                         </SheetFooter>
                     </form>
                 </Form>
+            </FileInputDropZone>
             </SheetContent>
         </Sheet>
     );
