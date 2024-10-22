@@ -30,8 +30,8 @@ export const passOldDocumentsIntoInactive = async(existingDocuments: Document[])
         .returning('*');
 }
 
-export const createDocument = async(documentData, fileName: string) => {
-    const existingDocuments = await loadUnsecureDocumentsBy( {file_name: fileName})
+export const createDocument = async(documentData) => {
+    const existingDocuments = await loadUnsecureDocumentsBy( {file_name: documentData.file_name})
     if(existingDocuments.length >0) {
         passOldDocumentsIntoInactive(existingDocuments)
     }
