@@ -32,6 +32,18 @@
       "pass": "changeMe"
     }
   },
+  "login_settings": [
+    {
+      "name": "local",
+      "type": "FORM",
+      "provider": "local"
+    },
+    {
+      "name": "Login to Portal",
+      "type": "SSO",
+      "provider": "oidc"
+    }
+  ],
   "init_services": [
     {
       "service": {
