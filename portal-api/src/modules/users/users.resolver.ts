@@ -89,7 +89,6 @@ const resolvers: Resolvers = {
     // Management
     addUser: async (_, { input }, context) => {
       const trx = await dbTx();
-
       try {
         const { salt, hash } = hashPassword(input.password);
         const data: User = {
@@ -158,7 +157,7 @@ const resolvers: Resolvers = {
           });
           await insertCapa(context, addedUserService.id, 'ACCESS_SERVICE');
         }
-
+        await trx.commit();
         return addedUser;
       } catch (error) {
         await trx.rollback();
@@ -208,6 +207,7 @@ const resolvers: Resolvers = {
             },
           });
         }
+        await trx.commit();
         return completedUser as unknown as GeneratedUser;
       } catch (error) {
         await trx.rollback();

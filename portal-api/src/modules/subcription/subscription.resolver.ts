@@ -27,6 +27,7 @@ import { ServiceId } from '../../model/kanel/public/Service';
 import { GraphQLError } from 'graphql/error/index.js';
 import { AWXAction } from '../../managers/awx/awx.model';
 import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { aw } from 'vitest/dist/chunks/reporters.WnPwkmgA';
 
 const resolvers: Resolvers = {
   Query: {
@@ -122,6 +123,7 @@ const resolvers: Resolvers = {
           filledSubscription.id
         );
 
+        await trx.commit();
         return {
           ...filledSubscription.service,
           subscribed: true,
@@ -196,6 +198,7 @@ const resolvers: Resolvers = {
           },
         });
 
+        await trx.commit();
         return userServiceData;
       } catch (error) {
         await trx.rollback();
@@ -224,6 +227,7 @@ const resolvers: Resolvers = {
           .where({ id })
           .update(update)
           .returning('*');
+        await trx.commit();
         return await fillSubscription(context, updatedSubscription);
       } catch (error) {
         await trx.rollback();
