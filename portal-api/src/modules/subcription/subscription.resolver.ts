@@ -27,7 +27,6 @@ import { ServiceId } from '../../model/kanel/public/Service';
 import { GraphQLError } from 'graphql/error/index.js';
 import { AWXAction } from '../../managers/awx/awx.model';
 import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
-import { aw } from 'vitest/dist/chunks/reporters.WnPwkmgA';
 
 const resolvers: Resolvers = {
   Query: {
