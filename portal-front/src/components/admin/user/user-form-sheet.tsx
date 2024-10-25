@@ -30,10 +30,11 @@ import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
 import { FunctionComponent, ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { z, ZodSchema } from 'zod';
+import { meContext_fragment$data } from '../../../../__generated__/meContext_fragment.graphql';
 import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
 
 interface UserFormSheetProps {
-  user?: userSlug_fragment$data;
+  user?: userSlug_fragment$data | meContext_fragment$data | null;
   open: boolean;
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
@@ -71,7 +72,13 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
     });
   }
   const [organizationData] = getOrganizations();
-  const defaultUser = { ...user };
+  const defaultUser = {
+    email: '',
+    first_name: '',
+    last_name: '',
+    organizations: [],
+    ...user,
+  };
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
@@ -79,7 +86,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
       first_name: defaultUser.first_name,
       last_name: defaultUser.last_name,
       password: '',
-      organization_id: defaultUser.organization?.id ?? '',
+      organization_id: defaultUser.organizations?.[0]?.id ?? '',
       roles_id: currentRolesPortal ?? [],
     },
   });

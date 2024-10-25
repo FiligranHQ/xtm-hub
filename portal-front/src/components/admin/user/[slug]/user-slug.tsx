@@ -98,8 +98,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
 
         <div className="m-2 flex justify-between">
           <h2 className="text-xl">
-            {user.first_name} {user.last_name} ({user.organization.name}) -{' '}
-            {user.email}
+            {user.first_name} {user.last_name} - {user.email}
           </h2>
           <div className="space-x-2">
             <EditUser user={user}></EditUser>

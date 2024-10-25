@@ -29,3 +29,5 @@ __pycache__
 !uploads/.gitkeep
 /config/filigran.json
 /config/thales.json
+
+*~

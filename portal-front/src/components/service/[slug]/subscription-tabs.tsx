@@ -35,18 +35,22 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
   return (
     <Tabs
       defaultValue={
-        subscriptions?.[0]?.user_service?.[0]?.user?.organization.name ?? ''
+        subscriptions?.[0]?.user_service?.[0]?.user?.organizations?.[0]?.name ??
+        ''
       }>
       <TabsList className="justify-start min-12 p-0 h-auto overflow-auto w-full">
         {subscriptions?.map((subscription) => (
           <TabsTrigger
-            key={subscription?.user_service?.[0]?.user?.organization.name}
+            key={
+              subscription?.user_service?.[0]?.user?.organizations?.[0]?.name
+            }
             value={
-              subscription?.user_service?.[0]?.user?.organization.name ?? ''
+              subscription?.user_service?.[0]?.user?.organizations?.[0]?.name ??
+              ''
             }
             className=" data-[state=active]:bg-page-background h-10">
-            {subscription?.user_service?.[0]?.user?.organization.name} (billing:{' '}
-            {subscription?.billing} %)
+            {subscription?.user_service?.[0]?.user?.organizations?.[0]?.name}{' '}
+            (billing: {subscription?.billing} %)
             {subscription?.billing === 0 && (
               <AlertDialogComponent
                 actionButtonText="Remove"
@@ -64,8 +68,11 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
                   onRemoveOrganization(subscription?.id ?? '')
                 }>
                 Are you sure you want to delete this organization{' '}
-                {subscription?.user_service?.[0]?.user?.organization.name} from
-                this service? This action cannot be undone.
+                {
+                  subscription?.user_service?.[0]?.user?.organizations?.[0]
+                    ?.name
+                }{' '}
+                from this service? This action cannot be undone.
               </AlertDialogComponent>
             )}
           </TabsTrigger>
@@ -98,7 +105,7 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
 
       {subscriptions?.map((subscription) => (
         <SubscriptionTabContent
-          key={subscription?.user_service?.[0]?.user?.organization.name}
+          key={subscription?.user_service?.[0]?.user?.organizations?.[0]?.name}
           subscription={subscription}
           setOpenSheet={setOpenSheet}
           setCurrentUser={setCurrentUser}

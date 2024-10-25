@@ -1,14 +1,11 @@
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
-  Capability,
   User as UserGenerated,
   UserConnection,
 } from '../../__generated__/resolvers-types';
-import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import { PortalContext } from '../../model/portal-context';
 import { hashPassword } from '../../utils/hash-password.util';
-import CapabilityPortal from '../../model/kanel/public/CapabilityPortal';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserInfo } from '../../model/user';
@@ -19,10 +16,11 @@ import {
   PLATFORM_ORGANIZATION_UUID,
 } from '../../portal.const';
 import { addPrefixToObject } from '../../utils/typescript';
+import { UserLoadUserBy } from '../../model/load-user-by';
 
-const completeUserCapability = (user: UserGenerated): UserGenerated => {
+const completeUserCapability = (user: UserLoadUserBy): UserLoadUserBy => {
   if (user && user.id === ADMIN_UUID) {
-    const capabilityIds = user.capabilities.map((c: Capability) => c.id);
+    const capabilityIds = user.capabilities.map((c) => c.id);
     if (!capabilityIds.includes(CAPABILITY_BYPASS.id)) {
       user.capabilities.push(CAPABILITY_BYPASS);
     }
@@ -42,10 +40,16 @@ export const loadUsersByOrganization = async (
 
 export const loadUserBy = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
-): Promise<UserWithAuthentication> => {
-  const userQuery = dbUnsecure<User>('User')
+): Promise<UserLoadUserBy> => {
+  const userQuery = dbUnsecure<UserLoadUserBy>('User')
     .where(field)
-    .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
+    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
+    .leftJoin(
+      'Organization as org',
+      'User_Organization.organization_id',
+      '=',
+      'org.id'
+    )
     .leftJoin(
       'User_RolePortal as user_RolePortal',
       'User.id',
@@ -68,37 +72,22 @@ export const loadUserBy = async (
     .select([
       'User.*',
       dbRaw(
-        "(json_agg(json_build_object('id', org.id, 'name', org.name, '__typename', 'Organization')) ->> 0)::json as organization"
+        "COALESCE( json_agg(distinct jsonb_build_object('id', org.id, 'name', CASE WHEN org.name = \"User\".email THEN 'Personal space' ELSE org.name END, '__typename', 'Organization', 'selected', org.id = \"User\".selected_organization_id) ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
       ),
       dbRaw(
-        "case when count(distinct capability.id) = 0 then '[]' else json_agg(distinct capability.*) end as capabilities"
+        "COALESCE( json_agg(distinct jsonb_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal' )) FILTER (WHERE \"user_RolePortal\".id IS NOT NULL), '[]' ) as roles_portal_id"
       ),
       dbRaw(
-        "case when count(distinct \"user_RolePortal\".role_portal_id) = 0 then '[]' else json_agg( json_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal')) end as roles_portal_id"
+        'COALESCE( json_agg(distinct jsonb_build_object( \'id\', "capability"."id", \'name\', "capability"."name" )) FILTER (WHERE "capability".id IS NOT NULL), \'[]\' ) as capabilities'
       ),
     ])
     .groupBy(['User.id'])
     .first();
 
   const user = await userQuery;
-  // Remove capability null from query
-  if (user) {
-    const cleanUser = {
-      ...user,
-      capabilities: user.capabilities.filter(
-        (capability: CapabilityPortal) => !!capability
-      ),
-      roles_portal_id: user.roles_portal_id.filter(
-        (role, index, self) =>
-          role.id !== null && index === self.findIndex((r) => r.id === role.id)
-      ),
-    };
-
-    return completeUserCapability(cleanUser) as UserWithAuthentication;
-  }
 
   // Complete admin user with bypass if needed
-  return completeUserCapability(user) as UserWithAuthentication;
+  return completeUserCapability(user);
 };
 
 export const loadUsers = async (
@@ -112,7 +101,13 @@ export const loadUsers = async (
   }
 
   const userConnection = await query
-    .leftJoin('Organization as org', 'User.organization_id', '=', 'org.id')
+    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
+    .leftJoin(
+      'Organization as org',
+      'User_Organization.organization_id',
+      '=',
+      'org.id'
+    )
     .leftJoin(
       'User_RolePortal as user_RolePortal',
       'User.id',
@@ -134,18 +129,21 @@ export const loadUsers = async (
     // Inspiration from https://github.com/knex/knex/issues/882
     .select([
       'User.*',
-      dbRaw('(json_agg(org.*) ->> 0)::json as organization'),
       dbRaw(
-        "case when count(capability) = 0 then '[]' else json_agg(capability.*) end as capabilities"
+        "COALESCE( json_agg(distinct jsonb_build_object('id', org.id, 'name', org.name, '__typename', 'Organization') ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
+      ),
+      dbRaw(
+        'COALESCE( json_agg(distinct jsonb_build_object( \'id\', "capability"."id", \'name\', "capability"."name" )) FILTER (WHERE "capability".id IS NOT NULL), \'[]\' ) as capabilities'
       ),
     ])
     .groupBy(['User.id'])
     .asConnection<UserConnection>();
 
   userConnection.edges = userConnection.edges.map((edge) => {
+    const edgeUser = edge.node as unknown as UserLoadUserBy;
     return {
       cursor: edge.cursor,
-      node: completeUserCapability(edge.node),
+      node: completeUserCapability(edgeUser) as unknown as UserGenerated,
     };
   });
 
@@ -164,11 +162,12 @@ export const createUser = async (
 ) => {
   const { email, first_name, last_name, roles } = userInfo;
   const { salt, hash } = hashPassword('');
+  const uuid = uuidv4();
   const data: User = {
-    id: uuidv4() as UserId,
+    id: uuid as UserId,
     salt,
     password: hash,
-    organization_id,
+    selected_organization_id: organization_id,
     email,
     first_name,
     last_name,
@@ -180,4 +179,16 @@ export const createUser = async (
 
 export const loadUnsecureUserBy = async (field: UserMutator) => {
   return dbUnsecure<User>('User').where(field);
+};
+
+export const updateSelectedOrganization = async (
+  context,
+  id,
+  selected_organization_id
+) => {
+  const [updatedUser] = await db<User>(context, 'User')
+    .where({ id: id as UserId })
+    .update({ selected_organization_id })
+    .returning('*');
+  return updatedUser;
 };

@@ -1,8 +1,8 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
-import { User } from '../model/user';
 import { PortalContext } from '../model/portal-context';
 import { getCapabilityUser, userHasBypassCapability } from './auth.helper';
+import { UserLoadUserBy } from '../model/load-user-by';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
 export const SERVICE_DIRECTIVE_NAME = 'service_capa';
@@ -12,10 +12,10 @@ export type ServiceCapabilityArgs = {
   subscription_id?: string;
 };
 
-type AuthFn = (user: User) => boolean;
-type RoleFn = (user: User, roleRequiredInSchema: string[]) => boolean;
+type AuthFn = (user: UserLoadUserBy) => boolean;
+type RoleFn = (user: UserLoadUserBy, roleRequiredInSchema: string[]) => boolean;
 type ServiceFn = (
-  user: User,
+  user: UserLoadUserBy,
   args: ServiceCapabilityArgs,
   roleRequiredInSchema: string[]
 ) => Promise<boolean>;
@@ -87,11 +87,14 @@ const getSchemaTransformer = (
   };
 };
 
-const isAuthenticated = (user: User) => {
+const isAuthenticated = (user: UserLoadUserBy) => {
   return !!user;
 };
 
-const hasCapability = (user: User, capabilitiesRequired: string[]) => {
+const hasCapability = (
+  user: UserLoadUserBy,
+  capabilitiesRequired: string[]
+) => {
   if (userHasBypassCapability(user)) {
     return true;
   }
@@ -103,7 +106,7 @@ const hasCapability = (user: User, capabilitiesRequired: string[]) => {
 };
 
 const hasServiceCapability = async (
-  user: User,
+  user: UserLoadUserBy,
   args: ServiceCapabilityArgs,
   capabilitiesRequired: string[]
 ) => {

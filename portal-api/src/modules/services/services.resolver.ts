@@ -187,7 +187,8 @@ const resolvers: Resolvers = {
         if (
           input.billing_manager &&
           !input.organizations_id.some(
-            (id) => billingManager.organization_id === fromGlobalId(id).id
+            (id) =>
+              billingManager.selected_organization_id === fromGlobalId(id).id
           )
         ) {
           await trx.rollback();
@@ -216,7 +217,7 @@ const resolvers: Resolvers = {
         } else {
           await orgaCreateCommu(
             context,
-            [toGlobalId('Organization', context.user.organization_id)],
+            [toGlobalId('Organization', context.user.selected_organization_id)],
             addedService.id as ServiceId,
             input.justification
           );

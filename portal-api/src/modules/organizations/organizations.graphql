@@ -7,6 +7,11 @@ type Organization implements Node {
   domains: [String!]
 }
 
+type MeOrganization implements Node {
+  id: ID!
+  name: String!
+  selected: Boolean!
+}
 type OrganizationEdge {
   cursor: String!
   node: Organization!
