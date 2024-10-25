@@ -4,7 +4,6 @@ import { createUser, loadUserBy } from '../modules/users/users.domain';
 import { UserInfo } from '../model/user';
 import { ROLE_ADMIN } from '../portal.const';
 import { ensureUserRoleExist } from '../server/initialize.helper';
-import { RolePortalId } from '../__generated__/resolvers-types';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {
   // region test the groups existence and eventually auto create groups
@@ -22,9 +21,7 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
     }
   } else {
     if (
-      !user.roles_portal_id.includes(
-        ROLE_ADMIN.id as unknown as RolePortalId
-      ) &&
+      !user.roles_portal_id.some(({ id }) => ROLE_ADMIN.id === id) &&
       userInfo.roles.includes(ROLE_ADMIN.name)
     ) {
       await ensureUserRoleExist(user.id, ROLE_ADMIN.id);

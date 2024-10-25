@@ -1,8 +1,8 @@
 import express from 'express';
-import { User } from './user';
+import { UserLoadUserBy } from './load-user-by';
 
 export interface PortalContext {
-  user: User;
+  user: UserLoadUserBy;
   referer?: string;
   req: express.Request;
   res: express.Response;

@@ -2,13 +2,13 @@ import { dbUnsecure } from '../../knexfile';
 import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
-import { UserWithAuthentication } from '../modules/users/users';
 import Service from '../model/kanel/public/Service';
 import ServicePrice from '../model/kanel/public/ServicePrice';
 import ServiceLink from '../model/kanel/public/ServiceLink';
 import Organization, {
   OrganizationId,
 } from '../model/kanel/public/Organization';
+import { UserId, UserInitializer } from '../model/kanel/public/User';
 
 export const ensureServiceExists = async (service) => {
   const services = await dbUnsecure('Service');
@@ -99,14 +99,12 @@ export const insertAdminUser = async (trx, email, data) => {
     organization_id: PLATFORM_ORGANIZATION_UUID,
     ...data,
   };
-  await dbUnsecure<UserWithAuthentication>('User')
-    .insert(userData)
-    .transacting(trx);
+  await dbUnsecure<UserInitializer>('User').insert(userData).transacting(trx);
 };
 
 export const updateUserPassword = async (data) => {
-  await dbUnsecure<UserWithAuthentication>('User')
-    .where({ id: ADMIN_UUID })
+  await dbUnsecure<UserInitializer>('User')
+    .where({ id: ADMIN_UUID as UserId })
     .update(data)
     .returning('*');
 };

@@ -18,7 +18,7 @@ export const usersFragment = graphql`
           email
           first_name
           last_name
-          organization {
+          organizations {
             id
             name
           }
@@ -60,7 +60,7 @@ export const userSlugFragment = graphql`
     email
     last_name
     first_name
-    organization {
+    organizations {
       id
       name
     }

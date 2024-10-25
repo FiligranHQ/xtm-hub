@@ -1,14 +1,14 @@
-import { Capability } from '../__generated__/resolvers-types';
 import { TypedNode } from '../pub';
 import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
 import { Knex } from 'knex';
-import { User } from '../model/user';
 import { PortalContext } from '../model/portal-context';
 import { CAPABILITY_BYPASS, CAPABILITY_FRT_MANAGE_USER } from '../portal.const';
 import MalwareAnalysis from '../model/kanel/public/MalwareAnalysis';
 import { loadUserBy } from '../modules/users/users.domain';
+import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
+import { UserLoadUserBy } from '../model/load-user-by';
 
-const isUserGranted = (user: User, capability: Capability) =>
+const isUserGranted = (user: UserLoadUserBy, capability: CapabilityPortal) =>
   !!user &&
   user.capabilities.some(
     (c) => c.id === CAPABILITY_BYPASS.id || c.id === capability.id
@@ -18,7 +18,7 @@ const isUserGranted = (user: User, capability: Capability) =>
  * Data event must be consistent to provide all information needed to infer security access.
  */
 export const isNodeAccessible = async (
-  user: User,
+  user: UserLoadUserBy,
   data: { [action in ActionType]: TypedNode }
 ) => {
   const isInvalidActionSize = Object.keys(data).length !== 1;
@@ -55,7 +55,10 @@ export const isNodeAccessible = async (
     // TODO Dispatch only if user is part of the same organization
     const malwareObj = node as unknown as MalwareAnalysis;
     const userFromMalwareObj = await loadUserBy({ id: malwareObj.user_id });
-    return user.organization_id === userFromMalwareObj.organization_id;
+    return (
+      user.selected_organization_id ===
+      userFromMalwareObj.selected_organization_id
+    );
   }
   if (availableTypes.includes(type)) {
     return true;
@@ -97,7 +100,7 @@ export const applyDbSecurity = <T>(
     queryContext.where(
       'User.organization_id',
       '=',
-      context.user.organization.id
+      context.user.selected_organization_id
     );
     return queryContext;
   }

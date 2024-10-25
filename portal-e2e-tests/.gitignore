@@ -49,3 +49,5 @@ next-env.d.ts
 /playwright-report/
 /playwright/.cache/
 /tests_e2e/.setup/
+
+*~

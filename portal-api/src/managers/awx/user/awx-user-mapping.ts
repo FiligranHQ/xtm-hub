@@ -37,7 +37,10 @@ export const mapUserInputAWX = async (
   user: UserInput,
   awxUUID: ActionTrackingId
 ) => {
-  const orgInfo = await loadUnsecureOrganizationBy('id', user.organization_id);
+  const orgInfo = await loadUnsecureOrganizationBy(
+    'id',
+    user.selected_organization_id
+  );
 
   let awxAddUserInput: AWXAddUserInput = {
     awx_client_request_id: awxUUID,
@@ -82,7 +85,10 @@ export const mapUpdateUserInputAWX = async (
   user: UserInput,
   awxUUID: ActionTrackingId
 ): Promise<AWXUpdateUserInput> => {
-  const orgInfo = await loadUnsecureOrganizationBy('id', user.organization_id);
+  const orgInfo = await loadUnsecureOrganizationBy(
+    'id',
+    user.selected_organization_id
+  );
 
   return {
     awx_client_request_id: awxUUID,

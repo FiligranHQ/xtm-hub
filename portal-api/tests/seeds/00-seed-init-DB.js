@@ -20,11 +20,32 @@ export async function seed(knex) {
           'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
         first_name: null,
         last_name: null,
-        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+        selected_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
       },
     ])
     .onConflict('id')
     .ignore();
+
+  await knex('Organization')
+    .insert([
+      {
+        id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        name: 'admin@filigran.io',
+      },
+    ])
+    .onConflict('id')
+    .ignore();
+
+  await knex('User_Organization').insert([
+    {
+      user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+    },
+    {
+      user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+    },
+  ]);
 
   await knex('RolePortal')
     .insert([

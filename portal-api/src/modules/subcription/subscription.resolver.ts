@@ -64,7 +64,7 @@ const resolvers: Resolvers = {
       // Check the subscription does not already exist :
       try {
         const subscription = await checkSubscriptionExists(
-          context.user.organization_id,
+          context.user.selected_organization_id,
           fromGlobalId(service_id).id
         );
 
@@ -91,7 +91,7 @@ const resolvers: Resolvers = {
         const subscriptionData = {
           id: uuidv4(),
           service_id: fromGlobalId(service_id).id,
-          organization_id: context.user.organization_id,
+          organization_id: context.user.selected_organization_id,
           start_date: new Date(),
           end_date: undefined,
           billing: 100,
@@ -117,7 +117,7 @@ const resolvers: Resolvers = {
         );
         await grantServiceAccessUsers(
           context,
-          context.user.organization_id as OrganizationId,
+          context.user.selected_organization_id as OrganizationId,
           context.user.id,
           filledSubscription.id
         );
@@ -148,7 +148,8 @@ const resolvers: Resolvers = {
       // Check the subscription does not already exist :
       try {
         const subscription = await checkSubscriptionExists(
-          fromGlobalId(organization_id).id ?? context.user.organization_id,
+          fromGlobalId(organization_id).id ??
+            context.user.selected_organization_id,
           fromGlobalId(service_id).id
         );
         if (subscription) {
@@ -159,7 +160,8 @@ const resolvers: Resolvers = {
           id: uuidv4(),
           service_id: fromGlobalId(service_id).id,
           organization_id:
-            fromGlobalId(organization_id).id ?? context.user.organization_id,
+            fromGlobalId(organization_id).id ??
+            context.user.selected_organization_id,
           start_date: new Date(),
           end_date: undefined,
           billing: 0,
@@ -176,7 +178,7 @@ const resolvers: Resolvers = {
         const userServices = await grantServiceAccessUsers(
           context,
           (fromGlobalId(organization_id).id ??
-            context.user.organization_id) as OrganizationId,
+            context.user.selected_organization_id) as OrganizationId,
           context.user.id,
           addedSubscription.id
         );

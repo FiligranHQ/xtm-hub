@@ -124,7 +124,8 @@ export const loadSubscriptionsByService = async (
 
   // In case we got a normal service return only the organization of the user
   const userSubOrga = result.find(
-    ({ organization_id }) => organization_id === context.user.organization_id
+    ({ organization_id }) =>
+      organization_id === context.user.selected_organization_id
   );
   return [userSubOrga];
 };
@@ -165,7 +166,7 @@ export const loadSubscriptionsByOrganization = async (
       dbRaw('(serv."description") as service_description'),
       dbRaw('(link."url") as service_url'),
     ])
-    .where('organization_id', context.user.organization_id)
+    .where('organization_id', context.user.selected_organization_id)
     .where('serv.type', '=', 'COMMUNITY')
     .where('service_capa.service_capability_name', '=', 'MANAGE_ACCESS')
     .groupBy([
@@ -205,7 +206,7 @@ export const loadSubscriptionsByOrganization = async (
       'service_capa.user_service_id'
     )
     .countDistinct('Subscription.id as totalCount')
-    .where('organization_id', context.user.organization_id)
+    .where('organization_id', context.user.selected_organization_id)
     .where('serv.type', '=', 'COMMUNITY')
     .where('service_capa.service_capability_name', '=', 'MANAGE_ACCESS')
     .first();
@@ -289,14 +290,15 @@ export const fillUserServiceData = async (
     const serviceCapa = await loadUnsecureServiceCapabilitiesBy({
       user_service_id: userService.id,
     });
+    // TODO: Issue 10 - Chunk 2, modify API we should pass the corresponding organization to fillUserServiceData
     const userServiceData = {
       id: userService.id,
       subscription: {
         billing: subscription.billing,
         id: subscription.id,
         organization: {
-          id: user.organization.id,
-          name: user.organization.name,
+          id: user.organizations[0].id,
+          name: user.organizations[0].name,
         },
         service: {
           id: service_id,

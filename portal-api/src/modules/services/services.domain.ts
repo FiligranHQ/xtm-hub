@@ -77,7 +77,7 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
     orderMode,
     orderBy,
   });
-  const organizationId = context.user.organization_id;
+  const organizationId = context.user.selected_organization_id;
   const userId = context.user.id;
   const servicesConnection = await query
     .leftJoin('Subscription as subscription', function () {
@@ -156,11 +156,10 @@ export const loadServiceBy = async (
   field: string,
   value: string
 ): Promise<Service> => {
-  const service = await db<Service>(context, 'Service')
+  return db<Service>(context, 'Service')
     .where({ [field]: value })
     .select('*')
     .first();
-  return service;
 };
 
 export const loadUnsecureServiceBy = async (field: ServiceMutator) => {

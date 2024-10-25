@@ -6,7 +6,8 @@ import { Separator } from 'filigran-ui/clients';
 import { Button, buttonVariants } from 'filigran-ui/servers';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ElementType, FunctionComponent, useCallback, useState } from 'react';
+import { ElementType, FunctionComponent, useCallback } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 
 interface LinkMenuProps {
   open: boolean;
@@ -43,7 +44,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
 };
 
 const Menu = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useLocalStorage<boolean>('menu-open', false);
   const handleOpenMenu = useCallback(
     () => setOpen((prev0pen) => !prev0pen),
     []
