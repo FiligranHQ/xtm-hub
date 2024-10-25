@@ -7,13 +7,13 @@ test.beforeAll('Add necessary data for tests', async () => {
   await addOrganization('Thales');
 });
 test('should confirm CRUD of users is ok', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.login();
-    await page.getByLabel('Settings menu').click();
-    await page.getByRole('link', { name: 'Users' }).click();
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(
-        'Users list'
-    );
+  const loginPage = new LoginPage(page);
+  await loginPage.login();
+  await page.getByLabel('Settings menu').click();
+  await page.getByRole('link', { name: 'Users' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(
+    'Users list'
+  );
 
   // Create User
 
@@ -40,7 +40,7 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
   // Edit user
   await page.getByRole('cell', { name: 'userInE2E@thales.com' }).click();
   await expect(
-    page.getByRole('heading', { name: 'firstname lastname' })
+    page.getByRole('heading', { name: 'userInE2E@thales.com' })
   ).toBeVisible();
 
   await page.getByLabel('Edit').click();

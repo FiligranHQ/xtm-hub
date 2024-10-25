@@ -168,7 +168,6 @@ const resolvers: Resolvers = {
     login: async (_, { email, password }, context) => {
       const { req } = context;
       const logged = await loadUserBy({ email });
-
       if (logged && validPassword(logged, password)) {
         req.session.user = logged;
         return mapUserToGraphqlUser(logged);

@@ -32,7 +32,7 @@
     "test:ci": "yarn test && yarn lint",
     "prepare": "cd .. && husky ./.husky",
     "seed:make:test": "VITEST_MODE=true && yarn knex:run seed:make",
-    "start-dev-test": "VITEST_MODE=true && START_DEV_TEST=true && yarn start-dev",
+    "start-dev-test": "VITEST_MODE=true && START_DEV_SERVER=true && yarn start-dev",
     "test:w": "VITEST_MODE=true && vitest",
     "init-db-test": "NODE_OPTIONS='--loader ts-node/esm' VITEST_MODE=true npx ts-node tests/script/create-database.ts"
   },
