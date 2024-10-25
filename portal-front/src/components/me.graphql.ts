@@ -10,8 +10,10 @@ export const MeContextFragment = graphql`
     roles_portal_id {
       id
     }
-    organization {
+    organizations {
       id
+      name
+      selected
     }
   }
 `;

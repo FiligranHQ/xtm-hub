@@ -35,7 +35,9 @@ const OpenedMenuAdmin = () => (
         <span className="flex-1 px-2 text-left txt-default">Settings</span>
       </AccordionTrigger>
       <AccordionContent>
-        <AdminLinks className="h-8 txt-sub-content" />
+        <ul className="space-y-xs">
+          <AdminLinks className="h-8 txt-sub-content" />
+        </ul>
       </AccordionContent>
     </AccordionItem>
   </Accordion>
@@ -67,10 +69,12 @@ const ClosedMenuAdmin = () => {
       </PopoverTrigger>
       <PopoverContent
         sideOffset={0}
-        className="w-min border-border-light"
         side="right"
-        align="start">
-        <AdminLinks className="pl-0" />
+        align="start"
+        asChild>
+        <ul className="w-min space-y-xs p-s">
+          <AdminLinks className="pl-0" />
+        </ul>
       </PopoverContent>
     </Popover>
   );
@@ -96,12 +100,14 @@ const AdminLinks = ({ className }: { className?: string }) => (
         key={href}
         displayError={false}
         capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS, ...restriction]}>
-        <AdminButton
-          className={className}
-          href={href}
-          icon={icon}
-          label={label}
-        />
+        <li>
+          <AdminButton
+            className={className}
+            href={href}
+            icon={icon}
+            label={label}
+          />
+        </li>
       </GuardCapacityComponent>
     ))}
   </>

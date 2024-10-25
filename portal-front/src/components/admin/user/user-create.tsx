@@ -12,7 +12,6 @@ import { FunctionComponent, useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { userListCreateMutation } from '../../../../__generated__/userListCreateMutation.graphql';
-import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
 
 interface CreateUserProps {
   connectionId: string;
@@ -29,11 +28,6 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
   );
   const { me } = useContext<Portal>(portalContext);
   const isFullAdmin = useGranted('BYPASS');
-  const user = {
-    organization: {
-      id: me?.organization.id,
-    },
-  } as userSlug_fragment$data;
 
   const handleSubmit = (
     values: z.infer<typeof userFormSchema> | z.infer<typeof userEditFormSchema>
@@ -62,7 +56,7 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
       open={openSheet}
       setOpen={setOpenSheet}
       validationSchema={userFormSchema}
-      user={isFullAdmin ? undefined : user}
+      user={isFullAdmin ? undefined : me}
       trigger={<TriggerButton label="Create user" />}></UserFormSheet>
   );
 };

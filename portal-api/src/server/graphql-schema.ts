@@ -13,7 +13,6 @@ import { authDirectiveTransformer } from '../security/directive-auth';
 import settingsResolver from '../modules/settings/settings.resolver';
 import trackingResolver from '../modules/tracking/tracking.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
-import malwareAnalysisResolver from '../modules/malware-analysis/malware-analysis.resolver';
 import servicePriceResolver from '../modules/services/instances/service-price/service-price.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
 
@@ -33,7 +32,6 @@ const resolvers = mergeResolvers([
   settingsResolver,
   trackingResolver,
   rolePortalResolver,
-  malwareAnalysisResolver,
   vaultResolver,
   subscriptionsResolver,
   userServiceResolver,

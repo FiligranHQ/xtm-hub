@@ -1,11 +1,16 @@
-import { Capability, Restriction } from './__generated__/resolvers-types';
+import { Restriction } from './__generated__/resolvers-types';
 import RolePortal, { RolePortalId } from './model/kanel/public/RolePortal';
+import CapabilityPortal, {
+  CapabilityPortalId,
+} from './model/kanel/public/CapabilityPortal';
+import { UserId } from './model/kanel/public/User';
 
-export const ADMIN_UUID = 'ba091095-418f-4b4f-b150-6c9295e232c3';
+export const ADMIN_UUID: UserId =
+  'ba091095-418f-4b4f-b150-6c9295e232c3' as UserId;
 export const PLATFORM_ORGANIZATION_UUID =
   'ba091095-418f-4b4f-b150-6c9295e232c4';
-export const CAPABILITY_BYPASS: Capability = {
-  id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09',
+export const CAPABILITY_BYPASS: CapabilityPortal = {
+  id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09' as CapabilityPortalId,
   name: Restriction.Bypass,
 };
 export const CAPABILITY_BCK_MANAGE_SERVICES = {
@@ -24,8 +29,8 @@ export const CAPABILITY_FRT_MANAGE_SETTINGS = {
   id: 'cabbc09c-275a-473b-b490-626b9ebf6939',
   name: Restriction.FrtManageSettings,
 };
-export const CAPABILITY_FRT_MANAGE_USER = {
-  id: '350d67fe-5a9b-4b51-8d63-ad504d8a4999',
+export const CAPABILITY_FRT_MANAGE_USER: CapabilityPortal = {
+  id: '350d67fe-5a9b-4b51-8d63-ad504d8a4999' as CapabilityPortalId,
   name: Restriction.FrtManageUser,
 };
 export const CAPABILITY_FRT_ACCESS_BILLING = {

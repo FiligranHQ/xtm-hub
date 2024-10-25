@@ -4,14 +4,16 @@ import {
   User as GeneratedUser,
 } from '../../__generated__/resolvers-types';
 import { db, dbTx } from '../../../knexfile';
-import { UserWithAuthentication } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import crypto from 'node:crypto';
 import { PORTAL_COOKIE_NAME } from '../../index';
-import { loadUserBy, loadUsers } from './users.domain';
+import {
+  loadUserBy,
+  loadUsers,
+  updateSelectedOrganization,
+} from './users.domain';
 import { dispatch, listen } from '../../pub';
 import { extractId } from '../../utils/utils';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { hashPassword } from '../../utils/hash-password.util';
 import { GraphQLError } from 'graphql/error/index.js';
 import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
@@ -28,11 +30,10 @@ import { UserServiceId } from '../../model/kanel/public/UserService';
 import { sendMail } from '../../server/mail-service';
 import { updateUser } from './users.helper';
 import { ROLE_ADMIN } from '../../portal.const';
+import { UserLoadUserBy } from '../../model/load-user-by';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 
-const validPassword = (
-  user: UserWithAuthentication,
-  password: string
-): boolean => {
+const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   const hash = crypto
     .pbkdf2Sync(password, user.salt, 1000, 64, `sha512`)
     .toString(`hex`);
@@ -46,14 +47,17 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      return context.user;
+      console.log(context.user.selected_organization_id);
+      return context.user as unknown as GeneratedUser;
     },
     user: async (_, { id }, context) => {
       if (!context.user)
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      return loadUserBy({ 'User.id': id as UserId });
+      return loadUserBy({
+        'User.id': id as UserId,
+      }) as unknown as GeneratedUser;
     },
     users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
       if (!context.user)
@@ -64,11 +68,6 @@ const resolvers: Resolvers = {
     },
   },
   User: {
-    organization: (user, __, context) => {
-      return user.organization
-        ? user.organization
-        : loadOrganizationBy(context, 'Organization.id', user.organization_id);
-    },
     tracking_data: async (user, __, context) => {
       return user?.tracking_data
         ? user?.tracking_data
@@ -98,7 +97,9 @@ const resolvers: Resolvers = {
           password: hash,
           first_name: input.first_name,
           last_name: input.last_name,
-          organization_id: extractId(input.organization_id) as OrganizationId,
+          selected_organization_id: extractId(
+            input.organization_id
+          ) as OrganizationId,
         };
         const [addedUser] = await db<GeneratedUser>(context, 'User')
           .insert(data)
@@ -229,6 +230,25 @@ const resolvers: Resolvers = {
       });
       return deletedUser;
     },
+    changeSelectedOrganization: async (_, { organization_id }, context) => {
+      const updatedUser = await updateSelectedOrganization(
+        context,
+        context.user.id,
+        fromGlobalId(organization_id).id
+      );
+
+      context.req.session.reload(async function (err) {
+        context.req.session.user = await loadUserBy({
+          email: updatedUser.email,
+        });
+        context.req.session.save();
+        if (err) {
+          console.error('Context error', err);
+        }
+      });
+
+      return !!updatedUser;
+    },
     // Login / logout
     login: async (_, { email, password }, context) => {
       const { req } = context;
@@ -236,7 +256,7 @@ const resolvers: Resolvers = {
 
       if (logged && validPassword(logged, password)) {
         req.session.user = logged;
-        return logged;
+        return logged as unknown as GeneratedUser;
       }
       return undefined;
     },

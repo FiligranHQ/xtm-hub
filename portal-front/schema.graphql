@@ -8,42 +8,34 @@ scalar Date
 
 scalar Upload
 
-enum MalwareAnalysisOrdering {
-  created_at
+enum OrganizationOrdering {
+  name
 }
 
-type MalwareAnalysisResult implements Node {
-  id: ID!
-  result: JSON!
-}
-
-type GlimpsCallbackTemporary {
-  result: JSON!
-}
-
-type MalwareAnalysis implements Node {
+type Organization implements Node {
   id: ID!
   name: String!
-  created_at: Date!
-  ended_at: Date
-  result: JSON!
-  status: String!
-  type: String!
+  domains: [String!]
 }
 
-type MalwareAnalysisEdge {
+type MeOrganization implements Node {
+  id: ID!
+  name: String!
+  selected: Boolean!
+}
+
+type OrganizationEdge {
   cursor: String!
-  node: MalwareAnalysis!
+  node: Organization!
 }
 
-type MalwareAnalysisConnection {
+type OrganizationConnection {
   totalCount: Int!
-  edges: [MalwareAnalysisEdge!]!
+  edges: [OrganizationEdge!]!
   pageInfo: PageInfo!
 }
 
 type Query {
-  malwareAnalysis(first: Int = 50, after: ID, orderBy: MalwareAnalysisOrdering!, orderMode: OrderingMode!): MalwareAnalysisConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
@@ -67,9 +59,11 @@ type Query {
   node(id: ID!): Node
 }
 
+input EditOrganizationInput {
+  name: String!
+}
+
 type Mutation {
-  malwareAnalysis(string: String, file: Upload): MalwareAnalysis!
-  malwareAnalysisResult(id: ID!, status: String!, result: JSON!): GlimpsCallbackTemporary
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
@@ -93,59 +87,9 @@ type Mutation {
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User
   deleteUser(id: ID!): User
+  changeSelectedOrganization(organization_id: ID!): Boolean
   login(email: String!, password: String): User
   logout: ID!
-}
-
-type MalwareAnalysisSubscription {
-  add: MalwareAnalysis
-  edit: MalwareAnalysis
-  delete: MalwareAnalysis
-}
-
-type Subscription implements Node {
-  MalwareAnalysis: MalwareAnalysisSubscription
-  Service: ServiceSubscription
-  id: ID!
-  organization_id: ID!
-  organization: Organization
-  service_id: ID!
-  service_url: String
-  service: Service
-  start_date: Date
-  end_date: Date
-  status: String
-  joining: String
-  justification: String
-  billing: Int
-  user_service: [UserService]
-  ActionTracking: TrackingSubscription
-  User: UserSubscription
-}
-
-enum OrganizationOrdering {
-  name
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-  domains: [String!]
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditOrganizationInput {
-  name: String!
 }
 
 type RolePortal implements Node {
@@ -268,6 +212,25 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
+}
+
+type Subscription implements Node {
+  Service: ServiceSubscription
+  id: ID!
+  organization_id: ID!
+  organization: Organization
+  service_id: ID!
+  service_url: String
+  service: Service
+  start_date: Date
+  end_date: Date
+  status: String
+  joining: String
+  justification: String
+  billing: Int
+  user_service: [UserService]
+  ActionTracking: TrackingSubscription
+  User: UserSubscription
 }
 
 type PlatformProvider {
@@ -401,8 +364,7 @@ type User implements Node {
   email: String!
   first_name: String
   last_name: String
-  organization_id: String!
-  organization: Organization!
+  organizations: [MeOrganization!]!
   capabilities: [Capability!]!
   tracking_data: [ActionTracking]
   roles_portal_id: [RolePortalID!]!

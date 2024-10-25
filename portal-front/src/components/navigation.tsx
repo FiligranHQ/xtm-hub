@@ -1,5 +1,6 @@
 import { LinkMenu } from '@/components/menu/menu';
 import MenuAdmin from '@/components/menu/menu-admin';
+import { OrganizationSwitcher } from '@/components/menu/organization-switcher';
 import { HomeIcon } from 'filigran-icon';
 import { Separator } from 'filigran-ui/clients';
 import { FunctionComponent } from 'react';
@@ -12,6 +13,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
 }) => {
   return (
     <nav>
+      <OrganizationSwitcher open={open} />
       <ul>
         <li>
           <LinkMenu

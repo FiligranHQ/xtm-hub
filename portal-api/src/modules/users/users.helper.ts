@@ -62,14 +62,14 @@ async function createOrganisationWithAdminUser(
     name: extractedDomain.split('.')[0],
     domains: [extractedDomain],
   });
-
+  // TODO: Issue 10 - Chunk 2, verify if this is the right way to do it
   return await addNewUserWithRoles(
     {
       id: uuidv4() as UserId,
       email,
       salt,
       password: hash,
-      organization_id: newOrganization.id,
+      selected_organization_id: newOrganization.id,
     },
     [ROLE_ADMIN_ORGA.name, ROLE_USER.name]
   );
@@ -96,7 +96,7 @@ export const createNewUserFromInvitation = async (email: string) => {
           email,
           salt,
           password: hash,
-          organization_id: organization.id,
+          selected_organization_id: organization.id,
         },
         [ROLE_USER.name]
       );
@@ -144,10 +144,15 @@ export const updateUser = async (
   id: string,
   input: EditUserInput
 ) => {
-  const organization_id = extractId(input.organization_id);
+  const selected_organization_id = extractId(
+    input.organization_id
+  ) as OrganizationId;
   const { roles_id, ...inputWithoutRoles } = input;
   const rolePortalIds = roles_id.map(extractId);
-  const update = { ...inputWithoutRoles, organization_id } as User;
+  const update = {
+    ...inputWithoutRoles,
+    selected_organization_id,
+  } as UserMutator;
   const [updatedUser] = await db<User>(context, 'User')
     .where({ id: id as UserId })
     .update(update)
@@ -167,7 +172,7 @@ export const updateUser = async (
   const organization = await loadOrganizationBy(
     context,
     'Organization.id',
-    organization_id
+    selected_organization_id
   );
 
   return {

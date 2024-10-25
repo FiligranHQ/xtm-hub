@@ -14,12 +14,12 @@ import { printSchema } from 'graphql/utilities/index.js';
 import fs from 'node:fs';
 import platformInit, { minioInit } from './server/initialize';
 import { initAuthPlatform } from './auth/auth-platform';
-import { User } from './model/user';
 import { PortalContext } from './model/portal-context';
 import { awxEndpoint } from './managers/awx/awx-endpoint';
 import { createHandler } from 'graphql-sse/lib/use/express';
 import { extractId } from './utils';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
+import { UserLoadUserBy } from './model/load-user-by';
 
 const { json } = pkg;
 
@@ -105,7 +105,7 @@ await server.start();
 declare module 'express-session' {
   // noinspection JSUnusedGlobalSymbols
   interface SessionData {
-    user: User;
+    user: UserLoadUserBy;
     referer: string;
   }
 }

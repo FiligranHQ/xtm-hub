@@ -61,8 +61,9 @@ const resolvers: Resolvers = {
         });
       }
 
+      // TODO: Issue 10 - Chunk 2
       const isSameOrganization = await isOrgMatchingSub(
-        user.organization_id as OrganizationId,
+        user.selected_organization_id as OrganizationId,
         subscription_id
       );
       const addedUserService = await (isSameOrganization
@@ -75,7 +76,7 @@ const resolvers: Resolvers = {
             subscription_id,
             user_id: user.id as UserId,
             capabilities: input.capabilities,
-            organization_id: user.organization_id as OrganizationId,
+            organization_id: user.selected_organization_id as OrganizationId,
           }));
 
       const [subscription] = await loadSubscriptionBy('id', subscription_id);
