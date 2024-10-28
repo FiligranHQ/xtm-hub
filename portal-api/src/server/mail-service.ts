@@ -4,7 +4,8 @@ const smtpOptions = config.get('smtp_options');
 const transporter = nodemailer.createTransport(smtpOptions);
 
 export const sendMail = async ({
-  from = 'no-reply@scredplatform.io',
+  from = (config.get('smtp_options.auth.user') as string) ||
+    'no-reply@scredplatform.io',
   to = 'berof12139@foraro.com',
   subject = 'test mail',
   text = 'Hello This is an SMTP message with customizations',
