@@ -20,7 +20,7 @@ export const VaultForm = () => {
     const { toast } = useToast();
     const t = useTranslations();
     const [vaultFileMutation] = useMutation<vaultAddFileMutation>(VaultFileMutation);
-    const [file, setFile] = useState(null)
+    const [file, setFile] = useState<File | null>(null)
     const [openSheet, setOpenSheet] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -59,12 +59,12 @@ export const VaultForm = () => {
 
             <VaultNewFileFormSheet
                 fileExtension={file?.name?.split(".")[1] ?? '.pdf'}
-                fileName={file?.name}
+                fileName={file?.name ?? ''}
                 open={openSheet}
                 trigger={<TriggerButton label="Add new file" />}
                 setOpen={setOpenSheet}
                 handleSubmit={sendFile}
-                ></VaultNewFileFormSheet>
+                />
     </>
     );
 
