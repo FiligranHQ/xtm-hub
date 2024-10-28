@@ -134,16 +134,7 @@ export const loadSubscriptionsByOrganization = async (
   opts
 ) => {
   const { first, after, orderMode, orderBy } = opts;
-  const subscriptionConnection = await paginate<Subscription>(
-    context,
-    'Subscription',
-    {
-      first,
-      after,
-      orderMode,
-      orderBy,
-    }
-  )
+  const queryContext = db(context, 'Subscription')
     .leftJoin(
       'Organization as org',
       'Subscription.organization_id',
@@ -165,7 +156,7 @@ export const loadSubscriptionsByOrganization = async (
       'service_capa.user_service_id'
     )
     .select([
-      'Subscription.*',
+      dbRaw('DISTINCT ON ("Subscription".id) "Subscription".*'),
       dbRaw('(json_agg(org.*) ->> 0)::json as organization'),
       dbRaw('(json_agg(serv.*) ->> 0)::json as service'),
       dbRaw('(serv."name") as service_name'),
@@ -185,7 +176,19 @@ export const loadSubscriptionsByOrganization = async (
       'serv.description',
       'link.url',
     ])
-    .asConnection<SubscriptionConnection>();
+    .orderBy('Subscription.id', 'asc');
+  const subscriptionConnection = await paginate<Subscription>(
+    context,
+    'Subscription',
+    {
+      first,
+      after,
+      orderMode,
+      orderBy,
+    },
+    {},
+    queryContext
+  ).asConnection<SubscriptionConnection>();
 
   const { totalCount } = await db<Service>(context, 'Subscription', opts)
     .leftJoin('Service as serv', 'Subscription.service_id', '=', 'serv.id')

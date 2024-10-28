@@ -33,7 +33,7 @@ const formSchema = z.object({
 // Component
 const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
   const router = useRouter();
-  usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
+  const data = usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,61 +57,70 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
       <div className="flex flex-col items-center p-xl sm:p-0">
         <FiligranLogo className="text-primary px-xl" />
         <LoginTitleForm />
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-s">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="email"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="password"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <div className="pt-s w-full">
+        {data.settings.platform_providers.some(
+          ({ provider }) => provider === 'local'
+        ) && (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full space-y-s">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="email"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="password"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
               <Button
                 className="w-full"
                 type="submit">
                 Submit
               </Button>
-            </div>
-          </form>
-        </Form>
-        <div className="mt-s w-full">
-          <Button
-            variant="outline"
-            asChild>
-            <Link
-              className="w-full"
-              type="submit"
-              href={'/auth/oidc'}>
-              OpenId Connect
-            </Link>
-          </Button>
+            </form>
+          </Form>
+        )}
+        <div className="mt-s space-y-s w-full">
+          {data.settings.platform_providers.map((platformProvider) => {
+            if (platformProvider.provider === 'local') {
+              return null;
+            }
+            return (
+              <Button
+                key={platformProvider.provider}
+                asChild>
+                <Link
+                  className="w-full"
+                  type="submit"
+                  href={`/auth/${platformProvider.provider}`}>
+                  {platformProvider.name}
+                </Link>
+              </Button>
+            );
+          })}
         </div>
       </div>
     </main>

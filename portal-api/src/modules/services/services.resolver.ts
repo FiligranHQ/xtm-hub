@@ -134,7 +134,7 @@ const resolvers: Resolvers = {
           fromGlobalId(input.organization_id).id
         );
         addedSubscription.service = addedService;
-
+        await trx.commit();
         return addedSubscription;
       } catch (error) {
         await trx.rollback();
@@ -223,7 +223,7 @@ const resolvers: Resolvers = {
         }
 
         await grantServiceAdminAccess(context, userId, addedService.id);
-
+        await trx.commit();
         return addedService;
       } catch (error) {
         await trx.rollback();
@@ -289,6 +289,7 @@ const resolvers: Resolvers = {
           },
         });
 
+        await trx.commit();
         return addedSubscriptions ?? [];
       } catch (error) {
         await trx.rollback();

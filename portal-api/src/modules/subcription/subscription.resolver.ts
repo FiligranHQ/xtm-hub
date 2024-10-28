@@ -122,6 +122,7 @@ const resolvers: Resolvers = {
           filledSubscription.id
         );
 
+        await trx.commit();
         return {
           ...filledSubscription.service,
           subscribed: true,
@@ -196,6 +197,7 @@ const resolvers: Resolvers = {
           },
         });
 
+        await trx.commit();
         return userServiceData;
       } catch (error) {
         await trx.rollback();
@@ -224,6 +226,7 @@ const resolvers: Resolvers = {
           .where({ id })
           .update(update)
           .returning('*');
+        await trx.commit();
         return await fillSubscription(context, updatedSubscription);
       } catch (error) {
         await trx.rollback();

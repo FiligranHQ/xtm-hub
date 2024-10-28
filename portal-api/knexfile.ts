@@ -126,11 +126,11 @@ export const paginate = <T>(
   context: PortalContext,
   type: DatabaseType,
   pagination: Pagination,
-  opts: QueryOpts = {}
+  opts: QueryOpts = {},
+  queryContext = db<T>(context, type, opts)
 ) => {
   const { first, after, orderMode, orderBy } = pagination;
   const currentOffset = after ? Number(atob(after)) : 0;
-  const queryContext = db<T>(context, type, opts);
   queryContext.queryContext({
     ...queryContext.queryContext(),
     ...pagination,
