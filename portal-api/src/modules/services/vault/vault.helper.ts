@@ -12,3 +12,13 @@ export const getFileName = (fileName: string) => {
 export const loadUnsecureDocumentsBy = async(field: DocumentMutator): Promise<Document[]> => {
     return dbUnsecure<Document>( 'Document').where(field).select('*') as unknown as Document[]
 }
+
+export const createDocument = async(documentData): Promise<Document> => {
+    return dbUnsecure<Document>('Document')
+        .insert(documentData)
+        .returning('*');
+}
+
+export const deleteDocuments = async() => {
+    return dbUnsecure<Document>('Document').delete('*')
+}

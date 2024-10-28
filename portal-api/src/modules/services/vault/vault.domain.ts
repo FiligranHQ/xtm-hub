@@ -2,7 +2,7 @@ import {insertFileInMinio, UploadedFile} from "./file-storage";
 import config from "config";
 import Document from '../../../model/kanel/public/Document';
 import {dbUnsecure} from "../../../../knexfile";
-import {getFileName, loadUnsecureDocumentsBy} from "./vault.helper";
+import {createDocument, getFileName, loadUnsecureDocumentsBy} from "./vault.helper";
 
 export const sendFileToS3 = async (file: UploadedFile, userId: string) => {
     const fullMetadata = {
@@ -30,14 +30,12 @@ export const passOldDocumentsIntoInactive = async(existingDocuments: Document[])
         .returning('*');
 }
 
-export const createDocument = async(documentData) => {
+export const insertDocument = async(documentData: Document) => {
     const existingDocuments = await loadUnsecureDocumentsBy( {file_name: documentData.file_name})
     if(existingDocuments.length >0) {
         passOldDocumentsIntoInactive(existingDocuments)
     }
 
-    return dbUnsecure<Document>('Document')
-        .insert(documentData)
-        .returning('*');
+    return createDocument(documentData)
 
 }

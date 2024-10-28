@@ -342,7 +342,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.670.0":
+"@aws-sdk/client-s3@npm:3.670.0":
   version: 3.670.0
   resolution: "@aws-sdk/client-s3@npm:3.670.0"
   dependencies:
@@ -688,7 +688,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-storage@npm:^3.670.0":
+"@aws-sdk/lib-storage@npm:3.670.0":
   version: 3.670.0
   resolution: "@aws-sdk/lib-storage@npm:3.670.0"
   dependencies:
@@ -8927,8 +8927,8 @@ __metadata:
   resolution: "portal-api@workspace:."
   dependencies:
     "@apollo/server": 4.11.0
-    "@aws-sdk/client-s3": ^3.670.0
-    "@aws-sdk/lib-storage": ^3.670.0
+    "@aws-sdk/client-s3": 3.670.0
+    "@aws-sdk/lib-storage": 3.670.0
     "@eslint/js": 9.10.0
     "@graphql-codegen/cli": 5.0.2
     "@graphql-codegen/typescript": 4.0.9

@@ -89,7 +89,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                         <FormControl>
                                             <FileInput
                                                 {...field}
-                                                allowedTypes={'image/png, applicatiion/pdf'}
+                                                allowedTypes={'image/jpeg, image/gif, image/png, application/pdf, image/svg, video/mp4, video/webm'}
                                             />
                                         </FormControl>
                                         <FormMessage />

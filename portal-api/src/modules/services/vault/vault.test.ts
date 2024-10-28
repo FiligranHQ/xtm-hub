@@ -1,0 +1,99 @@
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import {ServiceId} from "../../../model/kanel/public/Service";
+import {createDocument, deleteDocuments, getFileName, loadUnsecureDocumentsBy} from "./vault.helper";
+import {insertDocument, sendFileToS3} from "./vault.domain";
+import {insertFileInMinio} from "./file-storage";
+import { Readable } from 'stream';
+import { sendFileToS3 } from './vault.domain';
+import * as FileStorage from './file-storage';
+
+
+describe('should call S3 to send file', () => {
+    it("should call S3", async () => {
+        vi.spyOn(Date, 'now').mockReturnValue(new Date('2023-01-01T00:00:00Z').getTime());
+        const mockInsertFileInMinio = vi.spyOn(FileStorage, 'insertFileInMinio')
+            .mockResolvedValueOnce('mocked response');
+
+          const fileMock = {
+            mimetype: 'mimeType',
+            filename: 'name',
+            encoding: 'utf8',
+            createReadStream: () => Readable.from(['file content']),
+        };
+
+        await sendFileToS3(fileMock, 'ba091095-418f-4b4f-b150-6c9295e232c3');
+
+        const expectedResult = {
+            Bucket: 'xtmhubbucket',
+            Key: getFileName(fileMock.filename),
+            Body: fileMock.createReadStream(),
+            Metadata: {
+                mimetype: 'mimeType',
+                filename:  'name',
+                encoding: 'utf8',
+                Uploadinguserid: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            }
+        }
+        expect(mockInsertFileInMinio).toHaveBeenCalledTimes(1)
+        const callArguments = mockInsertFileInMinio.mock.calls[0][0];
+        expect(callArguments.Bucket).toBe(expectedResult.Bucket);
+        expect(callArguments.Metadata).toMatchObject(expectedResult.Metadata);
+    })
+})
+
+describe('should add new file', () =>  {
+    beforeAll(async () => {
+        await createDocument({
+            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            short_name: 'shortName',
+            description: 'description',
+            minio_name: 'minioName',
+            file_name: 'filename',
+            service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
+        })
+    })
+    it('should create Document entry in DB', async () => {
+        const data = {
+            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            short_name: 'shortName2',
+            description: 'description2',
+            minio_name: 'minioName2',
+            file_name: 'filename2',
+            service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
+        }
+        await insertDocument(data)
+        const inDb = await loadUnsecureDocumentsBy({short_name: 'shortName2'})
+        expect(inDb).toBeTruthy()
+        expect(inDb[0].short_name).toEqual('shortName2')
+    })
+
+    it('should pass old Documents into inactive state',async () => {
+        const data = {
+            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            short_name: 'shortName3',
+            description: 'description3',
+            minio_name: 'minioName3',
+            file_name: 'filename',
+            service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
+        }
+        await insertDocument(data)
+        const inDb = await loadUnsecureDocumentsBy({file_name: 'filename'})
+        expect(inDb).toBeTruthy()
+        expect(inDb.length).toEqual(2)
+        expect(inDb[0].active).toEqual(false)
+        expect(inDb[1].active).toEqual(true)
+    })
+
+
+    afterAll(async () => {
+        await deleteDocuments();
+    })
+})
+
+describe('getFileName', () => {
+    it("should set the correct fileName", () => {
+        vi.spyOn(Date, 'now').mockReturnValue(new Date('2023-01-01T00:00:00Z').getTime());
+        const result = getFileName('test.pdf')
+        expect(result).toEqual('test1672531200000.pdf')
+    })
+})
