@@ -35,8 +35,8 @@ services:
   portal-minio:
     image: 'minio/minio:RELEASE.2024-08-03T04-33-23Z'
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: password
+      MINIO_ROOT_USER: portal
+      MINIO_ROOT_PASSWORD: changeme
     ports:
       - '9000:9000'
       - '8900:8900'
@@ -48,7 +48,7 @@ services:
       test: [ "CMD", "mc", "ready", "local" ]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
 
 volumes:
   pgdata:

@@ -144,12 +144,16 @@ const initializeDefaultServices = async () => {
   for (const service of portalConfig.services) {
     await ensureServiceExists(service);
   }
-  await isStorageAlive();
+
 };
 
 const platformInit = async () => {
   await initializeDefaultServices();
   await initializeBuiltInAdministrator();
+};
+
+export const minioInit = async () => {
+  await isStorageAlive();
 };
 
 export default platformInit;
