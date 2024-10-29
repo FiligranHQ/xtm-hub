@@ -15,6 +15,7 @@ import trackingResolver from '../modules/tracking/tracking.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import malwareAnalysisResolver from '../modules/malware-analysis/malware-analysis.resolver';
 import servicePriceResolver from '../modules/services/instances/service-price/service-price.resolver';
+import vaultResolver from "../modules/services/vault/vault.resolver";
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
@@ -33,6 +34,7 @@ const resolvers = mergeResolvers([
   trackingResolver,
   rolePortalResolver,
   malwareAnalysisResolver,
+  vaultResolver,
   subscriptionsResolver,
   userServiceResolver,
   serviceCapabilityResolver,

@@ -2,8 +2,16 @@
   "Utils": {
     "Cancel": "Cancel",
     "Validate": "Validate",
+    "Create": "Create",
     "Continue": "Continue",
-    "Loading": "Loading..."
+    "Loading": "Loading...",
+    "Success": "Success",
+    "Error": "Error",
+    "Reset": "Reset",
+    "Inserted": "The element has been added",
+    "Form": {
+      "ResetFile": "Remove the current selected file."
+    }
   },
   "HomePage": {
     "Homepage": "Homepage",
@@ -21,7 +29,21 @@
     "SureWantSubscriptionDirect": "Are you really sure you want to subscribe this service? This action can not be undone.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
-    "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team."
+    "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
+
+    "Vault": {
+      "VaultTitle": "Vault Administration",
+      "File": "File to send",
+      "DropFile": "Drop the file here",
+      "FileExtension": "The file must have an extension",
+      "FileForm": {
+        "UploadNewFile": "Upload a new file in Vault",
+        "ShortNameLabel": "Short name",
+        "ShortNamePlaceholder": "Filigran Pricing",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a short paragraph to describe the file."
+      }
+    }
   },
   "LocaleSwitcher": {
     "fr": "Français",

@@ -42,6 +42,8 @@ services:
     depends_on:
       portal-postgres:
         condition: service_healthy
+      portal-minio:
+        condition: service_healthy
     environment:
       - DATABASE_HOST=portal-postgres
       - DATABASE_PORT=5432
@@ -51,6 +53,12 @@ services:
       - ADMIN_EMAIL=admin@filigran.io
       - ADMIN_PASSWORD=admin
       - NODE_ENV=production
+      - MINIO_BUCKET_NAME=xtmhubbucket
+      - MINIO_ENDPOINT=portal-minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=password
+      - MINIO_USE_SSL=false
 
 
   portal-api:
@@ -70,6 +78,8 @@ services:
     depends_on:
       portal-postgres:
         condition: service_healthy
+      portal-minio:
+        condition: service_healthy
     environment:
       - DATABASE_HOST=portal-postgres
       - DATABASE_PORT=5432
@@ -79,6 +89,12 @@ services:
       - ADMIN_EMAIL=admin@filigran.io
       - ADMIN_PASSWORD=admin
       - DATA_SEEDING=true
+      - MINIO_BUCKET_NAME=xtmhubbucket
+      - MINIO_ENDPOINT=portal-minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=portal
+      - MINIO_SECRET_KEY=changeme
+      - MINIO_USE_SSL=false
 
   portal-postgres:
     container_name: portal-postgres
@@ -97,6 +113,24 @@ services:
       timeout: 5s
       retries: 10
 
+  portal-minio:
+    container_name: portal-minio
+    image: 'minio/minio:RELEASE.2024-08-03T04-33-23Z'
+    environment:
+      MINIO_ROOT_USER: portal
+      MINIO_ROOT_PASSWORD: changeme
+    ports:
+      - '9000:9000'
+    volumes:
+      - 'minio:/data/minio'
+    command: 'minio server /data/minio'
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+
   portal-e2e-tests:
     build:
       context: ../portal-e2e-tests/.
@@ -105,6 +139,10 @@ services:
       - "type=registry,ref=filigran/portal-e2e-tests:${IMAGE_TAGS}"
     depends_on:
       portal-front:
+        condition: service_healthy
+      portal-api:
+        condition: service_healthy
+      portal-minio:
         condition: service_healthy
     environment:
       - E2E_BASE_URL=http://portal-front:3000
@@ -116,4 +154,6 @@ services:
 
 volumes:
   pgdata:
+    driver: local
+  minio:
     driver: local

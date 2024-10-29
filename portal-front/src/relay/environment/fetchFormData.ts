@@ -20,7 +20,7 @@ export const fetchFormData = async (
   }
 
   const formData = new FormData();
-  formData.append('operations', JSON.stringify({ query: request.text }));
+  formData.append('operations', JSON.stringify({ query: request.text, variables }));
   const uploadablesArray = Array.from(uploadables);
   const map = uploadablesArray.reduce<{ [key: number]: string[] }>(
     (acc, _, index) => {

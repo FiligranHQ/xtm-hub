@@ -1,0 +1,15 @@
+type Document implements Node {
+    id: ID!
+    uploader_id: String!
+    service_id: String!
+    short_name: String
+    description: String
+    file_name: String!
+    minio_name: String!
+    active: Boolean!
+    created_at: Date!
+}
+
+type Mutation {
+    addVaultFile(file: Upload, shortName: String, description: String): String! @auth
+}
