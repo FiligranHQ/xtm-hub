@@ -26,9 +26,11 @@
   "minio": {
     "bucketName": "xtmhubbucket",
     "region": "us-east-1",
-    "endpoint": "http://localhost:9000/",
+    "endpoint": "localhost",
+    "port": 9000,
     "accessKeyId": "changeme",
-    "secretAccessKey": "changeme"
+    "secretAccessKey": "changeme",
+    "useSsl": false
   },
   "smtp_options": {
     "host": "changeMe",

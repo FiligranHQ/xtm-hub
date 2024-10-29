@@ -10,5 +10,14 @@
     "user": "DATABASE_USER",
     "password": "DATABASE_PASSWORD",
     "database": "DATABASE_BASE"
+  },
+  "minio": {
+    "bucketName": "MINIO_BUCKET_NAME",
+    "region": "MINIO_REGION",
+    "endpoint": "MINIO_ENDPOINT",
+    "port": "MINIO_PORT",
+    "accessKeyId": "MINIO_ACCESS_KEY",
+    "secretAccessKey": "MINIO_SECRET_KEY",
+    "useSsl": "MINIO_USE_SSL"
   }
 }

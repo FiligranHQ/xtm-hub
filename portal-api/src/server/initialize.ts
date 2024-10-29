@@ -27,6 +27,7 @@ import {
   ROLE_ADMIN_ORGA,
   ROLE_USER,
 } from '../portal.const';
+import {isStorageAlive} from "../modules/services/vault/file-storage";
 
 const initAdminUser = async () => {
   const { email, password } = portalConfig.admin;
@@ -143,6 +144,7 @@ const initializeDefaultServices = async () => {
   for (const service of portalConfig.services) {
     await ensureServiceExists(service);
   }
+  await isStorageAlive();
 };
 
 const platformInit = async () => {
