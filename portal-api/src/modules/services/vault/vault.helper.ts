@@ -13,10 +13,11 @@ export const loadUnsecureDocumentsBy = async(field: DocumentMutator): Promise<Do
     return dbUnsecure<Document>( 'Document').where(field).select('*') as unknown as Document[]
 }
 
-export const createDocument = async(documentData): Promise<Document> => {
-    return dbUnsecure<Document>('Document')
+export const createDocument = async(documentData): Promise<Document[]> => {
+    const document = dbUnsecure<Document>('Document')
         .insert(documentData)
-        .returning('*');
+        .returning('*') as unknown as Document[];
+    return document;
 }
 
 export const deleteDocuments = async() => {

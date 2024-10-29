@@ -10,5 +10,6 @@ export async function seed(knex) {
       last_name: 'hello',
       organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
     },
-  ]);
+  ]).onConflict('id')
+      .ignore();
 }

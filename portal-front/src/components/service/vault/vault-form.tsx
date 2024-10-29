@@ -58,8 +58,6 @@ export const VaultForm = () => {
         {isLoading && <Loader/>}
 
             <VaultNewFileFormSheet
-                fileExtension={file?.name?.split(".")[1] ?? '.pdf'}
-                fileName={file?.name ?? ''}
                 open={openSheet}
                 trigger={<TriggerButton label="Add new file" />}
                 setOpen={setOpenSheet}

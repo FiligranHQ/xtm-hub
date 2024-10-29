@@ -27,8 +27,6 @@ interface VaultNewFileFormSheetProps {
     open: boolean;
     setOpen: (open: boolean) => void;
     trigger: ReactNode;
-    fileExtension: string;
-    fileName: string;
     handleSubmit: (
         values: z.infer<typeof newFileSchema>
     ) => void;
@@ -38,8 +36,6 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
      open,
      setOpen,
     trigger,
-     fileExtension,
-     fileName,
      handleSubmit
 }) => {
     const t = useTranslations();
@@ -54,15 +50,14 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
     })
 
     const onSubmit = (values: z.infer<typeof newFileSchema>) => {
+        const extension = values?.file[0]?.name.split('.')[1]
         handleSubmit({
             ...values,
-            shortName: values.shortName && !values.shortName.endsWith(fileExtension)
-                ? values.shortName + fileExtension
+            shortName: values.shortName && !values.shortName.endsWith(extension ?? '')
+                ? values.shortName + '.' + extension
                 : values.shortName,
         });
     };
-
-
 
     return (
         <Sheet key={'right'}
@@ -72,7 +67,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
 
             <SheetContent side={'right'}>
                 <SheetHeader className="bg-page-background">
-                    <SheetTitle>{t('Service.Vault.FileForm.UploadNewFile')}: {fileName}</SheetTitle>
+                    <SheetTitle>{t('Service.Vault.FileForm.UploadNewFile')}</SheetTitle>
                 </SheetHeader>
                 <FileInputDropZone className="absolute inset-0 p-xl pt-[5rem]">
                 <Form {...form}>
@@ -102,7 +97,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                             name="shortName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t('Service.Vault.FileForm.ShortNameLabel')} ( {fileExtension} auto inserted )</FormLabel>
+                                    <FormLabel>{t('Service.Vault.FileForm.ShortNameLabel')}</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder={t('Service.Vault.FileForm.ShortNamePlaceholder')}

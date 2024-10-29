@@ -1,5 +1,5 @@
 import {Resolvers} from "../../../__generated__/resolvers-types";
-import {createDocument, insertDocument, sendFileToS3} from "./vault.domain";
+import {insertDocument, sendFileToS3} from "./vault.domain";
 import {UserId} from "../../../model/kanel/public/User";
 import {ServiceId} from "../../../model/kanel/public/Service";
 import Document from "../../../model/kanel/public/Document";

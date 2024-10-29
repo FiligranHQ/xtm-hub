@@ -92,8 +92,8 @@ services:
       - MINIO_BUCKET_NAME=xtmhubbucket
       - MINIO_ENDPOINT=portal-minio
       - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=minio
-      - MINIO_SECRET_KEY=password
+      - MINIO_ACCESS_KEY=portal
+      - MINIO_SECRET_KEY=changeme
       - MINIO_USE_SSL=false
 
   portal-postgres:
@@ -117,17 +117,18 @@ services:
     container_name: portal-minio
     image: 'minio/minio:RELEASE.2024-08-03T04-33-23Z'
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: password
+      MINIO_ROOT_USER: portal
+      MINIO_ROOT_PASSWORD: changeme
     ports:
       - '9000:9000'
     volumes:
       - 'minio:/data/minio'
+    command: 'minio server /data/minio'
     healthcheck:
       test: [ "CMD", "mc", "ready", "local" ]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
 
 
   portal-e2e-tests:
@@ -138,6 +139,10 @@ services:
       - "type=registry,ref=filigran/portal-e2e-tests:${IMAGE_TAGS}"
     depends_on:
       portal-front:
+        condition: service_healthy
+      portal-api:
+        condition: service_healthy
+      portal-minio:
         condition: service_healthy
     environment:
       - E2E_BASE_URL=http://portal-front:3000
