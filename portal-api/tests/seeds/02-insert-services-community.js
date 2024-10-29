@@ -9,7 +9,8 @@ export async function seed(knex) {
       creation_status: 'READY',
       subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
     },
-  ]);
+  ]).onConflict('id')
+      .ignore();
   await knex('Service_Link').insert([
     {
       id: '86a0b81b-de3c-4790-bb1d-96d95135271b',
@@ -35,7 +36,8 @@ export async function seed(knex) {
       url: 'http://www.google.fr',
       name: 'NextCloud',
     },
-  ]);
+  ]).onConflict('id')
+      .ignore();
   await knex('Service_Price').insert([
     {
       id: '65ca846b-b4ff-42ec-bafa-cc604eea11f5',
@@ -44,7 +46,8 @@ export async function seed(knex) {
       start_date: '2024-08-08',
       price: 1000,
     },
-  ]);
+  ]).onConflict('id')
+      .ignore();
   await knex('Subscription').insert([
     {
       id: 'fdd973f0-6e8e-4794-9857-da84830679d5',
@@ -54,7 +57,8 @@ export async function seed(knex) {
       end_date: null,
       status: 'ACCEPTED',
     },
-  ]);
+  ]).onConflict('id')
+      .ignore();
   await knex('User_Service').insert([
     {
       id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
@@ -62,7 +66,8 @@ export async function seed(knex) {
       subscription_id: 'fdd973f0-6e8e-4794-9857-da84830679d5',
       service_personal_data: null,
     },
-  ]);
+  ]).onConflict('id')
+      .ignore();
 
   await knex('Service_Capability').insert([
     {
@@ -80,5 +85,6 @@ export async function seed(knex) {
       user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
       service_capability_name: 'ACCESS_SERVICE',
     },
-  ]);
+  ]).onConflict('id')
+      .ignore();
 }

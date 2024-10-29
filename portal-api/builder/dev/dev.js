@@ -13,7 +13,7 @@ let ctx = await esbuild.context({
 });
 
 // Custom watcher
-const watcher = chokidar.watch('src/**/*.ts', {
+const watcher = chokidar.watch('src/**/*.{ts,graphql}', {
   ignored: ['**/*.test.ts', 'node_modules', 'dist'],
   persistent: true,
 });

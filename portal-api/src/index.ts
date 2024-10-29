@@ -12,7 +12,7 @@ import { dbMigration } from '../knexfile';
 import portalConfig from './config';
 import { printSchema } from 'graphql/utilities/index.js';
 import fs from 'node:fs';
-import platformInit from './server/initialize';
+import platformInit, {minioInit} from './server/initialize';
 import { initAuthPlatform } from './auth/auth-platform';
 import { User } from './model/user';
 import { PortalContext } from './model/portal-context';
@@ -161,6 +161,8 @@ if (!process.env.VITEST_MODE) {
   console.log(
     '[Migration] Database version is now ' + (await dbMigration.version())
   );
+  await minioInit();
+  console.log('[MINIO] Bucket ready')
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: portalConfig.port }, resolve)
   );

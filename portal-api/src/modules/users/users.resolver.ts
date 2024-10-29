@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      return loadUserBy({ 'User.id': id });
+      return loadUserBy({ 'User.id': id as UserId});
     },
     users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
       if (!context.user)
