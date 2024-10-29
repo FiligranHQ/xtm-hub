@@ -12,6 +12,9 @@ cloudportal:
       OIDC_CLIENT_ID: ""
       OIDC_REDIRECT_URIS: ""
       OIDC_LOGOUT_CALLBACK_URL: ""
+      MINIO_USE_SSL: "false"
+      MINIO_PORT: 80
+      MINIO_ENDPOINT: minio
     secret:
       OIDC_CLIENT_SECRET: ""
   front:
