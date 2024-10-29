@@ -9,7 +9,7 @@ spec:
   features:
     bucketDNS: false
     enableSFTP: false
-  image: "{{ .image.repository }}:{{ .image.digest | default .image.tag }}"
+  image: "{{ .Values.minio.image.repository }}:{{ .Values.minio.image.digest | default .Values.minio.image.tag }}"
   imagePullPolicy: IfNotPresent
   logging:
     anonymous: true
