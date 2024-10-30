@@ -20,7 +20,7 @@ const s3Client = new S3Client({
         accessKeyId: config.get('minio.accessKeyId'),
         secretAccessKey: config.get('minio.secretAccessKey'),
     },
-    tls: config.get('minio.useSsl') === 'true' ?? false
+    tls: config.get('minio.useSsl') === 'true' ? true : false
 });
 
 export interface UploadedFile {
