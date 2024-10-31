@@ -144,9 +144,9 @@ jobs:
 
   build-images-prod:
     needs:
-      - run-api-test
-      - run-front-test
       - run-tests
+      - run-front-test
+      - run-api-test
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -192,13 +192,10 @@ jobs:
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
   restart-staging:
-      needs:
-        - run-tests
-        - run-front-test
-        - run-api-test
-      runs-on: ubuntu-latest
-      timeout-minutes: 20
-      if: github.event_name != 'pull_request'
-      steps:
-        - name: restart deployment on staging
-          run: kubectl --server=https://api.staging.eu-west.filigran.io --token=${{ secrets.K8S_TOKEN }} -n wip-cloudportal rollout restart deployment
+    needs: build-images-prod
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: restart deployment on staging
+        run: kubectl --server=https://api.staging.eu-west.filigran.io --token=${{ secrets.K8S_TOKEN }} -n wip-cloudportal rollout restart deployment
