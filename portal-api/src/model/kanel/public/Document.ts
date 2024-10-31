@@ -14,8 +14,6 @@ export default interface Document {
 
   service_id: ServiceId | null;
 
-  short_name: string | null;
-
   description: string | null;
 
   file_name: string | null;
@@ -35,8 +33,6 @@ export interface DocumentInitializer {
   uploader_id?: string | null;
 
   service_id?: ServiceId | null;
-
-  short_name?: string | null;
 
   description?: string | null;
 
@@ -58,8 +54,6 @@ export interface DocumentMutator {
   uploader_id?: string | null;
 
   service_id?: ServiceId | null;
-
-  short_name?: string | null;
 
   description?: string | null;
 

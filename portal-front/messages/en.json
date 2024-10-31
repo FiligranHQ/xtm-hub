@@ -8,7 +8,7 @@
     "Success": "Success",
     "Error": "Error",
     "Reset": "Reset",
-    "Inserted": "The element has been added",
+    "Inserted": "has been added",
     "Form": {
       "ResetFile": "Remove the current selected file."
     }
@@ -44,9 +44,9 @@
         "ShortNamePlaceholder": "Filigran Pricing",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a short paragraph to describe the file.",
-        "FileAlreadyExists": "This file already exist",
-        "FileExistsDialog": "This file already exist. This file will erase the old one. Are you sure you want to continue?",
-        "AlreadyExists": "This file already exist. The old one will be erased."
+        "FileAlreadyExists": "This file already exists",
+        "FileExistsDialog": "This file already exists. This file will erase the old one. Are you sure you want to continue?",
+        "AlreadyExists": "This file already exists. The old one will be erased."
 
       }
     }
