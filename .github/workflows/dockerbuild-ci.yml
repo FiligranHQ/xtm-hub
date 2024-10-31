@@ -158,7 +158,6 @@ jobs:
         include:
           - image: portal-front
           - image: portal-api
-          - image: portal-e2e-tests
     if: github.event_name != 'pull_request'
     steps:
       - name: Checkout repository
