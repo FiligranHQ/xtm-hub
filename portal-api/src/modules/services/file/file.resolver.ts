@@ -1,12 +1,13 @@
 import {Resolvers} from "../../../__generated__/resolvers-types";
-import {insertDocument, sendFileToS3} from "./vault.domain";
+import {insertDocument, sendFileToS3} from "./file.domain";
 import {UserId} from "../../../model/kanel/public/User";
 import {ServiceId} from "../../../model/kanel/public/Service";
 import Document from "../../../model/kanel/public/Document";
+import {checkFileExists} from "./file.helper";
 
 const resolvers: Resolvers = {
     Mutation: {
-        addVaultFile: async (_, opt, context) => {
+        addFile: async (_, opt, context) => {
             try {
                 const minioName = await sendFileToS3(opt.file.file, context.user.id);
                 const data: Document = {
@@ -25,6 +26,17 @@ const resolvers: Resolvers = {
             }
         },
 
+    },
+    Query: {
+        fileExists: async (_, input, context) => {
+          try {
+              return checkFileExists(input.fileName)
+              return true
+          } catch (error) {
+              console.error("Error while fetching files:", error);
+              throw error
+          }
+      }
     }
 }
 

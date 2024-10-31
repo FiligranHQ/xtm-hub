@@ -11,15 +11,15 @@ import {newFileSchema, VaultNewFileFormSheet} from "@/components/service/vault/v
 import {z} from "zod";
 import Loader from "@/components/loader";
 import {
-    vaultAddFileMutation
-} from "../../../../__generated__/vaultAddFileMutation.graphql";
-import {VaultFileMutation} from "@/components/service/vault/vault.graphql";
+    fileAddMutation
+} from "../../../../__generated__/fileAddMutation.graphql";
+import {FileAddMutation} from "@/components/service/vault/file.graphql";
 import TriggerButton from "@/components/ui/trigger-button";
 
 export const VaultForm = () => {
     const { toast } = useToast();
     const t = useTranslations();
-    const [vaultFileMutation] = useMutation<vaultAddFileMutation>(VaultFileMutation);
+    const [vaultFileMutation] = useMutation<fileAddMutation>(FileAddMutation);
     const [file, setFile] = useState<File | null>(null)
     const [openSheet, setOpenSheet] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -56,10 +56,9 @@ export const VaultForm = () => {
 
     return ( <>
         {isLoading && <Loader/>}
-
             <VaultNewFileFormSheet
                 open={openSheet}
-                trigger={<TriggerButton label="Add new file" />}
+                trigger={<TriggerButton label={t('Service.Vault.FileForm.AddFile')} />}
                 setOpen={setOpenSheet}
                 handleSubmit={sendFile}
                 />

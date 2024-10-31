@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import {ServiceId} from "../../../model/kanel/public/Service";
-import {createDocument, deleteDocuments, getFileName, loadUnsecureDocumentsBy} from "./vault.helper";
-import {insertDocument, sendFileToS3} from "./vault.domain";
+import {checkFileExists, createDocument, deleteDocuments, getFileName, loadUnsecureDocumentsBy} from "./file.helper";
+import {insertDocument, sendFileToS3} from "./file.domain";
 import {insertFileInMinio} from "./file-storage";
 import { Readable } from 'stream';
-import { sendFileToS3 } from './vault.domain';
+import { sendFileToS3 } from './file.domain';
 import * as FileStorage from './file-storage';
 
 
@@ -95,5 +95,31 @@ describe('getFileName', () => {
         vi.spyOn(Date, 'now').mockReturnValue(new Date('2023-01-01T00:00:00Z').getTime());
         const result = getFileName('test.pdf')
         expect(result).toEqual('test1672531200000.pdf')
+    })
+})
+
+describe("should check if file already exists", () => {
+    beforeAll(async () => {
+        await createDocument({
+            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            short_name: 'shortName',
+            description: 'description',
+            minio_name: 'minioName',
+            file_name: 'filename',
+            service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
+        })
+    })
+
+    it.each`
+    expected | fileName        | title
+    ${true}  | ${'filename'}   | ${'Already exists'}
+    ${false} | ${'test'}       | ${'Does not exist'}
+    `('Should return $expected if filename $title', async ({expected, fileName}) => {
+        const result = await checkFileExists(fileName)
+        expect(result).toEqual(expected)
+    })
+
+    afterAll(async () => {
+        await deleteDocuments();
     })
 })

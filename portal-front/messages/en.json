@@ -37,11 +37,17 @@
       "DropFile": "Drop the file here",
       "FileExtension": "The file must have an extension",
       "FileForm": {
+        "AddFile": "Add new file",
+        "File": "File",
         "UploadNewFile": "Upload a new file in Vault",
         "ShortNameLabel": "Short name",
         "ShortNamePlaceholder": "Filigran Pricing",
         "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "This is a short paragraph to describe the file."
+        "DescriptionPlaceholder": "This is a short paragraph to describe the file.",
+        "FileAlreadyExists": "This file already exist",
+        "FileExistsDialog": "This file already exist. This file will erase the old one. Are you sure you want to continue?",
+        "AlreadyExists": "This file already exist. The old one will be erased."
+
       }
     }
   },
