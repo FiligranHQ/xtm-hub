@@ -8,6 +8,11 @@ export const getFileName = (fileName: string) => {
     return `${nameWithoutExtension}${Date.now()}.${extensionName}`
 }
 
+export const checkFileExists = async (fileName: string) => {
+    const documents: Document[] = await loadUnsecureDocumentsBy({file_name: fileName})
+    return documents.length > 0;
+}
+
 
 export const loadUnsecureDocumentsBy = async(field: DocumentMutator): Promise<Document[]> => {
     return dbUnsecure<Document>( 'Document').where(field).select('*') as unknown as Document[]

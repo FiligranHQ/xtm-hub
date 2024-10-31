@@ -1,6 +1,8 @@
-import {FunctionComponent, ReactNode} from "react";
+import {FunctionComponent, ReactNode, useEffect, useState} from "react";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
+import { useRef } from 'react';
+
 import {z} from "zod";
 import {Form, Sheet, SheetContent,FileInputDropZone} from "filigran-ui/clients";
 import {
@@ -16,6 +18,10 @@ import {
 import {Button, Input, Textarea} from "filigran-ui/servers";
 import {FileInput} from "filigran-ui";
 import {useTranslations} from "next-intl";
+import { useLazyLoadQuery } from 'react-relay';
+import {fileExistsQuery} from "../../../../__generated__/fileExistsQuery.graphql";
+import {FileExistsQuery} from "@/components/service/vault/file.graphql";
+import {AlertDialogComponent} from "@/components/ui/alert-dialog";
 
 export const newFileSchema = z.object({
     shortName: z.string().optional(),
@@ -40,6 +46,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
 }) => {
     const t = useTranslations();
 
+
     const form = useForm<z.infer<typeof newFileSchema>>({
         resolver: zodResolver(newFileSchema),
         defaultValues: {
@@ -48,7 +55,32 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
             file: undefined
         }
     })
+    const { watch } = form;
+    const file = watch('file');
+    const [fileName, setFileName] = useState(null);
+    const [fileExists, setFileExists] = useState<boolean>(false);
 
+    useEffect(() => {
+        if (file && file.length > 0) {
+            setFileName(file[0].name);
+        }
+    }, [file]);
+
+    const fileExistsData = useLazyLoadQuery<fileExistsQuery>(
+        FileExistsQuery,
+        { fileName }
+    );
+
+    useEffect(() => {
+        if (fileExistsData) {
+            setFileExists(fileExistsData.fileExists);
+        }
+    }, [fileExistsData]);
+
+    const formRef = useRef<HTMLFormElement>(null);
+    const handleContinuePopUp = () => {
+        form.handleSubmit(onSubmit)();
+    };
     const onSubmit = (values: z.infer<typeof newFileSchema>) => {
         const extension = values?.file[0]?.name.split('.')[1]
         handleSubmit({
@@ -72,6 +104,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                 <FileInputDropZone className="absolute inset-0 p-xl pt-[5rem]">
                 <Form {...form}>
                     <form
+                        ref={formRef}
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="w-full space-y-xl">
                         <FormField
@@ -80,7 +113,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                             render={({field}) => {
                                 return (
                                     <FormItem>
-                                        <FormLabel>File</FormLabel>
+                                        <FormLabel>{t('Service.Vault.FileForm.File')}</FormLabel>
                                         <FormControl>
                                             <FileInput
                                                 {...field}
@@ -88,6 +121,11 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                             />
                                         </FormControl>
                                         <FormMessage />
+                                        {fileExists && (
+                                            <FormMessage>
+                                                <div>{t('Service.Vault.FileForm.AlreadyExists')}</div>
+                                            </FormMessage>
+                                        )}
                                     </FormItem>
                                 );
                             }}
@@ -132,15 +170,36 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                             <SheetClose asChild>
                                 <Button variant="outline">{t('Utils.Cancel')}</Button>
                             </SheetClose>
-                            <Button
-                                type="submit">
+
+                            {fileExists ? (<AlertDialogComponent
+                                AlertTitle={t('Service.Vault.FileForm.FileAlreadyExists')}
+                                actionButtonText={t('Utils.Continue')}
+                                triggerElement={
+                                    <Button
+                                        type="button"
+                                    >
+                                        {t('Utils.Create')}
+                                    </Button>
+                                }
+                                onClickContinue={() =>
+                                    handleContinuePopUp()}
+
+                                    >
+                                {t('Service.Vault.FileForm.FileExistsDialog')}
+                            </AlertDialogComponent>) : (   <Button
+                               type="submit">
                                 {t('Utils.Create')}
-                            </Button>
+                            </Button>)}
+
                         </SheetFooter>
+
                     </form>
                 </Form>
             </FileInputDropZone>
+
+
             </SheetContent>
+
         </Sheet>
     );
 }

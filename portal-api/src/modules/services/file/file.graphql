@@ -11,5 +11,9 @@ type Document implements Node {
 }
 
 type Mutation {
-    addVaultFile(file: Upload, shortName: String, description: String): String! @auth
+    addFile(file: Upload, shortName: String, description: String): String! @auth
+}
+
+type Query {
+    fileExists(fileName: String): Boolean @auth
 }
