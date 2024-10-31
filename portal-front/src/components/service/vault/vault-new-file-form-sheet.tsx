@@ -1,7 +1,6 @@
 import {FunctionComponent, ReactNode, useEffect, useState} from "react";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
-import { useRef } from 'react';
 
 import {z} from "zod";
 import {Form, Sheet, SheetContent,FileInputDropZone} from "filigran-ui/clients";
@@ -15,7 +14,7 @@ import {
     SheetTitle,
     SheetTrigger
 } from "filigran-ui/clients";
-import {Button, Input, Textarea} from "filigran-ui/servers";
+import {Button, Textarea} from "filigran-ui/servers";
 import {FileInput} from "filigran-ui";
 import {useTranslations} from "next-intl";
 import { useLazyLoadQuery } from 'react-relay';
@@ -24,7 +23,6 @@ import {FileExistsQuery} from "@/components/service/vault/file.graphql";
 import {AlertDialogComponent} from "@/components/ui/alert-dialog";
 
 export const newFileSchema = z.object({
-    shortName: z.string().optional(),
     description: z.string().optional(),
     file: z.custom<FileList>()
 })
@@ -46,49 +44,29 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
 }) => {
     const t = useTranslations();
 
-
     const form = useForm<z.infer<typeof newFileSchema>>({
         resolver: zodResolver(newFileSchema),
         defaultValues: {
-            shortName: '',
             description: '',
             file: undefined
         }
     })
     const { watch } = form;
-    const file = watch('file');
-    const [fileName, setFileName] = useState(null);
-    const [fileExists, setFileExists] = useState<boolean>(false);
+    const watchFile = watch('file');
 
-    useEffect(() => {
-        if (file && file.length > 0) {
-            setFileName(file[0].name);
-        }
-    }, [file]);
+    const fileName = watchFile?.[0]?.name || null;
 
-    const fileExistsData = useLazyLoadQuery<fileExistsQuery>(
+    const {fileExists} = useLazyLoadQuery<fileExistsQuery>(
         FileExistsQuery,
         { fileName }
     );
 
-    useEffect(() => {
-        if (fileExistsData) {
-            setFileExists(fileExistsData.fileExists);
-        }
-    }, [fileExistsData]);
 
-    const formRef = useRef<HTMLFormElement>(null);
-    const handleContinuePopUp = () => {
-        form.handleSubmit(onSubmit)();
-    };
     const onSubmit = (values: z.infer<typeof newFileSchema>) => {
-        const extension = values?.file[0]?.name.split('.')[1]
         handleSubmit({
-            ...values,
-            shortName: values.shortName && !values.shortName.endsWith(extension ?? '')
-                ? values.shortName + '.' + extension
-                : values.shortName,
+            ...values
         });
+        form.reset();
     };
 
     return (
@@ -104,7 +82,6 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                 <FileInputDropZone className="absolute inset-0 p-xl pt-[5rem]">
                 <Form {...form}>
                     <form
-                        ref={formRef}
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="w-full space-y-xl">
                         <FormField
@@ -118,6 +95,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                             <FileInput
                                                 {...field}
                                                 allowedTypes={'image/jpeg, image/gif, image/png, application/pdf, image/svg, video/mp4, video/webm'}
+
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -129,22 +107,6 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                     </FormItem>
                                 );
                             }}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="shortName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('Service.Vault.FileForm.ShortNameLabel')}</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder={t('Service.Vault.FileForm.ShortNamePlaceholder')}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
                         />
 
                         <FormField
@@ -181,10 +143,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                         {t('Utils.Create')}
                                     </Button>
                                 }
-                                onClickContinue={() =>
-                                    handleContinuePopUp()}
-
-                                    >
+                                onClickContinue={form.handleSubmit(onSubmit)}>
                                 {t('Service.Vault.FileForm.FileExistsDialog')}
                             </AlertDialogComponent>) : (   <Button
                                type="submit">
@@ -196,10 +155,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                     </form>
                 </Form>
             </FileInputDropZone>
-
-
             </SheetContent>
-
         </Sheet>
     );
 }

@@ -1,8 +1,8 @@
 import {graphql} from "react-relay";
 
 export const FileAddMutation = graphql`
-    mutation fileAddMutation($file: Upload, $shortName: String, $description: String) {
-        addFile(file: $file, shortName: $shortName, description: $description)
+    mutation fileAddMutation($file: Upload, $description: String) {
+        addFile(file: $file, description: $description)
     }
 `;
 
