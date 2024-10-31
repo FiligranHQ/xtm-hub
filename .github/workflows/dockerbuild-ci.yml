@@ -143,6 +143,10 @@ jobs:
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
 
   build-images-prod:
+    needs:
+      - run-api-test
+      - run-front-test
+      - run-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
