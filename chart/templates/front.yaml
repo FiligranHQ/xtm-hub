@@ -22,7 +22,7 @@ spec:
     {{- end }}
       containers:
       - name: portal-front
-        image: filigran/portal-front:{{ .Values.cloudportal.version }}
+        image: filigran/portal-front-prod:{{ .Values.cloudportal.version }}
         {{- if eq .Values.cloudportal.version "main" }}
         imagePullPolicy: "Always"
         {{- else }}
