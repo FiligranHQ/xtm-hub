@@ -1,18 +1,18 @@
 type Document implements Node {
-    id: ID!
-    uploader_id: String!
-    service_id: String!
-    description: String
-    file_name: String!
-    minio_name: String!
-    active: Boolean!
-    created_at: Date!
+  id: ID!
+  uploader_id: String!
+  service_id: String!
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
 }
 
 type Mutation {
-    addFile(file: Upload, description: String): String! @auth
+  addFile(file: Upload, description: String): String! @auth
 }
 
 type Query {
-    fileExists(fileName: String): Boolean @auth
+  fileExists(fileName: String): Boolean @auth
 }
