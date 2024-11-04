@@ -3,9 +3,9 @@
  * @returns { Promise<void> }
  */
 export async function up(knex) {
-    await knex.schema.table('Document', function (table) {
-        table.dropColumn('short_name');
-    });
+  await knex.schema.table('Document', function (table) {
+    table.dropColumn('short_name');
+  });
 }
 
 /**
@@ -13,7 +13,7 @@ export async function up(knex) {
  * @returns { Promise<void> }
  */
 export async function down(knex) {
-    await knex.schema.table('Document', function (table) {
-        table.addColumn('short_name')
-    });
+  await knex.schema.table('Document', function (table) {
+    table.string('short_name');
+  });
 }

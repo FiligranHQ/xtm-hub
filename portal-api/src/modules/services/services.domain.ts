@@ -140,7 +140,8 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
       ("Service"."type" = 'COMMUNITY' AND "subscription"."status" = 'ACCEPTED')
     )
   `
-    ).whereRaw(`"subscription"."id" IS NULL`)
+    )
+    .whereRaw(`"subscription"."id" IS NULL`)
     .countDistinct('Service.id as totalCount')
     .first();
 

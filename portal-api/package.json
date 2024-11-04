@@ -29,6 +29,7 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "test": "VITEST_MODE=true && vitest run",
+    "test:ci": "yarn test && yarn lint",
     "prepare": "cd .. && husky ./.husky",
     "seed:make:test": "VITEST_MODE=true && yarn knex:run seed:make",
     "start-dev-test": "VITEST_MODE=true && yarn start-dev",
