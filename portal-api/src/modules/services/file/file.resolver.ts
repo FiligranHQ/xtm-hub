@@ -28,8 +28,7 @@ const resolvers: Resolvers = {
   Query: {
     fileExists: async (_, input) => {
       try {
-        return checkFileExists(input.fileName);
-        return true;
+        return checkFileExists(input.fileName ?? '');
       } catch (error) {
         console.error('Error while fetching files:', error);
         throw error;
