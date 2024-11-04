@@ -1,6 +1,6 @@
+import config from 'config';
 import pkg, { Knex } from 'knex';
 import portalConfig from '../src/config';
-import config from 'config';
 
 const DATABASE_TEST: string =
   config.get('database-test.database') || 'test_database';

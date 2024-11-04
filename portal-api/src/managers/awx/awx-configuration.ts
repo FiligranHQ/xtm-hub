@@ -1,4 +1,9 @@
 import config from 'config';
+import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
+import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
+import { TrackingConst } from '../../modules/tracking/tracking.const';
+import { initTracking } from '../../modules/tracking/tracking.domain';
+import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
 import {
   AWXAction,
   AWXActionFunctionMap,
@@ -6,16 +11,6 @@ import {
   AWXWorkflowAction,
   AWXWorkflowConfig,
 } from './awx.model';
-import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
-import {
-  mapUserInputAWX,
-  mapUserEmailAWX,
-  mapUpdateUserInputAWX,
-} from './user/awx-user-mapping';
-import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
-import { initTracking } from '../../modules/tracking/tracking.domain';
-import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
-import { TrackingConst } from '../../modules/tracking/tracking.const';
 import {
   mapCommunityIdAWX,
   mapCreateCommunityAWX,
@@ -29,10 +24,15 @@ import {
 import { mapUserCommunityAWX } from './community/awx-user-community.helper';
 import {
   mapAddServiceOrganizationAWX,
-  mapUserInServiceOrganizationAWX,
   mapDeleteServiceOrganizationAWX,
   mapUpdateServiceOrganizationAWX,
+  mapUserInServiceOrganizationAWX,
 } from './organization/awx-service-organization.helper';
+import {
+  mapUpdateUserInputAWX,
+  mapUserEmailAWX,
+  mapUserInputAWX,
+} from './user/awx-user-mapping';
 
 export const launchAWXWorkflow = async (action: AWXWorkflowAction) => {
   const awx = config.get('awx.activate');

@@ -1,7 +1,7 @@
+import { dbUnsecure } from '../../../../knexfile';
 import Document, {
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
-import { dbUnsecure } from '../../../../knexfile';
 
 export const getDocumentName = (documentName: string) => {
   const splitName = documentName.split('.');

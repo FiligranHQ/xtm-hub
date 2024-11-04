@@ -1,7 +1,7 @@
-import { Node, Resolvers } from '../__generated__/resolvers-types';
-import { DatabaseType, db } from '../../knexfile';
-import { GraphQLError } from 'graphql/error/index.js';
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { DatabaseType, db } from '../../knexfile';
+import { Node, Resolvers } from '../__generated__/resolvers-types';
 
 const resolvers: Resolvers = {
   Query: {

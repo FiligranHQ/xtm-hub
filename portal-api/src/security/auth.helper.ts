@@ -1,10 +1,11 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { dbRaw, dbUnsecure } from '../../knexfile';
 import Service from '../model/kanel/public/Service';
-import { CAPABILITY_BYPASS } from '../portal.const';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { loadSubscriptionBy } from '../modules/subcription/subscription.helper';
+import { CAPABILITY_BYPASS } from '../portal.const';
 import { ServiceCapabilityArgs } from './directive-auth';
-import { UserLoadUserBy } from '../model/load-user-by';
+
+import { UserLoadUserBy } from '../model/user';
 
 export const loadCapabilitiesByServiceId = async (
   user: UserLoadUserBy,

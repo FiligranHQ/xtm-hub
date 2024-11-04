@@ -1,7 +1,7 @@
-import passport from './providers/providers';
-import { setCookieError } from '../utils/set-cookies.util';
 import bodyParser from 'body-parser';
+import { setCookieError } from '../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
+import passport from './providers/providers';
 
 export const initAuthPlatform = async (app) => {
   app.get(`/auth/:provider`, (req, res, next) => {

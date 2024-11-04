@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { loadUserBy } from './users.domain';
 import { UserId } from '../../model/kanel/public/User';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
+import { loadUserBy } from './users.domain';
 
 describe('Users domain', () => {
   it('should load user Admin', async () => {

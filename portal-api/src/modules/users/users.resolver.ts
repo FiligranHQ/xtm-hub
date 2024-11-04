@@ -1,37 +1,33 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import crypto from 'node:crypto';
+import { v4 as uuidv4 } from 'uuid';
+import { db, dbTx } from '../../../knexfile';
 import {
   MergeEvent,
+  MeUser,
   Resolvers,
-  User as GeneratedUser,
+  SimpleTypeUser,
 } from '../../__generated__/resolvers-types';
-import { db, dbTx } from '../../../knexfile';
-import { v4 as uuidv4 } from 'uuid';
-import crypto from 'node:crypto';
 import { PORTAL_COOKIE_NAME } from '../../index';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { RolePortalId } from '../../model/kanel/public/RolePortal';
+import User, { UserId } from '../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../model/user';
+import { dispatch, listen } from '../../pub';
+import { sendMail } from '../../server/mail-service';
+import { extractId } from '../../utils/utils';
+import { createUserOrganizationRelation } from '../common/user-organization.helper';
+import { createUserRolePortalRelation } from '../common/user-role-portal.helper';
+import { insertNewOrganization } from '../organizations/organizations.helper';
 import {
+  addNewUser,
   loadUserBy,
   loadUsers,
+  loadUserWithOrganizations,
   updateSelectedOrganization,
+  updateUser,
 } from './users.domain';
-import { dispatch, listen } from '../../pub';
-import { extractId } from '../../utils/utils';
-import { hashPassword } from '../../utils/hash-password.util';
-import { GraphQLError } from 'graphql/error/index.js';
-import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
-import User, { UserId, UserMutator } from '../../model/kanel/public/User';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { AWXAction } from '../../managers/awx/awx.model';
-import { loadTrackingDataBy } from '../tracking/tracking.domain';
-import { createUserRolePortal } from '../common/user-role-portal';
-import { loadSubscriptionsByOrganization } from '../subcription/subscription.domain';
-import { insertUserService } from '../user_service/user_service.domain';
-import { insertCapa } from '../subcription/service_capability.domain';
-import { RolePortalId } from '../../model/kanel/public/RolePortal';
-import { UserServiceId } from '../../model/kanel/public/UserService';
-import { sendMail } from '../../server/mail-service';
-import { updateUser } from './users.helper';
-import { ROLE_ADMIN } from '../../portal.const';
-import { UserLoadUserBy } from '../../model/load-user-by';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   const hash = crypto
@@ -48,7 +44,7 @@ const resolvers: Resolvers = {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       console.log(context.user.selected_organization_id);
-      return context.user as unknown as GeneratedUser;
+      return context.user as unknown as MeUser;
     },
     user: async (_, { id }, context) => {
       if (!context.user)
@@ -57,7 +53,7 @@ const resolvers: Resolvers = {
         });
       return loadUserBy({
         'User.id': id as UserId,
-      }) as unknown as GeneratedUser;
+      }) as unknown as MeUser;
     },
     users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
       if (!context.user)
@@ -65,17 +61,6 @@ const resolvers: Resolvers = {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       return loadUsers(context, { first, after, orderMode, orderBy }, filter);
-    },
-  },
-  User: {
-    tracking_data: async (user, __, context) => {
-      return user?.tracking_data
-        ? user?.tracking_data
-        : await loadTrackingDataBy(
-            context,
-            'ActionTracking.contextual_id',
-            user.id
-          );
     },
   },
   Mutation: {
@@ -89,127 +74,75 @@ const resolvers: Resolvers = {
     addUser: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        const { salt, hash } = hashPassword(input.password);
-        const data: User = {
-          id: uuidv4() as UserId,
-          email: input.email,
-          salt,
-          password: hash,
-          first_name: input.first_name,
-          last_name: input.last_name,
-          selected_organization_id: extractId(
-            input.organization_id
-          ) as OrganizationId,
-        };
-        const [addedUser] = await db<GeneratedUser>(context, 'User')
-          .insert(data)
-          .returning('*');
+        const userId = uuidv4();
 
-        const extractRolesId = input.roles_id.map((role_id) =>
-          extractId(role_id)
-        );
-        for (const role_id of extractRolesId) {
-          await createUserRolePortal(
-            addedUser.id as UserId,
-            role_id as RolePortalId
-          );
-        }
+        // Create user personal space organization
+        const [addOrganization] = await insertNewOrganization({
+          id: userId as OrganizationId,
+          name: input.email,
+        });
 
-        await launchAWXWorkflow({
-          type: AWXAction.CREATE_USER,
-          input: {
-            ...data,
-            roles: extractRolesId,
-            password: input.password,
-          },
+        // Create user with Personal space by default
+        const addedUser = await addNewUser(context, {
+          input,
+          userId,
+          selected_organization_id: addOrganization.id,
+        });
+
+        // Insert relation UserOrganization
+        await createUserOrganizationRelation(context, {
+          user_id: addedUser.id,
+          organizations_id: [
+            addOrganization.id,
+            ...(input.organizations ?? []).map(
+              (orgId) => fromGlobalId(orgId).id as OrganizationId
+            ),
+          ],
+        });
+
+        // Insert relation UserRolePortal
+        await createUserRolePortalRelation({
+          user_id: addedUser.id,
+          roles_id: input.roles_id.map(
+            (role_id) => extractId(role_id) as RolePortalId
+          ),
         });
 
         // Send email to user
         await sendMail({
-          from: 'no-reply@scredplatform.io',
           to: input.email,
           subject: 'XTM Hub invitation',
           text: "An administrator has invited you to create your account on the Filigran's XTM Hub platform ! Register. ",
         });
 
-        // Add access to free services of its organization
-        const subscriptions = await loadSubscriptionsByOrganization(context, {
-          orderBy: 'service_name',
+        const user = await loadUserWithOrganizations({
+          'User.id': addedUser.id,
         });
 
-        const subscriptableDirectSubscriptions = subscriptions.edges.filter(
-          (subscription) => {
-            return (
-              typeof subscription.node.service.subscription_service_type ===
-                'string' &&
-              subscription.node.service.subscription_service_type ===
-                'SUBSCRIPTABLE_DIRECT' &&
-              subscription.node.joining === 'AUTO_JOIN'
-            );
-          }
-        );
-
-        for (const subscription of subscriptableDirectSubscriptions) {
-          const [addedUserService] = await insertUserService(context, {
-            id: uuidv4() as UserServiceId,
-            user_id: context.user.id,
-            subscription_id: subscription.node.id,
-            service_personal_data: null,
-          });
-          await insertCapa(context, addedUserService.id, 'ACCESS_SERVICE');
-        }
+        await dispatch('User', 'add', user);
         await trx.commit();
-        return addedUser;
+        return user;
       } catch (error) {
         await trx.rollback();
-        console.log('Error while adding the new user.', error);
-        throw error;
+        console.error('Error while adding the new user.', error);
+        throw new GraphQLError('Error while adding the new user.', {
+          extensions: { code: '[Users] addUser mutation' },
+          originalError: error,
+        });
       }
     },
     editUser: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        const userBeforeUpdate = await loadUserBy({
-          'User.id': id as UserId,
-        } as UserMutator);
         const completedUser = await updateUser(context, id, input);
 
-        await dispatch('User', 'edit', completedUser);
-
-        await launchAWXWorkflow({
-          type: AWXAction.UPDATE_USER,
-          input: {
-            id: completedUser.id,
-            ...completedUser,
-            roles: completedUser.roles_portal_id.map(({ id }) => id),
-          },
+        const user = await loadUserWithOrganizations({
+          'User.id': completedUser.id,
         });
-        const hasAdminRole = (user) =>
-          user.roles_portal_id.some(({ id }) => id === ROLE_ADMIN.id);
 
-        const hadAdminRoleBefore = hasAdminRole(userBeforeUpdate);
-        const hasAdminRoleNow = hasAdminRole(completedUser);
-
-        if (hadAdminRoleBefore && !hasAdminRoleNow) {
-          await launchAWXWorkflow({
-            type: AWXAction.REMOVE_PLTF_USER,
-            input: {
-              id: completedUser.id,
-              email: completedUser.email,
-            },
-          });
-        } else if (!hadAdminRoleBefore && hasAdminRoleNow) {
-          // add admin role
-          await launchAWXWorkflow({
-            type: AWXAction.ADD_PLTF_USER,
-            input: {
-              id: completedUser.id,
-              email: completedUser.email,
-            },
-          });
-        }
+        await dispatch('User', 'edit', user);
         await trx.commit();
-        return completedUser as unknown as GeneratedUser;
+        return user;
       } catch (error) {
         await trx.rollback();
         console.log('Error while editing the new user.');
@@ -217,18 +150,12 @@ const resolvers: Resolvers = {
       }
     },
     deleteUser: async (_, { id }, context) => {
-      const [deletedUser] = await db<GeneratedUser>(context, 'User')
-        .where({ id })
+      const [deletedUser] = await db<User>(context, 'User')
+        .where({ id: id as UserId })
         .delete('*');
+
       await dispatch('User', 'delete', deletedUser);
-      await launchAWXWorkflow({
-        type: AWXAction.DISABLE_USER,
-        input: {
-          id: deletedUser.id,
-          email: deletedUser.email,
-        },
-      });
-      return deletedUser;
+      return deletedUser as unknown as SimpleTypeUser;
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateSelectedOrganization(
@@ -256,7 +183,7 @@ const resolvers: Resolvers = {
 
       if (logged && validPassword(logged, password)) {
         req.session.user = logged;
-        return logged as unknown as GeneratedUser;
+        return logged as unknown as MeUser;
       }
       return undefined;
     },

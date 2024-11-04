@@ -1,17 +1,6 @@
-import portalConfig from '../config';
 import { dbTx, dbUnsecure } from '../../knexfile';
 import { Organization, User } from '../__generated__/resolvers-types';
-import {
-  ensureCapabilityExists,
-  ensureRoleExists,
-  ensureRoleHasCapability,
-  ensureServiceExists,
-  ensureUserRoleExist,
-  insertAdminUser,
-  insertPlatformOrganization,
-  updateUserPassword,
-} from './initialize.helper';
-import { hashPassword } from '../utils/hash-password.util';
+import portalConfig from '../config';
 import {
   ADMIN_UUID,
   CAPABILITY_BCK_MANAGE_COMMUNITIES,
@@ -28,6 +17,17 @@ import {
   ROLE_USER,
 } from '../portal.const';
 import { isStorageAlive } from '../modules/services/document/document-storage';
+import { hashPassword } from '../utils/hash-password.util';
+import {
+  ensureCapabilityExists,
+  ensureRoleExists,
+  ensureRoleHasCapability,
+  ensureServiceExists,
+  ensureUserRoleExist,
+  insertAdminUser,
+  insertPlatformOrganization,
+  updateUserPassword,
+} from './initialize.helper';
 
 const initAdminUser = async () => {
   const { email, password } = portalConfig.admin;

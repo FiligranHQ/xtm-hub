@@ -1,8 +1,8 @@
-import { loadUnsecureOrganizationBy } from '../../../modules/organizations/organizations.helper';
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
+import User from '../../../model/kanel/public/User';
+import { loadUnsecureOrganizationBy } from '../../../modules/organizations/organizations.helper';
 import { loadUnsecureUserServiceBy } from '../../../modules/user_service/user-service.helper';
 import { ROLE_ADMIN } from '../../../portal.const';
-import User from '../../../model/kanel/public/User';
 
 export interface UserCommu {
   community_id: string;

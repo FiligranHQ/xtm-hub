@@ -1,31 +1,31 @@
-import { Resolvers } from '../../__generated__/resolvers-types';
-import {
-  loadUserServiceById,
-  loadUserServiceByUser,
-} from './user_service.domain';
-import { loadUserBy } from '../users/users.domain';
-import { db } from '../../../knexfile';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { db } from '../../../knexfile';
+import { Resolvers } from '../../__generated__/resolvers-types';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { AWXAction } from '../../managers/awx/awx.model';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import Subscription, {
+  SubscriptionId,
+} from '../../model/kanel/public/Subscription';
+import { UserId } from '../../model/kanel/public/User';
+import UserService from '../../model/kanel/public/UserService';
+import {
+  isOrgMatchingSub,
+  loadSubscriptionBy,
+} from '../subcription/subscription.helper';
+import { loadUserBy } from '../users/users.domain';
+import { getOrCreateUser } from '../users/users.helper';
 import {
   createUserAccessForOtherOrg,
   createUserServiceAccess,
   isUserServiceExist,
   loadUnsecureUserServiceBy,
 } from './user-service.helper';
-import { UserId } from '../../model/kanel/public/User';
-import Subscription, {
-  SubscriptionId,
-} from '../../model/kanel/public/Subscription';
-import { GraphQLError } from 'graphql/error/index.js';
-import { getOrCreateUser } from '../users/users.helper';
-import UserService from '../../model/kanel/public/UserService';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import {
-  isOrgMatchingSub,
-  loadSubscriptionBy,
-} from '../subcription/subscription.helper';
-import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
-import { AWXAction } from '../../managers/awx/awx.model';
+  loadUserServiceById,
+  loadUserServiceByUser,
+} from './user_service.domain';
 
 const resolvers: Resolvers = {
   Query: {
