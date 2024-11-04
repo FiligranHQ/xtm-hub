@@ -1,134 +1,139 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import {ServiceId} from "../../../model/kanel/public/Service";
+import { ServiceId } from '../../../model/kanel/public/Service';
 import {
-    checkFileExists,
-    createDocument,
-    deleteDocuments,
-    getFileName,
-    loadUnsecureDocumentsBy,
-    normalizeFileName
-} from "./file.helper";
-import {insertDocument, sendFileToS3} from "./file.domain";
-import {insertFileInMinio} from "./file-storage";
+  checkFileExists,
+  createDocument,
+  deleteDocuments,
+  getFileName,
+  loadUnsecureDocumentsBy,
+  normalizeFileName,
+} from './file.helper';
+import { insertDocument, sendFileToS3 } from './file.domain';
 import { Readable } from 'stream';
 import * as FileStorage from './file-storage';
 
-
 describe('should call S3 to send file', () => {
-    it("should call S3", async () => {
-        vi.spyOn(Date, 'now').mockReturnValue(new Date('2023-01-01T00:00:00Z').getTime());
-        const mockInsertFileInMinio = vi.spyOn(FileStorage, 'insertFileInMinio')
-            .mockResolvedValueOnce('mocked response');
+  it('should call S3', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(
+      new Date('2023-01-01T00:00:00Z').getTime()
+    );
+    const mockInsertFileInMinio = vi
+      .spyOn(FileStorage, 'insertFileInMinio')
+      .mockResolvedValueOnce('mocked response');
 
-          const fileMock = {
-            mimetype: 'mimeType',
-            filename: 'name',
-            encoding: 'utf8',
-            createReadStream: () => Readable.from(['file content']),
-        };
+    const fileMock = {
+      mimetype: 'mimeType',
+      filename: 'name',
+      encoding: 'utf8',
+      createReadStream: () => Readable.from(['file content']),
+    };
 
-        await sendFileToS3(fileMock, 'ba091095-418f-4b4f-b150-6c9295e232c3');
+    await sendFileToS3(fileMock, 'ba091095-418f-4b4f-b150-6c9295e232c3');
 
-        const expectedResult = {
-            Bucket: 'xtmhubbucket',
-            Key: getFileName(fileMock.filename),
-            Body: fileMock.createReadStream(),
-            Metadata: {
-                mimetype: 'mimeType',
-                filename:  'name',
-                encoding: 'utf8',
-                Uploadinguserid: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-            }
-        }
-        expect(mockInsertFileInMinio).toHaveBeenCalledTimes(1)
-        const callArguments = mockInsertFileInMinio.mock.calls[0][0];
-        expect(callArguments.Bucket).toBe(expectedResult.Bucket);
-        expect(callArguments.Metadata).toMatchObject(expectedResult.Metadata);
-    })
-})
+    const expectedResult = {
+      Bucket: 'xtmhubbucket',
+      Key: getFileName(fileMock.filename),
+      Body: fileMock.createReadStream(),
+      Metadata: {
+        mimetype: 'mimeType',
+        filename: 'name',
+        encoding: 'utf8',
+        Uploadinguserid: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      },
+    };
+    expect(mockInsertFileInMinio).toHaveBeenCalledTimes(1);
+    const callArguments = mockInsertFileInMinio.mock.calls[0][0];
+    expect(callArguments.Bucket).toBe(expectedResult.Bucket);
+    expect(callArguments.Metadata).toMatchObject(expectedResult.Metadata);
+  });
+});
 
-describe('should add new file', () =>  {
-    beforeAll(async () => {
-        await createDocument({
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-            description: 'description',
-            minio_name: 'minioName',
-            file_name: 'filename',
-            service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
-        })
-    })
-    it('should create Document entry in DB', async () => {
-        const data = {
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-            description: 'description2',
-            minio_name: 'minioName2',
-            file_name: 'filename2',
-            service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
-        }
-        await insertDocument(data)
-        const inDb = await loadUnsecureDocumentsBy({file_name: 'filename2'})
-        expect(inDb).toBeTruthy()
-        expect(inDb[0].file_name).toEqual('filename2')
-    })
+describe('should add new file', () => {
+  beforeAll(async () => {
+    await createDocument({
+      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      description: 'description',
+      minio_name: 'minioName',
+      file_name: 'filename',
+      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+    });
+  });
+  it('should create Document entry in DB', async () => {
+    const data = {
+      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      description: 'description2',
+      minio_name: 'minioName2',
+      file_name: 'filename2',
+      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+    };
+    await insertDocument(data);
+    const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
+    expect(inDb).toBeTruthy();
+    expect(inDb[0].file_name).toEqual('filename2');
+  });
 
-    it('should pass old Documents into inactive state',async () => {
-        const data = {
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-            description: 'description3',
-            minio_name: 'minioName3',
-            file_name: 'filename',
-            service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
-        }
-        await insertDocument(data)
-        const inDb = await loadUnsecureDocumentsBy({file_name: 'filename'})
-        expect(inDb).toBeTruthy()
-        expect(inDb.length).toEqual(2)
-        expect(inDb[0].active).toEqual(false)
-        expect(inDb[1].active).toEqual(true)
-    })
+  it('should pass old Documents into inactive state', async () => {
+    const data = {
+      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      description: 'description3',
+      minio_name: 'minioName3',
+      file_name: 'filename',
+      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+    };
+    await insertDocument(data);
+    const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
+    expect(inDb).toBeTruthy();
+    expect(inDb.length).toEqual(2);
+    expect(inDb[0].active).toEqual(false);
+    expect(inDb[1].active).toEqual(true);
+  });
 
-
-    afterAll(async () => {
-        await deleteDocuments();
-    })
-})
+  afterAll(async () => {
+    await deleteDocuments();
+  });
+});
 
 describe('getFileName', () => {
-    it("should set the correct fileName", () => {
-        vi.spyOn(Date, 'now').mockReturnValue(new Date('2023-01-01T00:00:00Z').getTime());
-        const result = getFileName('test.pdf')
-        expect(result).toEqual('test_1672531200000.pdf')
-    })
-})
+  it('should set the correct fileName', () => {
+    vi.spyOn(Date, 'now').mockReturnValue(
+      new Date('2023-01-01T00:00:00Z').getTime()
+    );
+    const result = getFileName('test.pdf');
+    expect(result).toEqual('test_1672531200000.pdf');
+  });
+});
 
 describe('should normalize filename', () => {
-    it("should send a normalized fileName", () => {
-        const result = normalizeFileName("Naîà-méE&mo!")
-        expect(result).toStrictEqual('naia-mee-mo-')
-    })
-})
+  it('should send a normalized fileName', () => {
+    const result = normalizeFileName('Naîà-méE&mo!');
+    expect(result).toStrictEqual('naia-mee-mo-');
+  });
+});
 
-describe("should check if file already exists", () => {
-    beforeAll(async () => {
-        await createDocument({
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-            description: 'description',
-            minio_name: 'minioName',
-            file_name: 'filename',
-            service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
-        })
-    })
+describe('should check if file already exists', () => {
+  beforeAll(async () => {
+    await createDocument({
+      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      description: 'description',
+      minio_name: 'minioName',
+      file_name: 'filename',
+      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+    });
+  });
 
-    it.each`
-    expected | fileName        | title
-    ${true}  | ${'filename'}   | ${'Already exists'}
-    ${false} | ${'test'}       | ${'Does not exist'}
-    `('Should return $expected if filename $title', async ({expected, fileName}) => {
-        const result = await checkFileExists(fileName)
-        expect(result).toEqual(expected)
-    })
+  it.each`
+    expected | fileName      | title
+    ${true}  | ${'filename'} | ${'Already exists'}
+    ${false} | ${'test'}     | ${'Does not exist'}
+  `(
+    'Should return $expected if filename $title',
+    async ({ expected, fileName }) => {
+      const result = await checkFileExists(fileName);
+      expect(result).toEqual(expected);
+    }
+  );
 
-    afterAll(async () => {
-        await deleteDocuments();
-    })
-})
+  afterAll(async () => {
+    await deleteDocuments();
+  });
+});
