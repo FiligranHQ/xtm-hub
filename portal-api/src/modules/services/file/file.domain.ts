@@ -2,7 +2,7 @@ import {insertFileInMinio, UploadedFile} from "./file-storage";
 import config from "config";
 import Document from '../../../model/kanel/public/Document';
 import {dbUnsecure} from "../../../../knexfile";
-import {createDocument, getFileName, loadUnsecureDocumentsBy} from "./vault.helper";
+import {createDocument, getFileName, loadUnsecureDocumentsBy} from "./file.helper";
 
 export const sendFileToS3 = async (file: UploadedFile, userId: string) => {
     const fullMetadata = {

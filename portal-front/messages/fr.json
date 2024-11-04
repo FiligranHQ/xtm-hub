@@ -37,11 +37,14 @@
       "InsertedFile": "Fichier inséré",
       "FileExtension": "Le fichier doit avoir une extension",
       "FileForm": {
+        "AddFile": "Ajouter un fichier",
+        "File": "Fichier",
         "UploadNewFile": "Ajout d'un nouveau fichier dans le Vault",
-        "ShortNameLabel": "Nom simplifié",
-        "ShortNamePlaceholder": "Filigran Pricing",
         "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "Ceci est une courte description du fichier."
+        "DescriptionPlaceholder": "Ceci est une courte description du fichier.",
+        "FileAlreadyExists": "Ce fichier existe déjà",
+        "FileExistsDialog": "Ce fichier existe déjà. Ce fichier écrasera l'ancien fichier. Êtes-vous sûr de vouloir continuer ?",
+        "AlreadyExists": "Ce fichier existe déjà. L'ancien sera écrasé."
       }
     }
   },

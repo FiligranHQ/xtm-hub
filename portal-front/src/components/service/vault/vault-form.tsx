@@ -9,23 +9,19 @@ import {UploadableMap} from "relay-runtime";
 import {useMutation} from "react-relay";
 import {newFileSchema, VaultNewFileFormSheet} from "@/components/service/vault/vault-new-file-form-sheet";
 import {z} from "zod";
-import Loader from "@/components/loader";
 import {
-    vaultAddFileMutation
-} from "../../../../__generated__/vaultAddFileMutation.graphql";
-import {VaultFileMutation} from "@/components/service/vault/vault.graphql";
+    fileAddMutation
+} from "../../../../__generated__/fileAddMutation.graphql";
+import {FileAddMutation} from "@/components/service/vault/file.graphql";
 import TriggerButton from "@/components/ui/trigger-button";
 
 export const VaultForm = () => {
     const { toast } = useToast();
     const t = useTranslations();
-    const [vaultFileMutation] = useMutation<vaultAddFileMutation>(VaultFileMutation);
-    const [file, setFile] = useState<File | null>(null)
+    const [vaultFileMutation] = useMutation<fileAddMutation>(FileAddMutation);
     const [openSheet, setOpenSheet] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     const sendFile=(values: z.infer<typeof newFileSchema>) => {
-        setIsLoading(true)
             vaultFileMutation({
                 variables: {
                     ...values
@@ -33,15 +29,12 @@ export const VaultForm = () => {
                 uploadables: values.file as unknown as UploadableMap,
                 onCompleted: (response) => {
                     setOpenSheet(false)
-                    setFile(null)
-                    setIsLoading(false)
                     toast({
                         title: t('Utils.Success'),
-                        description: t('Utils.Inserted') + ': ' + response.addVaultFile,
+                        description: response.addFile + ' ' + t('Utils.Inserted'),
                     });
                 },
                 onError: (error) => {
-                    setIsLoading(false)
                     toast({
                         variant: 'destructive',
                         title: 'Error',
@@ -51,15 +44,10 @@ export const VaultForm = () => {
             });
     }
 
-
-
-
     return ( <>
-        {isLoading && <Loader/>}
-
             <VaultNewFileFormSheet
                 open={openSheet}
-                trigger={<TriggerButton label="Add new file" />}
+                trigger={<TriggerButton label={t('Service.Vault.FileForm.AddFile')} />}
                 setOpen={setOpenSheet}
                 handleSubmit={sendFile}
                 />

@@ -171,6 +171,7 @@ export type MessageTracking = Node & {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptCommunity?: Maybe<Array<Maybe<Subscription>>>;
+  addFile: Scalars['String']['output'];
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Subscription>;
   addServiceCommunity?: Maybe<Service>;
@@ -179,7 +180,6 @@ export type Mutation = {
   addSubscriptionInCommunity?: Maybe<Array<Maybe<UserService>>>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
-  addVaultFile: Scalars['String']['output'];
   deleteOrganization?: Maybe<Organization>;
   deleteService?: Maybe<Service>;
   deleteSubscription?: Maybe<Subscription>;
@@ -200,6 +200,13 @@ export type Mutation = {
 
 export type MutationAcceptCommunityArgs = {
   input?: InputMaybe<ServiceCommunityAcceptInput>;
+};
+
+
+export type MutationAddFileArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  file?: InputMaybe<Scalars['Upload']['input']>;
+  shortName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -241,13 +248,6 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceInput;
-};
-
-
-export type MutationAddVaultFileArgs = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  file?: InputMaybe<Scalars['Upload']['input']>;
-  shortName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -380,6 +380,7 @@ export type PlatformProvider = {
 export type Query = {
   __typename?: 'Query';
   communities: ServiceConnection;
+  fileExists?: Maybe<Scalars['Boolean']['output']>;
   malwareAnalysis: MalwareAnalysisConnection;
   me?: Maybe<User>;
   node?: Maybe<Node>;
@@ -406,6 +407,11 @@ export type QueryCommunitiesArgs = {
   first: Scalars['Int']['input'];
   orderBy: ServiceOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryFileExistsArgs = {
+  fileName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1071,6 +1077,7 @@ export type MessageTrackingResolvers<ContextType = PortalContext, ParentType ext
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   acceptCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType, Partial<MutationAcceptCommunityArgs>>;
+  addFile?: Resolver<ResolversTypes['String'], ParentType, ContextType, Partial<MutationAddFileArgs>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
   addService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationAddServiceArgs>>;
   addServiceCommunity?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, Partial<MutationAddServiceCommunityArgs>>;
@@ -1079,7 +1086,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addSubscriptionInCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, Partial<MutationAddSubscriptionInCommunityArgs>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
-  addVaultFile?: Resolver<ResolversTypes['String'], ParentType, ContextType, Partial<MutationAddVaultFileArgs>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationDeleteServiceArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
@@ -1139,6 +1145,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   communities?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryCommunitiesArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  fileExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryFileExistsArgs>>;
   malwareAnalysis?: Resolver<ResolversTypes['MalwareAnalysisConnection'], ParentType, ContextType, RequireFields<QueryMalwareAnalysisArgs, 'first' | 'orderBy' | 'orderMode'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;

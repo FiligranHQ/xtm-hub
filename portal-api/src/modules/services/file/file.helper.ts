@@ -5,7 +5,18 @@ export const getFileName = (fileName: string) => {
     const splitName = fileName.split('.')
     const nameWithoutExtension = splitName[0]
     const extensionName = splitName[1]
-    return `${nameWithoutExtension}${Date.now()}.${extensionName}`
+    return `${nameWithoutExtension}_${Date.now()}.${extensionName}`
+}
+
+export const normalizeFileName = (fileName: string): string => {
+    return fileName.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[&\/\\#,+()$~%'":*?!<>{}]/g, '-');
+}
+
+export const checkFileExists = async (fileName: string) => {
+    const documents: Document[] = await loadUnsecureDocumentsBy({file_name: fileName})
+    return documents.length > 0;
 }
 
 
