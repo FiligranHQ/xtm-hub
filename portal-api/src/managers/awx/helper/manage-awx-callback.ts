@@ -1,16 +1,16 @@
-import { loadUserBy } from '../../../modules/users/users.domain';
-import { sendMail } from '../../../server/mail-service';
-import { dispatch } from '../../../pub';
-import { TrackingData } from '../../../model/tracking-data';
-import { AWXAction } from '../awx.model';
-import { launchAWXWorkflow } from '../awx-configuration';
 import { ServiceId } from '../../../model/kanel/public/Service';
-import { loadUnsecureAllUserFromServiceForAWX } from '../../../modules/services/services.helper';
+import { UserId } from '../../../model/kanel/public/User';
+import { TrackingData } from '../../../model/tracking-data';
 import {
   loadUnsecureServiceLinkByService,
   updateServiceLink,
 } from '../../../modules/services/instances/service-link/service_link.helper';
-import { UserId } from '../../../model/kanel/public/User';
+import { loadUnsecureAllUserFromServiceForAWX } from '../../../modules/services/services.helper';
+import { loadUserBy } from '../../../modules/users/users.domain';
+import { dispatch } from '../../../pub';
+import { sendMail } from '../../../server/mail-service';
+import { launchAWXWorkflow } from '../awx-configuration';
+import { AWXAction } from '../awx.model';
 
 type AWXManageFunctionMap = Partial<{
   [key in AWXAction]: (...args: unknown[]) => Promise<unknown> | unknown;

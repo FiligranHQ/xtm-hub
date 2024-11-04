@@ -1,5 +1,5 @@
-import { Resolvers } from '../../__generated__/resolvers-types';
 import { db } from '../../../knexfile';
+import { Resolvers } from '../../__generated__/resolvers-types';
 import RolePortal from '../../model/kanel/public/RolePortal';
 import { loadRolePortalBy } from './role-portal.domain';
 

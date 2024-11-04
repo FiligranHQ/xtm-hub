@@ -1,8 +1,8 @@
-import User from '../../model/kanel/public/User';
 import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
+import User from '../../model/kanel/public/User';
 import { InputCreateCommunity } from './community/awx-community.helper';
-import { InputUserCommunity } from './community/awx-user-community.helper';
 import { InputAddServiceCommunityAWX } from './community/awx-service-community.helper';
+import { InputUserCommunity } from './community/awx-user-community.helper';
 import { UserEmailInput, UserInput } from './user/awx-user-mapping';
 
 export interface AWUserInput extends User {

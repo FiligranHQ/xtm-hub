@@ -1,6 +1,6 @@
-import request from 'supertest';
-import { print } from 'graphql/language';
 import gql from 'graphql-tag';
+import { print } from 'graphql/language';
+import request from 'supertest';
 
 const ENDPOINT_URL = 'http://localhost:4001';
 

@@ -1,5 +1,5 @@
-import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 
 export interface AWXServiceOrganization {
   awx_client_request_id: string;

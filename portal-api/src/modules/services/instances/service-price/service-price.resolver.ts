@@ -1,11 +1,11 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
+import { db } from '../../../../../knexfile';
+import { Resolvers } from '../../../../__generated__/resolvers-types';
+import { ServiceId } from '../../../../model/kanel/public/Service';
 import ServicePrice, {
   ServicePriceId,
 } from '../../../../model/kanel/public/ServicePrice';
-import { Resolvers } from '../../../../__generated__/resolvers-types';
-import { ServiceId } from '../../../../model/kanel/public/Service';
-import { db } from '../../../../../knexfile';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 
 const resolvers: Resolvers = {
   Mutation: {

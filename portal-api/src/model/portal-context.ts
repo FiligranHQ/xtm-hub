@@ -1,5 +1,6 @@
 import express from 'express';
-import { UserLoadUserBy } from './load-user-by';
+
+import { UserLoadUserBy } from './user';
 
 export interface PortalContext {
   user: UserLoadUserBy;

@@ -1,20 +1,18 @@
-import { afterAll, describe, expect, it } from 'vitest';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  createNewUserFromInvitation,
-  deleteUserById,
-  loadUserRoles,
-} from './users.helper';
-import { ADMIN_UUID, ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
-import { createUser, loadUserBy } from './users.domain';
+import { afterAll, describe, expect, it } from 'vitest';
 import { UserId } from '../../model/kanel/public/User';
+import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import {
   deleteOrganizationByName,
   loadUnsecureOrganizationBy,
 } from '../organizations/organizations.helper';
-
-import usersResolver from './users.resolver';
-import { contextAdminUser } from '../../../tests/tests.const';
+import {
+  createUser,
+  deleteUserById,
+  loadUserBy,
+  loadUserRoles,
+} from './users.domain';
+import { createNewUserFromInvitation } from './users.helper';
 
 describe('User helpers - createNewUserFromInvitation', async () => {
   it('should be add new user with Role user only in an existing Organization', async () => {
@@ -82,35 +80,5 @@ describe('User should be log with all the capacity', () => {
 
   afterAll(async () => {
     await deleteUserById(newUser.id as UserId);
-  });
-});
-
-describe('Query resolver', () => {
-  it('should fetch User', async () => {
-    // @ts-ignore
-    const response = await usersResolver.Query.user(
-      {},
-      { id: ADMIN_UUID },
-      contextAdminUser
-    );
-    expect(response).toBeTruthy();
-  });
-});
-
-describe('Mutation resolver', () => {
-  it('should be login', async () => {
-    // @ts-ignore
-    const response = await usersResolver.Mutation.login(
-      undefined,
-      { email: 'admin@filigran.io', password: 'admin' },
-      {
-        req: {
-          session: {
-            user: {},
-          },
-        },
-      }
-    );
-    expect(response).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
-import ActionTracking from '../../model/kanel/public/ActionTracking';
 import { dbUnsecure } from '../../../knexfile';
+import ActionTracking from '../../model/kanel/public/ActionTracking';
 import MessageTracking, {
   MessageTrackingInitializer,
 } from '../../model/kanel/public/MessageTracking';

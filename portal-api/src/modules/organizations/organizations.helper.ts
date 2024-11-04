@@ -1,8 +1,8 @@
+import { db, dbUnsecure } from '../../../knexfile';
 import Organization, {
   OrganizationInitializer,
 } from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
-import { db, dbUnsecure } from '../../../knexfile';
 import { extractDomain } from '../../utils/verify-email.util';
 
 export const loadOrganizationBy = async (

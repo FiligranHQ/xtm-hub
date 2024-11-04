@@ -1,11 +1,11 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { v4 as uuidv4 } from 'uuid';
+import { db } from '../../../../knexfile';
 import {
   Resolvers,
   ServiceCapability,
 } from '../../../__generated__/resolvers-types';
-import { db } from '../../../../knexfile';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
-import { v4 as uuidv4 } from 'uuid';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { loadUserServiceById } from '../user_service.domain';
 
 const resolvers: Resolvers = {

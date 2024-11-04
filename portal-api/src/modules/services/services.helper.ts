@@ -1,9 +1,9 @@
+import { dbRaw, dbUnsecure } from '../../../knexfile';
+import { UserWithRoleCommunity } from '../../managers/awx/community/awx-user-community.helper';
 import Service, {
   ServiceId,
   ServiceMutator,
 } from '../../model/kanel/public/Service';
-import { dbRaw, dbUnsecure } from '../../../knexfile';
-import { UserWithRoleCommunity } from '../../managers/awx/community/awx-user-community.helper';
 
 export const deleteServiceUnsecure = async (field: ServiceMutator) => {
   return dbUnsecure<Service>('Service').where(field).delete('*');

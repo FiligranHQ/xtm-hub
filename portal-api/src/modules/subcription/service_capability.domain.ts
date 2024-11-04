@@ -1,10 +1,10 @@
-import { PortalContext } from '../../model/portal-context';
 import { v4 as uuidv4 } from 'uuid';
+import { db } from '../../../knexfile';
 import ServiceCapability, {
   ServiceCapabilityId,
 } from '../../model/kanel/public/ServiceCapability';
 import { UserServiceId } from '../../model/kanel/public/UserService';
-import { db } from '../../../knexfile';
+import { PortalContext } from '../../model/portal-context';
 
 export const insertCapa = async (
   context: PortalContext,

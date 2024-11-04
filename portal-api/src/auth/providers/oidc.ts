@@ -1,3 +1,4 @@
+import config from 'config';
 import {
   ClientMetadata,
   custom as OpenIDCustom,
@@ -5,7 +6,6 @@ import {
   Strategy as OpenIDStrategy,
 } from 'openid-client';
 import { providerLoginHandler } from '../login-handle';
-import config from 'config';
 import { extractRole } from '../mapping-roles';
 
 export const addOIDCStrategy = (passport) => {

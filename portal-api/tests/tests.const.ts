@@ -1,10 +1,10 @@
+import { Restriction } from '../src/__generated__/resolvers-types';
 import {
   ADMIN_UUID,
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
 } from '../src/portal.const';
-import { Restriction } from '../src/__generated__/resolvers-types';
 
 export const DEFAULT_ADMIN_EMAIL = 'admin@filigran.io';
 export const DEFAULT_ORG = 'internal';

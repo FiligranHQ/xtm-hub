@@ -2,7 +2,8 @@ import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { PortalContext } from '../model/portal-context';
 import { getCapabilityUser, userHasBypassCapability } from './auth.helper';
-import { UserLoadUserBy } from '../model/load-user-by';
+
+import { UserLoadUserBy } from '../model/user';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
 export const SERVICE_DIRECTIVE_NAME = 'service_capa';
