@@ -1,20 +1,16 @@
 import { dbUnsecure } from '../../../knexfile';
+import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import { UserId } from '../../model/kanel/public/User';
-import { getRolePortalByName } from '../role-portal/role-portal';
 import UserRolePortal, {
   UserRolePortalInitializer,
 } from '../../model/kanel/public/UserRolePortal';
-import { RolePortalId } from '../../model/kanel/public/RolePortal';
+import { getRolePortalByName } from '../role-portal/role-portal';
 
 export const createUserRolePortal = async (
-  user_id: UserId,
-  role_portal_id: RolePortalId
+  userRolePortal: UserRolePortalInitializer | UserRolePortalInitializer[]
 ) => {
   return dbUnsecure<UserRolePortal>('User_RolePortal')
-    .insert({
-      user_id,
-      role_portal_id,
-    } as UserRolePortalInitializer)
+    .insert(userRolePortal)
     .returning('*');
 };
 
@@ -26,9 +22,25 @@ export const addRolesToUser = async (userId: UserId, roles: string[]) => {
   for (const roleName of roles) {
     const role = await getRolePortalByName(roleName);
     if (role) {
-      await createUserRolePortal(userId, role.id);
+      await createUserRolePortal({ user_id: userId, role_portal_id: role.id });
     } else {
       console.error(`Role "${roleName}" not found in database`);
     }
   }
+};
+
+export const createUserRolePortalRelation = async ({
+  user_id,
+  roles_id,
+}: {
+  user_id: UserId;
+  roles_id: RolePortalId[];
+}) => {
+  const extractRolesId: UserRolePortalInitializer[] = roles_id.map(
+    (role_portal_id) => ({
+      user_id,
+      role_portal_id,
+    })
+  );
+  await createUserRolePortal(extractRolesId);
 };

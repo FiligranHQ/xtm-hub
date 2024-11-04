@@ -8350,7 +8350,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^6.9.15":
+"nodemailer@npm:6.9.15":
   version: 6.9.15
   resolution: "nodemailer@npm:6.9.15"
   checksum: 2d975f5c60f84acde52d79d43287c70197fe94bde4a731682f306e9636a148c49de29a5dd92ce7dc5aac068a148cd91da3401ede80f8f52b9f2bc00439f36ced
@@ -9073,11 +9073,12 @@ __metadata:
     kanel: 3.9.1
     knex: 3.1.0
     lint-staged: 15.2.10
-    nodemailer: ^6.9.15
+    nodemailer: 6.9.15
     openid-client: 5.7.0
     passport: 0.7.0
     pg: 8.13.0
     prettier: 3.3.3
+    prettier-plugin-organize-imports: 4.1.0
     supertest: 7.0.0
     ts-node: 10.9.2
     typescript: 5.6.2
@@ -9139,6 +9140,20 @@ __metadata:
   version: 1.1.2
   resolution: "prelude-ls@npm:1.1.2"
   checksum: c4867c87488e4a0c233e158e4d0d5565b609b105d75e4c05dc760840475f06b731332eb93cc8c9cecb840aa8ec323ca3c9a56ad7820ad2e63f0261dadcb154e4
+  languageName: node
+  linkType: hard
+
+"prettier-plugin-organize-imports@npm:4.1.0":
+  version: 4.1.0
+  resolution: "prettier-plugin-organize-imports@npm:4.1.0"
+  peerDependencies:
+    prettier: ">=2.0"
+    typescript: ">=2.9"
+    vue-tsc: ^2.1.0
+  peerDependenciesMeta:
+    vue-tsc:
+      optional: true
+  checksum: 43c917959170fa3e30e41f9b3bd314a31462ae34e5568b4dba6b1c8b8da758adf900fdf4999333ab2b60b3d1af541f9521396a5e19df03ab5400a50edc9a75f6
   languageName: node
   linkType: hard
 

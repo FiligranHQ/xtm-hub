@@ -1,4 +1,19 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { v4 as uuidv4 } from 'uuid';
+import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { AWXAction } from '../../managers/awx/awx.model';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceId } from '../../model/kanel/public/Service';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { UserId } from '../../model/kanel/public/User';
+import {
+  grantServiceAccessUsers,
+  loadServiceBy,
+} from '../services/services.domain';
+import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,
   fillSubscription,
@@ -7,26 +22,11 @@ import {
   loadSubscriptionsByOrganization,
   loadSubscriptionsByService,
 } from './subscription.domain';
-import { v4 as uuidv4 } from 'uuid';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { db, dbTx } from '../../../knexfile';
-import { addAdminAccess } from '../user_service/user_service.domain';
-import { UserId } from '../../model/kanel/public/User';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import {
   loadSubscriptionBy,
   loadUnsecureSubscriptionBy,
   loadUsersBySubscriptionForAWX,
 } from './subscription.helper';
-import {
-  grantServiceAccessUsers,
-  loadServiceBy,
-} from '../services/services.domain';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceId } from '../../model/kanel/public/Service';
-import { GraphQLError } from 'graphql/error/index.js';
-import { AWXAction } from '../../managers/awx/awx.model';
-import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
 
 const resolvers: Resolvers = {
   Query: {

@@ -1,8 +1,8 @@
 import { Restriction } from './__generated__/resolvers-types';
-import RolePortal, { RolePortalId } from './model/kanel/public/RolePortal';
 import CapabilityPortal, {
   CapabilityPortalId,
 } from './model/kanel/public/CapabilityPortal';
+import RolePortal, { RolePortalId } from './model/kanel/public/RolePortal';
 import { UserId } from './model/kanel/public/User';
 
 export const ADMIN_UUID: UserId =

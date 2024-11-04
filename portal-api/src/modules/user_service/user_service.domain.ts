@@ -1,16 +1,16 @@
-import { PortalContext } from '../../model/portal-context';
+import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { UserServiceConnection } from '../../__generated__/resolvers-types';
+import Service from '../../model/kanel/public/Service';
+import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { UserId } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
-import { UserServiceConnection } from '../../__generated__/resolvers-types';
-import Service from '../../model/kanel/public/Service';
-import { v4 as uuidv4 } from 'uuid';
-import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
+import { PortalContext } from '../../model/portal-context';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { UserId } from '../../model/kanel/public/User';
 
 export const insertUserService = async (context, userServiceData) => {
   return db<UserService>(context, 'User_Service')

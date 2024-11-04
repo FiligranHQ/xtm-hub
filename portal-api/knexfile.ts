@@ -1,8 +1,8 @@
-import portalConfig from './src/config';
-import pkg, { type Knex } from 'knex';
 import { PageInfo } from 'graphql-relay/connection/connection';
-import { applyDbSecurity } from './src/security/access';
+import pkg, { type Knex } from 'knex';
+import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
+import { applyDbSecurity } from './src/security/access';
 
 declare module 'knex' {
   // TODO: Knex specificity, could be complicated modify the model directly
@@ -31,7 +31,8 @@ export type DatabaseType =
   | 'Service_Capability'
   | 'MalwareAnalysis'
   | 'UserService'
-  | 'Document';
+  | 'Document'
+  | 'User_Organization';
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {

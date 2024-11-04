@@ -1,14 +1,14 @@
 import { dbUnsecure } from '../../knexfile';
-import RolePortal from '../model/kanel/public/RolePortal';
-import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
-import Service from '../model/kanel/public/Service';
-import ServicePrice from '../model/kanel/public/ServicePrice';
-import ServiceLink from '../model/kanel/public/ServiceLink';
 import Organization, {
   OrganizationId,
 } from '../model/kanel/public/Organization';
+import RolePortal from '../model/kanel/public/RolePortal';
+import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
+import Service from '../model/kanel/public/Service';
+import ServiceLink from '../model/kanel/public/ServiceLink';
+import ServicePrice from '../model/kanel/public/ServicePrice';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
+import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 
 export const ensureServiceExists = async (service) => {
   const services = await dbUnsecure('Service');

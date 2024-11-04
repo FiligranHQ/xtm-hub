@@ -1,22 +1,34 @@
+import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
-  User as UserGenerated,
+  AddUserInput,
+  EditUserInput,
   UserConnection,
+  User as UserGenerated,
 } from '../../__generated__/resolvers-types';
-import { v4 as uuidv4 } from 'uuid';
-import { PortalContext } from '../../model/portal-context';
-import { hashPassword } from '../../utils/hash-password.util';
-import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { UserInfo } from '../../model/user';
-import { addNewUserWithRoles } from './users.helper';
+import { RolePortalId } from '../../model/kanel/public/RolePortal';
+import User, { UserId, UserMutator } from '../../model/kanel/public/User';
+import { PortalContext } from '../../model/portal-context';
+import {
+  UserInfo,
+  UserLoadUserBy,
+  UserWithOrganizations,
+} from '../../model/user';
 import {
   ADMIN_UUID,
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
 } from '../../portal.const';
+import { hashPassword } from '../../utils/hash-password.util';
 import { addPrefixToObject } from '../../utils/typescript';
-import { UserLoadUserBy } from '../../model/load-user-by';
+import { extractId } from '../../utils/utils';
+import {
+  createUserRolePortal,
+  deleteUserRolePortalByUserId,
+} from '../common/user-role-portal.helper';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { addNewUserWithRoles } from './users.helper';
 
 const completeUserCapability = (user: UserLoadUserBy): UserLoadUserBy => {
   if (user && user.id === ADMIN_UUID) {
@@ -191,4 +203,115 @@ export const updateSelectedOrganization = async (
     .update({ selected_organization_id })
     .returning('*');
   return updatedUser;
+};
+
+export const updateUser = async (
+  context: PortalContext,
+  id: string,
+  input: EditUserInput
+) => {
+  const selected_organization_id = extractId(
+    input.organization_id
+  ) as OrganizationId;
+  const { roles_id, ...inputWithoutRoles } = input;
+  const rolePortalIds = roles_id.map(extractId);
+  const update = {
+    ...inputWithoutRoles,
+    selected_organization_id,
+  } as UserMutator;
+  const [updatedUser] = await db<User>(context, 'User')
+    .where({ id: id as UserId })
+    .update(update)
+    .returning('*');
+
+  await deleteUserRolePortalByUserId(updatedUser.id);
+
+  const roles_portal_id = await Promise.all(
+    rolePortalIds.map(async (rolePortalId) => {
+      await createUserRolePortal({
+        user_id: updatedUser.id as UserId,
+        role_portal_id: rolePortalId as RolePortalId,
+      });
+      return { id: rolePortalId };
+    })
+  );
+  const organization = await loadOrganizationBy(
+    context,
+    'Organization.id',
+    selected_organization_id
+  );
+
+  return {
+    ...updatedUser,
+    organization,
+    roles_portal_id,
+  };
+};
+export const deleteUserById = async (userId: UserId) => {
+  return dbUnsecure<User>('User')
+    .where('id', userId)
+    .delete('*')
+    .returning('*');
+};
+export const loadUserRoles = async (userId: UserId) => {
+  return dbUnsecure('User')
+    .leftJoin('User_RolePortal', 'User.id', 'User_RolePortal.user_id')
+    .leftJoin('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
+    .where('User.id', userId)
+    .select([
+      'User.*', // Select all columns from the User table
+      dbRaw('json_agg("RolePortal".name) as roles'), // Aggregate role names into an array
+    ])
+    .groupBy('User.id') // Group by User.id to ensure proper aggregation
+    .first();
+};
+
+export const addNewUser = async (
+  context: PortalContext,
+  {
+    input,
+    userId,
+    selected_organization_id,
+  }: {
+    input: AddUserInput;
+    userId: string;
+    selected_organization_id: OrganizationId;
+  }
+) => {
+  const { salt, hash } = hashPassword(input.password);
+  const data: User = {
+    id: userId as UserId,
+    email: input.email,
+    salt,
+    password: hash,
+    first_name: input.first_name,
+    last_name: input.last_name,
+    selected_organization_id,
+  };
+  const [addedUser] = await db<User>(context, 'User')
+    .insert(data)
+    .returning('*');
+  return addedUser;
+};
+
+export const loadUserWithOrganizations = async (
+  field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
+): Promise<UserWithOrganizations> => {
+  return dbUnsecure<UserWithOrganizations>('User')
+    .where(field)
+    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
+    .leftJoin(
+      'Organization as org',
+      'User_Organization.organization_id',
+      '=',
+      'org.id'
+    )
+    .select([
+      'User.*',
+      dbRaw(
+        "COALESCE( json_agg(distinct jsonb_build_object('id', org.id, 'name', CASE WHEN org.name = \"User\".email THEN 'Personal space' ELSE org.name END, '__typename', 'Organization' ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
+      ),
+    ])
+    .groupBy(['User.id'])
+    .first();
 };

@@ -1,9 +1,9 @@
-import { isEmptyField } from '../utils/utils';
-import { ForbiddenAccess } from '../utils/error.util';
-import { createUser, loadUserBy } from '../modules/users/users.domain';
 import { UserInfo } from '../model/user';
+import { createUser, loadUserBy } from '../modules/users/users.domain';
 import { ROLE_ADMIN } from '../portal.const';
 import { ensureUserRoleExist } from '../server/initialize.helper';
+import { ForbiddenAccess } from '../utils/error.util';
+import { isEmptyField } from '../utils/utils';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {
   // region test the groups existence and eventually auto create groups

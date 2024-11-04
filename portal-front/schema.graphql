@@ -53,8 +53,8 @@ type Query {
   subscriptionsByServiceId(service_id: ID): [Subscription]
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  me: User
-  user(id: ID!): User
+  me: MeUser
+  user(id: ID!): MeUser
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: String): UserConnection!
   node(id: ID!): Node
 }
@@ -84,11 +84,11 @@ type Mutation {
   addUserService(input: UserServiceInput!): UserService
   deleteUserService(input: UserServiceInput!): UserServiceDeleted
   mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
-  editUser(id: ID!, input: EditUserInput!): User
-  deleteUser(id: ID!): User
+  addUser(input: AddUserInput!): UserWithOrganizations
+  editUser(id: ID!, input: EditUserInput!): UserWithOrganizations
+  deleteUser(id: ID!): SimpleTypeUser
   changeSelectedOrganization(organization_id: ID!): Boolean
-  login(email: String!, password: String): User
+  login(email: String!, password: String): MeUser
   logout: ID!
 }
 
@@ -359,20 +359,41 @@ type Capability implements Node {
   name: Restriction!
 }
 
-type User implements Node {
+interface User implements Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+}
+
+type SimpleTypeUser implements User & Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+}
+
+type UserWithOrganizations implements User & Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  organizations: [Organization!]!
+}
+
+type MeUser implements User & Node {
   id: ID!
   email: String!
   first_name: String
   last_name: String
   organizations: [MeOrganization!]!
   capabilities: [Capability!]!
-  tracking_data: [ActionTracking]
   roles_portal_id: [RolePortalID!]!
 }
 
 type UserEdge {
   cursor: String!
-  node: User!
+  node: SimpleTypeUser!
 }
 
 type UserConnection {
@@ -392,16 +413,16 @@ input EditUserInput {
 input AddUserInput {
   email: String!
   password: String!
-  organization_id: String!
+  organizations: [String]!
   first_name: String!
   last_name: String!
   roles_id: [String]!
 }
 
 type UserSubscription {
-  add: User
-  edit: User
-  delete: User
+  add: UserWithOrganizations
+  edit: UserWithOrganizations
+  delete: SimpleTypeUser
   merge: MergeEvent
 }
 

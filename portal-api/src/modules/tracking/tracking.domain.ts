@@ -1,14 +1,14 @@
-import { AWXWorkflowAction } from '../../managers/awx/awx.model';
 import { v4 as uuidv4 } from 'uuid';
+import { db, dbRaw, dbUnsecure } from '../../../knexfile';
+import { AWXWorkflowAction } from '../../managers/awx/awx.model';
 import ActionTracking, {
   ActionTrackingId,
 } from '../../model/kanel/public/ActionTracking';
+import { MessageTrackingInitializer } from '../../model/kanel/public/MessageTracking';
+import { PortalContext } from '../../model/portal-context';
 import { addNewActionTracking, updateActionTracking } from './action-tracking';
 import { addNewMessageTracking } from './message-tracking';
 import { TrackingConst } from './tracking.const';
-import { MessageTrackingInitializer } from '../../model/kanel/public/MessageTracking';
-import { PortalContext } from '../../model/portal-context';
-import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 
 export const initTracking = async (action: AWXWorkflowAction) => {
   const id = uuidv4() as ActionTrackingId;

@@ -1,8 +1,8 @@
-import { Organization, Resolvers } from '../../__generated__/resolvers-types';
-import { db } from '../../../knexfile';
 import { v4 as uuidv4 } from 'uuid';
-import { loadOrganizationBy, loadOrganizations } from './organizations.domain';
+import { db } from '../../../knexfile';
+import { Organization, Resolvers } from '../../__generated__/resolvers-types';
 import { dispatch } from '../../pub';
+import { loadOrganizationBy, loadOrganizations } from './organizations.domain';
 
 const resolvers: Resolvers = {
   Query: {

@@ -1,10 +1,10 @@
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import Subscription, {
   SubscriptionId,
   SubscriptionInitializer,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
 
 export const deleteSubscriptionUnsecure = async (serviceId: string) => {

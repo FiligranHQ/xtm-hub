@@ -1,9 +1,9 @@
+import { db, paginate } from '../../../knexfile';
 import {
   Organization,
   OrganizationConnection,
   Service,
 } from '../../__generated__/resolvers-types';
-import { db, paginate } from '../../../knexfile';
 import { PortalContext } from '../../model/portal-context';
 
 export const loadOrganizationBy = async (

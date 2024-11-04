@@ -1,20 +1,28 @@
+import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { v4 as uuidv4 } from 'uuid';
+import { DatabaseType, db, dbTx } from '../../../knexfile';
 import {
   Resolvers,
   Service,
   ServiceLink,
   Subscription,
 } from '../../__generated__/resolvers-types';
-import { DatabaseType, db, dbTx } from '../../../knexfile';
-import { v4 as uuidv4 } from 'uuid';
-import { dispatch, listen } from '../../pub';
-import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
+import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
+import { AWXAction } from '../../managers/awx/awx.model';
+import { ServiceId } from '../../model/kanel/public/Service';
+import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import ServicePrice, {
   ServicePriceId,
 } from '../../model/kanel/public/ServicePrice';
-import { ServiceId } from '../../model/kanel/public/Service';
-import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import User, { UserId } from '../../model/kanel/public/User';
+import { dispatch, listen } from '../../pub';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
+import { isAdmin } from '../role-portal/role-portal.domain';
+import { addSubscriptions } from '../subcription/subscription.domain';
+import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
+import { insertServicePrice } from './instances/service-price/service_price.helper';
 import {
   addServiceLink,
   adminCreateCommu,
@@ -27,14 +35,6 @@ import {
   loadServiceBy,
   orgaCreateCommu,
 } from './services.domain';
-import { insertServicePrice } from './instances/service-price/service_price.helper';
-import { isAdmin } from '../role-portal/role-portal.domain';
-import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
-import User, { UserId } from '../../model/kanel/public/User';
-import { GraphQLError } from 'graphql/error/index.js';
-import { addSubscriptions } from '../subcription/subscription.domain';
-import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
-import { AWXAction } from '../../managers/awx/awx.model';
 
 const resolvers: Resolvers = {
   Query: {

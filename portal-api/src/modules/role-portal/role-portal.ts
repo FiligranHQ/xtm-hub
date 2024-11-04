@@ -1,7 +1,7 @@
-import RolePortal from '../../model/kanel/public/RolePortal';
 import { db, dbUnsecure } from '../../../knexfile';
-import UserRolePortal from '../../model/kanel/public/UserRolePortal';
+import RolePortal from '../../model/kanel/public/RolePortal';
 import { UserId } from '../../model/kanel/public/User';
+import UserRolePortal from '../../model/kanel/public/UserRolePortal';
 import { PortalContext } from '../../model/portal-context';
 
 export const getRolePortal = (): Promise<RolePortal[]> => {

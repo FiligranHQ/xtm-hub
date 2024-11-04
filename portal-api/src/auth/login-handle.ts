@@ -1,6 +1,6 @@
-import { loginFromProvider } from './auth-user';
 import { UserInfo } from '../model/user';
 import { FORBIDDEN_ACCESS } from '../utils/error.util';
+import { loginFromProvider } from './auth-user';
 
 export const providerLoginHandler = async (userInfo: UserInfo, done) => {
   await loginFromProvider(userInfo)

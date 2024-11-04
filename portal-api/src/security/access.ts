@@ -1,12 +1,13 @@
-import { TypedNode } from '../pub';
-import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
 import { Knex } from 'knex';
-import { PortalContext } from '../model/portal-context';
-import { CAPABILITY_BYPASS, CAPABILITY_FRT_MANAGE_USER } from '../portal.const';
-import MalwareAnalysis from '../model/kanel/public/MalwareAnalysis';
-import { loadUserBy } from '../modules/users/users.domain';
+import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
 import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
-import { UserLoadUserBy } from '../model/load-user-by';
+import MalwareAnalysis from '../model/kanel/public/MalwareAnalysis';
+import { PortalContext } from '../model/portal-context';
+import { loadUserBy } from '../modules/users/users.domain';
+import { CAPABILITY_BYPASS, CAPABILITY_FRT_MANAGE_USER } from '../portal.const';
+import { TypedNode } from '../pub';
+
+import { UserLoadUserBy } from '../model/user';
 
 const isUserGranted = (user: UserLoadUserBy, capability: CapabilityPortal) =>
   !!user &&
@@ -89,7 +90,8 @@ export const applyDbSecurity = <T>(
     'MalwareAnalysis',
     'Organization',
     'ActionTracking',
-    'Document'
+    'Document',
+    'User_Organization',
   ];
   // If user is admin, user has no access restriction
   if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
