@@ -48,6 +48,7 @@ type Query {
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  fileExists(fileName: String): Boolean
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceById(service_id: ID): Service
   communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
@@ -70,13 +71,13 @@ type Mutation {
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
+  addFile(file: Upload, description: String): String!
   addServicePrice(input: AddServicePriceInput): ServicePrice
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription
   addServiceCommunity(input: AddServiceCommunityInput): Service
   acceptCommunity(input: ServiceCommunityAcceptInput): [Subscription]
   deleteService(id: ID!): Service
-  addVaultFile(file: Upload, shortName: String, description: String): String!
   addSubscription(service_id: String): Service
   addSubscriptionInCommunity(service_id: String, organization_id: ID): [UserService]
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
@@ -150,6 +151,17 @@ type RolePortal implements Node {
 
 type RolePortalID implements Node {
   id: ID!
+}
+
+type Document implements Node {
+  id: ID!
+  uploader_id: String!
+  service_id: String!
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
 }
 
 type ServiceLink implements Node {
@@ -234,18 +246,6 @@ type ServiceSubscription {
   add: Service
   edit: Service
   delete: Service
-}
-
-type Document implements Node {
-  id: ID!
-  uploader_id: String!
-  service_id: String!
-  short_name: String
-  description: String
-  file_name: String!
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
 }
 
 type PlatformProvider {
