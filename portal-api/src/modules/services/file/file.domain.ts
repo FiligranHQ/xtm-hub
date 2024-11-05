@@ -1,12 +1,14 @@
 import { insertFileInMinio, UploadedFile } from './file-storage';
 import config from 'config';
-import Document from '../../../model/kanel/public/Document';
-import { dbUnsecure } from '../../../../knexfile';
+import Document, {DocumentId} from '../../../model/kanel/public/Document';
+import {db, dbUnsecure, paginate} from '../../../../knexfile';
 import {
   createDocument,
   getFileName,
   loadUnsecureDocumentsBy,
 } from './file.helper';
+import {PortalContext} from "../../../model/portal-context";
+import {DocumentConnection} from "../../../__generated__/resolvers-types";
 
 export const sendFileToS3 = async (file: UploadedFile, userId: string) => {
   const fullMetadata = {
@@ -48,3 +50,34 @@ export const insertDocument = async (
 
   return createDocument(documentData);
 };
+
+export const updateDocument = async (
+    context: PortalContext,
+    description: string,
+    documentId: DocumentId
+): Promise<Document[]> => {
+  return db<Document>(context, 'Document').where({id: documentId}).update({
+    description
+  }).returning('*')
+}
+
+export const loadDocuments = async(
+    context: PortalContext,
+    opts,
+    filter
+): Promise<DocumentConnection> => {
+  const query = paginate<Document>(context, 'Document', opts).where('active', '=', true);
+  if (filter) {
+    query.where('file_name', 'LIKE', `${filter}%`)
+  }
+
+  const documentConnection = await query.select(['Document.*']).asConnection<DocumentConnection>();
+
+  const { totalCount } = await db<Document>(context, 'Document', opts).where('active', '=', true)
+      .countDistinct('id as totalCount')
+      .first();
+
+  return {
+    totalCount, ...documentConnection
+  }
+}

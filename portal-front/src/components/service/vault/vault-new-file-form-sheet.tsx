@@ -1,4 +1,4 @@
-import {FunctionComponent, ReactNode, useEffect, useState} from "react";
+import {FunctionComponent, ReactNode} from "react";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
 
@@ -21,9 +21,11 @@ import { useLazyLoadQuery } from 'react-relay';
 import {fileExistsQuery} from "../../../../__generated__/fileExistsQuery.graphql";
 import {FileExistsQuery} from "@/components/service/vault/file.graphql";
 import {AlertDialogComponent} from "@/components/ui/alert-dialog";
+import {fileList$data} from "../../../../__generated__/fileList.graphql";
 
 export const newFileSchema = z.object({
     description: z.string().optional(),
+    documentId: z.string().optional(),
     file: z.custom<FileList>()
 })
 
@@ -31,6 +33,7 @@ interface VaultNewFileFormSheetProps {
     open: boolean;
     setOpen: (open: boolean) => void;
     trigger: ReactNode;
+    document?: fileList$data;
     handleSubmit: (
         values: z.infer<typeof newFileSchema>
     ) => void;
@@ -40,6 +43,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
      open,
      setOpen,
     trigger,
+    document,
      handleSubmit
 }) => {
     const t = useTranslations();
@@ -47,7 +51,8 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
     const form = useForm<z.infer<typeof newFileSchema>>({
         resolver: zodResolver(newFileSchema),
         defaultValues: {
-            description: '',
+            description: document ? document.description : '',
+            documentId: document ? document.id : '',
             file: undefined
         }
     })
@@ -60,7 +65,6 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
         FileExistsQuery,
         { fileName }
     );
-
 
     const onSubmit = (values: z.infer<typeof newFileSchema>) => {
         handleSubmit({
@@ -77,14 +81,14 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
 
             <SheetContent side={'right'}>
                 <SheetHeader className="bg-page-background">
-                    <SheetTitle>{t('Service.Vault.FileForm.UploadNewFile')}</SheetTitle>
+                    {document ? <SheetTitle>{t('Service.Vault.FileForm.EditFile')} </SheetTitle> : <SheetTitle>{t('Service.Vault.FileForm.UploadNewFile')} </SheetTitle> }
                 </SheetHeader>
                 <FileInputDropZone className="absolute inset-0 p-xl pt-[5rem]">
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="w-full space-y-xl">
-                        <FormField
+                        {!document && <FormField
                             control={form.control}
                             name="file"
                             render={({field}) => {
@@ -107,7 +111,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                     </FormItem>
                                 );
                             }}
-                        />
+                        />}
 
                         <FormField
                             control={form.control}
@@ -126,8 +130,6 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                             )}
                         />
 
-                        TODO Later : choose the Vault Partner here
-
                         <SheetFooter className="pt-2">
                             <SheetClose asChild>
                                 <Button variant="outline">{t('Utils.Cancel')}</Button>
@@ -140,14 +142,14 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                     <Button
                                         type="button"
                                     >
-                                        {t('Utils.Create')}
+                                        {t('Utils.Validate')}
                                     </Button>
                                 }
                                 onClickContinue={form.handleSubmit(onSubmit)}>
                                 {t('Service.Vault.FileForm.FileExistsDialog')}
                             </AlertDialogComponent>) : (   <Button
                                type="submit">
-                                {t('Utils.Create')}
+                                {t('Utils.Validate')}
                             </Button>)}
 
                         </SheetFooter>

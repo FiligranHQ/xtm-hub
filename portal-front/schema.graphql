@@ -49,6 +49,7 @@ type Query {
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   fileExists(fileName: String): Boolean
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String): DocumentConnection!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceById(service_id: ID): Service
   communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
@@ -72,6 +73,7 @@ type Mutation {
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
   addFile(file: Upload, description: String): String!
+  editFile(documentId: ID, newDescription: String): Document!
   addServicePrice(input: AddServicePriceInput): ServicePrice
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription
@@ -162,6 +164,23 @@ type Document implements Node {
   minio_name: String!
   active: Boolean!
   created_at: Date!
+}
+
+enum DocumentOrdering {
+  file_name
+  created_at
+  description
+}
+
+type DocumentEdge {
+  cursor: String!
+  node: Document!
+}
+
+type DocumentConnection {
+  totalCount: Int!
+  edges: [DocumentEdge!]!
+  pageInfo: PageInfo!
 }
 
 type ServiceLink implements Node {
