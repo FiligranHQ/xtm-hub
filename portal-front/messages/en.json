@@ -3,12 +3,15 @@
     "Cancel": "Cancel",
     "Validate": "Validate",
     "Create": "Create",
+    "Edit": "Edit",
     "Continue": "Continue",
     "Loading": "Loading...",
     "Success": "Success",
     "Error": "Error",
     "Reset": "Reset",
+    "Modified": "Modified",
     "Inserted": "has been added",
+    "OpenMenu": "Open menu",
     "Form": {
       "ResetFile": "Remove the current selected file."
     }
@@ -32,6 +35,7 @@
     "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
 
     "Vault": {
+      "Vault": "Partner Vault",
       "VaultTitle": "Vault Administration",
       "File": "File to send",
       "DropFile": "Drop the file here",
@@ -40,6 +44,7 @@
         "AddFile": "Add new file",
         "File": "File",
         "UploadNewFile": "Upload a new file in Vault",
+        "EditFile": "Edit file",
         "ShortNameLabel": "Short name",
         "ShortNamePlaceholder": "Filigran Pricing",
         "DescriptionLabel": "Description",
@@ -47,7 +52,12 @@
         "FileAlreadyExists": "This file already exists",
         "FileExistsDialog": "This file already exists. This file will erase the old one. Are you sure you want to continue?",
         "AlreadyExists": "This file already exists. The old one will be erased."
-
+      },
+      "FileTab": {
+        "FileName": "File name",
+        "UploadDate": "Upload date",
+        "Description": "Description",
+        "Search": "Search with filename..."
       }
     }
   },

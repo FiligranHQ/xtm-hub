@@ -11,6 +11,8 @@ import {
 import { insertDocument, sendFileToS3 } from './file.domain';
 import { Readable } from 'stream';
 import * as FileStorage from './file-storage';
+import fileResolver from "./file.resolver";
+import {contextAdminUser} from "../../../../tests/tests.const";
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {
@@ -93,6 +95,28 @@ describe('should add new file', () => {
   });
 });
 
+describe("Should update file", () => {
+  beforeAll(async () => {
+    await createDocument({
+      id: 'bc348e84-3635-46de-9b56-38db09c35f4d',
+      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      description: 'description',
+      minio_name: 'minioName',
+      file_name: 'filename',
+      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+    });
+  });
+  it("Should update file description", async () => {
+    const response = await fileResolver.Mutation.editFile(
+        {}, {documentId: 'bc348e84-3635-46de-9b56-38db09c35f4d', newDescription: 'NEW'}, contextAdminUser
+    );
+    expect(response.description).toStrictEqual('NEW')
+  })
+  afterAll(async () => {
+    await deleteDocuments();
+  });
+})
+
 describe('getFileName', () => {
   it('should set the correct fileName', () => {
     vi.spyOn(Date, 'now').mockReturnValue(
@@ -137,3 +161,34 @@ describe('should check if file already exists', () => {
     await deleteDocuments();
   });
 });
+
+
+describe("Documents loading", () => {
+  beforeAll(async () => {
+    await createDocument({
+      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      description: 'description',
+      minio_name: 'minioName',
+      file_name: 'filename',
+      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+    });
+    await createDocument({
+      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      description: 'xdescription',
+      minio_name: 'xminioName',
+      file_name: 'xfilename',
+      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+    });
+  });
+
+  it("should load all documents", async () => {
+    const response = await fileResolver.Query.documents(
+        {}, {first: 1, after: 0, filter: "xfi", orderBy: 'file_name', orderMode: 'asc'}, contextAdminUser
+    );
+    expect(response?.totalCount).toStrictEqual('2')
+    expect(response?.edges[0].node.file_name).toStrictEqual('xfilename')
+  })
+  afterAll(async () => {
+    await deleteDocuments();
+  });
+})

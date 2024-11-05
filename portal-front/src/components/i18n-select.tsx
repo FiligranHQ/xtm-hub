@@ -15,6 +15,7 @@ import { useLocale, useTranslations } from 'next-intl';
 export default function I18nSelect() {
   const t = useTranslations('LocaleSwitcher');
   const defaultValue = useLocale();
+
   const items = [
     {
       value: 'en',

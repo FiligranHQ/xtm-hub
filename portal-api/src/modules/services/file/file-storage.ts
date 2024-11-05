@@ -58,7 +58,7 @@ export const insertFileInMinio = async (fileParams) => {
     params: fileParams,
   });
   await s3Upload.done();
-  console.log('inserted file ', fileParams.Key + ' into Minio...');
+  console.log('[MinIO] inserted file ', fileParams.Key);
 
   return await fileKey;
 };

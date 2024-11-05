@@ -1,9 +1,11 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { insertDocument, sendFileToS3 } from './file.domain';
+import {insertDocument, loadDocuments, sendFileToS3, updateDocument} from './file.domain';
 import { UserId } from '../../../model/kanel/public/User';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import Document from '../../../model/kanel/public/Document';
 import { checkFileExists, normalizeFileName } from './file.helper';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import {DocumentId} from '../../../model/kanel/public/Document';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -24,6 +26,15 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
+    editFile: async(_, {documentId, newDescription}, context) => {
+      try {
+        const [document] = await updateDocument(context, newDescription, fromGlobalId(documentId).id as DocumentId)
+        return document;
+      } catch (error) {
+        console.error('Error while updating file:', error);
+        throw error;
+      }
+    }
   },
   Query: {
     fileExists: async (_, input) => {
@@ -34,6 +45,9 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
+    documents: async(_, {first, after, orderMode, orderBy, filter}, context) => {
+      return loadDocuments(context, {first, after, orderMode, orderBy}, filter);
+    }
   },
 };
 
