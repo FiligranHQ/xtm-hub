@@ -13,11 +13,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Sheet,
   SheetClose,
   SheetContent,
@@ -34,7 +29,7 @@ import { meContext_fragment$data } from '../../../../__generated__/meContext_fra
 import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
 
 interface UserFormSheetProps {
-  user?: userSlug_fragment$data | meContext_fragment$data | null;
+  user?: meContext_fragment$data | userSlug_fragment$data | null;
   open: boolean;
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
@@ -54,40 +49,40 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   handleSubmit,
   validationSchema,
 }) => {
-  const currentRolesPortal = user?.roles_portal_id?.map(
+  const currentRolesPortal = user?.roles_portal_id.map(
     (rolePortalData) => rolePortalData.id
   );
+
+  const currentOrganization = user?.organizations?.map(
+    (organizationData) => organizationData.id
+  );
+
   const rolePortal = getRolesPortal();
   const isFullAdmin = useGranted('BYPASS');
 
-  let rolePortalData =
-    rolePortal?.rolesPortal?.map(({ name, id }) => ({
+  const rolePortalData = rolePortal?.rolesPortal
+    ?.map(({ name, id }) => ({
       label: name,
       value: id,
-    })) ?? [];
+    }))
+    .filter(
+      ({ label }) => !(!isFullAdmin && ['ADMIN', 'ADMIN_COMMU'].includes(label))
+    );
 
-  if (!isFullAdmin) {
-    rolePortalData = rolePortalData.filter((rolePortal) => {
-      return rolePortal.label !== 'ADMIN' && rolePortal.label !== 'ADMIN_COMMU';
-    });
-  }
   const [organizationData] = getOrganizations();
-  const defaultUser = {
-    email: '',
-    first_name: '',
-    last_name: '',
-    organizations: [],
-    ...user,
-  };
+
+  const orgData = organizationData.organizations.edges.map(({ node }) => ({
+    label: node.name,
+    value: node.id,
+  }));
+
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
-      email: defaultUser.email,
-      first_name: defaultUser.first_name,
-      last_name: defaultUser.last_name,
+      ...user,
       password: '',
-      organization_id: defaultUser.organizations?.[0]?.id ?? '',
       roles_id: currentRolesPortal ?? [],
+      organizations: currentOrganization ?? [],
     },
   });
 
@@ -199,40 +194,26 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
               )}
             />
 
-            {isFullAdmin ? (
+            {isFullAdmin && (
               <FormField
                 control={form.control}
-                name="organization_id"
+                name="organizations"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organization</FormLabel>
-                    <Select
-                      disabled={!isFullAdmin}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an organization" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {organizationData.organizations.edges.map(
-                          ({ node }) => (
-                            <SelectItem
-                              key={node.id}
-                              value={node.id}>
-                              {node.name}
-                            </SelectItem>
-                          )
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>Organizations</FormLabel>
+                    <FormControl>
+                      <MultiSelectFormField
+                        options={orgData}
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Select an organization"
+                        variant="inverted"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            ) : (
-              <> </>
             )}
 
             <SheetFooter className="pt-2">

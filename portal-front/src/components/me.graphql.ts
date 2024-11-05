@@ -1,9 +1,11 @@
 import { graphql } from 'react-relay';
 
 export const MeContextFragment = graphql`
-  fragment meContext_fragment on User {
+  fragment meContext_fragment on MeUser {
     id
     email
+    first_name
+    last_name
     capabilities {
       name
     }

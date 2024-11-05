@@ -112,6 +112,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
               return (
                 !service.subscribed && (
                   <ServiceCard
+                    key={service.id}
                     topRightAction={null}
                     bottomLeftAction={
                       service.subscribed ||

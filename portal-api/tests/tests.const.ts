@@ -15,7 +15,7 @@ export const contextAdminUser = {
     email: DEFAULT_ADMIN_EMAIL,
     first_name: null,
     last_name: null,
-    organization_id: PLATFORM_ORGANIZATION_UUID,
+    selected_organization_id: PLATFORM_ORGANIZATION_UUID,
     organization: {
       id: PLATFORM_ORGANIZATION_UUID,
       name: DEFAULT_ORG,
