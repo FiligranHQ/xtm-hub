@@ -1,6 +1,6 @@
-import { insertFileInMinio, UploadedFile } from './file-storage';
+import {downloadFileFromMinio, insertFileInMinio, UploadedFile} from './file-storage';
 import config from 'config';
-import Document, {DocumentId} from '../../../model/kanel/public/Document';
+import Document, {DocumentId, DocumentMutator} from '../../../model/kanel/public/Document';
 import {db, dbUnsecure, paginate} from '../../../../knexfile';
 import {
   createDocument,
@@ -53,12 +53,12 @@ export const insertDocument = async (
 
 export const updateDocument = async (
     context: PortalContext,
-    description: string,
+    updateData:DocumentMutator,
     documentId: DocumentId
 ): Promise<Document[]> => {
-  return db<Document>(context, 'Document').where({id: documentId}).update({
-    description
-  }).returning('*')
+  return db<Document>(context, 'Document').where({id: documentId}).update(
+    updateData
+  ).returning('*')
 }
 
 export const loadDocuments = async(
@@ -80,4 +80,12 @@ export const loadDocuments = async(
   return {
     totalCount, ...documentConnection
   }
+}
+const loadDocumentBy = async (context: PortalContext, field: DocumentMutator) => {
+  return db<Document>(context, 'Document').where(field)
+}
+export const downloadDocument = async (context: PortalContext, documentId: DocumentId) => {
+  const [document] = await loadDocumentBy(context, {id: documentId})
+  await updateDocument(context, {download_number: document.download_number+1}, document.id)
+  return downloadFileFromMinio(document.minio_name, document.file_name)
 }

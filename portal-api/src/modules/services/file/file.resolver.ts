@@ -1,5 +1,5 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import {insertDocument, loadDocuments, sendFileToS3, updateDocument} from './file.domain';
+import {downloadDocument, insertDocument, loadDocuments, sendFileToS3, updateDocument} from './file.domain';
 import { UserId } from '../../../model/kanel/public/User';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import Document from '../../../model/kanel/public/Document';
@@ -20,7 +20,7 @@ const resolvers: Resolvers = {
           service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff' as ServiceId,
         } as unknown as Document;
         const [addedDocument] = await insertDocument(data);
-        return addedDocument.file_name;
+        return addedDocument;
       } catch (error) {
         console.error('Error while inserting file:', error);
         throw error;
@@ -28,7 +28,7 @@ const resolvers: Resolvers = {
     },
     editFile: async(_, {documentId, newDescription}, context) => {
       try {
-        const [document] = await updateDocument(context, newDescription, fromGlobalId(documentId).id as DocumentId)
+        const [document] = await updateDocument(context, {description: newDescription}, fromGlobalId(documentId).id as DocumentId)
         return document;
       } catch (error) {
         console.error('Error while updating file:', error);
@@ -47,6 +47,9 @@ const resolvers: Resolvers = {
     },
     documents: async(_, {first, after, orderMode, orderBy, filter}, context) => {
       return loadDocuments(context, {first, after, orderMode, orderBy}, filter);
+    },
+    document: async(_, {documentId}, context) => {
+      return downloadDocument(context, fromGlobalId(documentId).id as DocumentId)
     }
   },
 };

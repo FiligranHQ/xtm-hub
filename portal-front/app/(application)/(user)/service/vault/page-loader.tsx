@@ -17,6 +17,7 @@ import {FormatDate} from "@/utils/date";
 import {getUserLocale} from "@/i18n/locale";
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import DownloadDocument from "@/components/service/vault/download-document";
 
 interface PreloaderProps {}
 
@@ -62,6 +63,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
                         </>
                     }>
                     <EditDocument documentData={row.original} />
+                    <DownloadDocument documentData={row.original} />
                 </IconActions>
             ),
         },

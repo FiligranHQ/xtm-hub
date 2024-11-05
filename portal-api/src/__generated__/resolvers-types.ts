@@ -76,6 +76,7 @@ export type Document = Node & {
   active: Scalars['Boolean']['output'];
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  download_number?: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   minio_name: Scalars['String']['output'];
@@ -189,7 +190,7 @@ export type MessageTracking = Node & {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptCommunity?: Maybe<Array<Maybe<Subscription>>>;
-  addFile: Scalars['String']['output'];
+  addFile: Document;
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Subscription>;
   addServiceCommunity?: Maybe<Service>;
@@ -404,6 +405,7 @@ export type PlatformProvider = {
 export type Query = {
   __typename?: 'Query';
   communities: ServiceConnection;
+  document?: Maybe<Scalars['String']['output']>;
   documents: DocumentConnection;
   fileExists?: Maybe<Scalars['Boolean']['output']>;
   malwareAnalysis: MalwareAnalysisConnection;
@@ -432,6 +434,11 @@ export type QueryCommunitiesArgs = {
   first: Scalars['Int']['input'];
   orderBy: ServiceOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryDocumentArgs = {
+  documentId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1042,6 +1049,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1128,7 +1136,7 @@ export type MessageTrackingResolvers<ContextType = PortalContext, ParentType ext
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   acceptCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType, Partial<MutationAcceptCommunityArgs>>;
-  addFile?: Resolver<ResolversTypes['String'], ParentType, ContextType, Partial<MutationAddFileArgs>>;
+  addFile?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationAddFileArgs>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
   addService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationAddServiceArgs>>;
   addServiceCommunity?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, Partial<MutationAddServiceCommunityArgs>>;
@@ -1197,6 +1205,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   communities?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryCommunitiesArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  document?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   fileExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryFileExistsArgs>>;
   malwareAnalysis?: Resolver<ResolversTypes['MalwareAnalysisConnection'], ParentType, ContextType, RequireFields<QueryMalwareAnalysisArgs, 'first' | 'orderBy' | 'orderMode'>>;
