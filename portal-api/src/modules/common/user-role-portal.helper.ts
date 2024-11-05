@@ -1,9 +1,11 @@
-import { dbUnsecure } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import { UserId } from '../../model/kanel/public/User';
 import UserRolePortal, {
   UserRolePortalInitializer,
 } from '../../model/kanel/public/UserRolePortal';
+import { PortalContext } from '../../model/portal-context';
+import { isEmpty } from '../../utils/utils';
 import { getRolePortalByName } from '../role-portal/role-portal';
 
 export const createUserRolePortal = async (
@@ -14,8 +16,8 @@ export const createUserRolePortal = async (
     .returning('*');
 };
 
-export const deleteUserRolePortalByUserId = (user_id) => {
-  return dbUnsecure('User_RolePortal').where({ user_id }).del();
+export const deleteUserRolePortalByUserId = (context, user_id) => {
+  return db(context, 'User_RolePortal').where({ user_id }).del();
 };
 
 export const addRolesToUser = async (userId: UserId, roles: string[]) => {
@@ -43,4 +45,22 @@ export const createUserRolePortalRelation = async ({
     })
   );
   await createUserRolePortal(extractRolesId);
+};
+
+export const updateUserRolePortal = async (
+  context: PortalContext,
+  user_id: UserId,
+  rolePortalIds: RolePortalId[]
+) => {
+  if (isEmpty(rolePortalIds)) {
+    return;
+  }
+  await deleteUserRolePortalByUserId(context, user_id);
+  const rolesPortal: UserRolePortalInitializer[] = rolePortalIds.map(
+    (role_portal_id) => ({
+      user_id,
+      role_portal_id,
+    })
+  );
+  await createUserRolePortal(rolesPortal);
 };

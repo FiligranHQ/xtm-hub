@@ -54,7 +54,7 @@ type Query {
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: MeUser
-  user(id: ID!): MeUser
+  user(id: ID!): UserDetail
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: String): UserConnection!
   node(id: ID!): Node
 }
@@ -84,9 +84,9 @@ type Mutation {
   addUserService(input: UserServiceInput!): UserService
   deleteUserService(input: UserServiceInput!): UserServiceDeleted
   mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): UserWithOrganizations
-  editUser(id: ID!, input: EditUserInput!): UserWithOrganizations
-  deleteUser(id: ID!): SimpleTypeUser
+  addUser(input: AddUserInput!): UserDetail
+  editUser(id: ID!, input: EditUserInput!): UserDetail!
+  deleteUser(id: ID!): BaseUser
   changeSelectedOrganization(organization_id: ID!): Boolean
   login(email: String!, password: String): MeUser
   logout: ID!
@@ -366,19 +366,11 @@ interface User implements Node {
   last_name: String
 }
 
-type SimpleTypeUser implements User & Node {
+type BaseUser implements User & Node {
   id: ID!
   email: String!
   first_name: String
   last_name: String
-}
-
-type UserWithOrganizations implements User & Node {
-  id: ID!
-  email: String!
-  first_name: String
-  last_name: String
-  organizations: [Organization!]!
 }
 
 type MeUser implements User & Node {
@@ -391,9 +383,18 @@ type MeUser implements User & Node {
   roles_portal_id: [RolePortalID!]!
 }
 
+type UserDetail implements User & Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  organizations: [Organization!]!
+  roles_portal_id: [RolePortalID!]!
+}
+
 type UserEdge {
   cursor: String!
-  node: SimpleTypeUser!
+  node: BaseUser!
 }
 
 type UserConnection {
@@ -406,7 +407,7 @@ input EditUserInput {
   email: String!
   first_name: String
   last_name: String
-  organization_id: String!
+  organizations: [String]!
   roles_id: [String]!
 }
 
@@ -420,9 +421,9 @@ input AddUserInput {
 }
 
 type UserSubscription {
-  add: UserWithOrganizations
-  edit: UserWithOrganizations
-  delete: SimpleTypeUser
+  add: UserDetail
+  edit: UserDetail
+  delete: BaseUser
   merge: MergeEvent
 }
 

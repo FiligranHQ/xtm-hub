@@ -6,11 +6,12 @@ import { useToast } from 'filigran-ui/clients';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
+import { meContext_fragment$data } from '../../../../../__generated__/meContext_fragment.graphql';
 import { userSlugEditMutation } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
 
 interface EditUserProps {
-  user: userSlug_fragment$data;
+  user: meContext_fragment$data | userSlug_fragment$data;
 }
 
 export const EditUser: FunctionComponent<EditUserProps> = ({ user }) => {
@@ -44,6 +45,7 @@ export const EditUser: FunctionComponent<EditUserProps> = ({ user }) => {
       setOpen={setOpenSheet}
       user={user}
       validationSchema={userEditFormSchema}
-      trigger={<TriggerButton label="Edit" />}></UserFormSheet>
+      trigger={<TriggerButton label="Edit" />}
+    />
   );
 };

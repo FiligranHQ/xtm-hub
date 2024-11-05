@@ -13,7 +13,7 @@ import { PortalContext } from '../../model/portal-context';
 import {
   UserInfo,
   UserLoadUserBy,
-  UserWithOrganizations,
+  UserWithOrganizationsAndRole,
 } from '../../model/user';
 import {
   ADMIN_UUID,
@@ -23,11 +23,8 @@ import {
 import { hashPassword } from '../../utils/hash-password.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { extractId } from '../../utils/utils';
-import {
-  createUserRolePortal,
-  deleteUserRolePortalByUserId,
-} from '../common/user-role-portal.helper';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { updateUserOrg } from '../common/user-organization.helper';
+import { updateUserRolePortal } from '../common/user-role-portal.helper';
 import { addNewUserWithRoles } from './users.helper';
 
 const completeUserCapability = (user: UserLoadUserBy): UserLoadUserBy => {
@@ -84,13 +81,13 @@ export const loadUserBy = async (
     .select([
       'User.*',
       dbRaw(
-        "COALESCE( json_agg(distinct jsonb_build_object('id', org.id, 'name', CASE WHEN org.name = \"User\".email THEN 'Personal space' ELSE org.name END, '__typename', 'Organization', 'selected', org.id = \"User\".selected_organization_id) ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
+        "COALESCE( json_agg( DISTINCT to_jsonb(\"org\") || jsonb_build_object( 'selected', org.id = \"User\".selected_organization_id, '__typename', 'Organization' ) ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
       ),
       dbRaw(
         "COALESCE( json_agg(distinct jsonb_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal' )) FILTER (WHERE \"user_RolePortal\".id IS NOT NULL), '[]' ) as roles_portal_id"
       ),
       dbRaw(
-        'COALESCE( json_agg(distinct jsonb_build_object( \'id\', "capability"."id", \'name\', "capability"."name" )) FILTER (WHERE "capability".id IS NOT NULL), \'[]\' ) as capabilities'
+        'COALESCE( json_agg(DISTINCT to_jsonb(capability)) FILTER (WHERE "capability".id IS NOT NULL), \'[]\' ) as capabilities'
       ),
     ])
     .groupBy(['User.id'])
@@ -207,45 +204,22 @@ export const updateSelectedOrganization = async (
 
 export const updateUser = async (
   context: PortalContext,
-  id: string,
+  id: UserId,
   input: EditUserInput
 ) => {
-  const selected_organization_id = extractId(
-    input.organization_id
-  ) as OrganizationId;
-  const { roles_id, ...inputWithoutRoles } = input;
-  const rolePortalIds = roles_id.map(extractId);
-  const update = {
-    ...inputWithoutRoles,
-    selected_organization_id,
-  } as UserMutator;
+  const { organizations, roles_id, ...user } = input;
+  const rolePortalIds = roles_id?.map(extractId<RolePortalId>);
+  const organizationsIds = organizations.map(extractId<OrganizationId>);
+
   const [updatedUser] = await db<User>(context, 'User')
-    .where({ id: id as UserId })
-    .update(update)
+    .where({ id })
+    .update(user)
     .returning('*');
 
-  await deleteUserRolePortalByUserId(updatedUser.id);
+  await updateUserOrg(context, id, organizationsIds);
+  await updateUserRolePortal(context, id, rolePortalIds);
 
-  const roles_portal_id = await Promise.all(
-    rolePortalIds.map(async (rolePortalId) => {
-      await createUserRolePortal({
-        user_id: updatedUser.id as UserId,
-        role_portal_id: rolePortalId as RolePortalId,
-      });
-      return { id: rolePortalId };
-    })
-  );
-  const organization = await loadOrganizationBy(
-    context,
-    'Organization.id',
-    selected_organization_id
-  );
-
-  return {
-    ...updatedUser,
-    organization,
-    roles_portal_id,
-  };
+  return updatedUser;
 };
 export const deleteUserById = async (userId: UserId) => {
   return dbUnsecure<User>('User')
@@ -294,10 +268,10 @@ export const addNewUser = async (
   return addedUser;
 };
 
-export const loadUserWithOrganizations = async (
+export const loadUserDetails = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
-): Promise<UserWithOrganizations> => {
-  return dbUnsecure<UserWithOrganizations>('User')
+): Promise<UserWithOrganizationsAndRole> => {
+  return dbUnsecure<UserWithOrganizationsAndRole>('User')
     .where(field)
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
     .leftJoin(
@@ -306,10 +280,19 @@ export const loadUserWithOrganizations = async (
       '=',
       'org.id'
     )
+    .leftJoin(
+      'User_RolePortal as user_RolePortal',
+      'User.id',
+      '=',
+      'user_RolePortal.user_id'
+    )
     .select([
       'User.*',
       dbRaw(
-        "COALESCE( json_agg(distinct jsonb_build_object('id', org.id, 'name', CASE WHEN org.name = \"User\".email THEN 'Personal space' ELSE org.name END, '__typename', 'Organization' ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
+        "COALESCE( json_agg( DISTINCT to_jsonb(org) || jsonb_build_object( '__typename', 'Organization' ) ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
+      ),
+      dbRaw(
+        "COALESCE( json_agg(distinct jsonb_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal' )) FILTER (WHERE \"user_RolePortal\".id IS NOT NULL), '[]' ) as roles_portal_id"
       ),
     ])
     .groupBy(['User.id'])

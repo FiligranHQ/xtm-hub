@@ -5,6 +5,7 @@ import UserOrganization, {
   UserOrganizationInitializer,
 } from '../../model/kanel/public/UserOrganization';
 import { PortalContext } from '../../model/portal-context';
+import { isEmpty } from '../../utils/utils';
 
 export const insertNewUserOrganization = (
   context: PortalContext,
@@ -30,4 +31,27 @@ export const createUserOrganizationRelation = async (
     })
   );
   await insertNewUserOrganization(context, usersOrganization);
+};
+
+export const updateUserOrg = async (
+  context: PortalContext,
+  userId: UserId,
+  organizationsId: OrganizationId[]
+) => {
+  if (isEmpty(organizationsId)) {
+    return;
+  }
+  await db<UserOrganization>(context, 'User_Organization')
+    .where('user_id', '=', userId)
+    .delete('*');
+
+  const userOrgsToInsert: UserOrganizationInitializer[] = organizationsId.map(
+    (orgId) => ({
+      user_id: userId,
+      organization_id: orgId,
+    })
+  );
+  return db<UserOrganization>(context, 'User_Organization')
+    .insert(userOrgsToInsert)
+    .returning('*');
 };

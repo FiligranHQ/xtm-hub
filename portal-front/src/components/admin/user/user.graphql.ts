@@ -18,10 +18,6 @@ export const usersFragment = graphql`
           email
           first_name
           last_name
-          organizations {
-            id
-            name
-          }
         }
       }
     }
@@ -55,7 +51,7 @@ export const userSlugDeletion = graphql`
 `;
 
 export const userSlugFragment = graphql`
-  fragment userSlug_fragment on User {
+  fragment userSlug_fragment on UserDetail {
     id
     email
     last_name
@@ -104,9 +100,6 @@ export const UserSlugQuery = graphql`
   query userSlugQuery($id: ID!) {
     user(id: $id) {
       ...userSlug_fragment
-      tracking_data {
-        ...trackingData_fragment
-      }
     }
   }
 `;
