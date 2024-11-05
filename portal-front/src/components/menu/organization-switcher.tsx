@@ -6,11 +6,15 @@ import { Popover, PopoverContent, PopoverTrigger } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { FunctionComponent, useCallback, useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
+import { useWindowSize } from 'usehooks-ts';
 import { organizationSwitcherMutation } from '../../../__generated__/organizationSwitcherMutation.graphql';
 
 interface TeamSwitcherProps {
   open: boolean;
 }
+
+const MOBILE_SIZE = 640;
+
 export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
   open,
 }) => {
@@ -18,6 +22,8 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
   if (!me) {
     return null;
   }
+  const { width = 0, height = 0 } = useWindowSize();
+  const isMobile = width < MOBILE_SIZE;
 
   const [commitOrganizationSwitcherMutation] =
     useMutation<organizationSwitcherMutation>(
@@ -40,7 +46,11 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
     setOpenPopover(false);
   }, []);
 
-  const selectedOrganisation = me?.organizations.find(
+  const parsedOrganization = me.organizations.map((org) => ({
+    ...org,
+    name: org.name === me.email ? 'Personal space' : org.name,
+  }));
+  const selectedOrganisation = parsedOrganization.find(
     ({ selected }) => selected
   );
 
@@ -71,11 +81,11 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
       </PopoverTrigger>
       <PopoverContent
         sideOffset={0}
-        side="right"
+        side={isMobile ? 'bottom' : 'right'}
         align="start"
         asChild>
         <ul className="flex-col gap-xs flex sm:w-[200px] p-s">
-          {me.organizations.map((group) => (
+          {parsedOrganization.map((group) => (
             <li key={group.id}>
               <Button
                 variant="ghost"

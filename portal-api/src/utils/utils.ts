@@ -1,10 +1,10 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { DatabaseType } from '../../knexfile';
 
-export const extractId = (id: string) => {
+export const extractId = <T>(id: string) => {
   const { id: databaseId } = fromGlobalId(id) as {
     type: DatabaseType;
-    id: string;
+    id: T;
   };
   return databaseId;
 };

@@ -4,10 +4,10 @@ import crypto from 'node:crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import {
+  BaseUser,
   MergeEvent,
   MeUser,
   Resolvers,
-  SimpleTypeUser,
 } from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -23,8 +23,8 @@ import { insertNewOrganization } from '../organizations/organizations.helper';
 import {
   addNewUser,
   loadUserBy,
+  loadUserDetails,
   loadUsers,
-  loadUserWithOrganizations,
   updateSelectedOrganization,
   updateUser,
 } from './users.domain';
@@ -43,7 +43,6 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      console.log(context.user.selected_organization_id);
       return context.user as unknown as MeUser;
     },
     user: async (_, { id }, context) => {
@@ -51,9 +50,9 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      return loadUserBy({
+      return loadUserDetails({
         'User.id': id as UserId,
-      }) as unknown as MeUser;
+      });
     },
     users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
       if (!context.user)
@@ -115,7 +114,7 @@ const resolvers: Resolvers = {
           text: "An administrator has invited you to create your account on the Filigran's XTM Hub platform ! Register. ",
         });
 
-        const user = await loadUserWithOrganizations({
+        const user = await loadUserDetails({
           'User.id': addedUser.id,
         });
 
@@ -134,9 +133,9 @@ const resolvers: Resolvers = {
     editUser: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        const completedUser = await updateUser(context, id, input);
+        const completedUser = await updateUser(context, id as UserId, input);
 
-        const user = await loadUserWithOrganizations({
+        const user = await loadUserDetails({
           'User.id': completedUser.id,
         });
 
@@ -155,7 +154,7 @@ const resolvers: Resolvers = {
         .delete('*');
 
       await dispatch('User', 'delete', deletedUser);
-      return deletedUser as unknown as SimpleTypeUser;
+      return deletedUser as BaseUser;
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateSelectedOrganization(
@@ -163,11 +162,11 @@ const resolvers: Resolvers = {
         context.user.id,
         fromGlobalId(organization_id).id
       );
-
+      const user = await loadUserBy({
+        email: updatedUser.email,
+      });
       context.req.session.reload(async function (err) {
-        context.req.session.user = await loadUserBy({
-          email: updatedUser.email,
-        });
+        context.req.session.user = user;
         context.req.session.save();
         if (err) {
           console.error('Context error', err);

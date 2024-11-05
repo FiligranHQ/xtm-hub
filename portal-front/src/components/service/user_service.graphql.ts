@@ -44,10 +44,6 @@ export const userServiceFragment = graphql`
       last_name
       first_name
       email
-      organizations {
-        id
-        name
-      }
     }
   }
 `;

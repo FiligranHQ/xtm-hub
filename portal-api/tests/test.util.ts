@@ -13,7 +13,7 @@ export const logAdminUserTest = async (agent) => {
           id
         }
       }
-      fragment meContext_fragment on User {
+      fragment meContext_fragment on MeUser {
         id
         email
         capabilities {
@@ -23,8 +23,10 @@ export const logAdminUserTest = async (agent) => {
         roles_portal_id {
           id
         }
-        organization {
+        organizations {
           id
+          name
+          selected @required(action: THROW)
         }
       }
     `),

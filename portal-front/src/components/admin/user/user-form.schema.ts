@@ -14,9 +14,7 @@ export const userFormSchema = z.object({
   password: z.string().min(2, {
     message: 'Password must be at least 2 characters.',
   }),
-  organization_id: z.string().min(2, {
-    message: 'Choose an organisation',
-  }),
+  organizations: z.array(z.string()).default([]),
   roles_id: z
     .array(z.string())
     .min(1, { message: 'Choose a role for the user' }),
@@ -34,9 +32,7 @@ export const userEditFormSchema = z.object({
     message: 'Lastname must be at least 2 characters.',
   }),
   password: z.string().optional(),
-  organization_id: z.string().min(2, {
-    message: 'Choose an organisation',
-  }),
+  organizations: z.array(z.string()).default([]),
   roles_id: z
     .array(z.string())
     .min(1, { message: 'Choose a role for the user' }),

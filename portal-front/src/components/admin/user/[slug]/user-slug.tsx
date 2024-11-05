@@ -7,10 +7,6 @@ import {
   usePreloadedQuery,
   useSubscription,
 } from 'react-relay';
-import {
-  userSlug_fragment$data,
-  userSlug_fragment$key,
-} from '../../../../../__generated__/userSlug_fragment.graphql';
 import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
 
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
@@ -20,16 +16,18 @@ import {
   UserSlugQuery,
   userSlugSubscription,
 } from '@/components/admin/user/user.graphql';
-import { DataTracking } from '@/components/data-tracking/data-tracking';
 import { trackingSubscription } from '@/components/data-tracking/tracking.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { DeleteIcon } from 'filigran-icon';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
-import { trackingData_fragment$key } from '../../../../../__generated__/trackingData_fragment.graphql';
 import { userSlugQuery } from '../../../../../__generated__/userSlugQuery.graphql';
 import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
+import {
+  userSlug_fragment$data,
+  userSlug_fragment$key,
+} from '../../../../../__generated__/userSlug_fragment.graphql';
 
 // Component interface
 interface UserSlugProps {
@@ -120,9 +118,6 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             </AlertDialogComponent>
           </div>
         </div>
-        <DataTracking
-          data={data.user?.tracking_data as trackingData_fragment$key}
-        />
       </>
     );
   }

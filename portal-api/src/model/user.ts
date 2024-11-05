@@ -1,6 +1,6 @@
 import CapabilityPortal from './kanel/public/CapabilityPortal';
 import Organization from './kanel/public/Organization';
-import RolePortal from './kanel/public/RolePortal';
+import { RolePortalId } from './kanel/public/RolePortal';
 import User from './kanel/public/User';
 
 export interface UserInfo {
@@ -11,16 +11,23 @@ export interface UserInfo {
 }
 
 export interface UserLoadUserBy extends User {
-  organizations: (Pick<Organization, 'id' | 'name'> & {
+  organizations: (Organization & {
     selected: boolean;
     __typename: 'Organization';
   })[];
-  roles_portal_id: (Pick<RolePortal, 'id'> & { __typename: 'RolePortal' })[];
-  capabilities: Pick<CapabilityPortal, 'id' | 'name'>[];
+  roles_portal_id: {
+    id: RolePortalId;
+    __typename: 'RolePortalID';
+  }[];
+  capabilities: CapabilityPortal[];
 }
 
-export interface UserWithOrganizations extends User {
-  organizations: (Pick<Organization, 'id' | 'name'> & {
+export interface UserWithOrganizationsAndRole extends User {
+  organizations: (Organization & {
     __typename: 'Organization';
   })[];
+  roles_portal_id: {
+    id: RolePortalId;
+    __typename: 'RolePortalID';
+  }[];
 }
