@@ -132,7 +132,7 @@ const FileList: React.FunctionComponent<ServiceProps> = ({
                     />
                     <div className="justify-between flex w-full sm:w-auto items-center gap-s">
                         <DataTableHeadBarOptions />
-                        <VaultForm/>
+                        <VaultForm connectionId={data?.documents?.__id}/>
                     </div>
                 </div>
             }

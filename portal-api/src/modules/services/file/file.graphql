@@ -7,10 +7,11 @@ type Document implements Node {
   minio_name: String!
   active: Boolean!
   created_at: Date!
+  download_number: Int
 }
 
 type Mutation {
-  addFile(file: Upload, description: String): String! @auth
+  addFile(file: Upload, description: String): Document! @auth
   editFile(documentId: ID, newDescription: String): Document! @auth
 }
 
@@ -40,4 +41,5 @@ type Query {
     orderMode: OrderingMode!
     filter: String
   ): DocumentConnection! @auth
+  document(documentId: ID): String @auth
 }

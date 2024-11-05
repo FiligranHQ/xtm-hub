@@ -14,8 +14,10 @@ import {
 } from "../../../../__generated__/fileAddMutation.graphql";
 import {FileAddMutation} from "@/components/service/vault/file.graphql";
 import TriggerButton from "@/components/ui/trigger-button";
-
-export const VaultForm = () => {
+interface VaultFormProps {
+    connectionId: string;
+}
+export const VaultForm: FunctionComponent<VaultFormProps> = ({connectionId}) => {
     const { toast } = useToast();
     const t = useTranslations();
     const [vaultFileMutation] = useMutation<fileAddMutation>(FileAddMutation);
@@ -24,14 +26,15 @@ export const VaultForm = () => {
     const sendFile=(values: z.infer<typeof newFileSchema>) => {
             vaultFileMutation({
                 variables: {
-                    ...values
+                    ...values,
+                    connections: [connectionId],
                 },
                 uploadables: values.file as unknown as UploadableMap,
                 onCompleted: (response) => {
                     setOpenSheet(false)
                     toast({
                         title: t('Utils.Success'),
-                        description: response.addFile + ' ' + t('Utils.Inserted'),
+                        description: response.addFile.file_name + ' ' + t('Utils.Inserted'),
                     });
                 },
                 onError: (error) => {

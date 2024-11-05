@@ -1,8 +1,15 @@
 import {graphql} from "react-relay";
 
 export const FileAddMutation = graphql`
-    mutation fileAddMutation($file: Upload, $description: String) {
-        addFile(file: $file, description: $description)
+    mutation fileAddMutation($file: Upload, $description: String, $connections: [ID!]!) {
+        addFile(file: $file, description: $description) 
+        @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
+            id
+            description
+            created_at
+            file_name
+        }
+        
     }
 `;
 
@@ -21,6 +28,12 @@ export const FileExistsQuery = graphql`
 query fileExistsQuery($fileName: String) {
     fileExists(fileName: $fileName) 
 }`
+
+export const FileDownloadQuery = graphql`
+    query fileDownloadQuery($documentId: ID) {
+        document(documentId: $documentId)
+    }
+`
 export const filesFragment = graphql`
     fragment fileList on Query
     @refetchable(queryName: "FilesPaginationQuery") {
