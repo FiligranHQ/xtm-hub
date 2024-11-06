@@ -7,34 +7,35 @@ import {useState } from 'react';
 import {useTranslations} from "next-intl";
 import {UploadableMap} from "relay-runtime";
 import {useMutation} from "react-relay";
-import {newFileSchema, VaultNewFileFormSheet} from "@/components/service/vault/vault-new-file-form-sheet";
-import {z} from "zod";
 import {
-    fileAddMutation
-} from "../../../../__generated__/fileAddMutation.graphql";
-import {FileAddMutation} from "@/components/service/vault/file.graphql";
+    newDocumentSchema,
+    VaultNewFileFormSheet
+} from "@/components/service/vault/vault-new-file-form-sheet";
+import {z} from "zod";
+import {DocumentAddMutation} from "@/components/service/vault/document.graphql";
 import TriggerButton from "@/components/ui/trigger-button";
+import {documentAddMutation} from "../../../../__generated__/documentAddMutation.graphql";
 interface VaultFormProps {
     connectionId: string;
 }
 export const VaultForm: FunctionComponent<VaultFormProps> = ({connectionId}) => {
     const { toast } = useToast();
     const t = useTranslations();
-    const [vaultFileMutation] = useMutation<fileAddMutation>(FileAddMutation);
+    const [vaultDocumentMutation] = useMutation<documentAddMutation>(DocumentAddMutation);
     const [openSheet, setOpenSheet] = useState(false);
 
-    const sendFile=(values: z.infer<typeof newFileSchema>) => {
-            vaultFileMutation({
+    const sendDocument =(values: z.infer<typeof newDocumentSchema>) => {
+            vaultDocumentMutation({
                 variables: {
                     ...values,
                     connections: [connectionId],
                 },
-                uploadables: values.file as unknown as UploadableMap,
+                uploadables: values.document as unknown as UploadableMap,
                 onCompleted: (response) => {
                     setOpenSheet(false)
                     toast({
                         title: t('Utils.Success'),
-                        description: response.addFile.file_name + ' ' + t('Utils.Inserted'),
+                        description: response.addDocument.file_name + ' ' + t('Utils.Inserted'),
                     });
                 },
                 onError: (error) => {
@@ -52,7 +53,7 @@ export const VaultForm: FunctionComponent<VaultFormProps> = ({connectionId}) => 
                 open={openSheet}
                 trigger={<TriggerButton label={t('Service.Vault.FileForm.AddFile')} />}
                 setOpen={setOpenSheet}
-                handleSubmit={sendFile}
+                handleSubmit={sendDocument}
                 />
     </>
     );

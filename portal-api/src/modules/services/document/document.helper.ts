@@ -3,24 +3,24 @@ import Document, {
 } from '../../../model/kanel/public/Document';
 import { dbUnsecure } from '../../../../knexfile';
 
-export const getFileName = (fileName: string) => {
-  const splitName = fileName.split('.');
+export const getDocumentName = (documentName: string) => {
+  const splitName = documentName.split('.');
   const nameWithoutExtension = splitName[0];
   const extensionName = splitName[1];
   return `${nameWithoutExtension}_${Date.now()}.${extensionName}`;
 };
 
-export const normalizeFileName = (fileName: string): string => {
-  return fileName
+export const normalizeDocumentName = (documentName: string): string => {
+  return documentName
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[&\\#,+()$~%'":*?!<>{}]/g, '-');
 };
 
-export const checkFileExists = async (fileName: string) => {
+export const checkDocumentExists = async (documentName: string) => {
   const documents: Document[] = await loadUnsecureDocumentsBy({
-    file_name: fileName,
+    file_name: documentName,
   });
   return documents.length > 0;
 };

@@ -7,11 +7,11 @@ import {
   getFileName,
   loadUnsecureDocumentsBy,
   normalizeFileName,
-} from './file.helper';
-import { insertDocument, sendFileToS3 } from './file.domain';
+} from './document.helper';
+import { insertDocument, sendFileToS3 } from './document.domain';
 import { Readable } from 'stream';
-import * as FileStorage from './file-storage';
-import fileResolver from "./file.resolver";
+import * as FileStorage from './document-storage';
+import fileResolver from "./document.resolver";
 import {contextAdminUser} from "../../../../tests/tests.const";
 
 describe('should call S3 to send file', () => {

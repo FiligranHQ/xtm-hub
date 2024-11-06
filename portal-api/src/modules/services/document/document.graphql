@@ -11,8 +11,8 @@ type Document implements Node {
 }
 
 type Mutation {
-  addFile(file: Upload, description: String): Document! @auth
-  editFile(documentId: ID, newDescription: String): Document! @auth
+  addDocument(document: Upload, description: String): Document! @auth
+  editDocument(documentId: ID, newDescription: String): Document! @auth
 }
 
 enum DocumentOrdering {
@@ -33,7 +33,7 @@ type DocumentConnection {
 }
 
 type Query {
-  fileExists(fileName: String): Boolean @auth
+  documentExists(documentName: String): Boolean @auth
   documents(
     first: Int!
     after: ID

@@ -1,12 +1,11 @@
-import {downloadFileFromMinio, insertFileInMinio, UploadedFile} from './file-storage';
+import {downloadFileFromMinio, insertFileInMinio, UploadedFile} from './document-storage';
 import config from 'config';
 import Document, {DocumentId, DocumentMutator} from '../../../model/kanel/public/Document';
 import {db, dbUnsecure, paginate} from '../../../../knexfile';
 import {
-  createDocument,
-  getFileName,
+  createDocument, getDocumentName,
   loadUnsecureDocumentsBy,
-} from './file.helper';
+} from './document.helper';
 import {PortalContext} from "../../../model/portal-context";
 import {DocumentConnection} from "../../../__generated__/resolvers-types";
 
@@ -20,7 +19,7 @@ export const sendFileToS3 = async (file: UploadedFile, userId: string) => {
 
   const fileParams = {
     Bucket: config.get('minio.bucketName'),
-    Key: getFileName(file.filename),
+    Key: getDocumentName(file.filename),
     Body: file.createReadStream(),
     Metadata: fullMetadata,
   };

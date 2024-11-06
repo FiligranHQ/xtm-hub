@@ -1,8 +1,8 @@
 import {graphql} from "react-relay";
 
-export const FileAddMutation = graphql`
-    mutation fileAddMutation($file: Upload, $description: String, $connections: [ID!]!) {
-        addFile(file: $file, description: $description) 
+export const DocumentAddMutation = graphql`
+    mutation documentAddMutation($document: Upload, $description: String, $connections: [ID!]!) {
+        addDocument(document: $document, description: $description) 
         @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
             id
             description
@@ -13,9 +13,9 @@ export const FileAddMutation = graphql`
     }
 `;
 
-export const FileUpdateMutation = graphql`
-    mutation fileUpdateMutation($documentId: ID, $newDescription: String) {
-        editFile(documentId: $documentId, newDescription: $newDescription) {
+export const DocumentUpdateMutation = graphql`
+    mutation documentUpdateMutation($documentId: ID, $newDescription: String) {
+        editDocument(documentId: $documentId, newDescription: $newDescription) {
             id
             file_name
             created_at
@@ -24,19 +24,19 @@ export const FileUpdateMutation = graphql`
     }
 `;
 
-export const FileExistsQuery = graphql`
-query fileExistsQuery($fileName: String) {
-    fileExists(fileName: $fileName) 
+export const DocumentExistsQuery = graphql`
+query documentExistsQuery($documentName: String) {
+    documentExists(documentName: $documentName) 
 }`
 
-export const FileDownloadQuery = graphql`
-    query fileDownloadQuery($documentId: ID) {
+export const DocumentDownloadQuery = graphql`
+    query documentDownloadQuery($documentId: ID) {
         document(documentId: $documentId)
     }
 `
-export const filesFragment = graphql`
-    fragment fileList on Query
-    @refetchable(queryName: "FilesPaginationQuery") {
+export const documentsFragment = graphql`
+    fragment documentsList on Query
+    @refetchable(queryName: "DocumentsPaginationQuery") {
         documents(
             first: $count
             after: $cursor
@@ -58,12 +58,12 @@ export const filesFragment = graphql`
     }
 `
 
-export const FileListQuery = graphql`
-    query fileQuery(
+export const DocumentsListQuery = graphql`
+    query documentsQuery(
         $count: Int!
         $cursor: ID
         $orderBy: DocumentOrdering!
         $orderMode: OrderingMode!
         $filter: String) {
-            ...fileList
+            ...documentsList
         }`

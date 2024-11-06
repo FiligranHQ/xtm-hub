@@ -12,30 +12,30 @@ import {
     usePreloadedQuery,
     useRefetchableFragment,
 } from 'react-relay';
-import {fileList$data, fileList$key} from "../../../../__generated__/fileList.graphql";
-import {FileListQuery, filesFragment} from "@/components/service/vault/file.graphql";
-import {fileQuery, fileQuery$variables} from "../../../../__generated__/fileQuery.graphql";
+import {DocumentsListQuery, documentsFragment} from "@/components/service/vault/document.graphql";
 import {documentListLocalStorage} from "@/components/service/vault/document-list-localstorage";
 import {VaultForm} from "@/components/service/vault/vault-form";
 import { useTranslations } from 'next-intl';
 import {
-    OrderingMode,
     DocumentOrdering,
-} from '../../../../__generated__/fileQuery.graphql';
-import {fileQuery$variables} from "../../../../__generated__/fileQuery.graphql";
+    OrderingMode,
+    documentsQuery,
+    documentsQuery$variables
+} from "../../../../__generated__/documentsQuery.graphql";
+import {documentsList$data, documentsList$key} from "../../../../__generated__/documentsList.graphql";
 interface ServiceProps {
-    queryRef: PreloadedQuery<fileQuery>;
-    columns: ColumnDef<fileList$data>[];
+    queryRef: PreloadedQuery<documentsQuery>;
+    columns: ColumnDef<documentsList$data>[];
 }
 
-const FileList: React.FunctionComponent<ServiceProps> = ({
+const DocumentList: React.FunctionComponent<ServiceProps> = ({
          queryRef,
          columns,
      }) => {
-    const queryData = usePreloadedQuery<fileQuery>(FileListQuery, queryRef);
+    const queryData = usePreloadedQuery<documentsQuery>(DocumentsListQuery, queryRef);
     const t = useTranslations();
-    const [data, refetch] = useRefetchableFragment<fileQuery, fileList$key>(
-        filesFragment,
+    const [data, refetch] = useRefetchableFragment<documentsQuery, documentsList$key>(
+        documentsFragment,
         queryData
     );
 
@@ -63,7 +63,7 @@ const FileList: React.FunctionComponent<ServiceProps> = ({
     });
 
 
-    const handleRefetchData = (args?: Partial<fileQuery$variables>) => {
+    const handleRefetchData = (args?: Partial<documentsQuery$variables>) => {
         const sorting = mapToSortingTableValue(orderBy, orderMode);
         refetch({
             count: pagination.pageSize,
@@ -148,4 +148,4 @@ const FileList: React.FunctionComponent<ServiceProps> = ({
 
 }
 
-export default FileList;
+export default DocumentList;
