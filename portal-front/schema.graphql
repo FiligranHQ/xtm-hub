@@ -48,7 +48,7 @@ type Query {
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  fileExists(fileName: String): Boolean
+  documentExists(documentName: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String): DocumentConnection!
   document(documentId: ID): String
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
@@ -73,8 +73,8 @@ type Mutation {
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addFile(file: Upload, description: String): Document!
-  editFile(documentId: ID, newDescription: String): Document!
+  addDocument(document: Upload, description: String): Document!
+  editDocument(documentId: ID, newDescription: String): Document!
   addServicePrice(input: AddServicePriceInput): ServicePrice
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription

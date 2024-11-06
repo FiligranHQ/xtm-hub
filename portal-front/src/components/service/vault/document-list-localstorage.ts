@@ -1,13 +1,13 @@
-import {fileList$data} from "../../../../__generated__/fileList.graphql";
 import { ColumnDef } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 import {
     OrderingMode,
 } from '../../../../__generated__/userQuery.graphql';
-import {DocumentOrdering} from "../../../../__generated__/fileQuery.graphql";
+import {DocumentOrdering} from "../../../../__generated__/documentsQuery.graphql";
+import {documentsList$data} from "../../../../__generated__/documentsList.graphql";
 
 
-export const documentListLocalStorage = (columns: ColumnDef<fileList$data>[]) => {
+export const documentListLocalStorage = (columns: ColumnDef<documentsList$data>[]) => {
     const [count, setCount, removeCount] = useLocalStorage('countDocumentList', 50);
     const [orderMode, setOrderMode, removeOrderMode] =
         useLocalStorage<OrderingMode>('orderModeDocumentList', 'asc');

@@ -190,7 +190,7 @@ export type MessageTracking = Node & {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptCommunity?: Maybe<Array<Maybe<Subscription>>>;
-  addFile: Document;
+  addDocument: Document;
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Subscription>;
   addServiceCommunity?: Maybe<Service>;
@@ -204,7 +204,7 @@ export type Mutation = {
   deleteSubscription?: Maybe<Subscription>;
   deleteUser?: Maybe<User>;
   deleteUserService?: Maybe<UserServiceDeleted>;
-  editFile: Document;
+  editDocument: Document;
   editOrganization?: Maybe<Organization>;
   editService?: Maybe<Service>;
   editServiceCapability?: Maybe<UserService>;
@@ -223,9 +223,9 @@ export type MutationAcceptCommunityArgs = {
 };
 
 
-export type MutationAddFileArgs = {
+export type MutationAddDocumentArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
-  file?: InputMaybe<Scalars['Upload']['input']>;
+  document?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 
@@ -295,7 +295,7 @@ export type MutationDeleteUserServiceArgs = {
 };
 
 
-export type MutationEditFileArgs = {
+export type MutationEditDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   newDescription?: InputMaybe<Scalars['String']['input']>;
 };
@@ -406,8 +406,8 @@ export type Query = {
   __typename?: 'Query';
   communities: ServiceConnection;
   document?: Maybe<Scalars['String']['output']>;
+  documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
-  fileExists?: Maybe<Scalars['Boolean']['output']>;
   malwareAnalysis: MalwareAnalysisConnection;
   me?: Maybe<User>;
   node?: Maybe<Node>;
@@ -442,17 +442,17 @@ export type QueryDocumentArgs = {
 };
 
 
+export type QueryDocumentExistsArgs = {
+  documentName?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filter?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int']['input'];
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
-};
-
-
-export type QueryFileExistsArgs = {
-  fileName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1136,7 +1136,7 @@ export type MessageTrackingResolvers<ContextType = PortalContext, ParentType ext
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   acceptCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType, Partial<MutationAcceptCommunityArgs>>;
-  addFile?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationAddFileArgs>>;
+  addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationAddDocumentArgs>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
   addService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationAddServiceArgs>>;
   addServiceCommunity?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, Partial<MutationAddServiceCommunityArgs>>;
@@ -1150,7 +1150,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteSubscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['UserServiceDeleted']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
-  editFile?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationEditFileArgs>>;
+  editDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationEditDocumentArgs>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationEditServiceArgs, 'id' | 'name'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
@@ -1206,8 +1206,8 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   communities?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryCommunitiesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   document?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
+  documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  fileExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryFileExistsArgs>>;
   malwareAnalysis?: Resolver<ResolversTypes['MalwareAnalysisConnection'], ParentType, ContextType, RequireFields<QueryMalwareAnalysisArgs, 'first' | 'orderBy' | 'orderMode'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;

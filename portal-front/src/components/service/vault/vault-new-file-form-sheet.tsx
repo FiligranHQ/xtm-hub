@@ -18,24 +18,24 @@ import {Button, Textarea} from "filigran-ui/servers";
 import {FileInput} from "filigran-ui";
 import {useTranslations} from "next-intl";
 import { useLazyLoadQuery } from 'react-relay';
-import {fileExistsQuery} from "../../../../__generated__/fileExistsQuery.graphql";
-import {FileExistsQuery} from "@/components/service/vault/file.graphql";
+import {DocumentExistsQuery} from "@/components/service/vault/document.graphql";
 import {AlertDialogComponent} from "@/components/ui/alert-dialog";
-import {fileList$data} from "../../../../__generated__/fileList.graphql";
+import {documentExistsQuery} from "../../../../__generated__/documentExistsQuery.graphql";
+import {documentsList$data} from "../../../../__generated__/documentsList.graphql";
 
-export const newFileSchema = z.object({
+export const newDocumentSchema = z.object({
     description: z.string().optional(),
     documentId: z.string().optional(),
-    file: z.custom<FileList>()
+    document: z.custom<FileList>()
 })
 
 interface VaultNewFileFormSheetProps {
     open: boolean;
     setOpen: (open: boolean) => void;
     trigger: ReactNode;
-    document?: fileList$data;
+    document?: documentsList$data;
     handleSubmit: (
-        values: z.infer<typeof newFileSchema>
+        values: z.infer<typeof newDocumentSchema>
     ) => void;
 }
 
@@ -48,25 +48,25 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
 }) => {
     const t = useTranslations();
 
-    const form = useForm<z.infer<typeof newFileSchema>>({
-        resolver: zodResolver(newFileSchema),
+    const form = useForm<z.infer<typeof newDocumentSchema>>({
+        resolver: zodResolver(newDocumentSchema),
         defaultValues: {
             description: document ? document.description : '',
             documentId: document ? document.id : '',
-            file: undefined
+            document: undefined
         }
     })
     const { watch } = form;
-    const watchFile = watch('file');
+    const watchDocument = watch('document');
 
-    const fileName = watchFile?.[0]?.name || null;
+    const documentName = watchDocument?.[0]?.name || null;
 
-    const {fileExists} = useLazyLoadQuery<fileExistsQuery>(
-        FileExistsQuery,
-        { fileName }
+    const {documentExists} = useLazyLoadQuery<documentExistsQuery>(
+        DocumentExistsQuery,
+        { documentName }
     );
 
-    const onSubmit = (values: z.infer<typeof newFileSchema>) => {
+    const onSubmit = (values: z.infer<typeof newDocumentSchema>) => {
         handleSubmit({
             ...values
         });
@@ -90,7 +90,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                         className="w-full space-y-xl">
                         {!document && <FormField
                             control={form.control}
-                            name="file"
+                            name="document"
                             render={({field}) => {
                                 return (
                                     <FormItem>
@@ -103,7 +103,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                             />
                                         </FormControl>
                                         <FormMessage />
-                                        {fileExists && (
+                                        {documentExists && (
                                             <FormMessage>
                                                 <div>{t('Service.Vault.FileForm.AlreadyExists')}</div>
                                             </FormMessage>
@@ -135,7 +135,7 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
                                 <Button variant="outline">{t('Utils.Cancel')}</Button>
                             </SheetClose>
 
-                            {fileExists ? (<AlertDialogComponent
+                            {documentExists ? (<AlertDialogComponent
                                 AlertTitle={t('Service.Vault.FileForm.FileAlreadyExists')}
                                 actionButtonText={t('Utils.Continue')}
                                 triggerElement={

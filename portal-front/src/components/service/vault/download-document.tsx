@@ -1,15 +1,15 @@
 import { Button } from 'filigran-ui/servers';
 import { FunctionComponent } from 'react';
-import {fileList$data} from "../../../../__generated__/fileList.graphql";
 import {
-    FileDownloadQuery
-} from "@/components/service/vault/file.graphql";
+    DocumentDownloadQuery,
+} from "@/components/service/vault/document.graphql";
 import {useTranslations} from "next-intl";
-import {fileDownloadQuery} from "../../../../__generated__/fileDownloadQuery.graphql";
 import { useLazyLoadQuery } from 'react-relay';
+import {documentDownloadQuery} from "../../../../__generated__/documentDownloadQuery.graphql";
+import {documentsList$data} from "../../../../__generated__/documentsList.graphql";
 
 interface DownloadDocumentProps {
-    documentData: fileList$data;
+    documentData: documentsList$data;
 }
 
 export const DownloadDocument: FunctionComponent<DownloadDocumentProps> = ({
@@ -17,19 +17,19 @@ export const DownloadDocument: FunctionComponent<DownloadDocumentProps> = ({
        }) => {
     const t = useTranslations();
 
-    const downloadedFile  = useLazyLoadQuery<fileDownloadQuery>(
-        FileDownloadQuery,
+    const downloadedDocument  = useLazyLoadQuery<documentDownloadQuery>(
+        DocumentDownloadQuery,
         { documentId: documentData.id }
     );
 
     const handleDownload = () => {
-        window.location.href = downloadedFile.document;
+        window.location.href = downloadedDocument.document;
     };
     return (
        <Button
            variant="ghost"
            className="w-full justify-start"
-           aria-label="Download File" onClick={handleDownload}>Download</Button>
+           aria-label="Download Document" onClick={handleDownload}>Download</Button>
     )
 }
 

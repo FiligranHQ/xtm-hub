@@ -1,14 +1,11 @@
 'use client';
 
-import FileList from '@/components/service/vault/file-list'
+import DocumentList from '@/components/service/vault/document-list'
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
-import {FileListQuery} from "@/components/service/vault/file.graphql";
-import {fileList$data} from "../../../../../__generated__/fileList.graphql";
-import {fileQuery} from "../../../../../__generated__/fileQuery.graphql";
 import {documentListLocalStorage} from "@/components/service/vault/document-list-localstorage";
 import {IconActions} from "@/components/ui/icon-actions";
 import { MoreVertIcon } from 'filigran-icon';
@@ -18,6 +15,9 @@ import {getUserLocale} from "@/i18n/locale";
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import DownloadDocument from "@/components/service/vault/download-document";
+import {documentsList$data} from "../../../../../__generated__/documentsList.graphql";
+import {documentsQuery} from "../../../../../__generated__/documentsQuery.graphql";
+import {DocumentsListQuery} from "@/components/service/vault/document.graphql";
 
 interface PreloaderProps {}
 
@@ -32,7 +32,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
     fetchLocale();
 
 
-    const columns: ColumnDef<fileList$data>[] = [
+    const columns: ColumnDef<documentsList$data>[] = [
         {
             accessorKey: 'file_name',
             id: 'file_name',
@@ -70,14 +70,14 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
     ];
 
 
-    const [queryRef, loadQuery] = useQueryLoader<fileQuery>(FileListQuery);
+    const [queryRef, loadQuery] = useQueryLoader<documentsQuery>(DocumentsListQuery);
     const { count, orderBy, orderMode } = documentListLocalStorage(columns);
     useMountingLoader(loadQuery, { count, orderBy, orderMode });
     return (
         <>
             <h1 className="pb-s">{t('Service.Vault.Vault')}</h1>
             {queryRef ? (
-                <FileList
+                <DocumentList
                     queryRef={queryRef}
                     columns={columns}
                 />
