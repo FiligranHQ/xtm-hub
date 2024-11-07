@@ -21,5 +21,5 @@ export const loadAllRolePortalBy = async (
 };
 
 export const isAdmin = async (context: PortalContext) => {
-  return context.user.roles_portal_id.some((role) => role.id === ROLE_ADMIN.id);
+  return context.user.roles_portal.some((role) => role.id === ROLE_ADMIN.id);
 };

@@ -20,7 +20,7 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     await createNewUserFromInvitation(testMail);
     const newUser = await loadUserBy({ email: testMail });
     expect(newUser).toBeTruthy();
-    expect(newUser.roles_portal_id[0].id).toBe(ROLE_USER.id);
+    expect(newUser.roles_portal[0].id).toBe(ROLE_USER.id);
 
     // Delete corresponding in order to avoid issue with other tests
     await deleteUserById(newUser.id as UserId);
@@ -69,12 +69,12 @@ describe('User should be log with all the capacity', () => {
 
     expect(newUser).toBeTruthy();
     expect(newUser.capabilities.length).toBe(7);
-    expect(newUser.roles_portal_id.length).toBe(2);
+    expect(newUser.roles_portal.length).toBe(2);
     expect(
-      newUser.roles_portal_id.some(({ id }) => id === ROLE_USER.id)
+      newUser.roles_portal.some(({ id }) => id === ROLE_USER.id)
     ).toBeTruthy();
     expect(
-      newUser.roles_portal_id.some(({ id }) => id === ROLE_ADMIN_ORGA.id)
+      newUser.roles_portal.some(({ id }) => id === ROLE_ADMIN_ORGA.id)
     ).toBeTruthy();
   });
 

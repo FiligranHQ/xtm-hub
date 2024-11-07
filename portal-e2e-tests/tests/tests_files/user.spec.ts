@@ -30,8 +30,8 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
   await page.getByPlaceholder('Password').press('Tab');
   await page.getByLabel('Roles').press('Enter');
   await page.getByText('USER', { exact: true }).click();
-  await page.getByLabel('Organization').press('ArrowDown');
-  await page.getByLabel('Thales', { exact: true }).press('Enter');
+  await page.getByLabel('Organizations').press('Enter');
+  await page.getByText('Thales', { exact: true }).click();
   await page.getByRole('button', { name: 'Validate' }).click();
   await expect(
     page.getByRole('cell', { name: 'userInE2E@thales.com' })

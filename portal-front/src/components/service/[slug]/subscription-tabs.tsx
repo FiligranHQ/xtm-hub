@@ -33,24 +33,14 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
   loadQuery,
 }) => {
   return (
-    <Tabs
-      defaultValue={
-        subscriptions?.[0]?.user_service?.[0]?.user?.organizations?.[0]?.name ??
-        ''
-      }>
+    <Tabs defaultValue={subscriptions?.[0]?.id ?? ''}>
       <TabsList className="justify-start min-12 p-0 h-auto overflow-auto w-full">
         {subscriptions?.map((subscription) => (
           <TabsTrigger
-            key={
-              subscription?.user_service?.[0]?.user?.organizations?.[0]?.name
-            }
-            value={
-              subscription?.user_service?.[0]?.user?.organizations?.[0]?.name ??
-              ''
-            }
+            key={subscription?.id}
+            value={subscription.id ?? ''}
             className=" data-[state=active]:bg-page-background h-10">
-            {subscription?.user_service?.[0]?.user?.organizations?.[0]?.name}{' '}
-            (billing: {subscription?.billing} %)
+            {subscription.id} (billing: {subscription?.billing} %)
             {subscription?.billing === 0 && (
               <AlertDialogComponent
                 actionButtonText="Remove"
@@ -68,11 +58,8 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
                   onRemoveOrganization(subscription?.id ?? '')
                 }>
                 Are you sure you want to delete this organization{' '}
-                {
-                  subscription?.user_service?.[0]?.user?.organizations?.[0]
-                    ?.name
-                }{' '}
-                from this service? This action cannot be undone.
+                {subscription.id} from this service? This action cannot be
+                undone.
               </AlertDialogComponent>
             )}
           </TabsTrigger>
@@ -105,7 +92,7 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
 
       {subscriptions?.map((subscription) => (
         <SubscriptionTabContent
-          key={subscription?.user_service?.[0]?.user?.organizations?.[0]?.name}
+          key={subscription.id}
           subscription={subscription}
           setOpenSheet={setOpenSheet}
           setCurrentUser={setCurrentUser}

@@ -51,16 +51,16 @@ export const userSlugDeletion = graphql`
 `;
 
 export const userSlugFragment = graphql`
-  fragment userSlug_fragment on UserDetail {
+  fragment userSlug_fragment on User {
     id
     email
     last_name
     first_name
-    organizations {
+    organizations @required(action: THROW) {
       id
       name
     }
-    roles_portal_id {
+    roles_portal @required(action: THROW) {
       id
     }
   }

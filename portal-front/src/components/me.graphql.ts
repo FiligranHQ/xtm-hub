@@ -1,21 +1,21 @@
 import { graphql } from 'react-relay';
 
 export const MeContextFragment = graphql`
-  fragment meContext_fragment on MeUser {
+  fragment meContext_fragment on User {
     id
     email
     first_name
     last_name
-    capabilities {
+    capabilities @required(action: THROW) {
       name
     }
-    roles_portal_id {
+    roles_portal @required(action: THROW) {
       id
     }
-    organizations {
+    organizations @required(action: THROW) {
       id
       name
-      selected
+      selected @required(action: THROW)
     }
   }
 `;

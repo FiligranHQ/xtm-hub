@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { dbUnsecure } from '../../../knexfile';
+import {
+  Capability,
+  User as GraphqlUser,
+} from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import User, { UserId, UserInitializer } from '../../model/kanel/public/User';
+import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { hashPassword } from '../../utils/hash-password.util';
 import {
@@ -88,4 +93,14 @@ export const createNewUserFromInvitation = async (email: string) => {
 export const getOrCreateUser = async (email: string) => {
   const user = await loadUserBy({ email });
   return user ? user : await createNewUserFromInvitation(email);
+};
+
+export const mapUserToGraphqlUser = (
+  user: User | UserLoadUserBy | UserWithOrganizationsAndRole
+): GraphqlUser => {
+  return {
+    ...user,
+    capabilities:
+      'capabilities' in user ? (user.capabilities as Capability[]) : null,
+  };
 };
