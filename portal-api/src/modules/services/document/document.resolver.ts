@@ -3,7 +3,7 @@ import {downloadDocument, insertDocument, loadDocuments, sendFileToS3, updateDoc
 import { UserId } from '../../../model/kanel/public/User';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import Document from '../../../model/kanel/public/Document';
-import {checkDocumentExists, checkFileExists, normalizeDocumentName, normalizeFileName} from './document.helper';
+import {checkDocumentExists, normalizeDocumentName} from './document.helper';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {DocumentId} from '../../../model/kanel/public/Document';
 

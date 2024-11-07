@@ -151,7 +151,7 @@ await initAuthPlatform(app);
 awxEndpoint(app);
 
 // Modified server startup
-if (!process.env.VITEST_MODE) {
+// if (!process.env.VITEST_MODE) {
   // Ensure migrate the schema
   await dbMigration.migrate();
   if (process.env.DATA_SEEDING) {
@@ -166,6 +166,6 @@ if (!process.env.VITEST_MODE) {
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: portalConfig.port }, resolve)
   );
-}
+// }
 
 console.log(`🚀 Server ready at http://localhost:` + portalConfig.port);

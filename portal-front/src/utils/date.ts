@@ -1,13 +1,14 @@
-export const FormatDate = (date?: string, withHours: boolean = true, locale: string = 'en-US') => {
+import {useFormatter} from 'next-intl';
+export const FormatDate = (date?: Date, withHours: boolean = true) => {
   if (!date) {
     return null;
   }
 
   const dateObject = new Date(date);
-  return dateObject.toLocaleDateString(locale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+  const format = useFormatter();
+  if(withHours) {
+    return format.dateTime(dateObject, {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})
+  }
+  return format.dateTime(dateObject, {year: 'numeric', month: 'numeric', day: 'numeric'})
 };
 
