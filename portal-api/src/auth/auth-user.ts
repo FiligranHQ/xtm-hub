@@ -21,7 +21,7 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
     }
   } else {
     if (
-      !user.roles_portal_id.some(({ id }) => ROLE_ADMIN.id === id) &&
+      !user.roles_portal.some(({ id }) => ROLE_ADMIN.id === id) &&
       userInfo.roles.includes(ROLE_ADMIN.name)
     ) {
       await ensureUserRoleExist(user.id, ROLE_ADMIN.id);

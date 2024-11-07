@@ -9,7 +9,7 @@ import {
   Store,
 } from 'relay-runtime';
 import { networkFetch } from './fetchFn';
-import { buildQueryId, isRelayObservable } from './helpers';
+import { buildQueryId, fieldLogger, isRelayObservable } from './helpers';
 
 export type QueryResponsePayload = {
   queryId: string;
@@ -51,5 +51,7 @@ export function createServerSideRelayEnvironment(
     network: Network.create(curriedFetchFn, fetchOrSubscribe),
     store: new Store(new RecordSource()),
     isServer: true,
+    // @ts-ignore
+    relayFieldLogger: fieldLogger,
   });
 }

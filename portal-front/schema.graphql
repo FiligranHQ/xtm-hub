@@ -16,6 +16,7 @@ type Organization implements Node {
   id: ID!
   name: String!
   domains: [String!]
+  selected: Boolean
 }
 
 type MeOrganization implements Node {
@@ -53,8 +54,8 @@ type Query {
   subscriptionsByServiceId(service_id: ID): [Subscription]
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  me: MeUser
-  user(id: ID!): UserDetail
+  me: User
+  user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: String): UserConnection!
   node(id: ID!): Node
 }
@@ -84,21 +85,17 @@ type Mutation {
   addUserService(input: UserServiceInput!): UserService
   deleteUserService(input: UserServiceInput!): UserServiceDeleted
   mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): UserDetail
-  editUser(id: ID!, input: EditUserInput!): UserDetail!
-  deleteUser(id: ID!): BaseUser
+  addUser(input: AddUserInput!): User
+  editUser(id: ID!, input: EditUserInput!): User!
+  deleteUser(id: ID!): User
   changeSelectedOrganization(organization_id: ID!): Boolean
-  login(email: String!, password: String): MeUser
+  login(email: String!, password: String): User
   logout: ID!
 }
 
 type RolePortal implements Node {
   id: ID!
   name: String!
-}
-
-type RolePortalID implements Node {
-  id: ID!
 }
 
 type Document implements Node {
@@ -359,42 +356,19 @@ type Capability implements Node {
   name: Restriction!
 }
 
-interface User implements Node {
+type User implements Node {
   id: ID!
   email: String!
   first_name: String
   last_name: String
-}
-
-type BaseUser implements User & Node {
-  id: ID!
-  email: String!
-  first_name: String
-  last_name: String
-}
-
-type MeUser implements User & Node {
-  id: ID!
-  email: String!
-  first_name: String
-  last_name: String
-  organizations: [MeOrganization!]!
-  capabilities: [Capability!]!
-  roles_portal_id: [RolePortalID!]!
-}
-
-type UserDetail implements User & Node {
-  id: ID!
-  email: String!
-  first_name: String
-  last_name: String
-  organizations: [Organization!]!
-  roles_portal_id: [RolePortalID!]!
+  organizations: [Organization!]
+  capabilities: [Capability!]
+  roles_portal: [RolePortal!]
 }
 
 type UserEdge {
   cursor: String!
-  node: BaseUser!
+  node: User!
 }
 
 type UserConnection {
@@ -421,9 +395,9 @@ input AddUserInput {
 }
 
 type UserSubscription {
-  add: UserDetail
-  edit: UserDetail
-  delete: BaseUser
+  add: User
+  edit: User
+  delete: User
   merge: MergeEvent
 }
 

@@ -3,10 +3,6 @@ type RolePortal implements Node {
   name: String!
 }
 
-type RolePortalID implements Node {
-  id: ID!
-}
-
 type Query {
   rolePortal(id: ID!): RolePortal @auth
   rolesPortal: [RolePortal!]! @auth
