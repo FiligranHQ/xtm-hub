@@ -1,18 +1,17 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import {
-  checkFileExists,
+  checkDocumentExists,
   createDocument,
-  deleteDocuments,
-  getFileName,
-  loadUnsecureDocumentsBy,
-  normalizeFileName,
+  deleteDocuments, getDocumentName,
+  loadUnsecureDocumentsBy, normalizeDocumentName,
 } from './document.helper';
 import { insertDocument, sendFileToS3 } from './document.domain';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import * as FileStorage from './document-storage';
-import fileResolver from "./document.resolver";
 import {contextAdminUser} from "../../../../tests/tests.const";
+import documentResolver from "./document.resolver";
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {
@@ -34,7 +33,7 @@ describe('should call S3 to send file', () => {
 
     const expectedResult = {
       Bucket: 'xtmhubbucket',
-      Key: getFileName(fileMock.filename),
+      Key: getDocumentName(fileMock.filename),
       Body: fileMock.createReadStream(),
       Metadata: {
         mimetype: 'mimeType',
@@ -107,8 +106,8 @@ describe("Should update file", () => {
     });
   });
   it("Should update file description", async () => {
-    const response = await fileResolver.Mutation.editFile(
-        {}, {documentId: 'bc348e84-3635-46de-9b56-38db09c35f4d', newDescription: 'NEW'}, contextAdminUser
+    const response = await documentResolver.Mutation.editDocument(
+        {}, {documentId: toGlobalId('Document', 'bc348e84-3635-46de-9b56-38db09c35f4d'), newDescription: 'NEW'}, contextAdminUser
     );
     expect(response.description).toStrictEqual('NEW')
   })
@@ -122,14 +121,14 @@ describe('getFileName', () => {
     vi.spyOn(Date, 'now').mockReturnValue(
       new Date('2023-01-01T00:00:00Z').getTime()
     );
-    const result = getFileName('test.pdf');
+    const result = getDocumentName('test.pdf');
     expect(result).toEqual('test_1672531200000.pdf');
   });
 });
 
 describe('should normalize filename', () => {
   it('should send a normalized fileName', () => {
-    const result = normalizeFileName('Naîà-méE&mo!');
+    const result = normalizeDocumentName('Naîà-méE&mo!');
     expect(result).toStrictEqual('naia-mee-mo-');
   });
 });
@@ -152,7 +151,7 @@ describe('should check if file already exists', () => {
   `(
     'Should return $expected if filename $title',
     async ({ expected, fileName }) => {
-      const result = await checkFileExists(fileName);
+      const result = await checkDocumentExists(fileName);
       expect(result).toEqual(expected);
     }
   );
@@ -166,6 +165,7 @@ describe('should check if file already exists', () => {
 describe("Documents loading", () => {
   beforeAll(async () => {
     await createDocument({
+      id: 'aefd2d32-adae-4329-b772-90a2fb8516ad',
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'description',
       minio_name: 'minioName',
@@ -173,6 +173,7 @@ describe("Documents loading", () => {
       service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
     });
     await createDocument({
+      id: '96847916-2f35-4402-8e64-888c5d5e8b7a',
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'xdescription',
       minio_name: 'xminioName',
@@ -182,10 +183,29 @@ describe("Documents loading", () => {
   });
 
   it("should load all documents", async () => {
-    const response = await fileResolver.Query.documents(
-        {}, {first: 1, after: 0, filter: "xfi", orderBy: 'file_name', orderMode: 'asc'}, contextAdminUser
+    const response = await documentResolver.Query.documents(
+        {}, {count: 50, filter: "", orderBy: 'file_name', orderMode: 'asc'}, contextAdminUser
     );
     expect(response?.totalCount).toStrictEqual('2')
+    expect(response?.edges[0].node.file_name).toStrictEqual('filename')
+    expect(response?.edges[1].node.file_name).toStrictEqual('xfilename')
+  })
+
+
+  it("should load all documents by desc order", async () => {
+    const response = await documentResolver.Query.documents(
+        {}, {count: 50, filter: "", orderBy: 'file_name', orderMode: 'desc'}, contextAdminUser
+    );
+    expect(response?.totalCount).toStrictEqual('2')
+    expect(response?.edges[0].node.file_name).toStrictEqual('xfilename')
+    expect(response?.edges[1].node.file_name).toStrictEqual('filename')
+  })
+
+  it("should filter documents", async () => {
+    const response = await documentResolver.Query.documents(
+        {}, {first: 1, after: 0, filter: "xfi", orderBy: 'file_name', orderMode: 'asc'}, contextAdminUser
+    );
+    expect(response?.totalCount).toStrictEqual('1')
     expect(response?.edges[0].node.file_name).toStrictEqual('xfilename')
   })
   afterAll(async () => {

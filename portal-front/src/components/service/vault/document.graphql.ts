@@ -34,6 +34,15 @@ export const DocumentDownloadQuery = graphql`
         document(documentId: $documentId)
     }
 `
+
+export const documentItem = graphql`
+    fragment documentItem_fragment on Document {
+        id
+        file_name
+        created_at
+        description
+    }
+`;
 export const documentsFragment = graphql`
     fragment documentsList on Query
     @refetchable(queryName: "DocumentsPaginationQuery") {
@@ -48,10 +57,7 @@ export const documentsFragment = graphql`
             totalCount
             edges {
                 node {
-                    id
-                    file_name
-                    created_at
-                    description
+                    ...documentItem_fragment @relay(mask: false)
                 }
             }
         }

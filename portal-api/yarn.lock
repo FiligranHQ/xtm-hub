@@ -900,7 +900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:^3.685.0":
+"@aws-sdk/s3-request-presigner@npm:3.685.0":
   version: 3.685.0
   resolution: "@aws-sdk/s3-request-presigner@npm:3.685.0"
   dependencies:
@@ -9031,7 +9031,7 @@ __metadata:
     "@apollo/server": 4.11.0
     "@aws-sdk/client-s3": 3.670.0
     "@aws-sdk/lib-storage": 3.670.0
-    "@aws-sdk/s3-request-presigner": ^3.685.0
+    "@aws-sdk/s3-request-presigner": 3.685.0
     "@eslint/js": 9.10.0
     "@graphql-codegen/cli": 5.0.2
     "@graphql-codegen/typescript": 4.0.9

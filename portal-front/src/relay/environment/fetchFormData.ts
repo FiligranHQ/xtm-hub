@@ -25,7 +25,7 @@ export const fetchFormData = async (
   const map = uploadablesArray.reduce<{ [key: number]: string[] }>(
     (acc, _, index) => {
       acc[index] = [
-        `variables.file${uploadables.length > 1 ? '.' + index : ''}`,
+        `variables.document${uploadables.length > 1 ? '.' + index : ''}`,
       ];
       return acc;
     },

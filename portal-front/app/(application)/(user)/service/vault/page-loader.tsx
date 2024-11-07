@@ -18,21 +18,14 @@ import DownloadDocument from "@/components/service/vault/download-document";
 import {documentsList$data} from "../../../../../__generated__/documentsList.graphql";
 import {documentsQuery} from "../../../../../__generated__/documentsQuery.graphql";
 import {DocumentsListQuery} from "@/components/service/vault/document.graphql";
+import {documentItem_fragment$data} from "../../../../../__generated__/documentItem_fragment.graphql";
 
 interface PreloaderProps {}
 
 const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
     const t = useTranslations();
-    const [locale, setLocale] = useState('fr-FR');
 
-    const fetchLocale = async () => {
-        const userLocale = await getUserLocale();
-        setLocale(userLocale === 'en' ? 'en-US' : 'fr-FR');
-    };
-    fetchLocale();
-
-
-    const columns: ColumnDef<documentsList$data>[] = [
+    const columns: ColumnDef<documentItem_fragment$data>[] = [
         {
             accessorKey: 'file_name',
             id: 'file_name',
@@ -41,7 +34,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
         {
             id: 'created_at',
             header: t('Service.Vault.FileTab.UploadDate'),
-            cell: ({row}) => <>{FormatDate(row.original.created_at as string, false, locale)}</>
+            cell: ({row}) => <>{FormatDate(row.original.created_at)}</>
         },
         {
             accessorKey: 'description',

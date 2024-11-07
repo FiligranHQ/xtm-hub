@@ -72,7 +72,11 @@ export const loadDocuments = async(
 
   const documentConnection = await query.select(['Document.*']).asConnection<DocumentConnection>();
 
-  const { totalCount } = await db<Document>(context, 'Document', opts).where('active', '=', true)
+  const queryCount = db<Document>(context, 'Document', opts).where('active', '=', true)
+  if(filter) {
+    queryCount.where('file_name', 'LIKE', `${filter}%`)
+  }
+  const { totalCount } = await queryCount
       .countDistinct('id as totalCount')
       .first();
 

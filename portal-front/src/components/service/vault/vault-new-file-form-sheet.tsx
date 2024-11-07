@@ -81,7 +81,9 @@ export const VaultNewFileFormSheet: FunctionComponent<VaultNewFileFormSheetProps
 
             <SheetContent side={'right'}>
                 <SheetHeader className="bg-page-background">
-                    {document ? <SheetTitle>{t('Service.Vault.FileForm.EditFile')} </SheetTitle> : <SheetTitle>{t('Service.Vault.FileForm.UploadNewFile')} </SheetTitle> }
+                    <SheetTitle>
+                        {document ? t('Service.Vault.FileForm.EditFile') : t('Service.Vault.FileForm.UploadNewFile')  }
+                    </SheetTitle>
                 </SheetHeader>
                 <FileInputDropZone className="absolute inset-0 p-xl pt-[5rem]">
                 <Form {...form}>
