@@ -15,6 +15,7 @@ import RelayModernEnvironment from 'relay-runtime/lib/store/RelayModernEnvironme
 import { networkFetch } from './fetchFn';
 import {
   buildQueryId,
+  fieldLogger,
   hasHydrationResponses,
   RELAY_WINDOW_KEY,
 } from './helpers';
@@ -69,8 +70,9 @@ export function createClientSideRelayEnvironment() {
   clientSideRelayEnvironment ||= new Environment({
     network: Network.create(curriedFetchFn, fetchOrSubscribe),
     store: new Store(new RecordSource()),
+    // @ts-ignore https://github.com/facebook/relay/issues/4666
+    relayFieldLogger: fieldLogger,
   });
-
   return clientSideRelayEnvironment;
 }
 

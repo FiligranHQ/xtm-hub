@@ -3,12 +3,7 @@ import { GraphQLError } from 'graphql/error/index.js';
 import crypto from 'node:crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
-import {
-  BaseUser,
-  MergeEvent,
-  MeUser,
-  Resolvers,
-} from '../../__generated__/resolvers-types';
+import { MergeEvent, Resolvers } from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
@@ -28,6 +23,7 @@ import {
   updateSelectedOrganization,
   updateUser,
 } from './users.domain';
+import { mapUserToGraphqlUser } from './users.helper';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   const hash = crypto
@@ -43,7 +39,7 @@ const resolvers: Resolvers = {
         throw new GraphQLError('You must be logged in', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
-      return context.user as unknown as MeUser;
+      return mapUserToGraphqlUser(context.user);
     },
     user: async (_, { id }, context) => {
       if (!context.user)
@@ -154,7 +150,7 @@ const resolvers: Resolvers = {
         .delete('*');
 
       await dispatch('User', 'delete', deletedUser);
-      return deletedUser as BaseUser;
+      return deletedUser as User;
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateSelectedOrganization(
@@ -182,7 +178,7 @@ const resolvers: Resolvers = {
 
       if (logged && validPassword(logged, password)) {
         req.session.user = logged;
-        return logged as unknown as MeUser;
+        return mapUserToGraphqlUser(logged);
       }
       return undefined;
     },

@@ -151,7 +151,7 @@ await initAuthPlatform(app);
 awxEndpoint(app);
 
 // Modified server startup
-if (!process.env.VITEST_MODE) {
+if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema
   await dbMigration.migrate();
   if (process.env.DATA_SEEDING) {

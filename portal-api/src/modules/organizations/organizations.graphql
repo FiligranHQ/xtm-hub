@@ -5,6 +5,7 @@ type Organization implements Node {
   id: ID!
   name: String!
   domains: [String!]
+  selected: Boolean
 }
 
 type MeOrganization implements Node {

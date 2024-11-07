@@ -49,7 +49,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   handleSubmit,
   validationSchema,
 }) => {
-  const currentRolesPortal = user?.roles_portal_id.map(
+  const currentRolesPortal = user?.roles_portal.map(
     (rolePortalData) => rolePortalData.id
   );
 

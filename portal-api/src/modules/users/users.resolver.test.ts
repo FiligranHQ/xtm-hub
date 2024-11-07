@@ -14,7 +14,6 @@ import {
 } from '../../portal.const';
 import { deleteUserById, loadUserBy } from './users.domain';
 import usersResolver from './users.resolver';
-import exp = require('node:constants');
 
 describe('Query resolver', () => {
   it('should fetch User', async () => {
@@ -158,7 +157,6 @@ describe('Mutation resolver', () => {
         contextAdminUser
       );
 
-      console.log(response);
       expect(response).toBeTruthy();
       it('should have update organisations, first_name and last_name', async () => {
         expect(response.first_name).toEqual('test_firstname');
@@ -166,8 +164,8 @@ describe('Mutation resolver', () => {
         expect(response.organizations.length).toEqual(3);
       });
       it('should not have update other fields', async () => {
-        expect(fallbackUser.roles_portal_id.length).toEqual(
-          response.roles_portal_id.length
+        expect(fallbackUser.roles_portal.length).toEqual(
+          response.roles_portal.length
         );
         expect(fallbackUser.email).toEqual(response.email);
       });

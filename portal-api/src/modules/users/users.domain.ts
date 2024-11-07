@@ -21,6 +21,7 @@ import {
   PLATFORM_ORGANIZATION_UUID,
 } from '../../portal.const';
 import { hashPassword } from '../../utils/hash-password.util';
+import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { extractId } from '../../utils/utils';
 import { updateUserOrg } from '../common/user-organization.helper';
@@ -77,17 +78,38 @@ export const loadUserBy = async (
       '=',
       'rolePortal_CapabilityPortal.capability_portal_id'
     )
+    .leftJoin(
+      'RolePortal as rolePortal',
+      'user_RolePortal.role_portal_id',
+      '=',
+      'rolePortal.id'
+    )
     // Inspiration from https://github.com/knex/knex/issues/882
     .select([
       'User.*',
       dbRaw(
-        "COALESCE( json_agg( DISTINCT to_jsonb(\"org\") || jsonb_build_object( 'selected', org.id = \"User\".selected_organization_id, '__typename', 'Organization' ) ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
+        formatRawAggObject({
+          columnName: 'org',
+          typename: 'Organization',
+          as: 'Organizations',
+          properties: {
+            selected: `org.id = "User".selected_organization_id`,
+          },
+        })
       ),
       dbRaw(
-        "COALESCE( json_agg(distinct jsonb_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal' )) FILTER (WHERE \"user_RolePortal\".id IS NOT NULL), '[]' ) as roles_portal_id"
+        formatRawAggObject({
+          columnName: 'rolePortal',
+          typename: 'RolePortal',
+          as: 'roles_portal',
+        })
       ),
       dbRaw(
-        'COALESCE( json_agg(DISTINCT to_jsonb(capability)) FILTER (WHERE "capability".id IS NOT NULL), \'[]\' ) as capabilities'
+        formatRawAggObject({
+          columnName: 'capability',
+          typename: 'CapabilityPortal',
+          as: 'capabilities',
+        })
       ),
     ])
     .groupBy(['User.id'])
@@ -139,10 +161,21 @@ export const loadUsers = async (
     .select([
       'User.*',
       dbRaw(
-        "COALESCE( json_agg(distinct jsonb_build_object('id', org.id, 'name', org.name, '__typename', 'Organization') ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
+        formatRawAggObject({
+          columnName: 'org',
+          typename: 'Organization',
+          as: 'Organizations',
+          properties: {
+            selected: `org.id = "User".selected_organization_id`,
+          },
+        })
       ),
       dbRaw(
-        'COALESCE( json_agg(distinct jsonb_build_object( \'id\', "capability"."id", \'name\', "capability"."name" )) FILTER (WHERE "capability".id IS NOT NULL), \'[]\' ) as capabilities'
+        formatRawAggObject({
+          columnName: 'capability',
+          typename: 'CapabilityPortal',
+          as: 'capabilities',
+        })
       ),
     ])
     .groupBy(['User.id'])
@@ -286,13 +319,30 @@ export const loadUserDetails = async (
       '=',
       'user_RolePortal.user_id'
     )
+    .leftJoin(
+      'RolePortal as rolePortal',
+      'user_RolePortal.role_portal_id',
+      '=',
+      'rolePortal.id'
+    )
     .select([
       'User.*',
       dbRaw(
-        "COALESCE( json_agg( DISTINCT to_jsonb(org) || jsonb_build_object( '__typename', 'Organization' ) ) FILTER (WHERE org.id IS NOT NULL), '[]' )::json AS organizations"
+        formatRawAggObject({
+          columnName: 'org',
+          typename: 'Organization',
+          as: 'Organizations',
+          properties: {
+            selected: `org.id = "User".selected_organization_id`,
+          },
+        })
       ),
       dbRaw(
-        "COALESCE( json_agg(distinct jsonb_build_object( 'id', \"user_RolePortal\".role_portal_id, '__typename', 'RolePortal' )) FILTER (WHERE \"user_RolePortal\".id IS NOT NULL), '[]' ) as roles_portal_id"
+        formatRawAggObject({
+          columnName: 'rolePortal',
+          typename: 'RolePortal',
+          as: 'roles_portal',
+        })
       ),
     ])
     .groupBy(['User.id'])

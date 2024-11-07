@@ -62,6 +62,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
 
   const [queryRefServiceList, loadQueryServiceList] =
     useQueryLoader<serviceQuery>(ServiceListQuery);
+
   useMountingLoader(loadQueryServiceList, {
     count: countServiceList,
     orderBy: orderByServiceList,
