@@ -4,7 +4,7 @@ import {
   DropdownMenuTrigger,
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
-import { FunctionComponent, ReactNode } from 'react';
+import React, { FunctionComponent, ReactNode, useState } from 'react';
 
 interface IconActionsProps {
   children: ReactNode;
@@ -15,8 +15,14 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
   children,
   icon,
 }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      open={menuOpen}
+      onOpenChange={setMenuOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -27,7 +33,14 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
       <DropdownMenuContent
         align="end"
         className="w-[160px]">
-        {children}
+        {React.Children.map(children, (child) =>
+          React.isValidElement(child)
+            ? React.cloneElement(
+                child as React.ReactElement<{ closeMenu: () => void }>,
+                { closeMenu }
+              )
+            : child
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

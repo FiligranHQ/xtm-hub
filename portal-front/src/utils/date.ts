@@ -1,4 +1,5 @@
-import {useFormatter} from 'next-intl';
+'use server';
+import { useFormatter } from 'next-intl';
 export const FormatDate = (date?: Date, withHours: boolean = true) => {
   if (!date) {
     return null;
@@ -6,9 +7,18 @@ export const FormatDate = (date?: Date, withHours: boolean = true) => {
 
   const dateObject = new Date(date);
   const format = useFormatter();
-  if(withHours) {
-    return format.dateTime(dateObject, {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})
+  if (withHours) {
+    return format.dateTime(dateObject, {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    });
   }
-  return format.dateTime(dateObject, {year: 'numeric', month: 'numeric', day: 'numeric'})
+  return format.dateTime(dateObject, {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  });
 };
-
