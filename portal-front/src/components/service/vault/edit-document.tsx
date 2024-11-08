@@ -3,10 +3,11 @@ import {
   newDocumentSchema,
   VaultNewFileFormSheet,
 } from '@/components/service/vault/vault-new-file-form-sheet';
+import { IconActionContext } from '@/components/ui/icon-actions';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
@@ -14,12 +15,10 @@ import { documentUpdateMutation } from '../../../../__generated__/documentUpdate
 
 interface EditDocumentProps {
   documentData: documentItem_fragment$data;
-  closeMenu?: () => void;
 }
 
 export const EditDocument: FunctionComponent<EditDocumentProps> = ({
   documentData,
-  closeMenu,
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
   const { toast } = useToast();
@@ -27,6 +26,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
   const [vaultUpdateDocumentMutation] = useMutation<documentUpdateMutation>(
     DocumentUpdateMutation
   );
+  const { setMenuOpen } = useContext(IconActionContext);
   const updateDocumentDescription = (
     values: z.infer<typeof newDocumentSchema>
   ) => {
@@ -37,9 +37,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
       },
       onCompleted: (response) => {
         setOpenSheet(false);
-        if (closeMenu) {
-          closeMenu();
-        }
+        setMenuOpen(false);
         toast({
           title: t('Utils.Success'),
           description:
