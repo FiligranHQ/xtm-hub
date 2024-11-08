@@ -31,6 +31,7 @@ export async function seed(knex) {
       {
         id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
         name: 'admin@filigran.io',
+        personal_space: true,
       },
     ])
     .onConflict('id')

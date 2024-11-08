@@ -20,6 +20,7 @@ export async function seed(knex) {
       {
         id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
         name: 'user15@test.fr',
+        personal_space: true,
       },
     ])
     .onConflict('id')

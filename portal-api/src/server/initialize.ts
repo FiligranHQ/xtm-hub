@@ -1,6 +1,7 @@
 import { dbTx, dbUnsecure } from '../../knexfile';
-import { Organization, User } from '../__generated__/resolvers-types';
+import { User } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
+import { OrganizationId } from '../model/kanel/public/Organization';
 import {
   ADMIN_UUID,
   CAPABILITY_BCK_MANAGE_COMMUNITIES,
@@ -23,9 +24,11 @@ import {
   ensureRoleExists,
   ensureRoleHasCapability,
   ensureServiceExists,
+  ensureUserOrganizationExist,
   ensureUserRoleExist,
   insertAdminUser,
   insertPlatformOrganization,
+  insertUserAdminOrganization,
   updateUserPassword,
 } from './initialize.helper';
 
@@ -50,14 +53,22 @@ const completeUserInitialization = async (email, data) => {
   const trx = await dbTx();
   try {
     // Check the platform organization
-    const adminOrganization = await dbUnsecure<Organization>('Organization')
-      .where({ id: PLATFORM_ORGANIZATION_UUID })
-      .first();
 
-    if (!adminOrganization) {
-      await insertPlatformOrganization(trx);
-    }
+    await insertPlatformOrganization(trx);
+    await insertUserAdminOrganization(trx);
+
     await insertAdminUser(trx, email, data);
+
+    await ensureUserOrganizationExist(
+      ADMIN_UUID,
+      PLATFORM_ORGANIZATION_UUID,
+      trx
+    );
+    await ensureUserOrganizationExist(
+      ADMIN_UUID,
+      ADMIN_UUID as unknown as OrganizationId,
+      trx
+    );
 
     await trx.commit();
   } catch (error) {
