@@ -1,22 +1,40 @@
+'use client';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
-import { FunctionComponent, ReactNode } from 'react';
+import React, {
+  createContext,
+  FunctionComponent,
+  ReactNode,
+  useState,
+} from 'react';
 
 interface IconActionsProps {
   children: ReactNode;
   icon: ReactNode;
 }
 
+interface IconActionContextProps {
+  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+export const IconActionContext = createContext<IconActionContextProps>({
+  setMenuOpen: () => {},
+});
 export const IconActions: FunctionComponent<IconActionsProps> = ({
   children,
   icon,
 }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      open={menuOpen}
+      onOpenChange={setMenuOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -27,7 +45,9 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
       <DropdownMenuContent
         align="end"
         className="w-[160px]">
-        {children}
+        <IconActionContext.Provider value={{ setMenuOpen }}>
+          {children}
+        </IconActionContext.Provider>
       </DropdownMenuContent>
     </DropdownMenu>
   );

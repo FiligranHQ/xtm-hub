@@ -5,8 +5,9 @@ import {
   S3Client,
   CreateBucketCommand,
   HeadBucketCommand,
+  GetObjectCommand
 } from '@aws-sdk/client-s3';
-
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 const getEndpoint = () => {
   // If using AWS S3, unset the endpoint to let the library choose the best endpoint
   if (config.get('minio.endpoint') === 's3.amazonaws.com') {
@@ -58,7 +59,20 @@ export const insertFileInMinio = async (fileParams) => {
     params: fileParams,
   });
   await s3Upload.done();
-  console.log('inserted file ', fileParams.Key + ' into Minio...');
-
+  console.log('[MinIO] inserted file ', fileParams.Key);
   return await fileKey;
 };
+
+export const downloadFileFromMinio = async(minioName: string, fileName: string) => {
+  const object = new GetObjectCommand({
+    Bucket: config.get('minio.bucketName'),
+    Key: minioName,
+    client: s3Client,
+    ResponseContentDisposition: `attachment; filename="${fileName}"`
+  });
+  const downloadUrl = await getSignedUrl(s3Client, object, { expiresIn: 3600 });
+
+  return downloadUrl
+}
+
+

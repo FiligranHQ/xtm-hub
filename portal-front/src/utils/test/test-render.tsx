@@ -1,6 +1,7 @@
 import { PortalContext } from '@/components/portal-context';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { FunctionComponent, ReactNode } from 'react';
 import { RelayEnvironmentProvider } from 'react-relay/hooks';
 import { EnvironmentConfig } from 'relay-runtime';
@@ -86,7 +87,7 @@ export const TestWrapper: FunctionComponent<TestWrapperProps> = ({
     <ProvidersWrapper
       relayConfig={relayConfig}
       me={generateMockUser(me)}>
-      {children}
+      <NextIntlClientProvider locale={'fr'}>{children}</NextIntlClientProvider>
     </ProvidersWrapper>
   );
 };
