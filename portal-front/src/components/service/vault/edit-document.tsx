@@ -63,7 +63,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
           variant="ghost"
           className="w-full justify-start"
           aria-label="Update document">
-          {t('Utils.Edit')}
+          {t('Utils.Update')}
         </Button>
       }
       handleSubmit={updateDocumentDescription}
