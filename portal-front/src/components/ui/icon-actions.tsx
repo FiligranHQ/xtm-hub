@@ -1,16 +1,28 @@
+'use client';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
-import React, { FunctionComponent, ReactNode, useState } from 'react';
+import React, {
+  createContext,
+  FunctionComponent,
+  ReactNode,
+  useState,
+} from 'react';
 
 interface IconActionsProps {
   children: ReactNode;
   icon: ReactNode;
 }
 
+interface IconActionContextProps {
+  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+export const IconActionContext = createContext<IconActionContextProps>({
+  setMenuOpen: () => {},
+});
 export const IconActions: FunctionComponent<IconActionsProps> = ({
   children,
   icon,
@@ -33,14 +45,9 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
       <DropdownMenuContent
         align="end"
         className="w-[160px]">
-        {React.Children.map(children, (child) =>
-          React.isValidElement(child)
-            ? React.cloneElement(
-                child as React.ReactElement<{ closeMenu: () => void }>,
-                { closeMenu }
-              )
-            : child
-        )}
+        <IconActionContext.Provider value={{ setMenuOpen }}>
+          {children}
+        </IconActionContext.Provider>
       </DropdownMenuContent>
     </DropdownMenu>
   );

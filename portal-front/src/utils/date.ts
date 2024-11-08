@@ -1,4 +1,3 @@
-'use server';
 import { useFormatter } from 'next-intl';
 export const FormatDate = (date?: Date, withHours: boolean = true) => {
   if (!date) {
