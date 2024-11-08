@@ -1,4 +1,5 @@
 import { dbUnsecure } from '../../knexfile';
+import portalConfig from '../config';
 import Organization, {
   OrganizationId,
 } from '../model/kanel/public/Organization';
@@ -8,6 +9,7 @@ import Service from '../model/kanel/public/Service';
 import ServiceLink from '../model/kanel/public/ServiceLink';
 import ServicePrice from '../model/kanel/public/ServicePrice';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
+import UserOrganization from '../model/kanel/public/UserOrganization';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 
 export const ensureServiceExists = async (service) => {
@@ -50,8 +52,7 @@ export const ensureCapabilityExists = async (capability, trx) => {
 
 export const ensureUserRoleExist = async (user_id, role_portal_id) => {
   const userRole = await dbUnsecure('User_RolePortal')
-    .where({ user_id })
-    .where({ role_portal_id })
+    .where({ user_id, role_portal_id })
     .first();
   if (!userRole) {
     await dbUnsecure('User_RolePortal').insert({ user_id, role_portal_id });
@@ -69,8 +70,7 @@ export const ensureRoleHasCapability = async (role, capability, trx) => {
   const roleCapability = await dbUnsecure<RolePortalCapabilityPortal>(
     'RolePortal_CapabilityPortal'
   )
-    .where({ capability_portal_id: capability.id })
-    .where({ role_portal_id: role.id })
+    .where({ capability_portal_id: capability.id, role_portal_id: role.id })
     .first();
 
   if (!roleCapability) {
@@ -84,19 +84,39 @@ export const ensureRoleHasCapability = async (role, capability, trx) => {
 };
 
 export const insertPlatformOrganization = async (trx) => {
-  await dbUnsecure<Organization>('Organization')
-    .insert({
-      id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
-      name: 'Internal',
-    })
-    .transacting(trx);
+  const adminOrganization = await dbUnsecure<Organization>('Organization')
+    .where({ id: PLATFORM_ORGANIZATION_UUID })
+    .first();
+  if (!adminOrganization) {
+    await dbUnsecure<Organization>('Organization')
+      .insert({
+        id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
+        name: 'Internal',
+      })
+      .transacting(trx);
+  }
+};
+
+export const insertUserAdminOrganization = async (trx) => {
+  const adminOrganization = await dbUnsecure<Organization>('Organization')
+    .where({ id: ADMIN_UUID as unknown as OrganizationId })
+    .first();
+  if (!adminOrganization) {
+    await dbUnsecure<Organization>('Organization')
+      .insert({
+        id: ADMIN_UUID as unknown as OrganizationId,
+        name: portalConfig.admin.email,
+        personal_space: true,
+      })
+      .transacting(trx);
+  }
 };
 
 export const insertAdminUser = async (trx, email, data) => {
   const userData = {
     id: ADMIN_UUID,
     email,
-    organization_id: PLATFORM_ORGANIZATION_UUID,
+    selected_organization_id: PLATFORM_ORGANIZATION_UUID,
     ...data,
   };
   await dbUnsecure<UserInitializer>('User').insert(userData).transacting(trx);
@@ -107,4 +127,21 @@ export const updateUserPassword = async (data) => {
     .where({ id: ADMIN_UUID as UserId })
     .update(data)
     .returning('*');
+};
+
+export const ensureUserOrganizationExist = async (
+  user_id: UserId,
+  organization_id: OrganizationId,
+  trx
+) => {
+  const userOrganization = await dbUnsecure<UserOrganization>(
+    'User_Organization'
+  )
+    .where({ user_id, organization_id })
+    .first();
+  if (!userOrganization) {
+    await dbUnsecure('User_Organization')
+      .insert({ user_id, organization_id })
+      .transacting(trx);
+  }
 };

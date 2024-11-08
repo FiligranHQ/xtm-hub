@@ -32,7 +32,8 @@ export type DatabaseType =
   | 'MalwareAnalysis'
   | 'UserService'
   | 'Document'
-  | 'User_Organization';
+  | 'User_Organization'
+  | 'UserOrganization_Capability';
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {

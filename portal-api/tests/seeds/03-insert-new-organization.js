@@ -52,10 +52,12 @@ export async function seed(knex) {
       {
         id: '015c0488-848d-4c89-95e3-8a243971f594',
         name: 'admin@thales.com',
+        personal_space: true,
       },
       {
         id: '154006e2-f24b-42da-b39c-e0fb17bead00',
         name: 'user@thales.com',
+        personal_space: true,
       },
     ])
     .onConflict('id')
