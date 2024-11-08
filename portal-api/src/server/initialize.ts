@@ -27,7 +27,7 @@ import {
   ROLE_ADMIN_ORGA,
   ROLE_USER,
 } from '../portal.const';
-import { isStorageAlive } from '../modules/services/file/file-storage';
+import { isStorageAlive } from '../modules/services/document/document-storage';
 
 const initAdminUser = async () => {
   const { email, password } = portalConfig.admin;

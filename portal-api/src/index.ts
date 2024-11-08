@@ -162,7 +162,7 @@ if (!process.env.VITEST_MODE) {
     '[Migration] Database version is now ' + (await dbMigration.version())
   );
   await minioInit();
-  console.log('[MINIO] Bucket ready');
+  console.log('[MinIO] Bucket ready');
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: portalConfig.port }, resolve)
   );

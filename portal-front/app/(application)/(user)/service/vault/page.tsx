@@ -1,10 +1,10 @@
 import * as React from "react";
-import {VaultAdministration} from "@/components/service/vault/vault-administration";
+import PageLoader from "./page-loader";
 interface PageProps {
 }
 
 const Page: React.FunctionComponent<PageProps> = ({}) => {
-    return <VaultAdministration/>
+    return <PageLoader/>
 };
 
 export default Page;

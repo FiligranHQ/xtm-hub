@@ -23,6 +23,8 @@ export default interface Document {
   active: boolean | null;
 
   created_at: Date;
+
+  download_number: number | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -45,6 +47,9 @@ export interface DocumentInitializer {
 
   /** Default value: CURRENT_TIMESTAMP */
   created_at?: Date;
+
+  /** Default value: 0 */
+  download_number?: number | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -64,4 +69,6 @@ export interface DocumentMutator {
   active?: boolean | null;
 
   created_at?: Date;
+
+  download_number?: number | null;
 }

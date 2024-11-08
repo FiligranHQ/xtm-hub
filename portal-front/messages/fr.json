@@ -3,12 +3,15 @@
     "Cancel": "Annuler",
     "Validate": "Valider",
     "Create": "Créer",
+    "Update": "Editer",
     "Continue": "Continuer",
     "Loading": "Chargement...",
     "Success": "Succès",
     "Error": "Erreur",
     "Reset": "Effacer",
+    "Modified": "Modifié",
     "Inserted": "L'élément a été inséré",
+    "OpenMenu": "Ouvrir le menu",
     "Form": {
       "ResetFile": "Supprimer l'actuel fichier sélectionné."
     }
@@ -31,6 +34,7 @@
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
     "Vault": {
+      "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault",
       "File": "Fichier à transmettre",
       "DropFile": "Lâchez le fichier ici",
@@ -40,11 +44,18 @@
         "AddFile": "Ajouter un fichier",
         "File": "Fichier",
         "UploadNewFile": "Ajout d'un nouveau fichier dans le Vault",
+        "EditFile": "Editer le fichier",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est une courte description du fichier.",
         "FileAlreadyExists": "Ce fichier existe déjà",
         "FileExistsDialog": "Ce fichier existe déjà. Ce fichier écrasera l'ancien fichier. Êtes-vous sûr de vouloir continuer ?",
         "AlreadyExists": "Ce fichier existe déjà. L'ancien sera écrasé."
+      },
+      "FileTab": {
+        "FileName": "Nom de fichier",
+        "UploadDate": "Date d'ajout",
+        "Description": "Description",
+        "Search": "Chercher par nom de fichier..."
       }
     }
   },

@@ -1,0 +1,45 @@
+type Document implements Node {
+  id: ID!
+  uploader_id: String!
+  service_id: String!
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  download_number: Int
+}
+
+type Mutation {
+  addDocument(document: Upload, description: String): Document! @auth
+  editDocument(documentId: ID, newDescription: String): Document! @auth
+}
+
+enum DocumentOrdering {
+  file_name
+  created_at
+  description
+}
+
+type DocumentEdge {
+  cursor: String!
+  node: Document!
+}
+
+type DocumentConnection {
+  totalCount: Int!
+  edges: [DocumentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Query {
+  documentExists(documentName: String): Boolean @auth
+  documents(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    filter: String
+  ): DocumentConnection! @auth
+  document(documentId: ID): String @auth
+}
