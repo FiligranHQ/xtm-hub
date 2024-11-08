@@ -11,6 +11,8 @@ export default interface Organization {
   name: string | null;
 
   domains: string[] | null;
+
+  personal_space: boolean | null;
 }
 
 /** Represents the initializer for the table public.Organization */
@@ -20,6 +22,9 @@ export interface OrganizationInitializer {
   name?: string | null;
 
   domains?: string[] | null;
+
+  /** Default value: false */
+  personal_space?: boolean | null;
 }
 
 /** Represents the mutator for the table public.Organization */
@@ -29,4 +34,6 @@ export interface OrganizationMutator {
   name?: string | null;
 
   domains?: string[] | null;
+
+  personal_space?: boolean | null;
 }

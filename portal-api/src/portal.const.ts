@@ -2,13 +2,14 @@ import { Restriction } from './__generated__/resolvers-types';
 import CapabilityPortal, {
   CapabilityPortalId,
 } from './model/kanel/public/CapabilityPortal';
+import { OrganizationId } from './model/kanel/public/Organization';
 import RolePortal, { RolePortalId } from './model/kanel/public/RolePortal';
 import { UserId } from './model/kanel/public/User';
 
 export const ADMIN_UUID: UserId =
   'ba091095-418f-4b4f-b150-6c9295e232c3' as UserId;
-export const PLATFORM_ORGANIZATION_UUID =
-  'ba091095-418f-4b4f-b150-6c9295e232c4';
+export const PLATFORM_ORGANIZATION_UUID: OrganizationId =
+  'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId;
 export const CAPABILITY_BYPASS: CapabilityPortal = {
   id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09' as CapabilityPortalId,
   name: Restriction.Bypass,
