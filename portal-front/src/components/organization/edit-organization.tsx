@@ -3,7 +3,7 @@ import { organizationFormSchema } from '@/components/organization/organization-f
 import { OrganizationEditMutation } from '@/components/organization/organization.graphql';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { organizationEditMutation } from '../../../__generated__/organizationEditMutation.graphql';
@@ -11,15 +11,23 @@ import { organizationItem_fragment$data } from '../../../__generated__/organizat
 
 interface EditOrganizationProps {
   organization: organizationItem_fragment$data;
+  closeMenu?: () => void;
 }
 
 export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   organization,
+  closeMenu,
 }) => {
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
-  const [openSheet, setOpenSheet] = useState(false);
+  const [openSheet, setOpenSheet] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!openSheet && openSheet !== null && closeMenu) {
+      closeMenu();
+    }
+  }, [openSheet]);
 
   const handleSubmit = (values: z.infer<typeof organizationFormSchema>) => {
     commitOrganizationEditionMutation({
@@ -44,7 +52,7 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   };
   return (
     <OrganizationFormSheet
-      open={openSheet}
+      open={openSheet ?? false}
       setOpen={setOpenSheet}
       organization={organization}
       trigger={
