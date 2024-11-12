@@ -102,7 +102,12 @@ export const loadSubscriptionsByService = async (
       'Subscription.service_id'
     )
     .leftJoin('User as user', 'user.id', '=', 'userService.user_id')
-    .leftJoin('Organization as org', 'org.id', '=', 'user.organization_id')
+    .leftJoin(
+      'Organization as org',
+      'org.id',
+      '=',
+      'user.selected_organization_id'
+    )
     .select(
       'Subscription.*',
       'service.type as service_type',

@@ -6,6 +6,7 @@ export const MeContextFragment = graphql`
     email
     first_name
     last_name
+    selected_organization_id @required(action: THROW)
     capabilities @required(action: THROW) {
       name
     }
@@ -16,7 +17,6 @@ export const MeContextFragment = graphql`
       id
       name
       personal_space
-      selected @required(action: THROW)
     }
   }
 `;

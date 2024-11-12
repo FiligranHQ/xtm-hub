@@ -1,3 +1,4 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { dbUnsecure } from '../../../knexfile';
 import {
@@ -100,6 +101,10 @@ export const mapUserToGraphqlUser = (
 ): GraphqlUser => {
   return {
     ...user,
+    selected_organization_id: toGlobalId(
+      'Organization',
+      user.selected_organization_id
+    ),
     capabilities:
       'capabilities' in user ? (user.capabilities as Capability[]) : null,
   };

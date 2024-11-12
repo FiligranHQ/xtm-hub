@@ -54,7 +54,7 @@ describe('User mutation resolver', () => {
             input: {
               email: 'admin@filigran.io',
               password: 'admin',
-              roles_id: [toGlobalId('RolePörtal', ROLE_USER.id)],
+              roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
             } as AddUserInput,
           },
           contextAdminUser
@@ -76,7 +76,7 @@ describe('User mutation resolver', () => {
           input: {
             email: testMail,
             password: 'admin',
-            roles_id: [toGlobalId('RolePörtal', ROLE_USER.id)],
+            roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
           } as AddUserInput,
         },
         contextAdminUser
@@ -102,7 +102,7 @@ describe('User mutation resolver', () => {
           input: {
             email: testMail,
             password: 'admin',
-            roles_id: [toGlobalId('RolePörtal', ROLE_USER.id)],
+            roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
             organizations: [
               toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
             ],

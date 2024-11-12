@@ -159,18 +159,10 @@ const resolvers: Resolvers = {
         context.user.id,
         fromGlobalId(organization_id).id
       );
-      const user = await loadUserBy({
-        email: updatedUser.email,
-      });
-      context.req.session.reload(async function (err) {
-        context.req.session.user = user;
-        context.req.session.save();
-        if (err) {
-          console.error('Context error', err);
-        }
-      });
+      context.req.session.user.selected_organization_id =
+        updatedUser.selected_organization_id;
 
-      return !!updatedUser;
+      return mapUserToGraphqlUser(updatedUser);
     },
     // Login / logout
     login: async (_, { email, password }, context) => {

@@ -8,6 +8,7 @@ import {
 
 export interface Portal {
   me?: meContext_fragment$data | null;
+  isPersonalSpace?: boolean;
   hasCapability?: (capability: Restriction) => boolean;
 }
 
@@ -22,6 +23,9 @@ export const generatePortalContext = (
 ): Portal => {
   return {
     me,
+    isPersonalSpace: me?.organizations?.some(
+      (org) => org.personal_space && org.id === me?.selected_organization_id
+    ),
     hasCapability: (capability: Restriction) => {
       const userCapabilities = (me?.capabilities ?? []).map((c) => c?.name);
       return (

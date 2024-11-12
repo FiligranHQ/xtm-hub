@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { CityIcon, UnfoldMoreIcon } from 'filigran-icon';
 import { Popover, PopoverContent, PopoverTrigger } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
-import { FunctionComponent, useCallback, useContext, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { useWindowSize } from 'usehooks-ts';
 import { organizationSwitcherMutation } from '../../../__generated__/organizationSwitcherMutation.graphql';
@@ -31,7 +31,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
     );
 
   const [openPopover, setOpenPopover] = useState(false);
-  const handleSelectOrganisation = useCallback((organization_id: string) => {
+  const handleSelectOrganisation = (organization_id: string) => {
     commitOrganizationSwitcherMutation({
       variables: {
         organization_id,
@@ -44,14 +44,14 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
       },
     });
     setOpenPopover(false);
-  }, []);
+  };
 
   const parsedOrganization = me.organizations.map((org) => ({
     ...org,
     name: org.name === me.email ? 'Personal space' : org.name,
   }));
   const selectedOrganisation = parsedOrganization.find(
-    ({ selected }) => selected
+    ({ id }) => me.selected_organization_id === id
   );
 
   return (
@@ -92,7 +92,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
                 onClick={() => handleSelectOrganisation(group.id)}
                 className={cn(
                   'flex items-center w-full justify-between txt-sub-content rounded-none',
-                  group.selected &&
+                  me.selected_organization_id === group.id &&
                     'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
                 )}>
                 <CityIcon className="h-4 w-4" /> {group.name}
