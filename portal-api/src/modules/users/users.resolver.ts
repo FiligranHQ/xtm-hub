@@ -162,7 +162,7 @@ const resolvers: Resolvers = {
       context.req.session.user.selected_organization_id =
         updatedUser.selected_organization_id;
 
-      return mapUserToGraphqlUser(updatedUser);
+      return updatedUser;
     },
     // Login / logout
     login: async (_, { email, password }, context) => {

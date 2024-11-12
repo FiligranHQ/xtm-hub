@@ -40,7 +40,8 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
             key={subscription?.id}
             value={subscription.id ?? ''}
             className=" data-[state=active]:bg-page-background h-10">
-            {subscription.id} (billing: {subscription?.billing} %)
+            {subscription.organization_name} (billing: {subscription?.billing}{' '}
+            %)
             {subscription?.billing === 0 && (
               <AlertDialogComponent
                 actionButtonText="Remove"
@@ -58,8 +59,8 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
                   onRemoveOrganization(subscription?.id ?? '')
                 }>
                 Are you sure you want to delete this organization{' '}
-                {subscription.id} from this service? This action cannot be
-                undone.
+                {subscription.organization_name} from this service? This action
+                cannot be undone.
               </AlertDialogComponent>
             )}
           </TabsTrigger>

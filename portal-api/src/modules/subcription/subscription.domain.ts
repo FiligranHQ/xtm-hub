@@ -87,6 +87,7 @@ export const loadSubscriptionsByService = async (
       )
     )
     .groupBy(['User_Service.id']);
+
   const query = db<Subscription>(context, 'Subscription')
     .where('Subscription.service_id', '=', service_id)
     .leftJoin(
@@ -113,9 +114,10 @@ export const loadSubscriptionsByService = async (
       'service.type as service_type',
       dbRaw(
         `CASE WHEN COUNT ("userService".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "userService".id,'service_capability',"userService".service_capabilities ,'user', json_build_object('id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, 'organization', json_build_object('id', "org".id, 'name', "org".name, '__typename', 'Organization'), '__typename', 'User'), '__typename', 'User_Service'))::json) END AS user_service`
-      )
+      ),
+      'org.name as organization_name'
     )
-    .groupBy(['Subscription.id', 'service.type'])
+    .groupBy(['Subscription.id', 'service.type', 'org.name'])
     .orderBy('Subscription.billing', 'desc');
 
   const result = await query;
