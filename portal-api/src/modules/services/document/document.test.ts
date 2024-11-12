@@ -1,5 +1,11 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
+import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { contextAdminUser } from '../../../../tests/tests.const';
+import { DocumentMutator } from '../../../model/kanel/public/Document';
 import { ServiceId } from '../../../model/kanel/public/Service';
+import * as FileStorage from './document-storage';
+import { insertDocument, sendFileToS3 } from './document.domain';
 import {
   checkDocumentExists,
   createDocument,
@@ -9,13 +15,7 @@ import {
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
 } from './document.helper';
-import { insertDocument, sendFileToS3 } from './document.domain';
-import { toGlobalId } from 'graphql-relay/node/node.js';
-import { Readable } from 'stream';
-import * as FileStorage from './document-storage';
-import { contextAdminUser } from '../../../../tests/tests.const';
 import documentResolver from './document.resolver';
-import { DocumentMutator } from '../../../model/kanel/public/Document';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {

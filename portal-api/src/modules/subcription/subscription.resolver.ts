@@ -3,8 +3,6 @@ import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
-import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
-import { AWXAction } from '../../managers/awx/awx.model';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceId } from '../../model/kanel/public/Service';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
@@ -22,7 +20,6 @@ import {
 import {
   loadSubscriptionBy,
   loadUnsecureSubscriptionBy,
-  loadUsersBySubscriptionForAWX,
 } from './subscription.helper';
 
 const resolvers: Resolvers = {
@@ -122,7 +119,7 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
-    addSubscriptionInCommunity: async (
+    addSubscriptionInService: async (
       _,
       { service_id, organization_id },
       context
@@ -173,17 +170,6 @@ const resolvers: Resolvers = {
           fromGlobalId(service_id).id as ServiceId
         );
 
-        await launchAWXWorkflow({
-          type: AWXAction.COMMUNITY_ADD_USERS,
-          input: {
-            id: fromGlobalId(service_id).id,
-            users: userServiceData.map(({ user }) => ({
-              email: user.email,
-              admin: false,
-            })),
-          },
-        });
-
         await trx.commit();
         return userServiceData;
       } catch (error) {
@@ -226,8 +212,6 @@ const resolvers: Resolvers = {
         'id',
         fromGlobalId(subscription_id).id
       );
-      //Need to save users in variable before deleting subscription
-      const users = await loadUsersBySubscriptionForAWX(subscription.id);
 
       if (subscription.billing !== 0) {
         throw new Error('You can not delete a subscription with billing.');
@@ -238,14 +222,6 @@ const resolvers: Resolvers = {
       )
         .where({ id: fromGlobalId(subscription_id).id })
         .delete('*');
-
-      await launchAWXWorkflow({
-        type: AWXAction.COMMUNITY_REMOVE_USERS,
-        input: {
-          id: subscription.service_id,
-          users,
-        },
-      });
       return deletedSubscription;
     },
   },

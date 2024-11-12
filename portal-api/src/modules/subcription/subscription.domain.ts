@@ -125,7 +125,7 @@ export const loadSubscriptionsByService = async (
     (capability) => capability?.name === 'BYPASS'
   );
   // In case the service is a community service we return all the organization
-  if (result[0]?.service_type === 'COMMUNITY' || isAdmin) {
+  if (isAdmin) {
     return result;
   }
 

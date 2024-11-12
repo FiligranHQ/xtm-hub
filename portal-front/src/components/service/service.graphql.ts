@@ -20,26 +20,6 @@ export const ServiceById = graphql`
   }
 `;
 
-export const ServiceCommunityListCreateMutation = graphql`
-  mutation serviceCommunityListMutation(
-    $input: AddServiceCommunityInput
-    $connections: [ID!]!
-  ) {
-    addServiceCommunity(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "ServiceEdge") {
-      ...serviceList_fragment
-    }
-  }
-`;
-
-export const ServiceCommunityAcceptMutation = graphql`
-  mutation serviceCommunityAcceptMutation($input: ServiceCommunityAcceptInput) {
-    acceptCommunity(input: $input) {
-      id
-    }
-  }
-`;
-
 export const serviceListFragment = graphql`
   fragment serviceList_fragment on Service {
     id
@@ -115,46 +95,6 @@ export const servicesListFragment = graphql`
     }
   }
 `;
-export const communitiesListFragment = graphql`
-  fragment serviceCommunityList_services on Query
-  @refetchable(queryName: "CommunitiesPaginationQuery") {
-    communities(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          id
-          name
-          description
-          provider
-          type
-          subscription_service_type
-          creation_status
-          organization {
-            id
-            name
-          }
-          subscription {
-            id
-            status
-            organization {
-              name
-              id
-            }
-            start_date
-            end_date
-            justification
-          }
-        }
-      }
-    }
-  }
-`;
 
 export const ServiceListQuery = graphql`
   query serviceQuery(
@@ -219,15 +159,5 @@ export const ServiceUserSlugQuery = graphql`
     $orderMode: OrderingMode!
   ) {
     ...serviceUser
-  }
-`;
-export const ServiceCommunityListQuery = graphql`
-  query serviceCommunitiesQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: ServiceOrdering!
-    $orderMode: OrderingMode!
-  ) {
-    ...serviceCommunityList_services
   }
 `;

@@ -1,5 +1,5 @@
 import { getOrganizations } from '@/components/organization/organization.service';
-import { AddSubscriptionInCommunityMutation } from '@/components/subcription/subscription.graphql';
+import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -28,7 +28,7 @@ import { FunctionComponent, ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
-import { subscriptionInCommunityCreateMutation } from '../../../../__generated__/subscriptionInCommunityCreateMutation.graphql';
+import { subscriptionInServiceCreateMutation } from '../../../../__generated__/subscriptionInServiceCreateMutation.graphql';
 
 interface ServiceSlugAddOrgaFormSheetProps {
   open: boolean;
@@ -52,8 +52,8 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
   const [organizations] = getOrganizations();
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
-    useMutation<subscriptionInCommunityCreateMutation>(
-      AddSubscriptionInCommunityMutation
+    useMutation<subscriptionInServiceCreateMutation>(
+      AddSubscriptionInServiceMutation
     );
 
   const onSubmit = (inputValue: z.infer<ZodSchema>) => {

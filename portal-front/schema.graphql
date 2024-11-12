@@ -40,7 +40,6 @@ type Query {
   document(documentId: ID): String
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceById(service_id: ID): Service
-  communities(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   settings: Settings!
   subscription(id: ID!): Subscription
   subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
@@ -68,11 +67,9 @@ type Mutation {
   addServicePrice(input: AddServicePriceInput): ServicePrice
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription
-  addServiceCommunity(input: AddServiceCommunityInput): Service
-  acceptCommunity(input: ServiceCommunityAcceptInput): [Subscription]
   deleteService(id: ID!): Service
   addSubscription(service_id: String): Service
-  addSubscriptionInCommunity(service_id: String, organization_id: ID): [UserService]
+  addSubscriptionInService(service_id: String, organization_id: ID): [UserService]
   editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
   deleteSubscription(subscription_id: ID!): Subscription
   editServiceCapability(input: EditServiceCapabilityInput): UserService
@@ -182,21 +179,6 @@ input AddServiceInput {
   price: Int
   organization_id: String
   url: String
-}
-
-input AddServiceCommunityInput {
-  community_name: String
-  community_description: String
-  justification: String
-  price: Int
-  fee_type: String
-  organizations_id: [String]
-  billing_manager: String
-}
-
-input ServiceCommunityAcceptInput {
-  serviceId: String
-  organizationsId: [String]
 }
 
 type ServiceSubscription {

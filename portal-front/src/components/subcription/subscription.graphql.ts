@@ -143,13 +143,13 @@ export const SubscriptionDeleteMutation = graphql`
   }
 `;
 
-export const AddSubscriptionInCommunityMutation = graphql`
-  mutation subscriptionInCommunityCreateMutation(
+export const AddSubscriptionInServiceMutation = graphql`
+  mutation subscriptionInServiceCreateMutation(
     $service_id: String!
     $organization_id: ID
     $connections: [ID!]!
   ) {
-    addSubscriptionInCommunity(
+    addSubscriptionInService(
       service_id: $service_id
       organization_id: $organization_id
     ) @prependNode(connections: $connections, edgeTypeName: "UserServiceEdge") {

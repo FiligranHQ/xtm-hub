@@ -114,7 +114,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         capacityRestriction={[
           RESTRICTION.CAPABILITY_BYPASS,
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-          RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES,
         ]}>
         <div className="flex justify-end pb-s">
           <ServiceSlugFormSheet

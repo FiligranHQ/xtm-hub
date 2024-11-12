@@ -157,16 +157,12 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   const useGrantedBCK_MANAGE_SERVICES = useGranted(
     RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES
   );
-  const useGrantedBCK_MANAGE_COMMUNITIES = useGranted(
-    RESTRICTION.CAPABILITY_BCK_MANAGE_COMMUNITIES
-  );
 
   if (
     useGrantedBYPASS ||
     useGrantedFRT_MANAGE_USER ||
     useGrantedFRT_MANAGE_SETTINGS ||
-    useGrantedBCK_MANAGE_SERVICES ||
-    useGrantedBCK_MANAGE_COMMUNITIES
+    useGrantedBCK_MANAGE_SERVICES
   ) {
     return (
       <>

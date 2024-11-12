@@ -34,10 +34,8 @@ input EditOrganizationInput {
 }
 
 type Mutation {
-  addOrganization(name: String!): Organization
-    @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
+  addOrganization(name: String!): Organization @auth(requires: [BYPASS])
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-    @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
-  deleteOrganization(id: ID!): Organization
-    @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
+    @auth(requires: [BYPASS])
+  deleteOrganization(id: ID!): Organization @auth(requires: [BYPASS])
 }
