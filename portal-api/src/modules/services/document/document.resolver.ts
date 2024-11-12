@@ -1,4 +1,8 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Resolvers } from '../../../__generated__/resolvers-types';
+import Document, { DocumentId } from '../../../model/kanel/public/Document';
+import { ServiceId } from '../../../model/kanel/public/Service';
+import { UserId } from '../../../model/kanel/public/User';
 import {
   deleteDocument,
   downloadDocument,
@@ -7,12 +11,7 @@ import {
   sendFileToS3,
   updateDocument,
 } from './document.domain';
-import { UserId } from '../../../model/kanel/public/User';
-import { ServiceId } from '../../../model/kanel/public/Service';
-import Document from '../../../model/kanel/public/Document';
 import { checkDocumentExists, normalizeDocumentName } from './document.helper';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { DocumentId } from '../../../model/kanel/public/Document';
 
 const resolvers: Resolvers = {
   Mutation: {

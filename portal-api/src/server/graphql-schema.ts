@@ -3,18 +3,18 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { glob } from 'glob';
 import fs from 'node:fs';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
+import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
+import vaultResolver from '../modules/services/document/document.resolver';
+import servicePriceResolver from '../modules/services/instances/service-price/service-price.resolver';
 import servicesResolver from '../modules/services/services.resolver';
+import settingsResolver from '../modules/settings/settings.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
+import trackingResolver from '../modules/tracking/tracking.resolver';
 import serviceCapabilityResolver from '../modules/user_service/service-capability/service-capability.resolver';
 import userServiceResolver from '../modules/user_service/user_service.resolver';
 import usersResolver from '../modules/users/users.resolver';
 import nodesResolver from '../nodes/nodes.resolver';
 import { authDirectiveTransformer } from '../security/directive-auth';
-import settingsResolver from '../modules/settings/settings.resolver';
-import trackingResolver from '../modules/tracking/tracking.resolver';
-import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
-import servicePriceResolver from '../modules/services/instances/service-price/service-price.resolver';
-import vaultResolver from '../modules/services/document/document.resolver';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);

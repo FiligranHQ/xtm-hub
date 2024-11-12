@@ -3,9 +3,9 @@
  * @returns { Promise<void> }
  */
 export async function up(knex) {
-    await knex.schema.table('Document', function (table) {
-        table.integer('download_number').default(0);
-    });
+  await knex.schema.table('Document', function (table) {
+    table.integer('download_number').default(0);
+  });
 }
 
 /**
@@ -13,8 +13,7 @@ export async function up(knex) {
  * @returns { Promise<void> }
  */
 export async function down(knex) {
-    await knex.schema.table('Document', function (table) {
-        table.dropColumn('download_number');
-    });
-
+  await knex.schema.table('Document', function (table) {
+    table.dropColumn('download_number');
+  });
 }

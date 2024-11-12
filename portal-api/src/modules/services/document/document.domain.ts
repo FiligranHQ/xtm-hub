@@ -1,23 +1,23 @@
+import config from 'config';
+import { db, dbUnsecure, paginate } from '../../../../knexfile';
+import { DocumentConnection } from '../../../__generated__/resolvers-types';
+import Document, {
+  DocumentId,
+  DocumentMutator,
+} from '../../../model/kanel/public/Document';
+import { PortalContext } from '../../../model/portal-context';
 import {
   deleteFileToMinio,
   downloadFileFromMinio,
   insertFileInMinio,
   UploadedFile,
 } from './document-storage';
-import config from 'config';
-import Document, {
-  DocumentId,
-  DocumentMutator,
-} from '../../../model/kanel/public/Document';
-import { db, dbUnsecure, paginate } from '../../../../knexfile';
 import {
   createDocument,
   deleteDocumentBy,
   getDocumentName,
   loadUnsecureDocumentsBy,
 } from './document.helper';
-import { PortalContext } from '../../../model/portal-context';
-import { DocumentConnection } from '../../../__generated__/resolvers-types';
 
 export const sendFileToS3 = async (file: UploadedFile, userId: string) => {
   const fullMetadata = {

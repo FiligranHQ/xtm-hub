@@ -40,30 +40,12 @@ input AddServiceInput {
   url: String
 }
 
-input AddServiceCommunityInput {
-  community_name: String
-  community_description: String
-  justification: String
-  price: Int
-  fee_type: String
-  organizations_id: [String]
-  billing_manager: String
-}
-
-input ServiceCommunityAcceptInput {
-  serviceId: String
-  organizationsId: [String]
-}
 type Mutation {
   editService(id: ID!, name: String!): Service
-    @auth(requires: [BCK_MANAGE_COMMUNITIES])
+    @auth(requires: [BCK_MANAGE_SERVICES])
   addService(input: AddServiceInput): Subscription
-    @auth(requires: [BCK_MANAGE_COMMUNITIES])
-  addServiceCommunity(input: AddServiceCommunityInput): Service
-    @auth(requires: [BCK_MANAGE_COMMUNITIES])
-  acceptCommunity(input: ServiceCommunityAcceptInput): [Subscription]
-    @auth(requires: [BCK_MANAGE_COMMUNITIES])
-  deleteService(id: ID!): Service @auth(requires: [BCK_MANAGE_COMMUNITIES])
+    @auth(requires: [BCK_MANAGE_SERVICES])
+  deleteService(id: ID!): Service @auth(requires: [BCK_MANAGE_SERVICES])
 }
 
 type Query {
@@ -73,23 +55,10 @@ type Query {
     orderBy: ServiceOrdering!
     orderMode: OrderingMode!
   ): ServiceConnection!
-    @auth(
-      requires: [
-        FRT_ACCESS_SERVICES
-        BCK_MANAGE_SERVICES
-        BCK_MANAGE_COMMUNITIES
-      ]
-    )
+    @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_SERVICES])
   serviceById(service_id: ID): Service
     @auth
     @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
-  communities(
-    first: Int!
-    after: ID
-    orderBy: ServiceOrdering!
-    orderMode: OrderingMode!
-  ): ServiceConnection!
-    @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_COMMUNITIES])
 }
 
 type ServiceSubscription {

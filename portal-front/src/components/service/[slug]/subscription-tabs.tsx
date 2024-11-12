@@ -1,10 +1,13 @@
+'use client';
+import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import { SubscriptionTabContent } from '@/components/service/[slug]/subscription-tab-content';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { RESTRICTION } from '@/utils/constant';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
 import { Tabs, TabsList, TabsTrigger } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useContext } from 'react';
 import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
 import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 
@@ -32,6 +35,8 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
   setCurrentUser,
   loadQuery,
 }) => {
+  const { hasCapability } = useContext<Portal>(portalContext);
+
   return (
     <Tabs defaultValue={subscriptions?.[0]?.id ?? ''}>
       <TabsList className="justify-start min-12 p-0 h-auto overflow-auto w-full">
@@ -65,7 +70,7 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
             )}
           </TabsTrigger>
         ))}
-        {serviceType === 'COMMUNITY' && (
+        {hasCapability && hasCapability(RESTRICTION.CAPABILITY_BYPASS) && (
           <ServiceSlugAddOrgaFormSheet
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}

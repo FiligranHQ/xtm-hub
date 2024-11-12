@@ -31,16 +31,6 @@ export type ActionTracking = Node & {
   type: Scalars['String']['output'];
 };
 
-export type AddServiceCommunityInput = {
-  billing_manager?: InputMaybe<Scalars['String']['input']>;
-  community_description?: InputMaybe<Scalars['String']['input']>;
-  community_name?: InputMaybe<Scalars['String']['input']>;
-  fee_type?: InputMaybe<Scalars['String']['input']>;
-  justification?: InputMaybe<Scalars['String']['input']>;
-  organizations_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  price?: InputMaybe<Scalars['Int']['input']>;
-};
-
 export type AddServiceInput = {
   fee_type?: InputMaybe<Scalars['String']['input']>;
   organization_id?: InputMaybe<Scalars['String']['input']>;
@@ -143,14 +133,12 @@ export type MessageTracking = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  acceptCommunity?: Maybe<Array<Maybe<Subscription>>>;
   addDocument: Document;
   addOrganization?: Maybe<Organization>;
   addService?: Maybe<Subscription>;
-  addServiceCommunity?: Maybe<Service>;
   addServicePrice?: Maybe<ServicePrice>;
   addSubscription?: Maybe<Service>;
-  addSubscriptionInCommunity?: Maybe<Array<Maybe<UserService>>>;
+  addSubscriptionInService?: Maybe<Array<Maybe<UserService>>>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
   changeSelectedOrganization?: Maybe<User>;
@@ -172,11 +160,6 @@ export type Mutation = {
 };
 
 
-export type MutationAcceptCommunityArgs = {
-  input?: InputMaybe<ServiceCommunityAcceptInput>;
-};
-
-
 export type MutationAddDocumentArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   document?: InputMaybe<Scalars['Upload']['input']>;
@@ -193,11 +176,6 @@ export type MutationAddServiceArgs = {
 };
 
 
-export type MutationAddServiceCommunityArgs = {
-  input?: InputMaybe<AddServiceCommunityInput>;
-};
-
-
 export type MutationAddServicePriceArgs = {
   input?: InputMaybe<AddServicePriceInput>;
 };
@@ -208,7 +186,7 @@ export type MutationAddSubscriptionArgs = {
 };
 
 
-export type MutationAddSubscriptionInCommunityArgs = {
+export type MutationAddSubscriptionInServiceArgs = {
   organization_id?: InputMaybe<Scalars['ID']['input']>;
   service_id?: InputMaybe<Scalars['String']['input']>;
 };
@@ -356,7 +334,6 @@ export type PlatformProvider = {
 
 export type Query = {
   __typename?: 'Query';
-  communities: ServiceConnection;
   document?: Maybe<Scalars['String']['output']>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
@@ -377,14 +354,6 @@ export type Query = {
   user?: Maybe<User>;
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
-};
-
-
-export type QueryCommunitiesArgs = {
-  after?: InputMaybe<Scalars['ID']['input']>;
-  first: Scalars['Int']['input'];
-  orderBy: ServiceOrdering;
-  orderMode: OrderingMode;
 };
 
 
@@ -537,11 +506,6 @@ export type ServiceCapability = Node & {
   id: Scalars['ID']['output'];
   service_capability_name?: Maybe<Scalars['String']['output']>;
   user_service_id: Scalars['ID']['output'];
-};
-
-export type ServiceCommunityAcceptInput = {
-  organizationsId?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ServiceConnection = {
@@ -814,7 +778,6 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   ActionTracking: ResolverTypeWrapper<ActionTracking>;
-  AddServiceCommunityInput: AddServiceCommunityInput;
   AddServiceInput: AddServiceInput;
   AddServicePriceInput: AddServicePriceInput;
   AddUserInput: AddUserInput;
@@ -848,7 +811,6 @@ export type ResolversTypes = ResolversObject<{
   RolePortal: ResolverTypeWrapper<RolePortal>;
   Service: ResolverTypeWrapper<Service>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
-  ServiceCommunityAcceptInput: ServiceCommunityAcceptInput;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdge>;
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
@@ -880,7 +842,6 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   ActionTracking: ActionTracking;
-  AddServiceCommunityInput: AddServiceCommunityInput;
   AddServiceInput: AddServiceInput;
   AddServicePriceInput: AddServicePriceInput;
   AddUserInput: AddUserInput;
@@ -910,7 +871,6 @@ export type ResolversParentTypes = ResolversObject<{
   RolePortal: RolePortal;
   Service: Service;
   ServiceCapability: ServiceCapability;
-  ServiceCommunityAcceptInput: ServiceCommunityAcceptInput;
   ServiceConnection: ServiceConnection;
   ServiceEdge: ServiceEdge;
   ServiceLink: ServiceLink;
@@ -1015,14 +975,12 @@ export type MessageTrackingResolvers<ContextType = PortalContext, ParentType ext
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  acceptCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType, Partial<MutationAcceptCommunityArgs>>;
   addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationAddDocumentArgs>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
   addService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationAddServiceArgs>>;
-  addServiceCommunity?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, Partial<MutationAddServiceCommunityArgs>>;
   addServicePrice?: Resolver<Maybe<ResolversTypes['ServicePrice']>, ParentType, ContextType, Partial<MutationAddServicePriceArgs>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
-  addSubscriptionInCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, Partial<MutationAddSubscriptionInCommunityArgs>>;
+  addSubscriptionInService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, Partial<MutationAddSubscriptionInServiceArgs>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
@@ -1085,7 +1043,6 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  communities?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryCommunitiesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   document?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;

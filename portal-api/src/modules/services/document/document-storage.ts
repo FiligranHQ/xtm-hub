@@ -1,14 +1,14 @@
+import {
+  CreateBucketCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadBucketCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Upload as S3Upload } from '@aws-sdk/lib-storage';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import config from 'config';
 import { Readable } from 'stream';
-import {
-  S3Client,
-  CreateBucketCommand,
-  HeadBucketCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 const getEndpoint = () => {
   // If using AWS S3, unset the endpoint to let the library choose the best endpoint
   if (config.get('minio.endpoint') === 's3.amazonaws.com') {

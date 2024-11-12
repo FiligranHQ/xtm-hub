@@ -36,7 +36,7 @@ export const isNodeAccessible = async (
     'User_Service',
     'Service_Capability',
     'ActionTracking',
-    'Document'
+    'Document',
   ];
   const type = node.__typename;
   // If user have bypass do not apply security layer
