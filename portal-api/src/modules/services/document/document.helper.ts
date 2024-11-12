@@ -43,3 +43,7 @@ export const createDocument = async (documentData): Promise<Document[]> => {
 export const deleteDocuments = async () => {
   return dbUnsecure<Document>('Document').delete('*');
 };
+
+export const deleteDocumentBy = async (field: DocumentMutator) => {
+  return dbUnsecure<Document>('Document').where(field).delete('*');
+};

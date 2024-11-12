@@ -3,13 +3,9 @@
 import DocumentList from '@/components/service/vault/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import { DocumentsListQuery } from '@/components/service/vault/document.graphql';
-import DownloadDocument from '@/components/service/vault/download-document';
-import EditDocument from '@/components/service/vault/edit-document';
-import { IconActions } from '@/components/ui/icon-actions';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { FormatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreVertIcon } from 'filigran-icon';
 import { DataTable } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -44,18 +40,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
       enableHiding: false,
       enableSorting: false,
       enableResizing: false,
-      cell: ({ row }) => (
-        <IconActions
-          icon={
-            <>
-              <MoreVertIcon className="h-4 w-4" />
-              <span className="sr-only">{t('Utils.OpenMenu')}</span>
-            </>
-          }>
-          <EditDocument documentData={row.original} />
-          <DownloadDocument documentData={row.original} />
-        </IconActions>
-      ),
+      cell: ({ row }) => ({}),
     },
   ];
 
@@ -67,10 +52,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
     <>
       <h1 className="pb-s">{t('Service.Vault.Vault')}</h1>
       {queryRef ? (
-        <DocumentList
-          queryRef={queryRef}
-          columns={columns}
-        />
+        <DocumentList queryRef={queryRef} />
       ) : (
         <DataTable
           data={[]}

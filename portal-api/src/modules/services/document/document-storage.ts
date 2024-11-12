@@ -6,6 +6,7 @@ import {
   CreateBucketCommand,
   HeadBucketCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 const getEndpoint = () => {
@@ -75,4 +76,12 @@ export const downloadFileFromMinio = async (
   const downloadUrl = await getSignedUrl(s3Client, object, { expiresIn: 3600 });
 
   return downloadUrl;
+};
+
+export const deleteFileToMinio = async (minioName: string) => {
+  const deleteCommand = new DeleteObjectCommand({
+    Bucket: config.get('minio.bucketName'),
+    Key: minioName,
+  });
+  await s3Client.send(deleteCommand);
 };

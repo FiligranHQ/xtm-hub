@@ -199,6 +199,7 @@ export type Mutation = {
   addSubscriptionInCommunity?: Maybe<Array<Maybe<UserService>>>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<UserService>;
+  deleteDocument: Document;
   deleteOrganization?: Maybe<Organization>;
   deleteService?: Maybe<Service>;
   deleteSubscription?: Maybe<Subscription>;
@@ -267,6 +268,11 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceInput;
+};
+
+
+export type MutationDeleteDocumentArgs = {
+  documentId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1145,6 +1151,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addSubscriptionInCommunity?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, Partial<MutationAddSubscriptionInCommunityArgs>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
+  deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationDeleteServiceArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;

@@ -3,15 +3,19 @@ import { ServiceId } from '../../../model/kanel/public/Service';
 import {
   checkDocumentExists,
   createDocument,
-  deleteDocuments, getDocumentName,
-  loadUnsecureDocumentsBy, normalizeDocumentName,
+  deleteDocumentBy,
+  deleteDocuments,
+  getDocumentName,
+  loadUnsecureDocumentsBy,
+  normalizeDocumentName,
 } from './document.helper';
 import { insertDocument, sendFileToS3 } from './document.domain';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import * as FileStorage from './document-storage';
-import {contextAdminUser} from "../../../../tests/tests.const";
-import documentResolver from "./document.resolver";
+import { contextAdminUser } from '../../../../tests/tests.const';
+import documentResolver from './document.resolver';
+import { DocumentMutator } from '../../../model/kanel/public/Document';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {
@@ -94,7 +98,7 @@ describe('should add new file', () => {
   });
 });
 
-describe("Should update file", () => {
+describe('Should modify document', () => {
   beforeAll(async () => {
     await createDocument({
       id: 'bc348e84-3635-46de-9b56-38db09c35f4d',
@@ -105,16 +109,32 @@ describe("Should update file", () => {
       service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
     });
   });
-  it("Should update file description", async () => {
+  it('Should update document description', async () => {
     const response = await documentResolver.Mutation.editDocument(
-        {}, {documentId: toGlobalId('Document', 'bc348e84-3635-46de-9b56-38db09c35f4d'), newDescription: 'NEW'}, contextAdminUser
+      {},
+      {
+        documentId: toGlobalId(
+          'Document',
+          'bc348e84-3635-46de-9b56-38db09c35f4d'
+        ),
+        newDescription: 'NEW',
+      },
+      contextAdminUser
     );
-    expect(response.description).toStrictEqual('NEW')
-  })
+    expect(response.description).toStrictEqual('NEW');
+  });
+
+  it('Should delete document', async () => {
+    await deleteDocumentBy({
+      id: 'bc348e84-3635-46de-9b56-38db09c35f4d',
+    } as DocumentMutator);
+    const result = await checkDocumentExists('filename');
+    expect(result).toBe(false);
+  });
   afterAll(async () => {
     await deleteDocuments();
   });
-})
+});
 
 describe('getFileName', () => {
   it('should set the correct fileName', () => {
@@ -161,8 +181,7 @@ describe('should check if file already exists', () => {
   });
 });
 
-
-describe("Documents loading", () => {
+describe('Documents loading', () => {
   beforeAll(async () => {
     await createDocument({
       id: 'aefd2d32-adae-4329-b772-90a2fb8516ad',
@@ -182,33 +201,44 @@ describe("Documents loading", () => {
     });
   });
 
-  it("should load all documents", async () => {
+  it('should load all documents', async () => {
     const response = await documentResolver.Query.documents(
-        {}, {count: 50, filter: "", orderBy: 'file_name', orderMode: 'asc'}, contextAdminUser
+      {},
+      { count: 50, filter: '', orderBy: 'file_name', orderMode: 'asc' },
+      contextAdminUser
     );
-    expect(response?.totalCount).toStrictEqual('2')
-    expect(response?.edges[0].node.file_name).toStrictEqual('filename')
-    expect(response?.edges[1].node.file_name).toStrictEqual('xfilename')
-  })
+    expect(response?.totalCount).toStrictEqual('2');
+    expect(response?.edges[0].node.file_name).toStrictEqual('filename');
+    expect(response?.edges[1].node.file_name).toStrictEqual('xfilename');
+  });
 
-
-  it("should load all documents by desc order", async () => {
+  it('should load all documents by desc order', async () => {
     const response = await documentResolver.Query.documents(
-        {}, {count: 50, filter: "", orderBy: 'file_name', orderMode: 'desc'}, contextAdminUser
+      {},
+      { count: 50, filter: '', orderBy: 'file_name', orderMode: 'desc' },
+      contextAdminUser
     );
-    expect(response?.totalCount).toStrictEqual('2')
-    expect(response?.edges[0].node.file_name).toStrictEqual('xfilename')
-    expect(response?.edges[1].node.file_name).toStrictEqual('filename')
-  })
+    expect(response?.totalCount).toStrictEqual('2');
+    expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
+    expect(response?.edges[1].node.file_name).toStrictEqual('filename');
+  });
 
-  it("should filter documents", async () => {
+  it('should filter documents', async () => {
     const response = await documentResolver.Query.documents(
-        {}, {first: 1, after: 0, filter: "xfi", orderBy: 'file_name', orderMode: 'asc'}, contextAdminUser
+      {},
+      {
+        first: 1,
+        after: 0,
+        filter: 'xfi',
+        orderBy: 'file_name',
+        orderMode: 'asc',
+      },
+      contextAdminUser
     );
-    expect(response?.totalCount).toStrictEqual('1')
-    expect(response?.edges[0].node.file_name).toStrictEqual('xfilename')
-  })
+    expect(response?.totalCount).toStrictEqual('1');
+    expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
+  });
   afterAll(async () => {
     await deleteDocuments();
   });
-})
+});
