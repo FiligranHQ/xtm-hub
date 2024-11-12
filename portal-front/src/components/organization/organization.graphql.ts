@@ -25,6 +25,7 @@ export const organizationItem = graphql`
     id
     name
     domains
+    personal_space
   }
 `;
 export const organizationFetch = graphql`

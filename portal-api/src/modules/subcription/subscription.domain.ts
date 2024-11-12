@@ -235,12 +235,12 @@ export const fillSubscription = async (
   return updatedSubscription;
 };
 export const checkSubscriptionExists = async (
+  context: PortalContext,
   organization_id: string,
   service_id: string
 ): Promise<Subscription | boolean> => {
-  const subscriptionQuery = dbUnsecure<Subscription>('Subscription')
-    .where('organization_id', organization_id)
-    .where('service_id', service_id)
+  const subscriptionQuery = db<Subscription>(context, 'Subscription')
+    .where({ organization_id, service_id })
     .select('*')
     .first();
   const sub = await subscriptionQuery;

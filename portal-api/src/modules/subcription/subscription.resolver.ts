@@ -9,10 +9,7 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceId } from '../../model/kanel/public/Service';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import {
-  grantServiceAccessUsers,
-  loadServiceBy,
-} from '../services/services.domain';
+import { grantServiceAccessUsers } from '../services/services.domain';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,
@@ -64,23 +61,10 @@ const resolvers: Resolvers = {
       // Check the subscription does not already exist :
       try {
         const subscription = await checkSubscriptionExists(
+          context,
           context.user.selected_organization_id,
           fromGlobalId(service_id).id
         );
-
-        const service = await loadServiceBy(
-          context,
-          'id',
-          fromGlobalId(service_id).id
-        );
-        if (service.type === 'COMMUNITY') {
-          throw new GraphQLError(
-            'You cannot subscribe directly to an community.',
-            {
-              extensions: { code: '[Subscription] addSubscription' },
-            }
-          );
-        }
 
         if (subscription) {
           throw new GraphQLError('You have already subscribed this service.', {
@@ -148,6 +132,7 @@ const resolvers: Resolvers = {
       // Check the subscription does not already exist :
       try {
         const subscription = await checkSubscriptionExists(
+          context,
           fromGlobalId(organization_id).id ??
             context.user.selected_organization_id,
           fromGlobalId(service_id).id
@@ -203,7 +188,7 @@ const resolvers: Resolvers = {
         return userServiceData;
       } catch (error) {
         await trx.rollback();
-        console.log('Error while subscribing the service.', error);
+        console.error('Error while subscribing the service.', error);
         throw error;
       }
     },
@@ -254,7 +239,6 @@ const resolvers: Resolvers = {
         .where({ id: fromGlobalId(subscription_id).id })
         .delete('*');
 
-      console.log('deleteSubscription users', users);
       await launchAWXWorkflow({
         type: AWXAction.COMMUNITY_REMOVE_USERS,
         input: {

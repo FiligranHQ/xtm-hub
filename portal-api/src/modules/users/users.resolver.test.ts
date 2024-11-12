@@ -27,7 +27,7 @@ describe('Query resolver', () => {
   });
 });
 
-describe('Mutation resolver', () => {
+describe('User mutation resolver', () => {
   it('should be login', async () => {
     // @ts-ignore
     const response = await usersResolver.Mutation.login(

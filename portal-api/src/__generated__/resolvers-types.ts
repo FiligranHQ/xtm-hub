@@ -326,6 +326,7 @@ export type Organization = Node & {
   domains?: Maybe<Array<Scalars['String']['output']>>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  personal_space: Scalars['Boolean']['output'];
   selected?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -1066,6 +1067,7 @@ export type OrganizationResolvers<ContextType = PortalContext, ParentType extend
   domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  personal_space?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   selected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
