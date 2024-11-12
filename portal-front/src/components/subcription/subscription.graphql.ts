@@ -34,6 +34,7 @@ export const subscriptionByServiceFragment = graphql`
     justification
     id
     billing
+    organization_name
     user_service {
       ...userService_fragment @relay(mask: false)
     }

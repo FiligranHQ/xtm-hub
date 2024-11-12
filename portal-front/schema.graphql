@@ -220,6 +220,7 @@ type Subscription implements Node {
   justification: String
   billing: Int
   user_service: [UserService]
+  organization_name: String
   ActionTracking: TrackingSubscription
   User: UserSubscription
 }
