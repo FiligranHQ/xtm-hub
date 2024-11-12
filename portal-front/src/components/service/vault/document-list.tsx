@@ -9,11 +9,18 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { MoreVertIcon } from 'filigran-icon';
 import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
 import { Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
+
+import DeleteDocument from '@/components/service/vault/delete-document';
+import DownloadDocument from '@/components/service/vault/download-document';
+import EditDocument from '@/components/service/vault/edit-document';
+import { IconActions } from '@/components/ui/icon-actions';
+import { FormatDate } from '@/utils/date';
 import {
   PreloadedQuery,
   usePreloadedQuery,
@@ -29,13 +36,9 @@ import {
 } from '../../../../__generated__/documentsQuery.graphql';
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;
-  columns: ColumnDef<documentItem_fragment$data>[];
 }
 
-const DocumentList: React.FunctionComponent<ServiceProps> = ({
-  queryRef,
-  columns,
-}) => {
+const DocumentList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   const queryData = usePreloadedQuery<documentsQuery>(
     DocumentsListQuery,
     queryRef
@@ -52,6 +55,48 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
         ...node,
       }) as documentItem_fragment$data
   );
+
+  const columns: ColumnDef<documentItem_fragment$data>[] = [
+    {
+      accessorKey: 'file_name',
+      id: 'file_name',
+      header: t('Service.Vault.FileTab.FileName'),
+    },
+    {
+      id: 'created_at',
+      header: t('Service.Vault.FileTab.UploadDate'),
+      cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
+    },
+    {
+      accessorKey: 'description',
+      id: 'description',
+      enableSorting: false,
+      header: t('Service.Vault.FileTab.Description'),
+    },
+    {
+      id: 'actions',
+      size: 100,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => (
+        <IconActions
+          icon={
+            <>
+              <MoreVertIcon className="h-4 w-4" />
+              <span className="sr-only">{t('Utils.OpenMenu')}</span>
+            </>
+          }>
+          <EditDocument documentData={row.original} />
+          <DownloadDocument documentData={row.original} />
+          <DeleteDocument
+            documentData={row.original}
+            connectionId={data.documents.__id}
+          />
+        </IconActions>
+      ),
+    },
+  ];
 
   const {
     pageSize,
