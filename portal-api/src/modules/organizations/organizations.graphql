@@ -5,15 +5,9 @@ type Organization implements Node {
   id: ID!
   name: String!
   domains: [String!]
-  selected: Boolean
   personal_space: Boolean!
 }
 
-type MeOrganization implements Node {
-  id: ID!
-  name: String!
-  selected: Boolean!
-}
 type OrganizationEdge {
   cursor: String!
   node: Organization!
