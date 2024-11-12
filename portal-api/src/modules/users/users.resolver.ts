@@ -75,6 +75,7 @@ const resolvers: Resolvers = {
         const [addOrganization] = await insertNewOrganization({
           id: userId as OrganizationId,
           name: input.email,
+          personal_space: true,
         });
 
         // Create user with Personal space by default
