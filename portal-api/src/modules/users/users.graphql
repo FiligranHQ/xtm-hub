@@ -14,6 +14,7 @@ type User implements Node {
   email: String!
   first_name: String
   last_name: String
+  selected_organization_id: String
   organizations: [Organization!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
@@ -69,7 +70,7 @@ type Mutation {
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
   deleteUser(id: ID!): User
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_COMMUNITIES])
-  changeSelectedOrganization(organization_id: ID!): Boolean @auth
+  changeSelectedOrganization(organization_id: ID!): User @auth
   # Login
   login(email: String!, password: String): User
   logout: ID! @auth

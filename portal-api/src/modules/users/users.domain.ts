@@ -99,9 +99,6 @@ export const loadUserBy = async (
           columnName: 'org',
           typename: 'Organization',
           as: 'Organizations',
-          properties: {
-            selected: `org.id = "User".selected_organization_id`,
-          },
         })
       ),
       dbRaw(
@@ -172,9 +169,6 @@ export const loadUsers = async (
           columnName: 'org',
           typename: 'Organization',
           as: 'Organizations',
-          properties: {
-            selected: `org.id = "User".selected_organization_id`,
-          },
         })
       ),
       dbRaw(
@@ -339,9 +333,6 @@ export const loadUserDetails = async (
           columnName: 'org',
           typename: 'Organization',
           as: 'Organizations',
-          properties: {
-            selected: `org.id = "User".selected_organization_id`,
-          },
         })
       ),
       dbRaw(

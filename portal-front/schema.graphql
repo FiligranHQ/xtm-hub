@@ -16,14 +16,7 @@ type Organization implements Node {
   id: ID!
   name: String!
   domains: [String!]
-  selected: Boolean
   personal_space: Boolean!
-}
-
-type MeOrganization implements Node {
-  id: ID!
-  name: String!
-  selected: Boolean!
 }
 
 type OrganizationEdge {
@@ -89,7 +82,7 @@ type Mutation {
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User!
   deleteUser(id: ID!): User
-  changeSelectedOrganization(organization_id: ID!): Boolean
+  changeSelectedOrganization(organization_id: ID!): User
   login(email: String!, password: String): User
   logout: ID!
 }
@@ -362,6 +355,7 @@ type User implements Node {
   email: String!
   first_name: String
   last_name: String
+  selected_organization_id: String
   organizations: [Organization!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]

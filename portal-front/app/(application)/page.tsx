@@ -27,10 +27,7 @@ interface PageProps {}
 
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {
-  const { me } = useContext(portalContext);
-  const isPersonalSpace = me?.organizations.some(
-    ({ selected, personal_space }) => selected && personal_space
-  );
+  const { isPersonalSpace } = useContext(portalContext);
   if (isPersonalSpace) {
     return <h2>Bienvenue sur XTM Hub !</h2>;
   }
