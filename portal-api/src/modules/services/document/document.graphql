@@ -13,6 +13,7 @@ type Document implements Node {
 type Mutation {
   addDocument(document: Upload, description: String): Document! @auth
   editDocument(documentId: ID, newDescription: String): Document! @auth
+  deleteDocument(documentId: ID): Document! @auth
 }
 
 enum DocumentOrdering {

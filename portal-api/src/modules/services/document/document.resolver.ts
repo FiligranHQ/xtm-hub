@@ -1,17 +1,27 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import {downloadDocument, insertDocument, loadDocuments, sendFileToS3, updateDocument} from './document.domain';
+import {
+  deleteDocument,
+  downloadDocument,
+  insertDocument,
+  loadDocuments,
+  sendFileToS3,
+  updateDocument,
+} from './document.domain';
 import { UserId } from '../../../model/kanel/public/User';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import Document from '../../../model/kanel/public/Document';
-import {checkDocumentExists, normalizeDocumentName} from './document.helper';
+import { checkDocumentExists, normalizeDocumentName } from './document.helper';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import {DocumentId} from '../../../model/kanel/public/Document';
+import { DocumentId } from '../../../model/kanel/public/Document';
 
 const resolvers: Resolvers = {
   Mutation: {
     addDocument: async (_, opt, context) => {
       try {
-        const minioName = await sendFileToS3(opt.document.file, context.user.id);
+        const minioName = await sendFileToS3(
+          opt.document.file,
+          context.user.id
+        );
         const data: Document = {
           uploader_id: context.user.id as UserId,
           description: opt.description,
@@ -26,15 +36,31 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
-    editDocument: async(_, {documentId, newDescription}, context) => {
+    editDocument: async (_, { documentId, newDescription }, context) => {
       try {
-        const [document] = await updateDocument(context, {description: newDescription}, fromGlobalId(documentId).id as DocumentId)
+        const [document] = await updateDocument(
+          context,
+          { description: newDescription },
+          fromGlobalId(documentId).id as DocumentId
+        );
         return document;
       } catch (error) {
         console.error('Error while updating document:', error);
         throw error;
       }
-    }
+    },
+    deleteDocument: async (_, { documentId }, context) => {
+      try {
+        const deletedDocument = await deleteDocument(
+          context,
+          fromGlobalId(documentId).id as DocumentId
+        );
+        return deletedDocument;
+      } catch (error) {
+        console.error('Error while deleting document:', error);
+        throw error;
+      }
+    },
   },
   Query: {
     documentExists: async (_, input) => {
@@ -45,12 +71,23 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
-    documents: async(_, {first, after, orderMode, orderBy, filter}, context) => {
-      return loadDocuments(context, {first, after, orderMode, orderBy}, filter);
+    documents: async (
+      _,
+      { first, after, orderMode, orderBy, filter },
+      context
+    ) => {
+      return loadDocuments(
+        context,
+        { first, after, orderMode, orderBy },
+        filter
+      );
     },
-    document: async(_, {documentId}, context) => {
-      return downloadDocument(context, fromGlobalId(documentId).id as DocumentId)
-    }
+    document: async (_, { documentId }, context) => {
+      return downloadDocument(
+        context,
+        fromGlobalId(documentId).id as DocumentId
+      );
+    },
   },
 };
 
