@@ -4,6 +4,7 @@
     "Validate": "Valider",
     "Create": "Créer",
     "Update": "Editer",
+    "Delete": "Supprimer",
     "Continue": "Continuer",
     "Loading": "Chargement...",
     "Success": "Succès",
@@ -13,7 +14,7 @@
     "Inserted": "L'élément a été inséré",
     "OpenMenu": "Ouvrir le menu",
     "Form": {
-      "ResetFile": "Supprimer l'actuel fichier sélectionné."
+      "ResetFile": "Supprimer l'actuel document sélectionné."
     }
   },
   "HomePage": {
@@ -36,26 +37,26 @@
     "Vault": {
       "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault",
-      "File": "Fichier à transmettre",
-      "DropFile": "Lâchez le fichier ici",
-      "InsertedFile": "Fichier inséré",
-      "FileExtension": "Le fichier doit avoir une extension",
+      "File": "Document à transmettre",
+      "DropFile": "Lâchez le document ici",
+      "InsertedFile": "Document inséré",
+      "FileExtension": "Le document doit avoir une extension",
       "FileForm": {
-        "AddFile": "Ajouter un fichier",
-        "File": "Fichier",
-        "UploadNewFile": "Ajout d'un nouveau fichier dans le Vault",
-        "EditFile": "Editer le fichier",
+        "AddFile": "Ajouter un document",
+        "File": "Document",
+        "UploadNewFile": "Ajout d'un nouveau document dans le Vault",
+        "EditFile": "Editer le document",
         "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "Ceci est une courte description du fichier.",
-        "FileAlreadyExists": "Ce fichier existe déjà",
-        "FileExistsDialog": "Ce fichier existe déjà. Ce fichier écrasera l'ancien fichier. Êtes-vous sûr de vouloir continuer ?",
-        "AlreadyExists": "Ce fichier existe déjà. L'ancien sera écrasé."
+        "DescriptionPlaceholder": "Ceci est une courte description du document.",
+        "FileAlreadyExists": "Ce document existe déjà",
+        "FileExistsDialog": "Ce document existe déjà. Ce document écrasera l'ancien document. Êtes-vous sûr de vouloir continuer ?",
+        "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé."
       },
       "FileTab": {
-        "FileName": "Nom de fichier",
+        "FileName": "Nom de document",
         "UploadDate": "Date d'ajout",
         "Description": "Description",
-        "Search": "Chercher par nom de fichier..."
+        "Search": "Chercher par nom de document..."
       }
     }
   },

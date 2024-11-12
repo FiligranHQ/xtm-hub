@@ -75,6 +75,7 @@ type Mutation {
   deleteOrganization(id: ID!): Organization
   addDocument(document: Upload, description: String): Document!
   editDocument(documentId: ID, newDescription: String): Document!
+  deleteDocument(documentId: ID): Document!
   addServicePrice(input: AddServicePriceInput): ServicePrice
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription

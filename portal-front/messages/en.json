@@ -4,6 +4,7 @@
     "Validate": "Validate",
     "Create": "Create",
     "Update": "Update",
+    "Delete": "Delete",
     "Continue": "Continue",
     "Loading": "Loading...",
     "Success": "Success",
@@ -13,7 +14,7 @@
     "Inserted": "has been added",
     "OpenMenu": "Open menu",
     "Form": {
-      "ResetFile": "Remove the current selected file."
+      "ResetFile": "Remove the current selected document."
     }
   },
   "HomePage": {
@@ -37,27 +38,27 @@
     "Vault": {
       "Vault": "Partner Vault",
       "VaultTitle": "Vault Administration",
-      "File": "File to send",
-      "DropFile": "Drop the file here",
-      "FileExtension": "The file must have an extension",
+      "File": "Document to send",
+      "DropFile": "Drop the document here",
+      "FileExtension": "The document must have an extension",
       "FileForm": {
-        "AddFile": "Add new file",
+        "AddFile": "Add new document",
         "File": "File",
-        "UploadNewFile": "Upload a new file in Vault",
-        "EditFile": "Edit file",
+        "UploadNewFile": "Upload a new document in Vault",
+        "EditFile": "Edit document",
         "ShortNameLabel": "Short name",
         "ShortNamePlaceholder": "Filigran Pricing",
         "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "This is a short paragraph to describe the file.",
-        "FileAlreadyExists": "This file already exists",
-        "FileExistsDialog": "This file already exists. This file will erase the old one. Are you sure you want to continue?",
-        "AlreadyExists": "This file already exists. The old one will be erased."
+        "DescriptionPlaceholder": "This is a short paragraph to describe the document.",
+        "FileAlreadyExists": "This document already exists",
+        "FileExistsDialog": "This document already exists. This document will erase the old one. Are you sure you want to continue?",
+        "AlreadyExists": "This document already exists. The old one will be erased."
       },
       "FileTab": {
-        "FileName": "File name",
+        "FileName": "Document name",
         "UploadDate": "Upload date",
         "Description": "Description",
-        "Search": "Search with filename..."
+        "Search": "Search with document name..."
       }
     }
   },
