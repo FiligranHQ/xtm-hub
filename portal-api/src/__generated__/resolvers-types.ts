@@ -611,6 +611,7 @@ export type Subscription = Node & {
   justification?: Maybe<Scalars['String']['output']>;
   organization?: Maybe<Organization>;
   organization_id: Scalars['ID']['output'];
+  organization_name?: Maybe<Scalars['String']['output']>;
   service?: Maybe<Service>;
   service_id: Scalars['ID']['output'];
   service_url?: Maybe<Scalars['String']['output']>;
@@ -1189,6 +1190,7 @@ export type SubscriptionResolvers<ContextType = PortalContext, ParentType extend
   justification?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "justification", ParentType, ContextType>;
   organization?: SubscriptionResolver<Maybe<ResolversTypes['Organization']>, "organization", ParentType, ContextType>;
   organization_id?: SubscriptionResolver<ResolversTypes['ID'], "organization_id", ParentType, ContextType>;
+  organization_name?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "organization_name", ParentType, ContextType>;
   service?: SubscriptionResolver<Maybe<ResolversTypes['Service']>, "service", ParentType, ContextType>;
   service_id?: SubscriptionResolver<ResolversTypes['ID'], "service_id", ParentType, ContextType>;
   service_url?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "service_url", ParentType, ContextType>;
