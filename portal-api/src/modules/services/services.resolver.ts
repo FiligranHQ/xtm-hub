@@ -275,6 +275,7 @@ const resolvers: Resolvers = {
           adminsSubscription.organization_id,
           adminCommuId
         )) as User[];
+        console.log(users);
         await grantServiceAccess(
           context,
           ['ACCESS_SERVICE'],

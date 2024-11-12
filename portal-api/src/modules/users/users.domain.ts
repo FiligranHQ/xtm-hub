@@ -43,9 +43,16 @@ export const loadUsersByOrganization = async (
   excludedUserId: string
 ) => {
   return dbUnsecure<User>('User')
-    .where('organization_id', organizationId)
-    .where('id', '!=', excludedUserId)
-    .returning('*');
+    .select('User.*')
+    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
+    .leftJoin(
+      'Organization as org',
+      'User_Organization.organization_id',
+      '=',
+      'org.id'
+    )
+    .where('org.id', organizationId)
+    .where('User.id', '!=', excludedUserId);
 };
 
 export const loadUserBy = async (

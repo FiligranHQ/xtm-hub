@@ -15,6 +15,7 @@ export const MeContextFragment = graphql`
     organizations @required(action: THROW) {
       id
       name
+      personal_space
       selected @required(action: THROW)
     }
   }

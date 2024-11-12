@@ -5,12 +5,13 @@ import useMountingLoader from '@/hooks/useMountingLoader';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 
+import { portalContext } from '@/components/portal-context';
 import OwnedServices from '@/components/service/home/owned-services';
 import ServiceList from '@/components/service/service-list';
 import { ServiceListQuery } from '@/components/service/service.graphql';
 import { UserServiceOwnedQuery } from '@/components/service/user_service.graphql';
 import { useTranslations } from 'next-intl';
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 import {
   OrderingMode,
@@ -26,6 +27,13 @@ interface PageProps {}
 
 // Component
 const Page: React.FunctionComponent<PageProps> = () => {
+  const { me } = useContext(portalContext);
+  const isPersonalSpace = me?.organizations.some(
+    ({ selected, personal_space }) => selected && personal_space
+  );
+  if (isPersonalSpace) {
+    return <h2>Bienvenue sur XTM Hub !</h2>;
+  }
   const [count, setCount] = useLocalStorage('countServiceOwned', 50);
   const [orderMode, setOrderMode] = useLocalStorage(
     'orderModeServiceOwned',
