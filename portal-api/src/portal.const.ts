@@ -18,10 +18,6 @@ export const CAPABILITY_BCK_MANAGE_SERVICES = {
   id: '6ff7515e-5d86-49e8-84b6-f301d12e6038',
   name: Restriction.BckManageServices,
 };
-export const CAPABILITY_BCK_MANAGE_COMMUNITIES = {
-  id: '6fd9bdea-6bf5-4621-8216-50bd7a6584c7',
-  name: Restriction.BckManageCommunities,
-};
 export const CAPABILITY_FRT_SERVICE_SUBSCRIBER = {
   id: '993b2b86-2310-47e9-90f2-b56ad9b15405',
   name: Restriction.FrtServiceSubscriber,

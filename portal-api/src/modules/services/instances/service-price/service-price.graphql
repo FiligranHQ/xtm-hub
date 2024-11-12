@@ -14,5 +14,5 @@ type ServicePrice implements Node {
 
 type Mutation {
   addServicePrice(input: AddServicePriceInput): ServicePrice
-    @auth(requires: [BYPASS, BCK_MANAGE_COMMUNITIES])
+    @auth(requires: [BYPASS])
 }

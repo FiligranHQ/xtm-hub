@@ -2,9 +2,9 @@ import { dbTx, dbUnsecure } from '../../knexfile';
 import { User } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
 import { OrganizationId } from '../model/kanel/public/Organization';
+import { isStorageAlive } from '../modules/services/document/document-storage';
 import {
   ADMIN_UUID,
-  CAPABILITY_BCK_MANAGE_COMMUNITIES,
   CAPABILITY_BCK_MANAGE_SERVICES,
   CAPABILITY_BYPASS,
   CAPABILITY_FRT_ACCESS_BILLING,
@@ -17,7 +17,6 @@ import {
   ROLE_ADMIN_ORGA,
   ROLE_USER,
 } from '../portal.const';
-import { isStorageAlive } from '../modules/services/document/document-storage';
 import { hashPassword } from '../utils/hash-password.util';
 import {
   ensureCapabilityExists,
@@ -82,7 +81,6 @@ const initCapabilityAndRole = async () => {
   try {
     await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
     await ensureCapabilityExists(CAPABILITY_BCK_MANAGE_SERVICES, trx);
-    await ensureCapabilityExists(CAPABILITY_BCK_MANAGE_COMMUNITIES, trx);
     await ensureCapabilityExists(CAPABILITY_FRT_SERVICE_SUBSCRIBER, trx);
     await ensureCapabilityExists(CAPABILITY_FRT_MANAGE_SETTINGS, trx);
     await ensureCapabilityExists(CAPABILITY_FRT_ACCESS_BILLING, trx);
@@ -99,11 +97,6 @@ const initCapabilityAndRole = async () => {
     await ensureRoleHasCapability(
       ROLE_ADMIN_ORGA,
       CAPABILITY_BCK_MANAGE_SERVICES,
-      trx
-    );
-    await ensureRoleHasCapability(
-      ROLE_ADMIN_ORGA,
-      CAPABILITY_BCK_MANAGE_COMMUNITIES,
       trx
     );
     await ensureRoleHasCapability(
