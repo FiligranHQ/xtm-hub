@@ -42,5 +42,4 @@ type Query {
     orderMode: OrderingMode!
     filter: String
   ): DocumentConnection! @auth
-  document(documentId: ID): String @auth
 }
