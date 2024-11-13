@@ -1,7 +1,10 @@
 'use client';
 
+import Loader from '@/components/loader';
+import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 import * as React from 'react';
+import { useContext } from 'react';
 import { Restriction } from '../../__generated__/meContext_fragment.graphql';
 
 // Component interface
@@ -16,6 +19,10 @@ const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   capacityRestriction,
   displayError = true,
 }) => {
+  const { me } = useContext<Portal>(portalContext);
+  if (!me) {
+    return <Loader />;
+  }
   const authorized = capacityRestriction.some(useGranted);
   if (!authorized && displayError) {
     return (
@@ -25,7 +32,7 @@ const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
       </>
     );
   } else if (!authorized) {
-    return <></>;
+    return null;
   }
   return <>{children}</>;
 };
