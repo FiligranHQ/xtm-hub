@@ -1,12 +1,11 @@
+import * as s3 from '@aws-sdk/client-s3';
 import {
   CreateBucketCommand,
   DeleteObjectCommand,
-  GetObjectCommand,
   HeadBucketCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Upload as S3Upload } from '@aws-sdk/lib-storage';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import config from 'config';
 import { Readable } from 'stream';
 const getEndpoint = () => {
@@ -64,18 +63,21 @@ export const insertFileInMinio = async (fileParams) => {
   return await fileKey;
 };
 
-export const downloadFileFromMinio = async (
-  minioName: string,
-  fileName: string
-) => {
-  const object = new GetObjectCommand({
-    Bucket: config.get('minio.bucketName'),
-    Key: minioName,
-    ResponseContentDisposition: `attachment; filename="${fileName}"`,
-  });
-  const downloadUrl = await getSignedUrl(s3Client, object, { expiresIn: 3600 });
-
-  return downloadUrl;
+export const downloadFile = async (minioName: string) => {
+  try {
+    const object = await s3Client.send(
+      new s3.GetObjectCommand({
+        Bucket: config.get('minio.bucketName'),
+        Key: minioName,
+      })
+    );
+    return object.Body;
+  } catch (err) {
+    console.error('[FILE STORAGE] Cannot retrieve file from S3', {
+      error: err,
+    });
+    return null;
+  }
 };
 
 export const deleteFileToMinio = async (minioName: string) => {

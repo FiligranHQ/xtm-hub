@@ -8,7 +8,6 @@ import Document, {
 import { PortalContext } from '../../../model/portal-context';
 import {
   deleteFileToMinio,
-  downloadFileFromMinio,
   insertFileInMinio,
   UploadedFile,
 } from './document-storage';
@@ -71,6 +70,13 @@ export const updateDocument = async (
     .returning('*');
 };
 
+export const incrementDocumentsDownloads = async(context: PortalContext, document: Document) => {
+  const data: DocumentMutator = {
+    download_number: document.download_number +1
+  }
+  await updateDocument(context, data, document.id)
+}
+
 export const deleteDocument = async (
   context: PortalContext,
   documentId: DocumentId
@@ -116,21 +122,10 @@ export const loadDocuments = async (
     ...documentConnection,
   };
 };
-const loadDocumentBy = async (
+export const loadDocumentBy = async (
   context: PortalContext,
   field: DocumentMutator
 ) => {
   return db<Document>(context, 'Document').where(field);
 };
-export const downloadDocument = async (
-  context: PortalContext,
-  documentId: DocumentId
-) => {
-  const [document] = await loadDocumentBy(context, { id: documentId });
-  await updateDocument(
-    context,
-    { download_number: document.download_number + 1 },
-    document.id
-  );
-  return downloadFileFromMinio(document.minio_name, document.file_name);
-};
+

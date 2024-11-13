@@ -37,7 +37,6 @@ type Query {
   rolesPortal: [RolePortal!]!
   documentExists(documentName: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String): DocumentConnection!
-  document(documentId: ID): String
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceById(service_id: ID): Service
   settings: Settings!
