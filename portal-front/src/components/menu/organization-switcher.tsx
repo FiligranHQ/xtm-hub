@@ -1,19 +1,17 @@
 import { changeSelectedOrganizationMutation } from '@/components/menu/organization-switcher.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
+import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
 import { CityIcon, UnfoldMoreIcon } from 'filigran-icon';
 import { Popover, PopoverContent, PopoverTrigger } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { FunctionComponent, useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
-import { useWindowSize } from 'usehooks-ts';
 import { organizationSwitcherMutation } from '../../../__generated__/organizationSwitcherMutation.graphql';
 
 interface TeamSwitcherProps {
   open: boolean;
 }
-
-const MOBILE_SIZE = 640;
 
 export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
   open,
@@ -22,8 +20,8 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
   if (!me) {
     return null;
   }
-  const { width = 0, height = 0 } = useWindowSize();
-  const isMobile = width < MOBILE_SIZE;
+
+  const isMobile = useIsMobile();
 
   const [commitOrganizationSwitcherMutation] =
     useMutation<organizationSwitcherMutation>(

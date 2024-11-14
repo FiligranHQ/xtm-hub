@@ -267,7 +267,7 @@ export const loadUserRoles = async (userId: UserId) => {
     .leftJoin('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
     .where('User.id', userId)
     .select([
-      'User.*', // Select all columns from the User table
+      'User.*',
       dbRaw('json_agg("RolePortal".name) as roles'), // Aggregate role names into an array
     ])
     .groupBy('User.id') // Group by User.id to ensure proper aggregation
