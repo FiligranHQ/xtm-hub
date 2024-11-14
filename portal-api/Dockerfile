@@ -38,6 +38,7 @@ COPY --from=builder --chown=graphql:nodejs /app/config ./config
 COPY --from=builder --chown=graphql:nodejs /app/package.json .
 COPY --from=builder --chown=graphql:nodejs /app/tests/seeds ./tests/seeds
 COPY --from=builder --chown=graphql:nodejs /app/dist .
+COPY --from=builder --chown=graphql:nodejs /app/src/server/mail-template ./src/server/mail-template
 
 USER graphql
 

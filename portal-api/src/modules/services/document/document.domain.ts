@@ -70,12 +70,15 @@ export const updateDocument = async (
     .returning('*');
 };
 
-export const incrementDocumentsDownloads = async(context: PortalContext, document: Document) => {
+export const incrementDocumentsDownloads = async (
+  context: PortalContext,
+  document: Document
+) => {
   const data: DocumentMutator = {
-    download_number: document.download_number +1
-  }
-  await updateDocument(context, data, document.id)
-}
+    download_number: document.download_number + 1,
+  };
+  await updateDocument(context, data, document.id);
+};
 
 export const deleteDocument = async (
   context: PortalContext,
@@ -128,4 +131,3 @@ export const loadDocumentBy = async (
 ) => {
   return db<Document>(context, 'Document').where(field);
 };
-

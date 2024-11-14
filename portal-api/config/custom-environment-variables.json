@@ -19,5 +19,14 @@
     "accessKeyId": "MINIO_ACCESS_KEY",
     "secretAccessKey": "MINIO_SECRET_KEY",
     "useSsl": "MINIO_USE_SSL"
+  },
+  "smtp_options": {
+    "host": "SMTP_HOST",
+    "port": "SMTP_PORT",
+    "secure": "SMTP_SECURE",
+    "auth": {
+      "user": "SMTP_USER",
+      "pass": "SMTP_PASSWORD"
+    }
   }
 }
