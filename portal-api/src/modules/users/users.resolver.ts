@@ -104,7 +104,6 @@ const resolvers: Resolvers = {
           ),
         });
 
-        // Send email to user
         await sendMail({
           to: input.email,
           subject: 'XTM Hub invitation',
