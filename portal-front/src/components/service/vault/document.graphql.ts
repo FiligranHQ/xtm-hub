@@ -41,12 +41,6 @@ export const DocumentExistsQuery = graphql`
   }
 `;
 
-export const DocumentDownloadQuery = graphql`
-  query documentDownloadQuery($documentId: ID) {
-    document(documentId: $documentId)
-  }
-`;
-
 export const documentItem = graphql`
   fragment documentItem_fragment on Document {
     id

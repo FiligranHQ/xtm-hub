@@ -17,6 +17,7 @@ import portalConfig from './config';
 import { awxEndpoint } from './managers/awx/awx-endpoint';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
+import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
 import { extractId } from './utils/utils';
@@ -30,6 +31,7 @@ const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
 const app = express();
+
 const sessionMiddleware = expressSession({
   name: PORTAL_COOKIE_NAME,
   secret: PORTAL_COOKIE_SECRET,
@@ -137,6 +139,7 @@ const handler = createHandler({
     return { user, req: _req };
   },
 });
+
 app.use(PORTAL_WEBSOCKET_PATH, cors<cors.CorsRequest>(), json(), handler);
 app.use(
   PORTAL_GRAPHQL_PATH,
@@ -145,9 +148,14 @@ app.use(
   json(),
   middlewareExpress
 );
+
 // endregion
 
 await initAuthPlatform(app);
+// This /storage/get route is implemented here because the GraphQL resolver cannot return a document directly.
+// It lacks the level of abstraction needed to attach a file to the response (using res.attachment).
+// Therefore, we have to handle it through this route instead.
+documentDownloadEndpoint(app);
 awxEndpoint(app);
 
 // Modified server startup
