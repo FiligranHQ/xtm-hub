@@ -25,12 +25,14 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
   const [vaultDeleteDocumentMutation] = useMutation<documentDeleteMutation>(
     DocumentDeleteMutation
   );
+  const serviceId = new URLSearchParams(window.location.search).get('id');
 
   const deleteDocument = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     vaultDeleteDocumentMutation({
       variables: {
         documentId: documentData.id,
+        serviceId: serviceId,
         connections: [connectionId],
       },
       onCompleted: (response) => {

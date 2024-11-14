@@ -27,12 +27,16 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
     DocumentUpdateMutation
   );
   const { setMenuOpen } = useContext(IconActionContext);
+
+  const serviceId = new URLSearchParams(window.location.search).get('id');
+
   const updateDocumentDescription = (
     values: z.infer<typeof newDocumentSchema>
   ) => {
     vaultUpdateDocumentMutation({
       variables: {
         documentId: values.documentId,
+        serviceId: serviceId,
         newDescription: values.description,
       },
       onCompleted: (response) => {
