@@ -120,7 +120,6 @@ export const loadSubscriptionsByService = async (
     .groupBy(['Subscription.id', 'service.type', 'org.name'])
     .orderBy('Subscription.billing', 'desc');
 
-  console.log(query.toString());
   const result = await query;
   const isAdmin = context.user.capabilities.find(
     (capability) => capability?.name === 'BYPASS'
