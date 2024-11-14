@@ -6,7 +6,9 @@ import * as path from 'path';
 const smtpOptions = config.get('smtp_options');
 const transporter = nodemailer.createTransport(smtpOptions);
 
-async function renderEmail<T extends Record<string, string>>(substitutions: T) {
+export async function renderEmail<T extends Record<string, string>>(
+  substitutions: T
+) {
   const templatePath = 'transactional';
   const filepath = path.join(
     'src/server/mail-template',
@@ -23,8 +25,8 @@ async function renderEmail<T extends Record<string, string>>(substitutions: T) {
 
 export const sendMail = async ({
   from = (config.get('smtp_options.auth.user') as string) ||
-    'openbas-dev@filigran.cloud',
-  to = 'openbas-dev@filigran.cloud',
+    'no-reply@scredplatform.io',
+  to = 'jean-philippe.kha@filigran.io',
   subject = 'test mail',
   text = 'Please confirm your email address in order to activate your account.',
 }) => {
@@ -46,9 +48,10 @@ export const sendMail = async ({
       },
     ],
   };
-  transporter.sendMail(mailOptions, (error, info) => {
+
+  transporter?.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log('Email error: ' + error);
+      console.error('Email error: ' + error);
     } else {
       console.log('Email sent: ' + info.response);
     }
