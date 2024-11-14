@@ -24,11 +24,13 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
   const [vaultDocumentMutation] =
     useMutation<documentAddMutation>(DocumentAddMutation);
   const [openSheet, setOpenSheet] = useState(false);
+  const serviceId = new URLSearchParams(window.location.search).get('id');
 
   const sendDocument = (values: z.infer<typeof newDocumentSchema>) => {
     vaultDocumentMutation({
       variables: {
         ...values,
+        serviceId: serviceId,
         connections: [connectionId],
       },
       uploadables: values.document as unknown as UploadableMap,

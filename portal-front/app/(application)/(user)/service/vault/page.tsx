@@ -1,10 +1,9 @@
-import * as React from "react";
-import PageLoader from "./page-loader";
-interface PageProps {
-}
+import * as React from 'react';
+import PageLoader from './page-loader';
+interface PageProps {}
 
 const Page: React.FunctionComponent<PageProps> = ({}) => {
-    return <PageLoader/>
+  return <PageLoader />;
 };
 
 export default Page;

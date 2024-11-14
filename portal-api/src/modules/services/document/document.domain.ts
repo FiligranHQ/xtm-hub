@@ -5,7 +5,9 @@ import Document, {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
+import { ServiceId } from '../../../model/kanel/public/Service';
 import { PortalContext } from '../../../model/portal-context';
+import { checkUserIsAuthorized } from '../../user_service/user_service.domain';
 import {
   deleteFileToMinio,
   insertFileInMinio,
@@ -18,12 +20,17 @@ import {
   loadUnsecureDocumentsBy,
 } from './document.helper';
 
-export const sendFileToS3 = async (file: UploadedFile, userId: string) => {
+export const sendFileToS3 = async (
+  file: UploadedFile,
+  userId: string,
+  serviceId: ServiceId
+) => {
   const fullMetadata = {
     mimetype: file.mimetype,
     filename: file.filename,
     encoding: file.encoding,
     Uploadinguserid: userId,
+    ServiceId: serviceId,
   };
 
   const fileParams = {
@@ -59,6 +66,17 @@ export const insertDocument = async (
   return createDocument(documentData);
 };
 
+export const updateDocumentDescription = async (
+  context: PortalContext,
+  updateData: DocumentMutator,
+  documentId: DocumentId,
+  serviceId: ServiceId
+): Promise<Document[]> => {
+  await checkUserIsAuthorized(context, serviceId, 'ACCESS_SERVICE');
+
+  return updateDocument(context, updateData, documentId);
+};
+
 export const updateDocument = async (
   context: PortalContext,
   updateData: DocumentMutator,
@@ -82,24 +100,37 @@ export const incrementDocumentsDownloads = async (
 
 export const deleteDocument = async (
   context: PortalContext,
-  documentId: DocumentId
+  documentId: DocumentId,
+  serviceId: ServiceId
 ): Promise<Document> => {
+  await checkUserIsAuthorized(context, serviceId, 'ACCESS_SERVICE');
+
   const [documentFromDb] = await loadDocumentBy(context, { id: documentId });
   await deleteFileToMinio(documentFromDb.minio_name);
   await deleteDocumentBy({ id: documentId });
   return documentFromDb;
 };
 
+export const getDocuments = async (
+  context: PortalContext,
+  opts,
+  filter,
+  serviceId: ServiceId
+): Promise<DocumentConnection> => {
+  await checkUserIsAuthorized(context, serviceId, 'ACCESS_SERVICE');
+
+  return loadDocuments(context, opts, filter, serviceId);
+};
+
 export const loadDocuments = async (
   context: PortalContext,
   opts,
-  filter
+  filter,
+  serviceId: ServiceId
 ): Promise<DocumentConnection> => {
-  const query = paginate<Document>(context, 'Document', opts).where(
-    'active',
-    '=',
-    true
-  );
+  const query = paginate<Document>(context, 'Document', opts)
+    .where('active', '=', true)
+    .where('service_id', '=', serviceId);
   if (filter) {
     query.where('file_name', 'LIKE', `${filter}%`);
   }
@@ -108,11 +139,9 @@ export const loadDocuments = async (
     .select(['Document.*'])
     .asConnection<DocumentConnection>();
 
-  const queryCount = db<Document>(context, 'Document', opts).where(
-    'active',
-    '=',
-    true
-  );
+  const queryCount = db<Document>(context, 'Document', opts)
+    .where('active', '=', true)
+    .where('service_id', '=', serviceId);
   if (filter) {
     queryCount.where('file_name', 'LIKE', `${filter}%`);
   }

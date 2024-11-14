@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import { UserServiceConnection } from '../../__generated__/resolvers-types';
-import Service from '../../model/kanel/public/Service';
+import Service, { ServiceId } from '../../model/kanel/public/Service';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -240,4 +240,28 @@ export const addAdminAccess = async (
   }));
 
   await insertServiceCapability(context, dataCapabilities);
+};
+
+export const checkUserIsAuthorized = async (
+  context: PortalContext,
+  serviceId: ServiceId,
+  typeCapability: string
+): Promise<void> => {
+  const userServices = await loadUserServiceByUser(context, context.user.id, {
+    count: 500,
+    orderBy: 'id',
+    orderMode: 'asc',
+  });
+  const userAuthorized = userServices.edges.some((edge) => {
+    return (
+      edge.node.subscription.service.id === serviceId &&
+      edge.node.service_capability.some(
+        (capability) => (capability.service_capability_name = typeCapability)
+      )
+    );
+  });
+
+  if (!userAuthorized) {
+    throw new Error('Unauthorized.');
+  }
 };

@@ -163,6 +163,7 @@ export type Mutation = {
 export type MutationAddDocumentArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   document?: InputMaybe<Scalars['Upload']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -209,6 +210,7 @@ export type MutationChangeSelectedOrganizationArgs = {
 
 export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -240,6 +242,7 @@ export type MutationDeleteUserServiceArgs = {
 export type MutationEditDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   newDescription?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -368,6 +371,7 @@ export type QueryDocumentsArgs = {
   first: Scalars['Int']['input'];
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 

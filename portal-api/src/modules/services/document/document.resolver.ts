@@ -5,10 +5,10 @@ import { ServiceId } from '../../../model/kanel/public/Service';
 import { UserId } from '../../../model/kanel/public/User';
 import {
   deleteDocument,
+  getDocuments,
   insertDocument,
-  loadDocuments,
   sendFileToS3,
-  updateDocument,
+  updateDocumentDescription,
 } from './document.domain';
 import { checkDocumentExists, normalizeDocumentName } from './document.helper';
 
@@ -18,15 +18,16 @@ const resolvers: Resolvers = {
       try {
         const minioName = await sendFileToS3(
           opt.document.file,
-          context.user.id
+          context.user.id,
+          fromGlobalId(opt.serviceId).id as ServiceId
         );
         const data: Document = {
           uploader_id: context.user.id as UserId,
           description: opt.description,
           minio_name: minioName,
           file_name: normalizeDocumentName(opt.document.file.filename),
-          service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff' as ServiceId,
           created_at: new Date(),
+          service_id: fromGlobalId(opt.serviceId).id as ServiceId,
         } as unknown as Document;
         const [addedDocument] = await insertDocument(data);
         return addedDocument;
@@ -35,12 +36,17 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
-    editDocument: async (_, { documentId, newDescription }, context) => {
+    editDocument: async (
+      _,
+      { documentId, newDescription, serviceId },
+      context
+    ) => {
       try {
-        const [document] = await updateDocument(
+        const [document] = await updateDocumentDescription(
           context,
           { description: newDescription },
-          fromGlobalId(documentId).id as DocumentId
+          fromGlobalId(documentId).id as DocumentId,
+          fromGlobalId(serviceId).id as ServiceId
         );
         return document;
       } catch (error) {
@@ -48,11 +54,12 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
-    deleteDocument: async (_, { documentId }, context) => {
+    deleteDocument: async (_, { documentId, serviceId }, context) => {
       try {
         const deletedDocument = await deleteDocument(
           context,
-          fromGlobalId(documentId).id as DocumentId
+          fromGlobalId(documentId).id as DocumentId,
+          fromGlobalId(serviceId).id as ServiceId
         );
         return deletedDocument;
       } catch (error) {
@@ -66,20 +73,26 @@ const resolvers: Resolvers = {
       try {
         return checkDocumentExists(input.documentName ?? '');
       } catch (error) {
-        console.error('Error while fetching files:', error);
+        console.error('Error while fetching documents:', error);
         throw error;
       }
     },
     documents: async (
       _,
-      { first, after, orderMode, orderBy, filter },
+      { first, after, orderMode, orderBy, filter, serviceId },
       context
     ) => {
-      return loadDocuments(
-        context,
-        { first, after, orderMode, orderBy },
-        filter
-      );
+      try {
+        return getDocuments(
+          context,
+          { first, after, orderMode, orderBy },
+          filter,
+          fromGlobalId(serviceId).id as ServiceId
+        );
+      } catch (error) {
+        console.error('Error while fetching documents:', error);
+        throw error;
+      }
     },
   },
 };
