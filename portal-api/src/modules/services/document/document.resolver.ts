@@ -5,7 +5,6 @@ import { ServiceId } from '../../../model/kanel/public/Service';
 import { UserId } from '../../../model/kanel/public/User';
 import {
   deleteDocument,
-  downloadDocument,
   insertDocument,
   loadDocuments,
   sendFileToS3,
@@ -79,12 +78,6 @@ const resolvers: Resolvers = {
         context,
         { first, after, orderMode, orderBy },
         filter
-      );
-    },
-    document: async (_, { documentId }, context) => {
-      return downloadDocument(
-        context,
-        fromGlobalId(documentId).id as DocumentId
       );
     },
   },

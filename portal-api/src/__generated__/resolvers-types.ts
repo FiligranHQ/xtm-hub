@@ -334,7 +334,6 @@ export type PlatformProvider = {
 
 export type Query = {
   __typename?: 'Query';
-  document?: Maybe<Scalars['String']['output']>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
   me?: Maybe<User>;
@@ -354,11 +353,6 @@ export type Query = {
   user?: Maybe<User>;
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
-};
-
-
-export type QueryDocumentArgs = {
-  documentId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1043,7 +1037,6 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  document?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
