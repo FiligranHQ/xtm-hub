@@ -107,13 +107,13 @@ export const loadSubscriptionsByService = async (
       'Organization as org',
       'org.id',
       '=',
-      'user.selected_organization_id'
+      'Subscription.organization_id'
     )
     .select(
       'Subscription.*',
       'service.type as service_type',
       dbRaw(
-        `CASE WHEN COUNT ("userService".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "userService".id,'service_capability',"userService".service_capabilities ,'user', json_build_object('id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, 'organization', json_build_object('id', "org".id, 'name', "org".name, '__typename', 'Organization'), '__typename', 'User'), '__typename', 'User_Service'))::json) END AS user_service`
+        `COALESCE( CASE WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg( json_build_object( 'id', "userService".id, 'service_capability', "userService".service_capabilities, 'user', CASE WHEN "user".id IS NOT NULL THEN json_build_object( 'id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, 'organization', json_build_object( 'id', "org".id, 'name', "org".name, '__typename', 'Organization' ), '__typename', 'User' ) ELSE NULL END, '__typename', 'User_Service' ) )::json END, '[]'::json ) AS user_service`
       ),
       'org.name as organization_name'
     )
