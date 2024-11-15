@@ -5,17 +5,20 @@ import { serviceList_fragment$data } from '../../../__generated__/serviceList_fr
 
 interface ServiceCardProps {
   service: serviceList_fragment$data;
+  serviceLink?: string;
   topRightAction: ReactNode | null;
   bottomLeftAction: ReactNode;
 }
 const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   service,
+  serviceLink,
   topRightAction,
   bottomLeftAction,
 }) => {
   return (
     <li
-      className="border-light flex flex-col rounded border bg-page-background p-l gap-l"
+      className="border-light flex flex-col rounded border bg-page-background p-l gap-l hover:cursor-pointer"
+      onClick={() => (window.location.href = serviceLink ?? '')}
       key={service.id}>
       <div className=" flex justify-between items-center gap-s">
         <h3>{service.name}</h3>

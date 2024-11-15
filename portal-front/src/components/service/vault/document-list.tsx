@@ -80,20 +80,22 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => (
-        <IconActions
-          icon={
-            <>
-              <MoreVertIcon className="h-4 w-4" />
-              <span className="sr-only">{t('Utils.OpenMenu')}</span>
-            </>
-          }>
-          <EditDocument documentData={row.original} />
-          <DownloadDocument documentData={row.original} />
-          <DeleteDocument
-            documentData={row.original}
-            connectionId={data.documents.__id}
-          />
-        </IconActions>
+        <div onClick={(e) => e.stopPropagation()}>
+          <IconActions
+            icon={
+              <>
+                <MoreVertIcon className="h-4 w-4" />
+                <span className="sr-only">{t('Utils.OpenMenu')}</span>
+              </>
+            }>
+            <EditDocument documentData={row.original} />
+            <DownloadDocument documentData={row.original} />
+            <DeleteDocument
+              documentData={row.original}
+              connectionId={data.documents.__id}
+            />
+          </IconActions>
+        </div>
       ),
     },
   ];
@@ -176,6 +178,9 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
         manualSorting: true,
         manualPagination: true,
         rowCount: data.documents.totalCount,
+      }}
+      onClickRow={(row) => {
+        window.location.href = `/document/get/${row.id}`;
       }}
       toolbar={
         <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">

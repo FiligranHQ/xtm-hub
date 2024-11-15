@@ -1,7 +1,6 @@
 'use client';
 
 import { LogoutMutation } from '@/components/logout.graphql';
-import { LogoutIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui/servers';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -29,7 +28,7 @@ const Logout: React.FunctionComponent<LogoutProps> = ({ className }) => {
       onClick={logout}
       variant="ghost"
       className={className}>
-      <LogoutIcon className="mr-s h-4 w-4" /> Logout
+      Logout
     </Button>
   );
 };

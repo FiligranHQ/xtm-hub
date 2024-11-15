@@ -2,7 +2,7 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import useGranted from '@/hooks/useGranted';
 import { cn } from '@/lib/utils';
 import { RESTRICTION } from '@/utils/constant';
-import { GroupIcon, OrganizationIcon, SettingsIcon } from 'filigran-icon';
+import { SettingsIcon } from 'filigran-icon';
 import {
   Accordion,
   AccordionContent,
@@ -15,7 +15,7 @@ import {
 import { Button, buttonVariants } from 'filigran-ui/servers';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ElementType, FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
 export interface MenuAdminProps {
   open: boolean;
@@ -36,7 +36,7 @@ const OpenedMenuAdmin = () => (
       </AccordionTrigger>
       <AccordionContent>
         <ul className="space-y-xs">
-          <AdminLinks className="h-8 txt-sub-content" />
+          <AdminLinks className="pl-12 ml-1 h-8 txt-sub-content" />
         </ul>
       </AccordionContent>
     </AccordionItem>
@@ -72,8 +72,8 @@ const ClosedMenuAdmin = () => {
         side="right"
         align="start"
         asChild>
-        <ul className="w-min space-y-xs p-s">
-          <AdminLinks className="pl-0" />
+        <ul className="flex-col gap-xs flex sm:w-[200px] p-s">
+          <AdminLinks />
         </ul>
       </PopoverContent>
     </Popover>
@@ -82,20 +82,18 @@ const ClosedMenuAdmin = () => {
 const adminLinksData = [
   {
     href: '/admin/user',
-    icon: GroupIcon,
     label: 'Users',
     restriction: [RESTRICTION.CAPABILITY_FRT_MANAGE_USER],
   },
   {
     href: '/admin/organizations',
-    icon: OrganizationIcon,
     label: 'Organizations',
   },
 ];
 
 const AdminLinks = ({ className }: { className?: string }) => (
   <>
-    {adminLinksData.map(({ href, icon, label, restriction = [] }) => (
+    {adminLinksData.map(({ href, label, restriction = [] }) => (
       <GuardCapacityComponent
         key={href}
         displayError={false}
@@ -104,7 +102,6 @@ const AdminLinks = ({ className }: { className?: string }) => (
           <AdminButton
             className={className}
             href={href}
-            icon={icon}
             label={label}
           />
         </li>
@@ -115,12 +112,10 @@ const AdminLinks = ({ className }: { className?: string }) => (
 
 const AdminButton = ({
   href,
-  icon: Icon,
   label,
   className,
 }: {
   href: string;
-  icon: ElementType;
   label: string;
   className?: string;
 }) => {
@@ -132,16 +127,13 @@ const AdminButton = ({
         buttonVariants({
           variant: 'ghost',
           className: cn(
-            'h-9 w-full justify-start rounded-none border-none',
+            'flex items-center w-full justify-between txt-sub-content rounded-none normal-case',
             className
           ),
         }),
         currentPath === href &&
           'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
       )}>
-      <span className="ml-1 mr-2 flex w-8 flex-shrink-0 justify-center">
-        <Icon className="h-4 w-4" />
-      </span>
       {label}
     </Link>
   );

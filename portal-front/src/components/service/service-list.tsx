@@ -121,7 +121,9 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                           AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
                           actionButtonText={t('Utils.Continue')}
                           triggerElement={
-                            <Button aria-label="Subscribe service">
+                            <Button
+                              onClick={(e) => e.stopPropagation()}
+                              aria-label="Subscribe service">
                               {t('Service.Subscribe')}
                             </Button>
                           }

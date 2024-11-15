@@ -4,7 +4,7 @@ import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service
 import { SubscriptionTabContent } from '@/components/service/[slug]/subscription-tab-content';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { RESTRICTION } from '@/utils/constant';
-import { AddIcon, DeleteIcon } from 'filigran-icon';
+import { DeleteIcon } from 'filigran-icon';
 import { Tabs, TabsList, TabsTrigger } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { FunctionComponent, useContext } from 'react';
@@ -44,7 +44,7 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
           <TabsTrigger
             key={subscription?.id}
             value={subscription.id ?? ''}
-            className=" data-[state=active]:bg-page-background h-10">
+            className="h-10">
             {subscription.organization_name} (billing: {subscription?.billing}{' '}
             %)
             {subscription?.billing === 0 && (
@@ -79,10 +79,9 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
             serviceId={serviceId}
             trigger={
               <Button
-                className="text-nowrap"
-                variant="ghost"
+                className="ml-1 text-nowrap"
+                variant="outline"
                 aria-label="Add organization">
-                <AddIcon className="mr-2 h-4 w-4" />
                 Add organization
               </Button>
             }
@@ -91,7 +90,7 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
       </TabsList>
 
       {subscriptions?.length === 0 && (
-        <div className="border bg-page-background p-xl">
+        <div className="border p-xl">
           There is no subscription yet on this service...
         </div>
       )}

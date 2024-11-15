@@ -57,7 +57,7 @@
     {
       "service": {
         "id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
-        "name": "Vault",
+        "name": "Partner Vault",
         "provider": "FILIGRAN",
         "type": "Intel",
         "description": "This service allows you to gather information from Filigran.",
