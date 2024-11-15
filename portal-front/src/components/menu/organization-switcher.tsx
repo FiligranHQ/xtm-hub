@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { CityIcon, UnfoldMoreIcon } from 'filigran-icon';
 import { Popover, PopoverContent, PopoverTrigger } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useRouter } from 'next/navigation';
 import { FunctionComponent, useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { organizationSwitcherMutation } from '../../../__generated__/organizationSwitcherMutation.graphql';
@@ -16,6 +17,7 @@ interface TeamSwitcherProps {
 export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
   open,
 }) => {
+  const router = useRouter();
   const { me } = useContext<Portal>(portalContext);
   if (!me) {
     return null;
@@ -38,7 +40,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
         store.invalidateStore();
       },
       onCompleted: () => {
-        window.location.reload();
+        router.push('/');
       },
     });
     setOpenPopover(false);
