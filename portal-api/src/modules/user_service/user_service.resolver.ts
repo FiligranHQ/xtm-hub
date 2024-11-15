@@ -34,7 +34,7 @@ const resolvers: Resolvers = {
       { first, after, orderMode, orderBy },
       context
     ) => {
-      return loadUserServiceByUser(context, context.user.id, {
+      return loadUserServiceByUser(context, {
         first,
         after,
         orderMode,

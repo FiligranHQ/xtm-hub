@@ -54,11 +54,10 @@ export const loadUserServiceById = async (
     .first();
 };
 
-export const loadUserServiceByUser = async (
-  context: PortalContext,
-  userId,
-  opts
-) => {
+export const loadUserServiceByUser = async (context: PortalContext, opts) => {
+  const userSelectedOrganization = context.user.selected_organization_id;
+  const userId = context.user.id;
+
   const queryServicesWithLinks = db<Service>(context, 'Service')
     .leftJoin(
       'Service_Link as service_link',
@@ -101,15 +100,9 @@ export const loadUserServiceByUser = async (
       '=',
       'servcapa.user_service_id'
     )
-    .whereRaw(
-      `
-    (
-      "service"."type" != 'COMMUNITY' OR 
-      ("service"."type" = 'COMMUNITY' AND "sub"."status" = 'ACCEPTED')
-    )
-  `
-    )
+    .where('sub.status', 'ACCEPTED')
     .where('user.id', userId)
+    .where('sub.organization_id', userSelectedOrganization)
     .select([
       'User_Service.*',
       dbRaw(
@@ -148,7 +141,14 @@ export const loadUserServiceByUser = async (
   });
   const { totalCount } = await db<UserService>(context, 'User_Service', opts)
     .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
+    .leftJoin(
+      'Subscription as sub',
+      'User_Service.subscription_id',
+      '=',
+      'sub.id'
+    )
     .where('user.id', userId)
+    .where('sub.organization_id', userSelectedOrganization)
     .countDistinct('User_Service.id as totalCount')
     .first();
 
