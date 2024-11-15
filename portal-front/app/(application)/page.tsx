@@ -6,6 +6,7 @@ import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 
 import { portalContext } from '@/components/portal-context';
+import { EmptyServices } from '@/components/service/home/empty-services';
 import OwnedServices from '@/components/service/home/owned-services';
 import ServiceList from '@/components/service/service-list';
 import { ServiceListQuery } from '@/components/service/service.graphql';
@@ -29,7 +30,7 @@ interface PageProps {}
 const Page: React.FunctionComponent<PageProps> = () => {
   const { isPersonalSpace } = useContext(portalContext);
   if (isPersonalSpace) {
-    return <h2>Bienvenue sur XTM Hub !</h2>;
+    return <EmptyServices />;
   }
   const [count, setCount] = useLocalStorage('countServiceOwned', 50);
   const [orderMode, setOrderMode] = useLocalStorage(
