@@ -11,8 +11,9 @@
     "Success": "Succès",
     "Error": "Erreur",
     "Reset": "Effacer",
-    "Modified": "Modifié",
-    "Inserted": "L'élément a été inséré",
+    "Modified": "a été modifié",
+    "Inserted": "a été inséré",
+    "Deleted": "a été supprimé",
     "OpenMenu": "Ouvrir le menu",
     "Form": {
       "ResetFile": "Supprimer l'actuel document sélectionné."
@@ -51,7 +52,10 @@
         "DescriptionPlaceholder": "Ceci est une courte description du document.",
         "FileAlreadyExists": "Ce document existe déjà",
         "FileExistsDialog": "Ce document existe déjà. Ce document écrasera l'ancien document. Êtes-vous sûr de vouloir continuer ?",
-        "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé."
+        "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé.",
+        "SelectDocument": "Sélectionnez un document",
+        "NoDocument": "Pas de document sélectionné",
+        "DropDocuments": "Lâchez les documents ici"
       },
       "FileTab": {
         "FileName": "Nom de document",

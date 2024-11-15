@@ -31,6 +31,7 @@ export const DocumentDeleteMutation = graphql`
   mutation documentDeleteMutation($documentId: ID, $connections: [ID!]!) {
     deleteDocument(documentId: $documentId) {
       id @deleteEdge(connections: $connections)
+      file_name
     }
   }
 `;
