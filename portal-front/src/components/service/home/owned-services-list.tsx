@@ -29,6 +29,7 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
         {services.map(({ subscription, service_capability, id }) => {
           return (
             <ServiceCard
+              serviceLink={subscription?.service?.links?.[0]?.url ?? ''}
               key={id}
               topRightAction={
                 (service_capability?.some(
@@ -53,6 +54,7 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
                           ),
                         })
                       )}
+                      onClick={(e) => e.stopPropagation()}
                       href={`/admin/service/${subscription?.service?.id}`}>
                       {t('HomePage.Manage')}
                     </Link>

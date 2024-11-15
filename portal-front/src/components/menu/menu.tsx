@@ -30,7 +30,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
       className={cn(
         buttonVariants({
           variant: 'ghost',
-          className: 'h-9 w-full justify-start rounded-none',
+          className: 'h-9 w-full justify-start rounded-none normal-case',
         }),
         currentPath === href &&
           'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
@@ -70,7 +70,9 @@ const Menu = () => {
               )}
             />
           </span>
-          <span className={cn(open ? 'ml-2' : 'sr-only')}>Collapse</span>
+          <span className={(cn(open ? 'ml-2' : 'sr-only'), 'normal-case')}>
+            Collapse
+          </span>
         </Button>
       </div>
     </aside>

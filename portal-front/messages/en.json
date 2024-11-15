@@ -11,8 +11,9 @@
     "Success": "Success",
     "Error": "Error",
     "Reset": "Reset",
-    "Modified": "Modified",
+    "Modified": "has been modified",
     "Inserted": "has been added",
+    "Deleted": "has been deleted",
     "OpenMenu": "Open menu",
     "Form": {
       "ResetFile": "Remove the current selected document."
@@ -44,7 +45,7 @@
       "FileExtension": "The document must have an extension",
       "FileForm": {
         "AddFile": "Add new document",
-        "File": "File",
+        "File": "Document",
         "UploadNewFile": "Upload a new document in Vault",
         "EditFile": "Edit document",
         "ShortNameLabel": "Short name",
@@ -53,7 +54,10 @@
         "DescriptionPlaceholder": "This is a short paragraph to describe the document.",
         "FileAlreadyExists": "This document already exists",
         "FileExistsDialog": "This document already exists. This document will erase the old one. Are you sure you want to continue?",
-        "AlreadyExists": "This document already exists. The old one will be erased."
+        "AlreadyExists": "This document already exists. The old one will be erased.",
+        "SelectDocument": "Select document",
+        "NoDocument": "No document selected",
+        "DropDocuments": "Drop documents here"
       },
       "FileTab": {
         "FileName": "Document name",

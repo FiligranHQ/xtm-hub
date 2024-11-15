@@ -49,7 +49,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
               <span className="sr-only">Open user menu</span>
             </>
           }>
-          <Logout className="w-full justify-start" />
+          <Logout className="normal-case w-full justify-start" />
         </IconActions>
         <ThemeToggle />
         <I18nSelect />

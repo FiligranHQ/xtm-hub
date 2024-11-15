@@ -62,7 +62,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
             variant="ghost"
             role="combobox"
             aria-label="Select a team"
-            className={cn('w-full justify-between rounded-none')}>
+            className={cn('w-full justify-between rounded-none normal-case')}>
             <span className={'flex w-8 flex-shrink-0 justify-center'}>
               <CityIcon className="h-4 w-4" />
             </span>
@@ -89,11 +89,11 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
                 variant="ghost"
                 onClick={() => handleSelectOrganisation(group.id)}
                 className={cn(
-                  'flex items-center w-full justify-between txt-sub-content rounded-none',
+                  'flex items-center w-full justify-between txt-sub-content rounded-none normal-case',
                   me.selected_organization_id === group.id &&
                     'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
                 )}>
-                <CityIcon className="h-4 w-4" /> {group.name}
+                {group.name}
               </Button>
             </li>
           ))}
