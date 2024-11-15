@@ -54,20 +54,23 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
     });
   };
   return (
-    <VaultNewFileFormSheet
-      open={openSheet}
-      setOpen={setOpenSheet}
-      document={documentData}
-      trigger={
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          aria-label="Update document">
-          {t('Utils.Update')}
-        </Button>
-      }
-      handleSubmit={updateDocumentDescription}
-    />
+    <div onClick={(e) => e.stopPropagation()}>
+      <VaultNewFileFormSheet
+        open={openSheet}
+        setOpen={setOpenSheet}
+        document={documentData}
+        trigger={
+          <Button
+            onClick={(e) => e.stopPropagation()}
+            variant="ghost"
+            className="w-full justify-start"
+            aria-label="Update document">
+            {t('Utils.Update')}
+          </Button>
+        }
+        handleSubmit={updateDocumentDescription}
+      />
+    </div>
   );
 };
 

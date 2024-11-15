@@ -17,7 +17,8 @@ export const DownloadDocument: FunctionComponent<DownloadDocumentProps> = ({
   return (
     <Link
       href={`/document/get/${documentData.id}`}
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
         setMenuOpen(false);
       }}
       className={cn(

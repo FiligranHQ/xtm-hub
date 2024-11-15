@@ -79,7 +79,9 @@ export const VaultNewFileFormSheet: FunctionComponent<
       onOpenChange={setOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
 
-      <SheetContent side={'right'}>
+      <SheetContent
+        side={'right'}
+        onClick={(e) => e.stopPropagation()}>
         <SheetHeader className="bg-page-background">
           <SheetTitle>
             {document
@@ -105,8 +107,17 @@ export const VaultNewFileFormSheet: FunctionComponent<
                         <FormControl>
                           <FileInput
                             {...field}
+                            texts={{
+                              selectFile: t(
+                                'Service.Vault.FileForm.SelectDocument'
+                              ),
+                              noFile: t('Service.Vault.FileForm.NoDocument'),
+                              dropFiles: t(
+                                'Service.Vault.FileForm.DropDocuments'
+                              ),
+                            }}
                             allowedTypes={
-                              'image/jpeg, image/gif, image/png, application/pdf, image/svg, video/mp4, video/webm'
+                              'image/jpeg, image/gif, image/png, application/pdf, image/svg, video/mp4, video/webm, .docx, .docw,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                             }
                           />
                         </FormControl>
