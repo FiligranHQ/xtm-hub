@@ -1,5 +1,6 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import useGranted from '@/hooks/useGranted';
+import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 import { RESTRICTION } from '@/utils/constant';
 import { SettingsIcon } from 'filigran-icon';
@@ -13,6 +14,7 @@ import {
   PopoverTrigger,
 } from 'filigran-ui/clients';
 import { Button, buttonVariants } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FunctionComponent, useEffect, useState } from 'react';
@@ -20,30 +22,36 @@ import { FunctionComponent, useEffect, useState } from 'react';
 export interface MenuAdminProps {
   open: boolean;
 }
-const OpenedMenuAdmin = () => (
-  <Accordion
-    type="single"
-    collapsible
-    className="w-full">
-    <AccordionItem
-      className="border-none"
-      value="item-1">
-      <AccordionTrigger className="h-9 px-4 py-2 hover:bg-hover hover:no-underline">
-        <span className="flex w-8 flex-shrink-0 justify-center">
-          <SettingsIcon className="h-4 w-4" />
-        </span>
-        <span className="flex-1 px-2 text-left txt-default">Settings</span>
-      </AccordionTrigger>
-      <AccordionContent>
-        <ul className="space-y-xs">
-          <AdminLinks className="pl-12 ml-1 h-8 txt-sub-content" />
-        </ul>
-      </AccordionContent>
-    </AccordionItem>
-  </Accordion>
-);
+const OpenedMenuAdmin = () => {
+  const t = useTranslations();
+  return (
+    <Accordion
+      type="single"
+      collapsible
+      className="w-full">
+      <AccordionItem
+        className="border-none"
+        value="item-1">
+        <AccordionTrigger className="h-9 px-4 py-2 hover:bg-hover hover:no-underline">
+          <span className="flex w-8 flex-shrink-0 justify-center">
+            <SettingsIcon className="h-4 w-4" />
+          </span>
+          <span className="flex-1 px-2 text-left txt-default">
+            {t('MenuLinks.Settings')}
+          </span>
+        </AccordionTrigger>
+        <AccordionContent>
+          <ul className="space-y-xs">
+            <AdminLinks className="pl-12 ml-1 h-8 txt-sub-content" />
+          </ul>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+};
 
 const ClosedMenuAdmin = () => {
+  const t = useTranslations();
   const [adminOpened, setAdminOpened] = useState<boolean>(false);
   const currentPath = usePathname();
   useEffect(() => {
@@ -61,7 +69,7 @@ const ClosedMenuAdmin = () => {
             currentPath.startsWith('/admin/') &&
               'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
           )}
-          aria-label="Settings menu">
+          aria-label={t('MenuLinks.SettingsLabel')}>
           <span className="flex w-8 flex-shrink-0 justify-center">
             <SettingsIcon className="h-4 w-4" />
           </span>
@@ -79,36 +87,44 @@ const ClosedMenuAdmin = () => {
     </Popover>
   );
 };
-const adminLinksData = [
+
+const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: '/admin/user',
-    label: 'Users',
+    label: t('MenuLinks.Users'),
     restriction: [RESTRICTION.CAPABILITY_FRT_MANAGE_USER],
   },
   {
     href: '/admin/organizations',
-    label: 'Organizations',
+    label: t('MenuLinks.Organizations'),
+  },
+  {
+    href: '/admin/service',
+    label: t('MenuLinks.Services'),
   },
 ];
 
-const AdminLinks = ({ className }: { className?: string }) => (
-  <>
-    {adminLinksData.map(({ href, label, restriction = [] }) => (
-      <GuardCapacityComponent
-        key={href}
-        displayError={false}
-        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS, ...restriction]}>
-        <li>
-          <AdminButton
-            className={className}
-            href={href}
-            label={label}
-          />
-        </li>
-      </GuardCapacityComponent>
-    ))}
-  </>
-);
+const AdminLinks = ({ className }: { className?: string }) => {
+  const t = useTranslations();
+  return (
+    <>
+      {adminLinksData(t).map(({ href, label, restriction = [] }) => (
+        <GuardCapacityComponent
+          key={href}
+          displayError={false}
+          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS, ...restriction]}>
+          <li>
+            <AdminButton
+              className={className}
+              href={href}
+              label={label}
+            />
+          </li>
+        </GuardCapacityComponent>
+      ))}
+    </>
+  );
+};
 
 const AdminButton = ({
   href,

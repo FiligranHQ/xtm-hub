@@ -3,6 +3,7 @@
 import Loader from '@/components/loader';
 import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
 import { Restriction } from '../../__generated__/meContext_fragment.graphql';
@@ -25,10 +26,11 @@ const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   }
   const authorized = capacityRestriction.some(useGranted);
   if (!authorized && displayError) {
+    const t = useTranslations();
     return (
       <>
-        <h2 className={'txt-title'}>Error</h2>You are not authorized to get this
-        page.
+        <h2 className={'txt-title'}>{t('Utils.Error')}</h2>
+        {t('Error.YouAreNotAuthorized')}
       </>
     );
   } else if (!authorized) {

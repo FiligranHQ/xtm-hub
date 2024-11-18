@@ -7,13 +7,13 @@ test.beforeAll('Add necessary data for tests', async () => {
   await addOrganization('Thales');
 });
 test('should confirm CRUD of users is ok', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.login();
-    await page.getByLabel('Settings menu').click();
-    await page.getByRole('link', { name: 'Users' }).click();
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(
-        'Users list'
-    );
+  const loginPage = new LoginPage(page);
+  await loginPage.login();
+  await page.getByLabel('Settings menu').click();
+  await page.getByRole('dialog').getByRole('link', { name: 'Users' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(
+    'Users list'
+  );
 
   // Create User
 

@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import { KeyboardArrowLeftIcon } from 'filigran-icon';
 import { Separator } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
 interface CollapseMenuButtonProps {
@@ -13,6 +14,7 @@ export const CollapseMenuButton: FunctionComponent<CollapseMenuButtonProps> = ({
   open,
   handleOpenMenu,
 }) => {
+  const t = useTranslations();
   return (
     <div className="flex-shrink-0 pb-s">
       <Separator className="my-2" />
@@ -29,7 +31,7 @@ export const CollapseMenuButton: FunctionComponent<CollapseMenuButtonProps> = ({
           />
         </span>
         <span className={cn('normal-case', open ? 'ml-2' : 'sr-only')}>
-          Collapse
+          {t('App.Collapse')}
         </span>
       </Button>
     </div>
