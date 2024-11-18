@@ -17,6 +17,7 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
   const locale = useLocale();
   return (
     <html
+      suppressHydrationWarning
       lang={locale}
       className={`${geologica.variable} ${ibmPlexSans.variable}`}>
       <Head>
