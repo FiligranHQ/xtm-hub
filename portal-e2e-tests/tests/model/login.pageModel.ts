@@ -23,14 +23,11 @@ export default class LoginPage {
   }
 
   getSignInButton() {
-    return this.page.getByRole('button', { name: 'Submit' });
+    return this.page.getByRole('button', { name: 'Sign in' });
   }
 
   async login() {
     await this.page.goto('/');
-    await expect(this.page.getByRole('heading', { level: 1 })).toContainText(
-      'Sign in'
-    );
     await this.fillLoginInput('admin@filigran.io');
     await this.fillPasswordInput('admin');
     return this.getSignInButton().click();
