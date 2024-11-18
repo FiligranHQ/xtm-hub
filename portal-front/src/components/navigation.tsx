@@ -12,7 +12,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   open,
 }) => {
   return (
-    <nav>
+    <nav className="flex-1 flex-shrink-0 pt-s">
       <OrganizationSwitcher open={open} />
       <ul>
         <li>

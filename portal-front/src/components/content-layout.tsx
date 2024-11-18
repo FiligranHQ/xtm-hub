@@ -1,4 +1,3 @@
-import Menu from '@/components/menu/menu';
 import { FunctionComponent, ReactNode } from 'react';
 
 interface ContentLayoutProps {
@@ -10,7 +9,6 @@ export const ContentLayout: FunctionComponent<ContentLayoutProps> = ({
 }) => {
   return (
     <div className="flex flex-1">
-      <Menu />
       <main className={`flex-1 overflow-auto bg-background p-6`}>
         {children}
       </main>

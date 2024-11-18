@@ -1,11 +1,9 @@
 'use client';
 import LoginErrorMessage from '@/components/login/login-error-message';
+import { DisplayLogo } from '@/components/ui/display-logo';
 import { useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
 import { useSearchParams } from 'next/navigation';
 import { FunctionComponent } from 'react';
-import LogoXTMDark from '../../../public/logo_xtm_hub_dark.svg';
-import LogoXTMLight from '../../../public/logo_xtm_hub_light.svg';
 
 interface LoginTitleProps {}
 
@@ -25,11 +23,6 @@ const LoginTitleForm: FunctionComponent<LoginTitleProps> = ({}) => {
       )}
     </>
   );
-};
-
-const DisplayLogo = () => {
-  const { theme } = useTheme();
-  return theme === 'dark' ? <LogoXTMDark /> : <LogoXTMLight />;
 };
 
 export default LoginTitleForm;
