@@ -1,74 +1,80 @@
 {
-  "Utils": {
-    "Cancel": "Annuler",
-    "Validate": "Valider",
-    "Create": "Créer",
-    "Update": "Editer",
-    "Delete": "Supprimer",
-    "Download": "Télécharger",
-    "Continue": "Continuer",
-    "Loading": "Chargement...",
-    "Success": "Succès",
-    "Error": "Erreur",
-    "Reset": "Effacer",
-    "Modified": "a été modifié",
-    "Inserted": "a été inséré",
-    "Deleted": "a été supprimé",
-    "OpenMenu": "Ouvrir le menu",
-    "Form": {
-      "ResetFile": "Supprimer l'actuel document sélectionné."
-    }
-  },
   "HomePage": {
-    "Homepage": "Page d'accueil",
-    "YourServices": "Vos services",
     "AvailableServices": "Services disponibles",
+    "Homepage": "Page d'accueil",
     "Manage": "Gérer",
     "OpenManagement": "Aller vers la page de management",
-    "Welcome": "Bienvenue sur XTMHub !"
+    "Welcome": "Bienvenue sur XTMHub !",
+    "YourServices": "Vos services"
+  },
+  "LocaleSwitcher": {
+    "en": "English",
+    "fr": "Français",
+    "label": "Langage"
+  },
+  "LoginPage": {
+    "Email": "Email",
+    "Login": "Connexion",
+    "Password": "Mot de passe",
+    "Title": "Page de connexion XTM Hub"
   },
   "Service": {
-    "Subscribe": "Souscrire",
-    "SubscribeService": "Souscrire au service",
     "NoOwnedService": "Vous n'avez pas encore de service.",
     "NoService": "Il n'y a pas encore de service...",
-    "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",
-    "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
+    "Subscribe": "Souscrire",
+    "SubscribeService": "Souscrire au service",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
+    "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",
+    "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Vault": {
-      "Vault": "Partenaire Vault",
-      "VaultTitle": "Administration du Vault",
-      "File": "Document à transmettre",
       "DropFile": "Lâchez le document ici",
-      "InsertedFile": "Document inséré",
+      "File": "Document à transmettre",
       "FileExtension": "Le document doit avoir une extension",
       "FileForm": {
         "AddFile": "Ajouter un document",
-        "File": "Document",
-        "UploadNewFile": "Ajout d'un nouveau document dans le Vault",
-        "EditFile": "Editer le document",
+        "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé.",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est une courte description du document.",
+        "DropDocuments": "Lâchez les documents ici",
+        "EditFile": "Editer le document",
+        "File": "Document",
         "FileAlreadyExists": "Ce document existe déjà",
         "FileExistsDialog": "Ce document existe déjà. Ce document écrasera l'ancien document. Êtes-vous sûr de vouloir continuer ?",
-        "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé.",
-        "SelectDocument": "Sélectionnez un document",
         "NoDocument": "Pas de document sélectionné",
-        "DropDocuments": "Lâchez les documents ici"
+        "SelectDocument": "Sélectionnez un document",
+        "ShortNameLabel": "Nom court",
+        "ShortNamePlaceholder": "Filigrane de la tarification",
+        "UploadNewFile": "Ajout d'un nouveau document dans le Vault"
       },
       "FileTab": {
-        "FileName": "Nom de document",
-        "UploadDate": "Date d'ajout",
         "Description": "Description",
-        "Search": "Chercher par nom de document..."
-      }
+        "FileName": "Nom de document",
+        "Search": "Chercher par nom de document...",
+        "UploadDate": "Date d'ajout"
+      },
+      "Vault": "Partenaire Vault",
+      "VaultTitle": "Administration du Vault"
     }
   },
-
-  "LocaleSwitcher": {
-    "fr": "Français",
-    "en": "English",
-    "label": "Langage"
+  "Utils": {
+    "Cancel": "Annuler",
+    "Continue": "Continuer",
+    "Create": "Créer",
+    "Delete": "Supprimer",
+    "Deleted": "a été supprimé",
+    "Download": "Télécharger",
+    "Error": "Erreur",
+    "Form": {
+      "ResetFile": "Supprimer l'actuel document sélectionné."
+    },
+    "Inserted": "a été inséré",
+    "Loading": "Chargement...",
+    "Modified": "a été modifié",
+    "OpenMenu": "Ouvrir le menu",
+    "Reset": "Effacer",
+    "Success": "Succès",
+    "Update": "Editer",
+    "Validate": "Valider"
   }
 }

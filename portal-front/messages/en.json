@@ -1,81 +1,80 @@
 {
-  "Utils": {
-    "Cancel": "Cancel",
-    "Validate": "Validate",
-    "Create": "Create",
-    "Update": "Update",
-    "Delete": "Delete",
-    "Download": "Download",
-    "Continue": "Continue",
-    "Loading": "Loading...",
-    "Success": "Success",
-    "Error": "Error",
-    "Reset": "Reset",
-    "Modified": "has been modified",
-    "Inserted": "has been added",
-    "Deleted": "has been deleted",
-    "OpenMenu": "Open menu",
-    "Form": {
-      "ResetFile": "Remove the current selected document."
-    }
-  },
   "HomePage": {
-    "Homepage": "Homepage",
-    "YourServices": "Your services",
     "AvailableServices": "Available services",
+    "Homepage": "Homepage",
     "Manage": "Manage",
     "OpenManagement": "Go to management page",
-    "Welcome": "Welcome on XTMHub!!"
+    "Welcome": "Welcome on XTMHub!!",
+    "YourServices": "Your services"
+  },
+  "LocaleSwitcher": {
+    "en": "English",
+    "fr": "Français",
+    "label": "Language"
+  },
+  "LoginPage": {
+    "Email": "Email",
+    "Login": "Login",
+    "Password": "Password",
+    "Title": "XTM Hub login page"
   },
   "Service": {
-    "Subscribe": "Subscribe",
-    "SubscribeService": "Subscribe service",
     "NoOwnedService": "You don't have any services yet.",
     "NoService": "There is no service... Yet!",
-    "SureWantSubscriptionDirect": "Are you really sure you want to subscribe this service? This action can not be undone.",
-    "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
+    "Subscribe": "Subscribe",
+    "SubscribeService": "Subscribe service",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
     "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
-
+    "SureWantSubscriptionDirect": "Are you really sure you want to subscribe this service? This action can not be undone.",
+    "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Vault": {
-      "Vault": "Partner Vault",
-      "VaultTitle": "Vault Administration",
-      "File": "Document to send",
       "DropFile": "Drop the document here",
+      "File": "Document to send",
       "FileExtension": "The document must have an extension",
       "FileForm": {
         "AddFile": "Add new document",
-        "File": "Document",
-        "UploadNewFile": "Upload a new document in Vault",
-        "EditFile": "Edit document",
-        "ShortNameLabel": "Short name",
-        "ShortNamePlaceholder": "Filigran Pricing",
+        "AlreadyExists": "This document already exists. The old one will be erased.",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a short paragraph to describe the document.",
+        "DropDocuments": "Drop documents here",
+        "EditFile": "Edit document",
+        "File": "Document",
         "FileAlreadyExists": "This document already exists",
         "FileExistsDialog": "This document already exists. This document will erase the old one. Are you sure you want to continue?",
-        "AlreadyExists": "This document already exists. The old one will be erased.",
-        "SelectDocument": "Select document",
         "NoDocument": "No document selected",
-        "DropDocuments": "Drop documents here"
+        "SelectDocument": "Select document",
+        "ShortNameLabel": "Short name",
+        "ShortNamePlaceholder": "Filigran Pricing",
+        "UploadNewFile": "Upload a new document in Vault"
       },
       "FileTab": {
-        "FileName": "Document name",
-        "UploadDate": "Upload date",
         "Description": "Description",
-        "Search": "Search with document name..."
-      }
+        "FileName": "Document name",
+        "Search": "Search with document name...",
+        "UploadDate": "Upload date"
+      },
+      "Vault": "Partner Vault",
+      "VaultTitle": "Vault Administration"
     }
   },
-  "LoginPage": {
-    "Title": "XTM Hub login page",
-    "Login": "Login",
-    "Email": "Email",
-    "Password": "Password"
-  },
-  "LocaleSwitcher": {
-    "fr": "Français",
-    "en": "English",
-    "label": "Language"
+  "Utils": {
+    "Cancel": "Cancel",
+    "Continue": "Continue",
+    "Create": "Create",
+    "Delete": "Delete",
+    "Deleted": "has been deleted",
+    "Download": "Download",
+    "Error": "Error",
+    "Form": {
+      "ResetFile": "Remove the current selected document."
+    },
+    "Inserted": "has been added",
+    "Loading": "Loading...",
+    "Modified": "has been modified",
+    "OpenMenu": "Open menu",
+    "Reset": "Reset",
+    "Success": "Success",
+    "Update": "Update",
+    "Validate": "Validate"
   }
 }
