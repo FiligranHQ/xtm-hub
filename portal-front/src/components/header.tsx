@@ -5,6 +5,7 @@ import Logout from '@/components/logout';
 import { NavigationApp } from '@/components/navigation';
 import { Portal, portalContext } from '@/components/portal-context';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions } from '@/components/ui/icon-actions';
 import { IndividualIcon } from 'filigran-icon';
 import { Skeleton } from 'filigran-ui';
@@ -20,7 +21,6 @@ import { MenuIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import Logo from '../../public/logo.svg';
 
 // Component interface
 interface HeaderComponentProps {}
@@ -32,15 +32,11 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
     setOpen(false);
   }, [currentPath]);
   return (
-    <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center justify-between border-b bg-page-background dark:bg-background px-4">
-      <Logo className="mr-2 h-8 w-8" />
+    <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between sm:justify-end">
+      <DisplayLogo className="text-primary mr-2 h-full py-l sm:hidden" />
       <div className="mobile:hidden flex items-center gap-s">
         <span>
-          {me?.email ? (
-            <span> {me.email}</span>
-          ) : (
-            <Skeleton className="h-6 w-56" />
-          )}
+          {me?.email ? <> {me.email}</> : <Skeleton className="h-6 w-56" />}
         </span>
         <IconActions
           icon={

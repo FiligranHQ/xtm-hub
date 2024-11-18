@@ -1,9 +1,9 @@
 'use client';
+import { CollapseMenuButton } from '@/components/menu/collapse-menu-button';
+import { MenuLogo } from '@/components/menu/menu-logo';
 import { NavigationApp } from '@/components/navigation';
 import { cn } from '@/lib/utils';
-import { KeyboardArrowLeftIcon } from 'filigran-icon';
-import { Separator } from 'filigran-ui/clients';
-import { Button, buttonVariants } from 'filigran-ui/servers';
+import { buttonVariants } from 'filigran-ui/servers';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ElementType, FunctionComponent, useCallback } from 'react';
@@ -52,29 +52,15 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'mobile:hidden z-9 sticky top-[4rem] flex h-[calc(100vh-4rem)] flex-col justify-between overflow-y-auto overflow-x-hidden border-r bg-page-background py-2 duration-300 ease-in-out',
+        'mobile:hidden z-9 sticky top-0 flex h-screen flex-col overflow-y-auto overflow-x-hidden border-r bg-page-background duration-300 ease-in-out',
         open ? 'w-48' : 'w-16'
       )}>
+      <MenuLogo open={open} />
       <NavigationApp open={open} />
-      <div>
-        <Separator className="my-2" />
-        <Button
-          variant="ghost"
-          className="h-9 w-full justify-start border-none"
-          onClick={handleOpenMenu}>
-          <span className="flex w-8 flex-shrink-0 justify-center">
-            <KeyboardArrowLeftIcon
-              className={cn(
-                'h-4 w-4 p-1 duration-300 ease-in-out',
-                open ? 'rotate-0' : 'rotate-180'
-              )}
-            />
-          </span>
-          <span className={(cn(open ? 'ml-2' : 'sr-only'), 'normal-case')}>
-            Collapse
-          </span>
-        </Button>
-      </div>
+      <CollapseMenuButton
+        open={open}
+        handleOpenMenu={handleOpenMenu}
+      />
     </aside>
   );
 };
