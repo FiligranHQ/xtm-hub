@@ -35,7 +35,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
         <AppContext>
           <PageLoader>
             <Menu />
-            <div className="flex flex-col flex-1">
+            <div className="w-full">
               <HeaderComponent />
               <ContentLayout>{children}</ContentLayout>
             </div>
