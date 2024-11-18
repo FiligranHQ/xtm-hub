@@ -12,6 +12,7 @@ import {
   FormLabel,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FunctionComponent } from 'react';
@@ -19,7 +20,6 @@ import { useForm } from 'react-hook-form';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
 import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
-import FiligranLogo from '../../../public/filigran_logo.svg';
 
 interface LoginFormProps {
   queryRef: PreloadedQuery<settingsQuery>;
@@ -33,6 +33,7 @@ const formSchema = z.object({
 // Component
 const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
   const router = useRouter();
+  const t = useTranslations();
   const data = usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,11 +52,9 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
       },
     });
   };
-
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
       <div className="flex flex-col items-center p-xl sm:p-0">
-        <FiligranLogo className="text-primary px-xl" />
         <LoginTitleForm />
         {data.settings.platform_providers.some(
           ({ provider }) => provider === 'local'
@@ -69,10 +68,10 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('LoginPage.Email')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="email"
+                        placeholder={t('LoginPage.Email')}
                         {...field}
                       />
                     </FormControl>
@@ -84,11 +83,11 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{t('LoginPage.Password')}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="password"
+                        placeholder={t('LoginPage.Password')}
                         {...field}
                       />
                     </FormControl>
@@ -98,7 +97,7 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
               <Button
                 className="w-full"
                 type="submit">
-                Submit
+                Sign in
               </Button>
             </form>
           </Form>
@@ -111,6 +110,8 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
             return (
               <Button
                 key={platformProvider.provider}
+                variant="outline"
+                className="text-secondary border-secondary"
                 asChild>
                 <Link
                   className="w-full"

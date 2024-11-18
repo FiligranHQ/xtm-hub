@@ -67,6 +67,12 @@
       }
     }
   },
+  "LoginPage": {
+    "Title": "XTM Hub login page",
+    "Login": "Login",
+    "Email": "Email",
+    "Password": "Password"
+  },
   "LocaleSwitcher": {
     "fr": "Français",
     "en": "English",
