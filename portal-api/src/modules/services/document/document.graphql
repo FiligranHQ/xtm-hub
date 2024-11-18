@@ -11,9 +11,9 @@ type Document implements Node {
 }
 
 type Mutation {
-  addDocument(document: Upload, description: String, serviceId: String): Document! @auth
-  editDocument(documentId: ID, newDescription: String, serviceId: String): Document! @auth
-  deleteDocument(documentId: ID, serviceId: String): Document! @auth
+  addDocument(document: Upload, description: String, serviceId: String): Document! @auth(requires: [BYPASS])
+  editDocument(documentId: ID, newDescription: String, serviceId: String): Document! @auth(requires: [BYPASS])
+  deleteDocument(documentId: ID, serviceId: String): Document! @auth(requires: [BYPASS])
 }
 
 enum DocumentOrdering {
@@ -34,7 +34,7 @@ type DocumentConnection {
 }
 
 type Query {
-  documentExists(documentName: String): Boolean @auth
+  documentExists(documentName: String): Boolean @auth(requires: [BYPASS])
   documents(
     first: Int!
     after: ID

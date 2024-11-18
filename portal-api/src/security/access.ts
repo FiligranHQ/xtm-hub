@@ -12,6 +12,7 @@ const isUserGranted = (user: UserLoadUserBy, capability: CapabilityPortal) =>
   user.capabilities.some(
     (c) => c.id === CAPABILITY_BYPASS.id || c.id === capability.id
   );
+
 /**
  * This method will filter every event to distribute real time data to users that have access to it
  * Data event must be consistent to provide all information needed to infer security access.
@@ -45,11 +46,15 @@ export const isNodeAccessible = async (
     // Users can only be dispatched to admin
     return isUserGranted(user, CAPABILITY_FRT_MANAGE_USER);
   }
+
   if (type === 'Organization') {
     // TODO Organization can be dispatched to admin or if user is part of
     // We do not send any organization by SSE for the moment
     return true;
   }
+    if (type === 'Document') {
+        return true;
+    }
   if (availableTypes.includes(type)) {
     return true;
   }
@@ -82,14 +87,56 @@ export const applyDbSecurity = <T>(
     'Document',
     'User_Organization',
   ];
+
   // If user is admin, user has no access restriction
   if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
     return queryContext;
   }
+
+  if (type === 'Document') {
+    queryContext
+      .rightJoin(
+        'Service as securityService',
+        'securityService.id',
+        '=',
+        'Document.service_id'
+      )
+      .rightJoin('Subscription as securitySubscription', function () {
+        this.onVal(
+          'securitySubscription.service_id',
+          '=',
+          context.currentServiceId
+        );
+      })
+      .rightJoin('User_Service as securityUserService', function () {
+        this.on(
+          'securityUserService.subscription_id',
+          '=',
+          'securitySubscription.id'
+        ).andOnVal('securityUserService.user_id', '=', context?.user?.id);
+      })
+      .rightJoin(
+        'Service_Capability as securityServiceCapability',
+        function () {
+          this.on(
+            'securityUserService.id',
+            '=',
+            'securityServiceCapability.user_service_id'
+          ).andOnVal(
+            'securityServiceCapability.service_capability_name',
+            '=',
+            'ACCESS_SERVICE'
+          );
+        }
+      );
+    return queryContext;
+  }
+
   // Standard user can access to all users from its own organization
   if (type === 'User') {
     return queryContext;
   }
+
   // Standard user can access only its own organization
   //if (type === 'Organization') {
   //  queryContext.rightJoin(

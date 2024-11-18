@@ -25,7 +25,7 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
   const [vaultDeleteDocumentMutation] = useMutation<documentDeleteMutation>(
     DocumentDeleteMutation
   );
-  const serviceId = new URLSearchParams(window.location.search).get('id');
+  const serviceId = window.location.pathname.split('/').pop();
 
   const deleteDocument = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

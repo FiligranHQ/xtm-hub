@@ -28,7 +28,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
   );
   const { setMenuOpen } = useContext(IconActionContext);
 
-  const serviceId = new URLSearchParams(window.location.search).get('id');
+  const serviceId = window.location.pathname.split('/').pop();
 
   const updateDocumentDescription = (
     values: z.infer<typeof newDocumentSchema>

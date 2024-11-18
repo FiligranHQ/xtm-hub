@@ -16,29 +16,37 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
 
+import GuardCapacityComponent from '@/components/admin-guard';
+import { ServiceById } from '@/components/service/service.graphql';
 import DeleteDocument from '@/components/service/vault/delete-document';
 import DownloadDocument from '@/components/service/vault/download-document';
 import EditDocument from '@/components/service/vault/edit-document';
 import { IconActions } from '@/components/ui/icon-actions';
+import { RESTRICTION } from '@/utils/constant';
 import { FormatDate } from '@/utils/date';
 import {
   PreloadedQuery,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
-import { documentsList$key } from '../../../../__generated__/documentsList.graphql';
+import { documentItem_fragment$data } from '../../../../../__generated__/documentItem_fragment.graphql';
+import { documentsList$key } from '../../../../../__generated__/documentsList.graphql';
 import {
   DocumentOrdering,
   OrderingMode,
   documentsQuery,
   documentsQuery$variables,
-} from '../../../../__generated__/documentsQuery.graphql';
+} from '../../../../../__generated__/documentsQuery.graphql';
+import { serviceByIdQuery } from '../../../../../__generated__/serviceByIdQuery.graphql';
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;
+  queryRefService: PreloadedQuery<serviceByIdQuery>;
 }
 
-const DocumentList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
+const DocumentList: React.FunctionComponent<ServiceProps> = ({
+  queryRef,
+  queryRefService,
+}) => {
   const queryData = usePreloadedQuery<documentsQuery>(
     DocumentsListQuery,
     queryRef
@@ -48,6 +56,11 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
     documentsQuery,
     documentsList$key
   >(documentsFragment, queryData);
+
+  const queryDataService = usePreloadedQuery<serviceByIdQuery>(
+    ServiceById,
+    queryRefService
+  );
 
   const documentData: documentItem_fragment$data[] = data.documents.edges.map(
     ({ node }) =>
@@ -80,22 +93,28 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => (
-        <div onClick={(e) => e.stopPropagation()}>
-          <IconActions
-            icon={
-              <>
-                <MoreVertIcon className="h-4 w-4" />
-                <span className="sr-only">{t('Utils.OpenMenu')}</span>
-              </>
-            }>
+          <div onClick={(e) => e.stopPropagation()}>
+        <IconActions
+          icon={
+            <>
+              <MoreVertIcon className="h-4 w-4" />
+              <span className="sr-only">{t('Utils.OpenMenu')}</span>
+            </>
+          }>
+          <GuardCapacityComponent
+            capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
             <EditDocument documentData={row.original} />
-            <DownloadDocument documentData={row.original} />
+          </GuardCapacityComponent>
+          <DownloadDocument documentData={row.original} />
+          <GuardCapacityComponent
+            capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
             <DeleteDocument
               documentData={row.original}
               connectionId={data.documents.__id}
             />
-          </IconActions>
-        </div>
+          </GuardCapacityComponent>
+        </IconActions>
+          </div>
       ),
     },
   ];
@@ -166,42 +185,46 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({ queryRef }) => {
   };
 
   return (
-    <DataTable
-      columns={columns}
-      data={documentData}
-      onResetTable={resetAll}
-      tableOptions={{
-        onSortingChange: onSortingChange,
-        onPaginationChange: onPaginationChange,
-        onColumnOrderChange: setColumnOrder,
-        onColumnVisibilityChange: setColumnVisibility,
-        manualSorting: true,
-        manualPagination: true,
-        rowCount: data.documents.totalCount,
-      }}
-      onClickRow={(row) => {
-        window.location.href = `/document/get/${row.id}`;
-      }}
-      toolbar={
-        <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
-          <Input
-            className="w-full sm:w-1/3"
-            placeholder={t('Service.Vault.FileTab.Search')}
-            onChange={(e) => handleInputChange(e.target.value)}
-          />
-          <div className="justify-between flex w-full sm:w-auto items-center gap-s">
-            <DataTableHeadBarOptions />
-            <VaultForm connectionId={data?.documents?.__id} />
+    <>
+      <h1 className="pb-s">{queryDataService.serviceById.name}</h1>
+
+      <DataTable
+        columns={columns}
+        data={documentData}
+        onResetTable={resetAll}
+        tableOptions={{
+          onSortingChange: onSortingChange,
+          onPaginationChange: onPaginationChange,
+          onColumnOrderChange: setColumnOrder,
+          onColumnVisibilityChange: setColumnVisibility,
+          manualSorting: true,
+          manualPagination: true,
+          rowCount: data.documents.totalCount,
+        }}
+        onClickRow={(row) => {
+            window.location.href = `/document/get/${row.id}`;
+        }}
+        toolbar={
+          <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
+            <Input
+              className="w-full sm:w-1/3"
+              placeholder={t('Service.Vault.FileTab.Search')}
+              onChange={(e) => handleInputChange(e.target.value)}
+            />
+            <div className="justify-between flex w-full sm:w-auto items-center gap-s">
+              <DataTableHeadBarOptions />
+              <VaultForm connectionId={data?.documents?.__id} />
+            </div>
           </div>
-        </div>
-      }
-      tableState={{
-        sorting: mapToSortingTableValue(orderBy, orderMode),
-        pagination,
-        columnOrder,
-        columnVisibility,
-      }}
-    />
+        }
+        tableState={{
+          sorting: mapToSortingTableValue(orderBy, orderMode),
+          pagination,
+          columnOrder,
+          columnVisibility,
+        }}
+      />
+    </>
   );
 };
 

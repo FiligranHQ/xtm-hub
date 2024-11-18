@@ -20,7 +20,7 @@ export const normalizeDocumentName = (documentName: string): string => {
 
 export const checkDocumentExists = async (documentName: string) => {
   const documents: Document[] = await loadUnsecureDocumentsBy({
-    file_name: documentName,
+    file_name: normalizeDocumentName(documentName),
   });
   return documents.length > 0;
 };

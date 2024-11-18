@@ -14,11 +14,11 @@ export const DownloadDocument: FunctionComponent<DownloadDocumentProps> = ({
 }) => {
   const { setMenuOpen } = useContext(IconActionContext);
   const t = useTranslations();
-  const serviceId = new URLSearchParams(window.location.search).get('id');
+  const serviceId = window.location.pathname.split('/').pop();
 
   return (
     <Link
-      href={`/document/get/${documentData.id}/${serviceId}`}
+      href={`/document/get/${serviceId}/${documentData.id}`}
       onClick={() => {
           e.stopPropagation();
         setMenuOpen(false);

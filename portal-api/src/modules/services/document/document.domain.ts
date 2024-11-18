@@ -7,7 +7,6 @@ import Document, {
 } from '../../../model/kanel/public/Document';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import { PortalContext } from '../../../model/portal-context';
-import { checkUserIsAuthorized } from '../../user_service/user_service.domain';
 import {
   deleteFileToMinio,
   insertFileInMinio,
@@ -72,18 +71,19 @@ export const updateDocumentDescription = async (
   documentId: DocumentId,
   serviceId: ServiceId
 ): Promise<Document[]> => {
-  await checkUserIsAuthorized(context, serviceId, 'ACCESS_SERVICE');
-
-  return updateDocument(context, updateData, documentId);
+  return updateDocument(context, updateData, {
+    id: documentId,
+    service_id: serviceId,
+  });
 };
 
 export const updateDocument = async (
   context: PortalContext,
   updateData: DocumentMutator,
-  documentId: DocumentId
+  field: DocumentMutator
 ): Promise<Document[]> => {
   return db<Document>(context, 'Document')
-    .where({ id: documentId })
+    .where(field)
     .update(updateData)
     .returning('*');
 };
@@ -95,7 +95,7 @@ export const incrementDocumentsDownloads = async (
   const data: DocumentMutator = {
     download_number: document.download_number + 1,
   };
-  await updateDocument(context, data, document.id);
+  await updateDocument(context, data, { id: document.id });
 };
 
 export const deleteDocument = async (
@@ -103,9 +103,10 @@ export const deleteDocument = async (
   documentId: DocumentId,
   serviceId: ServiceId
 ): Promise<Document> => {
-  await checkUserIsAuthorized(context, serviceId, 'ACCESS_SERVICE');
-
-  const [documentFromDb] = await loadDocumentBy(context, { id: documentId });
+  const [documentFromDb] = await loadDocumentBy(context, {
+    id: documentId,
+    service_id: serviceId,
+  });
   await deleteFileToMinio(documentFromDb.minio_name);
   await deleteDocumentBy({ id: documentId });
   return documentFromDb;
@@ -117,8 +118,6 @@ export const getDocuments = async (
   filter,
   serviceId: ServiceId
 ): Promise<DocumentConnection> => {
-  await checkUserIsAuthorized(context, serviceId, 'ACCESS_SERVICE');
-
   return loadDocuments(context, opts, filter, serviceId);
 };
 
@@ -129,10 +128,10 @@ export const loadDocuments = async (
   serviceId: ServiceId
 ): Promise<DocumentConnection> => {
   const query = paginate<Document>(context, 'Document', opts)
-    .where('active', '=', true)
-    .where('service_id', '=', serviceId);
+    .where('Document.active', '=', true)
+    .where('Document.service_id', '=', serviceId);
   if (filter) {
-    query.where('file_name', 'LIKE', `${filter}%`);
+    query.where('Document.file_name', 'LIKE', `${filter}%`);
   }
 
   const documentConnection = await query
@@ -140,13 +139,13 @@ export const loadDocuments = async (
     .asConnection<DocumentConnection>();
 
   const queryCount = db<Document>(context, 'Document', opts)
-    .where('active', '=', true)
-    .where('service_id', '=', serviceId);
+    .where('Document.active', '=', true)
+    .where('Document.service_id', '=', serviceId);
   if (filter) {
-    queryCount.where('file_name', 'LIKE', `${filter}%`);
+    queryCount.where('Document.file_name', 'LIKE', `${filter}%`);
   }
   const { totalCount } = await queryCount
-    .countDistinct('id as totalCount')
+    .countDistinct('Document.id as totalCount')
     .first();
 
   return {
