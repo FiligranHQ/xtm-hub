@@ -19,15 +19,15 @@ const resolvers: Resolvers = {
         const minioName = await sendFileToS3(
           opt.document.file,
           context.user.id,
-          fromGlobalId(opt.serviceId).id as ServiceId
+          context.currentServiceId as ServiceId
         );
         const data: Document = {
           uploader_id: context.user.id as UserId,
           description: opt.description,
           minio_name: minioName,
           file_name: normalizeDocumentName(opt.document.file.filename),
+          service_id: context.currentServiceId,
           created_at: new Date(),
-          service_id: fromGlobalId(opt.serviceId).id as ServiceId,
         } as unknown as Document;
         const [addedDocument] = await insertDocument(data);
         return addedDocument;
@@ -36,17 +36,13 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
-    editDocument: async (
-      _,
-      { documentId, newDescription, serviceId },
-      context
-    ) => {
+    editDocument: async (_, { documentId, newDescription }, context) => {
       try {
         const [document] = await updateDocumentDescription(
           context,
           { description: newDescription },
           fromGlobalId(documentId).id as DocumentId,
-          fromGlobalId(serviceId).id as ServiceId
+          context.currentServiceId as ServiceId
         );
         return document;
       } catch (error) {
@@ -54,12 +50,12 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
-    deleteDocument: async (_, { documentId, serviceId }, context) => {
+    deleteDocument: async (_, { documentId }, context) => {
       try {
         const deletedDocument = await deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
-          fromGlobalId(serviceId).id as ServiceId
+          context.currentServiceId as ServiceId
         );
         return deletedDocument;
       } catch (error) {

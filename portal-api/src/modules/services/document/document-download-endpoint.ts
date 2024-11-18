@@ -5,14 +5,12 @@ import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
-import { ServiceId } from '../../../model/kanel/public/Service';
 import { PortalContext } from '../../../model/portal-context';
-import { checkUserIsAuthorized } from '../../user_service/user_service.domain';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
 
 export const documentDownloadEndpoint = (app) => {
-  app.get(`/document/get/:filename/:serviceId`, cors(), async (req, res) => {
+  app.get(`/document/get/:serviceId/:filename`, cors(), async (req, res) => {
     const { user } = req.session;
     if (!user || user.capabilities.length === 0) {
       res.status(401).json({ message: 'You must be logged in' });
@@ -24,11 +22,6 @@ export const documentDownloadEndpoint = (app) => {
         req,
         res,
       };
-      await checkUserIsAuthorized(
-        context,
-        fromGlobalId(req.params.serviceId).id as ServiceId,
-        'ACCESS_SERVICE'
-      );
 
       const [document] = await loadDocumentBy(context, {
         id: fromGlobalId(req.params.filename).id as DocumentId,

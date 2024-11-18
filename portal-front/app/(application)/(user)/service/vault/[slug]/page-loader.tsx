@@ -1,8 +1,10 @@
 'use client';
 
-import DocumentList from '@/components/service/vault/document-list';
+import { ServiceById } from '@/components/service/service.graphql';
+import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import { DocumentsListQuery } from '@/components/service/vault/document.graphql';
+import useMountingLoader from '@/hooks/useMountingLoader';
 import { FormatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
@@ -10,8 +12,9 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useQueryLoader } from 'react-relay';
-import { documentItem_fragment$data } from '../../../../../__generated__/documentItem_fragment.graphql';
-import { documentsQuery } from '../../../../../__generated__/documentsQuery.graphql';
+import { documentItem_fragment$data } from '../../../../../../__generated__/documentItem_fragment.graphql';
+import { documentsQuery } from '../../../../../../__generated__/documentsQuery.graphql';
+import { serviceByIdQuery } from '../../../../../../__generated__/serviceByIdQuery.graphql';
 interface PreloaderProps {}
 
 const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
@@ -43,11 +46,15 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
     },
   ];
 
-  const serviceId = new URLSearchParams(window.location.search).get('id');
+  const serviceId = window.location.pathname.split('/').pop();
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, orderBy, orderMode } = documentListLocalStorage(columns);
   const [readyToLoad, setReadyToLoad] = useState(false);
+
+  const [queryRefService, loadQueryService] =
+    useQueryLoader<serviceByIdQuery>(ServiceById);
+  useMountingLoader(loadQueryService, { service_id: serviceId });
 
   useEffect(() => {
     if (serviceId) {
@@ -71,9 +78,11 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
 
   return (
     <>
-      <h1 className="pb-s">{t('Service.Vault.Vault')}</h1>
-      {queryRef && serviceId ? (
-        <DocumentList queryRef={queryRef} />
+      {queryRef && serviceId && queryRefService ? (
+        <DocumentList
+          queryRefService={queryRefService}
+          queryRef={queryRef}
+        />
       ) : (
         <DataTable
           data={[]}
