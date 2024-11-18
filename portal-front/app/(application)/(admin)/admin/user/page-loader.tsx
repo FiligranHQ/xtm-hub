@@ -5,8 +5,10 @@ import { useUserListLocalstorage } from '@/components/admin/user/user-list-local
 import { UserListQuery } from '@/components/admin/user/user.graphql';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { UseTranslationsProps } from '@/i18n/config';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 import { userQuery } from '../../../../../__generated__/userQuery.graphql';
@@ -34,23 +36,23 @@ const columns: ColumnDef<UserData>[] = [
     },
   },
 ];
-const breadcrumbValue = [
+const breadcrumbValue = (t: UseTranslationsProps) => [
   {
-    label: 'Backoffice',
+    label: t('MenuLinks.Backoffice'),
   },
   {
-    label: 'Users',
+    label: t('MenuLinks.Users'),
   },
 ];
-
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
+  const t = useTranslations();
   const [queryRef, loadQuery] = useQueryLoader<userQuery>(UserListQuery);
   const { count, orderBy, orderMode } = useUserListLocalstorage(columns);
   useMountingLoader(loadQuery, { count, orderBy, orderMode });
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue} />
+      <BreadcrumbNav value={breadcrumbValue(t)} />
       <h1 className="pb-s">Users list</h1>
       {queryRef ? (
         <UserList

@@ -1,4 +1,11 @@
 {
+  "App": {
+    "Collapse": "Réduire",
+    "Title": "XTM Hub"
+  },
+  "Error": {
+    "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
+  },
   "HomePage": {
     "AvailableServices": "Services disponibles",
     "Homepage": "Page d'accueil",
@@ -17,6 +24,15 @@
     "Login": "Connexion",
     "Password": "Mot de passe",
     "Title": "Page de connexion XTM Hub"
+  },
+  "MenuLinks": {
+    "Backoffice": "Backoffice",
+    "Home": "Accueil",
+    "Organizations": "Organisations",
+    "Services": "Services",
+    "Users": "Utilisateurs",
+    "SettingsLabel": "Menu des paramètres",
+    "Settings": "Réglages"
   },
   "Service": {
     "NoOwnedService": "Vous n'avez pas encore de service.",

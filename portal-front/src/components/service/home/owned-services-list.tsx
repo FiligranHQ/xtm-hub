@@ -55,7 +55,7 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
                         })
                       )}
                       onClick={(e) => e.stopPropagation()}
-                      href={`/admin/service/${subscription?.service?.id}`}>
+                      href={`/manage/service/${subscription?.service?.id}`}>
                       {t('HomePage.Manage')}
                     </Link>
                   </IconActions>

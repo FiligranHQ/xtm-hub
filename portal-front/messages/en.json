@@ -1,4 +1,11 @@
 {
+  "App": {
+    "Collapse": "Collapse",
+    "Title": "XTM Hub"
+  },
+  "Error": {
+    "YouAreNotAuthorized": "You are not authorized to get this page."
+  },
   "HomePage": {
     "AvailableServices": "Available services",
     "Homepage": "Homepage",
@@ -17,6 +24,15 @@
     "Login": "Login",
     "Password": "Password",
     "Title": "XTM Hub login page"
+  },
+  "MenuLinks": {
+    "Backoffice": "Backoffice",
+    "Home": "Home",
+    "Organizations": "Organizations",
+    "Services": "Services",
+    "Users": "Users",
+    "SettingsLabel": "Settings menu",
+    "Settings": "Settings"
   },
   "Service": {
     "NoOwnedService": "You don't have any services yet.",
@@ -77,4 +93,5 @@
     "Update": "Update",
     "Validate": "Validate"
   }
+
 }

@@ -12,7 +12,10 @@ interface PageProps {}
 const Page: React.FunctionComponent<PageProps> = async () => {
   return (
     <GuardCapacityComponent
-      capacityRestriction={[RESTRICTION.CAPABILITY_FRT_MANAGE_USER]}>
+      capacityRestriction={[
+        RESTRICTION.CAPABILITY_BYPASS,
+        RESTRICTION.CAPABILITY_FRT_MANAGE_USER,
+      ]}>
       <PageLoader />
     </GuardCapacityComponent>
   );
