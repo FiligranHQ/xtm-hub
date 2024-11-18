@@ -17,7 +17,8 @@
     "test:e2e": "yarn playwright test",
     "test:e2e:ui": "yarn playwright test --ui",
     "generate-test-e2e": "npx playwright codegen http://localhost:3001/",
-    "prepare": "cd .. && husky ./.husky"
+    "prepare": "cd .. && husky ./.husky",
+    "auto-translation": "i18n-auto-translation -a deepl-free -p ./messages/en.json -t fr -k $SUBSCRIPTION_KEY"
   },
   "dependencies": {
     "@hookform/resolvers": "3.9.0",
@@ -64,6 +65,7 @@
     "eslint-config-next": "14.2.15",
     "eslint-config-prettier": "9.1.0",
     "husky": "9.1.6",
+    "i18n-auto-translation": "1.8.2",
     "jsdom": "25.0.1",
     "lint-staged": "15.2.10",
     "monocart-reporter": "2.9.6",
