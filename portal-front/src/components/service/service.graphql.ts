@@ -20,45 +20,6 @@ export const ServiceById = graphql`
   }
 `;
 
-export const serviceListFragment = graphql`
-  fragment serviceList_fragment on Service {
-    id
-    name
-    description
-    provider
-    type
-    subscription_service_type
-    creation_status
-    subscribed
-    capabilities
-  }
-`;
-
-export const communityListFragment = graphql`
-  fragment serviceCommunityList_fragment on Service {
-    id
-    name
-    description
-    provider
-    type
-    subscription_service_type
-    creation_status
-    organization {
-      id
-      name
-    }
-    subscription {
-      id
-      status
-      justification
-      organization {
-        id
-        name
-      }
-    }
-  }
-`;
-
 export const subscription = graphql`
   subscription serviceListSubscription($connections: [ID!]!) {
     Service {
@@ -72,38 +33,6 @@ export const subscription = graphql`
         id @deleteRecord
       }
     }
-  }
-`;
-
-export const servicesListFragment = graphql`
-  fragment serviceList_services on Query
-  @refetchable(queryName: "ServicesPaginationQuery") {
-    services(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          id
-          ...serviceList_fragment @relay(mask: false)
-        }
-      }
-    }
-  }
-`;
-
-export const ServiceListQuery = graphql`
-  query serviceQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: ServiceOrdering!
-    $orderMode: OrderingMode!
-  ) {
-    ...serviceList_services
   }
 `;
 
@@ -159,5 +88,19 @@ export const ServiceUserSlugQuery = graphql`
     $orderMode: OrderingMode!
   ) {
     ...serviceUser
+  }
+`;
+
+export const serviceListFragment = graphql`
+  fragment serviceList_fragment on Service {
+    id
+    name
+    description
+    provider
+    type
+    subscription_service_type
+    creation_status
+    subscribed
+    capabilities
   }
 `;
