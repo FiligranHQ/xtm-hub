@@ -43,6 +43,7 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
+    //TODO Modify for the use case
     addUserService: async (_, { input }, context) => {
       const user = await getOrCreateUser(input.email);
 
