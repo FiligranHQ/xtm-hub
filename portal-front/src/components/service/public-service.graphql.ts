@@ -2,7 +2,7 @@ import { graphql } from 'react-relay';
 
 export const publicServiceListFragment = graphql`
   fragment publicServiceList_services on Query
-  @refetchable(queryName: "ServicesPaginationQuery") {
+  @refetchable(queryName: "PublicServicesPaginationQuery") {
     publicServices(
       first: $count
       after: $cursor
