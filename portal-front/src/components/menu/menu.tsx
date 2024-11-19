@@ -52,7 +52,7 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'mobile:hidden z-9 sticky flex-shrink-0 top-0 flex h-screen flex-col overflow-y-auto overflow-x-hidden border-r bg-page-background duration-300 ease-in-out',
+        'mobile:hidden z-20 sticky flex-shrink-0 top-0 left-0 flex h-screen flex-col overflow-y-auto overflow-x-hidden border-r bg-page-background duration-300 ease-in-out',
         open ? 'w-48' : 'w-16'
       )}>
       <MenuLogo />

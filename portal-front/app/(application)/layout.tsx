@@ -35,7 +35,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
         <AppContext>
           <PageLoader>
             <Menu />
-            <div className="w-full">
+            <div className="w-full overflow-auto h-screen">
               <HeaderComponent />
               <ContentLayout>{children}</ContentLayout>
             </div>
