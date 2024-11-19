@@ -15,11 +15,18 @@ import ServicePrice, {
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
-import { loadPublicServices, loadServiceBy } from './services.domain';
+import {
+  loadPublicServices,
+  loadServiceBy,
+  loadServices,
+} from './services.domain';
 
 const resolvers: Resolvers = {
   Query: {
     services: async (_, opt, context) => {
+      return loadServices(context, opt);
+    },
+    publicServices: async (_, opt, context) => {
       return loadPublicServices(context, opt);
     },
     serviceById: async (_, { service_id }, context) => {
