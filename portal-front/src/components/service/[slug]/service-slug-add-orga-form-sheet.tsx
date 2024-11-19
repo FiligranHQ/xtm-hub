@@ -128,13 +128,15 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {organizations.organizations.edges.map(({ node }) => (
-                        <SelectItem
-                          key={node.id}
-                          value={node.id}>
-                          {node.name}
-                        </SelectItem>
-                      ))}
+                      {organizations.organizations.edges
+                        .filter(({ node }) => !node.personal_space)
+                        .map(({ node }) => (
+                          <SelectItem
+                            key={node.id}
+                            value={node.id}>
+                            {node.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
