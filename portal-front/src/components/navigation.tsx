@@ -16,9 +16,11 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   open,
 }) => {
   const t = useTranslations();
-  const { hasCapability } = useContext<Portal>(portalContext);
+  const { hasCapability, isPersonalSpace } = useContext<Portal>(portalContext);
   const canManageUser =
-    hasCapability && hasCapability(RESTRICTION.CAPABILITY_FRT_MANAGE_USER);
+    hasCapability &&
+    hasCapability(RESTRICTION.CAPABILITY_FRT_MANAGE_USER) &&
+    !isPersonalSpace;
   return (
     <nav className="flex-1 flex-shrink-0 pt-s">
       <OrganizationSwitcher open={open} />

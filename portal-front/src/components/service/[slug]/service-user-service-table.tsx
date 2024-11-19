@@ -6,7 +6,7 @@ import { MoreVertIcon } from 'filigran-icon';
 import { DataTable } from 'filigran-ui/clients';
 import { Badge, Button } from 'filigran-ui/servers';
 import * as React from 'react';
-import { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, ReactNode, useMemo } from 'react';
 import { useMutation } from 'react-relay';
 import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
@@ -17,6 +17,7 @@ interface ServiceUserServiceProps {
   setOpenSheet: (open: boolean) => void;
   setCurrentUser: (user: userService_fragment$data) => void;
   loadQuery: () => void;
+  toolbar?: ReactNode;
 }
 
 const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
@@ -25,6 +26,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
   setOpenSheet,
   setCurrentUser,
   loadQuery,
+  toolbar,
 }) => {
   const [commitUserServiceDeletingMutation] =
     useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
@@ -141,6 +143,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
     <DataTable
       columns={columns}
       data={data}
+      toolbar={toolbar}
       tableState={{ pagination, columnPinning: { right: ['actions'] } }}
     />
   );

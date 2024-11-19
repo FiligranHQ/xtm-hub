@@ -35,7 +35,7 @@ interface ServiceSlugFormSheetProps {
   refetch: () => void;
 }
 
-let capabilitiesFormSchema = z.object({
+const capabilitiesFormSchema = z.object({
   capabilities: z.array(z.string()),
 });
 
@@ -50,16 +50,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
   subscriptionId,
   refetch,
 }) => {
-  let capabilitiesEmailFormSchema;
-  if (!userService.id) {
-    capabilitiesEmailFormSchema = capabilitiesFormSchema.extend({
-      email: z
-        .string()
-        .min(2, { message: 'Email must be at least 2 characters.' })
-        .email('This is not a valid email.'),
-    });
-  }
-
   const currentCapabilities = userService?.service_capability?.map(
     (capability: any) => capability?.service_capability_name
   );
@@ -82,7 +72,12 @@ export const ServiceSlugFormSheet: FunctionComponent<
   const form = useForm<z.infer<ZodSchema>>({
     resolver: zodResolver(
       !userService.id
-        ? (capabilitiesEmailFormSchema as z.ZodObject<{
+        ? (capabilitiesFormSchema.extend({
+            email: z
+              .string()
+              .min(2, { message: 'Email must be at least 2 characters.' })
+              .email('This is not a valid email.'),
+          }) as z.ZodObject<{
             capabilities: z.ZodArray<z.ZodString, 'many'>;
             email: z.ZodString;
           }>)
