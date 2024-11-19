@@ -8,17 +8,18 @@ import { useQueryLoader } from 'react-relay';
 import { portalContext } from '@/components/portal-context';
 import { EmptyServices } from '@/components/service/home/empty-services';
 import OwnedServices from '@/components/service/home/owned-services';
+import { publicServiceListQuery } from '@/components/service/public-service.graphql';
 import ServiceList from '@/components/service/service-list';
-import { ServiceListQuery } from '@/components/service/service.graphql';
 import { UserServiceOwnedQuery } from '@/components/service/user_service.graphql';
 import { useTranslations } from 'next-intl';
 import { useCallback, useContext } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
+
 import {
   OrderingMode,
+  publicServiceQuery,
   ServiceOrdering,
-  serviceQuery,
-} from '../../__generated__/serviceQuery.graphql';
+} from '../../__generated__/publicServiceQuery.graphql';
 import { userServiceOwnedQuery } from '../../__generated__/userServiceOwnedQuery.graphql';
 
 export const dynamic = 'force-dynamic';
@@ -67,7 +68,7 @@ const Page: React.FunctionComponent<PageProps> = () => {
     useLocalStorage<ServiceOrdering>('orderByServiceList', 'name');
 
   const [queryRefServiceList, loadQueryServiceList] =
-    useQueryLoader<serviceQuery>(ServiceListQuery);
+    useQueryLoader<publicServiceQuery>(publicServiceListQuery);
 
   useMountingLoader(loadQueryServiceList, {
     count: countServiceList,

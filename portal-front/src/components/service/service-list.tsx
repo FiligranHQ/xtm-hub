@@ -1,11 +1,11 @@
 'use client';
 
-import ServiceCard from '@/components/service/service-card';
 import {
-  ServiceListQuery,
-  servicesListFragment,
-  subscription,
-} from '@/components/service/service.graphql';
+  publicServiceListFragment,
+  publicServiceListQuery,
+} from '@/components/service/public-service.graphql';
+import ServiceCard from '@/components/service/service-card';
+import { subscription } from '@/components/service/service.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useToast } from 'filigran-ui/clients';
@@ -20,13 +20,13 @@ import {
   useRefetchableFragment,
   useSubscription,
 } from 'react-relay';
+import { publicServiceList_services$key } from '../../../__generated__/publicServiceList_services.graphql';
+import { publicServiceQuery } from '../../../__generated__/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
-import { serviceList_services$key } from '../../../__generated__/serviceList_services.graphql';
-import { serviceQuery } from '../../../__generated__/serviceQuery.graphql';
 import { subscriptionCreateMutation } from '../../../__generated__/subscriptionCreateMutation.graphql';
 
 interface ServiceProps {
-  queryRef: PreloadedQuery<serviceQuery>;
+  queryRef: PreloadedQuery<publicServiceQuery>;
   onUpdate: () => void;
 }
 
@@ -37,13 +37,16 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
   const t = useTranslations();
   const { toast } = useToast();
 
-  const queryData = usePreloadedQuery<serviceQuery>(ServiceListQuery, queryRef);
+  const queryData = usePreloadedQuery<publicServiceQuery>(
+    publicServiceListQuery,
+    queryRef
+  );
   const [data, refetch] = useRefetchableFragment<
-    serviceQuery,
-    serviceList_services$key
-  >(servicesListFragment, queryData);
+    publicServiceQuery,
+    publicServiceList_services$key
+  >(publicServiceListFragment, queryData);
 
-  const connectionID = data?.services?.__id;
+  const connectionID = data?.publicServices?.__id;
   const config = useMemo(
     () => ({
       variables: { connections: [connectionID] },
@@ -95,14 +98,14 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     [connectionID]
   );
 
-  const servicesData = data.services.edges.map(
+  const servicesData = data.publicServices.edges.map(
     ({ node }) => node
   ) as serviceList_fragment$data[];
 
   return (
     <>
       <h2 className="pb-m pt-m">{t('HomePage.AvailableServices')}</h2>
-      {data.services.edges.length > 0 ? (
+      {data.publicServices.edges.length > 0 ? (
         <React.Suspense>
           <ul
             className={

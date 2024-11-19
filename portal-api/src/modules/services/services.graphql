@@ -49,13 +49,20 @@ type Mutation {
 }
 
 type Query {
-  services(
+  publicServices(
     first: Int!
     after: ID
     orderBy: ServiceOrdering!
     orderMode: OrderingMode!
   ): ServiceConnection!
     @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_SERVICES])
+  services(
+    first: Int!
+    after: ID
+    orderBy: ServiceOrdering!
+    orderMode: OrderingMode!
+  ): ServiceConnection!
+  @auth(requires: [BYPASS])
   serviceById(service_id: ID): Service
     @auth
     @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
