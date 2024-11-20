@@ -14,9 +14,6 @@
     "test": "vitest run",
     "test:w": "vitest",
     "test:ci": "yarn test && yarn lint",
-    "test:e2e": "yarn playwright test",
-    "test:e2e:ui": "yarn playwright test --ui",
-    "generate-test-e2e": "npx playwright codegen http://localhost:3001/",
     "prepare": "cd .. && husky ./.husky",
     "auto-translation": "i18n-auto-translation -a deepl-free -p ./messages/en.json -t fr -k $SUBSCRIPTION_KEY"
   },

@@ -122,12 +122,12 @@ const middlewareExpress = expressMiddleware(server, {
     req?.body?.variables?.id &&
       (req.body.variables.id = extractId(req.body.variables.id));
 
-    const currentServiceId = req?.body?.variables?.serviceId
+    const serviceId = req?.body?.variables?.serviceId
       ? fromGlobalId(req?.body?.variables?.serviceId)?.id
       : '';
     // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
     // TODO Add build session from request authorization
-    return { user, req, res, currentServiceId };
+    return { user, req, res, serviceId };
   },
 });
 const handler = createHandler({

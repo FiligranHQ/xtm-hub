@@ -7,12 +7,14 @@ import { TypedNode } from '../pub';
 
 import { UserLoadUserBy } from '../model/user';
 
-const isUserGranted = (user: UserLoadUserBy, capability: CapabilityPortal) =>
-  !!user &&
-  user.capabilities.some(
-    (c) => c.id === CAPABILITY_BYPASS.id || c.id === capability.id
+const isUserGranted = (user: UserLoadUserBy, capability: CapabilityPortal) => {
+  return (
+    !!user &&
+    user.capabilities.some(
+      (c) => c.id === CAPABILITY_BYPASS.id || c.id === capability.id
+    )
   );
-
+};
 /**
  * This method will filter every event to distribute real time data to users that have access to it
  * Data event must be consistent to provide all information needed to infer security access.
@@ -52,9 +54,9 @@ export const isNodeAccessible = async (
     // We do not send any organization by SSE for the moment
     return true;
   }
-    if (type === 'Document') {
-        return true;
-    }
+  if (type === 'Document') {
+    return true;
+  }
   if (availableTypes.includes(type)) {
     return true;
   }
@@ -95,27 +97,17 @@ export const applyDbSecurity = <T>(
 
   if (type === 'Document') {
     queryContext
-      .rightJoin(
-        'Service as securityService',
-        'securityService.id',
-        '=',
-        'Document.service_id'
-      )
-      .rightJoin('Subscription as securitySubscription', function () {
-        this.onVal(
-          'securitySubscription.service_id',
-          '=',
-          context.currentServiceId
-        );
+      .innerJoin('Subscription as securitySubscription', function () {
+        this.onVal('securitySubscription.service_id', '=', context.serviceId);
       })
-      .rightJoin('User_Service as securityUserService', function () {
+      .innerJoin('User_Service as securityUserService', function () {
         this.on(
           'securityUserService.subscription_id',
           '=',
           'securitySubscription.id'
         ).andOnVal('securityUserService.user_id', '=', context?.user?.id);
       })
-      .rightJoin(
+      .innerJoin(
         'Service_Capability as securityServiceCapability',
         function () {
           this.on(

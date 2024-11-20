@@ -5,6 +5,7 @@ import {
   publicServiceListQuery,
 } from '@/components/service/public-service.graphql';
 import ServiceCard from '@/components/service/service-card';
+import { JOIN_TYPE } from '@/components/service/service.const';
 import { subscription } from '@/components/service/service.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
@@ -89,7 +90,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
         });
       };
 
-      if (service.subscription_service_type === 'SUBSCRIPTABLE_DIRECT') {
+      if (service.join_type === JOIN_TYPE.JOIN_SELF) {
         commitMutation('ACCEPTED', t('Service.SubscribeSuccessful'));
       } else {
         commitMutation('REQUESTED', t('Service.SubscriptionRequestSuccessful'));
@@ -119,7 +120,9 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                     topRightAction={null}
                     bottomLeftAction={
                       service.subscribed ||
-                      service.type === 'COMMUNITY' ? null : (
+                      service.type === 'COMMUNITY' ||
+                      !service.public ||
+                      service.join_type !== JOIN_TYPE.JOIN_SELF ? null : (
                         <AlertDialogComponent
                           AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
                           actionButtonText={t('Utils.Continue')}

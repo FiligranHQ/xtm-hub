@@ -10,7 +10,7 @@ export const getDocumentName = (documentName: string) => {
   return `${nameWithoutExtension}_${Date.now()}.${extensionName}`;
 };
 
-export const normalizeDocumentName = (documentName: string): string => {
+export const normalizeDocumentName = (documentName: string = ''): string => {
   return documentName
     .toLowerCase()
     .normalize('NFD')
@@ -34,10 +34,9 @@ export const loadUnsecureDocumentsBy = async (
 };
 
 export const createDocument = async (documentData): Promise<Document[]> => {
-  const document = dbUnsecure<Document>('Document')
+  return dbUnsecure<Document>('Document')
     .insert(documentData)
     .returning('*') as unknown as Document[];
-  return document;
 };
 
 export const deleteDocuments = async () => {

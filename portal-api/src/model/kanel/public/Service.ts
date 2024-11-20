@@ -18,9 +18,9 @@ export default interface Service {
 
   creation_status: string | null;
 
-  subscription_service_type: string | null;
-
   public: boolean | null;
+
+  join_type: string | null;
 }
 
 /** Represents the initializer for the table public.Service */
@@ -40,11 +40,11 @@ export interface ServiceInitializer {
   /** Default value: 'READY'::text */
   creation_status?: string | null;
 
-  /** Default value: 'SUBSCRIPTABLE_BACKOFFICE'::text */
-  subscription_service_type?: string | null;
-
   /** Default value: false */
   public?: boolean | null;
+
+  /** Default value: 'JOIN_INVITE'::text */
+  join_type?: string | null;
 }
 
 /** Represents the mutator for the table public.Service */
@@ -61,7 +61,7 @@ export interface ServiceMutator {
 
   creation_status?: string | null;
 
-  subscription_service_type?: string | null;
-
   public?: boolean | null;
+
+  join_type?: string | null;
 }

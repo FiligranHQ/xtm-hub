@@ -15,6 +15,7 @@ import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
+import { ROLE_ADMIN_ORGA } from '../../portal.const';
 import { loadSubscription } from '../subcription/subscription.domain';
 import {
   addAdminAccess,
@@ -30,7 +31,7 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
     after,
     orderMode,
     orderBy,
-  });
+  }).where('public', '=', true);
   const organizationId = context.user.selected_organization_id;
   const userId = context.user.id;
   const servicesConnection = await query
@@ -202,13 +203,14 @@ export const grantServiceAccessUsers = async (
 ): Promise<UserService[]> => {
   const usersInOrga = (await loadUsersByOrganization(
     organizationId,
-    adminId
+    adminId,
+    ROLE_ADMIN_ORGA.id
   )) as User[];
 
   return usersInOrga.length > 0
     ? await grantServiceAccess(
         context,
-        ['ACCESS_SERVICE'],
+        ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
         usersInOrga.map(({ id }) => id),
         subscriptionId
       )

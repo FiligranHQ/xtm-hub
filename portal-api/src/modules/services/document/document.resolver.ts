@@ -19,14 +19,14 @@ const resolvers: Resolvers = {
         const minioName = await sendFileToS3(
           opt.document.file,
           context.user.id,
-          context.currentServiceId as ServiceId
+          context.serviceId as ServiceId
         );
         const data: Document = {
           uploader_id: context.user.id as UserId,
           description: opt.description,
           minio_name: minioName,
           file_name: normalizeDocumentName(opt.document.file.filename),
-          service_id: context.currentServiceId,
+          service_id: context.serviceId,
           created_at: new Date(),
         } as unknown as Document;
         const [addedDocument] = await insertDocument(data);
@@ -42,7 +42,7 @@ const resolvers: Resolvers = {
           context,
           { description: newDescription },
           fromGlobalId(documentId).id as DocumentId,
-          context.currentServiceId as ServiceId
+          context.serviceId as ServiceId
         );
         return document;
       } catch (error) {
@@ -52,12 +52,11 @@ const resolvers: Resolvers = {
     },
     deleteDocument: async (_, { documentId }, context) => {
       try {
-        const deletedDocument = await deleteDocument(
+        return deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
-          context.currentServiceId as ServiceId
+          context.serviceId as ServiceId
         );
-        return deletedDocument;
       } catch (error) {
         console.error('Error while deleting document:', error);
         throw error;
@@ -82,7 +81,7 @@ const resolvers: Resolvers = {
         return getDocuments(
           context,
           { first, after, orderMode, orderBy },
-          filter,
+          normalizeDocumentName(filter),
           fromGlobalId(serviceId).id as ServiceId
         );
       } catch (error) {

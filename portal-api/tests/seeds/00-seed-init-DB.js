@@ -145,7 +145,6 @@ export async function seed(knex) {
         provider: 'SCRED',
         type: 'Intel',
         creation_status: 'READY',
-        subscription_service_type: 'SUBSCRIPTABLE_DIRECT',
       },
       {
         id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
@@ -155,7 +154,6 @@ export async function seed(knex) {
         provider: 'SCRED',
         type: 'Feed',
         creation_status: 'READY',
-        subscription_service_type: 'SUBSCRIPTABLE_DIRECT',
       },
       {
         id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
@@ -165,7 +163,6 @@ export async function seed(knex) {
         provider: 'Glimps',
         type: 'analysis',
         creation_status: 'READY',
-        subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
       },
     ])
     .onConflict('id')
