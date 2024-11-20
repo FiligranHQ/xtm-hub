@@ -1,12 +1,10 @@
-import { UserData } from '@/components/admin/user/user-list';
-import { ColumnDef } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 import {
   OrderingMode,
   UserOrdering,
 } from '../../../../__generated__/userQuery.graphql';
 
-export const useUserListLocalstorage = (columns: ColumnDef<UserData>[]) => {
+export const useUserListLocalstorage = () => {
   const [count, setCount, removeCount] = useLocalStorage('countUserList', 50);
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>('orderModeUserList', 'asc');
@@ -18,10 +16,9 @@ export const useUserListLocalstorage = (columns: ColumnDef<UserData>[]) => {
     'countUserList',
     50
   );
-  const [columnOrder, setColumnOrder, removeColumnOrder] = useLocalStorage(
-    'columnOrderingUserList',
-    columns.map((c) => c.id!)
-  );
+  const [columnOrder, setColumnOrder, removeColumnOrder] = useLocalStorage<
+    string[]
+  >('columnOrderingUserList', []);
 
   const [columnVisibility, setColumnVisibility, removeColumnVisibility] =
     useLocalStorage('columnVisibilityUserList', {});

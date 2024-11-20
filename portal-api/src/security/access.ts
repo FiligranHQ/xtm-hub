@@ -126,6 +126,18 @@ export const applyDbSecurity = <T>(
 
   // Standard user can access to all users from its own organization
   if (type === 'User') {
+    queryContext
+      .leftJoin(
+        'User_Organization',
+        'User.id',
+        '=',
+        'User_Organization.user_id'
+      )
+      .where(
+        'User.organization_id',
+        '=',
+        context.user.selected_organization_id
+      );
     return queryContext;
   }
 

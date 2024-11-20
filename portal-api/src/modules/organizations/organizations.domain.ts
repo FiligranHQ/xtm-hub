@@ -29,12 +29,12 @@ export const loadOrganizations = async (context: PortalContext, opts) => {
       orderBy,
     }
   )
-    .where('Organization.personal_space', '=', false)
     .select('*')
+    .where('personal_space', false)
     .asConnection<OrganizationConnection>();
 
   const { totalCount } = await db<Service>(context, 'Organization', opts)
-    .where('Organization.personal_space', '=', false)
+    .where('personal_space', false)
     .countDistinct('id as totalCount')
     .first();
 

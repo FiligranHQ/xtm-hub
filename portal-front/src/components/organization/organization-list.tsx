@@ -93,9 +93,9 @@ const OrganizationList: FunctionComponent = () => {
     orderMode,
     orderBy,
   });
-  const organizationDataTable = organizationData.organizations.edges
-    .filter(({ node }) => !node.personal_space)
-    .map(({ node }) => node) as organizationItem_fragment$data[];
+  const organizationDataTable = organizationData.organizations.edges.map(
+    ({ node }) => node
+  ) as organizationItem_fragment$data[];
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

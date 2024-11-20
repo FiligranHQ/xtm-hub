@@ -92,6 +92,10 @@
     "Success": "Success",
     "Update": "Update",
     "Validate": "Validate"
-  }
-
+  },
+  "areYouSureYouWantToDeleteThisUser": "Are you sure you want to delete this user {first_name} {last_name} ?",
+  "deleteUser": "Delete User",
+  "delete": "Delete",
+  "update": "Update",
+  "updateUser": "Update User"
 }
