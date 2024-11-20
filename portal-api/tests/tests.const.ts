@@ -1,4 +1,5 @@
 import { Restriction } from '../src/__generated__/resolvers-types';
+
 import {
   ADMIN_UUID,
   CAPABILITY_BYPASS,
@@ -21,7 +22,7 @@ export const contextAdminUser = {
       name: DEFAULT_ORG,
       __typename: 'Organization',
     },
-    capabilities: [{ id: CAPABILITY_BYPASS, name: Restriction.Bypass }],
+    capabilities: [{ id: CAPABILITY_BYPASS.id, name: Restriction.Bypass }],
     roles_portal_id: [
       {
         id: ROLE_ADMIN,
@@ -30,4 +31,5 @@ export const contextAdminUser = {
     ],
     __typename: 'User',
   },
+  serviceId: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
 };

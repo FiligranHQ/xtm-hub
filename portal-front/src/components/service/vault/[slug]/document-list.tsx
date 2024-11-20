@@ -93,28 +93,30 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => (
-          <div onClick={(e) => e.stopPropagation()}>
-        <IconActions
-          icon={
-            <>
-              <MoreVertIcon className="h-4 w-4" />
-              <span className="sr-only">{t('Utils.OpenMenu')}</span>
-            </>
-          }>
-          <GuardCapacityComponent
-            capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-            <EditDocument documentData={row.original} />
-          </GuardCapacityComponent>
-          <DownloadDocument documentData={row.original} />
-          <GuardCapacityComponent
-            capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-            <DeleteDocument
-              documentData={row.original}
-              connectionId={data.documents.__id}
-            />
-          </GuardCapacityComponent>
-        </IconActions>
-          </div>
+        <div onClick={(e) => e.stopPropagation()}>
+          <IconActions
+            icon={
+              <>
+                <MoreVertIcon className="text-primary h-4 w-4" />
+                <span className="sr-only">{t('Utils.OpenMenu')}</span>
+              </>
+            }>
+            <GuardCapacityComponent
+              capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
+              displayError={false}>
+              <EditDocument documentData={row.original} />
+            </GuardCapacityComponent>
+            <DownloadDocument documentData={row.original} />
+            <GuardCapacityComponent
+              capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
+              displayError={false}>
+              <DeleteDocument
+                documentData={row.original}
+                connectionId={data.documents.__id}
+              />
+            </GuardCapacityComponent>
+          </IconActions>
+        </div>
       ),
     },
   ];
@@ -186,7 +188,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
 
   return (
     <>
-      <h1 className="pb-s">{queryDataService.serviceById.name}</h1>
+      <h1 className="pb-s">{queryDataService.serviceById?.name}</h1>
 
       <DataTable
         columns={columns}
@@ -202,7 +204,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           rowCount: data.documents.totalCount,
         }}
         onClickRow={(row) => {
-            window.location.href = `/document/get/${row.id}`;
+          window.location.href = `/document/get/${queryDataService.serviceById?.id}/${row.id}`;
         }}
         toolbar={
           <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
@@ -222,6 +224,9 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           pagination,
           columnOrder,
           columnVisibility,
+          columnPinning: {
+            right: ['actions'],
+          },
         }}
       />
     </>

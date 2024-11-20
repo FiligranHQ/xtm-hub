@@ -41,10 +41,18 @@ const completeUserCapability = (user: UserLoadUserBy): UserLoadUserBy => {
 
 export const loadUsersByOrganization = async (
   organizationId: string,
-  excludedUserId: string
+  excludedUserId: string,
+  role: string
 ) => {
   return dbUnsecure<User>('User')
     .select('User.*')
+    .rightJoin('User_RolePortal', function () {
+      this.on('User_RolePortal.user_id', '=', 'User.id').andOnVal(
+        'User_RolePortal.role_portal_id',
+        '=',
+        role
+      );
+    })
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
     .leftJoin(
       'Organization as org',
@@ -60,6 +68,9 @@ export const loadUserBy = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<UserLoadUserBy> => {
   const [foundUser] = await dbUnsecure<UserLoadUserBy>('User').where(field);
+  if (!foundUser) {
+    return;
+  }
   const queryUserServiceWithCapa = await dbUnsecure<UserService>('User_Service')
     .where('User_Service.user_id', '=', foundUser.id)
     .leftJoin(

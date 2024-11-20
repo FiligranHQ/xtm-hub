@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import { DocumentMutator } from '../../../model/kanel/public/Document';
 import { ServiceId } from '../../../model/kanel/public/Service';
+import { PortalContext } from '../../../model/portal-context';
 import * as FileStorage from './document-storage';
 import { insertDocument, sendFileToS3 } from './document.domain';
 import {
@@ -117,6 +118,10 @@ describe('Should modify document', () => {
           'Document',
           'bc348e84-3635-46de-9b56-38db09c35f4d'
         ),
+        serviceId: toGlobalId(
+          'Service',
+          'c6343882-f609-4a3f-abe0-a34f8cb11302'
+        ),
         newDescription: 'NEW',
       },
       contextAdminUser
@@ -204,8 +209,17 @@ describe('Documents loading', () => {
   it('should load all documents', async () => {
     const response = await documentResolver.Query.documents(
       {},
-      { count: 50, filter: '', orderBy: 'file_name', orderMode: 'asc' },
-      contextAdminUser
+      {
+        first: 50,
+        filter: '',
+        orderBy: 'file_name',
+        orderMode: 'asc',
+        serviceId: toGlobalId(
+          'Service',
+          'c6343882-f609-4a3f-abe0-a34f8cb11302'
+        ),
+      },
+      contextAdminUser as PortalContext
     );
     expect(response?.totalCount).toStrictEqual('2');
     expect(response?.edges[0].node.file_name).toStrictEqual('filename');
@@ -215,7 +229,16 @@ describe('Documents loading', () => {
   it('should load all documents by desc order', async () => {
     const response = await documentResolver.Query.documents(
       {},
-      { count: 50, filter: '', orderBy: 'file_name', orderMode: 'desc' },
+      {
+        count: 50,
+        filter: '',
+        orderBy: 'file_name',
+        orderMode: 'desc',
+        serviceId: toGlobalId(
+          'Service',
+          'c6343882-f609-4a3f-abe0-a34f8cb11302'
+        ),
+      },
       contextAdminUser
     );
     expect(response?.totalCount).toStrictEqual('2');
@@ -228,10 +251,15 @@ describe('Documents loading', () => {
       {},
       {
         first: 1,
+
         after: 0,
         filter: 'xfi',
         orderBy: 'file_name',
         orderMode: 'asc',
+        serviceId: toGlobalId(
+          'Service',
+          'c6343882-f609-4a3f-abe0-a34f8cb11302'
+        ),
       },
       contextAdminUser
     );

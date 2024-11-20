@@ -2,13 +2,14 @@ export async function seed(knex) {
   await knex('Service')
     .insert([
       {
-        id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
-        name: 'Test',
-        description: 'short',
-        provider: 'SCRED_ONDEMAND',
-        type: 'COMMUNITY',
+        id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        name: 'Vault',
+        description: 'short description for Vault',
+        provider: 'FILIGRAN',
+        type: 'Intel',
         creation_status: 'READY',
-        subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
+        public: false,
+        join_type: 'JOIN_INVITE',
       },
     ])
     .onConflict('id')
@@ -16,28 +17,10 @@ export async function seed(knex) {
   await knex('Service_Link')
     .insert([
       {
-        id: '86a0b81b-de3c-4790-bb1d-96d95135271b',
-        service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
-        url: 'http://www.google.fr',
-        name: 'OpenFeed',
-      },
-      {
-        id: '814fb413-5f11-4dea-9aef-492db0e2a680',
-        service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
-        url: 'http://www.google.fr',
-        name: 'PrivateFeed',
-      },
-      {
-        id: '9cd71b26-84eb-4711-8b1d-58f94d8b9aa1',
-        service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
-        url: 'http://www.google.fr',
-        name: 'CyberWeather',
-      },
-      {
         id: '2baba29b-62f5-4d50-8d68-eb8a25887d9c',
-        service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
-        url: 'http://www.google.fr',
-        name: 'NextCloud',
+        service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        url: '/service/vault',
+        name: 'Vault',
       },
     ])
     .onConflict('id')
@@ -46,7 +29,7 @@ export async function seed(knex) {
     .insert([
       {
         id: '65ca846b-b4ff-42ec-bafa-cc604eea11f5',
-        service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
+        service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         fee_type: 'MONTHLY',
         start_date: '2024-08-08',
         price: 1000,
@@ -57,9 +40,9 @@ export async function seed(knex) {
   await knex('Subscription')
     .insert([
       {
-        id: 'fdd973f0-6e8e-4794-9857-da84830679d5',
+        id: '7f17820c-3a36-4023-ae3c-e2c15613b518',
         organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
-        service_id: '575d37c8-53ed-4c63-ae86-2d8d10f14eaf',
+        service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         start_date: '2024-08-08',
         end_date: null,
         status: 'ACCEPTED',
@@ -72,7 +55,7 @@ export async function seed(knex) {
       {
         id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
         user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-        subscription_id: 'fdd973f0-6e8e-4794-9857-da84830679d5',
+        subscription_id: '7f17820c-3a36-4023-ae3c-e2c15613b518',
         service_personal_data: null,
       },
     ])

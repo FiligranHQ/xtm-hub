@@ -6,7 +6,11 @@ import {
   User as GraphqlUser,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import User, { UserId, UserInitializer } from '../../model/kanel/public/User';
+import User, {
+  UserId,
+  UserInitializer,
+  UserMutator,
+} from '../../model/kanel/public/User';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { hashPassword } from '../../utils/hash-password.util';
@@ -67,7 +71,7 @@ export const createNewUserFromInvitation = async (email: string) => {
 
   if (!isAuthorizedEmail(email)) {
     // TODO: Should throw an error and break the following execution
-    // throw new GraphQLError('Sorry this mail is not authorize', {
+    // throw new GraphQLError('Sorry this mail is not authorized', {
     //   extensions: { code: '[Users] NOT AUTHORIZED MAIL' },
     // });
     return null;
@@ -108,4 +112,8 @@ export const mapUserToGraphqlUser = (
     capabilities:
       'capabilities' in user ? (user.capabilities as Capability[]) : null,
   };
+};
+
+export const removeUser = async (field: UserMutator) => {
+  await dbUnsecure<User>('User').delete('*').where(field);
 };

@@ -1,0 +1,6 @@
+export const JOIN_TYPE = {
+  JOIN_INVITE: 'JOIN_INVITE',
+  JOIN_ASK: 'JOIN_ASK',
+  JOIN_AUTO: 'JOIN_AUTO',
+  JOIN_SELF: 'JOIN_SELF',
+};

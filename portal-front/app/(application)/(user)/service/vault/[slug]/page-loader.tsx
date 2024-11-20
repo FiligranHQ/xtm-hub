@@ -9,8 +9,10 @@ import { FormatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+
 import { useQueryLoader } from 'react-relay';
 import { documentItem_fragment$data } from '../../../../../../__generated__/documentItem_fragment.graphql';
 import { documentsQuery } from '../../../../../../__generated__/documentsQuery.graphql';
@@ -46,7 +48,13 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
     },
   ];
 
-  const serviceId = window.location.pathname.split('/').pop();
+  const params = useParams<{ slug: string }>();
+  const encodedServiceId = params.slug;
+
+  // Have to decode it, otherwise = become %3D for instance
+  const serviceId = encodedServiceId
+    ? decodeURIComponent(encodedServiceId)
+    : null;
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, orderBy, orderMode } = documentListLocalStorage(columns);

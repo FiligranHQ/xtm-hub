@@ -152,13 +152,14 @@ type Service implements Node {
   description: String
   provider: String
   type: String
-  subscription_service_type: String
   creation_status: String
   subscribed: Boolean
   links: [ServiceLink]
   organization: [Organization]
   subscription: [Subscription]
   capabilities: [String]
+  public: Boolean
+  join_type: String
 }
 
 type ServiceEdge {

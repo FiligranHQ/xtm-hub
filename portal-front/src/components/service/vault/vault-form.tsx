@@ -9,8 +9,10 @@ import TriggerButton from '@/components/ui/trigger-button';
 import { RESTRICTION } from '@/utils/constant';
 import { useToast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useState } from 'react';
+
 import { useMutation } from 'react-relay';
 import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
@@ -26,13 +28,19 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
   const [vaultDocumentMutation] =
     useMutation<documentAddMutation>(DocumentAddMutation);
   const [openSheet, setOpenSheet] = useState(false);
-  const serviceId = window.location.pathname.split('/').pop();
+  const params = useParams<{ slug: string }>();
+  const encodedServiceId = params.slug;
+
+  // Have to decode it, otherwise = become %3D for instance
+  const serviceId = encodedServiceId
+    ? decodeURIComponent(encodedServiceId)
+    : null;
 
   const sendDocument = (values: z.infer<typeof newDocumentSchema>) => {
     vaultDocumentMutation({
       variables: {
         ...values,
-        serviceId: serviceId,
+        serviceId,
         connections: [connectionId],
       },
       uploadables: values.document as unknown as UploadableMap,
@@ -57,7 +65,8 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
   return (
     <>
       <GuardCapacityComponent
-        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
+        displayError={false}>
         <VaultNewFileFormSheet
           open={openSheet}
           trigger={
