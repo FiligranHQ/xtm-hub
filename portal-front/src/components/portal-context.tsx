@@ -23,9 +23,10 @@ export const generatePortalContext = (
 ): Portal => {
   return {
     me,
-    isPersonalSpace: me?.organizations?.some(
-      (org) => org.personal_space && org.id === me?.selected_organization_id
-    ),
+    isPersonalSpace:
+      me?.organizations?.some(
+        (org) => org.personal_space && org.id === me?.selected_organization_id
+      ) ?? false,
     hasCapability: (capability: Restriction) => {
       const userCapabilities = (me?.capabilities ?? []).map((c) => c?.name);
       return (

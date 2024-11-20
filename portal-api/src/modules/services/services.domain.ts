@@ -35,17 +35,17 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
   const userId = context.user.id;
   const servicesConnection = await query
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOn(
+      this.on('subscription.service_id', '=', 'Service.id').andOnVal(
         'subscription.organization_id',
         '=',
-        dbRaw('?', [organizationId])
+        organizationId
       );
     })
     .leftJoin('User_Service as userService', function () {
-      this.on('userService.subscription_id', '=', 'subscription.id').andOn(
+      this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
         'userService.user_id',
         '=',
-        dbRaw('?', [userId])
+        userId
       );
     })
     .leftJoin(
@@ -72,10 +72,10 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
 
   const { totalCount } = await db<Service>(context, 'Service', opts)
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOn(
+      this.on('subscription.service_id', '=', 'Service.id').andOnVal(
         'subscription.organization_id',
         '=',
-        dbRaw('?', [organizationId])
+        organizationId
       );
     })
     .whereRaw(`"subscription"."id" IS NULL`)
@@ -100,17 +100,17 @@ export const loadServices = async (context: PortalContext, opts) => {
   const userId = context.user.id;
   const servicesConnection = await query
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOn(
+      this.on('subscription.service_id', '=', 'Service.id').andOnVal(
         'subscription.organization_id',
         '=',
-        dbRaw('?', [organizationId])
+        organizationId
       );
     })
     .leftJoin('User_Service as userService', function () {
-      this.on('userService.subscription_id', '=', 'subscription.id').andOn(
+      this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
         'userService.user_id',
         '=',
-        dbRaw('?', [userId])
+        userId
       );
     })
     .leftJoin(
@@ -136,10 +136,10 @@ export const loadServices = async (context: PortalContext, opts) => {
 
   const { totalCount } = await db<Service>(context, 'Service', opts)
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOn(
+      this.on('subscription.service_id', '=', 'Service.id').andOnVal(
         'subscription.organization_id',
         '=',
-        dbRaw('?', [organizationId])
+        organizationId
       );
     })
     .countDistinct('Service.id as totalCount')

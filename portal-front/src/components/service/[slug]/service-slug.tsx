@@ -89,7 +89,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         });
         loadQuery({ service_id: serviceId }, { fetchPolicy: 'network-only' });
         setSelectedSubscription(
-          queryData.subscriptionsByServiceId?.[0] ?? undefined
+          (queryData
+            .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data) ??
+            undefined
         );
         setOpenSheet(false);
       },
@@ -153,7 +155,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           capacityRestriction={[
             RESTRICTION.CAPABILITY_BYPASS,
             RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-          ]}>
+          ]}
+          displayError={false}>
           <AlertDialogComponent
             actionButtonText="Remove"
             variantName="destructive"
@@ -217,7 +220,12 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           <ServiceSlugAddOrgaFormSheet
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
-            insertedOrganization={loadQuery}
+            insertedOrganization={() =>
+              loadQuery(
+                { service_id: serviceId },
+                { fetchPolicy: 'network-only' }
+              )
+            }
             connectionId=""
             serviceId={serviceId}
             trigger={
