@@ -1,9 +1,7 @@
 import { Knex } from 'knex';
 import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
 import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
-import MalwareAnalysis from '../model/kanel/public/MalwareAnalysis';
 import { PortalContext } from '../model/portal-context';
-import { loadUserBy } from '../modules/users/users.domain';
 import { CAPABILITY_BYPASS, CAPABILITY_FRT_MANAGE_USER } from '../portal.const';
 import { TypedNode } from '../pub';
 
@@ -51,15 +49,6 @@ export const isNodeAccessible = async (
     // TODO Organization can be dispatched to admin or if user is part of
     // We do not send any organization by SSE for the moment
     return true;
-  }
-  if (type === 'MalwareAnalysis') {
-    // TODO Dispatch only if user is part of the same organization
-    const malwareObj = node as unknown as MalwareAnalysis;
-    const userFromMalwareObj = await loadUserBy({ id: malwareObj.user_id });
-    return (
-      user.selected_organization_id ===
-      userFromMalwareObj.selected_organization_id
-    );
   }
   if (availableTypes.includes(type)) {
     return true;
