@@ -1,6 +1,6 @@
 import { graphql } from 'react-relay';
 
-export const usersFragment = graphql`
+export const userListFragment = graphql`
   fragment userList_users on Query
   @refetchable(queryName: "UsersPaginationQuery") {
     users(
@@ -14,15 +14,13 @@ export const usersFragment = graphql`
       totalCount
       edges {
         node {
-          id
-          email
-          first_name
-          last_name
+          ...user_fragment @relay(mask: false)
         }
       }
     }
   }
 `;
+
 export const UserListCreateMutation = graphql`
   mutation userListCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
     addUser(input: $input)
@@ -50,6 +48,14 @@ export const userSlugDeletion = graphql`
   }
 `;
 
+export const userDeletion = graphql`
+  mutation userDeletionMutation($connections: [ID!]!, $id: ID!) {
+    deleteUser(id: $id) {
+      id @deleteEdge(connections: $connections)
+    }
+  }
+`;
+
 export const userSlugFragment = graphql`
   fragment userSlug_fragment on User {
     id
@@ -72,10 +78,6 @@ export const userSlugSubscription = graphql`
     User {
       edit {
         ...userSlug_fragment
-      }
-      merge {
-        from
-        target
       }
       delete {
         id @deleteRecord
@@ -102,5 +104,14 @@ export const UserSlugQuery = graphql`
     user(id: $id) {
       ...userSlug_fragment
     }
+  }
+`;
+
+export const UserFragment = graphql`
+  fragment user_fragment on User {
+    id
+    email
+    last_name
+    first_name
   }
 `;

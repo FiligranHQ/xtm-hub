@@ -62,12 +62,6 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   useSubscription<generatedUserSlugSubscription>({
     variables: {},
     subscription: userSlugSubscription,
-    onNext: (response) => {
-      // In case of merge, redirect to the target merged user
-      if (response?.User?.merge && response?.User?.merge.from === user?.id) {
-        router.replace(`/admin/user/${response?.User?.merge?.target}`);
-      }
-    },
   });
   useSubscription<generatedUserSlugSubscription>({
     variables: {},
@@ -99,7 +93,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             {user.first_name} {user.last_name} - {user.email}
           </h2>
           <div className="space-x-2">
-            <EditUser user={user}></EditUser>
+            <EditUser user={user} />
             <AlertDialogComponent
               AlertTitle={'Delete user'}
               actionButtonText={'Delete'}
