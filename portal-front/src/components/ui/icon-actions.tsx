@@ -1,4 +1,5 @@
 'use client';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,5 +51,19 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
         </IconActionContext.Provider>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+export const IconActionsButton: FunctionComponent<
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+> = ({ children, className, ...props }) => {
+  return (
+    <Button
+      variant="ghost"
+      className={cn('w-full justify-start normal-case', className)}
+      onClick={(e) => e.stopPropagation()}
+      {...props}>
+      {children}
+    </Button>
   );
 };

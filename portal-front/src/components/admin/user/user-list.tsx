@@ -1,24 +1,26 @@
+import GuardCapacityComponent from '@/components/admin-guard';
+import { DeleteUserAction } from '@/components/admin/user/delete-user-action';
 import { CreateUser } from '@/components/admin/user/user-create';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import {
   UserListQuery,
-  usersFragment,
+  userListFragment,
 } from '@/components/admin/user/user.graphql';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
+import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import { RESTRICTION } from '@/utils/constant';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { MoreVertIcon } from 'filigran-icon';
 import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
 import { Input } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import * as React from 'react';
-import { useState } from 'react';
-import {
-  PreloadedQuery,
-  usePreloadedQuery,
-  useRefetchableFragment,
-} from 'react-relay';
+import { useEffect, useState } from 'react';
+import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import { user_fragment$data } from '../../../../__generated__/user_fragment.graphql';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
 import {
   OrderingMode,
@@ -27,26 +29,8 @@ import {
   userQuery$variables,
 } from '../../../../__generated__/userQuery.graphql';
 
-// Component interface
-interface ServiceProps {
-  queryRef: PreloadedQuery<userQuery>;
-  columns: ColumnDef<UserData>[];
-}
-
-export interface UserData {
-  email?: string;
-  first_name: string | null | undefined;
-  id: string;
-  last_name: string | null | undefined;
-}
-
 // Component
-const UserList: React.FunctionComponent<ServiceProps> = ({
-  queryRef,
-  columns,
-}) => {
-  const router = useRouter();
-  const queryData = usePreloadedQuery<userQuery>(UserListQuery, queryRef);
+const UserList = () => {
   const {
     pageSize,
     setPageSize,
@@ -59,7 +43,16 @@ const UserList: React.FunctionComponent<ServiceProps> = ({
     columnVisibility,
     setColumnVisibility,
     resetAll,
-  } = useUserListLocalstorage(columns);
+  } = useUserListLocalstorage();
+
+  const t = useTranslations();
+  const router = useRouter();
+
+  const queryData = useLazyLoadQuery<userQuery>(UserListQuery, {
+    count: pageSize,
+    orderMode: orderMode,
+    orderBy: orderBy,
+  });
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -67,13 +60,76 @@ const UserList: React.FunctionComponent<ServiceProps> = ({
   });
 
   const [data, refetch] = useRefetchableFragment<userQuery, userList_users$key>(
-    usersFragment,
+    userListFragment,
     queryData
   );
 
+  const columns: ColumnDef<user_fragment$data>[] = [
+    {
+      accessorKey: 'first_name',
+      id: 'first_name',
+      header: 'First name',
+    },
+    {
+      accessorKey: 'last_name',
+      id: 'last_name',
+      header: 'Last name',
+    },
+    {
+      accessorKey: 'email',
+      id: 'email',
+      header: 'Email',
+      cell: ({ row }) => {
+        return <span className="truncate">{row.original.email}</span>;
+      },
+    },
+    {
+      id: 'actions',
+      size: 100,
+      enableHiding: false,
+      enableSorting: false,
+      enableResizing: false,
+      cell: ({ row }) => (
+        <IconActions
+          icon={
+            <>
+              <MoreVertIcon className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </>
+          }>
+          {/*<EditUser user={row.original}>*/}
+          {/*  <IconActionsButton aria-label={t('updateUser')}>*/}
+          {/*    {t('update')}*/}
+          {/*  </IconActionsButton>*/}
+          {/*</EditUser>*/}
+          <GuardCapacityComponent
+            capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
+            displayError={false}>
+            <IconActionsButton
+              aria-label={t('detailsUser')}
+              onClick={() => router.push(`/admin/user/${row.original.id}`)}>
+              {t('details')}
+            </IconActionsButton>
+          </GuardCapacityComponent>
+          <DeleteUserAction
+            user={row.original}
+            connectionID={data?.users?.__id}
+          />
+        </IconActions>
+      ),
+    },
+  ];
+
+  useEffect(() => {
+    if (columnOrder.length === 0) {
+      const defaultColumnOrder = columns.map((c) => c.id!);
+      setColumnOrder(defaultColumnOrder);
+    }
+  }, []);
+
   const userData = data.users.edges.map(({ node }) => ({
     ...node,
-  })) as UserData[];
+  })) as user_fragment$data[];
 
   const handleRefetchData = (args?: Partial<userQuery$variables>) => {
     const sorting = mapToSortingTableValue(orderBy, orderMode);
@@ -112,9 +168,6 @@ const UserList: React.FunctionComponent<ServiceProps> = ({
     }
   };
 
-  const onClickRow = (row: Row<UserData>) => {
-    router.push(`/admin/user/${row.original.id}`);
-  };
   const handleInputChange = (inputValue: string) => {
     refetch({
       filter: inputValue,
@@ -135,14 +188,14 @@ const UserList: React.FunctionComponent<ServiceProps> = ({
         rowCount: data.users.totalCount,
       }}
       toolbar={
-        <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
+        <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
           <Input
             className="w-full sm:w-1/3"
             placeholder={'Search with email...'}
             onChange={(e) => handleInputChange(e.target.value)}
           />
 
-          <div className="justify-between flex w-full sm:w-auto items-center gap-s">
+          <div className="flex w-full items-center justify-between gap-s sm:w-auto">
             <DataTableHeadBarOptions />
             <CreateUser connectionId={data?.users?.__id} />
           </div>
@@ -154,7 +207,6 @@ const UserList: React.FunctionComponent<ServiceProps> = ({
         columnOrder,
         columnVisibility,
       }}
-      onClickRow={onClickRow}
     />
   );
 };

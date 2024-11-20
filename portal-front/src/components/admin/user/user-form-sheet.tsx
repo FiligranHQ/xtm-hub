@@ -71,12 +71,10 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
 
   const [organizationData] = getOrganizations();
 
-  const orgData = organizationData.organizations.edges
-    .filter(({ node }) => !node.personal_space)
-    .map(({ node }) => ({
-      label: node.name,
-      value: node.id,
-    }));
+  const orgData = organizationData.organizations.edges.map(({ node }) => ({
+    label: node.name,
+    value: node.id,
+  }));
 
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
