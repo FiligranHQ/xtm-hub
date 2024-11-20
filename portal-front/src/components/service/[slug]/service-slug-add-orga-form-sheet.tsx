@@ -36,7 +36,7 @@ interface ServiceSlugAddOrgaFormSheetProps {
   trigger: ReactNode;
   connectionId: string;
   serviceId: string;
-  insertedOrganization: (organization: any) => void;
+  insertedOrganization: () => void;
 }
 
 export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
@@ -68,7 +68,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
           title: 'Success',
           description: 'Organization added',
         });
-        insertedOrganization(response);
+        insertedOrganization();
       },
       onError: (error: Error) => {
         toast({
