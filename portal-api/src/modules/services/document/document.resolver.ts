@@ -26,7 +26,7 @@ const resolvers: Resolvers = {
           minio_name: minioName,
           file_name: normalizeDocumentName(opt.document.file.filename),
           service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff' as ServiceId,
-          created_ad: new Date(),
+          created_at: new Date(),
         } as unknown as Document;
         const [addedDocument] = await insertDocument(data);
         return addedDocument;
