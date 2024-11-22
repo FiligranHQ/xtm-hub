@@ -5,19 +5,13 @@ export const FormatDate = (date?: Date, withHours: boolean = true) => {
   }
 
   const dateObject = new Date(date);
+
   const format = useFormatter();
-  if (withHours) {
-    return format.dateTime(dateObject, {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    });
-  }
   return format.dateTime(dateObject, {
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',
+    ...(withHours && { hour: 'numeric', minute: 'numeric' }),
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 };
