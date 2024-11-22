@@ -56,7 +56,7 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
       open={openSheet}
       setOpen={setOpenSheet}
       validationSchema={userFormSchema}
-      user={isFullAdmin ? undefined : me}
+      user={undefined}
       trigger={<TriggerButton label="Create user" />}></UserFormSheet>
   );
 };

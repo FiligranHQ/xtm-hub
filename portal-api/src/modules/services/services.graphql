@@ -62,8 +62,7 @@ type Query {
     after: ID
     orderBy: ServiceOrdering!
     orderMode: OrderingMode!
-  ): ServiceConnection!
-  @auth(requires: [BYPASS])
+  ): ServiceConnection! @auth(requires: [BYPASS])
   serviceById(service_id: ID): Service
     @auth
 }

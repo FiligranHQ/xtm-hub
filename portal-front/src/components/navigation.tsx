@@ -1,10 +1,10 @@
+import GuardCapacityComponent from '@/components/admin-guard';
 import { LinkMenu } from '@/components/menu/menu';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { OrganizationSwitcher } from '@/components/menu/organization-switcher';
 import { Portal, portalContext } from '@/components/portal-context';
 import { RESTRICTION } from '@/utils/constant';
 import { HomeIcon } from 'filigran-icon';
-import { Separator } from 'filigran-ui/clients';
 import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
@@ -24,7 +24,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   return (
     <nav className="flex-1 flex-shrink-0 pt-s">
       <OrganizationSwitcher open={open} />
-      <ul>
+      <ul className="space-y-s">
         <li>
           <LinkMenu
             open={open}
@@ -44,8 +44,10 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
           </li>
         )}
 
-        <Separator className="my-2" />
-        <MenuAdmin open={open} />
+        <GuardCapacityComponent
+          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+          <MenuAdmin open={open} />
+        </GuardCapacityComponent>
       </ul>
     </nav>
   );

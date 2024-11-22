@@ -110,13 +110,14 @@ const resolvers: Resolvers = {
           text: "An administrator has invited you to create your account on the Filigran's XTM Hub platform ! Register. ",
         });
 
-        const user = await loadUserDetails({
+        const user = await loadUserBy({
           'User.id': addedUser.id,
         });
 
         await dispatch('User', 'add', user);
         await trx.commit();
-        return user;
+
+        return mapUserToGraphqlUser(user);
       } catch (error) {
         await trx.rollback();
         console.error('Error while adding the new user.', error);
@@ -154,7 +155,6 @@ const resolvers: Resolvers = {
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateSelectedOrganization(
-        context,
         context.user.id,
         fromGlobalId(organization_id).id
       );

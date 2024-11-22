@@ -10,6 +10,7 @@ interface PageProps {}
 const Page: React.FunctionComponent<PageProps> = () => {
   return (
     <GuardCapacityComponent
+      displayError
       capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
       <PageLoader />
     </GuardCapacityComponent>

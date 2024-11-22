@@ -12,6 +12,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Separator,
 } from 'filigran-ui/clients';
 import { Button, buttonVariants } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
@@ -111,7 +112,6 @@ const AdminLinks = ({ className }: { className?: string }) => {
       {adminLinksData(t).map(({ href, label, restriction = [] }) => (
         <GuardCapacityComponent
           key={href}
-          displayError={false}
           capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS, ...restriction]}>
           <li>
             <AdminButton
@@ -156,24 +156,10 @@ const AdminButton = ({
 };
 const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   const useGrantedBYPASS = useGranted(RESTRICTION.CAPABILITY_BYPASS);
-  const useGrantedFRT_MANAGE_USER = useGranted(
-    RESTRICTION.CAPABILITY_FRT_MANAGE_USER
-  );
-  const useGrantedFRT_MANAGE_SETTINGS = useGranted(
-    RESTRICTION.CAPABILITY_FRT_MANAGE_SETTINGS
-  );
-  const useGrantedBCK_MANAGE_SERVICES = useGranted(
-    RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES
-  );
-
-  if (
-    useGrantedBYPASS ||
-    useGrantedFRT_MANAGE_USER ||
-    useGrantedFRT_MANAGE_SETTINGS ||
-    useGrantedBCK_MANAGE_SERVICES
-  ) {
+  if (useGrantedBYPASS) {
     return (
       <>
+        <Separator className="my-2" />
         <li>{open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}</li>
       </>
     );
