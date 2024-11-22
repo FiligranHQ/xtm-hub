@@ -174,6 +174,12 @@ export const loadUsers = async (
       '=',
       'rolePortal_CapabilityPortal.capability_portal_id'
     )
+    .leftJoin(
+      'RolePortal as rolePortal',
+      'user_RolePortal.role_portal_id',
+      '=',
+      'rolePortal.id'
+    )
     // Inspiration from https://github.com/knex/knex/issues/882
     .select([
       'User.*',
@@ -189,6 +195,13 @@ export const loadUsers = async (
           columnName: 'capability',
           typename: 'CapabilityPortal',
           as: 'capabilities',
+        })
+      ),
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'rolePortal',
+          typename: 'RolePortal',
+          as: 'roles_portal',
         })
       ),
     ])
@@ -238,11 +251,10 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
 };
 
 export const updateSelectedOrganization = async (
-  context,
   id,
   selected_organization_id
 ) => {
-  const [updatedUser] = await db<User>(context, 'User')
+  const [updatedUser] = await dbUnsecure<User>('User')
     .where({ id: id as UserId })
     .update({ selected_organization_id })
     .returning('*');
@@ -258,9 +270,22 @@ export const updateUser = async (
   const rolePortalIds = roles_id?.map(extractId<RolePortalId>);
   const organizationsIds = organizations.map(extractId<OrganizationId>);
 
-  const [updatedUser] = await db<User>(context, 'User')
+  const [updatedUser] = await dbUnsecure<User>('User')
     .where({ id })
     .update(user)
+    .whereIn('id', function () {
+      this.select('User.id')
+        .from('User')
+        .innerJoin(
+          'User_Organization as securityUserOrg',
+          'User.id',
+          'securityUserOrg.user_id'
+        )
+        .where(
+          'securityUserOrg.organization_id',
+          context.user.selected_organization_id
+        );
+    })
     .returning('*');
 
   await updateUserOrg(context, id, organizationsIds);

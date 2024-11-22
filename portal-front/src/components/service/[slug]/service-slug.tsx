@@ -197,8 +197,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           capacityRestriction={[
             RESTRICTION.CAPABILITY_BYPASS,
             RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-          ]}
-          displayError={false}>
+          ]}>
           <AlertDialogComponent
             actionButtonText="Remove"
             variantName="destructive"
@@ -226,6 +225,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       <div className="flex gap-s flex-wrap">
         <DataTableHeadBarOptions />
         <GuardCapacityComponent
+          displayError
           capacityRestriction={[
             RESTRICTION.CAPABILITY_BYPASS,
             RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
@@ -257,8 +257,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           />
         </GuardCapacityComponent>
         <GuardCapacityComponent
-          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
-          displayError={false}>
+          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
           <ServiceSlugAddOrgaFormSheet
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
@@ -288,6 +287,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       <h1 className="pb-s">{queryDataService.serviceById?.name}</h1>
       <div className="pb-s">{queryDataService.serviceById?.description}</div>
       <GuardCapacityComponent
+        displayError
         capacityRestriction={[
           RESTRICTION.CAPABILITY_BYPASS,
           RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,

@@ -44,19 +44,19 @@ export const DeleteUserAction: FunctionComponent<DeleteUserActionsProps> = ({
   };
 
   const defaultTrigger = (
-    <IconActionsButton aria-label={t('deleteUser')}>
-      {t('delete')}
+    <IconActionsButton aria-label={t('UserActions.deleteUser')}>
+      {t('MenuActions.delete')}
     </IconActionsButton>
   );
 
   return (
     <AlertDialogComponent
-      AlertTitle={t('deleteUser')}
-      actionButtonText={'Delete'}
+      AlertTitle={t('UserActions.deleteUser')}
+      actionButtonText={t('MenuActions.delete')}
       variantName={'destructive'}
       triggerElement={trigger ?? defaultTrigger}
       onClickContinue={() => onDeleteUser(user.id)}>
-      {t('areYouSureYouWantToDeleteThisUser', {
+      {t('DeleteUserDialog.textDeleteThisUser', {
         first_name: user.first_name,
         last_name: user.last_name,
       })}

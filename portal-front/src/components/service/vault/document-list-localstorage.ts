@@ -1,8 +1,10 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
-import { DocumentOrdering } from '../../../../__generated__/documentsQuery.graphql';
-import { OrderingMode } from '../../../../__generated__/userQuery.graphql';
+import {
+  DocumentOrdering,
+  OrderingMode,
+} from '../../../../__generated__/documentsQuery.graphql';
 
 export const documentListLocalStorage = (
   columns: ColumnDef<documentItem_fragment$data>[]

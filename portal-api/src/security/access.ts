@@ -88,9 +88,11 @@ export const applyDbSecurity = <T>(
     'ActionTracking',
     'Document',
     'User_Organization',
+    'User_RolePortal',
   ];
 
   // If user is admin, user has no access restriction
+  // TODO We need to filter query that is not a select but the applyDbSecurity is used at the init of the query so we cannot not where it's used and how update/select etC..
   if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
     return queryContext;
   }
@@ -127,14 +129,14 @@ export const applyDbSecurity = <T>(
   // Standard user can access to all users from its own organization
   if (type === 'User') {
     queryContext
-      .leftJoin(
-        'User_Organization',
+      .innerJoin(
+        'User_Organization as securityUserOrg',
         'User.id',
         '=',
-        'User_Organization.user_id'
+        'securityUserOrg.user_id'
       )
       .where(
-        'User.organization_id',
+        'securityUserOrg.organization_id',
         '=',
         context.user.selected_organization_id
       );

@@ -4,17 +4,22 @@ import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import TriggerButton from '@/components/ui/trigger-button';
 import { useToast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, ReactNode, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
+import { userList_fragment$data } from '../../../../../__generated__/userList_fragment.graphql';
 import { userSlugEditMutation } from '../../../../../__generated__/userSlugEditMutation.graphql';
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
 
 interface EditUserProps {
-  user: userSlug_fragment$data;
+  user: userSlug_fragment$data | userList_fragment$data;
+  trigger?: ReactNode;
 }
 
-export const EditUser: FunctionComponent<EditUserProps> = ({ user }) => {
+export const EditUser: FunctionComponent<EditUserProps> = ({
+  user,
+  trigger,
+}) => {
   const [openSheet, setOpenSheet] = useState(false);
   const t = useTranslations();
 
@@ -38,15 +43,17 @@ export const EditUser: FunctionComponent<EditUserProps> = ({ user }) => {
       },
     });
   };
+
+  const defaultTrigger = <TriggerButton label={t('update')} />;
   return (
     <UserFormSheet
-      title={t('updateUser')}
+      title={t('UserActions.updateUser')}
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}
       user={user}
       validationSchema={userEditFormSchema}
-      trigger={<TriggerButton label={t('update')} />}
+      trigger={trigger ?? defaultTrigger}
     />
   );
 };
