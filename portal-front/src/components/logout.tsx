@@ -18,6 +18,9 @@ const Logout: React.FunctionComponent<LogoutProps> = ({ className }) => {
   const logout = () => {
     commitLogoutMutation({
       variables: {},
+      updater: (store) => {
+        store.invalidateStore();
+      },
       onCompleted() {
         router.refresh();
       },

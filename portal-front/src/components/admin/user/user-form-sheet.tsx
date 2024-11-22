@@ -3,6 +3,7 @@ import {
   userFormSchema,
 } from '@/components/admin/user/user-form.schema';
 import { getOrganizations } from '@/components/organization/organization.service';
+import { Portal, portalContext } from '@/components/portal-context';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import useGranted from '@/hooks/useGranted';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,14 +23,19 @@ import {
   SheetTrigger,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
-import { FunctionComponent, ReactNode } from 'react';
+import { FunctionComponent, ReactNode, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { z, ZodSchema } from 'zod';
 import { meContext_fragment$data } from '../../../../__generated__/meContext_fragment.graphql';
+import { userList_fragment$data } from '../../../../__generated__/userList_fragment.graphql';
 import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
 
 interface UserFormSheetProps {
-  user?: meContext_fragment$data | userSlug_fragment$data | null;
+  user?:
+    | meContext_fragment$data
+    | userSlug_fragment$data
+    | userList_fragment$data
+    | null;
   open: boolean;
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
@@ -49,13 +55,22 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   handleSubmit,
   validationSchema,
 }) => {
+  const { me } = useContext<Portal>(portalContext);
   const currentRolesPortal = user?.roles_portal.map(
     (rolePortalData) => rolePortalData.id
   );
 
-  const currentOrganization = user?.organizations?.map(
-    (organizationData) => organizationData.id
+  // TODO Rework not a good implementation yet, should be easier when we will have a clear separation between user, role and org
+  const personalSpace = (user?.organizations ?? [])?.find(
+    (organizationData) => organizationData.personal_space
   );
+
+  // If user is null, that mean we are creating an user, if not we are updating
+  const initOrganizations = user
+    ? (user?.organizations ?? [])
+        ?.filter((organizationData) => !organizationData.personal_space)
+        .map((organizationData) => organizationData.id)
+    : [me?.selected_organization_id];
 
   const rolePortal = getRolesPortal();
   const isFullAdmin = useGranted('BYPASS');
@@ -65,9 +80,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
       label: name,
       value: id,
     }))
-    .filter(
-      ({ label }) => !(!isFullAdmin && ['ADMIN', 'ADMIN_COMMU'].includes(label))
-    );
+    .filter(({ label }) => !(!isFullAdmin && ['ADMIN'].includes(label)));
 
   const [organizationData] = getOrganizations();
 
@@ -82,13 +95,17 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
       ...user,
       password: '',
       roles_id: currentRolesPortal ?? [],
-      organizations: currentOrganization ?? [],
+      organizations: initOrganizations,
     },
   });
 
   const onSubmit = (values: z.infer<typeof validationSchema>) => {
     handleSubmit({
       ...values,
+      organizations: [
+        ...values.organizations,
+        ...(personalSpace ? [personalSpace.id] : []),
+      ],
     });
   };
 

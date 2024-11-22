@@ -1,6 +1,5 @@
 'use client';
 
-import Loader from '@/components/loader';
 import { Portal, portalContext } from '@/components/portal-context';
 import useGranted from '@/hooks/useGranted';
 import { useTranslations } from 'next-intl';
@@ -18,11 +17,11 @@ interface GuardComponentProps {
 const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   children,
   capacityRestriction,
-  displayError = true,
+  displayError = false,
 }) => {
   const { me } = useContext<Portal>(portalContext);
   if (!me) {
-    return <Loader />;
+    return null;
   }
   const authorized = capacityRestriction.some(useGranted);
   if (!authorized && displayError) {

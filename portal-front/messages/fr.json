@@ -92,5 +92,16 @@
     "Success": "Succès",
     "Update": "Editer",
     "Validate": "Valider"
+  },
+  "DeleteUserDialog": {
+    "textDeleteThisUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur {first_name} {last_name} ?"
+  },
+  "UserActions": {
+    "deleteUser": "Supprimer l'utilisateur",
+    "updateUser": "Mettre à jour l'utilisateur"
+  },
+  "MenuActions": {
+    "delete": "Supprimer",
+    "update": "Mise à jour"
   }
 }
