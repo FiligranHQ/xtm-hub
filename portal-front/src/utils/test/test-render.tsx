@@ -28,7 +28,7 @@ export const generateMockUser = (
         name: 'BYPASS',
       },
     ],
-    roles_portal_id: [
+    roles_portal: [
       {
         id: 'role_id',
       },

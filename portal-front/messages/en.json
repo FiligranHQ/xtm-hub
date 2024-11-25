@@ -98,10 +98,12 @@
   },
   "UserActions": {
     "deleteUser": "Delete User",
-    "updateUser": "Update User"
+    "updateUser": "Update User",
+    "detailsUser": "Details User"
   },
   "MenuActions": {
     "delete": "Delete",
-    "update": "Update"
+    "update": "Update",
+    "details": "Details"
   }
 }

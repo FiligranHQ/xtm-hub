@@ -1,16 +1,19 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { dbUnsecure } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import {
   Capability,
   User as GraphqlUser,
 } from '../../__generated__/resolvers-types';
-import { OrganizationId } from '../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../model/kanel/public/Organization';
 import User, {
   UserId,
   UserInitializer,
   UserMutator,
 } from '../../model/kanel/public/User';
+import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { hashPassword } from '../../utils/hash-password.util';
@@ -114,6 +117,19 @@ export const mapUserToGraphqlUser = (
   };
 };
 
-export const removeUser = async (field: UserMutator) => {
-  await dbUnsecure<User>('User').delete('*').where(field);
+export const removeUser = async (
+  context: PortalContext,
+  field: UserMutator
+) => {
+  const [deletedUser] = await db<User>(context, 'User')
+    .delete('*')
+    .where(field)
+    .returning('*');
+
+  // Organization personalSpace of the user should have the same id
+  await db<Organization>(context, 'Organization')
+    .delete('*')
+    .where({ id: deletedUser.id as unknown as OrganizationId });
+
+  return deletedUser;
 };
