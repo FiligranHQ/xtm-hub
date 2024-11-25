@@ -68,7 +68,6 @@ const resolvers: Resolvers = {
           provider: 'SCRED_ONDEMAND',
           type: 'PRIVATE',
           creation_status: 'READY',
-          subscription_service_type: 'SUBSCRIPTABLE_BACKOFFICE',
         };
         const [addedService] = await db<Service>(context, 'Service')
           .insert(dataService)

@@ -1,4 +1,5 @@
 import GuardCapacityComponent from '@/components/admin-guard';
+import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
 import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
@@ -10,7 +11,6 @@ import {
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import TriggerButton from '@/components/ui/trigger-button';
-import useGranted from '@/hooks/useGranted';
 import { RESTRICTION } from '@/utils/constant';
 import { DeleteIcon } from 'filigran-icon';
 import {
@@ -19,7 +19,7 @@ import {
   useToast,
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import {
   PreloadedQuery,
   useMutation,
@@ -55,6 +55,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
   const { toast } = useToast();
+  const { me } = useContext<Portal>(portalContext);
 
   const queryData = usePreloadedQuery<subscriptionByServiceQuery>(
     SubscriptionsByService,
@@ -64,6 +65,23 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     ServiceById,
     queryRefService
   );
+
+  const userCanInviteUser = () => {
+    return (
+      queryData?.subscriptionsByServiceId?.map((subscription) => {
+        subscription?.user_service?.map((user_service) => {
+          user_service?.user?.id === me?.id &&
+            user_service?.service_capability?.some(
+              (service_capability) =>
+                service_capability?.service_capability_name === 'MANAGE_ACCESS'
+            );
+        });
+      }) ||
+      me?.capabilities.some((capability) => {
+        capability?.name === 'BYPASS';
+      })
+    );
+  };
 
   const [selectedSubscription, setSelectedSubscription] = useState<
     subscriptionByService_fragment$data | undefined
@@ -201,7 +219,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             }
             subscriptionId={selectedSubscription?.id ?? ''}
             trigger={
-              useGranted('BYPASS') && (
+              userCanInviteUser() && (
                 <TriggerButton
                   disabled={
                     queryData.subscriptionsByServiceId?.[0]?.status ===

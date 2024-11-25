@@ -5,10 +5,10 @@ import { ServiceId } from '../../../model/kanel/public/Service';
 import { UserId } from '../../../model/kanel/public/User';
 import {
   deleteDocument,
+  getDocuments,
   insertDocument,
-  loadDocuments,
   sendFileToS3,
-  updateDocument,
+  updateDocumentDescription,
 } from './document.domain';
 import { checkDocumentExists, normalizeDocumentName } from './document.helper';
 
@@ -18,14 +18,15 @@ const resolvers: Resolvers = {
       try {
         const minioName = await sendFileToS3(
           opt.document.file,
-          context.user.id
+          context.user.id,
+          context.serviceId as ServiceId
         );
         const data: Document = {
           uploader_id: context.user.id as UserId,
           description: opt.description,
           minio_name: minioName,
           file_name: normalizeDocumentName(opt.document.file.filename),
-          service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff' as ServiceId,
+          service_id: context.serviceId,
           created_at: new Date(),
         } as unknown as Document;
         const [addedDocument] = await insertDocument(data);
@@ -37,10 +38,11 @@ const resolvers: Resolvers = {
     },
     editDocument: async (_, { documentId, newDescription }, context) => {
       try {
-        const [document] = await updateDocument(
+        const [document] = await updateDocumentDescription(
           context,
           { description: newDescription },
-          fromGlobalId(documentId).id as DocumentId
+          fromGlobalId(documentId).id as DocumentId,
+          context.serviceId as ServiceId
         );
         return document;
       } catch (error) {
@@ -50,11 +52,11 @@ const resolvers: Resolvers = {
     },
     deleteDocument: async (_, { documentId }, context) => {
       try {
-        const deletedDocument = await deleteDocument(
+        return deleteDocument(
           context,
-          fromGlobalId(documentId).id as DocumentId
+          fromGlobalId(documentId).id as DocumentId,
+          context.serviceId as ServiceId
         );
-        return deletedDocument;
       } catch (error) {
         console.error('Error while deleting document:', error);
         throw error;
@@ -66,20 +68,26 @@ const resolvers: Resolvers = {
       try {
         return checkDocumentExists(input.documentName ?? '');
       } catch (error) {
-        console.error('Error while fetching files:', error);
+        console.error('Error while fetching documents:', error);
         throw error;
       }
     },
     documents: async (
       _,
-      { first, after, orderMode, orderBy, filter },
+      { first, after, orderMode, orderBy, filter, serviceId },
       context
     ) => {
-      return loadDocuments(
-        context,
-        { first, after, orderMode, orderBy },
-        filter
-      );
+      try {
+        return getDocuments(
+          context,
+          { first, after, orderMode, orderBy },
+          normalizeDocumentName(filter),
+          fromGlobalId(serviceId).id as ServiceId
+        );
+      } catch (error) {
+        console.error('Error while fetching documents:', error);
+        throw error;
+      }
     },
   },
 };

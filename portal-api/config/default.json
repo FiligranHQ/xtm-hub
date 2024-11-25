@@ -60,18 +60,61 @@
         "name": "Partner Vault",
         "provider": "FILIGRAN",
         "type": "Intel",
-        "description": "This service allows you to gather information from Filigran.",
-        "subscription_service_type": "SUBSCRIPTABLE_DIRECT"
+        "description": "This service allows you to gather information from Filigran."
       },
       "link": {
         "id": "5abcf40a-3d33-45d0-a6fd-fae350cdf8ec",
         "service_id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
-        "url": "/service/vault",
+        "url": "",
         "name": "Vault"
       },
       "price": {
         "id": "353cceeb-ada7-446d-a7f2-db1444b64cbd",
         "service_id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
+    },
+    {
+      "service": {
+        "id": "ec115942-6275-4a9d-9b69-d0d7ae2a42cb",
+        "name": "Vault Gold",
+        "provider": "FILIGRAN",
+        "type": "Intel",
+        "description": "This service allows you to gather gold information from Filigran."
+      },
+      "link": {
+        "id": "7adfc08c-a321-4a0e-a285-98e52d3f1216",
+        "service_id": "ec115942-6275-4a9d-9b69-d0d7ae2a42cb",
+        "url": "",
+        "name": "Vault Gold"
+      },
+      "price": {
+        "id": "29683499-6520-48b4-a2b2-018d6cc5e6cb",
+        "service_id": "ec115942-6275-4a9d-9b69-d0d7ae2a42cb",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
+    },
+    {
+      "service": {
+        "id": "6cdaee9e-556a-4486-9d7d-958315767e82",
+        "name": "Vault Silver",
+        "provider": "FILIGRAN",
+        "type": "Intel",
+        "description": "This service allows you to gather silver information from Filigran."
+      },
+      "link": {
+        "id": "355edc19-b046-4169-814b-cc181917658e",
+        "service_id": "6cdaee9e-556a-4486-9d7d-958315767e82",
+        "url": "",
+        "name": "Vault Silver"
+      },
+      "price": {
+        "id": "854fda31-29ad-40f5-baf1-730684cf69dc",
+        "service_id": "6cdaee9e-556a-4486-9d7d-958315767e82",
         "fee_type": "YEARLY",
         "start_date": null,
         "price": 0

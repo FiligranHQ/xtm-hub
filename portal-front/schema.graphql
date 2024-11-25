@@ -36,7 +36,7 @@ type Query {
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   documentExists(documentName: String): Boolean
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String): DocumentConnection!
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, serviceId: String): DocumentConnection!
   publicServices(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceById(service_id: ID): Service
@@ -61,9 +61,9 @@ type Mutation {
   addOrganization(name: String!): Organization
   editOrganization(id: ID!, input: EditOrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addDocument(document: Upload, description: String): Document!
-  editDocument(documentId: ID, newDescription: String): Document!
-  deleteDocument(documentId: ID): Document!
+  addDocument(document: Upload, description: String, serviceId: String): Document!
+  editDocument(documentId: ID, newDescription: String, serviceId: String): Document!
+  deleteDocument(documentId: ID, serviceId: String): Document!
   addServicePrice(input: AddServicePriceInput): ServicePrice
   editService(id: ID!, name: String!): Service
   addService(input: AddServiceInput): Subscription
@@ -152,13 +152,14 @@ type Service implements Node {
   description: String
   provider: String
   type: String
-  subscription_service_type: String
   creation_status: String
   subscribed: Boolean
   links: [ServiceLink]
   organization: [Organization]
   subscription: [Subscription]
   capabilities: [String]
+  public: Boolean
+  join_type: String
 }
 
 type ServiceEdge {

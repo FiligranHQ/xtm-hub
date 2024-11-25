@@ -27,10 +27,11 @@ export const serviceListFragment = graphql`
     description
     provider
     type
-    subscription_service_type
     creation_status
     subscribed
     capabilities
+    public
+    join_type
   }
 `;
 

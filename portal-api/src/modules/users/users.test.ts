@@ -12,10 +12,10 @@ import {
   loadUserBy,
   loadUserRoles,
 } from './users.domain';
-import { createNewUserFromInvitation } from './users.helper';
+import { createNewUserFromInvitation, removeUser } from './users.helper';
 
 describe('User helpers - createNewUserFromInvitation', async () => {
-  it('should be add new user with Role user only in an existing Organization', async () => {
+  it('should add new user with Role user only in an existing Organization', async () => {
     const testMail = `testCreateNewUserFromInvitation${uuidv4()}@filigran.io`;
     await createNewUserFromInvitation(testMail);
     const newUser = await loadUserBy({ email: testMail });
@@ -23,9 +23,7 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     expect(newUser.roles_portal[0].id).toBe(ROLE_USER.id);
 
     // Delete corresponding in order to avoid issue with other tests
-    await deleteUserById(newUser.id as UserId);
-    const testUserDeletion = await loadUserBy({ email: testMail });
-    expect(testUserDeletion).toBeFalsy();
+    await removeUser({ email: newUser.email });
   });
   it('should not add new user with an unauthorized domain Organization', async () => {
     const testMail = `testCreateNewUserFromInvitation${uuidv4()}@gmail.com`;
@@ -33,7 +31,7 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     const newUser = await loadUserBy({ email: testMail });
     expect(newUser).toBeFalsy();
   });
-  it('should be add new user with Role admin organization with an new Organization', async () => {
+  it('should add new user with Role admin organization with an new Organization', async () => {
     const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
     await createNewUserFromInvitation(testMail);
     const newUser = await loadUserBy({ email: testMail });
@@ -50,10 +48,8 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     expect(newOrganization).toBeTruthy();
 
     // Delete corresponding in order to avoid issue with other tests
-    await deleteUserById(newUser.id as UserId);
-    const testUserDeletion = await loadUserBy({ email: testMail });
-    expect(testUserDeletion).toBeFalsy();
-    deleteOrganizationByName('test-new-organization');
+    await removeUser({ email: testMail });
+    await deleteOrganizationByName('test-new-organization');
   });
 });
 
