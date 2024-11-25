@@ -2,7 +2,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import crypto from 'node:crypto';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbTx } from '../../../knexfile';
+import { dbTx } from '../../../knexfile';
 import { MergeEvent, Resolvers } from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -23,7 +23,7 @@ import {
   updateSelectedOrganization,
   updateUser,
 } from './users.domain';
-import { mapUserToGraphqlUser } from './users.helper';
+import { mapUserToGraphqlUser, removeUser } from './users.helper';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   const hash = crypto
@@ -146,9 +146,7 @@ const resolvers: Resolvers = {
       }
     },
     deleteUser: async (_, { id }, context) => {
-      const [deletedUser] = await db<User>(context, 'User')
-        .where({ id: id as UserId })
-        .delete('*');
+      const deletedUser = await removeUser(context, { id: id as UserId });
 
       await dispatch('User', 'delete', deletedUser);
       return deletedUser as User;

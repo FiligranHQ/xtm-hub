@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, describe, expect, it } from 'vitest';
+import { contextAdminUser } from '../../../tests/tests.const';
 import { UserId } from '../../model/kanel/public/User';
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import {
@@ -23,7 +24,7 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     expect(newUser.roles_portal[0].id).toBe(ROLE_USER.id);
 
     // Delete corresponding in order to avoid issue with other tests
-    await removeUser({ email: newUser.email });
+    await removeUser(contextAdminUser, { email: newUser.email });
   });
   it('should not add new user with an unauthorized domain Organization', async () => {
     const testMail = `testCreateNewUserFromInvitation${uuidv4()}@gmail.com`;
@@ -48,7 +49,7 @@ describe('User helpers - createNewUserFromInvitation', async () => {
     expect(newOrganization).toBeTruthy();
 
     // Delete corresponding in order to avoid issue with other tests
-    await removeUser({ email: testMail });
+    await removeUser(contextAdminUser, { email: testMail });
     await deleteOrganizationByName('test-new-organization');
   });
 });
