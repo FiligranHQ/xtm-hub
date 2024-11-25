@@ -29,6 +29,7 @@ export const loadOrganizations = async (context: PortalContext, opts) => {
       orderBy,
     }
   )
+    .where('Organization.personal_space', '=', false)
     .select('*')
     .asConnection<OrganizationConnection>();
 

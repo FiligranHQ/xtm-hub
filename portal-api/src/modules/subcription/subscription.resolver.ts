@@ -96,12 +96,14 @@ const resolvers: Resolvers = {
           context.user.id as UserId,
           filledSubscription.id as SubscriptionId
         );
-        await grantServiceAccessUsers(
-          context,
-          context.user.selected_organization_id as OrganizationId,
-          context.user.id,
-          filledSubscription.id
-        );
+
+        // TODO If Service is AUTO_JOIN
+        // await grantServiceAccessUsers(
+        //   context,
+        //   context.user.selected_organization_id as OrganizationId,
+        //   context.user.id,
+        //   filledSubscription.id
+        // );
 
         await trx.commit();
         return {

@@ -5,6 +5,8 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import pkg from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+
 import expressSession, { SessionData } from 'express-session';
 import { createHandler } from 'graphql-sse/lib/use/express';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
@@ -120,9 +122,12 @@ const middlewareExpress = expressMiddleware(server, {
     req?.body?.variables?.id &&
       (req.body.variables.id = extractId(req.body.variables.id));
 
+    const serviceId = req?.body?.variables?.serviceId
+      ? fromGlobalId(req?.body?.variables?.serviceId)?.id
+      : '';
     // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
     // TODO Add build session from request authorization
-    return { user, req, res };
+    return { user, req, res, serviceId };
   },
 });
 const handler = createHandler({

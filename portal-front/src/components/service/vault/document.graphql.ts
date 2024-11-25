@@ -4,10 +4,14 @@ export const DocumentAddMutation = graphql`
   mutation documentAddMutation(
     $document: Upload
     $description: String
+    $serviceId: String
     $connections: [ID!]!
   ) {
-    addDocument(document: $document, description: $description)
-      @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
+    addDocument(
+      document: $document
+      description: $description
+      serviceId: $serviceId
+    ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       id
       description
       created_at
@@ -17,8 +21,16 @@ export const DocumentAddMutation = graphql`
 `;
 
 export const DocumentUpdateMutation = graphql`
-  mutation documentUpdateMutation($documentId: ID, $newDescription: String) {
-    editDocument(documentId: $documentId, newDescription: $newDescription) {
+  mutation documentUpdateMutation(
+    $documentId: ID
+    $newDescription: String
+    $serviceId: String
+  ) {
+    editDocument(
+      documentId: $documentId
+      newDescription: $newDescription
+      serviceId: $serviceId
+    ) {
       id
       file_name
       created_at
@@ -28,8 +40,12 @@ export const DocumentUpdateMutation = graphql`
 `;
 
 export const DocumentDeleteMutation = graphql`
-  mutation documentDeleteMutation($documentId: ID, $connections: [ID!]!) {
-    deleteDocument(documentId: $documentId) {
+  mutation documentDeleteMutation(
+    $documentId: ID
+    $connections: [ID!]!
+    $serviceId: String
+  ) {
+    deleteDocument(documentId: $documentId, serviceId: $serviceId) {
       id @deleteEdge(connections: $connections)
       file_name
     }
@@ -59,6 +75,7 @@ export const documentsFragment = graphql`
       orderBy: $orderBy
       orderMode: $orderMode
       filter: $filter
+      serviceId: $serviceId
     ) {
       __id
       totalCount
@@ -78,6 +95,7 @@ export const DocumentsListQuery = graphql`
     $orderBy: DocumentOrdering!
     $orderMode: OrderingMode!
     $filter: String
+    $serviceId: String
   ) {
     ...documentsList
   }

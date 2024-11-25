@@ -9,6 +9,7 @@ import {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
+import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import {
   UserInfo,
@@ -40,10 +41,18 @@ const completeUserCapability = (user: UserLoadUserBy): UserLoadUserBy => {
 
 export const loadUsersByOrganization = async (
   organizationId: string,
-  excludedUserId: string
+  excludedUserId: string,
+  role: string
 ) => {
   return dbUnsecure<User>('User')
     .select('User.*')
+    .rightJoin('User_RolePortal', function () {
+      this.on('User_RolePortal.user_id', '=', 'User.id').andOnVal(
+        'User_RolePortal.role_portal_id',
+        '=',
+        role
+      );
+    })
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
     .leftJoin(
       'Organization as org',
@@ -58,6 +67,39 @@ export const loadUsersByOrganization = async (
 export const loadUserBy = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<UserLoadUserBy> => {
+  const [foundUser] = await dbUnsecure<UserLoadUserBy>('User').where(field);
+  if (!foundUser) {
+    return;
+  }
+  const queryUserServiceWithCapa = await dbUnsecure<UserService>('User_Service')
+    .where('User_Service.user_id', '=', foundUser.id)
+    .leftJoin(
+      'Service_Capability',
+      'User_Service.id',
+      '=',
+      'Service_Capability.user_service_id'
+    )
+    .leftJoin(
+      'Subscription',
+      'Subscription.id',
+      '=',
+      'User_Service.subscription_id'
+    )
+    .select(
+      'User_Service.*',
+      dbRaw(
+        `CASE WHEN COUNT("Service_Capability".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "Service_Capability".id, 'service_capability_name', "Service_Capability".service_capability_name)))::json END AS service_capabilities`
+      ),
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'Subscription',
+          typename: 'Subscription',
+          as: 'subscription',
+        })
+      )
+    )
+    .groupBy(['User_Service.id']);
+
   const userQuery = dbUnsecure<UserLoadUserBy>('User')
     .where(field)
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
@@ -120,6 +162,7 @@ export const loadUserBy = async (
     .first();
 
   const user = await userQuery;
+  user.user_services = queryUserServiceWithCapa;
 
   // Complete admin user with bypass if needed
   return completeUserCapability(user);

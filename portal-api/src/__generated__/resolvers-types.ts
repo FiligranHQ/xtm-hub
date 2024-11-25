@@ -163,6 +163,7 @@ export type Mutation = {
 export type MutationAddDocumentArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   document?: InputMaybe<Scalars['Upload']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -209,6 +210,7 @@ export type MutationChangeSelectedOrganizationArgs = {
 
 export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -240,6 +242,7 @@ export type MutationDeleteUserServiceArgs = {
 export type MutationEditDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   newDescription?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -368,6 +371,7 @@ export type QueryDocumentsArgs = {
   first: Scalars['Int']['input'];
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -494,13 +498,14 @@ export type Service = Node & {
   creation_status?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  join_type?: Maybe<Scalars['String']['output']>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   name: Scalars['String']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
   provider?: Maybe<Scalars['String']['output']>;
+  public?: Maybe<Scalars['Boolean']['output']>;
   subscribed?: Maybe<Scalars['Boolean']['output']>;
   subscription?: Maybe<Array<Maybe<Subscription>>>;
-  subscription_service_type?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1079,13 +1084,14 @@ export type ServiceResolvers<ContextType = PortalContext, ParentType extends Res
   creation_status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  join_type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organization']>>>, ParentType, ContextType>;
   provider?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType>;
-  subscription_service_type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

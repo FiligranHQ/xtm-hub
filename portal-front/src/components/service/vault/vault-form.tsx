@@ -1,14 +1,18 @@
 'use client';
+import GuardCapacityComponent from '@/components/admin-guard';
 import { DocumentAddMutation } from '@/components/service/vault/document.graphql';
 import {
   newDocumentSchema,
   VaultNewFileFormSheet,
 } from '@/components/service/vault/vault-new-file-form-sheet';
 import TriggerButton from '@/components/ui/trigger-button';
+import { RESTRICTION } from '@/utils/constant';
 import { useToast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useState } from 'react';
+
 import { useMutation } from 'react-relay';
 import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
@@ -24,11 +28,19 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
   const [vaultDocumentMutation] =
     useMutation<documentAddMutation>(DocumentAddMutation);
   const [openSheet, setOpenSheet] = useState(false);
+  const params = useParams<{ slug: string }>();
+  const encodedServiceId = params.slug;
+
+  // Have to decode it, otherwise = become %3D for instance
+  const serviceId = encodedServiceId
+    ? decodeURIComponent(encodedServiceId)
+    : null;
 
   const sendDocument = (values: z.infer<typeof newDocumentSchema>) => {
     vaultDocumentMutation({
       variables: {
         ...values,
+        serviceId,
         connections: [connectionId],
       },
       uploadables: values.document as unknown as UploadableMap,
@@ -52,12 +64,18 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
 
   return (
     <>
-      <VaultNewFileFormSheet
-        open={openSheet}
-        trigger={<TriggerButton label={t('Service.Vault.FileForm.AddFile')} />}
-        setOpen={setOpenSheet}
-        handleSubmit={sendDocument}
-      />
+      <GuardCapacityComponent
+        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
+        displayError={false}>
+        <VaultNewFileFormSheet
+          open={openSheet}
+          trigger={
+            <TriggerButton label={t('Service.Vault.FileForm.AddFile')} />
+          }
+          setOpen={setOpenSheet}
+          handleSubmit={sendDocument}
+        />
+      </GuardCapacityComponent>
     </>
   );
 };

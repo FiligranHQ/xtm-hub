@@ -75,7 +75,6 @@ export const subscriptionItem = graphql`
       id
       description
       provider
-      subscription_service_type
       type
     }
     start_date

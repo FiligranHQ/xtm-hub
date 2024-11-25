@@ -1,12 +1,12 @@
 import ServiceCard from '@/components/service/service-card';
 import { IconActions } from '@/components/ui/icon-actions';
 import useGranted from '@/hooks/useGranted';
-import { cn } from '@/lib/utils';
 import { MoreVertIcon } from 'filigran-icon';
-import { Button, buttonVariants } from 'filigran-ui/servers';
+import { Button } from 'filigran-ui/servers';
 import { LinkIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
@@ -19,6 +19,8 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
   services,
 }) => {
   const t = useTranslations();
+  const router = useRouter();
+
   return (
     <>
       <h2 className="pb-m">{t('HomePage.YourServices')}</h2>
@@ -29,7 +31,7 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
         {services.map(({ subscription, service_capability, id }) => {
           return (
             <ServiceCard
-              serviceLink={subscription?.service?.links?.[0]?.url ?? ''}
+              serviceLink={`/service/vault/${subscription?.service?.id}`}
               key={id}
               topRightAction={
                 (service_capability?.some(
@@ -45,19 +47,17 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
                         </span>
                       </>
                     }>
-                    <Link
-                      className={cn(
-                        buttonVariants({
-                          variant: 'ghost',
-                          className: cn(
-                            'h-9 w-full justify-start rounded-none'
-                          ),
-                        })
-                      )}
-                      onClick={(e) => e.stopPropagation()}
-                      href={`/manage/service/${subscription?.service?.id}`}>
+                    <Button
+                      variant={'ghost'}
+                      className="normal-case w-full"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(
+                          `/manage/service/${subscription?.service?.id}`
+                        );
+                      }}>
                       {t('HomePage.Manage')}
-                    </Link>
+                    </Button>
                   </IconActions>
                 )
               }
@@ -74,7 +74,8 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
                         }
                         asChild
                         variant={'ghost'}>
-                        <Link href={link?.url ?? ''}>
+                        <Link
+                          href={`/service/vault/${subscription?.service?.id}`}>
                           <LinkIcon className="mr-3 h-3 w-3" /> {link?.name}
                         </Link>
                       </Button>

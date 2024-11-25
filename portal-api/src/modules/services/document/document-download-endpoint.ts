@@ -5,12 +5,13 @@ import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
+import { ServiceId } from '../../../model/kanel/public/Service';
 import { PortalContext } from '../../../model/portal-context';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
 
 export const documentDownloadEndpoint = (app) => {
-  app.get(`/document/get/:filename`, cors(), async (req, res) => {
+  app.get(`/document/get/:serviceId/:filename`, cors(), async (req, res) => {
     const { user } = req.session;
     if (!user || user.capabilities.length === 0) {
       res.status(401).json({ message: 'You must be logged in' });
@@ -19,11 +20,13 @@ export const documentDownloadEndpoint = (app) => {
     try {
       const context: PortalContext = {
         user: user,
+        serviceId: fromGlobalId(req.params.serviceId).id as ServiceId,
         req,
         res,
       };
+
       const [document] = await loadDocumentBy(context, {
-        id: fromGlobalId(req.params.filename).id as DocumentId,
+        'Document.id': fromGlobalId(req.params.filename).id as DocumentId,
       } as DocumentMutator);
       if (!document) {
         console.error('Error while retrieving document: document not found.');
