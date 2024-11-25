@@ -34,21 +34,13 @@ interface ServiceSlugAddOrgaFormSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
-  connectionId: string;
   serviceId: string;
   insertedOrganization: () => void;
 }
 
 export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({
-  open,
-  setOpen,
-  trigger,
-  connectionId,
-  serviceId,
-  insertedOrganization,
-}) => {
+> = ({ open, setOpen, trigger, serviceId, insertedOrganization }) => {
   const [organizations] = getOrganizations();
   const { toast } = useToast();
   const [commitSubscriptionCreateMutation] =
@@ -59,11 +51,11 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
   const onSubmit = (inputValue: z.infer<ZodSchema>) => {
     commitSubscriptionCreateMutation({
       variables: {
-        connections: [connectionId],
+        connections: [''],
         service_id: serviceId,
         organization_id: inputValue.organization_id,
       },
-      onCompleted: (response) => {
+      onCompleted: () => {
         toast({
           title: 'Success',
           description: 'Organization added',
@@ -104,8 +96,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
         <SheetHeader className="bg-page-background">
           <SheetTitle className="txt-title">{'Add organization'}</SheetTitle>
           <SheetDescription>
-            Invite an organization in you community. Its members will have
-            access to all of this community services.
+            Invite an organization on the service.
           </SheetDescription>
         </SheetHeader>
 

@@ -34,6 +34,7 @@ export const loadOrganizations = async (context: PortalContext, opts) => {
     .asConnection<OrganizationConnection>();
 
   const { totalCount } = await db<Service>(context, 'Organization', opts)
+    .where('Organization.personal_space', '=', false)
     .countDistinct('id as totalCount')
     .first();
 

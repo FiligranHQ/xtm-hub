@@ -1,3 +1,4 @@
+import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,7 +19,7 @@ import {
   SheetTrigger,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
-import { FunctionComponent, ReactNode } from 'react';
+import { FunctionComponent, ReactNode, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
@@ -53,12 +54,9 @@ export const ServiceSlugFormSheet: FunctionComponent<
   const currentCapabilities = userService?.service_capability?.map(
     (capability: any) => capability?.service_capability_name
   );
+  const { me } = useContext<Portal>(portalContext);
 
   const capabilitiesData = [
-    {
-      label: 'ADMIN_SUBSCRIPTION',
-      value: 'ADMIN_SUBSCRIPTION',
-    },
     {
       label: 'MANAGE_ACCESS',
       value: 'MANAGE_ACCESS',
@@ -67,6 +65,14 @@ export const ServiceSlugFormSheet: FunctionComponent<
       label: 'ACCESS_SERVICE',
       value: 'ACCESS_SERVICE',
     },
+    ...(me?.capabilities.some((capability) => capability?.name === 'BYPASS')
+      ? [
+          {
+            label: 'ADMIN_SUBSCRIPTION',
+            value: 'ADMIN_SUBSCRIPTION',
+          },
+        ]
+      : []),
   ];
 
   const form = useForm<z.infer<ZodSchema>>({
@@ -130,7 +136,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
         <SheetHeader className="bg-page-background">
-          <SheetTitle>{'Capabilities'}</SheetTitle>
+          <SheetTitle>{'Invite user to the service'}</SheetTitle>
           <SheetDescription>
             {'Set the access rights here. Click Validate when you are done.'}
           </SheetDescription>

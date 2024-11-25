@@ -9,7 +9,6 @@ import {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
-import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import {
   UserInfo,
@@ -71,34 +70,6 @@ export const loadUserBy = async (
   if (!foundUser) {
     return;
   }
-  const queryUserServiceWithCapa = await dbUnsecure<UserService>('User_Service')
-    .where('User_Service.user_id', '=', foundUser.id)
-    .leftJoin(
-      'Service_Capability',
-      'User_Service.id',
-      '=',
-      'Service_Capability.user_service_id'
-    )
-    .leftJoin(
-      'Subscription',
-      'Subscription.id',
-      '=',
-      'User_Service.subscription_id'
-    )
-    .select(
-      'User_Service.*',
-      dbRaw(
-        `CASE WHEN COUNT("Service_Capability".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "Service_Capability".id, 'service_capability_name', "Service_Capability".service_capability_name)))::json END AS service_capabilities`
-      ),
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'Subscription',
-          typename: 'Subscription',
-          as: 'subscription',
-        })
-      )
-    )
-    .groupBy(['User_Service.id']);
 
   const userQuery = dbUnsecure<UserLoadUserBy>('User')
     .where(field)
@@ -162,7 +133,6 @@ export const loadUserBy = async (
     .first();
 
   const user = await userQuery;
-  user.user_services = queryUserServiceWithCapa;
 
   // Complete admin user with bypass if needed
   return completeUserCapability(user);
@@ -234,7 +204,7 @@ export const loadUsers = async (
   });
 
   const { totalCount } = await db<User>(context, 'User', opts)
-    .countDistinct('id as totalCount')
+    .countDistinct('User.id as totalCount')
     .first();
   return {
     totalCount,

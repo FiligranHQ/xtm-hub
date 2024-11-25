@@ -75,7 +75,6 @@ export const SubscriptionTabs: FunctionComponent<SubscriptionTabsProps> = ({
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
             insertedOrganization={loadQuery}
-            connectionId=""
             serviceId={serviceId}
             trigger={
               <Button
