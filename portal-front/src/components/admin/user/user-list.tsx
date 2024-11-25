@@ -182,9 +182,9 @@ const UserList = () => {
             <GuardCapacityComponent
               capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
               <IconActionsButton
-                aria-label={t('detailsUser')}
+                aria-label={t('UserActions.detailsUser')}
                 onClick={() => router.push(`/admin/user/${row.original.id}`)}>
-                {t('details')}
+                {t('MenuActions.details')}
               </IconActionsButton>
             </GuardCapacityComponent>
             <DeleteUserAction

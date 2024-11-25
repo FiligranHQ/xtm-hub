@@ -29,7 +29,7 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
   await page.getByPlaceholder('Password').fill('azert');
   await page.getByPlaceholder('Password').press('Tab');
   await page.getByLabel('Roles').press('Enter');
-  await page.getByText('USER', { exact: true }).click();
+  await page.getByRole('option', { name: 'USER' }).click();
   await page.getByLabel('Organizations').press('Enter');
   await page.getByText('Thales', { exact: true }).click();
   await page.getByRole('button', { name: 'Validate' }).click();
@@ -38,12 +38,16 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
   ).toBeVisible();
 
   // Edit user
-  await page.getByRole('cell', { name: 'userInE2E@thales.com' }).click();
+  await page
+    .getByRole('row', { name: 'firstname lastname userInE2E@' })
+    .getByRole('button')
+    .click();
+  await page.getByLabel('Details User').click();
   await expect(
     page.getByRole('heading', { name: 'firstname lastname' })
   ).toBeVisible();
 
-  await page.getByLabel('Edit').click();
+  await page.getByLabel('Update').click();
   await page.getByPlaceholder('First name').click();
   await page.getByPlaceholder('First name').fill('firstnameModified');
   await page.getByRole('button', { name: 'Validate' }).click();
