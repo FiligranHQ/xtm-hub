@@ -70,14 +70,12 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     return (
       queryData?.subscriptionsByServiceId?.map((subscription) => {
         subscription?.user_service?.map((user_service) => {
-          user_service?.user?.id === me?.id &&
-            user_service?.service_capability?.some(
-              (service_capability) =>
-                service_capability?.service_capability_name === 'MANAGE_ACCESS'
-            );
+          user_service?.service_capability?.some(
+            (c) => c?.service_capability_name === 'MANAGE_ACCESS'
+          ) && user_service?.user?.id === me?.id;
         });
       }) ||
-      me?.capabilities.some((capability) => {
+      me?.capabilities?.some((capability) => {
         capability?.name === 'BYPASS';
       })
     );
@@ -142,9 +140,35 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   };
   if (queryData.subscriptionsByServiceId?.length === 0) {
     return (
-      <div className="border p-xl">
-        There is no subscription yet on this service...
-      </div>
+      <>
+        <div className="border p-xl">
+          There is no subscription yet on this service...
+        </div>
+
+        <GuardCapacityComponent
+          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
+          displayError={false}>
+          <ServiceSlugAddOrgaFormSheet
+            open={openSheetAddOrga}
+            setOpen={setOpenSheetAddOrga}
+            insertedOrganization={() =>
+              loadQuery(
+                { service_id: serviceId },
+                { fetchPolicy: 'network-only' }
+              )
+            }
+            serviceId={serviceId}
+            trigger={
+              <Button
+                className="text-nowrap mt-xl"
+                variant="outline"
+                aria-label="Add organization">
+                Add organization
+              </Button>
+            }
+          />
+        </GuardCapacityComponent>
+      </>
     );
   }
   const dataOrganizationsTab = (queryData.subscriptionsByServiceId ?? []).map(
@@ -244,7 +268,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 { fetchPolicy: 'network-only' }
               )
             }
-            connectionId=""
             serviceId={serviceId}
             trigger={
               <Button
