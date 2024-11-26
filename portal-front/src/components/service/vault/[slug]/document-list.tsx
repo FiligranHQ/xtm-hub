@@ -10,7 +10,14 @@ import {
 } from '@/components/ui/handle-sorting.utils';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui/clients';
 import { Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -42,7 +49,7 @@ interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;
   queryRefService: PreloadedQuery<serviceByIdQuery>;
 }
-
+const DEFAULT_TRUNCATE_LIMIT = 64;
 const DocumentList: React.FunctionComponent<ServiceProps> = ({
   queryRef,
   queryRefService,
@@ -81,10 +88,29 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
     },
     {
-      accessorKey: 'description',
       id: 'description',
       enableSorting: false,
       header: t('Service.Vault.FileTab.Description'),
+      cell: ({ row }) => (
+        <>
+          {row?.original?.description &&
+          row?.original?.description.length > DEFAULT_TRUNCATE_LIMIT ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  {row.original.description.slice(0, DEFAULT_TRUNCATE_LIMIT) +
+                    '...'}
+                </TooltipTrigger>
+                <TooltipContent className={'max-w-lg'}>
+                  {row.original.description}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <>{row?.original?.description}</>
+          )}
+        </>
+      ),
     },
     {
       id: 'actions',
