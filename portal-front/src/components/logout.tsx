@@ -22,6 +22,7 @@ const Logout: React.FunctionComponent<LogoutProps> = ({ className }) => {
         store.invalidateStore();
       },
       onCompleted() {
+        router.push('/');
         router.refresh();
       },
     });

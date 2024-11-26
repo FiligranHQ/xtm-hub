@@ -30,7 +30,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
       className={cn(
         buttonVariants({
           variant: 'ghost',
-          className: 'h-9 w-full justify-start rounded-none normal-case',
+          className: 'h-9 w-full justify-start rounded-none normal-case px-m',
         }),
         currentPath === href &&
           'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
@@ -52,15 +52,17 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'mobile:hidden z-20 sticky flex-shrink-0 top-0 left-0 flex h-screen flex-col overflow-y-auto overflow-x-hidden border-r bg-page-background duration-300 ease-in-out',
-        open ? 'w-48' : 'w-16'
+        'mobile:hidden z-20 sticky flex-shrink-0 top-0 left-0 flex h-screen flex-col overflow-y-auto overflow-x-hidden bg-page-background duration-300 ease-in-out',
+        open ? 'w-48' : 'w-14'
       )}>
       <MenuLogo />
-      <NavigationApp open={open} />
-      <CollapseMenuButton
-        open={open}
-        handleOpenMenu={handleOpenMenu}
-      />
+      <div className="border-r flex-1 flex-col flex justify-between">
+        <NavigationApp open={open} />
+        <CollapseMenuButton
+          open={open}
+          handleOpenMenu={handleOpenMenu}
+        />
+      </div>
     </aside>
   );
 };

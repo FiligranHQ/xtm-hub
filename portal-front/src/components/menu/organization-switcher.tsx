@@ -1,4 +1,3 @@
-import { changeSelectedOrganizationMutation } from '@/components/menu/organization-switcher.graphql';
 import { Portal, portalContext } from '@/components/portal-context';
 import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
@@ -7,12 +6,21 @@ import { Popover, PopoverContent, PopoverTrigger } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useRouter } from 'next/navigation';
 import { FunctionComponent, useContext, useState } from 'react';
-import { useMutation } from 'react-relay';
+import { graphql, useMutation } from 'react-relay';
 import { organizationSwitcherMutation } from '../../../__generated__/organizationSwitcherMutation.graphql';
 
 interface TeamSwitcherProps {
   open: boolean;
 }
+
+const changeSelectedOrganizationMutation = graphql`
+  mutation organizationSwitcherMutation($organization_id: ID!) {
+    changeSelectedOrganization(organization_id: $organization_id) {
+      id
+      selected_organization_id
+    }
+  }
+`;
 
 export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
   open,
@@ -63,8 +71,10 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
           <Button
             variant="ghost"
             role="combobox"
-            aria-label="Select a team"
-            className={cn('w-full justify-between rounded-none normal-case')}>
+            aria-label="Select an organization"
+            className={cn(
+              'px-m w-full justify-between rounded-none normal-case'
+            )}>
             <span className={'flex w-8 flex-shrink-0 justify-center'}>
               <CityIcon className="h-4 w-4" />
             </span>

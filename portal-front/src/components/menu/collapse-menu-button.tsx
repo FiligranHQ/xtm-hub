@@ -18,7 +18,7 @@ export const CollapseMenuButton: FunctionComponent<CollapseMenuButtonProps> = ({
     <div className="flex-shrink-0 pb-s">
       <Button
         variant="ghost"
-        className="h-9 w-full justify-start rounded-none"
+        className="h-9 px-m w-full justify-start rounded-none"
         onClick={handleOpenMenu}>
         <span className="flex w-8 flex-shrink-0 justify-center">
           <KeyboardArrowLeftIcon
