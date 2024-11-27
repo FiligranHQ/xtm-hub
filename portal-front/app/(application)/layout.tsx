@@ -16,6 +16,11 @@ import meLoaderQueryNode, {
 } from '../../__generated__/meLoaderQuery.graphql';
 import PageLoader from './page-loader';
 
+export const metadata = {
+  title: 'XTM Hub',
+  description: 'XTM Hub application by Filigran',
+};
+
 // Component interface
 interface RootLayoutProps {
   children: React.ReactNode;
