@@ -11,15 +11,20 @@ import HeaderComponent from '@/components/header';
 import Login from '@/components/login/login';
 import Menu from '@/components/menu/menu';
 import I18nContext from '@/i18n/i18n-context';
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import meLoaderQueryNode, {
   meLoaderQuery,
 } from '../../__generated__/meLoaderQuery.graphql';
 import PageLoader from './page-loader';
 
-export const metadata = {
-  title: 'XTM Hub',
-  description: 'XTM Hub application by Filigran',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'XTM Hub',
+    description: 'XTM Hub application by Filigran',
+    metadataBase: new URL(`https://${headers().get('host')}`),
+  };
+}
 
 // Component interface
 interface RootLayoutProps {
