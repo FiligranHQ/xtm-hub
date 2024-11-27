@@ -33,17 +33,17 @@ const OpenedMenuAdmin = () => {
       <AccordionItem
         className="border-none"
         value="item-1">
-        <AccordionTrigger className="h-9 px-3 py-2 hover:bg-hover hover:no-underline">
+        <AccordionTrigger className="h-9 px-m py-s hover:bg-hover hover:no-underline">
           <span className="flex w-8 flex-shrink-0 justify-center">
             <SettingsIcon className="h-4 w-4" />
           </span>
-          <span className="flex-1 px-2 text-left txt-default">
+          <span className="flex-1 px-s text-left txt-default">
             {t('MenuLinks.Settings')}
           </span>
         </AccordionTrigger>
         <AccordionContent>
           <ul className="space-y-xs">
-            <AdminLinks className="pl-12 ml-1 h-8 txt-sub-content" />
+            <AdminLinks className="pl-12 ml-xs h-8 txt-sub-content" />
           </ul>
         </AccordionContent>
       </AccordionItem>
@@ -159,7 +159,7 @@ const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
   if (useGrantedBYPASS) {
     return (
       <>
-        <Separator className="my-2" />
+        <Separator className="my-s" />
         <li>{open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}</li>
       </>
     );
