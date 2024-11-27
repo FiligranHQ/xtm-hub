@@ -63,8 +63,7 @@ type Query {
     orderBy: ServiceOrdering!
     orderMode: OrderingMode!
   ): ServiceConnection! @auth(requires: [BYPASS])
-  serviceById(service_id: ID): Service
-    @auth
+  serviceById(service_id: ID): Service @auth
 }
 
 type ServiceSubscription {

@@ -22,6 +22,7 @@ import {
   loadUsers,
   updateSelectedOrganization,
   updateUser,
+  userHasSomeSubscription,
 } from './users.domain';
 import { mapUserToGraphqlUser, removeUser } from './users.helper';
 
@@ -35,27 +36,18 @@ const validPassword = (user: UserLoadUserBy, password: string): boolean => {
 const resolvers: Resolvers = {
   Query: {
     me: async (_, __, context) => {
-      if (!context.user)
-        throw new GraphQLError('You must be logged in', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
       return mapUserToGraphqlUser(context.user);
     },
-    user: async (_, { id }, context) => {
-      if (!context.user)
-        throw new GraphQLError('You must be logged in', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
+    user: async (_, { id }) => {
       return loadUserDetails({
         'User.id': id as UserId,
       });
     },
     users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
-      if (!context.user)
-        throw new GraphQLError('You must be logged in', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
       return loadUsers(context, { first, after, orderMode, orderBy }, filter);
+    },
+    userHasSomeSubscription: async (_, __, context) => {
+      return userHasSomeSubscription(context);
     },
   },
   Mutation: {

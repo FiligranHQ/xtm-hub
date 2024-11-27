@@ -105,5 +105,9 @@
     "delete": "Delete",
     "update": "Update",
     "details": "Details"
+  },
+  "RedirectPage": {
+    "yourFutureHub": "Your future Filigran community hub is taking shape !",
+    "ExploringOurRoad": "Hold tight—you're just 3 seconds away from exploring our roadmap and learning more."
   }
 }

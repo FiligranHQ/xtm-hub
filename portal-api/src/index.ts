@@ -125,7 +125,6 @@ const middlewareExpress = expressMiddleware(server, {
     const serviceId = req?.body?.variables?.serviceId
       ? fromGlobalId(req?.body?.variables?.serviceId)?.id
       : '';
-    // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
     // TODO Add build session from request authorization
     return { user, req, res, serviceId };
   },

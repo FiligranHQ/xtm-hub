@@ -7,6 +7,7 @@ import { Portal, portalContext } from '@/components/portal-context';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions } from '@/components/ui/icon-actions';
+import { cn } from '@/lib/utils';
 import { IndividualIcon } from 'filigran-icon';
 import { Skeleton } from 'filigran-ui';
 import {
@@ -23,8 +24,12 @@ import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
 
 // Component interface
-interface HeaderComponentProps {}
-const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
+interface HeaderComponentProps {
+  displayLogo?: boolean;
+}
+const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
+  displayLogo,
+}) => {
   const { me } = useContext<Portal>(portalContext);
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
@@ -32,8 +37,18 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = () => {
     setOpen(false);
   }, [currentPath]);
   return (
-    <header className="sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between sm:justify-end">
-      <DisplayLogo className="text-primary mr-2 h-full py-l sm:hidden" />
+    <header
+      className={cn(
+        'sticky top-0 z-10 flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between',
+        displayLogo ? '' : 'sm:justify-end'
+      )}>
+      <DisplayLogo
+        className={cn(
+          'text-primary mr-2 h-full py-l',
+          displayLogo ? '' : 'sm:hidden'
+        )}
+      />
+
       <div className="mobile:hidden flex items-center gap-s">
         <span>
           {me?.email ? <> {me.email}</> : <Skeleton className="h-6 w-56" />}

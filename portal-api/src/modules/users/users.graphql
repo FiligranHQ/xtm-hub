@@ -41,6 +41,7 @@ type Query {
     orderMode: OrderingMode!
     filter: String
   ): UserConnection! @auth
+  userHasSomeSubscription: Boolean! @auth
 }
 
 input EditUserInput {
