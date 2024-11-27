@@ -50,6 +50,7 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: String): UserConnection!
+  userHasSomeSubscription: Boolean!
   node(id: ID!): Node
 }
 

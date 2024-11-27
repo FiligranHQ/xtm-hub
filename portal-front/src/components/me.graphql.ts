@@ -29,3 +29,9 @@ export const MeQuery = graphql`
     }
   }
 `;
+
+export const meUserHasSomeSubscription = graphql`
+  query meUserHasSomeSubscription {
+    userHasSomeSubscription
+  }
+`;

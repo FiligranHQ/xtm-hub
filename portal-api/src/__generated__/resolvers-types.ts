@@ -355,6 +355,7 @@ export type Query = {
   subscriptionsByOrganization: SubscriptionConnection;
   subscriptionsByServiceId?: Maybe<Array<Maybe<Subscription>>>;
   user?: Maybe<User>;
+  userHasSomeSubscription: Scalars['Boolean']['output'];
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
 };
@@ -1069,6 +1070,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   subscriptionsByOrganization?: Resolver<ResolversTypes['SubscriptionConnection'], ParentType, ContextType, RequireFields<QuerySubscriptionsByOrganizationArgs, 'first' | 'orderBy' | 'orderMode'>>;
   subscriptionsByServiceId?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType, Partial<QuerySubscriptionsByServiceIdArgs>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  userHasSomeSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userServiceOwned?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
 }>;

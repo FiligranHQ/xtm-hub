@@ -10,12 +10,17 @@ import { ContentLayout } from '@/components/content-layout';
 import HeaderComponent from '@/components/header';
 import Login from '@/components/login/login';
 import Menu from '@/components/menu/menu';
+import { EmptyServicesRedirect } from '@/components/service/home/empty-services-redirect';
 import I18nContext from '@/i18n/i18n-context';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import meLoaderQueryNode, {
   meLoaderQuery,
 } from '../../__generated__/meLoaderQuery.graphql';
+import meUserHasSomeSubscriptionNode, {
+  meUserHasSomeSubscription,
+  meUserHasSomeSubscription$data,
+} from '../../__generated__/meUserHasSomeSubscription.graphql';
 import PageLoader from './page-loader';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -40,16 +45,32 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
       meLoaderQueryNode,
       {}
     );
+    // @ts-ignore
+    const { data }: { data: meUserHasSomeSubscription$data } =
+      await serverPortalApiFetch<
+        typeof meUserHasSomeSubscriptionNode,
+        meUserHasSomeSubscription
+      >(meUserHasSomeSubscriptionNode, {});
+
     return (
       <I18nContext>
         <AppContext>
-          <PageLoader>
-            <Menu />
-            <div className="w-full overflow-auto h-screen">
-              <HeaderComponent />
-              <ContentLayout>{children}</ContentLayout>
-            </div>
-          </PageLoader>
+          {data.userHasSomeSubscription ? (
+            <PageLoader>
+              <Menu />
+              <div className="w-full overflow-auto h-screen">
+                <HeaderComponent />
+                <ContentLayout>{children}</ContentLayout>
+              </div>
+            </PageLoader>
+          ) : (
+            <PageLoader>
+              <div className="w-full overflow-auto h-screen">
+                <HeaderComponent displayLogo={true} />
+                <EmptyServicesRedirect />
+              </div>
+            </PageLoader>
+          )}
         </AppContext>
       </I18nContext>
     );
