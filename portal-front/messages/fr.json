@@ -98,10 +98,16 @@
   },
   "UserActions": {
     "deleteUser": "Supprimer l'utilisateur",
-    "updateUser": "Mettre à jour l'utilisateur"
+    "updateUser": "Mettre à jour l'utilisateur",
+    "detailsUser": "Détails Utilisateur"
   },
   "MenuActions": {
     "delete": "Supprimer",
-    "update": "Mise à jour"
+    "update": "Mise à jour",
+    "details": "Détails"
+  },
+  "RedirectPage": {
+    "yourFutureHub": "Votre futur centre communautaire Filigran prend forme !",
+    "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus."
   }
 }

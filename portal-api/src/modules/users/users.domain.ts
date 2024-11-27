@@ -384,3 +384,11 @@ export const loadUserDetails = async (
     .groupBy(['User.id'])
     .first();
 };
+
+export const userHasSomeSubscription = async (context: PortalContext) => {
+  const exists = await dbUnsecure('User_Service')
+    .where({ user_id: context.user.id })
+    .first(); // Fetch only the first matching record
+
+  return !!exists;
+};
