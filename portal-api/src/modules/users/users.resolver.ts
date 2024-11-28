@@ -98,8 +98,10 @@ const resolvers: Resolvers = {
 
         await sendMail({
           to: input.email,
-          subject: 'XTM Hub invitation',
-          text: "An administrator has invited you to create your account on the Filigran's XTM Hub platform ! Register. ",
+          template: 'welcome',
+          params: {
+            name: `${input.first_name}`,
+          },
         });
 
         const user = await loadUserBy({
