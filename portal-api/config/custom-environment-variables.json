@@ -28,5 +28,6 @@
       "user": "SMTP_USER",
       "pass": "SMTP_PASSWORD"
     }
-  }
+  },
+  "base_url_front": "BASE_URL_FRONT"
 }

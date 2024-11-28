@@ -2,51 +2,54 @@ import config from 'config';
 import * as fsPromises from 'fs/promises';
 import nodemailer from 'nodemailer';
 import * as path from 'path';
+import { MailTemplates, templateSubjects } from './mail-template/mail';
 
 const smtpOptions = config.get('smtp_options');
 const transporter = nodemailer.createTransport(smtpOptions);
 
-export async function renderEmail<T extends Record<string, string>>(
-  substitutions: T
-) {
-  const templatePath = 'transactional';
-  const filepath = path.join(
-    'src/server/mail-template',
-    `${templatePath}.html`
-  );
-  let template = (await fsPromises.readFile(filepath)).toString();
-
-  for (const sub in substitutions) {
-    template = template.replace(`{{ ${sub} }}`, substitutions[sub]);
-  }
-
-  return template;
+interface SendMailParams<T extends keyof MailTemplates> {
+  to: string;
+  template: T;
+  params: MailTemplates[T];
 }
 
-export const sendMail = async ({
-  from = (config.get('smtp_options.auth.user') as string) ||
-    'no-reply@scredplatform.io',
+export async function renderEmail<T extends keyof MailTemplates>(
+  templateName: T,
+  params: MailTemplates[T]
+) {
+  const filepath = path.join(
+    'src/server/mail-template',
+    `${templateName}.html`
+  );
+
+  let templateContent = (await fsPromises.readFile(filepath)).toString();
+
+  const replaceParams = {
+    ...params,
+    base_url_front: config.get('base_url_front'),
+  };
+  for (const key in replaceParams) {
+    const value = replaceParams[key as keyof MailTemplates[T]];
+    const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+    templateContent = templateContent.replace(regex, value as string);
+  }
+
+  return templateContent;
+}
+
+export const sendMail = async <T extends keyof MailTemplates>({
   to = 'jean-philippe.kha@filigran.io',
-  subject = 'test mail',
-  text = 'Please confirm your email address in order to activate your account.',
-}) => {
-  const html = await renderEmail({
-    name: 'Jean-Philippe',
-    project: 'XTM Hub',
-    text,
-  });
+  template,
+  params,
+}: SendMailParams<T>) => {
+  const from = config.get('smtp_options.auth.user') as string;
+  const subject = templateSubjects[template](params);
+  const html = await renderEmail(template, params);
   const mailOptions = {
     from,
     to,
     subject,
     html,
-    attachments: [
-      {
-        filename: 'logo_filigran.png',
-        path: 'src/server/mail-template/images/logo_filigran.png',
-        cid: 'logo_filigran.png',
-      },
-    ],
   };
 
   transporter?.sendMail(mailOptions, (error, info) => {
