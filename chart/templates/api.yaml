@@ -1,35 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portal-api
+  name: xtmhub-api
 spec:
-  replicas: {{ .Values.cloudportal.api.replicas }}
+  replicas: {{ .Values.xtmhub.api.replicas }}
   selector:
     matchLabels:
-      app: portal-api
+      app: xtmhub-api
   template:
     metadata:
       labels:
-        app: portal-api
+        app: xtmhub-api
     spec:
-    {{- with .Values.cloudportal.imagePullSecrets }}
+    {{- with .Values.xtmhub.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.cloudportal.nodeSelector }}
+    {{- with .Values.xtmhub.nodeSelector }}
       nodeSelector:
           {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
-      - name: portal-api
-        image: filigran/portal-api-prod:{{ .Values.cloudportal.version }}
-        {{- if eq .Values.cloudportal.version "main" }}
+      - name: xtmhub-api
+        image: filigran/xtmhub-api-prod:{{ .Values.xtmhub.version }}
+        {{- if eq .Values.xtmhub.version "main" }}
         imagePullPolicy: "Always"
         {{- else }}
         imagePullPolicy: "IfNotPresent"
         {{- end }}
         resources:
-          {{- toYaml .Values.cloudportal.api.resources | nindent 12 }}
+          {{- toYaml .Values.xtmhub.api.resources | nindent 12 }}
         ports:
         - containerPort: 4001
         env:
@@ -40,13 +40,13 @@ spec:
         - name: ADMIN_EMAIL
           valueFrom:
             secretKeyRef:
-              name: portal-api-config
+              name: xtmhub-api-config
               key: ADMIN_EMAIL
               optional: false
         - name: ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: portal-api-config
+              name: xtmhub-api-config
               key: ADMIN_PASSWORD
               optional: false
         - name: DATABASE_HOST
@@ -66,11 +66,11 @@ spec:
               key: password
               optional: false
         - name: DATABASE_BASE
-          value: "cloudportal"
+          value: "xtmhub"
         - name: OIDC_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: portal-api-config
+              name: xtmhub-api-config
               key: OIDC_CLIENT_SECRET
               optional: false      
         - name: MINIO_ACCESS_KEY
@@ -85,7 +85,7 @@ spec:
               name: minio-credentials
               key: secretKey
               optional: false
-        {{- with .Values.cloudportal.api.env }}
+        {{- with .Values.xtmhub.api.env }}
         {{- range $key, $value := . }}
         - name: {{ $key }}
           value: {{ $value | quote }}

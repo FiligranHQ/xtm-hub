@@ -1,39 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portal-front
+  name: xtmhub-front
 spec:
-  replicas: {{ .Values.cloudportal.front.replicas }}
+  replicas: {{ .Values.xtmhub.front.replicas }}
   selector:
     matchLabels:
-      app: portal-front
+      app: xtmhub-front
   template:
     metadata:
       labels:
-        app: portal-front
+        app: xtmhub-front
     spec:
-    {{- with .Values.cloudportal.imagePullSecrets }}
+    {{- with .Values.xtmhub.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.cloudportal.nodeSelector }}
+    {{- with .Values.xtmhub.nodeSelector }}
       nodeSelector:
           {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
-      - name: portal-front
-        image: filigran/portal-front-prod:{{ .Values.cloudportal.version }}
-        {{- if eq .Values.cloudportal.version "main" }}
+      - name: xtmhub-front
+        image: filigran/xtmhub-front-prod:{{ .Values.xtmhub.version }}
+        {{- if eq .Values.xtmhub.version "main" }}
         imagePullPolicy: "Always"
         {{- else }}
         imagePullPolicy: "IfNotPresent"
         {{- end }}
         resources:
-          {{- toYaml .Values.cloudportal.front.resources | nindent 12 }}
+          {{- toYaml .Values.xtmhub.front.resources | nindent 12 }}
         ports:
         - containerPort: 4001
         env:
         - name: NODE_ENV
           value: production
         - name: SERVER_HTTP_API
-          value: "http://$(PORTAL_API_SERVICE_HOST):$(PORTAL_API_SERVICE_PORT)"
+          value: "http://$(XTMHUB_API_SERVICE_HOST):$(XTMHUB_API_SERVICE_PORT)"

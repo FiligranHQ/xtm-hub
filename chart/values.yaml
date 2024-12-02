@@ -1,6 +1,6 @@
 tls_issuer: le-staging
 ingressClass: nginx
-cloudportal:
+xtmhub:
   api:
     resources: {}
     replicas: 1
