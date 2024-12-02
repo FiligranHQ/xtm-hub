@@ -1,7 +1,11 @@
 import { UserInfo } from '../model/user';
-import { createUser, loadUserBy } from '../modules/users/users.domain';
-import { ROLE_ADMIN } from '../portal.const';
-import { ensureUserRoleExist } from '../server/initialize.helper';
+import { loadUserBy } from '../modules/users/users.domain';
+import { getOrCreateUser } from '../modules/users/users.helper';
+import { PLATFORM_ORGANIZATION_UUID, ROLE_ADMIN } from '../portal.const';
+import {
+  ensureUserOrganizationExist,
+  ensureUserRoleExist,
+} from '../server/initialize.helper';
 import { ForbiddenAccess } from '../utils/error.util';
 import { isEmptyField } from '../utils/utils';
 
@@ -12,21 +16,15 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   if (isEmptyField(email)) {
     throw ForbiddenAccess('User email not provided');
   }
-  const user = await loadUserBy({ email });
-  if (!user) {
-    if (userInfo.roles.includes(ROLE_ADMIN.name)) {
-      return await createUser(userInfo);
-    } else {
-      throw ForbiddenAccess('User account not provided');
-    }
-  } else {
-    if (
-      !user.roles_portal.some(({ id }) => ROLE_ADMIN.id === id) &&
-      userInfo.roles.includes(ROLE_ADMIN.name)
-    ) {
-      await ensureUserRoleExist(user.id, ROLE_ADMIN.id);
-    }
+
+  const user = await getOrCreateUser(userInfo);
+  // Check if the user has the admin role, so in creation we create user then add admin role
+  if (userInfo.roles.includes(ROLE_ADMIN.name)) {
+    await ensureUserRoleExist(user.id, ROLE_ADMIN.id);
+    await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
+    return loadUserBy({ 'User.id': user.id });
   }
+
   return user;
 };
 
