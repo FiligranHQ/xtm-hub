@@ -1,13 +1,11 @@
+import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
+
 import GuardCapacityComponent from '@/components/admin-guard';
 import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
 import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
-import { ServiceById } from '@/components/service/service.graphql';
-import {
-  SubscriptionDeleteMutation,
-  SubscriptionsByService,
-} from '@/components/subcription/subscription.graphql';
+import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import TriggerButton from '@/components/ui/trigger-button';
@@ -19,95 +17,108 @@ import {
   useToast,
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useState } from 'react';
-import {
-  PreloadedQuery,
-  useMutation,
-  usePreloadedQuery,
-  UseQueryLoaderLoadQueryOptions,
-} from 'react-relay';
-import { serviceByIdQuery } from '../../../../__generated__/serviceByIdQuery.graphql';
-import { subscriptionByService_fragment$data } from '../../../../__generated__/subscriptionByService_fragment.graphql';
-import {
-  subscriptionByServiceQuery,
-  subscriptionByServiceQuery$variables,
-} from '../../../../__generated__/subscriptionByServiceQuery.graphql';
+import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
+import { serviceByIdWithSubscriptionsQuery } from '../../../../__generated__/serviceByIdWithSubscriptionsQuery.graphql';
+import { serviceWithSubscriptions_fragment$data } from '../../../../__generated__/serviceWithSubscriptions_fragment.graphql';
 import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
-import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
-
+import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
 interface ServiceSlugProps {
-  queryRef: PreloadedQuery<subscriptionByServiceQuery>;
-  queryRefService: PreloadedQuery<serviceByIdQuery>;
-  loadQuery: (
-    variables: subscriptionByServiceQuery$variables,
-    options?: UseQueryLoaderLoadQueryOptions | undefined
-  ) => void;
+  queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
   serviceId: string;
 }
 
 const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   queryRef,
-  queryRefService,
-  loadQuery,
   serviceId,
 }) => {
-  const [openSheet, setOpenSheet] = useState(false);
-  const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
-  const [currentUser, setCurrentUser] = useState({});
-  const { toast } = useToast();
-  const { me } = useContext<Portal>(portalContext);
-
-  const queryData = usePreloadedQuery<subscriptionByServiceQuery>(
-    SubscriptionsByService,
+  const queryData = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
+    ServiceByIdWithSubscriptions,
     queryRef
-  );
-  const queryDataService = usePreloadedQuery<serviceByIdQuery>(
-    ServiceById,
-    queryRefService
-  );
-
-  const userCanInviteUser = () => {
-    return (
-      queryData?.subscriptionsByServiceId?.map((subscription) => {
-        subscription?.user_service?.map((user_service) => {
-          user_service?.service_capability?.some(
-            (c) => c?.service_capability_name === 'MANAGE_ACCESS'
-          ) && user_service?.user?.id === me?.id;
-        });
-      }) ||
-      me?.capabilities?.some((capability) => {
-        capability?.name === 'BYPASS';
-      })
-    );
-  };
-
-  const [selectedSubscription, setSelectedSubscription] = useState<
-    subscriptionByService_fragment$data | undefined
-  >(
-    (queryData
-      .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data) ??
-      undefined
   );
 
   const [commitSubscriptionMutation] = useMutation<subscriptionDeleteMutation>(
     SubscriptionDeleteMutation
   );
 
-  const onRemoveOrganization = (subscription_id: string) => {
+  const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
+  const [openSheet, setOpenSheet] = useState(false);
+  const [currentUser, setCurrentUser] = useState({});
+
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<subscriptionWithUserService_fragment$data>(
+      queryData.serviceByIdWithSubscriptions
+        ?.subscriptions?.[0] as subscriptionWithUserService_fragment$data
+    );
+
+  const { me } = useContext<Portal>(portalContext);
+  const { toast } = useToast();
+  const t = useTranslations();
+
+  const breadcrumbValue = [
+    {
+      label: 'Home',
+      href: '/',
+    },
+    {
+      label: queryData.serviceByIdWithSubscriptions?.name,
+    },
+  ];
+
+  const dataOrganizationsTab = (
+    queryData.serviceByIdWithSubscriptions?.subscriptions ?? []
+  ).map((subscription) => {
+    return {
+      value: subscription?.organization?.name ?? '',
+      label: subscription?.organization?.name ?? '',
+    };
+  });
+
+  const onValueChange = (value: string) => {
+    const subscription =
+      queryData.serviceByIdWithSubscriptions?.subscriptions?.find(
+        (subscription) => {
+          return subscription?.organization.name === value;
+        }
+      );
+    setSelectedSubscription(
+      subscription as subscriptionWithUserService_fragment$data
+    );
+  };
+
+  const isAllowedInviteUser = () => {
+    return (
+      queryData?.serviceByIdWithSubscriptions?.subscriptions?.map(
+        (subscription) => {
+          subscription?.user_service.map((user_service) => {
+            user_service?.service_capability?.some(
+              (c) => c?.service_capability_name === 'MANAGE_ACCESS'
+            ) && user_service?.user?.id === me?.id;
+          });
+        }
+      ) ||
+      me?.capabilities?.some((capability) => {
+        capability?.name === 'BYPASS';
+      })
+    );
+  };
+
+  const removeOrganization = (
+    subscription: subscriptionWithUserService_fragment$data
+  ) => {
     commitSubscriptionMutation({
       variables: {
-        subscription_id: subscription_id,
+        subscription_id: subscription.id,
       },
-      onCompleted: () => {
+      onCompleted: (response) => {
         toast({
           title: 'Success',
-          description: <>{'Organization removed'}</>,
+          description: `${subscription.organization.name} ${t('Utils.Deleted')}`,
         });
-        loadQuery({ service_id: serviceId }, { fetchPolicy: 'network-only' });
         setSelectedSubscription(
-          (queryData
-            .subscriptionsByServiceId?.[0] as subscriptionByService_fragment$data) ??
-            undefined
+          response.deleteSubscription
+            ?.subscriptions?.[0] as subscriptionWithUserService_fragment$data
         );
         setOpenSheet(false);
       },
@@ -121,64 +132,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     });
   };
 
-  const breadcrumbValue = [
-    {
-      label: 'Home',
-      href: '/',
-    },
-    {
-      label: queryDataService.serviceById?.name,
-    },
-  ];
-
-  const onValueChange = (value: string) => {
-    setSelectedSubscription(
-      queryData.subscriptionsByServiceId?.find(
-        (sub) => sub?.organization_name === value
-      ) as subscriptionByService_fragment$data
-    );
-  };
-  if (queryData.subscriptionsByServiceId?.length === 0) {
-    return (
-      <>
-        <div className="border p-xl">
-          There is no subscription yet on this service...
-        </div>
-
-        <GuardCapacityComponent
-          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
-          displayError={false}>
-          <ServiceSlugAddOrgaFormSheet
-            open={openSheetAddOrga}
-            setOpen={setOpenSheetAddOrga}
-            insertedOrganization={() =>
-              loadQuery(
-                { service_id: serviceId },
-                { fetchPolicy: 'network-only' }
-              )
-            }
-            serviceId={serviceId}
-            trigger={
-              <Button
-                className="text-nowrap mt-xl"
-                variant="outline"
-                aria-label="Add organization">
-                Add organization
-              </Button>
-            }
-          />
-        </GuardCapacityComponent>
-      </>
-    );
-  }
-  const dataOrganizationsTab = (queryData.subscriptionsByServiceId ?? []).map(
-    (subs) => {
-      return {
-        value: subs?.organization_name ?? '',
-        label: subs?.organization_name ?? '',
-      };
-    }
-  );
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
       <div className="flex gap-s items-center">
@@ -190,7 +143,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           placeholder={'Select an organization'}
           emptyCommand={'Not found'}
           onValueChange={onValueChange}
-          value={selectedSubscription?.organization_name ?? ''}
+          value={selectedSubscription?.organization.name ?? ''}
           onInputChange={() => {}}
         />
         <GuardCapacityComponent
@@ -209,13 +162,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 <DeleteIcon className="h-4 w-4" />
               </Button>
             }
-            onClickContinue={() =>
-              onRemoveOrganization(selectedSubscription?.id ?? '')
-            }>
+            onClickContinue={() => removeOrganization(selectedSubscription)}>
             <div>
               Are you sure you want to delete this organization{' '}
               <span className="font-bold">
-                {selectedSubscription?.organization_name}
+                {selectedSubscription?.organization.name}
               </span>{' '}
               from this service ? This action cannot be undone.
             </div>
@@ -234,21 +185,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             open={openSheet}
             setOpen={setOpenSheet}
             userService={currentUser}
-            connectionId={''}
-            refetch={() =>
-              loadQuery(
-                { service_id: serviceId },
-                { fetchPolicy: 'network-only' }
-              )
-            }
+            connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
             subscriptionId={selectedSubscription?.id ?? ''}
             trigger={
-              userCanInviteUser() && (
+              isAllowedInviteUser() && (
                 <TriggerButton
-                  disabled={
-                    queryData.subscriptionsByServiceId?.[0]?.status ===
-                    'REQUESTED'
-                  }
                   onClick={() => setCurrentUser({})}
                   label="Invite user"
                 />
@@ -261,13 +202,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           <ServiceSlugAddOrgaFormSheet
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
-            insertedOrganization={() =>
-              loadQuery(
-                { service_id: serviceId },
-                { fetchPolicy: 'network-only' }
-              )
-            }
             serviceId={serviceId}
+            connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
             trigger={
               <Button
                 className="text-nowrap"
@@ -281,11 +217,15 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       </div>
     </div>
   );
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{queryDataService.serviceById?.name}</h1>
-      <div className="pb-s">{queryDataService.serviceById?.description}</div>
+      <h1 className="pb-s">{queryData.serviceByIdWithSubscriptions?.name}</h1>
+      <div className="pb-s">
+        {queryData.serviceByIdWithSubscriptions?.description}
+      </div>
+
       <GuardCapacityComponent
         displayError
         capacityRestriction={[
@@ -295,17 +235,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         <ServiceUserServiceSlug
           subscriptionId={selectedSubscription?.id}
           data={
-            selectedSubscription?.user_service as userService_fragment$data[]
+            queryData.serviceByIdWithSubscriptions as serviceWithSubscriptions_fragment$data
           }
           setOpenSheet={setOpenSheet}
           setCurrentUser={setCurrentUser}
           toolbar={toolbar}
-          loadQuery={() =>
-            loadQuery(
-              { service_id: serviceId },
-              { fetchPolicy: 'network-only' }
-            )
-          }
         />
       </GuardCapacityComponent>
     </>

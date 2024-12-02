@@ -40,11 +40,8 @@ type Query {
   publicServices(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceById(service_id: ID): Service
+  serviceByIdWithSubscriptions(service_id: ID): Service
   settings: Settings!
-  subscription(id: ID!): Subscription
-  subscriptions(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
-  subscriptionsByOrganization(first: Int = 50, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!): SubscriptionConnection!
-  subscriptionsByServiceId(service_id: ID): [Subscription]
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: User
@@ -70,12 +67,11 @@ type Mutation {
   addService(input: AddServiceInput): Subscription
   deleteService(id: ID!): Service
   addSubscription(service_id: String): Service
-  addSubscriptionInService(service_id: String, organization_id: ID): [UserService]
-  editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
-  deleteSubscription(subscription_id: ID!): Subscription
-  editServiceCapability(input: EditServiceCapabilityInput): UserService
-  addUserService(input: UserServiceInput!): UserService
-  deleteUserService(input: UserServiceInput!): UserServiceDeleted
+  addSubscriptionInService(service_id: String, organization_id: ID): Service
+  deleteSubscription(subscription_id: ID!): Service
+  editServiceCapability(input: EditServiceCapabilityInput): Subscription
+  addUserService(input: UserServiceInput!): Subscription
+  deleteUserService(input: UserServiceInput!): Subscription
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User!
@@ -157,7 +153,7 @@ type Service implements Node {
   subscribed: Boolean
   links: [ServiceLink]
   organization: [Organization]
-  subscription: [Subscription]
+  subscriptions: [Subscription]
   capabilities: [String]
   public: Boolean
   join_type: String
@@ -193,18 +189,14 @@ type Subscription implements Node {
   Service: ServiceSubscription
   id: ID!
   organization_id: ID!
-  organization: Organization
   service_id: ID!
-  service_url: String
-  service: Service
   start_date: Date
   end_date: Date
   status: String
-  joining: String
-  justification: String
-  billing: Int
-  user_service: [UserService]
-  organization_name: String
+  organization: Organization!
+  service_url: String!
+  service: Service
+  user_service: [UserService]!
   ActionTracking: TrackingSubscription
   User: UserSubscription
 }
@@ -235,14 +227,9 @@ type SubscriptionEdge {
   node: Subscription!
 }
 
-type SubscriptionConnection {
-  totalCount: Int!
-  edges: [SubscriptionEdge!]!
-  pageInfo: PageInfo!
-}
-
-input EditSubscriptionInput {
-  status: String
+type SubscriptionByService {
+  subscriptions: [Subscription!]!
+  service: Service
 }
 
 type ActionTracking implements Node {

@@ -1,33 +1,19 @@
 import { graphql } from 'react-relay';
 
 export const ServiceCapabilityCreateMutation = graphql`
-  mutation serviceCapabilityMutation(
-    $input: EditServiceCapabilityInput
-    $connections: [ID!]!
-  ) {
-    editServiceCapability(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "UserServiceEdge") {
+  mutation serviceCapabilityMutation($input: EditServiceCapabilityInput) {
+    editServiceCapability(input: $input) {
       id
-      user {
-        id
-        last_name
-        first_name
-        email
+      organization {
+        name
       }
-      service_capability {
-        id
-        service_capability_name
+      user_service {
+        ...userService_fragment @relay(mask: false)
       }
-      subscription {
+      service {
         id
-        organization {
-          name
-          id
-        }
-        service {
-          name
-          id
-        }
+        name
+        description
       }
     }
   }

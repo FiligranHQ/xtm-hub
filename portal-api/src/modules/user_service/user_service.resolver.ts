@@ -2,30 +2,21 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { db } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
-import { launchAWXWorkflow } from '../../managers/awx/awx-configuration';
-import { AWXAction } from '../../managers/awx/awx.model';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
-import {
-  isOrgMatchingSub,
-  loadSubscriptionBy,
-} from '../subcription/subscription.helper';
+import { fillSubscriptionWithOrgaServiceAndUserService } from '../subcription/subscription.domain';
+import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
 import { getOrCreateUser } from '../users/users.helper';
 import {
-  createUserAccessForOtherOrg,
   createUserServiceAccess,
   isUserServiceExist,
   loadUnsecureUserServiceBy,
 } from './user-service.helper';
-import {
-  loadUserServiceById,
-  loadUserServiceByUser,
-} from './user_service.domain';
+import { loadUserServiceByUser } from './user_service.domain';
 
 const resolvers: Resolvers = {
   Query: {
@@ -65,40 +56,19 @@ const resolvers: Resolvers = {
         });
       }
 
-      // TODO: Issue 10 - Chunk 2
-      const isSameOrganization = await isOrgMatchingSub(
-        user.selected_organization_id as OrganizationId,
-        subscription_id
-      );
-      const addedUserService = await (isSameOrganization
-        ? createUserServiceAccess(context, {
-            subscription_id,
-            user_id: user.id as UserId,
-            capabilities: input.capabilities,
-          })
-        : createUserAccessForOtherOrg(context, {
-            subscription_id,
-            user_id: user.id as UserId,
-            capabilities: input.capabilities,
-            organization_id: user.selected_organization_id as OrganizationId,
-          }));
+      await createUserServiceAccess(context, {
+        subscription_id,
+        user_id: user.id as UserId,
+        capabilities: input.capabilities,
+      });
 
       const [subscription] = await loadSubscriptionBy('id', subscription_id);
-      await launchAWXWorkflow({
-        type: AWXAction.COMMUNITY_ADD_USERS,
-        input: {
-          id: subscription.service_id,
-          users: [
-            {
-              ...user,
-              admin: input.capabilities.some(
-                (c) => c === 'ADMIN_SUBSCRIPTION' || c === 'MANAGE_ACCESS'
-              ),
-            },
-          ],
-        },
-      });
-      return await loadUserServiceById(context, addedUserService.id);
+      const returningSubscription =
+        await fillSubscriptionWithOrgaServiceAndUserService(
+          context,
+          subscription.id as SubscriptionId
+        );
+      return returningSubscription;
     },
     deleteUserService: async (_, { input }, context) => {
       const userToDelete = await loadUserBy({ email: input.email });
@@ -127,15 +97,12 @@ const resolvers: Resolvers = {
           .returning('*');
       }
 
-      await launchAWXWorkflow({
-        type: AWXAction.COMMUNITY_REMOVE_USERS,
-        input: {
-          id: deletedUserService.service_id,
-          users: [{ ...userToDelete, admin: false }],
-        },
-      });
+      const subscription = await fillSubscriptionWithOrgaServiceAndUserService(
+        context,
+        fromGlobalId(input.subscriptionId).id as SubscriptionId
+      );
 
-      return deletedUserService;
+      return subscription;
     },
   },
 };

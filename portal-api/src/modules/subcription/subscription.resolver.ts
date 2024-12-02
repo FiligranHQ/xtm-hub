@@ -4,53 +4,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceId } from '../../model/kanel/public/Service';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import { grantServiceAccessUsers } from '../services/services.domain';
+import {
+  grantServiceAccessUsers,
+  loadServiceWithSubscriptions,
+} from '../services/services.domain';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,
   fillSubscription,
-  fillUserServiceData,
-  loadSubscriptions,
-  loadSubscriptionsByOrganization,
-  loadSubscriptionsByService,
 } from './subscription.domain';
-import {
-  loadSubscriptionBy,
-  loadUnsecureSubscriptionBy,
-} from './subscription.helper';
+import { loadSubscriptionBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
-  Query: {
-    subscriptions: async (_, { first, after, orderMode, orderBy }, context) => {
-      return loadSubscriptions(context, {
-        first,
-        after,
-        orderMode,
-        orderBy,
-      });
-    },
-    subscriptionsByServiceId: async (_, { service_id }, context) => {
-      return await loadSubscriptionsByService(
-        context,
-        fromGlobalId(service_id).id
-      );
-    },
-    subscriptionsByOrganization: async (
-      _,
-      { first, after, orderMode, orderBy },
-      context
-    ) => {
-      return await loadSubscriptionsByOrganization(context, {
-        first,
-        after,
-        orderMode,
-        orderBy,
-      });
-    },
-  },
   Mutation: {
     addSubscription: async (_, { service_id }, context) => {
       const trx = await dbTx();
@@ -159,7 +126,7 @@ const resolvers: Resolvers = {
           .insert(subscriptionData)
           .returning('*');
 
-        const userServices = await grantServiceAccessUsers(
+        await grantServiceAccessUsers(
           context,
           (fromGlobalId(organization_id).id ??
             context.user.selected_organization_id) as OrganizationId,
@@ -167,45 +134,14 @@ const resolvers: Resolvers = {
           addedSubscription.id
         );
 
-        const userServiceData = await fillUserServiceData(
-          userServices,
-          fromGlobalId(service_id).id as ServiceId
-        );
-
         await trx.commit();
-        return userServiceData;
+        return loadServiceWithSubscriptions(
+          context,
+          fromGlobalId(service_id).id
+        );
       } catch (error) {
         await trx.rollback();
         console.error('Error while subscribing the service.', error);
-        throw error;
-      }
-    },
-    editSubscription: async (_, { id, input }, context) => {
-      const trx = await dbTx();
-
-      try {
-        // Retrieve subscription
-        const [retrievedSubscription] = await loadUnsecureSubscriptionBy({
-          id: id as SubscriptionId,
-        });
-        const update = {
-          id,
-          organization_id: retrievedSubscription.organization_id,
-          service_id: retrievedSubscription.service_id,
-          status: input.status ? input.status : retrievedSubscription.status,
-        };
-        const [updatedSubscription] = await db<Subscription>(
-          context,
-          'Subscription'
-        )
-          .where({ id })
-          .update(update)
-          .returning('*');
-        await trx.commit();
-        return await fillSubscription(context, updatedSubscription);
-      } catch (error) {
-        await trx.rollback();
-        console.error('Error while editing the subscription', error);
         throw error;
       }
     },
@@ -218,13 +154,11 @@ const resolvers: Resolvers = {
       if (subscription.billing !== 0) {
         throw new Error('You can not delete a subscription with billing.');
       }
-      const [deletedSubscription] = await db<Subscription>(
-        context,
-        'Subscription'
-      )
+      await db<Subscription>(context, 'Subscription')
         .where({ id: fromGlobalId(subscription_id).id })
         .delete('*');
-      return deletedSubscription;
+
+      return loadServiceWithSubscriptions(context, subscription.service_id);
     },
   },
 };

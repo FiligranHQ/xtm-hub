@@ -5,31 +5,38 @@ import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { DataTable } from 'filigran-ui/clients';
 import { Badge, Button } from 'filigran-ui/servers';
-import * as React from 'react';
-import { FunctionComponent, ReactNode, useMemo } from 'react';
+import { FunctionComponent, ReactNode, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
+import { serviceWithSubscriptions_fragment$data } from '../../../../__generated__/serviceWithSubscriptions_fragment.graphql';
 import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
 
 interface ServiceUserServiceProps {
   subscriptionId?: string;
-  data?: userService_fragment$data[];
+  data: serviceWithSubscriptions_fragment$data;
   setOpenSheet: (open: boolean) => void;
   setCurrentUser: (user: userService_fragment$data) => void;
-  loadQuery: () => void;
   toolbar?: ReactNode;
 }
 
 const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
   subscriptionId = '',
-  data = [],
+  data,
   setOpenSheet,
   setCurrentUser,
-  loadQuery,
   toolbar,
 }) => {
   const [commitUserServiceDeletingMutation] =
     useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
+
+  const [pagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 500,
+  });
+
+  const subscription = data.subscriptions?.find(
+    (subscription) => subscription?.id === subscriptionId
+  );
 
   const deleteCurrentUser = (email: string) => {
     commitUserServiceDeletingMutation({
@@ -39,9 +46,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
           subscriptionId,
         },
       },
-      onCompleted() {
-        loadQuery();
-      },
+      onCompleted() {},
     });
   };
 
@@ -108,14 +113,14 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                     Edit
                   </Button>
                   <AlertDialogComponent
-                    AlertTitle={"Remove user's rights"}
+                    AlertTitle={'Remove access'}
                     actionButtonText={'Remove rights'}
                     variantName={'destructive'}
                     triggerElement={
                       <Button
                         variant="ghost"
                         className="w-full justify-start"
-                        aria-label="Remove User's rights">
+                        aria-label="Remove access">
                         Delete
                       </Button>
                     }
@@ -135,14 +140,11 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
     ],
     [deleteCurrentUser, setCurrentUser, setOpenSheet]
   );
-  const [pagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 50,
-  });
+
   return (
     <DataTable
       columns={columns}
-      data={data}
+      data={(subscription?.user_service as userService_fragment$data[]) ?? {}}
       toolbar={toolbar}
       tableState={{ pagination, columnPinning: { right: ['actions'] } }}
     />

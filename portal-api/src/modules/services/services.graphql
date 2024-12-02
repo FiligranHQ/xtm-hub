@@ -15,7 +15,7 @@ type Service implements Node {
   subscribed: Boolean
   links: [ServiceLink]
   organization: [Organization]
-  subscription: [Subscription]
+  subscriptions: [Subscription]
   capabilities: [String]
   public: Boolean
   join_type: String
@@ -64,6 +64,9 @@ type Query {
     orderMode: OrderingMode!
   ): ServiceConnection! @auth(requires: [BYPASS])
   serviceById(service_id: ID): Service @auth
+  serviceByIdWithSubscriptions(service_id: ID): Service
+  @auth
+  @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
 }
 
 type ServiceSubscription {
