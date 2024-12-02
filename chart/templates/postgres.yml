@@ -13,5 +13,5 @@ spec:
     enablePodMonitor: true
   bootstrap:
     initdb:
-      database: cloudportal
-      owner: cloudportal
+      database: xtmhub
+      owner: xtmhub

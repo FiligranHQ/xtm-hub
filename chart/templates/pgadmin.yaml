@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-pgadmin
   labels:
-    app: portal-pgadmin
-    portal.component: pgadmin
+    app: xtmhub-pgadmin
+    xtmhub.component: pgadmin
 spec:
   replicas: 1
   selector:
     matchLabels:
-      portal.component: pgadmin
+      xtmhub.component: pgadmin
   template:
     metadata:
       labels:
-        app: portal-pgadmin
-        portal.component: pgadmin
+        app: xtmhub-pgadmin
+        xtmhub.component: pgadmin
     spec:
       containers:
         - name: pgadmin

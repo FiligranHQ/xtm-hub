@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Namespace}}-{{ .Release.Name }}-ingress
   annotations:
     cert-manager.io/cluster-issuer: {{ .Values.tls_issuer }}
-    external-dns.alpha.kubernetes.io/hostname: {{ tpl .Values.cloudportal.host . }}
+    external-dns.alpha.kubernetes.io/hostname: {{ tpl .Values.xtmhub.host . }}
     external-dns.alpha.kubernetes.io/ttl: "120"
     prometheus.io/probe: "true"
     {{- if eq .Values.ingressClass "nginx" }}
@@ -21,17 +21,17 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingressClass }} 
   rules:
-  - host: {{ .Values.cloudportal.host }}
+  - host: {{ .Values.xtmhub.host }}
     http:
       paths:
       - backend:
           service:
-            name: portal-front
+            name: xtmhub-front
             port:
               number: 3000
         path: /
         pathType: Prefix
-  - host: pgadmin.{{ .Values.cloudportal.host }}
+  - host: pgadmin.{{ .Values.xtmhub.host }}
     http:
       paths:
         - backend:
@@ -43,6 +43,6 @@ spec:
           pathType: Prefix
   tls:
   - hosts:
-    - {{ .Values.cloudportal.host }}
-    - pgadmin.{{ .Values.cloudportal.host }}
-    secretName: cloudportal-cert
+    - {{ .Values.xtmhub.host }}
+    - pgadmin.{{ .Values.xtmhub.host }}
+    secretName: xtmhub-cert

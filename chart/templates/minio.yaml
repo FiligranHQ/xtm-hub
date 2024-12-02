@@ -18,7 +18,7 @@ spec:
   mountPath: /export
   podManagementPolicy: Parallel
   pools:
-  - name: portal
+  - name: xtmhub
     servers: {{ .Values.minio.server.count }}
     volumeClaimTemplate:
       metadata:
