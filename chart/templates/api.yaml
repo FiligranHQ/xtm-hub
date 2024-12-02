@@ -22,7 +22,8 @@ spec:
     {{- end }}
       containers:
       - name: xtmhub-api
-        image: filigran/xtmhub-api-prod:{{ .Values.xtmhub.version }}
+        #TODO: Rename portal to xtmhub once docker image has been renamed
+        image: filigran/portal-api-prod:{{ .Values.xtmhub.version }}
         {{- if eq .Values.xtmhub.version "main" }}
         imagePullPolicy: "Always"
         {{- else }}
