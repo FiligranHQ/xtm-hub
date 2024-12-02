@@ -38,7 +38,7 @@ export async function renderEmail<T extends keyof MailTemplates>(
 }
 
 export const sendMail = async <T extends keyof MailTemplates>({
-  to = 'jean-philippe.kha@filigran.io',
+  to,
   template,
   params,
 }: SendMailParams<T>) => {

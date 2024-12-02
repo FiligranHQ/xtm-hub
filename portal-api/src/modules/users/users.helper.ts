@@ -16,11 +16,10 @@ import User, {
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
+import { sendMail } from '../../server/mail-service';
 import { hashPassword } from '../../utils/hash-password.util';
-import {
-  extractDomain,
-  isAuthorizedEmail,
-} from '../../utils/verify-email.util';
+import { extractDomain } from '../../utils/verify-email.util';
+import { createUserOrganizationRelationUnsecure } from '../common/user-organization.helper';
 import { addRolesToUser } from '../common/user-role-portal.helper';
 import {
   insertNewOrganization,
@@ -29,78 +28,93 @@ import {
 import { loadUserBy } from './users.domain';
 
 export const addNewUserWithRoles = async (
-  data: UserInitializer,
+  data: Pick<UserInitializer, 'email' | 'first_name' | 'last_name'>,
   roles: string[]
 ): Promise<User> => {
+  const { salt, hash } = hashPassword('');
+  const uuid = uuidv4();
+  // Create user personal space organization
+  const [addOrganization] = await insertNewOrganization({
+    id: uuid as unknown as OrganizationId,
+    name: data.email,
+    personal_space: true,
+  });
   const [addedUser] = await dbUnsecure<User>('User')
-    .insert(data)
+    .insert({
+      id: uuid as UserId,
+      selected_organization_id: uuid as OrganizationId,
+      salt,
+      password: hash,
+      ...data,
+    })
     .returning('*');
 
-  await addRolesToUser(data.id, roles);
+  // Insert relation UserOrganization
+  await createUserOrganizationRelationUnsecure({
+    user_id: addedUser.id,
+    organizations_id: [addOrganization.id],
+  });
+
+  await addRolesToUser(addedUser.id, roles);
+
+  await sendMail({
+    to: addedUser.email,
+    template: 'welcome',
+    params: { name: addedUser.email },
+  });
   return addedUser;
 };
 
-async function createOrganisationWithAdminUser(
-  email: string,
-  salt: string,
-  hash: string
-) {
+async function createOrganisationWithAdminUser(email: string) {
   const extractedDomain = extractDomain(email);
 
-  // TODO: Should throw an error and break the following execution
-  // throw new GraphQLError('Sorry this mail is not authorize', {
-  //   extensions: { code: '[Users] NOT AUTHORIZED MAIL' },
-  // });
   const [newOrganization] = await insertNewOrganization({
     id: uuidv4() as OrganizationId,
     name: extractedDomain.split('.')[0],
     domains: [extractedDomain],
   });
-  // TODO: Issue 10 - Chunk 2, verify if this is the right way to do it
-  return await addNewUserWithRoles(
+  const addedUser = await addNewUserWithRoles(
     {
-      id: uuidv4() as UserId,
       email,
-      salt,
-      password: hash,
-      selected_organization_id: newOrganization.id,
     },
     [ROLE_ADMIN_ORGA.name, ROLE_USER.name]
   );
+
+  // Insert relation UserOrganization
+  await createUserOrganizationRelationUnsecure({
+    user_id: addedUser.id,
+    organizations_id: [newOrganization.id],
+  });
+
+  return addedUser;
 }
 
-export const createNewUserFromInvitation = async (email: string) => {
-  const { salt, hash } = hashPassword('temporaryPassword');
-
-  if (!isAuthorizedEmail(email)) {
-    // TODO: Should throw an error and break the following execution
-    // throw new GraphQLError('Sorry this mail is not authorized', {
-    //   extensions: { code: '[Users] NOT AUTHORIZED MAIL' },
-    // });
-    return null;
-  }
-
+export const createNewUserFromInvitation = async ({
+  email,
+  first_name,
+  last_name,
+}: Pick<UserInitializer, 'email' | 'first_name' | 'last_name'>) => {
   const [organization] = await loadOrganizationsFromEmail(email);
 
   const userWithRoles: User = !organization
-    ? await createOrganisationWithAdminUser(email, salt, hash)
+    ? await createOrganisationWithAdminUser(email)
     : await addNewUserWithRoles(
         {
-          id: uuidv4() as UserId,
           email,
-          salt,
-          password: hash,
-          selected_organization_id: organization.id,
+          last_name,
+          first_name,
         },
         [ROLE_USER.name]
       );
 
-  return userWithRoles;
+  return loadUserBy({ 'User.id': userWithRoles.id });
 };
 
-export const getOrCreateUser = async (email: string) => {
-  const user = await loadUserBy({ email });
-  return user ? user : await createNewUserFromInvitation(email);
+export const getOrCreateUser = async (
+  userInfo: Pick<UserInitializer, 'email' | 'first_name' | 'last_name'>
+) => {
+  const user = await loadUserBy({ email: userInfo.email });
+  return user ? user : await createNewUserFromInvitation(userInfo);
 };
 
 export const mapUserToGraphqlUser = (

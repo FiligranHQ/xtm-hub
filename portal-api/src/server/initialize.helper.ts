@@ -132,16 +132,23 @@ export const updateUserPassword = async (data) => {
 export const ensureUserOrganizationExist = async (
   user_id: UserId,
   organization_id: OrganizationId,
-  trx
+  trx?
 ) => {
   const userOrganization = await dbUnsecure<UserOrganization>(
     'User_Organization'
   )
     .where({ user_id, organization_id })
     .first();
+
   if (!userOrganization) {
-    await dbUnsecure('User_Organization')
-      .insert({ user_id, organization_id })
-      .transacting(trx);
+    const query = dbUnsecure('User_Organization').insert({
+      user_id,
+      organization_id,
+    });
+    if (trx) {
+      await query.transacting(trx);
+    } else {
+      await query;
+    }
   }
 };

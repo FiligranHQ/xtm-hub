@@ -1,4 +1,4 @@
-import { db } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import UserOrganization, {
@@ -31,6 +31,24 @@ export const createUserOrganizationRelation = async (
     })
   );
   await insertNewUserOrganization(context, usersOrganization);
+};
+
+export const createUserOrganizationRelationUnsecure = async ({
+  user_id,
+  organizations_id = [],
+}: {
+  user_id: UserId;
+  organizations_id: OrganizationId[];
+}) => {
+  const usersOrganization: UserOrganizationInitializer[] = organizations_id.map(
+    (organization_id) => ({
+      user_id,
+      organization_id,
+    })
+  );
+  await dbUnsecure('User_Organization')
+    .insert(usersOrganization)
+    .returning('*');
 };
 
 export const updateUserOrg = async (
