@@ -45,7 +45,10 @@ const resolvers: Resolvers = {
   Mutation: {
     //TODO Modify for the use case
     addUserService: async (_, { input }, context) => {
-      const user = await getOrCreateUser(input.email);
+      const user = await getOrCreateUser({
+        email: input.email,
+      });
+      //TODO  Need to add to the organization but will be delete later
 
       const subscription_id = fromGlobalId(input.subscriptionId)
         .id as SubscriptionId;

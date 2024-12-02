@@ -14,8 +14,10 @@ import { EmptyServicesRedirect } from '@/components/service/home/empty-services-
 import I18nContext from '@/i18n/i18n-context';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { meContext_fragment$data } from '../../__generated__/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
+  meLoaderQuery$data,
 } from '../../__generated__/meLoaderQuery.graphql';
 import meUserHasSomeSubscriptionNode, {
   meUserHasSomeSubscription,
@@ -41,10 +43,12 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
   children,
 }) => {
   try {
-    await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
-      meLoaderQueryNode,
-      {}
-    );
+    // @ts-ignore
+    const { data: meData }: { data: meLoaderQuery$data } =
+      await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
+        meLoaderQueryNode,
+        {}
+      );
     // @ts-ignore
     const { data }: { data: meUserHasSomeSubscription$data } =
       await serverPortalApiFetch<
@@ -52,10 +56,14 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
         meUserHasSomeSubscription
       >(meUserHasSomeSubscriptionNode, {});
 
+    const me = meData.me as unknown as meContext_fragment$data;
+    const userHasBypassCapability = me.capabilities.some(
+      (capability) => capability.name === 'BYPASS'
+    );
     return (
       <I18nContext>
         <AppContext>
-          {data.userHasSomeSubscription ? (
+          {data.userHasSomeSubscription || userHasBypassCapability ? (
             <PageLoader>
               <Menu />
               <div className="w-full overflow-auto h-screen">

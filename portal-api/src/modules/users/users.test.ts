@@ -16,25 +16,25 @@ import {
 import { createNewUserFromInvitation, removeUser } from './users.helper';
 
 describe('User helpers - createNewUserFromInvitation', async () => {
-  it('should add new user with Role user only in an existing Organization', async () => {
+  it('should create a new user with Role USER and not add in an existing Organization', async () => {
     const testMail = `testCreateNewUserFromInvitation${uuidv4()}@filigran.io`;
-    await createNewUserFromInvitation(testMail);
+    await createNewUserFromInvitation({
+      email: testMail,
+    });
     const newUser = await loadUserBy({ email: testMail });
     expect(newUser).toBeTruthy();
     expect(newUser.roles_portal[0].id).toBe(ROLE_USER.id);
+    expect(newUser.organizations.length).toBe(1);
+    expect(newUser.organizations[0].personal_space).toBe(true);
 
     // Delete corresponding in order to avoid issue with other tests
     await removeUser(contextAdminUser, { email: newUser.email });
   });
-  it('should not add new user with an unauthorized domain Organization', async () => {
-    const testMail = `testCreateNewUserFromInvitation${uuidv4()}@gmail.com`;
-    await createNewUserFromInvitation(testMail);
-    const newUser = await loadUserBy({ email: testMail });
-    expect(newUser).toBeFalsy();
-  });
   it('should add new user with Role admin organization with an new Organization', async () => {
     const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
-    await createNewUserFromInvitation(testMail);
+    await createNewUserFromInvitation({
+      email: testMail,
+    });
     const newUser = await loadUserBy({ email: testMail });
     expect(newUser).toBeTruthy();
     const newOrganization = await loadUnsecureOrganizationBy(
