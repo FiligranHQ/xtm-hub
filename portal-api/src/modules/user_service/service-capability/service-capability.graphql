@@ -10,6 +10,6 @@ input EditServiceCapabilityInput {
 }
 
 type Mutation {
-  editServiceCapability(input: EditServiceCapabilityInput): UserService
+  editServiceCapability(input: EditServiceCapabilityInput): Subscription
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_SERVICES])
 }

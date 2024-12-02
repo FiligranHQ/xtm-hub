@@ -83,6 +83,26 @@ export const ServiceListQuery = graphql`
   }
 `;
 
+export const ServiceByIdWithSubscriptions = graphql`
+  query serviceByIdWithSubscriptionsQuery($service_id: ID) {
+    serviceByIdWithSubscriptions(service_id: $service_id) {
+      ...serviceWithSubscriptions_fragment @relay(mask: false)
+    }
+  }
+`;
+
+export const serviceWithSubscriptionsFragment = graphql`
+  fragment serviceWithSubscriptions_fragment on Service {
+    __id
+    name
+    id
+    description
+    subscriptions {
+      ...subscriptionWithUserService_fragment @relay(mask: false)
+    }
+  }
+`;
+
 export const serviceUsersFragment = graphql`
   fragment serviceUser on Query
   @refetchable(queryName: "ServiceUserPaginationQuery") {

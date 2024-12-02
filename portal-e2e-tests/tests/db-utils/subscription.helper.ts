@@ -1,4 +1,6 @@
-import {db} from "./db-connection";
-export const removeSubscription = async (serviceId: string) => {
-    await db("Subscription").delete('*').where('service_id', '=', serviceId)
+import { db } from './db-connection';
+export const removeSubscription = async (organizationId) => {
+  await db('Subscription')
+    .delete('*')
+    .where('organization_id', '=', organizationId);
 };

@@ -17,8 +17,10 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  useToast,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
@@ -33,7 +35,6 @@ interface ServiceSlugFormSheetProps {
   connectionId: string;
   userService: any;
   subscriptionId: string;
-  refetch: () => void;
 }
 
 const capabilitiesFormSchema = z.object({
@@ -42,19 +43,19 @@ const capabilitiesFormSchema = z.object({
 
 export const ServiceSlugFormSheet: FunctionComponent<
   ServiceSlugFormSheetProps
-> = ({
-  open,
-  setOpen,
-  trigger,
-  connectionId,
-  userService,
-  subscriptionId,
-  refetch,
-}) => {
+> = ({ open, setOpen, trigger, connectionId, userService, subscriptionId }) => {
+  const [commitServiceCapabilityMutation] =
+    useMutation<serviceCapabilityMutation>(ServiceCapabilityCreateMutation);
+  const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
+    UserServiceCreateMutation
+  );
+  const { me } = useContext<Portal>(portalContext);
+  const { toast } = useToast();
+  const t = useTranslations();
+
   const currentCapabilities = userService?.service_capability?.map(
     (capability: any) => capability?.service_capability_name
   );
-  const { me } = useContext<Portal>(portalContext);
 
   const capabilitiesData = [
     {
@@ -94,11 +95,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
       capabilities: currentCapabilities,
     },
   });
-  const [commitServiceCapabilityMutation] =
-    useMutation<serviceCapabilityMutation>(ServiceCapabilityCreateMutation);
-  const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
-    UserServiceCreateMutation
-  );
 
   const onSubmit = (values: any) => {
     if (userService.id) {
@@ -107,13 +103,26 @@ export const ServiceSlugFormSheet: FunctionComponent<
       };
       commitServiceCapabilityMutation({
         variables: {
-          connections: [connectionId],
           input: { user_service_id: userService?.id, ...editCapaValues },
+        },
+        onCompleted() {
+          toast({
+            title: 'Success',
+            description: `${userService.user.email} ${t('Utils.Modified')}`,
+          });
+        },
+        onError(error) {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
         },
       });
     } else {
       commitUserServiceMutation({
         variables: {
+          connections: [connectionId],
           input: {
             email: values.email,
             capabilities: values.capabilities,
@@ -121,7 +130,17 @@ export const ServiceSlugFormSheet: FunctionComponent<
           },
         },
         onCompleted() {
-          refetch();
+          toast({
+            title: 'Success',
+            description: `${values.email} ${t('Utils.Modified')}`,
+          });
+        },
+        onError(error) {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: <>{error.message}</>,
+          });
         },
       });
     }

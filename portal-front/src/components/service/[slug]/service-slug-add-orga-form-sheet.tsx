@@ -35,43 +35,20 @@ interface ServiceSlugAddOrgaFormSheetProps {
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
   serviceId: string;
-  insertedOrganization: () => void;
+  connectionId: string;
 }
 
 export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ open, setOpen, trigger, serviceId, insertedOrganization }) => {
+> = ({ open, setOpen, trigger, serviceId, connectionId }) => {
   const [organizations] = getOrganizations();
+
   const { toast } = useToast();
+
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionInServiceCreateMutation>(
       AddSubscriptionInServiceMutation
     );
-
-  const onSubmit = (inputValue: z.infer<ZodSchema>) => {
-    commitSubscriptionCreateMutation({
-      variables: {
-        connections: [''],
-        service_id: serviceId,
-        organization_id: inputValue.organization_id,
-      },
-      onCompleted: () => {
-        toast({
-          title: 'Success',
-          description: 'Organization added',
-        });
-        insertedOrganization();
-      },
-      onError: (error: Error) => {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: <>{error.message}</>,
-        });
-      },
-    });
-    setOpen(false);
-  };
 
   const form = useForm<z.infer<ZodSchema>>({
     resolver: zodResolver(
@@ -85,6 +62,29 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       organization_id: '',
     },
   });
+
+  const onSubmit = (inputValue: z.infer<ZodSchema>) => {
+    commitSubscriptionCreateMutation({
+      variables: {
+        service_id: serviceId,
+        organization_id: inputValue.organization_id,
+      },
+      onCompleted: () => {
+        toast({
+          title: 'Success',
+          description: 'Organization added',
+        });
+      },
+      onError: (error: Error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: <>{error.message}</>,
+        });
+      },
+    });
+    setOpen(false);
+  };
 
   return (
     <Sheet
