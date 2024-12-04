@@ -17,9 +17,11 @@ xtmhub:
       MINIO_ENDPOINT: minio
     secret:
       OIDC_CLIENT_SECRET: ""
+    livenessProbe: {}
   front:
     resources: {}
     replicas: 1
+    livenessProbe: {}
   imagePullSecrets: []
   labels:
     environment: dev
@@ -28,7 +30,12 @@ xtmhub:
 postgres:
   storage:
     size: 10Gi
-  resources: {}
+  resources:
+    requests:
+      cpu: 2
+      memory: 4Gi
+    limits:
+      memory: 8Gi
   pgadmin:
     version: "8.8"
     username: xthmhub@filigran.io
