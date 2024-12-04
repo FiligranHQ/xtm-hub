@@ -105,9 +105,9 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
 
   return (
     <>
-      <h2 className="pb-m pt-m">{t('HomePage.AvailableServices')}</h2>
       {data.publicServices.edges.length > 0 ? (
         <React.Suspense>
+          <h2 className="pb-m pt-m">{t('HomePage.AvailableServices')}</h2>
           <ul
             className={
               'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'
@@ -146,7 +146,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
           </ul>
         </React.Suspense>
       ) : (
-        t('Service.NoService')
+        <></>
       )}
     </>
   );

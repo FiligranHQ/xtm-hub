@@ -80,6 +80,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     {
       accessorKey: 'file_name',
       id: 'file_name',
+      size: 100,
       header: t('Service.Vault.FileTab.FileName'),
     },
     {
@@ -89,7 +90,6 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     },
     {
       id: 'description',
-      enableSorting: false,
       header: t('Service.Vault.FileTab.Description'),
       cell: ({ row }) => (
         <TooltipProvider>
@@ -103,6 +103,18 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           </Tooltip>
         </TooltipProvider>
       ),
+    },
+    {
+      id: 'created_at',
+      size: 50,
+      header: t('Service.Vault.FileTab.UploadDate'),
+      cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
+    },
+    {
+      accessorKey: 'download_number',
+      id: 'download_number',
+      size: 40,
+      header: t('Service.Vault.FileTab.NumberDownload'),
     },
     {
       id: 'actions',

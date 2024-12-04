@@ -16,6 +16,7 @@ export const DocumentAddMutation = graphql`
       description
       created_at
       file_name
+      download_number
     }
   }
 `;
@@ -35,6 +36,7 @@ export const DocumentUpdateMutation = graphql`
       file_name
       created_at
       description
+      download_number
     }
   }
 `;
@@ -64,6 +66,7 @@ export const documentItem = graphql`
     file_name
     created_at
     description
+    download_number
   }
 `;
 export const documentsFragment = graphql`

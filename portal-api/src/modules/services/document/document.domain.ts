@@ -134,9 +134,13 @@ export const loadDocuments = async (
     .where('Document.active', '=', true)
     .where('Document.service_id', '=', serviceId);
   if (filter) {
-    query
-      .where('Document.file_name', 'LIKE', `%${filter}%`)
-      .orWhere('Document.description', 'LIKE', `%${filter}%`);
+    query.andWhere(function () {
+      this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(
+        'Document.description',
+        'ILIKE',
+        `%${filter}%`
+      );
+    });
   }
 
   const documentConnection = await query
@@ -147,7 +151,13 @@ export const loadDocuments = async (
     .where('Document.active', '=', true)
     .where('Document.service_id', '=', serviceId);
   if (filter) {
-    queryCount.where('Document.file_name', 'LIKE', `${filter}%`);
+    query.andWhere(function () {
+      this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(
+        'Document.description',
+        'ILIKE',
+        `%${filter}%`
+      );
+    });
   }
   const { totalCount } = await queryCount
     .countDistinct('Document.id as totalCount')

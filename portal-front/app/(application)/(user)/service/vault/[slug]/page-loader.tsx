@@ -29,14 +29,21 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
       header: t('Service.Vault.FileTab.FileName'),
     },
     {
+      accessorKey: 'description',
+      id: 'description',
+      size: 300,
+      header: t('Service.Vault.FileTab.Description'),
+    },
+    {
       id: 'created_at',
       header: t('Service.Vault.FileTab.UploadDate'),
       cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
     },
     {
-      accessorKey: 'description',
-      id: 'description',
-      header: t('Service.Vault.FileTab.Description'),
+      accessorKey: 'download_number',
+      id: 'download_number',
+      size: 40,
+      header: t('Service.Vault.FileTab.NumberDownload'),
     },
     {
       id: 'actions',
