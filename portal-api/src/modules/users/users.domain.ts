@@ -4,6 +4,7 @@ import {
   AddUserInput,
   EditUserInput,
   UserConnection,
+  UserFilter,
   User as UserGenerated,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -141,15 +142,13 @@ export const loadUserBy = async (
 export const loadUsers = async (
   context: PortalContext,
   opts,
-  filter
+  filter: UserFilter
 ): Promise<UserConnection> => {
   const query = paginate<UserGenerated>(context, 'User', opts);
-  if (filter) {
-    query.where('email', 'LIKE', filter + '%');
-  }
 
-  const userConnection = await query
+  const loadUsersQuery = query
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
+
     .leftJoin(
       'Organization as org',
       'User_Organization.organization_id',
@@ -205,9 +204,24 @@ export const loadUsers = async (
         })
       ),
     ])
-    .groupBy(['User.id'])
-    .asConnection<UserConnection>();
+    .groupBy(['User.id']);
 
+  if (filter.search) {
+    loadUsersQuery
+      .where('email', 'LIKE', `%${filter.search}%`)
+      .orWhere('first_name', 'LIKE', `%${filter.search}%`)
+      .orWhere('last_name', 'LIKE', `%${filter.search}%`);
+  }
+  if (filter.organization) {
+    const organizationId = extractId(filter.organization);
+    loadUsersQuery.where(
+      'User_Organization.organization_id',
+      '=',
+      organizationId
+    );
+  }
+
+  const userConnection = await loadUsersQuery.asConnection<UserConnection>();
   userConnection.edges = userConnection.edges.map((edge) => {
     const edgeUser = edge.node as unknown as UserLoadUserBy;
     return {

@@ -4,11 +4,10 @@ import {
   userFormSchema,
 } from '@/components/admin/user/user-form.schema';
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
-import { Portal, portalContext } from '@/components/portal-context';
 import TriggerButton from '@/components/ui/trigger-button';
-import useGranted from '@/hooks/useGranted';
 import { useToast } from 'filigran-ui/clients';
-import { FunctionComponent, useContext, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { userListCreateMutation } from '../../../../__generated__/userListCreateMutation.graphql';
@@ -17,17 +16,16 @@ interface CreateUserProps {
   connectionId: string;
 }
 
-export const CreateUser: FunctionComponent<CreateUserProps> = ({
+export const AddUser: FunctionComponent<CreateUserProps> = ({
   connectionId,
 }) => {
+  const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
 
   const { toast } = useToast();
   const [commitUserMutation] = useMutation<userListCreateMutation>(
     UserListCreateMutation
   );
-  const { me } = useContext<Portal>(portalContext);
-  const isFullAdmin = useGranted('BYPASS');
 
   const handleSubmit = (
     values: z.infer<typeof userFormSchema> | z.infer<typeof userEditFormSchema>
@@ -57,6 +55,7 @@ export const CreateUser: FunctionComponent<CreateUserProps> = ({
       setOpen={setOpenSheet}
       validationSchema={userFormSchema}
       user={undefined}
-      trigger={<TriggerButton label="Create user" />}></UserFormSheet>
+      trigger={<TriggerButton label={t('UserActions.addUser')} />}
+    />
   );
 };

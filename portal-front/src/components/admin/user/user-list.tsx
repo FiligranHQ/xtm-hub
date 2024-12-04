@@ -1,7 +1,7 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
 import { DeleteUserAction } from '@/components/admin/user/delete-user-action';
-import { CreateUser } from '@/components/admin/user/user-create';
+import { AddUser } from '@/components/admin/user/user-create';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import {
   mapToSortingTableValue,
@@ -10,18 +10,20 @@ import {
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import useGranted from '@/hooks/useGranted';
 import { RESTRICTION } from '@/utils/constant';
+import { i18nKey } from '@/utils/datatable';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
 import { Badge, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { graphql, useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 import { userList_fragment$data } from '../../../../__generated__/userList_fragment.graphql';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
 import {
   OrderingMode,
+  UserFilter,
   UserOrdering,
   userListQuery,
   userListQuery$variables,
@@ -34,7 +36,7 @@ const UserListQuery = graphql`
     $cursor: ID
     $orderBy: UserOrdering!
     $orderMode: OrderingMode!
-    $filter: String
+    $filter: UserFilter
   ) {
     ...userList_users
   }
@@ -79,8 +81,13 @@ export const UserFragment = graphql`
   }
 `;
 
+interface UserListProps {
+  organization?: string;
+}
+
 // Component
-const UserList = () => {
+const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
+  const t = useTranslations();
   const {
     pageSize,
     setPageSize,
@@ -95,13 +102,18 @@ const UserList = () => {
     resetAll,
   } = useUserListLocalstorage();
 
-  const t = useTranslations();
   const router = useRouter();
+
+  const [filter, setFilter] = useState<UserFilter>({
+    search: undefined,
+    organization,
+  });
 
   const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
     count: pageSize,
     orderMode: orderMode,
     orderBy: orderBy,
+    filter,
   });
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -116,19 +128,9 @@ const UserList = () => {
 
   const columns: ColumnDef<userList_fragment$data>[] = [
     {
-      accessorKey: 'first_name',
-      id: 'first_name',
-      header: 'First name',
-    },
-    {
-      accessorKey: 'last_name',
-      id: 'last_name',
-      header: 'Last name',
-    },
-    {
       accessorKey: 'email',
       id: 'email',
-      header: 'Email',
+      header: t('UserListPage.Email'),
       cell: ({ row }) => {
         return <span className="truncate">{row.original.email}</span>;
       },
@@ -136,7 +138,7 @@ const UserList = () => {
     {
       accessorKey: 'roles_portal',
       id: 'roles_portal',
-      header: 'Roles',
+      header: t('UserListPage.Roles'),
       cell: ({ row }) => {
         return (
           <div className="flex gap-xs">
@@ -246,14 +248,21 @@ const UserList = () => {
   };
 
   const handleInputChange = (inputValue: string) => {
-    refetch({
-      filter: inputValue,
+    setFilter((prevFilter) => {
+      const updatedFilter = {
+        ...prevFilter,
+        search: inputValue,
+      };
+      refetch({ filter: updatedFilter }); // Use the updated filter
+      return updatedFilter;
     });
   };
+
   return (
     <DataTable
       columns={columns}
       data={userData}
+      i18nKey={i18nKey(t)}
       onResetTable={resetAll}
       tableOptions={{
         onSortingChange: onSortingChange,
@@ -274,7 +283,7 @@ const UserList = () => {
 
           <div className="flex w-full items-center justify-between gap-s sm:w-auto">
             <DataTableHeadBarOptions />
-            <CreateUser connectionId={data?.users?.__id} />
+            <AddUser connectionId={data?.users?.__id} />
           </div>
         </div>
       }
