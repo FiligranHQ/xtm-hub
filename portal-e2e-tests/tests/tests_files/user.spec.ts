@@ -15,9 +15,9 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
     'Users list'
   );
 
-  // Create User
+  // Add User
 
-  await page.getByLabel('Create user').click();
+  await page.getByLabel('Add user').click();
   await page
     .getByPlaceholder('Email', { exact: true })
     .fill('userInE2E@thales.com');

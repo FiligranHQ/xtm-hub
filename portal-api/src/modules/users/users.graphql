@@ -31,6 +31,11 @@ type UserConnection {
   pageInfo: PageInfo!
 }
 
+input UserFilter {
+  search: String
+  organization: String
+}
+
 type Query {
   me: User @auth
   user(id: ID!): User @auth
@@ -39,7 +44,7 @@ type Query {
     after: ID
     orderBy: UserOrdering!
     orderMode: OrderingMode!
-    filter: String
+    filter: UserFilter
   ): UserConnection! @auth
   userHasSomeSubscription: Boolean! @auth
 }
