@@ -10,7 +10,14 @@ import {
 } from '@/components/ui/handle-sorting.utils';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui/clients';
 import { Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -81,10 +88,21 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
     },
     {
-      accessorKey: 'description',
       id: 'description',
       enableSorting: false,
       header: t('Service.Vault.FileTab.Description'),
+      cell: ({ row }) => (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger className={'w-full truncate text-left'}>
+              {row.original.description}
+            </TooltipTrigger>
+            <TooltipContent className={'max-w-lg'}>
+              <p>{row.original.description}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
     },
     {
       id: 'actions',
