@@ -99,7 +99,15 @@
   "UserActions": {
     "deleteUser": "Supprimer l'utilisateur",
     "updateUser": "Mettre à jour l'utilisateur",
-    "detailsUser": "Détails Utilisateur"
+    "detailsUser": "Détails Utilisateur",
+    "addUser": "Ajouter un utilisateur"
+  },
+  "UserListPage": {
+    "Title": "Liste des utilisateurs",
+    "Email": "Email",
+    "FirstName": "Prénom",
+    "LastName": "Nom de famille",
+    "Roles": "Rôles"
   },
   "MenuActions": {
     "delete": "Supprimer",
@@ -109,5 +117,17 @@
   "RedirectPage": {
     "yourFutureHub": "Votre futur centre communautaire Filigran prend forme !",
     "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus."
+  },
+  "Datatable": {
+    "RowsPerPage": "Lignes par page",
+    "ManageColumnsVisibility": "Gérer la visibilité des colonnes",
+    "Asc": "Ascendant",
+    "Desc": "Descendante",
+    "Hide": "Cacher",
+    "goFirstPage": "Aller à la première page",
+    "goPreviousPage": "Aller à la page précédente",
+    "goNextPage": "Aller à la page suivante",
+    "goLastPage": "Aller à la dernière page",
+    "Columns": "Colonnes"
   }
 }

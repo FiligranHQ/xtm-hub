@@ -470,7 +470,7 @@ export type QueryUserServiceOwnedArgs = {
 
 export type QueryUsersArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filter?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<UserFilter>;
   first: Scalars['Int']['input'];
   orderBy: UserOrdering;
   orderMode: OrderingMode;
@@ -647,6 +647,11 @@ export type UserEdge = {
   __typename?: 'UserEdge';
   cursor: Scalars['String']['output'];
   node: User;
+};
+
+export type UserFilter = {
+  organization?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum UserOrdering {
@@ -838,6 +843,7 @@ export type ResolversTypes = ResolversObject<{
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
+  UserFilter: UserFilter;
   UserOrdering: UserOrdering;
   UserService: ResolverTypeWrapper<UserService>;
   UserServiceConnection: ResolverTypeWrapper<UserServiceConnection>;
@@ -895,6 +901,7 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
+  UserFilter: UserFilter;
   UserService: UserService;
   UserServiceConnection: UserServiceConnection;
   UserServiceDeleted: UserServiceDeleted;

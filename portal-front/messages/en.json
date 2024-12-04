@@ -97,9 +97,17 @@
     "textDeleteThisUser": "Are you sure you want to delete this user {first_name} {last_name} ?"
   },
   "UserActions": {
-    "deleteUser": "Delete User",
-    "updateUser": "Update User",
-    "detailsUser": "Details User"
+    "deleteUser": "Delete user",
+    "updateUser": "Update user",
+    "detailsUser": "Details user",
+    "addUser": "Add user"
+  },
+  "UserListPage": {
+    "Title": "Users list",
+    "Email": "Email",
+    "FirstName": "First name",
+    "LastName": "Last name",
+    "Roles": "Roles"
   },
   "MenuActions": {
     "delete": "Delete",
@@ -109,5 +117,17 @@
   "RedirectPage": {
     "yourFutureHub": "Your future Filigran community hub is taking shape !",
     "ExploringOurRoad": "Hold tight—you're just 3 seconds away from exploring our roadmap and learning more."
+  },
+  "Datatable": {
+    "RowsPerPage": "Rows per page",
+    "ManageColumnsVisibility": "Manage columns visibility",
+    "Asc": "Ascending",
+    "Desc": "Descending",
+    "Hide": "Hide",
+    "goFirstPage": "Go to first page",
+    "goPreviousPage": "Go to previous page",
+    "goNextPage": "Go to next page",
+    "goLastPage": "Go to last page",
+    "Columns": "Columns"
   }
 }

@@ -49,7 +49,7 @@ type Query {
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: User
   user(id: ID!): User
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: String): UserConnection!
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: UserFilter): UserConnection!
   userHasSomeSubscription: Boolean!
   node(id: ID!): Node
 }
@@ -355,6 +355,11 @@ type UserConnection {
   totalCount: Int!
   edges: [UserEdge!]!
   pageInfo: PageInfo!
+}
+
+input UserFilter {
+  search: String
+  organization: String
 }
 
 input EditUserInput {
