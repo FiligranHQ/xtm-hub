@@ -33,6 +33,12 @@ spec:
           {{- toYaml .Values.xtmhub.front.resources | nindent 12 }}
         ports:
         - containerPort: 4001
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 3000
+            scheme: HTTP
         env:
         - name: NODE_ENV
           value: production
