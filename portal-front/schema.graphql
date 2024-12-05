@@ -81,6 +81,7 @@ type Mutation {
   editUser(id: ID!, input: EditUserInput!): User!
   deleteUser(id: ID!): User
   changeSelectedOrganization(organization_id: ID!): User
+  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   login(email: String!, password: String): User
   logout: ID!
 }
