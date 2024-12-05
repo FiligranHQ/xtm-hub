@@ -1,7 +1,6 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import crypto from 'node:crypto';
-import { v4 as uuidv4 } from 'uuid';
 import { dbTx } from '../../../knexfile';
 import { MergeEvent, Resolvers } from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
@@ -9,14 +8,14 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import User, { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
+import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
-import { sendMail } from '../../server/mail-service';
 import { extractId } from '../../utils/utils';
-import { createUserOrganizationRelation } from '../common/user-organization.helper';
-import { createUserRolePortalRelation } from '../common/user-role-portal.helper';
-import { insertNewOrganization } from '../organizations/organizations.helper';
+import { updateUserOrg } from '../common/user-organization.helper';
+import { updateUserRolePortal } from '../common/user-role-portal.helper';
+import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
-  addNewUser,
+  loadUnsecureUser,
   loadUserBy,
   loadUserDetails,
   loadUsers,
@@ -24,7 +23,11 @@ import {
   updateUser,
   userHasSomeSubscription,
 } from './users.domain';
-import { mapUserToGraphqlUser, removeUser } from './users.helper';
+import {
+  addNewUserWithRoles,
+  mapUserToGraphqlUser,
+  removeUser,
+} from './users.helper';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   const hash = crypto
@@ -61,57 +64,59 @@ const resolvers: Resolvers = {
     addUser: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        const userId = uuidv4();
+        const [organizationFromEmail] = await loadOrganizationsFromEmail(
+          input.email
+        );
+        // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
+        const chosenOrganization: OrganizationId | undefined = input
+          .organizations?.[0]
+          ? (extractId(input.organizations?.[0]) as OrganizationId)
+          : undefined;
 
-        // Create user personal space organization
-        const [addOrganization] = await insertNewOrganization({
-          id: userId as OrganizationId,
-          name: input.email,
-          personal_space: true,
+        // The admin orga should only allow to add users in the same organization and with the same domain.
+        // Only the admin PLTFM can by pass this check
+        if (
+          chosenOrganization !== organizationFromEmail?.id &&
+          !context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)
+        ) {
+          throw new GraphQLError(
+            'You cannot add a user whose email domain is outside your organization',
+            {
+              extensions: { code: '[User] addUser' },
+            }
+          );
+        }
+
+        const [existingUser] = await loadUnsecureUser({ email: input.email });
+        const user = existingUser
+          ? existingUser
+          : await addNewUserWithRoles(
+              {
+                email: input.email,
+                password: input.password,
+                selected_organization_id: chosenOrganization,
+              },
+              []
+            );
+
+        await updateUserOrg(context, user.id, [
+          user.id, // Should always add the user personal space. User.Id is equal to Organization.Id
+          ...input.organizations.map(extractId<OrganizationId>),
+        ]);
+        await updateUserRolePortal(
+          context,
+          user.id,
+          input.roles_id.map(extractId<RolePortalId>)
+        );
+
+        const loadUserFinalUser = await loadUserBy({
+          'User.id': user.id,
         });
 
-        // Create user with Personal space by default
-        const addedUser = await addNewUser(context, {
-          input,
-          userId,
-          selected_organization_id: addOrganization.id,
-        });
-
-        // Insert relation UserOrganization
-        await createUserOrganizationRelation(context, {
-          user_id: addedUser.id,
-          organizations_id: [
-            addOrganization.id,
-            ...(input.organizations ?? []).map(
-              (orgId) => fromGlobalId(orgId).id as OrganizationId
-            ),
-          ],
-        });
-
-        // Insert relation UserRolePortal
-        await createUserRolePortalRelation({
-          user_id: addedUser.id,
-          roles_id: input.roles_id.map(
-            (role_id) => extractId(role_id) as RolePortalId
-          ),
-        });
-
-        await sendMail({
-          to: input.email,
-          template: 'welcome',
-          params: {
-            name: `${input.first_name}`,
-          },
-        });
-
-        const user = await loadUserBy({
-          'User.id': addedUser.id,
-        });
-
-        await dispatch('User', 'add', user);
+        await dispatch('User', 'add', loadUserFinalUser);
         await trx.commit();
 
-        return mapUserToGraphqlUser(user);
+        return mapUserToGraphqlUser(loadUserFinalUser);
       } catch (error) {
         await trx.rollback();
         console.error('Error while adding the new user.', error);
@@ -124,10 +129,9 @@ const resolvers: Resolvers = {
     editUser: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        const completedUser = await updateUser(context, id as UserId, input);
-
+        await updateUser(context, id as UserId, input);
         const user = await loadUserDetails({
-          'User.id': completedUser.id,
+          'User.id': id as UserId,
         });
 
         await dispatch('User', 'edit', user);

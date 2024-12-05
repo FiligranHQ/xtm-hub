@@ -14,4 +14,5 @@ export const i18nKey = (
   'Go to next page': t('Datatable.goNextPage'),
   'Go to last page': t('Datatable.goLastPage'),
   Columns: t('Datatable.Columns'),
+  'Reset table': t('Datatable.ResetTable'),
 });

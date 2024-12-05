@@ -38,7 +38,7 @@ export async function seed(knex) {
     .insert([
       {
         user_id: '015c0488-848d-4c89-95e3-8a243971f594',
-        role_portal_id: '6b632cf2-9105-46ec-a463-ad59ab58c770',
+        role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
       },
       {
         user_id: '154006e2-f24b-42da-b39c-e0fb17bead00',
