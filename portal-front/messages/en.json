@@ -94,13 +94,17 @@
     "Validate": "Validate"
   },
   "DeleteUserDialog": {
-    "TextDeleteThisUser": "Are you sure you want to delete this user {first_name} {last_name} ?"
+    "TextDeleteThisUser": "Are you sure you want to delete this user {email} ?"
+  },
+  "RemoveUserOrgDialog": {
+    "TextRemoveThisUser": "Are you sure you want to remove this user {email} from your organization ?"
   },
   "UserActions": {
     "DeleteUser": "Delete user",
     "UpdateUser": "Update user",
     "DetailsUser": "Details user",
-    "AddUser": "Add user"
+    "AddUser": "Add user",
+    "RemoveUser": "Remove user"
   },
   "UserListPage": {
     "Title": "Users list",
@@ -112,7 +116,8 @@
   "MenuActions": {
     "Delete": "Delete",
     "Update": "Update",
-    "Details": "Details"
+    "Details": "Details",
+    "Remove": "Remove"
   },
   "RedirectPage": {
     "YourFutureHub": "Your future Filigran community hub is taking shape !",
@@ -124,10 +129,10 @@
     "Asc": "Asc",
     "Desc": "Desc",
     "Hide": "Hide",
-    "goFirstPage": "Go to first page",
-    "goPreviousPage": "Go to previous page",
-    "goNextPage": "Go to next page",
-    "goLastPage": "Go to last page",
+    "GoFirstPage": "Go to first page",
+    "GoPreviousPage": "Go to previous page",
+    "GoNextPage": "Go to next page",
+    "GoLastPage": "Go to last page",
     "Columns": "Columns",
     "ResetTable": "Reset table"
   }

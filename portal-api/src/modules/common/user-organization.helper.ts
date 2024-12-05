@@ -81,3 +81,13 @@ export const updateUserOrg = async (
     .insert(userOrgsToInsert)
     .returning('*');
 };
+
+export const removeUserFromOrganization = async (
+  context: PortalContext,
+  user_id: UserId,
+  organization_id: OrganizationId
+) => {
+  return db<UserOrganization>(context, 'User_Organization')
+    .where({ user_id, organization_id })
+    .delete('*');
+};
