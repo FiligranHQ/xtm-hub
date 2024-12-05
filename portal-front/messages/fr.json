@@ -121,8 +121,8 @@
   "Datatable": {
     "RowsPerPage": "Lignes par page",
     "ManageColumnsVisibility": "Gérer la visibilité des colonnes",
-    "Asc": "Ascendant",
-    "Desc": "Descendante",
+    "Asc": "Asc",
+    "Desc": "Desc",
     "Hide": "Cacher",
     "goFirstPage": "Aller à la première page",
     "goPreviousPage": "Aller à la page précédente",

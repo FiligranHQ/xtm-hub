@@ -48,10 +48,8 @@ export type AddServicePriceInput = {
 
 export type AddUserInput = {
   email: Scalars['String']['input'];
-  first_name: Scalars['String']['input'];
-  last_name: Scalars['String']['input'];
   organizations: Array<InputMaybe<Scalars['String']['input']>>;
-  password: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
   roles_id: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
@@ -108,8 +106,6 @@ export type EditSubscriptionInput = {
 
 export type EditUserInput = {
   email: Scalars['String']['input'];
-  first_name?: InputMaybe<Scalars['String']['input']>;
-  last_name?: InputMaybe<Scalars['String']['input']>;
   organizations: Array<InputMaybe<Scalars['String']['input']>>;
   roles_id: Array<InputMaybe<Scalars['String']['input']>>;
 };

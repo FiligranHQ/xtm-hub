@@ -28,10 +28,13 @@ import {
 import { loadUserBy } from './users.domain';
 
 export const addNewUserWithRoles = async (
-  data: Pick<UserInitializer, 'email' | 'first_name' | 'last_name'>,
+  data: Pick<UserInitializer, 'email' | 'first_name' | 'last_name'> & {
+    password?: string;
+    selected_organization_id?: OrganizationId;
+  },
   roles: string[]
 ): Promise<User> => {
-  const { salt, hash } = hashPassword('');
+  const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
   // Create user personal space organization
   const [addOrganization] = await insertNewOrganization({
@@ -39,13 +42,15 @@ export const addNewUserWithRoles = async (
     name: data.email,
     personal_space: true,
   });
+
   const [addedUser] = await dbUnsecure<User>('User')
     .insert({
       id: uuid as UserId,
-      selected_organization_id: uuid as OrganizationId,
+      selected_organization_id:
+        data.selected_organization_id ?? addOrganization.id,
       salt,
+      email: data.email,
       password: hash,
-      ...data,
     })
     .returning('*');
 

@@ -22,12 +22,6 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
     .getByPlaceholder('Email', { exact: true })
     .fill('userInE2E@thales.com');
   await page.getByPlaceholder('Email', { exact: true }).press('Tab');
-  await page.getByPlaceholder('First name').fill('firstname');
-  await page.getByPlaceholder('First name').press('Tab');
-  await page.getByPlaceholder('Last name').fill('lastname');
-  await page.getByPlaceholder('Last name').press('Tab');
-  await page.getByPlaceholder('Password').fill('azert');
-  await page.getByPlaceholder('Password').press('Tab');
   await page.getByLabel('Roles').press('Enter');
   await page.getByRole('option', { name: 'USER' }).click();
   await page.getByLabel('Organizations').press('Enter');
@@ -39,27 +33,27 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
 
   // Edit user
   await page
-    .getByRole('row', { name: 'firstname lastname userInE2E@' })
+    .getByRole('row', { name: 'userInE2E@thales.com' })
     .getByRole('button')
     .click();
   await page.getByLabel('Details User').click();
   await expect(
-    page.getByRole('heading', { name: 'firstname lastname' })
+    page.getByRole('heading', { name: 'userInE2E@thales.com' })
   ).toBeVisible();
 
   await page.getByLabel('Update').click();
-  await page.getByPlaceholder('First name').click();
-  await page.getByPlaceholder('First name').fill('firstnameModified');
+  await page.getByLabel('Roles').press('Enter');
+  await page.getByRole('option', { name: 'ADMIN_ORGA' }).click();
   await page.getByRole('button', { name: 'Validate' }).click();
   await expect(
-    page.getByRole('heading', { name: 'firstnameModified lastname' })
+    page.getByRole('heading', { name: 'userInE2E@thales.com' })
   ).toBeVisible();
 
   // Delete user
   await page.getByLabel('Delete User').click();
   await page.getByRole('button', { name: 'Cancel' }).click();
   await expect(
-    page.getByRole('heading', { name: 'firstnameModified lastname' })
+    page.getByRole('heading', { name: 'userInE2E@thales.com' })
   ).toBeVisible();
   await page.getByLabel('Delete User').click();
   await page.getByRole('button', { name: 'Delete' }).click();

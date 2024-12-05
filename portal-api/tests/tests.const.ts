@@ -37,3 +37,35 @@ export const contextAdminUser: PortalContext = {
   },
   serviceId: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
 } as PortalContext;
+
+export const contextAdminOrgaThales: PortalContext = {
+  user: {
+    id: '015c0488-848d-4c89-95e3-8a243971f594',
+    email: 'admin@thales.com',
+    password: null,
+    salt: null,
+    first_name: null,
+    last_name: null,
+    selected_organization_id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c', // Thales test ID
+    organizations: [
+      {
+        id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
+        name: 'Thales',
+        personal_space: false,
+        domains: ['thales.com'],
+      },
+      {
+        id: '015c0488-848d-4c89-95e3-8a243971f594',
+        name: 'admin@thales.com',
+        personal_space: true,
+        domains: [],
+      },
+    ],
+    capabilities: [],
+    roles_portal: [
+      {
+        ...ROLE_ADMIN,
+      },
+    ],
+  },
+} as PortalContext;
