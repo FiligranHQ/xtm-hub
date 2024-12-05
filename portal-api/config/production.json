@@ -1,0 +1,9 @@
+{
+  "login_settings": [
+    {
+      "name": "Login to Portal",
+      "type": "SSO",
+      "provider": "oidc"
+    }
+  ]
+}
