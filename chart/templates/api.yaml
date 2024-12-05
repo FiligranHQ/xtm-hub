@@ -39,6 +39,9 @@ spec:
             path: /health
             port: 4001
             scheme: HTTP
+        annotations:
+          prometheus.io/scrape: 'true'
+          prometheus.io/port: '4001'
         env:
         - name: NODE_ENV
           value: "production"

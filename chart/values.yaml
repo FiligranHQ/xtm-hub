@@ -18,6 +18,7 @@ xtmhub:
     secret:
       OIDC_CLIENT_SECRET: ""
     livenessProbe: {}
+    annotations: {}
   front:
     resources: {}
     replicas: 1
