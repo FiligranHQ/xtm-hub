@@ -3,6 +3,7 @@ import { Resolvers } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import { UserId } from '../../../model/kanel/public/User';
+import { logApp } from '../../../utils/app-logger.util';
 import {
   deleteDocument,
   getDocuments,
@@ -32,7 +33,7 @@ const resolvers: Resolvers = {
         const [addedDocument] = await insertDocument(data);
         return addedDocument;
       } catch (error) {
-        console.error('Error while inserting document:', error);
+        logApp.error('Error while inserting document:', error);
         throw error;
       }
     },
@@ -46,7 +47,7 @@ const resolvers: Resolvers = {
         );
         return document;
       } catch (error) {
-        console.error('Error while updating document:', error);
+        logApp.error('Error while updating document:', error);
         throw error;
       }
     },
@@ -58,7 +59,7 @@ const resolvers: Resolvers = {
           context.serviceId as ServiceId
         );
       } catch (error) {
-        console.error('Error while deleting document:', error);
+        logApp.error('Error while deleting document:', error);
         throw error;
       }
     },
@@ -68,7 +69,7 @@ const resolvers: Resolvers = {
       try {
         return checkDocumentExists(input.documentName ?? '');
       } catch (error) {
-        console.error('Error while fetching documents:', error);
+        logApp.error('Error while fetching documents:', error);
         throw error;
       }
     },
@@ -85,7 +86,7 @@ const resolvers: Resolvers = {
           fromGlobalId(serviceId).id as ServiceId
         );
       } catch (error) {
-        console.error('Error while fetching documents:', error);
+        logApp.error('Error while fetching documents:', error);
         throw error;
       }
     },

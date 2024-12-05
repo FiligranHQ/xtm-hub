@@ -5,6 +5,7 @@ import UserRolePortal, {
   UserRolePortalInitializer,
 } from '../../model/kanel/public/UserRolePortal';
 import { PortalContext } from '../../model/portal-context';
+import { logApp } from '../../utils/app-logger.util';
 import { isEmpty } from '../../utils/utils';
 import { getRolePortalByName } from '../role-portal/role-portal';
 
@@ -26,7 +27,7 @@ export const addRolesToUser = async (userId: UserId, roles: string[]) => {
     if (role) {
       await createUserRolePortal({ user_id: userId, role_portal_id: role.id });
     } else {
-      console.error(`Role "${roleName}" not found in database`);
+      logApp.error(`Role "${roleName}" not found in database`);
     }
   }
 };

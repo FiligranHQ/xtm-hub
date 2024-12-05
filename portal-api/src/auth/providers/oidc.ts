@@ -5,6 +5,7 @@ import {
   Issuer as OpenIDIssuer,
   Strategy as OpenIDStrategy,
 } from 'openid-client';
+import { logApp } from '../../utils/app-logger.util';
 import { providerLoginHandler } from '../login-handle';
 import { extractRole } from '../mapping-roles';
 
@@ -35,7 +36,7 @@ export const addOIDCStrategy = (passport) => {
         params: { scope: openIdScopes.join(' ') },
       };
 
-      console.log('OIDC Strategy');
+      logApp.debug('OIDC Strategy');
       const openIDStrategy = new OpenIDStrategy(
         options,
         async (_, tokenSet, userinfo, done) => {
@@ -48,7 +49,7 @@ export const addOIDCStrategy = (passport) => {
             { email, first_name, last_name: '', roles },
             done
           );
-          console.info('[OPENID] Successfully logged', { userinfo });
+          logApp.info('[OPENID] Successfully logged', { userinfo });
 
           done(null, tokenSet.claims());
         }
@@ -79,7 +80,7 @@ export const addOIDCStrategy = (passport) => {
       });
     })
     .catch((err) => {
-      console.error('Error initializing authentication provider', {
+      logApp.error('Error initializing authentication provider', {
         cause: err,
         provider: providerRef,
       });

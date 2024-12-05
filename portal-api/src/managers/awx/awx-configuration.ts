@@ -3,6 +3,7 @@ import { ActionTrackingId } from '../../model/kanel/public/ActionTracking';
 import { addNewMessageTracking } from '../../modules/tracking/message-tracking';
 import { TrackingConst } from '../../modules/tracking/tracking.const';
 import { initTracking } from '../../modules/tracking/tracking.domain';
+import { logApp } from '../../utils/app-logger.util';
 import { AWX_HEADERS, AWX_URL, AWX_WORKFLOW_URL } from './awx.const';
 import {
   AWXAction,
@@ -69,7 +70,7 @@ export const awxLaunchWorkflowId = async (
     body: JSON.stringify(body),
     method: 'POST',
   }).catch(function (error) {
-    console.log(error);
+    logApp.error(error);
     return Promise.reject(error);
   });
   return await awxWorkflow.json();

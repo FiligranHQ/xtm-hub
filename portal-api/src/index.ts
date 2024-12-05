@@ -22,6 +22,7 @@ import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
+import { logApp } from './utils/app-logger.util';
 import { extractId } from './utils/utils';
 
 const { json } = pkg;
@@ -170,14 +171,14 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
     await dbMigration.seed();
   }
   await platformInit();
-  console.log(
+  logApp.debug(
     '[Migration] Database version is now ' + (await dbMigration.version())
   );
   await minioInit();
-  console.log('[MinIO] Bucket ready');
+  logApp.debug('[MinIO] Bucket ready');
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: portalConfig.port }, resolve)
   );
 }
 
-console.log(`🚀 Server ready at http://localhost:` + portalConfig.port);
+logApp.info(`🚀 Server ready at http://localhost:` + portalConfig.port);

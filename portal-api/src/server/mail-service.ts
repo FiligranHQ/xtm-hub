@@ -2,6 +2,7 @@ import config from 'config';
 import * as fsPromises from 'fs/promises';
 import nodemailer from 'nodemailer';
 import * as path from 'path';
+import { logApp } from '../utils/app-logger.util';
 import { MailTemplates, templateSubjects } from './mail-template/mail';
 
 const smtpOptions = config.get('smtp_options');
@@ -54,9 +55,9 @@ export const sendMail = async <T extends keyof MailTemplates>({
 
   transporter?.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error('Email error: ' + error);
+      logApp.error('Email error: ' + error);
     } else {
-      console.log('Email sent: ' + info.response);
+      logApp.info('Email sent: ' + info.response);
     }
   });
 };

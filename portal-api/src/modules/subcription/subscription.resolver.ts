@@ -10,6 +10,7 @@ import {
   grantServiceAccessUsers,
   loadServiceWithSubscriptions,
 } from '../services/services.domain';
+import { logApp } from '../../utils/app-logger.util';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,
@@ -84,7 +85,7 @@ const resolvers: Resolvers = {
         };
       } catch (error) {
         await trx.rollback();
-        console.log('Error while subscribing the service.', error);
+        logApp.error('Error while subscribing the service.', error);
         throw error;
       }
     },
@@ -141,10 +142,42 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         await trx.rollback();
-        console.error('Error while subscribing the service.', error);
+        logApp.error('Error while subscribing the service.', error);
         throw error;
       }
     },
+<<<<<<< HEAD
+=======
+    editSubscription: async (_, { id, input }, context) => {
+      const trx = await dbTx();
+
+      try {
+        // Retrieve subscription
+        const [retrievedSubscription] = await loadUnsecureSubscriptionBy({
+          id: id as SubscriptionId,
+        });
+        const update = {
+          id,
+          organization_id: retrievedSubscription.organization_id,
+          service_id: retrievedSubscription.service_id,
+          status: input.status ? input.status : retrievedSubscription.status,
+        };
+        const [updatedSubscription] = await db<Subscription>(
+          context,
+          'Subscription'
+        )
+          .where({ id })
+          .update(update)
+          .returning('*');
+        await trx.commit();
+        return await fillSubscription(context, updatedSubscription);
+      } catch (error) {
+        await trx.rollback();
+        logApp.error('Error while editing the subscription', error);
+        throw error;
+      }
+    },
+>>>>>>> f81b007 (feat: logger and replace console)
     deleteSubscription: async (_, { subscription_id }, context) => {
       const [subscription] = await loadSubscriptionBy(
         'id',

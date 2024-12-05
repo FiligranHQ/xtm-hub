@@ -10,6 +10,7 @@ import User, { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
+import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { updateUserOrg } from '../common/user-organization.helper';
 import { updateUserRolePortal } from '../common/user-role-portal.helper';
@@ -119,7 +120,7 @@ const resolvers: Resolvers = {
         return mapUserToGraphqlUser(loadUserFinalUser);
       } catch (error) {
         await trx.rollback();
-        console.error('Error while adding the new user.', error);
+        logApp.error('Error while adding the new user.', error);
         throw new GraphQLError('Error while adding the new user.', {
           extensions: { code: '[Users] addUser mutation' },
           originalError: error,
@@ -139,7 +140,7 @@ const resolvers: Resolvers = {
         return user;
       } catch (error) {
         await trx.rollback();
-        console.log('Error while editing the new user.');
+        logApp.error('Error while editing the new user.');
         throw error;
       }
     },
