@@ -6,7 +6,6 @@ dist
 node_modules
 config/ssl
 config/development.json
-config/production.json
 config/reference.json
 coverage
 test-results
