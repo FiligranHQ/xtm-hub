@@ -364,18 +364,14 @@ input UserFilter {
 
 input EditUserInput {
   email: String!
-  first_name: String
-  last_name: String
   organizations: [String]!
   roles_id: [String]!
 }
 
 input AddUserInput {
   email: String!
-  password: String!
+  password: String
   organizations: [String]!
-  first_name: String!
-  last_name: String!
   roles_id: [String]!
 }
 

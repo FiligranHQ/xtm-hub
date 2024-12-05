@@ -175,8 +175,8 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             <EditUser
               user={row.original}
               trigger={
-                <IconActionsButton aria-label={t('UserActions.updateUser')}>
-                  {t('MenuActions.update')}
+                <IconActionsButton aria-label={t('UserActions.UpdateUser')}>
+                  {t('MenuActions.Update')}
                 </IconActionsButton>
               }
             />
@@ -184,9 +184,9 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             <GuardCapacityComponent
               capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
               <IconActionsButton
-                aria-label={t('UserActions.detailsUser')}
+                aria-label={t('UserActions.DetailsUser')}
                 onClick={() => router.push(`/admin/user/${row.original.id}`)}>
-                {t('MenuActions.details')}
+                {t('MenuActions.Details')}
               </IconActionsButton>
             </GuardCapacityComponent>
             <DeleteUserAction

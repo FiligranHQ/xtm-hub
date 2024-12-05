@@ -1,7 +1,10 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, describe, expect, it } from 'vitest';
-import { contextAdminUser } from '../../../tests/tests.const';
+import {
+  contextAdminOrgaThales,
+  contextAdminUser,
+} from '../../../tests/tests.const';
 import {
   AddUserInput,
   EditUserInput,
@@ -77,6 +80,7 @@ describe('User mutation resolver', () => {
             email: testMail,
             password: 'admin',
             roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
+            organizations: [],
           } as AddUserInput,
         },
         contextAdminUser
@@ -93,7 +97,7 @@ describe('User mutation resolver', () => {
       });
     });
 
-    describe('should create user with personal space and add to internal organization', async () => {
+    describe('as Admin - should create user with personal space and add to internal organization', async () => {
       const testMail = `testAddUser${uuidv4()}@test.fr`;
       // @ts-ignore
       const response = await usersResolver.Mutation.addUser(
@@ -131,6 +135,73 @@ describe('User mutation resolver', () => {
         await deleteUserById(response.id as UserId);
       });
     });
+
+    it('as Admin Organization - should not able to create user with different email domain', async () => {
+      const testMail = `testAddUser${uuidv4()}@test.fr`;
+      try {
+        // @ts-ignore
+        await usersResolver.Mutation.addUser(
+          undefined,
+          {
+            input: {
+              email: testMail,
+              password: 'admin',
+              roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
+              organizations: [
+                toGlobalId(
+                  'Organization',
+                  '681fb117-e2c3-46d3-945a-0e921b5d4b6c'
+                ),
+              ],
+            } as AddUserInput,
+          },
+          contextAdminOrgaThales
+        );
+      } catch (error) {
+        const user = await loadUserBy({ 'User.email': testMail });
+        expect(user).toBeFalsy();
+        expect(error).toBeTruthy();
+      }
+    });
+  });
+
+  describe('as Admin orga - should create user with personal space and add to Thales organization', async () => {
+    const testMail = `testAddUser${uuidv4()}@thales.com`;
+    // @ts-ignore
+    const response = await usersResolver.Mutation.addUser(
+      undefined,
+      {
+        input: {
+          email: testMail,
+          password: 'admin',
+          roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
+          organizations: [
+            toGlobalId('Organization', '681fb117-e2c3-46d3-945a-0e921b5d4b6c'),
+          ],
+        } as AddUserInput,
+      },
+      contextAdminOrgaThales
+    );
+    const user = await loadUserBy({ 'User.id': response.id });
+    it('should have Personal space and Thales as organization', async () => {
+      expect(response).toBeTruthy();
+      expect(
+        user.organizations.some(
+          (org) => org.id === '681fb117-e2c3-46d3-945a-0e921b5d4b6c'
+        )
+      ).toBeTruthy();
+      expect(
+        user.organizations.some(
+          (org) => org.id.toString() === user.id.toString()
+        )
+      ).toBeTruthy();
+    });
+
+    expect(user.organizations.length).toEqual(2);
+
+    afterAll(async () => {
+      await deleteUserById(response.id as UserId);
+    });
   });
 
   describe('EditUser Mutation', () => {
@@ -142,8 +213,6 @@ describe('User mutation resolver', () => {
         {
           id: ADMIN_UUID,
           input: {
-            first_name: 'test_firstname',
-            last_name: 'admin_lastname',
             organizations: [
               toGlobalId('Organization', ADMIN_UUID),
               toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
@@ -159,8 +228,6 @@ describe('User mutation resolver', () => {
 
       expect(response).toBeTruthy();
       it('should have update organisations, first_name and last_name', async () => {
-        expect(response.first_name).toEqual('test_firstname');
-        expect(response.last_name).toEqual('admin_lastname');
         expect(response.organizations.length).toEqual(3);
       });
       it('should not have update other fields', async () => {
@@ -177,8 +244,6 @@ describe('User mutation resolver', () => {
           {
             id: ADMIN_UUID,
             input: {
-              first_name: null,
-              last_name: null,
               organizations: [
                 toGlobalId('Organization', ADMIN_UUID),
                 toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),

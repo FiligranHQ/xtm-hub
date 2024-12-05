@@ -15,7 +15,7 @@ export const EmptyServicesRedirect = () => {
   return (
     <section className="center flex flex-col items-center gap-s pt-[2vh]">
       <h2> {t('HomePage.Welcome')} 🎉</h2>
-      <p>{t('RedirectPage.yourFutureHub')}</p>
+      <p>{t('RedirectPage.YourFutureHub')}</p>
       <p>{t('RedirectPage.ExploringOurRoad')}</p>
     </section>
   );

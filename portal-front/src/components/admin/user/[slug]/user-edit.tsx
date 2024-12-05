@@ -47,7 +47,7 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
   const defaultTrigger = <TriggerButton label={t('update')} />;
   return (
     <UserFormSheet
-      title={t('UserActions.updateUser')}
+      title={t('UserActions.UpdateUser')}
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}

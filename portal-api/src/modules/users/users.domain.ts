@@ -9,7 +9,11 @@ import {
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
-import User, { UserId, UserMutator } from '../../model/kanel/public/User';
+import User, {
+  UserId,
+  UserInitializer,
+  UserMutator,
+} from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import {
   UserInfo,
@@ -24,7 +28,7 @@ import {
 import { hashPassword } from '../../utils/hash-password.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
-import { extractId } from '../../utils/utils';
+import { extractId, isEmpty } from '../../utils/utils';
 import { updateUserOrg } from '../common/user-organization.helper';
 import { updateUserRolePortal } from '../common/user-role-portal.helper';
 import { addNewUserWithRoles } from './users.helper';
@@ -62,6 +66,12 @@ export const loadUsersByOrganization = async (
     )
     .where('org.id', organizationId)
     .where('User.id', '!=', excludedUserId);
+};
+
+export const loadUnsecureUser = async (
+  field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
+) => {
+  return dbUnsecure<User>('User').where(field);
 };
 
 export const loadUserBy = async (
@@ -284,28 +294,28 @@ export const updateUser = async (
   const rolePortalIds = roles_id?.map(extractId<RolePortalId>);
   const organizationsIds = organizations.map(extractId<OrganizationId>);
 
-  const [updatedUser] = await dbUnsecure<User>('User')
-    .where({ id })
-    .update(user)
-    .whereIn('id', function () {
-      this.select('User.id')
-        .from('User')
-        .innerJoin(
-          'User_Organization as securityUserOrg',
-          'User.id',
-          'securityUserOrg.user_id'
-        )
-        .where(
-          'securityUserOrg.organization_id',
-          context.user.selected_organization_id
-        );
-    })
-    .returning('*');
+  if (!isEmpty(user)) {
+    await dbUnsecure<User>('User')
+      .where({ id })
+      .update(user)
+      .whereIn('id', function () {
+        this.select('User.id')
+          .from('User')
+          .innerJoin(
+            'User_Organization as securityUserOrg',
+            'User.id',
+            'securityUserOrg.user_id'
+          )
+          .where(
+            'securityUserOrg.organization_id',
+            context.user.selected_organization_id
+          );
+      })
+      .returning('*');
+  }
 
   await updateUserOrg(context, id, organizationsIds);
   await updateUserRolePortal(context, id, rolePortalIds);
-
-  return updatedUser;
 };
 export const deleteUserById = async (userId: UserId) => {
   return dbUnsecure<User>('User')
@@ -338,14 +348,12 @@ export const addNewUser = async (
     selected_organization_id: OrganizationId;
   }
 ) => {
-  const { salt, hash } = hashPassword(input.password);
-  const data: User = {
+  const { salt, hash } = hashPassword(input.password ?? '');
+  const data: UserInitializer = {
     id: userId as UserId,
     email: input.email,
     salt,
     password: hash,
-    first_name: input.first_name,
-    last_name: input.last_name,
     selected_organization_id,
   };
   const [addedUser] = await db<User>(context, 'User')
