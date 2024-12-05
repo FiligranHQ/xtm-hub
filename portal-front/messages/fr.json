@@ -94,13 +94,17 @@
     "Validate": "Valider"
   },
   "DeleteUserDialog": {
-    "textDeleteThisUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur {first_name} {last_name} ?"
+    "TextDeleteThisUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur {email} ? ?"
+  },
+  "RemoveUserOrgDialog": {
+    "TextRemoveThisUser": "Êtes-vous sûr de vouloir retirer cet utilisateur {email} de votre organisation ?"
   },
   "UserActions": {
-    "deleteUser": "Supprimer l'utilisateur",
-    "updateUser": "Mettre à jour l'utilisateur",
-    "detailsUser": "Détails Utilisateur",
-    "addUser": "Ajouter un utilisateur"
+    "DeleteUser": "Supprimer l'utilisateur",
+    "UpdateUser": "Mettre à jour l'utilisateur",
+    "DetailsUser": "Détails de l'utilisateur",
+    "AddUser": "Ajouter un utilisateur",
+    "RemoveUser": "Retirer l'utilisateur"
   },
   "UserListPage": {
     "Title": "Liste des utilisateurs",
@@ -110,12 +114,13 @@
     "Roles": "Rôles"
   },
   "MenuActions": {
-    "delete": "Supprimer",
-    "update": "Mise à jour",
-    "details": "Détails"
+    "Delete": "Supprimer",
+    "Update": "Modifier",
+    "Details": "Détails",
+    "Remove": "Retirer"
   },
   "RedirectPage": {
-    "yourFutureHub": "Votre futur centre communautaire Filigran prend forme !",
+    "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !",
     "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus."
   },
   "Datatable": {
@@ -124,10 +129,11 @@
     "Asc": "Asc",
     "Desc": "Desc",
     "Hide": "Cacher",
-    "goFirstPage": "Aller à la première page",
-    "goPreviousPage": "Aller à la page précédente",
-    "goNextPage": "Aller à la page suivante",
-    "goLastPage": "Aller à la dernière page",
-    "Columns": "Colonnes"
+    "GoFirstPage": "Aller à la première page",
+    "GoPreviousPage": "Aller à la page précédente",
+    "GoNextPage": "Aller à la page suivante",
+    "GoLastPage": "Aller à la dernière page",
+    "Columns": "Colonnes",
+    "ResetTable": "Réinitialiser"
   }
 }
