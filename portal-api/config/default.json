@@ -1,4 +1,5 @@
 {
+  "environment": "development",
   "port": 4001,
   "admin": {
     "email": "admin@filigran.io",

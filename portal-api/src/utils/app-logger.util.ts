@@ -80,7 +80,9 @@ export const appLogger = createLogger({
   format: format.combine(
     format.timestamp(),
     format.errors({ stack: appLogsConfig.extended_error_message }),
-    format.json()
+    config.get('environment') !== 'development'
+      ? format.json()
+      : format.simple()
   ),
   transports: [new transports.Console()],
 });

@@ -52,5 +52,17 @@
     "shell": {
       "program": "/bin/bash"
     }
+  },
+  {
+    "label": "Front Dev Server",
+    "cwd": "$ZED_WORKTREE_ROOT/portal-front",
+    "command": "yarn",
+    "args": ["dev"],
+    "allow_concurrent_runs": false,
+    "reveal": "no_focus",
+    "hide": "on_success",
+    "shell": {
+      "program": "/bin/bash"
+    }
   }
 ]
