@@ -11,7 +11,7 @@ interface PreloaderProps {}
 
 const breadcrumbValue = (t: UseTranslationsProps) => [
   {
-    label: t('MenuLinks.Backoffice'),
+    label: t('MenuLinks.Settings'),
   },
   {
     label: t('MenuLinks.Users'),
@@ -24,7 +24,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue(t)} />
-      <h1 className="pb-s">Users list</h1>
+      <h1 className="pb-s">{t('MenuLinks.Users')}</h1>
       <UserList />
     </>
   );

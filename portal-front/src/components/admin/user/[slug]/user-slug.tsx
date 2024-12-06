@@ -22,6 +22,7 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { DeleteIcon } from 'filigran-icon';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { userSlugQuery } from '../../../../../__generated__/userSlugQuery.graphql';
 import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 import {
@@ -39,6 +40,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const router = useRouter();
   const data = usePreloadedQuery<userSlugQuery>(UserSlugQuery, queryRef);
 
+  const t = useTranslations();
   const [deleteUserMutation] =
     useMutation<userSlugDeletionMutation>(userSlugDeletion);
   const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
@@ -52,7 +54,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },
@@ -74,11 +76,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   } else {
     const breadcrumbValue = [
       {
-        label: 'Backoffice',
+        label: t('MenuLinks.Settings'),
       },
       {
         href: '/admin/user',
-        label: 'Users',
+        label: t('MenuLinks.Users'),
       },
       {
         label: user.email,
@@ -92,23 +94,25 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           <h2 className="text-xl">
             {user.first_name} {user.last_name} - {user.email}
           </h2>
-          <div className="space-x-2">
+          <div className="space-x-2 flex items-center">
             <EditUser user={user} />
             <AlertDialogComponent
-              AlertTitle={'Delete user'}
-              actionButtonText={'Delete'}
+              AlertTitle={t('UserActions.DeleteUser')}
+              actionButtonText={t('MenuActions.Delete')}
               variantName={'destructive'}
               triggerElement={
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label="Delete User">
+                  aria-label={t('UserActions.DeleteUser')}>
                   <DeleteIcon className="h-4 w-4" />
                 </Button>
               }
               onClickContinue={() => onDeleteUser(user)}>
-              Are you sure you want to delete this user {user.first_name}{' '}
-              {user.last_name} ?
+              {t('DeleteUserDialog.TextDeleteThisUser', {
+                first_name: user.first_name,
+                last_name: user.last_name,
+              })}
             </AlertDialogComponent>
           </div>
         </div>
