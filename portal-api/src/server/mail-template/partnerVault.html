@@ -43,6 +43,7 @@
         }
       </style>
     <![endif]-->
+    <title>XTM Hub - Welcome to Your Partner Vault</title>
     <style>
       @media (max-width: 600px) {
         .sm-my-8 {
@@ -67,6 +68,7 @@
     style="
       margin: 0;
       width: 100%;
+      background-color: #f1f5f9;
       padding: 0;
       -webkit-font-smoothing: antialiased;
       word-break: break-word;
@@ -74,7 +76,7 @@
     <div
       role="article"
       aria-roledescription="email"
-      aria-label
+      aria-label="XTM Hub - Welcome to Your Partner Vault"
       lang="en">
       <div
         class="sm-px-4"
@@ -98,7 +100,7 @@
                 class="sm-my-8"
                 style="
                   margin-bottom: 40px;
-                  margin-top: 64px;
+                  margin-top: 40px;
                   text-align: center;
                 ">
                 <a href="{{ base_url_front }}">
@@ -130,15 +132,13 @@
                       style="
                         margin: 0 0 24px;
                         font-size: 24px;
-                        font-weight: 600;
-                        color: #000001;
+                        font-weight: 400;
                       ">
-                      Dear {{ name }},
+                      Welcome to the {{ partnerVault }}!
                     </h1>
                     <p style="margin: 0; line-height: 24px">
-                      Welcome to the Partner Vault! We're thrilled to have
-                      you onboard and look forward to collaborating closely with
-                      you.
+                      We're thrilled to have you onboard and look forward to
+                      collaborating closely with you.
                       <br />
                       <br />
                       Your Partner Vault is designed to provide all the
@@ -180,86 +180,141 @@
                         <![endif]-->
                       </a>
                     </div>
-                    <p>
-                      If you have any questions or need support, don't hesitate
-                      to reach out to us at {{ contactEmail }}.
+                    <p style="margin: 0; padding-top: 16px">
+                      Best regards, <br />Filigran Team
                     </p>
-                    <p style="margin: 0">Best regards, <br />Filigran</p>
-                  </td>
-                </tr>
-                <tr role="separator">
-                  <td style="line-height: 48px">&zwj;</td>
-                </tr>
-                <tr>
-                  <td
-                    style="
-                      padding-left: 24px;
-                      padding-right: 24px;
-                      text-align: center;
-                      font-size: 12px;
-                      color: #00020c;
-                    ">
-                    <p style="margin: 16px">
-                      <a
-                        href="https://filigran.io/"
-                        style="margin: 4px"
-                        ><img
-                          src="{{ base_url_front }}/website.png"
-                          width="24"
-                          alt="Filigran website"
-                          style="max-width: 100%; vertical-align: middle"
-                      /></a>
-                      <a
-                        href="https://filigran-community.slack.com/join/shared_invite/zt-2pp43qkqc-EY7qC7Sk30zZfsNjgXwF5w"
-                        style="margin: 4px"
-                        ><img
-                          src="{{ base_url_front }}/slack.png"
-                          width="24"
-                          alt="Slack community"
-                          style="max-width: 100%; vertical-align: middle"
-                      /></a>
-                      <a
-                        href="https://www.linkedin.com/company/filigran"
-                        style="margin: 4px"
-                        ><img
-                          src="{{ base_url_front }}/linkedin.png"
-                          width="24"
-                          alt="Linkedin page"
-                          style="max-width: 100%; vertical-align: middle"
-                      /></a>
-                      <a
-                        href="https://www.youtube.com/@Filigran"
-                        style="margin: 4px"
-                        ><img
-                          src="{{ base_url_front }}/youtube.png"
-                          width="24"
-                          alt="Youtube channel"
-                          style="max-width: 100%; vertical-align: middle"
-                      /></a>
-                      <a
-                        href="https://x.com/FiligranHQ"
-                        style="margin: 4px"
-                        ><img
-                          src="{{ base_url_front }}/twitter.png"
-                          width="24"
-                          alt="X link"
-                          style="max-width: 100%; vertical-align: middle"
-                      /></a>
-                    </p>
-                    <div style="margin-bottom: 8px">
-                      <a href="https://filigran.io">
-                        <img
-                          src="{{ base_url_front }}/logo-filigran.png"
-                          width="100"
-                          alt="Filigran logo"
-                          style="max-width: 100%; vertical-align: middle" />
-                      </a>
+                    <div
+                      role="separator"
+                      style="
+                        height: 1px;
+                        line-height: 1px;
+                        margin: 24px 0;
+                        background-color: #cbd5e1;
+                      ">
+                      &zwj;
                     </div>
-                    <p style="margin: 0 0 40px">
-                      New York, Paris, London, Sydney
+                    <p style="margin: 0; font-size: 14px">
+                      If you have any questions or need support, don’t hesitate
+                      to reach out to us at
+                      <a href="mailto:{{ contactEmail }}">{{ contactEmail }}</a
+                      >.
                     </p>
                   </td>
                 </tr>
+                <tr></tr>
+                <tr role="separator">
+                  <td style="line-height: 16px">&zwj;</td>
+                </tr>
+                <td
+                  style="
+                    padding-left: 24px;
+                    padding-right: 24px;
+                    text-align: center;
+                    font-size: 12px;
+                    color: #00020c;
+                  ">
+                  <table
+                    align="center"
+                    cellpadding="0"
+                    cellspacing="0"
+                    role="none">
+                    <tr>
+                      <td>
+                        <table
+                          style="
+                            margin: 16px;
+                            border-spacing: 4px;
+                            border-collapse: separate;
+                          "
+                          cellpadding="0"
+                          cellspacing="0"
+                          role="none">
+                          <tr>
+                            <td style="padding: 4px">
+                              <a href="https://filigran.io/">
+                                <img
+                                  src="{{ base_url_front }}/website.png"
+                                  width="24"
+                                  alt="Filigran website"
+                                  style="
+                                    max-width: 100%;
+                                    vertical-align: middle;
+                                    border: none;
+                                  " />
+                              </a>
+                            </td>
+                            <td style="padding: 4px">
+                              <a
+                                href="https://filigran-community.slack.com/join/shared_invite/zt-2pp43qkqc-EY7qC7Sk30zZfsNjgXwF5w">
+                                <img
+                                  src="{{ base_url_front }}/slack.png"
+                                  width="24"
+                                  alt="Slack community"
+                                  style="
+                                    max-width: 100%;
+                                    vertical-align: middle;
+                                    border: none;
+                                  " />
+                              </a>
+                            </td>
+                            <td style="padding: 4px">
+                              <a
+                                href="https://www.linkedin.com/company/filigran">
+                                <img
+                                  src="{{ base_url_front }}/linkedin.png"
+                                  width="24"
+                                  alt="Linkedin page"
+                                  style="
+                                    max-width: 100%;
+                                    vertical-align: middle;
+                                    border: none;
+                                  " />
+                              </a>
+                            </td>
+                            <td style="padding: 4px">
+                              <a href="https://www.youtube.com/@Filigran">
+                                <img
+                                  src="{{ base_url_front }}/youtube.png"
+                                  width="24"
+                                  alt="Youtube channel"
+                                  style="
+                                    max-width: 100%;
+                                    vertical-align: middle;
+                                    border: none;
+                                  " />
+                              </a>
+                            </td>
+                            <td style="padding: 4px">
+                              <a href="https://x.com/FiligranHQ">
+                                <img
+                                  src="{{ base_url_front }}/twitter.png"
+                                  width="24"
+                                  alt="X link"
+                                  style="
+                                    max-width: 100%;
+                                    vertical-align: middle;
+                                    border: none;
+                                  " />
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <div style="margin-bottom: 8px">
+                    <a href="https://filigran.io">
+                      <img
+                        src="{{ base_url_front }}/logo-filigran.png"
+                        width="100"
+                        alt="Filigran logo"
+                        style="max-width: 100%; vertical-align: middle" />
+                    </a>
+                  </div>
+                  <p style="margin: 0 0 40px">
+                    New York, Paris, London, Sydney
+                  </p>
+                </td>
               </table>
             </td>
           </tr>

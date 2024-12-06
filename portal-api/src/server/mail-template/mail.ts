@@ -2,12 +2,8 @@ export interface PartnerVaultMailModel {
   name: string;
   partnerVaultLink: string;
   partnerVault: string;
-  contactEmail: string;
 }
-
-export interface WelcomeMailModel {
-  name: string;
-}
+export type WelcomeMailModel = object;
 
 // ATTENTION, the key should be the same as the template file
 export type MailTemplates = {

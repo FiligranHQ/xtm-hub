@@ -296,7 +296,6 @@ export const grantServiceAccess = async (
         name: user.email,
         partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('Service', service.id)}`,
         partnerVault: service.name,
-        contactEmail: 'xtm-hub-support@filigran.io',
       },
     });
   }
