@@ -11,18 +11,14 @@ enum SubscriptionOrdering {
 type Subscription implements Node {
   id: ID!
   organization_id: ID!
-  organization: Organization
   service_id: ID!
-  service_url: String
-  service: Service
   start_date: Date
   end_date: Date
   status: String
-  joining: String
-  justification: String
-  billing: Int
-  user_service: [UserService]
-  organization_name: String
+  organization: Organization!
+  service_url: String!
+  service: Service
+  user_service: [UserService]!
 }
 
 type SubscriptionEdge {
@@ -30,33 +26,9 @@ type SubscriptionEdge {
   node: Subscription!
 }
 
-type SubscriptionConnection {
-  totalCount: Int!
-  edges: [SubscriptionEdge!]!
-  pageInfo: PageInfo!
-}
-
-type Query {
-  subscription(id: ID!): Subscription @auth
-  subscriptions(
-    first: Int = 50
-    after: ID
-    orderBy: SubscriptionOrdering!
-    orderMode: OrderingMode!
-  ): SubscriptionConnection! @auth
-  subscriptionsByOrganization(
-    first: Int = 50
-    after: ID
-    orderBy: SubscriptionOrdering!
-    orderMode: OrderingMode!
-  ): SubscriptionConnection! @auth
-  subscriptionsByServiceId(service_id: ID): [Subscription]
-    @auth
-    @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
-}
-
-input EditSubscriptionInput {
-  status: String
+type SubscriptionByService {
+  subscriptions: [Subscription!]!
+  service: Service
 }
 
 type Mutation {
@@ -65,10 +37,8 @@ type Mutation {
   addSubscriptionInService(
     service_id: String
     organization_id: ID
-  ): [UserService] @auth(requires: [BYPASS])
-  editSubscription(id: ID!, input: EditSubscriptionInput!): Subscription
-    @auth(requires: [BCK_MANAGE_SERVICES])
-  deleteSubscription(subscription_id: ID!): Subscription
+  ): Service @auth(requires: [BYPASS])
+  deleteSubscription(subscription_id: ID!): Service
     @auth(requires: [BCK_MANAGE_SERVICES])
     @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
 }

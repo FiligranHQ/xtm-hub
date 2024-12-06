@@ -6,6 +6,7 @@ import {
   ServiceCapability,
 } from '../../../__generated__/resolvers-types';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
+import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
 import { loadUserServiceById } from '../user_service.domain';
 
 const resolvers: Resolvers = {
@@ -27,9 +28,12 @@ const resolvers: Resolvers = {
         );
       }
 
-      const userService = loadUserServiceById(context, user_service_id);
+      const userService = await loadUserServiceById(context, user_service_id);
 
-      return userService;
+      return fillSubscriptionWithOrgaServiceAndUserService(
+        context,
+        userService.subscription_id
+      );
     },
   },
 };

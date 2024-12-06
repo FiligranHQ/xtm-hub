@@ -74,29 +74,23 @@ export const userServicesOwnedFragment = graphql`
 `;
 
 export const UserServiceCreateMutation = graphql`
-  mutation userServiceCreateMutation($input: UserServiceInput!) {
-    addUserService(input: $input) {
+  mutation userServiceCreateMutation(
+    $input: UserServiceInput!
+    $connections: [ID!]!
+  ) {
+    addUserService(input: $input)
+      @prependNode(connections: $connections, edgeTypeName: "Subscription") {
       id
-      user {
-        id
-        last_name
-        first_name
-        email
+      organization {
+        name
       }
-      service_capability {
-        id
-        service_capability_name
+      user_service {
+        ...userService_fragment @relay(mask: false)
       }
-      subscription {
+      service {
         id
-        organization {
-          name
-          id
-        }
-        service {
-          name
-          id
-        }
+        name
+        description
       }
     }
   }
@@ -106,6 +100,17 @@ export const UserServiceDeleteMutation = graphql`
   mutation userServiceDeleteMutation($input: UserServiceInput!) {
     deleteUserService(input: $input) {
       id
+      organization {
+        name
+      }
+      user_service {
+        ...userService_fragment @relay(mask: false)
+      }
+      service {
+        id
+        name
+        description
+      }
     }
   }
 `;

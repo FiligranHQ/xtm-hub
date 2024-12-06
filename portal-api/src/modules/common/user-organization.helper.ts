@@ -3,6 +3,7 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationInitializer,
+  UserOrganizationMutator,
 } from '../../model/kanel/public/UserOrganization';
 import { PortalContext } from '../../model/portal-context';
 import { isEmpty } from '../../utils/utils';
@@ -12,6 +13,13 @@ export const insertNewUserOrganization = (
   field: UserOrganizationInitializer | UserOrganizationInitializer[]
 ): Promise<UserOrganization[]> => {
   return db(context, 'User_Organization').insert(field).returning('*');
+};
+
+export const loadUserOrganization = (
+  context: PortalContext,
+  field: UserOrganizationMutator
+) => {
+  return db<UserOrganization>(context, 'User_Organization').where(field);
 };
 
 export const createUserOrganizationRelation = async (

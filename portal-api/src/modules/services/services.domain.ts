@@ -3,12 +3,10 @@ import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Service,
   ServiceConnection,
-  ServiceLink,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceMutator } from '../../model/kanel/public/Service';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
-import { ServiceLinkInitializer } from '../../model/kanel/public/ServiceLink';
 import Subscription from '../../model/kanel/public/Subscription';
 import User, { UserId } from '../../model/kanel/public/User';
 import UserService, {
@@ -16,6 +14,7 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import { ROLE_ADMIN_ORGA } from '../../portal.const';
+import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscription } from '../subcription/subscription.domain';
 import {
   addAdminAccess,
@@ -167,14 +166,62 @@ export const loadUnsecureServiceBy = async (field: ServiceMutator) => {
   return dbUnsecure<Service>('Service').where(field);
 };
 
-export const addServiceLink = async (
+export const loadServiceWithSubscriptions = async (
   context: PortalContext,
-  dataServiceLink: ServiceLinkInitializer
-): Promise<ServiceLink> => {
-  const [serviceLink] = await db<ServiceLink>(context, 'Service_Link')
-    .insert(dataServiceLink)
-    .returning('*');
-  return serviceLink;
+  service_id
+) => {
+  const queryUserServiceWithCapa = db<UserService>(context, 'User_Service')
+    .leftJoin(
+      'Service_Capability',
+      'User_Service.id',
+      '=',
+      'Service_Capability.user_service_id'
+    )
+    .select(
+      'User_Service.*',
+      dbRaw(
+        `CASE WHEN COUNT("Service_Capability".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "Service_Capability".id, 'service_capability_name', "Service_Capability".service_capability_name)))::json END AS service_capabilities`
+      )
+    )
+    .groupBy(['User_Service.id']);
+
+  const querySubscriptions = await db<Subscription>(context, 'Subscription')
+    .where('Subscription.service_id', '=', service_id)
+    .leftJoin(
+      queryUserServiceWithCapa.as('userService'),
+      'userService.subscription_id',
+      '=',
+      'Subscription.id'
+    )
+    .leftJoin('User as user', 'user.id', '=', 'userService.user_id')
+    .leftJoin(
+      'Organization as org',
+      'org.id',
+      '=',
+      'Subscription.organization_id'
+    )
+    .select(
+      dbRaw('DISTINCT ON ("Subscription".id) "Subscription".*'),
+      dbRaw(
+        formatRawObject({
+          columnName: 'org',
+          typename: 'Organization',
+          as: 'organization',
+        })
+      ),
+      dbRaw(
+        `COALESCE( CASE WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg( json_build_object( 'id', "userService".id, 'service_capability', "userService".service_capabilities, 'user', CASE WHEN "user".id IS NOT NULL THEN json_build_object( 'id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, '__typename', 'User' ) ELSE NULL END, '__typename', 'User_Service' ) )::json END, '[]'::json ) AS user_service`
+      )
+    )
+    .groupBy(['Subscription.id', 'org.*']);
+
+  const [service] = await db<Service>(context, 'Service').where(
+    'Service.id',
+    '=',
+    service_id
+  );
+
+  return { ...service, subscriptions: querySubscriptions };
 };
 
 export const insertService = async (context: PortalContext, dataService) => {

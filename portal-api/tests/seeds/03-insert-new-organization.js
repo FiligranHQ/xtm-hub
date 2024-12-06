@@ -7,7 +7,7 @@ export async function seed(knex) {
         domains: ['thales.com'],
       },
     ])
-    .onConflict('id')
+    .onConflict('name')
     .ignore();
   await knex('User')
     .insert([
