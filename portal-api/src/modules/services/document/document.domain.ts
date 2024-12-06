@@ -131,7 +131,9 @@ export const loadDocuments = async (
     .where('Document.active', '=', true)
     .where('Document.service_id', '=', serviceId);
   if (filter) {
-    query.where('Document.file_name', 'LIKE', `${filter}%`);
+    query
+      .where('Document.file_name', 'LIKE', `%${filter}%`)
+      .orWhere('Document.description', 'LIKE', `%${filter}%`);
   }
 
   const documentConnection = await query
