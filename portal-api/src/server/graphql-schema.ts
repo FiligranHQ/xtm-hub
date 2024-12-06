@@ -2,6 +2,7 @@ import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { glob } from 'glob';
 import fs from 'node:fs';
+import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
@@ -37,6 +38,7 @@ const resolvers = mergeResolvers([
   userServiceResolver,
   serviceCapabilityResolver,
   servicePriceResolver,
+  logResolver,
 ]);
 
 const createSchema = () => {

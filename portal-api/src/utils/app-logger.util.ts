@@ -14,7 +14,8 @@ export type AppLogsLevel = 'info' | 'error' | 'warn' | 'debug';
  * Log categories
  */
 export enum AppLogsCategory {
-  APP = 'APP',
+  BACKEND = 'BACKEND',
+  FRONTEND = 'FRONTEND',
 }
 
 /*
@@ -92,12 +93,13 @@ export const logApp = {
     level: AppLogsLevel,
     message: string,
     error: Error,
-    meta: Record<string, unknown> = {}
+    meta: Record<string, unknown> = {},
+    category: AppLogsCategory = AppLogsCategory.BACKEND
   ) => {
     appLogger.log(
       level,
       message,
-      addBasicMetaInformation(AppLogsCategory.APP, error, {
+      addBasicMetaInformation(category, error, {
         ...meta,
         source: 'backend',
       })
@@ -106,7 +108,8 @@ export const logApp = {
   _logWithError: (
     level: AppLogsLevel,
     messageOrError: string | Error,
-    meta: Record<string, unknown> = {}
+    meta: Record<string, unknown> = {},
+    category: AppLogsCategory = AppLogsCategory.BACKEND
   ) => {
     const isError = messageOrError instanceof Error;
     const message = isError ? messageOrError.message : messageOrError;
@@ -118,7 +121,7 @@ export const logApp = {
         error = UnknownError(message, { cause: messageOrError });
       }
     }
-    logApp._log(level, message, error, meta);
+    logApp._log(level, message, error, meta, category);
   },
   debug: (message: string, meta: Record<string, unknown> = {}) =>
     logApp._log('debug', message, null, meta),
@@ -126,8 +129,11 @@ export const logApp = {
     logApp._log('info', message, null, meta),
   warn: (messageOrError: string | Error, meta: Record<string, unknown> = {}) =>
     logApp._logWithError('warn', messageOrError, meta),
-  error: (messageOrError: string | Error, meta: Record<string, unknown> = {}) =>
-    logApp._logWithError('error', messageOrError, meta),
+  error: (
+    messageOrError: string | Error,
+    meta: Record<string, unknown> = {},
+    category: AppLogsCategory = AppLogsCategory.BACKEND
+  ) => logApp._logWithError('error', messageOrError, meta, category),
   query: (
     options: QueryOptions,
     errCallback: (error: Error, results: unknown) => void
