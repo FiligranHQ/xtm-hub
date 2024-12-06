@@ -1,4 +1,4 @@
-import { get } from 'config';
+import config from 'config';
 import { GraphQLError } from 'graphql';
 import { createLogger, format, QueryOptions, transports } from 'winston';
 import pjson from '../../package.json';
@@ -36,7 +36,7 @@ export interface AppLogsConfig {
   extended_error_message: boolean;
 }
 
-const config = get<AppLogsConfig>('app_logs');
+const appLogsConfig = config.get<AppLogsConfig>('app_logs');
 
 const buildMetaErrors = (error: Error) => {
   const errors = [];
@@ -76,10 +76,10 @@ const addBasicMetaInformation = (
 };
 
 export const appLogger = createLogger({
-  level: config.logs_level,
+  level: appLogsConfig.logs_level,
   format: format.combine(
     format.timestamp(),
-    format.errors({ stack: config.extended_error_message }),
+    format.errors({ stack: appLogsConfig.extended_error_message }),
     format.json()
   ),
   transports: [new transports.Console()],
