@@ -114,7 +114,6 @@ export const createUserServiceAccess = async (
         name: user.email,
         partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('Service', service.id)}`,
         partnerVault: service.name,
-        contactEmail: 'contact@filigran.io',
       },
     });
 
