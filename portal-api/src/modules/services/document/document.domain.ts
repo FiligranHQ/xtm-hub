@@ -7,14 +7,9 @@ import Document, {
 } from '../../../model/kanel/public/Document';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import { PortalContext } from '../../../model/portal-context';
-import {
-  deleteFileToMinio,
-  insertFileInMinio,
-  UploadedFile,
-} from './document-storage';
+import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
   createDocument,
-  deleteDocumentBy,
   getDocumentName,
   loadUnsecureDocumentsBy,
 } from './document.helper';
@@ -107,9 +102,17 @@ export const deleteDocument = async (
     id: documentId,
     service_id: serviceId,
   });
-  await deleteFileToMinio(documentFromDb.minio_name);
-  await deleteDocumentBy({ id: documentId });
+  await passDocumentToInactive(context, documentFromDb);
   return documentFromDb;
+};
+
+export const passDocumentToInactive = async (
+  context: PortalContext,
+  document: Document
+) => {
+  await db<Document>(context, 'Document')
+    .where('Document.id', '=', document.id)
+    .update({ active: false, remover_id: context.user.id });
 };
 
 export const getDocuments = async (

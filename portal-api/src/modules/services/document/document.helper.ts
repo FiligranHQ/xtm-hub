@@ -21,6 +21,7 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
 export const checkDocumentExists = async (documentName: string) => {
   const documents: Document[] = await loadUnsecureDocumentsBy({
     file_name: normalizeDocumentName(documentName),
+    active: true,
   });
   return documents.length > 0;
 };

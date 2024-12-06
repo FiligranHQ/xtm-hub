@@ -4,10 +4,10 @@ import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import * as React from 'react';
 import { FunctionComponent, useContext } from 'react';
 import { useMutation } from 'react-relay';
 
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { documentDeleteMutation } from '../../../../__generated__/documentDeleteMutation.graphql';
 import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
 interface DeleteDocumentProps {
@@ -35,8 +35,7 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
     ? decodeURIComponent(encodedServiceId)
     : null;
 
-  const deleteDocument = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const deleteDocument = () => {
     vaultDeleteDocumentMutation({
       variables: {
         documentId: documentData.id,
@@ -63,13 +62,21 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
   };
 
   return (
-    <Button
-      variant="ghost"
-      className="w-full justify-start normal-case"
-      aria-label="Download Document"
-      onClick={deleteDocument}>
-      {t('Utils.Delete')}
-    </Button>
+    <AlertDialogComponent
+      AlertTitle={t('Utils.Delete')}
+      actionButtonText={t('Utils.Delete')}
+      variantName={'destructive'}
+      triggerElement={
+        <Button
+          variant="ghost"
+          className="w-full justify-start normal-case"
+          aria-label={t('Service.Vault.DeleteDocument')}>
+          {t('Utils.Delete')}
+        </Button>
+      }
+      onClickContinue={deleteDocument}>
+      {t('Service.Vault.FileForm.DeleteDialog')}
+    </AlertDialogComponent>
   );
 };
 
