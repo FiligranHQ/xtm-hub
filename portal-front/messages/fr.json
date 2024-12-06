@@ -47,6 +47,7 @@
       "DropFile": "Lâchez le document ici",
       "File": "Document à transmettre",
       "FileExtension": "Le document doit avoir une extension",
+      "DeleteDocument": "Effacer le document",
       "FileForm": {
         "AddFile": "Ajouter un document",
         "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé.",
@@ -57,6 +58,7 @@
         "File": "Document",
         "FileAlreadyExists": "Ce document existe déjà",
         "FileExistsDialog": "Ce document existe déjà. Ce document écrasera l'ancien document. Êtes-vous sûr de vouloir continuer ?",
+        "DeleteDialog": "Êtes-vous sûr de vouloir supprimer ce document ?",
         "NoDocument": "Pas de document sélectionné",
         "SelectDocument": "Sélectionnez un document",
         "ShortNameLabel": "Nom court",

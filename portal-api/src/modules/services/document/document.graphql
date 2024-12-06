@@ -1,3 +1,9 @@
+enum DocumentOrdering {
+  file_name
+  created_at
+  description
+  download_number
+}
 type Document implements Node {
   id: ID!
   uploader_id: String!
@@ -25,11 +31,7 @@ type Mutation {
     @auth(requires: [BYPASS])
 }
 
-enum DocumentOrdering {
-  file_name
-  created_at
-  description
-}
+
 
 type DocumentEdge {
   cursor: String!
