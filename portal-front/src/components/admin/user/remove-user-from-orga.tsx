@@ -30,6 +30,7 @@ const removeUser = graphql`
       organization_id: $organization_id
     ) {
       id @deleteEdge(connections: $connections)
+      ...userList_fragment
     }
   }
 `;
