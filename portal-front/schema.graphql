@@ -43,6 +43,7 @@ type Organization implements Node {
   id: ID!
   name: String!
   domains: [String!]
+  qsdfqsdf: String
   personal_space: Boolean!
 }
 
