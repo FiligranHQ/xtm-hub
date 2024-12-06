@@ -86,6 +86,13 @@ type RolePortal implements Node {
   name: String!
 }
 
+enum DocumentOrdering {
+  file_name
+  created_at
+  description
+  download_number
+}
+
 type Document implements Node {
   id: ID!
   uploader_id: String!
@@ -96,12 +103,6 @@ type Document implements Node {
   active: Boolean!
   created_at: Date!
   download_number: Int
-}
-
-enum DocumentOrdering {
-  file_name
-  created_at
-  description
 }
 
 type DocumentEdge {

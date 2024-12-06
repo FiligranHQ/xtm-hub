@@ -88,6 +88,7 @@ export type DocumentEdge = {
 export enum DocumentOrdering {
   CreatedAt = 'created_at',
   Description = 'description',
+  DownloadNumber = 'download_number',
   FileName = 'file_name'
 }
 

@@ -25,6 +25,8 @@ export default interface Document {
   created_at: Date;
 
   download_number: number | null;
+
+  remover_id: string | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -50,6 +52,8 @@ export interface DocumentInitializer {
 
   /** Default value: 0 */
   download_number?: number | null;
+
+  remover_id?: string | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -71,4 +75,6 @@ export interface DocumentMutator {
   created_at?: Date;
 
   download_number?: number | null;
+
+  remover_id?: string | null;
 }
