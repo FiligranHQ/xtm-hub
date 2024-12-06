@@ -34,10 +34,8 @@ type SubscriptionByService {
 type Mutation {
   addSubscription(service_id: String): Service
     @auth(requires: [FRT_SERVICE_SUBSCRIBER])
-  addSubscriptionInService(
-    service_id: String
-    organization_id: ID
-  ): Service @auth(requires: [BYPASS])
+  addSubscriptionInService(service_id: String, organization_id: ID): Service
+    @auth(requires: [BYPASS])
   deleteSubscription(subscription_id: ID!): Service
     @auth(requires: [BCK_MANAGE_SERVICES])
     @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])

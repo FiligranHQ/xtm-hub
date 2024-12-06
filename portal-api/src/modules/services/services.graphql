@@ -65,8 +65,8 @@ type Query {
   ): ServiceConnection! @auth(requires: [BYPASS])
   serviceById(service_id: ID): Service @auth
   serviceByIdWithSubscriptions(service_id: ID): Service
-  @auth
-  @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
+    @auth
+    @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
 }
 
 type ServiceSubscription {
