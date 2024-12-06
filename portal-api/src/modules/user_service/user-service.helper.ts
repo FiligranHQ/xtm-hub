@@ -12,6 +12,7 @@ import UserService, {
   UserServiceInitializer,
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
+import { loadUserOrganization } from '../common/user-organization.helper';
 import {
   insertSubscription,
   loadUnsecureSubscriptionBy,
@@ -73,6 +74,20 @@ export const createUserServiceAccess = async (
     subscription_id,
     user_id,
   };
+
+  // Check the user is in the current organization
+  const [subscription] = await loadUnsecureSubscriptionBy({
+    id: subscription_id as SubscriptionId,
+  });
+  const userOrganizations = await loadUserOrganization(context, { user_id });
+  if (
+    !userOrganizations.some(
+      (userOrganization) =>
+        userOrganization.organization_id === subscription.organization_id
+    )
+  ) {
+    throw new Error('The user is not in the organization');
+  }
   const [addedUserService] = await db<UserService>(context, 'User_Service')
     .insert(user_service)
     .returning('*');

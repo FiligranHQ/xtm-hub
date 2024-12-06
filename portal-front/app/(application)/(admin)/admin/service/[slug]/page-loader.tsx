@@ -2,13 +2,12 @@
 
 import Loader from '@/components/loader';
 import ServiceSlug from '@/components/service/[slug]/service-slug';
-import { ServiceById } from '@/components/service/service.graphql';
-import { SubscriptionsByService } from '@/components/subcription/subscription.graphql';
+
+import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
-import { serviceByIdQuery } from '../../../../../../__generated__/serviceByIdQuery.graphql';
-import { subscriptionByServiceQuery } from '../../../../../../__generated__/subscriptionByServiceQuery.graphql';
+import { serviceByIdWithSubscriptionsQuery } from '../../../../../../__generated__/serviceByIdWithSubscriptionsQuery.graphql';
 
 // Component interface
 interface PreloaderProps {
@@ -17,21 +16,16 @@ interface PreloaderProps {
 
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
-  const [queryRef, loadQuery] = useQueryLoader<subscriptionByServiceQuery>(
-    SubscriptionsByService
-  );
+  const [queryRef, loadQuery] =
+    useQueryLoader<serviceByIdWithSubscriptionsQuery>(
+      ServiceByIdWithSubscriptions
+    );
   useMountingLoader(loadQuery, { service_id: id });
-
-  const [queryRefService, loadQueryService] =
-    useQueryLoader<serviceByIdQuery>(ServiceById);
-  useMountingLoader(loadQueryService, { service_id: id });
 
   return (
     <>
-      {queryRef && queryRefService ? (
+      {queryRef ? (
         <ServiceSlug
-          queryRefService={queryRefService}
-          loadQuery={loadQuery}
           queryRef={queryRef}
           serviceId={id}
         />
