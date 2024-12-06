@@ -80,13 +80,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     {
       accessorKey: 'file_name',
       id: 'file_name',
-      size: 100,
       header: t('Service.Vault.FileTab.FileName'),
-    },
-    {
-      id: 'created_at',
-      header: t('Service.Vault.FileTab.UploadDate'),
-      cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
     },
     {
       id: 'description',
@@ -106,19 +100,16 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     },
     {
       id: 'created_at',
-      size: 50,
       header: t('Service.Vault.FileTab.UploadDate'),
       cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
     },
     {
       accessorKey: 'download_number',
       id: 'download_number',
-      size: 40,
       header: t('Service.Vault.FileTab.NumberDownload'),
     },
     {
       id: 'actions',
-      size: 100,
       enableHiding: false,
       enableSorting: false,
       enableResizing: false,

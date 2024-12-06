@@ -151,7 +151,7 @@ export const loadDocuments = async (
     .where('Document.active', '=', true)
     .where('Document.service_id', '=', serviceId);
   if (filter) {
-    query.andWhere(function () {
+    queryCount.andWhere(function () {
       this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(
         'Document.description',
         'ILIKE',

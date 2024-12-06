@@ -106,7 +106,7 @@ const resolvers: Resolvers = {
         );
         if (subscription) {
           throw new Error(
-            `You've already subscribed this organization to this service.`
+            `[subscription.resolver] You've already subscribed this organization to this service.`
           );
         }
 

@@ -105,7 +105,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
 
   return (
     <>
-      {data.publicServices.edges.length > 0 ? (
+      {data.publicServices.edges.length > 0 && (
         <React.Suspense>
           <h2 className="pb-m pt-m">{t('HomePage.AvailableServices')}</h2>
           <ul
@@ -145,8 +145,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
             })}
           </ul>
         </React.Suspense>
-      ) : (
-        <></>
       )}
     </>
   );

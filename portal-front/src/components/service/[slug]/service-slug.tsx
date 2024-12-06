@@ -45,7 +45,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
-  const t = useTranslations();
 
   const [selectedSubscription, setSelectedSubscription] =
     useState<subscriptionWithUserService_fragment$data>(
