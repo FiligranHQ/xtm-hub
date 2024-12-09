@@ -1,0 +1,7 @@
+type Mutation {
+  frontendErrorLog(
+    message: String!
+    codeStack: String
+    componentStack: String
+  ): Boolean @auth
+}

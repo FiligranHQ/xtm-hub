@@ -1,6 +1,7 @@
 import config from 'config';
 import pkg, { Knex } from 'knex';
 import portalConfig from '../src/config';
+import { logApp } from '../src/utils/app-logger.util';
 
 const DATABASE_TEST: string =
   config.get('database-test.database') || 'test_database';
@@ -53,7 +54,7 @@ export async function createDatabase() {
     await database.seed.run();
     await database.destroy();
   } catch (err) {
-    console.log(err);
+    logApp.error(err);
   } finally {
     await dbConnection.destroy();
   }

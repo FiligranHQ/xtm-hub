@@ -8,6 +8,7 @@ import {
 import { Upload as S3Upload } from '@aws-sdk/lib-storage';
 import config from 'config';
 import { Readable } from 'stream';
+import { logApp } from '../../../utils/app-logger.util';
 const getEndpoint = () => {
   // If using AWS S3, unset the endpoint to let the library choose the best endpoint
   if (config.get('minio.endpoint') === 's3.amazonaws.com') {
@@ -45,7 +46,7 @@ export const initializeBucket = async () => {
     // If bucket not exist, try to create it.
     // If creation fail, propagate the exception
 
-    console.error(err);
+    logApp.error(err);
     await s3Client.send(
       new CreateBucketCommand({ Bucket: config.get('minio.bucketName') })
     );
@@ -59,7 +60,7 @@ export const insertFileInMinio = async (fileParams) => {
     params: fileParams,
   });
   await s3Upload.done();
-  console.log('[MinIO] inserted file ', fileParams.Key);
+  logApp.debug('[MinIO] inserted file ', fileParams.Key);
   return await fileKey;
 };
 
@@ -73,7 +74,7 @@ export const downloadFile = async (minioName: string) => {
     );
     return object.Body;
   } catch (err) {
-    console.error('[FILE STORAGE] Cannot retrieve file from S3', {
+    logApp.error('[FILE STORAGE] Cannot retrieve file from S3', {
       error: err,
     });
     return null;

@@ -6,6 +6,7 @@ import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
+import { logApp } from '../../utils/app-logger.util';
 import {
   grantServiceAccessUsers,
   loadServiceWithSubscriptions,
@@ -84,7 +85,7 @@ const resolvers: Resolvers = {
         };
       } catch (error) {
         await trx.rollback();
-        console.log('Error while subscribing the service.', error);
+        logApp.error('Error while subscribing the service.', error);
         throw error;
       }
     },
@@ -141,7 +142,7 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         await trx.rollback();
-        console.error('Error while subscribing the service.', error);
+        logApp.error('Error while subscribing the service.', error);
         throw error;
       }
     },

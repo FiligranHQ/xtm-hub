@@ -14,6 +14,7 @@ import ServicePrice, {
 } from '../../model/kanel/public/ServicePrice';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
+import { logApp } from '../../utils/app-logger.util';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import {
   loadPublicServices,
@@ -126,7 +127,7 @@ const resolvers: Resolvers = {
         return addedSubscription;
       } catch (error) {
         await trx.rollback();
-        console.log('Error while adding the new service.', error);
+        logApp.error('Error while adding the new service.', error);
         throw error;
       }
     },

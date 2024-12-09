@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../knexfile';
 import { Organization, Resolvers } from '../../__generated__/resolvers-types';
 import { dispatch } from '../../pub';
+import { logApp } from '../../utils/app-logger.util';
 import { loadOrganizationBy, loadOrganizations } from './organizations.domain';
 
 const resolvers: Resolvers = {
@@ -31,7 +32,7 @@ const resolvers: Resolvers = {
           .returning('*');
         return updatedOrganization;
       } catch (error) {
-        console.log('ERROR', error);
+        logApp.error('ERROR', error);
       }
     },
     deleteOrganization: async (_, { id }, context) => {
