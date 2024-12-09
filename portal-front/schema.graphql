@@ -1,16 +1,40 @@
-directive @auth(
-  requires: [Restriction] = []
-) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
-directive @service_capa(
-  requires: [ServiceRestriction] = []
-) repeatable on OBJECT | FIELD_DEFINITION
+directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 scalar JSON
 
 scalar Date
 
 scalar Upload
+
+type Mutation {
+  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+  addDocument(document: Upload, description: String, serviceId: String): Document!
+  editDocument(documentId: ID, newDescription: String, serviceId: String): Document!
+  deleteDocument(documentId: ID, serviceId: String): Document!
+  addServicePrice(input: AddServicePriceInput): ServicePrice
+  editService(id: ID!, name: String!): Service
+  addService(input: AddServiceInput): Subscription
+  deleteService(id: ID!): Service
+  addSubscription(service_id: String): Service
+  addSubscriptionInService(service_id: String, organization_id: ID): Service
+  deleteSubscription(subscription_id: ID!): Service
+  editServiceCapability(input: EditServiceCapabilityInput): Subscription
+  addUserService(input: UserServiceInput!): Subscription
+  deleteUserService(input: UserServiceInput!): Subscription
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
+  editUser(id: ID!, input: EditUserInput!): User!
+  deleteUser(id: ID!): User
+  changeSelectedOrganization(organization_id: ID!): User
+  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  login(email: String!, password: String): User
+  logout: ID!
+}
 
 enum OrganizationOrdering {
   name
@@ -36,106 +60,27 @@ type OrganizationConnection {
 
 type Query {
   organization(id: ID!): Organization
-  organizations(
-    first: Int = 50
-    after: ID
-    orderBy: OrganizationOrdering!
-    orderMode: OrderingMode!
-  ): OrganizationConnection!
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   documentExists(documentName: String): Boolean
-  documents(
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    filter: String
-    serviceId: String
-  ): DocumentConnection!
-  publicServices(
-    first: Int!
-    after: ID
-    orderBy: ServiceOrdering!
-    orderMode: OrderingMode!
-  ): ServiceConnection!
-  services(
-    first: Int!
-    after: ID
-    orderBy: ServiceOrdering!
-    orderMode: OrderingMode!
-  ): ServiceConnection!
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, serviceId: String): DocumentConnection!
+  publicServices(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceById(service_id: ID): Service
   serviceByIdWithSubscriptions(service_id: ID): Service
   settings: Settings!
-  userServiceOwned(
-    first: Int!
-    after: ID
-    orderBy: UserServiceOrdering!
-    orderMode: OrderingMode!
-  ): UserServiceConnection
-  serviceUsers(
-    id: ID!
-    first: Int!
-    after: ID
-    orderBy: UserServiceOrdering!
-    orderMode: OrderingMode!
-  ): UserServiceConnection
+  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
+  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: User
   user(id: ID!): User
-  users(
-    first: Int!
-    after: ID
-    orderBy: UserOrdering!
-    orderMode: OrderingMode!
-    filter: UserFilter
-  ): UserConnection!
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: UserFilter): UserConnection!
   userHasSomeSubscription: Boolean!
   node(id: ID!): Node
 }
 
 input EditOrganizationInput {
   name: String!
-}
-
-type Mutation {
-  frontendErrorLog(
-    message: String!
-    codeStack: String
-    componentStack: String
-  ): Boolean
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
-  addDocument(
-    document: Upload
-    description: String
-    serviceId: String
-  ): Document!
-  editDocument(
-    documentId: ID
-    newDescription: String
-    serviceId: String
-  ): Document!
-  deleteDocument(documentId: ID, serviceId: String): Document!
-  addServicePrice(input: AddServicePriceInput): ServicePrice
-  editService(id: ID!, name: String!): Service
-  addService(input: AddServiceInput): Subscription
-  deleteService(id: ID!): Service
-  addSubscription(service_id: String): Service
-  addSubscriptionInService(service_id: String, organization_id: ID): Service
-  deleteSubscription(subscription_id: ID!): Service
-  editServiceCapability(input: EditServiceCapabilityInput): Subscription
-  addUserService(input: UserServiceInput!): Subscription
-  deleteUserService(input: UserServiceInput!): Subscription
-  mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
-  editUser(id: ID!, input: EditUserInput!): User!
-  deleteUser(id: ID!): User
-  changeSelectedOrganization(organization_id: ID!): User
-  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
-  login(email: String!, password: String): User
-  logout: ID!
 }
 
 type RolePortal implements Node {

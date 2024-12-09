@@ -15,6 +15,7 @@ export type AppLogsLevel = 'info' | 'error' | 'warn' | 'debug';
  */
 export enum AppLogsCategory {
   BACKEND = 'BACKEND',
+  GRAPHQL = 'BACKEND_GRAPHQL',
   FRONTEND = 'FRONTEND',
 }
 
@@ -83,7 +84,7 @@ export const appLogger = createLogger({
     format.errors({ stack: appLogsConfig.extended_error_message }),
     config.get('environment') !== 'development'
       ? format.json()
-      : format.simple()
+      : format.combine(format.colorize(), format.simple())
   ),
   transports: [new transports.Console()],
 });
