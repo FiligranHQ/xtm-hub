@@ -21,6 +21,7 @@ import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
+import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
 import { logApp } from './utils/app-logger.util';
@@ -164,6 +165,7 @@ await initAuthPlatform(app);
 // Therefore, we have to handle it through this route instead.
 documentDownloadEndpoint(app);
 awxEndpoint(app);
+healthEndpoint(app);
 
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
