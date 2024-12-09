@@ -77,11 +77,7 @@ const resolvers: Resolvers = {
         return {
           ...filledSubscription.service,
           subscribed: true,
-          capabilities: [
-            'ACCESS_SERVICE',
-            'MANAGE_ACCESS',
-            'ADMIN_SUBSCRIPTION',
-          ],
+          capabilities: ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
         };
       } catch (error) {
         await trx.rollback();

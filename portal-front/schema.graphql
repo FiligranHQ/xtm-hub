@@ -385,7 +385,6 @@ enum Restriction {
 
 enum ServiceRestriction {
   ACCESS_USER
-  ADMIN_SUBSCRIPTION
   MANAGE_ACCESS
 }
 

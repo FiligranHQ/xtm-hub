@@ -533,7 +533,6 @@ export type ServicePrice = Node & {
 
 export enum ServiceRestriction {
   AccessUser = 'ACCESS_USER',
-  AdminSubscription = 'ADMIN_SUBSCRIPTION',
   ManageAccess = 'MANAGE_ACCESS'
 }
 
