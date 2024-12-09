@@ -32,7 +32,7 @@ export const loadUnsecureAllUserFromServiceForAWX = async (
       'User.email',
       dbRaw(`
       CASE 
-        WHEN array_agg("Service_Capability".service_capability_name) @> ARRAY['MANAGE_ACCESS', 'ADMIN_SUBSCRIPTION'] 
+        WHEN array_agg("Service_Capability".service_capability_name) @> ARRAY['MANAGE_ACCESS'] 
         THEN true 
         ELSE false 
       END as admin

@@ -2,6 +2,7 @@ import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { UnknownIcon } from 'filigran-icon';
 import {
   Form,
   FormControl,
@@ -66,14 +67,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
       label: 'ACCESS_SERVICE',
       value: 'ACCESS_SERVICE',
     },
-    ...(me?.capabilities.some((capability) => capability?.name === 'BYPASS')
-      ? [
-          {
-            label: 'ADMIN_SUBSCRIPTION',
-            value: 'ADMIN_SUBSCRIPTION',
-          },
-        ]
-      : []),
   ];
 
   const form = useForm<z.infer<ZodSchema>>({
@@ -184,7 +177,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
                 )}
               />
             )}
-
             <FormField
               control={form.control}
               name="capabilities"
@@ -204,7 +196,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
                 </FormItem>
               )}
             />
-
             <SheetFooter className="pt-2">
               <SheetClose asChild>
                 <Button variant="outline">Cancel</Button>
@@ -215,6 +206,20 @@ export const ServiceSlugFormSheet: FunctionComponent<
                 Validate
               </Button>
             </SheetFooter>
+            <div className="flex flex-row">
+              <div className="font-bold">Manage access</div>{' '}
+              <div className="flex items-center">
+                <UnknownIcon className="h-4 w-4 ml-s" />{' '}
+              </div>
+            </div>
+            You can access the service and invite users to this service
+            <div className="flex flex-row">
+              <div className="font-bold">Access service</div>
+              <div className="flex items-center">
+                <UnknownIcon className="h-4 w-4 ml-s" />
+              </div>
+            </div>
+            You just have access to a service
           </form>
         </Form>
       </SheetContent>

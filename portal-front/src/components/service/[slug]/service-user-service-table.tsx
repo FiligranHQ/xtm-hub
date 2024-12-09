@@ -93,7 +93,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
             <>
               {row.original.service_capability?.some(
                 (serv_capa) =>
-                  serv_capa?.service_capability_name !== 'ADMIN_SUBSCRIPTION'
+                  serv_capa?.service_capability_name !== 'MANAGE_ACCESS'
               ) && (
                 <IconActions
                   icon={
