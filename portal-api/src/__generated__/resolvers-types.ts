@@ -145,6 +145,7 @@ export type Mutation = {
   editService?: Maybe<Service>;
   editServiceCapability?: Maybe<Subscription>;
   editUser: User;
+  frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
@@ -258,6 +259,13 @@ export type MutationEditServiceCapabilityArgs = {
 export type MutationEditUserArgs = {
   id: Scalars['ID']['input'];
   input: EditUserInput;
+};
+
+
+export type MutationFrontendErrorLogArgs = {
+  codeStack?: InputMaybe<Scalars['String']['input']>;
+  componentStack?: InputMaybe<Scalars['String']['input']>;
+  message: Scalars['String']['input'];
 };
 
 
@@ -972,6 +980,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editService?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, RequireFields<MutationEditServiceArgs, 'id' | 'name'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserArgs, 'id' | 'input'>>;
+  frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;

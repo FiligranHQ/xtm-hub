@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import { logApp } from '../utils/app-logger.util';
 import { setCookieError } from '../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
 import passport from './providers/providers';
@@ -42,7 +43,7 @@ export const initAuthPlatform = async (app) => {
 
         await authenticateUser(req, user);
       } catch (err) {
-        console.error(err, { provider });
+        logApp.error(err, { provider });
         if (err.message === 'User not provided') {
           referer = referer + '?error=not-provided';
         }

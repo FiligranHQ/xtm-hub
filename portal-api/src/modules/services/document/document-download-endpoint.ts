@@ -7,6 +7,7 @@ import {
 } from '../../../model/kanel/public/Document';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import { PortalContext } from '../../../model/portal-context';
+import { logApp } from '../../../utils/app-logger.util';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
 
@@ -29,7 +30,7 @@ export const documentDownloadEndpoint = (app) => {
         'Document.id': fromGlobalId(req.params.filename).id as DocumentId,
       } as DocumentMutator);
       if (!document) {
-        console.error('Error while retrieving document: document not found.');
+        logApp.error('Error while retrieving document: document not found.');
         res.status(404).json({ message: 'Document not found' });
       }
 
@@ -39,7 +40,7 @@ export const documentDownloadEndpoint = (app) => {
 
       stream.pipe(res);
     } catch (error) {
-      console.error('Error while retrieving document: ', error);
+      logApp.error('Error while retrieving document: ', error);
       res.status(404).json({ message: 'Document not found' });
       return;
     }

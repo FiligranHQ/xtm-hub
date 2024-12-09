@@ -1,4 +1,5 @@
 {
+  "environment": "staging",
   "login_settings": [
     {
       "name": "local",

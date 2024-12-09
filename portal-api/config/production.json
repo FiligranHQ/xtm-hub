@@ -1,4 +1,5 @@
 {
+  "environment": "production",
   "login_settings": [
     {
       "name": "Login to Portal",
