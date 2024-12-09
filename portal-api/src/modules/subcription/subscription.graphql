@@ -38,5 +38,5 @@ type Mutation {
     @auth(requires: [BYPASS])
   deleteSubscription(subscription_id: ID!): Service
     @auth(requires: [BCK_MANAGE_SERVICES])
-    @service_capa(requires: [MANAGE_ACCESS, ADMIN_SUBSCRIPTION])
+    @service_capa(requires: [MANAGE_ACCESS])
 }

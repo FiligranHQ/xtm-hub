@@ -65,11 +65,6 @@ export async function seed(knex) {
   await knex('Service_Capability')
     .insert([
       {
-        id: '706c2468-581e-4739-8d25-082c0a3f328d',
-        user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
-        service_capability_name: 'ADMIN_SUBSCRIPTION',
-      },
-      {
         id: '51491107-5dc5-4aee-bca6-e07410844477',
         user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
         service_capability_name: 'MANAGE_ACCESS',

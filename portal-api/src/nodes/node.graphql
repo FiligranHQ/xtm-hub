@@ -19,7 +19,6 @@ directive @service_capa(
 
 enum ServiceRestriction {
   ACCESS_USER
-  ADMIN_SUBSCRIPTION
   MANAGE_ACCESS
 }
 

@@ -228,11 +228,7 @@ export const addAdminAccess = async (
     subscription_id: subscriptionId,
   };
   const [userService] = await insertUserService(context, dataUserService);
-  const capabilities = [
-    'ACCESS_SERVICE',
-    'MANAGE_ACCESS',
-    'ADMIN_SUBSCRIPTION',
-  ];
+  const capabilities = ['ACCESS_SERVICE', 'MANAGE_ACCESS'];
   const dataCapabilities = capabilities.map((capability) => ({
     id: uuidv4() as ServiceCapabilityId,
     user_service_id: userService.id,
