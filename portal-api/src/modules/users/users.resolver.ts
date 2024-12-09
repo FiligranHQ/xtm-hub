@@ -16,6 +16,9 @@ import { updateUserOrg } from '../common/user-organization.helper';
 import { updateUserRolePortal } from '../common/user-role-portal.helper';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
+  removeUserFromOrganization,
+} from '../common/user-organization.helper';
+import {
   loadUnsecureUser,
   loadUserBy,
   loadUserDetails,
@@ -159,6 +162,21 @@ const resolvers: Resolvers = {
         updatedUser.selected_organization_id;
 
       return mapUserToGraphqlUser(updatedUser);
+    },
+    removeUserFromOrganization: async (
+      _,
+      { user_id, organization_id },
+      context
+    ) => {
+      await removeUserFromOrganization(
+        context,
+        extractId(user_id),
+        extractId(organization_id)
+      );
+      const user = await loadUserBy({
+        'User.id': extractId(user_id),
+      });
+      return mapUserToGraphqlUser(user);
     },
     // Login / logout
     login: async (_, { email, password }, context) => {

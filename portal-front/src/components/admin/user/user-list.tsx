@@ -1,6 +1,6 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
-import { DeleteUserAction } from '@/components/admin/user/delete-user-action';
+import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
 import { AddUser } from '@/components/admin/user/user-create';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import {
@@ -180,7 +180,13 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
                 </IconActionsButton>
               }
             />
-
+            {organization && (
+              <RemoveUserFromOrga
+                organization_id={organization}
+                user={row.original}
+                connectionID={data?.users?.__id}
+              />
+            )}
             <GuardCapacityComponent
               capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
               <IconActionsButton
@@ -189,10 +195,6 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
                 {t('MenuActions.Details')}
               </IconActionsButton>
             </GuardCapacityComponent>
-            <DeleteUserAction
-              user={row.original}
-              connectionID={data?.users?.__id}
-            />
           </IconActions>
         );
       },

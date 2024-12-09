@@ -1,3 +1,5 @@
+import config from 'config';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
@@ -8,19 +10,21 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceMutator } from '../../model/kanel/public/Service';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import Subscription from '../../model/kanel/public/Subscription';
-import User, { UserId } from '../../model/kanel/public/User';
+import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import { ROLE_ADMIN_ORGA } from '../../portal.const';
+import { sendMail } from '../../server/mail-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscription } from '../subcription/subscription.domain';
+import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import {
   addAdminAccess,
   insertUserService,
 } from '../user_service/user_service.domain';
-import { loadUsersByOrganization } from '../users/users.domain';
+import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 
 export const loadPublicServices = async (context: PortalContext, opts) => {
@@ -279,6 +283,22 @@ export const grantServiceAccess = async (
     context,
     dataUserServices
   )) as [UserService];
+
+  const [subscription] = await loadSubscriptionBy('id', subscriptionId);
+  for (const userId of usersId) {
+    const user = await loadUserBy({ 'User.id': userId } as UserMutator);
+
+    const service = await loadServiceBy(context, 'id', subscription.service_id);
+    await sendMail({
+      to: user.email,
+      template: 'partnerVault',
+      params: {
+        name: user.email,
+        partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('Service', service.id)}`,
+        partnerVault: service.name,
+      },
+    });
+  }
 
   for (const capability of capabilities) {
     const dataServiceCapabilities = insertedUserServices.map(

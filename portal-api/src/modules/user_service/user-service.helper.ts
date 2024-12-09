@@ -1,3 +1,5 @@
+import config from 'config';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -12,11 +14,14 @@ import UserService, {
   UserServiceInitializer,
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
+import { sendMail } from '../../server/mail-service';
 import { loadUserOrganization } from '../common/user-organization.helper';
+import { loadServiceBy } from '../services/services.domain';
 import {
   insertSubscription,
   loadUnsecureSubscriptionBy,
 } from '../subcription/subscription.helper';
+import { loadUserBy } from '../users/users.domain';
 
 export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
   return dbUnsecure<UserService>('User_Service')
@@ -98,6 +103,19 @@ export const createUserServiceAccess = async (
       user_service_id: addedUserService.id,
       service_capability_name: capability,
     };
+
+    const user = await loadUserBy({ 'User.id': user_id });
+
+    const service = await loadServiceBy(context, 'id', subscription.service_id);
+    await sendMail({
+      to: user.email,
+      template: 'partnerVault',
+      params: {
+        name: user.email,
+        partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('Service', service.id)}`,
+        partnerVault: service.name,
+      },
+    });
 
     await db<ServiceCapability>(context, 'Service_Capability')
       .insert(service_capa)

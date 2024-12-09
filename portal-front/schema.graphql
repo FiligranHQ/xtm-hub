@@ -12,45 +12,6 @@ scalar Date
 
 scalar Upload
 
-type Mutation {
-  frontendErrorLog(
-    message: String!
-    codeStack: String
-    componentStack: String
-  ): Boolean
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
-  addDocument(
-    document: Upload
-    description: String
-    serviceId: String
-  ): Document!
-  editDocument(
-    documentId: ID
-    newDescription: String
-    serviceId: String
-  ): Document!
-  deleteDocument(documentId: ID, serviceId: String): Document!
-  addServicePrice(input: AddServicePriceInput): ServicePrice
-  editService(id: ID!, name: String!): Service
-  addService(input: AddServiceInput): Subscription
-  deleteService(id: ID!): Service
-  addSubscription(service_id: String): Service
-  addSubscriptionInService(service_id: String, organization_id: ID): Service
-  deleteSubscription(subscription_id: ID!): Service
-  editServiceCapability(input: EditServiceCapabilityInput): Subscription
-  addUserService(input: UserServiceInput!): Subscription
-  deleteUserService(input: UserServiceInput!): Subscription
-  mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
-  editUser(id: ID!, input: EditUserInput!): User!
-  deleteUser(id: ID!): User
-  changeSelectedOrganization(organization_id: ID!): User
-  login(email: String!, password: String): User
-  logout: ID!
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -135,6 +96,46 @@ type Query {
 
 input EditOrganizationInput {
   name: String!
+}
+
+type Mutation {
+  frontendErrorLog(
+    message: String!
+    codeStack: String
+    componentStack: String
+  ): Boolean
+  addOrganization(name: String!): Organization
+  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+  addDocument(
+    document: Upload
+    description: String
+    serviceId: String
+  ): Document!
+  editDocument(
+    documentId: ID
+    newDescription: String
+    serviceId: String
+  ): Document!
+  deleteDocument(documentId: ID, serviceId: String): Document!
+  addServicePrice(input: AddServicePriceInput): ServicePrice
+  editService(id: ID!, name: String!): Service
+  addService(input: AddServiceInput): Subscription
+  deleteService(id: ID!): Service
+  addSubscription(service_id: String): Service
+  addSubscriptionInService(service_id: String, organization_id: ID): Service
+  deleteSubscription(subscription_id: ID!): Service
+  editServiceCapability(input: EditServiceCapabilityInput): Subscription
+  addUserService(input: UserServiceInput!): Subscription
+  deleteUserService(input: UserServiceInput!): Subscription
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
+  editUser(id: ID!, input: EditUserInput!): User!
+  deleteUser(id: ID!): User
+  changeSelectedOrganization(organization_id: ID!): User
+  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  login(email: String!, password: String): User
+  logout: ID!
 }
 
 type RolePortal implements Node {

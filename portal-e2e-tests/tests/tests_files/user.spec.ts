@@ -11,9 +11,7 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
   await loginPage.login();
   await page.getByLabel('Settings menu').click();
   await page.getByRole('dialog').getByRole('link', { name: 'Users' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(
-    'Users list'
-  );
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Users');
 
   // Add User
 

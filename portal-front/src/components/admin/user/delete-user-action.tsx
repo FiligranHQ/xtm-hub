@@ -13,8 +13,7 @@ import { userDeletionMutation } from '../../../../__generated__/userDeletionMuta
 interface DeleteUserActionsProps {
   user: {
     id: string;
-    first_name?: string | null;
-    last_name?: string | null;
+    email: string;
   };
   trigger?: ReactNode;
   connectionID: string;
@@ -57,8 +56,7 @@ export const DeleteUserAction: FunctionComponent<DeleteUserActionsProps> = ({
       triggerElement={trigger ?? defaultTrigger}
       onClickContinue={() => onDeleteUser(user.id)}>
       {t('DeleteUserDialog.TextDeleteThisUser', {
-        first_name: user.first_name,
-        last_name: user.last_name,
+        email: user.email,
       })}
     </AlertDialogComponent>
   );

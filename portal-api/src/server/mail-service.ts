@@ -28,6 +28,7 @@ export async function renderEmail<T extends keyof MailTemplates>(
   const replaceParams = {
     ...params,
     base_url_front: config.get('base_url_front'),
+    contactEmail: 'xtm-hub-support@filigran.io',
   };
   for (const key in replaceParams) {
     const value = replaceParams[key as keyof MailTemplates[T]];

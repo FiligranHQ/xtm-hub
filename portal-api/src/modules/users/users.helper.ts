@@ -65,8 +65,9 @@ export const addNewUserWithRoles = async (
   await sendMail({
     to: addedUser.email,
     template: 'welcome',
-    params: { name: addedUser.email },
+    params: {},
   });
+
   return addedUser;
 };
 
