@@ -135,22 +135,20 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
       <div className="flex gap-s items-center">
-        <Combobox
-          key={selectedSubscription?.id}
-          className="w-[200px]"
-          dataTab={dataOrganizationsTab}
-          order={'Select an organization'}
-          placeholder={'Select an organization'}
-          emptyCommand={'Not found'}
-          onValueChange={onValueChange}
-          value={selectedSubscription?.organization.name ?? ''}
-          onInputChange={() => {}}
-        />
         <GuardCapacityComponent
-          capacityRestriction={[
-            RESTRICTION.CAPABILITY_BYPASS,
-            RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-          ]}>
+          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+          <Combobox
+            key={selectedSubscription?.id}
+            className="w-[200px]"
+            dataTab={dataOrganizationsTab}
+            order={'Select an organization'}
+            placeholder={'Select an organization'}
+            emptyCommand={'Not found'}
+            onValueChange={onValueChange}
+            value={selectedSubscription?.organization.name ?? ''}
+            onInputChange={() => {}}
+          />
+
           <AlertDialogComponent
             actionButtonText="Remove"
             variantName="destructive"
