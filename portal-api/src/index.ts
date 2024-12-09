@@ -7,6 +7,7 @@ import cors from 'cors';
 import express from 'express';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 
+import promBundle from 'express-prom-bundle';
 import expressSession, { SessionData } from 'express-session';
 import { createHandler } from 'graphql-sse/lib/use/express';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
@@ -52,6 +53,14 @@ const sessionMiddleware = expressSession({
 });
 app.use(express.json());
 app.use(sessionMiddleware);
+
+// Prometheus metrics
+const metricsMiddleware = promBundle({
+  customLabels: {
+    app: 'xtm-hub-api',
+  },
+});
+app.use(metricsMiddleware);
 
 /*
 Encountered an unexpected behavior within the express-session middleware.
