@@ -172,37 +172,39 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
         }
 
         return (
-          <IconActions
-            icon={
-              <>
-                <MoreVertIcon className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </>
-            }>
-            <EditUser
-              user={row.original}
-              trigger={
-                <IconActionsButton aria-label={t('UserActions.UpdateUser')}>
-                  {t('MenuActions.Update')}
-                </IconActionsButton>
-              }
-            />
-            {organization && (
-              <RemoveUserFromOrga
-                organization_id={organization}
+          <div className="flex items-center justify-end">
+            <IconActions
+              icon={
+                <>
+                  <MoreVertIcon className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </>
+              }>
+              <EditUser
                 user={row.original}
-                connectionID={data?.users?.__id}
+                trigger={
+                  <IconActionsButton aria-label={t('UserActions.UpdateUser')}>
+                    {t('MenuActions.Update')}
+                  </IconActionsButton>
+                }
               />
-            )}
-            <GuardCapacityComponent
-              capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-              <IconActionsButton
-                aria-label={t('UserActions.DetailsUser')}
-                onClick={() => router.push(`/admin/user/${row.original.id}`)}>
-                {t('MenuActions.Details')}
-              </IconActionsButton>
-            </GuardCapacityComponent>
-          </IconActions>
+              {organization && (
+                <RemoveUserFromOrga
+                  organization_id={organization}
+                  user={row.original}
+                  connectionID={data?.users?.__id}
+                />
+              )}
+              <GuardCapacityComponent
+                capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+                <IconActionsButton
+                  aria-label={t('UserActions.DetailsUser')}
+                  onClick={() => router.push(`/admin/user/${row.original.id}`)}>
+                  {t('MenuActions.Details')}
+                </IconActionsButton>
+              </GuardCapacityComponent>
+            </IconActions>
+          </div>
         );
       },
     },

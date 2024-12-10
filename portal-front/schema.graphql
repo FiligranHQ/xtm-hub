@@ -90,8 +90,8 @@ type RolePortal implements Node {
 
 enum DocumentOrdering {
   file_name
-  created_at
   description
+  created_at
   download_number
 }
 

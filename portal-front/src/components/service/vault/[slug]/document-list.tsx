@@ -114,7 +114,9 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => (
-        <div onClick={(e) => e.stopPropagation()}>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center justify-end">
           <IconActions
             icon={
               <>
