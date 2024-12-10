@@ -117,7 +117,6 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                 !service.subscribed && (
                   <ServiceCard
                     key={service.id}
-                    topRightAction={null}
                     bottomLeftAction={
                       service.subscribed ||
                       service.type === 'COMMUNITY' ||

@@ -18,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from 'filigran-ui/clients';
-import { Input } from 'filigran-ui/servers';
+import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
@@ -29,8 +29,10 @@ import DeleteDocument from '@/components/service/vault/delete-document';
 import DownloadDocument from '@/components/service/vault/download-document';
 import EditDocument from '@/components/service/vault/edit-document';
 import { IconActions } from '@/components/ui/icon-actions';
+import useDecodedParams from '@/hooks/useDecodedParams';
 import { RESTRICTION } from '@/utils/constant';
 import { FormatDate } from '@/utils/date';
+import Link from 'next/link';
 import {
   PreloadedQuery,
   usePreloadedQuery,
@@ -58,6 +60,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     DocumentsListQuery,
     queryRef
   );
+  const { slug } = useDecodedParams();
   const t = useTranslations();
   const [data, refetch] = useRefetchableFragment<
     documentsQuery,
@@ -68,6 +71,9 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     ServiceById,
     queryRefService
   );
+
+  const canManageService =
+    queryDataService.serviceById?.capabilities.includes('MANAGE_ACCESS');
 
   const documentData: documentItem_fragment$data[] = data.documents.edges.map(
     ({ node }) =>
@@ -244,6 +250,15 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
             <div className="justify-between flex w-full sm:w-auto items-center gap-s">
               <DataTableHeadBarOptions />
               <VaultForm connectionId={data?.documents?.__id} />
+              {canManageService && (
+                <Button
+                  asChild
+                  variant="outline">
+                  <Link href={`/manage/service/${slug}`}>
+                    {t('Service.Vault.ManageVault')}
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         }
