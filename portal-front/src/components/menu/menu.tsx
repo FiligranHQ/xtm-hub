@@ -47,7 +47,7 @@ const Menu = () => {
   const [open, setOpen] = useLocalStorage<boolean>('menu-open', false);
   const handleOpenMenu = useCallback(
     () => setOpen((prev0pen) => !prev0pen),
-    []
+    [setOpen]
   );
   return (
     <aside

@@ -10,8 +10,8 @@ interface DisplayLogoProps {
 export const DisplayLogo: FunctionComponent<DisplayLogoProps> = ({
   className,
 }) => {
-  const { theme } = useTheme();
-  return theme === 'dark' ? (
+  const { resolvedTheme } = useTheme();
+  return resolvedTheme === 'dark' ? (
     <LogoXTMDark className={className} />
   ) : (
     <LogoXTMLight className={className} />
