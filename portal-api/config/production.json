@@ -2,7 +2,7 @@
   "environment": "production",
   "login_settings": [
     {
-      "name": "Login to Portal",
+      "name": "Login with Filigran",
       "type": "SSO",
       "provider": "oidc"
     }
