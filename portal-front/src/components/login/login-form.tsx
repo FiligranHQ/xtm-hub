@@ -1,8 +1,6 @@
 'use client';
 
-import LoginTitleForm from '@/components/login/login-title';
 import { LoginFormMutation } from '@/components/login/login.graphql';
-import { SettingsQuery } from '@/components/login/settings.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -13,17 +11,10 @@ import {
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
-import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
+import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
-
-interface LoginFormProps {
-  queryRef: PreloadedQuery<settingsQuery>;
-}
 
 const formSchema = z.object({
   email: z.string().email('This is not a valid email.'),
@@ -31,10 +22,9 @@ const formSchema = z.object({
 });
 
 // Component
-const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
+const LoginForm = () => {
   const router = useRouter();
   const t = useTranslations();
-  const data = usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,78 +43,50 @@ const LoginForm: FunctionComponent<LoginFormProps> = ({ queryRef }) => {
     });
   };
   return (
-    <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
-      <div className="flex flex-col items-center p-xl sm:p-0">
-        <LoginTitleForm />
-        {data.settings.platform_providers.some(
-          ({ provider }) => provider === 'local'
-        ) && (
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="w-full space-y-s">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('LoginPage.Email')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t('LoginPage.Email')}
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('LoginPage.Password')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder={t('LoginPage.Password')}
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                className="w-full"
-                type="submit">
-                Sign in
-              </Button>
-            </form>
-          </Form>
-        )}
-        <div className="mt-s space-y-s w-full">
-          {data.settings.platform_providers.map((platformProvider) => {
-            if (platformProvider.provider === 'local') {
-              return null;
-            }
-            return (
-              <Button
-                key={platformProvider.provider}
-                variant="outline"
-                className="text-secondary border-secondary"
-                asChild>
-                <Link
-                  className="w-full"
-                  type="submit"
-                  href={`/auth/${platformProvider.provider}`}>
-                  {platformProvider.name}
-                </Link>
-              </Button>
-            );
-          })}
-        </div>
-      </div>
-    </main>
+    <div className="bg-page-background border border-border-light rounded w-full p-l mb-l">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-l">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('LoginPage.Email')}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t('LoginPage.Email')}
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('LoginPage.Password')}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder={t('LoginPage.Password')}
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button
+            className="w-full"
+            type="submit">
+            Sign in
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };
 
