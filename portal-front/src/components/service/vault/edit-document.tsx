@@ -7,9 +7,9 @@ import { IconActionContext } from '@/components/ui/icon-actions';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 import { FunctionComponent, useContext, useState } from 'react';
 
+import useDecodedParams from '@/hooks/useDecodedParams';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
@@ -30,13 +30,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
   );
   const { setMenuOpen } = useContext(IconActionContext);
 
-  const params = useParams<{ slug: string }>();
-  const encodedServiceId = params.slug;
-
-  // Have to decode it, otherwise = become %3D for instance
-  const serviceId = encodedServiceId
-    ? decodeURIComponent(encodedServiceId)
-    : null;
+  const { slug } = useDecodedParams();
 
   const updateDocumentDescription = (
     values: z.infer<typeof newDocumentSchema>
@@ -44,7 +38,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
     vaultUpdateDocumentMutation({
       variables: {
         documentId: values.documentId,
-        serviceId: serviceId,
+        serviceId: slug,
         newDescription: values.description,
       },
       onCompleted: (response) => {

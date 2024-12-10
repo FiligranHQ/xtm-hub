@@ -3,11 +3,11 @@ import { IconActionContext } from '@/components/ui/icon-actions';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 import { FunctionComponent, useContext } from 'react';
 import { useMutation } from 'react-relay';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import useDecodedParams from '@/hooks/useDecodedParams';
 import { documentDeleteMutation } from '../../../../__generated__/documentDeleteMutation.graphql';
 import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
 interface DeleteDocumentProps {
@@ -27,19 +27,13 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
   const [vaultDeleteDocumentMutation] = useMutation<documentDeleteMutation>(
     DocumentDeleteMutation
   );
-  const params = useParams<{ slug: string }>();
-  const encodedServiceId = params.slug;
-
-  // Have to decode it, otherwise = become %3D for instance
-  const serviceId = encodedServiceId
-    ? decodeURIComponent(encodedServiceId)
-    : null;
+  const { slug } = useDecodedParams();
 
   const deleteDocument = () => {
     vaultDeleteDocumentMutation({
       variables: {
         documentId: documentData.id,
-        serviceId: serviceId,
+        serviceId: slug,
         connections: [connectionId],
       },
       onCompleted: (response) => {
