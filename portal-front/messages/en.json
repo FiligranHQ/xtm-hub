@@ -39,6 +39,9 @@
     "NoService": "There is no service... Yet!",
     "Subscribe": "Subscribe",
     "SubscribeService": "Subscribe service",
+    "SubscribeOrganization": "Subscribe organization",
+    "GoTo": "Go to service page",
+    "GoToManagement": "Go to service management",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
     "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
     "SureWantSubscriptionDirect": "Are you really sure you want to subscribe this service? This action can not be undone.",
@@ -69,7 +72,8 @@
         "Description": "Description",
         "FileName": "Document name",
         "Search": "Search with document name...",
-        "UploadDate": "Upload date"
+        "UploadDate": "Upload date",
+        "NumberDownload": "Number of downloads"
       },
       "Vault": "Partner Vault",
       "VaultTitle": "Vault Administration"
