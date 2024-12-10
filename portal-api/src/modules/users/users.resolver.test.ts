@@ -206,19 +206,22 @@ describe('User mutation resolver', () => {
 
   describe('EditUser Mutation', () => {
     describe('should edit an existing user', async () => {
-      const fallbackUser = await loadUserBy({ email: 'admin@filigran.io' });
+      const fallbackUser = await loadUserBy({ email: 'user15@test.fr' });
       // @ts-ignore
       const response = await usersResolver.Mutation.editUser(
         undefined,
         {
-          id: ADMIN_UUID,
+          id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
           input: {
             organizations: [
-              toGlobalId('Organization', ADMIN_UUID),
+              toGlobalId(
+                'Organization',
+                'e389e507-f1cd-4f2f-bfb2-274140d87d28'
+              ),
               toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
               toGlobalId(
                 'Organization',
-                '681fb117-e2c3-46d3-945a-0e921b5d4b6c'
+                '681fb117-e2c3-46d3-945a-0e921b5d4b6c' // Thales
               ),
             ],
           } as EditUserInput,
@@ -242,10 +245,13 @@ describe('User mutation resolver', () => {
         await usersResolver.Mutation.editUser(
           undefined,
           {
-            id: ADMIN_UUID,
+            id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
             input: {
               organizations: [
-                toGlobalId('Organization', ADMIN_UUID),
+                toGlobalId(
+                  'Organization',
+                  'e389e507-f1cd-4f2f-bfb2-274140d87d28'
+                ),
                 toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
               ],
             } as EditUserInput,
@@ -253,6 +259,32 @@ describe('User mutation resolver', () => {
           contextAdminUser
         );
       });
+    });
+
+    it('user should not be able to edit himself', async () => {
+      try {
+        // @ts-ignore
+        await usersResolver.Mutation.editUser(
+          undefined,
+          {
+            id: ADMIN_UUID,
+            input: {
+              organizations: [
+                toGlobalId('Organization', ADMIN_UUID),
+                toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
+                toGlobalId(
+                  'Organization',
+                  '681fb117-e2c3-46d3-945a-0e921b5d4b6c'
+                ),
+              ],
+            } as EditUserInput,
+          },
+          contextAdminUser
+        );
+      } catch (error) {
+        expect(error).toBeTruthy();
+        expect(error.message).toEqual('You cannot edit yourself');
+      }
     });
   });
 });

@@ -12,12 +12,12 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
-import { updateUserOrg } from '../common/user-organization.helper';
-import { updateUserRolePortal } from '../common/user-role-portal.helper';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
   removeUserFromOrganization,
+  updateUserOrg,
 } from '../common/user-organization.helper';
+import { updateUserRolePortal } from '../common/user-role-portal.helper';
+import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
   loadUnsecureUser,
   loadUserBy,
@@ -131,6 +131,11 @@ const resolvers: Resolvers = {
       }
     },
     editUser: async (_, { id, input }, context) => {
+      if (id === context.user.id) {
+        throw new GraphQLError('You cannot edit yourself', {
+          extensions: { code: '[User] editUser' },
+        });
+      }
       const trx = await dbTx();
       try {
         await updateUser(context, id as UserId, input);
@@ -168,6 +173,11 @@ const resolvers: Resolvers = {
       { user_id, organization_id },
       context
     ) => {
+      if (extractId(user_id) === context.user.id) {
+        throw new GraphQLError('You cannot remove yourself from organization', {
+          extensions: { code: '[User] removeUserFromOrganization' },
+        });
+      }
       await removeUserFromOrganization(
         context,
         extractId(user_id),
