@@ -13,11 +13,11 @@ const LoginTitleForm: FunctionComponent<LoginTitleProps> = ({}) => {
   const t = useTranslations();
   return (
     <>
+      <DisplayLogo />
       {errorKey ? (
         <LoginErrorMessage errorKey={errorKey} />
       ) : (
         <>
-          <DisplayLogo />
           <h1 className="sr-only">{t('LoginPage.Title')}</h1>
         </>
       )}

@@ -70,7 +70,8 @@ type Mutation {
     @auth(requires: [FRT_MANAGE_USER])
   deleteUser(id: ID!): User @auth(requires: [FRT_MANAGE_USER])
   changeSelectedOrganization(organization_id: ID!): User @auth
-  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User @auth(requires: [FRT_MANAGE_USER])
+  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+    @auth(requires: [FRT_MANAGE_USER])
   # Login
   login(email: String!, password: String): User
   logout: ID! @auth

@@ -12,12 +12,12 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
-import { updateUserOrg } from '../common/user-organization.helper';
-import { updateUserRolePortal } from '../common/user-role-portal.helper';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
   removeUserFromOrganization,
+  updateUserOrg,
 } from '../common/user-organization.helper';
+import { updateUserRolePortal } from '../common/user-role-portal.helper';
+import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
   loadUnsecureUser,
   loadUserBy,
