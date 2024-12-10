@@ -5,7 +5,7 @@ import {
 import { getOrganizations } from '@/components/organization/organization.service';
 import { Portal, portalContext } from '@/components/portal-context';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
-import useGranted from '@/hooks/useGranted';
+import useAdminPath from '@/hooks/useAdminPath';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -46,6 +46,27 @@ interface UserFormSheetProps {
   validationSchema: ZodSchema;
 }
 
+export const initializeOrganizations = (
+  user:
+    | meContext_fragment$data
+    | userSlug_fragment$data
+    | userList_fragment$data
+    | null
+    | undefined,
+  me: meContext_fragment$data | null | undefined,
+  isAdmin: boolean | undefined
+) => {
+  if (user) {
+    // If updating a user, filter and map organizations
+    return (user?.organizations ?? [])
+      .filter((organizationData) => !organizationData.personal_space)
+      .map((organizationData) => organizationData.id);
+  } else {
+    // If creating a user, include the selected organization unless the user is an admin
+    return isAdmin ? [] : [me?.selected_organization_id];
+  }
+};
+
 export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   user,
   open,
@@ -64,23 +85,16 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   const personalSpace = (user?.organizations ?? [])?.find(
     (organizationData) => organizationData.personal_space
   );
-
-  // If user is null, that mean we are creating an user, if not we are updating
-  const initOrganizations = user
-    ? (user?.organizations ?? [])
-        ?.filter((organizationData) => !organizationData.personal_space)
-        .map((organizationData) => organizationData.id)
-    : [me?.selected_organization_id];
-
   const rolePortal = getRolesPortal();
-  const isFullAdmin = useGranted('BYPASS');
+  const isAdminPath = useAdminPath();
+  const initOrganizations = initializeOrganizations(user, me, isAdminPath);
 
   const rolePortalData = rolePortal?.rolesPortal
     ?.map(({ name, id }) => ({
       label: name,
       value: id,
     }))
-    .filter(({ label }) => !(!isFullAdmin && ['ADMIN'].includes(label)));
+    .filter(({ label }) => !(!isAdminPath && ['ADMIN'].includes(label)));
 
   const [organizationData] = getOrganizations();
 
@@ -140,7 +154,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
                 </FormItem>
               )}
             />
-            {isFullAdmin && (
+            {isAdminPath && (
               <FormField
                 control={form.control}
                 name="password"
@@ -180,7 +194,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
               )}
             />
 
-            {isFullAdmin && (
+            {isAdminPath && (
               <FormField
                 control={form.control}
                 name="organizations"
