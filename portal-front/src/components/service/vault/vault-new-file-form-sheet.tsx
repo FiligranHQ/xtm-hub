@@ -47,7 +47,6 @@ export const VaultNewFileFormSheet: FunctionComponent<
   VaultNewFileFormSheetProps
 > = ({ open, setOpen, trigger, document, handleSubmit }) => {
   const t = useTranslations();
-
   const form = useForm<z.infer<typeof newDocumentSchema>>({
     resolver: zodResolver(newDocumentSchema),
     defaultValues: {

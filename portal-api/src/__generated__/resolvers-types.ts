@@ -92,10 +92,6 @@ export enum DocumentOrdering {
   FileName = 'file_name'
 }
 
-export type EditOrganizationInput = {
-  name: Scalars['String']['input'];
-};
-
 export type EditServiceCapabilityInput = {
   capabilities: Array<InputMaybe<Scalars['String']['input']>>;
   user_service_id?: InputMaybe<Scalars['String']['input']>;
@@ -162,7 +158,7 @@ export type MutationAddDocumentArgs = {
 
 
 export type MutationAddOrganizationArgs = {
-  name: Scalars['String']['input'];
+  input: OrganizationInput;
 };
 
 
@@ -242,7 +238,7 @@ export type MutationEditDocumentArgs = {
 
 export type MutationEditOrganizationArgs = {
   id: Scalars['ID']['input'];
-  input: EditOrganizationInput;
+  input: OrganizationInput;
 };
 
 
@@ -315,6 +311,11 @@ export type OrganizationEdge = {
   __typename?: 'OrganizationEdge';
   cursor: Scalars['String']['output'];
   node: Organization;
+};
+
+export type OrganizationInput = {
+  domains?: InputMaybe<Array<Scalars['String']['input']>>;
+  name: Scalars['String']['input'];
 };
 
 export enum OrganizationOrdering {
@@ -774,7 +775,6 @@ export type ResolversTypes = ResolversObject<{
   DocumentConnection: ResolverTypeWrapper<DocumentConnection>;
   DocumentEdge: ResolverTypeWrapper<DocumentEdge>;
   DocumentOrdering: DocumentOrdering;
-  EditOrganizationInput: EditOrganizationInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
@@ -788,6 +788,7 @@ export type ResolversTypes = ResolversObject<{
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationConnection: ResolverTypeWrapper<OrganizationConnection>;
   OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
+  OrganizationInput: OrganizationInput;
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
@@ -837,7 +838,6 @@ export type ResolversParentTypes = ResolversObject<{
   Document: Document;
   DocumentConnection: DocumentConnection;
   DocumentEdge: DocumentEdge;
-  EditOrganizationInput: EditOrganizationInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
   ID: Scalars['ID']['output'];
@@ -850,6 +850,7 @@ export type ResolversParentTypes = ResolversObject<{
   Organization: Organization;
   OrganizationConnection: OrganizationConnection;
   OrganizationEdge: OrganizationEdge;
+  OrganizationInput: OrganizationInput;
   PageInfo: PageInfo;
   PlatformProvider: PlatformProvider;
   Query: {};
@@ -962,7 +963,7 @@ export type MessageTrackingResolvers<ContextType = PortalContext, ParentType ext
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationAddDocumentArgs>>;
-  addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'name'>>;
+  addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationAddServiceArgs>>;
   addServicePrice?: Resolver<Maybe<ResolversTypes['ServicePrice']>, ParentType, ContextType, Partial<MutationAddServicePriceArgs>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;

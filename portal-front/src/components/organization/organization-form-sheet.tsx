@@ -6,6 +6,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
   Sheet,
   SheetClose,
   SheetContent,
@@ -13,9 +14,11 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Tag,
+  TagInput,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
-import { FunctionComponent, ReactNode, useEffect } from 'react';
+import { FunctionComponent, ReactNode, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
@@ -40,7 +43,11 @@ export const OrganizationFormSheet: FunctionComponent<
     },
   });
   useEffect(
-    () => form.reset({ name: organization?.name ?? '' }),
+    () =>
+      form.reset({
+        name: organization?.name ?? '',
+        domains: (organization?.domains as string[]) ?? [],
+      }),
     [organization, form]
   );
   const onSubmit = (values: z.infer<typeof organizationFormSchema>) => {
@@ -48,6 +55,15 @@ export const OrganizationFormSheet: FunctionComponent<
       ...values,
     });
   };
+
+  const { setValue } = form;
+  const [tags, setTags] = useState<Tag[]>(
+    (organization?.domains ?? []).map(
+      (domain) => ({ id: domain, text: domain }) as Tag
+    )
+  );
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+
   return (
     <Sheet
       key={'right'}
@@ -74,6 +90,35 @@ export const OrganizationFormSheet: FunctionComponent<
                       {...field}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="domains"
+              render={({ field }) => (
+                <FormItem className="flex flex-col items-start">
+                  <FormLabel className="text-left">Domains</FormLabel>
+                  <FormControl>
+                    <TagInput
+                      {...field}
+                      placeholder="Enter a domain"
+                      tags={tags}
+                      className="sm:min-w-[450px]"
+                      activeTagIndex={activeTagIndex}
+                      setActiveTagIndex={setActiveTagIndex}
+                      setTags={(newTags) => {
+                        const newTagsText: string[] = (newTags as Tag[]).map(
+                          (tag) => tag.text
+                        );
+                        setTags(newTags);
+                        setValue('domains', newTagsText, {
+                          shouldDirty: true,
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

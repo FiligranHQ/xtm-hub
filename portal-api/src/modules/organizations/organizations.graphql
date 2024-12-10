@@ -29,13 +29,15 @@ type Query {
   ): OrganizationConnection! @auth
 }
 
-input EditOrganizationInput {
+input OrganizationInput {
   name: String!
+  domains: [String!]
 }
 
 type Mutation {
-  addOrganization(name: String!): Organization @auth(requires: [BYPASS])
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  addOrganization(input: OrganizationInput!): Organization
+    @auth(requires: [BYPASS])
+  editOrganization(id: ID!, input: OrganizationInput!): Organization
     @auth(requires: [BYPASS])
   deleteOrganization(id: ID!): Organization @auth(requires: [BYPASS])
 }

@@ -14,8 +14,8 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    addOrganization: async (_, { name }, context) => {
-      const data = { id: uuidv4(), name };
+    addOrganization: async (_, { input }, context) => {
+      const data = { id: uuidv4(), ...input };
       const [addOrganization] = await db<Organization>(context, 'Organization')
         .insert(data)
         .returning('*');
@@ -28,7 +28,7 @@ const resolvers: Resolvers = {
           'Organization'
         )
           .where({ id })
-          .update({ name: input.name })
+          .update({ ...input })
           .returning('*');
         return updatedOrganization;
       } catch (error) {
