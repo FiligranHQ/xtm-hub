@@ -58,19 +58,21 @@ const OrganizationList: FunctionComponent = () => {
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => (
-        <IconActions
-          icon={
-            <>
-              <MoreVertIcon className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </>
-          }>
-          <EditOrganization organization={row.original} />
-          <DeleteOrganization
-            connectionId={organizationData.organizations.__id}
-            organization={row.original}
-          />
-        </IconActions>
+        <div className="flex items-center justify-end">
+          <IconActions
+            icon={
+              <>
+                <MoreVertIcon className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </>
+            }>
+            <EditOrganization organization={row.original} />
+            <DeleteOrganization
+              connectionId={organizationData.organizations.__id}
+              organization={row.original}
+            />
+          </IconActions>
+        </div>
       ),
     },
   ];

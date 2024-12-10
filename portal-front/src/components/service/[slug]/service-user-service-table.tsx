@@ -90,7 +90,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         id: 'actions',
         cell: ({ row }) => {
           return (
-            <>
+            <div className="flex items-center justify-end">
               {row.original.service_capability?.some(
                 (serv_capa) =>
                   serv_capa?.service_capability_name !== 'MANAGE_ACCESS'
@@ -133,7 +133,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                   </AlertDialogComponent>
                 </IconActions>
               )}
-            </>
+            </div>
           );
         },
       },
