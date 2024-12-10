@@ -133,7 +133,10 @@ describe('Should modify document', () => {
     await deleteDocumentBy({
       id: 'bc348e84-3635-46de-9b56-38db09c35f4d',
     } as DocumentMutator);
-    const result = await checkDocumentExists('filename');
+    const result = await checkDocumentExists(
+      'filename',
+      'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
+    );
     expect(result).toBe(false);
   });
   afterAll(async () => {
@@ -170,13 +173,14 @@ describe('should check if file already exists', () => {
   });
 
   it.each`
-    expected | fileName      | title
-    ${true}  | ${'filename'} | ${'Already exists'}
-    ${false} | ${'test'}     | ${'Does not exist'}
+    expected | fileName      | title               | serviceId
+    ${true}  | ${'filename'} | ${'Already exists'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11302'}
+    ${false} | ${'test'}     | ${'Does not exist'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11302'}
+    ${false} | ${'test'}     | ${'Does not exist'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11301'}
   `(
     'Should return $expected if filename $title',
-    async ({ expected, fileName }) => {
-      const result = await checkDocumentExists(fileName);
+    async ({ expected, fileName, serviceId }) => {
+      const result = await checkDocumentExists(fileName, serviceId);
       expect(result).toEqual(expected);
     }
   );

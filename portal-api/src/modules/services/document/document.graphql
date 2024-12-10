@@ -46,7 +46,7 @@ type DocumentConnection {
 }
 
 type Query {
-  documentExists(documentName: String): Boolean @auth(requires: [BYPASS])
+  documentExists(documentName: String, serviceId: String): Boolean @auth(requires: [BYPASS])
   documents(
     first: Int!
     after: ID
