@@ -110,8 +110,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
               }
               onClickContinue={() => onDeleteUser(user)}>
               {t('DeleteUserDialog.TextDeleteThisUser', {
-                first_name: user.first_name,
-                last_name: user.last_name,
+                email: user.email,
               })}
             </AlertDialogComponent>
           </div>
