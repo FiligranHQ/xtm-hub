@@ -19,7 +19,10 @@ import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { hashPassword } from '../../utils/hash-password.util';
 import { extractDomain } from '../../utils/verify-email.util';
-import { createUserOrganizationRelationUnsecure } from '../common/user-organization.helper';
+import {
+  createUserOrganizationRelationUnsecure,
+  loadUserOrganization,
+} from '../common/user-organization.helper';
 import { addRolesToUser } from '../common/user-role-portal.helper';
 import {
   insertNewOrganization,
@@ -121,6 +124,26 @@ export const getOrCreateUser = async (
 ) => {
   const user = await loadUserBy({ email: userInfo.email });
   return user ? user : await createNewUserFromInvitation(userInfo);
+};
+
+export const insertUserIntoOrganization = async (
+  context: PortalContext,
+  user: User
+) => {
+  const [organization] = await loadOrganizationsFromEmail(user.email);
+  const userOrganization = await loadUserOrganization(context, {
+    user_id: user.id,
+  });
+  if (
+    userOrganization.every(
+      (userOrga) => userOrga.organization_id !== organization.id
+    )
+  ) {
+    await createUserOrganizationRelationUnsecure({
+      user_id: user.id,
+      organizations_id: [organization.id],
+    });
+  }
 };
 
 export const mapUserToGraphqlUser = (
