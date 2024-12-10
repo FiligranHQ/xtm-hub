@@ -14,9 +14,9 @@ export const documentListLocalStorage = (
     50
   );
   const [orderMode, setOrderMode, removeOrderMode] =
-    useLocalStorage<OrderingMode>('orderModeDocumentList', 'asc');
+    useLocalStorage<OrderingMode>('orderModeDocumentList', 'desc');
   const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<DocumentOrdering>('orderByDocumentList', 'file_name');
+    useLocalStorage<DocumentOrdering>('orderByDocumentList', 'created_at');
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countDocumentList',
     50

@@ -250,8 +250,7 @@ describe('Documents loading', () => {
     const response = await documentResolver.Query.documents(
       {},
       {
-        first: 1,
-
+        first: 50,
         after: 0,
         filter: 'xfi',
         orderBy: 'file_name',

@@ -43,7 +43,6 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
         connections: [connectionId],
       },
       onCompleted: (response) => {
-        console.log('response', response);
         toast({
           title: 'Success',
           description:

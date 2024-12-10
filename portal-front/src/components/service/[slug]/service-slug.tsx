@@ -208,8 +208,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               <Button
                 className="text-nowrap"
                 variant="outline"
-                aria-label="Add organization">
-                Add organization
+                aria-label={t('Service.SubscribeOrganization')}>
+                {t('Service.SubscribeOrganization')}
               </Button>
             }
           />

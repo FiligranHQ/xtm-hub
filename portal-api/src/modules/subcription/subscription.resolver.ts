@@ -101,7 +101,9 @@ const resolvers: Resolvers = {
           fromGlobalId(service_id).id
         );
         if (subscription) {
-          throw new Error(`You have already subscribed this service.`);
+          throw new Error(
+            `[subscription.resolver] You've already subscribed this organization to this service.`
+          );
         }
 
         const subscriptionData = {

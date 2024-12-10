@@ -82,7 +82,7 @@ const resolvers: Resolvers = {
         return getDocuments(
           context,
           { first, after, orderMode, orderBy },
-          normalizeDocumentName(filter),
+          normalizeDocumentName(filter ?? ''),
           fromGlobalId(serviceId).id as ServiceId
         );
       } catch (error) {
