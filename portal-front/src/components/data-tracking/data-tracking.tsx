@@ -44,11 +44,13 @@ const columns: ColumnDef<DataTrackingObject>[] = [
     id: 'actions',
     cell: ({ row }) => {
       return (
-        <DialogCloseButton
-          title={'Message Tracking'}
-          trigger={'Details'}>
-          <MessageTracking data={row.original.message_tracking} />
-        </DialogCloseButton>
+        <div className="flex items-center justify-end">
+          <DialogCloseButton
+            title={'Message Tracking'}
+            trigger={'Details'}>
+            <MessageTracking data={row.original.message_tracking} />
+          </DialogCloseButton>
+        </div>
       );
     },
   },

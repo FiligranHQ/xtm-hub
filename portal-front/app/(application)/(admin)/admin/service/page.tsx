@@ -3,8 +3,8 @@ import {
   ServiceListQuery,
   servicesListFragment,
 } from '@/components/service/service.graphql';
-import { IconActions } from '@/components/ui/icon-actions';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { IconActions } from '@/components/ui/icon-actions';
 import { UseTranslationsProps } from '@/i18n/config';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
@@ -18,12 +18,12 @@ import { serviceQuery } from '../../../../../__generated__/serviceQuery.graphql'
 import { servicesList_services$key } from '../../../../../__generated__/servicesList_services.graphql';
 
 const breadcrumbValue = (t: UseTranslationsProps) => [
-    {
-        label: t('MenuLinks.Settings'),
-    },
-    {
-        label: t('MenuLinks.Services'),
-    },
+  {
+    label: t('MenuLinks.Settings'),
+  },
+  {
+    label: t('MenuLinks.Services'),
+  },
 ];
 
 const Page = () => {
@@ -49,30 +49,32 @@ const Page = () => {
       id: 'actions',
       cell: ({ row }) => {
         return (
-          <IconActions
-            icon={
-              <>
-                <MoreVertIcon className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </>
-            }>
-            <Button
-              variant={'ghost'}
-              className="w-full justify-start"
-              aria-label={t('Service.GoToManagement')}
-              onClick={() => {
-                router.push(`/admin/service/${row.id}`);
-              }}>
-              Manage
-            </Button>
-            <Button
-              variant={'ghost'}
-              className="w-full justify-start"
-              aria-label={t('Service.GoToManagement')}
-              onClick={() => router.push(`/service/vault/${row.id}`)}>
-              Go to
-            </Button>
-          </IconActions>
+          <div className="flex items-center justify-end">
+            <IconActions
+              icon={
+                <>
+                  <MoreVertIcon className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </>
+              }>
+              <Button
+                variant={'ghost'}
+                className="w-full justify-start"
+                aria-label={t('Service.GoToManagement')}
+                onClick={() => {
+                  router.push(`/admin/service/${row.id}`);
+                }}>
+                Manage
+              </Button>
+              <Button
+                variant={'ghost'}
+                className="w-full justify-start"
+                aria-label={t('Service.GoToManagement')}
+                onClick={() => router.push(`/service/vault/${row.id}`)}>
+                Go to
+              </Button>
+            </IconActions>
+          </div>
         );
       },
     },
