@@ -67,7 +67,10 @@ const resolvers: Resolvers = {
   Query: {
     documentExists: async (_, input) => {
       try {
-        return checkDocumentExists(input.documentName ?? '');
+        return checkDocumentExists(
+          input.documentName ?? '',
+          fromGlobalId(input.serviceId).id
+        );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);
         throw error;

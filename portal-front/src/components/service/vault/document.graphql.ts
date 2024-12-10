@@ -55,8 +55,8 @@ export const DocumentDeleteMutation = graphql`
 `;
 
 export const DocumentExistsQuery = graphql`
-  query documentExistsQuery($documentName: String) {
-    documentExists(documentName: $documentName)
+  query documentExistsQuery($documentName: String, $serviceId: String) {
+    documentExists(documentName: $documentName, serviceId: $serviceId)
   }
 `;
 

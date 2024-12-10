@@ -361,6 +361,7 @@ export type Query = {
 
 export type QueryDocumentExistsArgs = {
   documentName?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
