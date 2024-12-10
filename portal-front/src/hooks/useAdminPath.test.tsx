@@ -8,39 +8,21 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('@/hooks/useGranted');
 vi.mock('next/navigation');
 describe('useAdminPath', () => {
-  it('should return true if user has BYPASS permission and path includes "admin"', () => {
-    useGranted.mockReturnValue(true);
-    usePathname.mockReturnValue('/admin/dashboard');
+  it.each`
+    expected | userCapa      | path
+    ${true}  | ${'BYPASS'}   | ${'admin'}
+    ${false} | ${'NOBYPASS'} | ${'admin'}
+    ${false} | ${'BYPASS'}   | ${'nothing'}
+    ${false} | ${'NOBYPASS'} | ${'nothing'}
+  `(
+    'Should return $expected if user has $userCapa and path includes $path',
+    async ({ expected, userCapa, path }) => {
+      useGranted.mockReturnValue(userCapa === 'BYPASS');
+      usePathname.mockReturnValue(`/${path}/dashboard`);
 
-    const { result } = renderHook(() => useAdminPath());
+      const { result } = renderHook(() => useAdminPath());
 
-    expect(result.current).toBe(true);
-  });
-
-  it('should return false if user does not have BYPASS permission, even if path includes "admin"', () => {
-    useGranted.mockReturnValue(false);
-    usePathname.mockReturnValue('/admin/dashboard');
-
-    const { result } = renderHook(() => useAdminPath());
-
-    expect(result.current).toBe(false);
-  });
-
-  it('should return false if path does not include "admin", even if user has BYPASS permission', () => {
-    useGranted.mockReturnValue(true);
-    usePathname.mockReturnValue('/user/profile');
-
-    const { result } = renderHook(() => useAdminPath());
-
-    expect(result.current).toBe(false);
-  });
-
-  it('should return false if neither condition is met', () => {
-    useGranted.mockReturnValue(false);
-    usePathname.mockReturnValue('/user/profile');
-
-    const { result } = renderHook(() => useAdminPath());
-
-    expect(result.current).toBe(false);
-  });
+      expect(result.current).toBe(expected);
+    }
+  );
 });
