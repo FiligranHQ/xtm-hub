@@ -1,9 +1,9 @@
 import { IconActionContext } from '@/components/ui/icon-actions';
+import useDecodedParams from '@/hooks/useDecodedParams';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { FunctionComponent, useContext } from 'react';
 import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
 interface DownloadDocumentProps {
@@ -15,16 +15,10 @@ export const DownloadDocument: FunctionComponent<DownloadDocumentProps> = ({
 }) => {
   const { setMenuOpen } = useContext(IconActionContext);
   const t = useTranslations();
-  const params = useParams<{ slug: string }>();
-  const encodedServiceId = params.slug;
-
-  // Have to decode it, otherwise = become %3D for instance
-  const serviceId = encodedServiceId
-    ? decodeURIComponent(encodedServiceId)
-    : null;
+  const { slug } = useDecodedParams();
   return (
     <Link
-      href={`/document/get/${serviceId}/${documentData.id}`}
+      href={`/document/get/${slug}/${documentData.id}`}
       onClick={(e) => {
         e.stopPropagation();
         setMenuOpen(false);

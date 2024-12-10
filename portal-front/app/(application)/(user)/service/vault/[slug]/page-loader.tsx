@@ -9,10 +9,10 @@ import { FormatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+import useDecodedParams from '@/hooks/useDecodedParams';
 import { useQueryLoader } from 'react-relay';
 import { documentItem_fragment$data } from '../../../../../../__generated__/documentItem_fragment.graphql';
 import { documentsQuery } from '../../../../../../__generated__/documentsQuery.graphql';
@@ -55,13 +55,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
     },
   ];
 
-  const params = useParams<{ slug: string }>();
-  const encodedServiceId = params.slug;
-
-  // Have to decode it, otherwise = become %3D for instance
-  const serviceId = encodedServiceId
-    ? decodeURIComponent(encodedServiceId)
-    : null;
+  const { slug } = useDecodedParams();
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, orderBy, orderMode } = documentListLocalStorage(columns);
@@ -69,13 +63,13 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
 
   const [queryRefService, loadQueryService] =
     useQueryLoader<serviceByIdQuery>(ServiceById);
-  useMountingLoader(loadQueryService, { service_id: serviceId });
+  useMountingLoader(loadQueryService, { service_id: slug });
 
   useEffect(() => {
-    if (serviceId) {
+    if (slug) {
       setReadyToLoad(true);
     }
-  }, [serviceId]);
+  }, [slug]);
 
   useEffect(() => {
     if (readyToLoad) {
@@ -83,17 +77,17 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
         count,
         orderBy,
         orderMode,
-        serviceId,
+        serviceId: slug,
       });
       loadQuery(JSON.parse(variablesValues), {
         fetchPolicy: 'store-and-network',
       });
     }
-  }, [readyToLoad, loadQuery, count, orderBy, orderMode, serviceId]);
+  }, [readyToLoad, loadQuery, count, orderBy, orderMode, slug]);
 
   return (
     <>
-      {queryRef && serviceId && queryRefService ? (
+      {queryRef && slug && queryRefService ? (
         <DocumentList
           queryRefService={queryRefService}
           queryRef={queryRef}
