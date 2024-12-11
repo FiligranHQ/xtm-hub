@@ -10,8 +10,8 @@ scalar Upload
 
 type Mutation {
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
-  addOrganization(name: String!): Organization
-  editOrganization(id: ID!, input: EditOrganizationInput!): Organization
+  addOrganization(input: OrganizationInput!): Organization
+  editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
   addDocument(document: Upload, description: String, serviceId: String): Document!
   editDocument(documentId: ID, newDescription: String, serviceId: String): Document!
@@ -79,8 +79,9 @@ type Query {
   node(id: ID!): Node
 }
 
-input EditOrganizationInput {
+input OrganizationInput {
   name: String!
+  domains: [String!]
 }
 
 type RolePortal implements Node {

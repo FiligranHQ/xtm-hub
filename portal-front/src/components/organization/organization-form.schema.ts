@@ -2,5 +2,8 @@ import { z } from 'zod';
 
 export const organizationFormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  domains: z.array(z.string()).optional(),
+  domains: z
+    .string()
+    .array()
+    .refine((domains) => domains.length > 0),
 });

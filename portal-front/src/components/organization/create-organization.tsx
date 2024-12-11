@@ -24,7 +24,7 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
     commitOrganizationCreationMutation({
       variables: {
         connections: [connectionId],
-        ...values,
+        input: { ...values },
       },
 
       onCompleted: ({ addOrganization }) => {

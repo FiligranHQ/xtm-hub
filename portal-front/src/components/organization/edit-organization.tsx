@@ -4,6 +4,7 @@ import { OrganizationEditMutation } from '@/components/organization/organization
 import { IconActionContext } from '@/components/ui/icon-actions';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ interface EditOrganizationProps {
 export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   organization,
 }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
@@ -58,7 +60,7 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
           variant="ghost"
           className="w-full justify-start"
           aria-label="Edit Organization">
-          Edit
+          {t('Utils.Update')}
         </Button>
       }
       title={"Edit the organization's name"}
