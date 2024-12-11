@@ -18,7 +18,7 @@ import { logApp } from '../../utils/app-logger.util';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import {
   loadPublicServices,
-  loadServiceBy,
+  loadServiceByWithCapabilities,
   loadServices,
   loadServiceWithSubscriptions,
 } from './services.domain';
@@ -32,7 +32,10 @@ const resolvers: Resolvers = {
       return loadPublicServices(context, opt);
     },
     serviceById: async (_, { service_id }, context) => {
-      return await loadServiceBy(context, 'id', fromGlobalId(service_id).id);
+      return await loadServiceByWithCapabilities(
+        context,
+        fromGlobalId(service_id).id
+      );
     },
     serviceByIdWithSubscriptions: async (_, { service_id }, context) => {
       return loadServiceWithSubscriptions(context, fromGlobalId(service_id).id);

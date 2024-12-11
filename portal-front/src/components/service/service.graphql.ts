@@ -16,6 +16,7 @@ export const ServiceById = graphql`
       name
       description
       type
+      capabilities @required(action: THROW)
     }
   }
 `;
