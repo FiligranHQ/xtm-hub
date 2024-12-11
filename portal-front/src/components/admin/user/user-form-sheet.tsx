@@ -6,6 +6,7 @@ import { getOrganizations } from '@/components/organization/organization.service
 import { Portal, portalContext } from '@/components/portal-context';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import useAdminPath from '@/hooks/useAdminPath';
+import { isDevelopment } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -154,7 +155,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
                 </FormItem>
               )}
             />
-            {isAdminPath && (
+            {isDevelopment() && isAdminPath && (
               <FormField
                 control={form.control}
                 name="password"
