@@ -1,4 +1,5 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbUnsecure } from '../../../knexfile';
 import {
@@ -134,19 +135,21 @@ export const insertUserIntoOrganization = async (
   user: User,
   subscriptionId: SubscriptionId
 ) => {
-  const [subscription] = await loadSubscriptionBy(
-    'subscription_id',
-    subscriptionId
-  );
+  const [subscription] = await loadSubscriptionBy('id', subscriptionId);
   const [organization] = await loadOrganizationsFromEmail(user.email);
   const userOrganization = await loadUserOrganization(context, {
     user_id: user.id,
     organization_id: organization.id,
   });
-  if (
-    isEmpty(userOrganization) &&
-    subscription.organization_id === organization.id
-  ) {
+  if (subscription.organization_id !== organization.id) {
+    throw new GraphQLError(
+      'The email address does not correspond to organization',
+      {
+        extensions: { code: '[User_Service] EMAIL ADDRESS WRONG DOMAIN' },
+      }
+    );
+  }
+  if (isEmpty(userOrganization)) {
     await createUserOrganizationRelationUnsecure({
       user_id: user.id,
       organizations_id: [organization.id],
