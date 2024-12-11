@@ -6,5 +6,51 @@
       "type": "SSO",
       "provider": "oidc"
     }
+  ],
+  "init_services": [
+    {
+      "service": {
+        "id": "bed61a7c-a6dd-4a1e-919f-021fb867cc76",
+        "name": "NEMEA Partner Vault",
+        "provider": "FILIGRAN",
+        "type": "Intel",
+        "description": "This service allows you to gather information from Filigran."
+      },
+      "link": {
+        "id": "3ba20f5b-dce8-4c53-b522-3b2b421c5c4b",
+        "service_id": "bed61a7c-a6dd-4a1e-919f-021fb867cc76",
+        "url": "",
+        "name": "Vault"
+      },
+      "price": {
+        "id": "fe567c4c-f337-4c77-8674-965277e812e8",
+        "service_id": "bed61a7c-a6dd-4a1e-919f-021fb867cc76",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
+    },
+    {
+      "service": {
+        "id": "d6d6d5b1-f3c8-4c3a-937e-6408c4386bd9",
+        "name": "Engineering Vault",
+        "provider": "FILIGRAN",
+        "type": "Intel",
+        "description": "This service allows you to gather information from Filigran."
+      },
+      "link": {
+        "id": "5188abf1-1c3e-4c53-9b27-56b15042abde",
+        "service_id": "d6d6d5b1-f3c8-4c3a-937e-6408c4386bd9",
+        "url": "",
+        "name": "Vault"
+      },
+      "price": {
+        "id": "cbcec366-c592-47b5-992c-29c5836ce417",
+        "service_id": "d6d6d5b1-f3c8-4c3a-937e-6408c4386bd9",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
+    }
   ]
 }
