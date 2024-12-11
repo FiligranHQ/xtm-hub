@@ -42,6 +42,10 @@
     "SubscribeOrganization": "Souscrire une organisation",
     "GoTo": "Aller au service",
     "GoToManagement": "Aller à la page de management du service",
+    "Management": {
+      "Email": "EMAIL",
+      "OneUserMax": "1 utilisateur max"
+    },
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
     "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",

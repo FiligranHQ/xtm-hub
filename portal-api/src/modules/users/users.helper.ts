@@ -133,12 +133,9 @@ export const insertUserIntoOrganization = async (
   const [organization] = await loadOrganizationsFromEmail(user.email);
   const userOrganization = await loadUserOrganization(context, {
     user_id: user.id,
+    organization_id: organization.id,
   });
-  if (
-    userOrganization.every(
-      (userOrga) => userOrga.organization_id !== organization.id
-    )
-  ) {
+  if (userOrganization.length === 0) {
     await createUserOrganizationRelationUnsecure({
       user_id: user.id,
       organizations_id: [organization.id],
