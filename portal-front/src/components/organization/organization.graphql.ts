@@ -48,23 +48,28 @@ export const organizationDeletion = graphql`
 `;
 
 export const CreateOrganizationMutation = graphql`
-  mutation organizationCreateMutation($name: String!, $connections: [ID!]!) {
-    addOrganization(name: $name)
+  mutation organizationCreateMutation(
+    $input: OrganizationInput!
+    $connections: [ID!]!
+  ) {
+    addOrganization(input: $input)
       @prependNode(
         connections: $connections
         edgeTypeName: "OrganizationEdge"
       ) {
       id
       name
+      domains
     }
   }
 `;
 
 export const OrganizationEditMutation = graphql`
-  mutation organizationEditMutation($id: ID!, $input: EditOrganizationInput!) {
+  mutation organizationEditMutation($id: ID!, $input: OrganizationInput!) {
     editOrganization(id: $id, input: $input) {
       id
       name
+      domains
     }
   }
 `;
