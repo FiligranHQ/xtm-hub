@@ -44,7 +44,7 @@ spec:
           prometheus.io/port: '4001'
         env:
         - name: NODE_ENV
-          value: {{ .Values.xtmhub.api.node_env }}
+          value: {{ .Values.xtmhub.node_env }}
         - name: APP_PORT
           value: "4001"
         - name: ADMIN_EMAIL

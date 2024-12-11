@@ -1,13 +1,13 @@
 tls_issuer: le-staging
 ingressClass: nginx
 xtmhub:
+  node_env: "production"
   api:
     resources: {}
     replicas: 1
     admin:
       email: ""
       password: ""
-    node_env: "production"
     env:
       OIDC_ISSUER: ""
       OIDC_CLIENT_ID: ""
