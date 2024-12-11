@@ -15,7 +15,7 @@ test('should confirm service management is ok', async ({ page }) => {
   await page.getByRole('button', { name: 'Manage' }).click();
 
   // Add organization
-  await page.getByLabel('Add organization').click();
+  await page.getByLabel('Subscribe organization').click();
   await page.getByLabel('Organization', { exact: true }).click();
   await page.getByLabel('Thales').click();
   await page.getByRole('button', { name: 'Validate' }).click();

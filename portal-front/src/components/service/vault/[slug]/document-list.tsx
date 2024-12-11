@@ -83,13 +83,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       header: t('Service.Vault.FileTab.FileName'),
     },
     {
-      id: 'created_at',
-      header: t('Service.Vault.FileTab.UploadDate'),
-      cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
-    },
-    {
       id: 'description',
-      enableSorting: false,
       header: t('Service.Vault.FileTab.Description'),
       cell: ({ row }) => (
         <TooltipProvider>
@@ -105,13 +99,24 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       ),
     },
     {
+      id: 'created_at',
+      header: t('Service.Vault.FileTab.UploadDate'),
+      cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
+    },
+    {
+      accessorKey: 'download_number',
+      id: 'download_number',
+      header: t('Service.Vault.FileTab.NumberDownload'),
+    },
+    {
       id: 'actions',
-      size: 100,
       enableHiding: false,
       enableSorting: false,
       enableResizing: false,
       cell: ({ row }) => (
-        <div onClick={(e) => e.stopPropagation()}>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center justify-end">
           <IconActions
             icon={
               <>

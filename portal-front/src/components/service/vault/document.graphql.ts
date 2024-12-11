@@ -16,6 +16,7 @@ export const DocumentAddMutation = graphql`
       description
       created_at
       file_name
+      download_number
     }
   }
 `;
@@ -35,6 +36,7 @@ export const DocumentUpdateMutation = graphql`
       file_name
       created_at
       description
+      download_number
     }
   }
 `;
@@ -53,8 +55,8 @@ export const DocumentDeleteMutation = graphql`
 `;
 
 export const DocumentExistsQuery = graphql`
-  query documentExistsQuery($documentName: String) {
-    documentExists(documentName: $documentName)
+  query documentExistsQuery($documentName: String, $serviceId: String) {
+    documentExists(documentName: $documentName, serviceId: $serviceId)
   }
 `;
 
@@ -64,6 +66,7 @@ export const documentItem = graphql`
     file_name
     created_at
     description
+    download_number
   }
 `;
 export const documentsFragment = graphql`

@@ -2,6 +2,7 @@ import { dbUnsecure } from '../../../../knexfile';
 import Document, {
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
+import { ServiceId } from '../../../model/kanel/public/Service';
 
 export const getDocumentName = (documentName: string) => {
   const splitName = documentName.split('.');
@@ -18,9 +19,14 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .replace(/[&\\#,+()$~%'":*?!<>{}]/g, '-');
 };
 
-export const checkDocumentExists = async (documentName: string) => {
+export const checkDocumentExists = async (
+  documentName: string,
+  serviceId: ServiceId
+) => {
   const documents: Document[] = await loadUnsecureDocumentsBy({
     file_name: normalizeDocumentName(documentName),
+    active: true,
+    service_id: serviceId,
   });
   return documents.length > 0;
 };

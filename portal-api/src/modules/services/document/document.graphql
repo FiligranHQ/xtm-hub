@@ -1,3 +1,10 @@
+enum DocumentOrdering {
+  file_name
+  description
+  created_at
+  download_number
+}
+
 type Document implements Node {
   id: ID!
   uploader_id: String!
@@ -25,11 +32,7 @@ type Mutation {
     @auth(requires: [BYPASS])
 }
 
-enum DocumentOrdering {
-  file_name
-  created_at
-  description
-}
+
 
 type DocumentEdge {
   cursor: String!
@@ -43,7 +46,7 @@ type DocumentConnection {
 }
 
 type Query {
-  documentExists(documentName: String): Boolean @auth(requires: [BYPASS])
+  documentExists(documentName: String, serviceId: String): Boolean @auth(requires: [BYPASS])
   documents(
     first: Int!
     after: ID

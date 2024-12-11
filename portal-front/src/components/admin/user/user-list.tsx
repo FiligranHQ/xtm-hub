@@ -3,6 +3,7 @@ import { EditUser } from '@/components/admin/user/[slug]/user-edit';
 import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
 import { AddUser } from '@/components/admin/user/user-create';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { Portal, portalContext } from '@/components/portal-context';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
@@ -17,7 +18,7 @@ import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
 import { Badge, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { graphql, useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 import { userList_fragment$data } from '../../../../__generated__/userList_fragment.graphql';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
@@ -103,6 +104,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   } = useUserListLocalstorage();
 
   const router = useRouter();
+  const { me } = useContext<Portal>(portalContext);
 
   const [filter, setFilter] = useState<UserFilter>({
     search: undefined,
@@ -164,38 +166,45 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           return null;
         }
 
+        // The user should not be able to modify itself
+        if (row.original.id === me?.id) {
+          return null;
+        }
+
         return (
-          <IconActions
-            icon={
-              <>
-                <MoreVertIcon className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </>
-            }>
-            <EditUser
-              user={row.original}
-              trigger={
-                <IconActionsButton aria-label={t('UserActions.UpdateUser')}>
-                  {t('MenuActions.Update')}
-                </IconActionsButton>
-              }
-            />
-            {organization && (
-              <RemoveUserFromOrga
-                organization_id={organization}
+          <div className="flex items-center justify-end">
+            <IconActions
+              icon={
+                <>
+                  <MoreVertIcon className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </>
+              }>
+              <EditUser
                 user={row.original}
-                connectionID={data?.users?.__id}
+                trigger={
+                  <IconActionsButton aria-label={t('UserActions.UpdateUser')}>
+                    {t('MenuActions.Update')}
+                  </IconActionsButton>
+                }
               />
-            )}
-            <GuardCapacityComponent
-              capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-              <IconActionsButton
-                aria-label={t('UserActions.DetailsUser')}
-                onClick={() => router.push(`/admin/user/${row.original.id}`)}>
-                {t('MenuActions.Details')}
-              </IconActionsButton>
-            </GuardCapacityComponent>
-          </IconActions>
+              {organization && (
+                <RemoveUserFromOrga
+                  organization_id={organization}
+                  user={row.original}
+                  connectionID={data?.users?.__id}
+                />
+              )}
+              <GuardCapacityComponent
+                capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+                <IconActionsButton
+                  aria-label={t('UserActions.DetailsUser')}
+                  onClick={() => router.push(`/admin/user/${row.original.id}`)}>
+                  {t('MenuActions.Details')}
+                </IconActionsButton>
+              </GuardCapacityComponent>
+            </IconActions>
+          </div>
         );
       },
     },

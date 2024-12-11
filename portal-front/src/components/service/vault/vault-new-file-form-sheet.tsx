@@ -1,9 +1,8 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { FunctionComponent, ReactNode } from 'react';
-import { useForm } from 'react-hook-form';
-
 import { DocumentExistsQuery } from '@/components/service/vault/document.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import useDecodedParams from '@/hooks/useDecodedParams';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { FileInput } from 'filigran-ui';
 import {
   FileInputDropZone,
@@ -23,6 +22,8 @@ import {
 } from 'filigran-ui/clients';
 import { Button, Textarea } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
+import { FunctionComponent, ReactNode } from 'react';
+import { useForm } from 'react-hook-form';
 import { useLazyLoadQuery } from 'react-relay';
 import { z } from 'zod';
 import { documentExistsQuery } from '../../../../__generated__/documentExistsQuery.graphql';
@@ -55,6 +56,9 @@ export const VaultNewFileFormSheet: FunctionComponent<
       document: undefined,
     },
   });
+
+  const { slug } = useDecodedParams();
+
   const { watch } = form;
   const watchDocument = watch('document');
 
@@ -62,7 +66,7 @@ export const VaultNewFileFormSheet: FunctionComponent<
 
   const { documentExists } = useLazyLoadQuery<documentExistsQuery>(
     DocumentExistsQuery,
-    { documentName }
+    { documentName, serviceId: slug }
   );
 
   const onSubmit = (values: z.infer<typeof newDocumentSchema>) => {

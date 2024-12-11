@@ -77,11 +77,7 @@ const resolvers: Resolvers = {
         return {
           ...filledSubscription.service,
           subscribed: true,
-          capabilities: [
-            'ACCESS_SERVICE',
-            'MANAGE_ACCESS',
-            'ADMIN_SUBSCRIPTION',
-          ],
+          capabilities: ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
         };
       } catch (error) {
         await trx.rollback();
@@ -105,7 +101,9 @@ const resolvers: Resolvers = {
           fromGlobalId(service_id).id
         );
         if (subscription) {
-          throw new Error(`You have already subscribed this service.`);
+          throw new Error(
+            `[subscription.resolver] You've already subscribed this organization to this service.`
+          );
         }
 
         const subscriptionData = {

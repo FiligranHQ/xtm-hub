@@ -7,6 +7,7 @@ import cors from 'cors';
 import express from 'express';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 
+import promBundle from 'express-prom-bundle';
 import expressSession, { SessionData } from 'express-session';
 import { createHandler } from 'graphql-sse/lib/use/express';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
@@ -21,6 +22,7 @@ import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
+import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
 import { logApp } from './utils/app-logger.util';
@@ -51,6 +53,14 @@ const sessionMiddleware = expressSession({
 });
 app.use(express.json());
 app.use(sessionMiddleware);
+
+// Prometheus metrics
+const metricsMiddleware = promBundle({
+  customLabels: {
+    app: 'xtm-hub-api',
+  },
+});
+app.use(metricsMiddleware);
 
 /*
 Encountered an unexpected behavior within the express-session middleware.
@@ -164,6 +174,7 @@ await initAuthPlatform(app);
 // Therefore, we have to handle it through this route instead.
 documentDownloadEndpoint(app);
 awxEndpoint(app);
+healthEndpoint(app);
 
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {

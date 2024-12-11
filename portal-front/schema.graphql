@@ -63,7 +63,7 @@ type Query {
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  documentExists(documentName: String): Boolean
+  documentExists(documentName: String, serviceId: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, serviceId: String): DocumentConnection!
   publicServices(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
@@ -88,6 +88,13 @@ type RolePortal implements Node {
   name: String!
 }
 
+enum DocumentOrdering {
+  file_name
+  description
+  created_at
+  download_number
+}
+
 type Document implements Node {
   id: ID!
   uploader_id: String!
@@ -98,12 +105,6 @@ type Document implements Node {
   active: Boolean!
   created_at: Date!
   download_number: Int
-}
-
-enum DocumentOrdering {
-  file_name
-  created_at
-  description
 }
 
 type DocumentEdge {
@@ -384,7 +385,6 @@ enum Restriction {
 
 enum ServiceRestriction {
   ACCESS_USER
-  ADMIN_SUBSCRIPTION
   MANAGE_ACCESS
 }
 

@@ -88,6 +88,7 @@ export type DocumentEdge = {
 export enum DocumentOrdering {
   CreatedAt = 'created_at',
   Description = 'description',
+  DownloadNumber = 'download_number',
   FileName = 'file_name'
 }
 
@@ -360,6 +361,7 @@ export type Query = {
 
 export type QueryDocumentExistsArgs = {
   documentName?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -532,7 +534,6 @@ export type ServicePrice = Node & {
 
 export enum ServiceRestriction {
   AccessUser = 'ACCESS_USER',
-  AdminSubscription = 'ADMIN_SUBSCRIPTION',
   ManageAccess = 'MANAGE_ACCESS'
 }
 

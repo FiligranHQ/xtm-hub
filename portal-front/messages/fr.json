@@ -39,6 +39,9 @@
     "NoService": "Il n'y a pas encore de service...",
     "Subscribe": "Souscrire",
     "SubscribeService": "Souscrire au service",
+    "SubscribeOrganization": "Souscrire une organisation",
+    "GoTo": "Aller au service",
+    "GoToManagement": "Aller à la page de management du service",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
     "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",
@@ -47,6 +50,7 @@
       "DropFile": "Lâchez le document ici",
       "File": "Document à transmettre",
       "FileExtension": "Le document doit avoir une extension",
+      "DeleteDocument": "Effacer le document",
       "FileForm": {
         "AddFile": "Ajouter un document",
         "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé.",
@@ -57,6 +61,7 @@
         "File": "Document",
         "FileAlreadyExists": "Ce document existe déjà",
         "FileExistsDialog": "Ce document existe déjà. Ce document écrasera l'ancien document. Êtes-vous sûr de vouloir continuer ?",
+        "DeleteDialog": "Êtes-vous sûr de vouloir supprimer ce document ?",
         "NoDocument": "Pas de document sélectionné",
         "SelectDocument": "Sélectionnez un document",
         "ShortNameLabel": "Nom court",
@@ -67,7 +72,9 @@
         "Description": "Description",
         "FileName": "Nom de document",
         "Search": "Chercher par nom de document...",
-        "UploadDate": "Date d'ajout"
+        "UploadDate": "Date d'ajout",
+        "NumberDownload": "Nombre de téléchargements"
+
       },
       "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault"
