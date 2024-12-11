@@ -73,8 +73,7 @@
         "FileName": "Nom de document",
         "Search": "Chercher par nom de document...",
         "UploadDate": "Date d'ajout",
-        "NumberDownload": "Nombre de téléchargements"
-
+        "NumberDownload": "Téléchargements"
       },
       "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault"
