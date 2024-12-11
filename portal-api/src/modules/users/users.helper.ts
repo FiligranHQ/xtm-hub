@@ -19,6 +19,7 @@ import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { hashPassword } from '../../utils/hash-password.util';
+import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import {
   createUserOrganizationRelationUnsecure,
@@ -143,7 +144,7 @@ export const insertUserIntoOrganization = async (
     organization_id: organization.id,
   });
   if (
-    userOrganization.length === 0 &&
+    isEmpty(userOrganization) &&
     subscription.organization_id === organization.id
   ) {
     await createUserOrganizationRelationUnsecure({
