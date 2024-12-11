@@ -474,7 +474,7 @@ export type RolePortal = Node & {
 
 export type Service = Node & {
   __typename?: 'Service';
-  capabilities?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  capabilities?: Maybe<Array<Scalars['String']['output']>>;
   creation_status?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -1058,7 +1058,7 @@ export type RolePortalResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type ServiceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Service'] = ResolversParentTypes['Service']> = ResolversObject<{
-  capabilities?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  capabilities?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   creation_status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

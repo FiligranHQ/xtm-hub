@@ -46,11 +46,13 @@
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
     "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
+    "InviteUser": "Inviter un utilisateur",
     "Vault": {
       "DropFile": "Lâchez le document ici",
       "File": "Document à transmettre",
       "FileExtension": "Le document doit avoir une extension",
       "DeleteDocument": "Effacer le document",
+      "ManageVault": "Gérer le service",
       "FileForm": {
         "AddFile": "Ajouter un document",
         "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé.",
@@ -97,13 +99,21 @@
     "Reset": "Effacer",
     "Success": "Succès",
     "Update": "Editer",
-    "Validate": "Valider"
+    "Validate": "Valider",
+    "NotFound": "Non trouvé"
   },
   "DeleteUserDialog": {
     "TextDeleteThisUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur {email} ? ?"
   },
   "RemoveUserOrgDialog": {
     "TextRemoveThisUser": "Êtes-vous sûr de vouloir retirer cet utilisateur {email} de votre organisation ?"
+  },
+  "OrganizationInServiceAction": {
+    "RemoveOrganization": "Supprimer l'organisation",
+    "DeleteOrgFromService": "Supprimer l'organisation du service",
+    "SelectOrganization": "Sélectionner une organisation",
+    "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
+    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée."
   },
   "UserActions": {
     "DeleteUser": "Supprimer l'utilisateur",

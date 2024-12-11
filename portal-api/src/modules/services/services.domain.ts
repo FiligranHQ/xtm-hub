@@ -154,6 +154,33 @@ export const loadServices = async (context: PortalContext, opts) => {
     ...servicesConnection,
   };
 };
+export const loadServiceByWithCapabilities = async (
+  context: PortalContext,
+  service_id: string
+): Promise<Service> => {
+  return db<Service>(context, 'Service')
+    .leftJoin('Subscription', 'Service.id', 'Subscription.service_id')
+    .leftJoin('User_Service', 'Subscription.id', 'User_Service.subscription_id')
+    .leftJoin(
+      'Service_Capability',
+      'User_Service.id',
+      '=',
+      'Service_Capability.user_service_id'
+    )
+    .select(
+      'Service.*',
+      dbRaw(
+        `CASE 
+             WHEN COUNT("Service_Capability".id) = 0 THEN ARRAY[]::text[] 
+             ELSE array_agg("Service_Capability".service_capability_name)::text[] 
+          END AS capabilities`
+      )
+    )
+
+    .where({ 'Service.id': service_id })
+    .groupBy(['Service.id', 'User_Service.id'])
+    .first();
+};
 
 export const loadServiceBy = async (
   context: PortalContext,

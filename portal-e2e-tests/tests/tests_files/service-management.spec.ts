@@ -11,8 +11,13 @@ test('should confirm service management is ok', async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.login();
 
-  await page.getByRole('button', { name: 'Go to management page' }).click();
-  await page.getByRole('button', { name: 'Manage' }).click();
+  await page.getByLabel('Settings menu').click();
+  await page.getByRole('link', { name: 'Services' }).click();
+  await page
+    .getByRole('row', { name: 'Partner Vault This service' })
+    .getByRole('button')
+    .click();
+  await page.getByText('Manage').click();
 
   // Add organization
   await page.getByLabel('Subscribe organization').click();

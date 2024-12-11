@@ -1,7 +1,4 @@
 import ServiceCard from '@/components/service/service-card';
-import { IconActions } from '@/components/ui/icon-actions';
-import useGranted from '@/hooks/useGranted';
-import { MoreVertIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui/servers';
 import { LinkIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -33,34 +30,6 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
             <ServiceCard
               serviceLink={`/service/vault/${subscription?.service?.id}`}
               key={id}
-              topRightAction={
-                (service_capability?.some(
-                  (capa) => capa?.service_capability_name === 'MANAGE_ACCESS'
-                ) ||
-                  useGranted('BYPASS')) && (
-                  <IconActions
-                    icon={
-                      <>
-                        <MoreVertIcon className="h-4 w-4 text-primary" />
-                        <span className="sr-only">
-                          {t('HomePage.OpenManagement')}
-                        </span>
-                      </>
-                    }>
-                    <Button
-                      variant={'ghost'}
-                      className="normal-case w-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        router.push(
-                          `/manage/service/${subscription?.service?.id}`
-                        );
-                      }}>
-                      {t('HomePage.Manage')}
-                    </Button>
-                  </IconActions>
-                )
-              }
               service={
                 subscription?.service as unknown as serviceList_fragment$data
               }

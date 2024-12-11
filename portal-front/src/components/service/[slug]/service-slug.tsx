@@ -9,6 +9,7 @@ import { ServiceByIdWithSubscriptions } from '@/components/service/service.graph
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import TriggerButton from '@/components/ui/trigger-button';
+import useAdminPath from '@/hooks/useAdminPath';
 import { RESTRICTION } from '@/utils/constant';
 import { DeleteIcon } from 'filigran-icon';
 import {
@@ -58,7 +59,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const breadcrumbValue = [
     {
-      label: 'Home',
+      label: t('MenuLinks.Home'),
       href: '/',
     },
     {
@@ -135,41 +136,44 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
       <div className="flex gap-s items-center">
-        <GuardCapacityComponent
-          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-          <Combobox
-            key={selectedSubscription?.id}
-            className="w-[200px]"
-            dataTab={dataOrganizationsTab}
-            order={'Select an organization'}
-            placeholder={'Select an organization'}
-            emptyCommand={'Not found'}
-            onValueChange={onValueChange}
-            value={selectedSubscription?.organization.name ?? ''}
-            onInputChange={() => {}}
-          />
+        {useAdminPath() && (
+          <>
+            <Combobox
+              key={selectedSubscription?.id}
+              className="w-[200px]"
+              dataTab={dataOrganizationsTab}
+              order={t('OrganizationInServiceAction.SelectOrganization')}
+              placeholder={t('OrganizationInServiceAction.SelectOrganization')}
+              emptyCommand={t('Utils.NotFound')}
+              onValueChange={onValueChange}
+              value={selectedSubscription?.organization.name ?? ''}
+              onInputChange={() => {}}
+            />
 
-          <AlertDialogComponent
-            actionButtonText="Remove"
-            variantName="destructive"
-            AlertTitle="Remove organization"
-            triggerElement={
-              <Button
-                variant="ghost"
-                aria-label="Delete Organization from the service">
-                <DeleteIcon className="h-4 w-4" />
-              </Button>
-            }
-            onClickContinue={() => removeOrganization(selectedSubscription)}>
-            <div>
-              Are you sure you want to delete this organization{' '}
-              <span className="font-bold">
-                {selectedSubscription?.organization.name}
-              </span>{' '}
-              from this service ? This action cannot be undone.
-            </div>
-          </AlertDialogComponent>
-        </GuardCapacityComponent>
+            <AlertDialogComponent
+              actionButtonText={t('MenuActions.Remove')}
+              variantName="destructive"
+              AlertTitle={t('OrganizationInServiceAction.RemoveOrganization')}
+              triggerElement={
+                <Button
+                  variant="ghost"
+                  aria-label={t(
+                    'OrganizationInServiceAction.DeleteOrgFromService'
+                  )}>
+                  <DeleteIcon className="h-4 w-4" />
+                </Button>
+              }
+              onClickContinue={() => removeOrganization(selectedSubscription)}>
+              <div>
+                <>{t('OrganizationInServiceAction.ConfirmDelete1')}</>{' '}
+                <span className="font-bold">
+                  {selectedSubscription?.organization.name}
+                </span>{' '}
+                <>{t('OrganizationInServiceAction.ConfirmDelete2')}</>{' '}
+              </div>
+            </AlertDialogComponent>
+          </>
+        )}
       </div>
       <div className="flex gap-s flex-wrap">
         <DataTableHeadBarOptions />
@@ -189,14 +193,13 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               isAllowedInviteUser() && (
                 <TriggerButton
                   onClick={() => setCurrentUser({})}
-                  label="Invite user"
+                  label={t('Service.InviteUser')}
                 />
               )
             }
           />
         </GuardCapacityComponent>
-        <GuardCapacityComponent
-          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+        {useAdminPath() && (
           <ServiceSlugAddOrgaFormSheet
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
@@ -211,7 +214,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               </Button>
             }
           />
-        </GuardCapacityComponent>
+        )}
       </div>
     </div>
   );
