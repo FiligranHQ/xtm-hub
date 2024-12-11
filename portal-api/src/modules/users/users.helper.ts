@@ -8,6 +8,7 @@ import {
 import Organization, {
   OrganizationId,
 } from '../../model/kanel/public/Organization';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import User, {
   UserId,
   UserInitializer,
@@ -28,6 +29,7 @@ import {
   insertNewOrganization,
   loadOrganizationsFromEmail,
 } from '../organizations/organizations.helper';
+import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from './users.domain';
 
 export const addNewUserWithRoles = async (
@@ -128,14 +130,22 @@ export const getOrCreateUser = async (
 
 export const insertUserIntoOrganization = async (
   context: PortalContext,
-  user: User
+  user: User,
+  subscriptionId: SubscriptionId
 ) => {
+  const [subscription] = await loadSubscriptionBy(
+    'subscription_id',
+    subscriptionId
+  );
   const [organization] = await loadOrganizationsFromEmail(user.email);
   const userOrganization = await loadUserOrganization(context, {
     user_id: user.id,
     organization_id: organization.id,
   });
-  if (userOrganization.length === 0) {
+  if (
+    userOrganization.length === 0 &&
+    subscription.organization_id === organization.id
+  ) {
     await createUserOrganizationRelationUnsecure({
       user_id: user.id,
       organizations_id: [organization.id],

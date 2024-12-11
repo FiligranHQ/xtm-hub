@@ -43,11 +43,9 @@ const resolvers: Resolvers = {
         email: input.email,
       });
 
-      await insertUserIntoOrganization(context, user);
-
       const subscription_id = fromGlobalId(input.subscriptionId)
         .id as SubscriptionId;
-
+      await insertUserIntoOrganization(context, user, subscription_id);
       if (!subscription_id) {
         throw new GraphQLError('Sorry the subscription does not exist', {
           extensions: { code: '[User_Service] UNKNOWN SUBSCRIPTION' },
