@@ -6,7 +6,12 @@ test.beforeEach('Remove subscription', async () => {
   await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
 });
 
+test.afterAll('Remove subscription', async () => {
+  await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
+});
+
 test('should confirm service management is ok', async ({ page }) => {
+  await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
   const loginPage = new LoginPage(page);
   await loginPage.login();
 
