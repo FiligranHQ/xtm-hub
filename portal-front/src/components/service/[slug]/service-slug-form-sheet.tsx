@@ -1,3 +1,8 @@
+import {
+  userListFragment,
+  UserListQuery,
+} from '@/components/admin/user/user-list';
+import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
@@ -18,15 +23,26 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Tag,
+  TagInput,
   useToast,
 } from 'filigran-ui/clients';
-import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
+import { Button, MultiSelectFormField } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, ReactNode, useContext } from 'react';
+import { FunctionComponent, ReactNode, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-relay';
-import { z, ZodSchema } from 'zod';
+import {
+  useLazyLoadQuery,
+  useMutation,
+  useRefetchableFragment,
+} from 'react-relay';
+import { z } from 'zod';
 import { serviceCapabilityMutation } from '../../../../__generated__/serviceCapabilityMutation.graphql';
+import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
+import {
+  UserFilter,
+  userListQuery,
+} from '../../../../__generated__/userListQuery.graphql';
 import { userServiceCreateMutation } from '../../../../__generated__/userServiceCreateMutation.graphql';
 
 interface ServiceSlugFormSheetProps {
@@ -69,22 +85,29 @@ export const ServiceSlugFormSheet: FunctionComponent<
     },
   ];
 
-  const form = useForm<z.infer<ZodSchema>>({
+  const capabilitiesFormSchema = z.object({
+    capabilities: z.array(z.string()),
+  });
+
+  // Schéma étendu
+  const extendedSchema = capabilitiesFormSchema.extend({
+    email: z
+      .array(
+        z.object({
+          id: z.string(),
+          text: z.string(),
+        })
+      )
+      .min(1, { message: 'Please provide at least one email.' }),
+  });
+
+  // Utilisation de `useForm`
+  const form = useForm({
     resolver: zodResolver(
-      !userService.id
-        ? (capabilitiesFormSchema.extend({
-            email: z
-              .string()
-              .min(2, { message: 'Email must be at least 2 characters.' })
-              .email('This is not a valid email.'),
-          }) as z.ZodObject<{
-            capabilities: z.ZodArray<z.ZodString, 'many'>;
-            email: z.ZodString;
-          }>)
-        : capabilitiesFormSchema
+      !userService.id ? extendedSchema : capabilitiesFormSchema
     ),
     defaultValues: {
-      email: '',
+      email: [{ id: '', text: '' }],
       capabilities: currentCapabilities,
     },
   });
@@ -117,7 +140,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
         variables: {
           connections: [connectionId],
           input: {
-            email: values.email,
+            email: values.email[0].text,
             capabilities: values.capabilities,
             subscriptionId: subscriptionId,
           },
@@ -125,7 +148,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
         onCompleted() {
           toast({
             title: 'Success',
-            description: `${values.email} ${t('Utils.Modified')}`,
+            description: `${values.email[0].text} ${t('Utils.Modified')}`,
           });
         },
         onError(error) {
@@ -139,6 +162,41 @@ export const ServiceSlugFormSheet: FunctionComponent<
     }
     setOpen(false);
   };
+
+  const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
+
+  const [filter, setFilter] = useState<UserFilter>({
+    search: undefined,
+    organization: me?.selected_organization_id,
+  });
+  const handleInputChange = (inputValue: string) => {
+    setFilter((prevFilter) => {
+      const updatedFilter = {
+        ...prevFilter,
+        search: inputValue,
+      };
+      refetch({ filter: updatedFilter });
+      return updatedFilter;
+    });
+  };
+  const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
+    count: pageSize,
+    orderMode: orderMode,
+    orderBy: orderBy,
+    filter,
+  });
+  const [data, refetch] = useRefetchableFragment<
+    userListQuery,
+    userList_users$key
+  >(userListFragment, queryData);
+
+  const tagsAutocomplete = data?.users?.edges?.map((edge) => ({
+    id: edge.node.id,
+    text: edge.node.email,
+  }));
+  const { setValue } = form;
+
+  const [tags, setTags] = useState<Tag[]>([]);
 
   return (
     <Sheet
@@ -167,9 +225,21 @@ export const ServiceSlugFormSheet: FunctionComponent<
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Email"
+                      <TagInput
                         {...field}
+                        placeholder={t('Service.Management.Email')}
+                        tags={tags}
+                        activeTagIndex={0}
+                        setActiveTagIndex={() => {}}
+                        enableAutocomplete={true}
+                        autocompleteOptions={tagsAutocomplete}
+                        maxTags={1}
+                        placeholderWhenFull={t('Service.Management.OneUserMax')}
+                        setTags={(newTags) => {
+                          setTags(newTags);
+                          setValue('email', newTags as Tag[]);
+                        }}
+                        onInputChange={handleInputChange}
                       />
                     </FormControl>
                     <FormMessage />

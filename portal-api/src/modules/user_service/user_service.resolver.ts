@@ -10,7 +10,10 @@ import UserService from '../../model/kanel/public/UserService';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../subcription/subscription.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
-import { getOrCreateUser } from '../users/users.helper';
+import {
+  getOrCreateUser,
+  insertUserIntoOrganization,
+} from '../users/users.helper';
 import {
   createUserServiceAccess,
   isUserServiceExist,
@@ -39,11 +42,10 @@ const resolvers: Resolvers = {
       const user = await getOrCreateUser({
         email: input.email,
       });
-      //TODO  Need to add to the organization but will be delete later
 
       const subscription_id = fromGlobalId(input.subscriptionId)
         .id as SubscriptionId;
-
+      await insertUserIntoOrganization(context, user, subscription_id);
       if (!subscription_id) {
         throw new GraphQLError('Sorry the subscription does not exist', {
           extensions: { code: '[User_Service] UNKNOWN SUBSCRIPTION' },
