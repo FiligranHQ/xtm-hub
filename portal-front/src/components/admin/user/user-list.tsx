@@ -31,7 +31,7 @@ import {
 } from '../../../../__generated__/userListQuery.graphql';
 
 // Configuration or Preloader Query
-const UserListQuery = graphql`
+export const UserListQuery = graphql`
   query userListQuery(
     $count: Int!
     $cursor: ID
@@ -43,7 +43,7 @@ const UserListQuery = graphql`
   }
 `;
 
-const userListFragment = graphql`
+export const userListFragment = graphql`
   fragment userList_users on Query
   @refetchable(queryName: "UsersPaginationQuery") {
     users(

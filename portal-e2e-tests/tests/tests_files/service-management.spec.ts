@@ -1,13 +1,21 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import { removeOrganization } from '../db-utils/organization.helper';
-import { removeSubscription } from '../db-utils/subscription.helper';
+import {
+  getSubscriptions,
+  removeSubscription,
+} from '../db-utils/subscription.helper';
 
-test.beforeAll('Remove subscription', async () => {
+test.beforeEach('Remove subscription', async () => {
+  await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
+});
+
+test.afterAll('Remove subscription', async () => {
   await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
 });
 
 test('should confirm service management is ok', async ({ page }) => {
+  await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
+
   const loginPage = new LoginPage(page);
   await loginPage.login();
 
@@ -35,8 +43,15 @@ test('should confirm service management is ok', async ({ page }) => {
 
   // Add user
   await page.getByLabel('Invite user').click();
-  await page.getByPlaceholder('Email').click();
-  await page.getByPlaceholder('Email').fill('user@thales.com');
+  await page.getByPlaceholder('EMAIL').click();
+  await page.getByPlaceholder('EMAIL').fill('use');
+  await page.getByText('user@thales.com').click();
+  await page.getByRole('dialog').nth(1).press('Enter');
+  await page
+    .locator('div')
+    .filter({ hasText: 'Access service' })
+    .nth(2)
+    .click();
   await page.getByLabel('Capabilities').click();
   await page.getByLabel('Suggestions').getByText('ACCESS_SERVICE').click();
   await page
@@ -45,6 +60,7 @@ test('should confirm service management is ok', async ({ page }) => {
     .nth(1)
     .click();
   await page.getByRole('button', { name: 'Validate' }).click();
+
   await expect(
     page.getByRole('cell', { name: 'user@thales.com' })
   ).toBeVisible();

@@ -1,4 +1,5 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbUnsecure } from '../../../knexfile';
 import {
@@ -8,6 +9,7 @@ import {
 import Organization, {
   OrganizationId,
 } from '../../model/kanel/public/Organization';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import User, {
   UserId,
   UserInitializer,
@@ -18,13 +20,18 @@ import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { hashPassword } from '../../utils/hash-password.util';
+import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
-import { createUserOrganizationRelationUnsecure } from '../common/user-organization.helper';
+import {
+  createUserOrganizationRelationUnsecure,
+  loadUserOrganization,
+} from '../common/user-organization.helper';
 import { addRolesToUser } from '../common/user-role-portal.helper';
 import {
   insertNewOrganization,
   loadOrganizationsFromEmail,
 } from '../organizations/organizations.helper';
+import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from './users.domain';
 
 export const addNewUserWithRoles = async (
@@ -121,6 +128,33 @@ export const getOrCreateUser = async (
 ) => {
   const user = await loadUserBy({ email: userInfo.email });
   return user ? user : await createNewUserFromInvitation(userInfo);
+};
+
+export const insertUserIntoOrganization = async (
+  context: PortalContext,
+  user: User,
+  subscriptionId: SubscriptionId
+) => {
+  const [subscription] = await loadSubscriptionBy('id', subscriptionId);
+  const [organization] = await loadOrganizationsFromEmail(user.email);
+  const userOrganization = await loadUserOrganization(context, {
+    user_id: user.id,
+    organization_id: organization.id,
+  });
+  if (subscription.organization_id !== organization.id) {
+    throw new GraphQLError(
+      'The email address does not correspond to the current organization',
+      {
+        extensions: { code: '[User_Service] EMAIL ADDRESS WRONG DOMAIN' },
+      }
+    );
+  }
+  if (isEmpty(userOrganization)) {
+    await createUserOrganizationRelationUnsecure({
+      user_id: user.id,
+      organizations_id: [organization.id],
+    });
+  }
 };
 
 export const mapUserToGraphqlUser = (
