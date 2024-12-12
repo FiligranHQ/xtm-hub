@@ -19,7 +19,7 @@ test('should confirm service management is ok', async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.login();
 
-  await page.getByLabel('Settings menu').click();
+  await page.getByRole('button', { name: 'Settings' }).click();
   await page.getByRole('link', { name: 'Services' }).click();
   await page
     .getByRole('row', { name: 'Partner Vault This service' })
@@ -32,7 +32,7 @@ test('should confirm service management is ok', async ({ page }) => {
   await page.getByLabel('Organization', { exact: true }).click();
   await page.getByLabel('Thales').click();
   await page.getByRole('button', { name: 'Validate' }).click();
-  await page.locator('button').filter({ hasText: 'Internal' }).click();
+  await page.getByRole('main').getByText('Internal').click();
   await page.getByRole('option', { name: 'Thales' }).click();
 
   await expect(
@@ -84,6 +84,6 @@ test('should confirm service management is ok', async ({ page }) => {
   // Unsubscribe organization
   await page.getByLabel('Delete Organization from the').click();
   await page.getByRole('button', { name: 'Remove' }).click();
-  await page.locator('button').filter({ hasText: 'Internal' }).click();
+  await page.getByRole('main').getByText('Internal').click();
   await expect(page.getByRole('option', { name: 'Thales' })).not.toBeVisible();
 });
