@@ -286,7 +286,9 @@ enum UserServiceOrdering {
 input UserServiceInput {
   email: String!
   capabilities: [String]
-  subscriptionId: String!
+  serviceId: String
+  organizationId: String
+  subscriptionId: String
 }
 
 type UserServiceConnection {

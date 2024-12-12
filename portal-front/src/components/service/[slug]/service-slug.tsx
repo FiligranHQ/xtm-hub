@@ -70,7 +70,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     queryData.serviceByIdWithSubscriptions?.subscriptions ?? []
   ).map((subscription) => {
     return {
-      value: subscription?.organization?.name ?? '',
+      value: subscription?.organization?.id ?? '',
       label: subscription?.organization?.name ?? '',
     };
   });
@@ -79,7 +79,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     const subscription =
       queryData.serviceByIdWithSubscriptions?.subscriptions?.find(
         (subscription) => {
-          return subscription?.organization.name === value;
+          return subscription?.organization.id === value;
         }
       );
     setSelectedSubscription(
@@ -147,7 +147,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               placeholder={t('OrganizationInServiceAction.SelectOrganization')}
               emptyCommand={t('Utils.NotFound')}
               onValueChange={onValueChange}
-              value={selectedSubscription?.organization.name ?? ''}
+              value={selectedSubscription?.organization.id ?? ''}
               onInputChange={() => {}}
             />
 
@@ -183,7 +183,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           setOpen={setOpenSheet}
           userService={currentUser}
           connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
-          subscriptionId={selectedSubscription?.id ?? ''}
+          dataOrganizationsTab={dataOrganizationsTab}
+          subscription={selectedSubscription}
           trigger={
             <TriggerButton
               onClick={() => setCurrentUser({})}

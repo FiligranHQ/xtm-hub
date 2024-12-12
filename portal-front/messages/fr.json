@@ -42,6 +42,12 @@
     "SubscribeOrganization": "Souscrire une organisation",
     "GoTo": "Aller au service",
     "GoToManagement": "Aller à la page de management du service",
+    "Capabilities": {
+      "ManageAccessName": "Manage access",
+      "ManageAccessDescription": "Vous pouvez accéder au service et inviter des utilisateurs à ce service",
+      "AccessServiceName": "Access service",
+      "AccessServiceDescription": "Vous avez uniquement accès à un service"
+    },
     "Management": {
       "Email": "EMAIL",
       "OneUserMax": "1 utilisateur max"

@@ -135,7 +135,7 @@ export const insertUserIntoOrganization = async (
   user: User,
   subscriptionId: SubscriptionId
 ) => {
-  const [subscription] = await loadSubscriptionBy('id', subscriptionId);
+  const [subscription] = await loadSubscriptionBy({ id: subscriptionId });
   const [organization] = await loadOrganizationsFromEmail(user.email);
   const userOrganization = await loadUserOrganization(context, {
     user_id: user.id,

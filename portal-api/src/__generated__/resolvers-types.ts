@@ -666,7 +666,9 @@ export type UserServiceEdge = {
 export type UserServiceInput = {
   capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Scalars['String']['input'];
-  subscriptionId: Scalars['String']['input'];
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
+  subscriptionId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum UserServiceOrdering {
