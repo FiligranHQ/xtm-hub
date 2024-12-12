@@ -177,7 +177,10 @@ export const loadServiceByWithCapabilities = async (
       )
     )
 
-    .where({ 'Service.id': service_id })
+    .where({
+      'Service.id': service_id,
+      'User_Service.user_id': context.user.id,
+    })
     .groupBy(['Service.id', 'User_Service.id'])
     .first();
 };
