@@ -46,14 +46,15 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
         setMenuOpen(false);
         toast({
           title: t('Utils.Success'),
-          description:
-            response.editDocument.file_name + ' ' + t('Utils.Modified'),
+          description: t('VaultActions.DocumentUpdated', {
+            file_name: response.editDocument.file_name,
+          }),
         });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },

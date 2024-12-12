@@ -42,14 +42,15 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         setOpenSheet(false);
         toast({
           title: t('Utils.Success'),
-          description:
-            response.addDocument.file_name + ' ' + t('Utils.Inserted'),
+          description: t('VaultActions.DocumentAdded', {
+            file_name: response.addDocument.file_name,
+          }),
         });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },

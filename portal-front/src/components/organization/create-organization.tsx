@@ -3,6 +3,7 @@ import { organizationFormSchema } from '@/components/organization/organization-f
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
 import TriggerButton from '@/components/ui/trigger-button';
 import { useToast } from 'filigran-ui/clients';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -15,6 +16,7 @@ interface CreateOrganizationProps {
 export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
   connectionId,
 }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const [commitOrganizationCreationMutation] =
     useMutation<organizationCreateMutation>(CreateOrganizationMutation);
@@ -32,11 +34,17 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
           return;
         }
         setOpenSheet(false);
+        toast({
+          title: t('Utils.Success'),
+          description: t('OrganizationActions.OrganizationCreated', {
+            name: values.name,
+          }),
+        });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },

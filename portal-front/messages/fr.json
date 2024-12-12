@@ -81,6 +81,16 @@
       "VaultTitle": "Administration du Vault"
     }
   },
+  "ServiceActions": {
+    "OrganizationDeleted": "L'organisation {name} a été supprimée",
+    "OrganizationAdded": "L'organisation a été ajoutée",
+    "UserCapabilitiesModified": "Les capacités de {email}'s ont été modifiées"
+  },
+  "VaultActions": {
+    "DocumentDeleted": "{file_name} a été supprimé",
+    "DocumentAdded": "{file_name} a été ajouté",
+    "DocumentUpdated": "{file_name} a été modifié"
+  },
   "Utils": {
     "Cancel": "Annuler",
     "Continue": "Continuer",
@@ -108,6 +118,11 @@
   "RemoveUserOrgDialog": {
     "TextRemoveThisUser": "Êtes-vous sûr de vouloir retirer cet utilisateur {email} de votre organisation ?"
   },
+  "OrganizationActions": {
+    "OrganizationCreated": "L'organisation {name} a été créée",
+    "OrganizationUpdated": "L'organisation {name} a été modifiée",
+    "OrganizationDeleted": "L'organisation a été supprimée"
+  },
   "OrganizationInServiceAction": {
     "RemoveOrganization": "Supprimer l'organisation",
     "DeleteOrgFromService": "Supprimer l'organisation du service",
@@ -120,7 +135,10 @@
     "UpdateUser": "Mettre à jour l'utilisateur",
     "DetailsUser": "Détails de l'utilisateur",
     "AddUser": "Ajouter un utilisateur",
-    "RemoveUser": "Retirer l'utilisateur"
+    "RemoveUser": "Retirer l'utilisateur",
+    "UserCreated": "L'utilisateur {email} a été créé",
+    "UserUpdated": "L'utilisateur {email} a été modifié",
+    "UserDeleted": "L'utilisateur a été supprimé"
   },
   "UserListPage": {
     "Title": "Liste des utilisateurs",

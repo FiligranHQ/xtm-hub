@@ -100,14 +100,16 @@ export const ServiceSlugFormSheet: FunctionComponent<
         },
         onCompleted() {
           toast({
-            title: 'Success',
-            description: `${userService.user.email} ${t('Utils.Modified')}`,
+            title: t('Utils.Success'),
+            description: t('ServiceActions.UserCapabilitiesModified', {
+              email: userService.user.email,
+            }),
           });
         },
         onError(error) {
           toast({
             variant: 'destructive',
-            title: 'Error',
+            title: t('Utils.Error'),
             description: <>{error.message}</>,
           });
         },
