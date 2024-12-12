@@ -4,6 +4,7 @@ export const subscriptionWithUserServiceFragment = graphql`
   fragment subscriptionWithUserService_fragment on Subscription {
     id
     organization {
+      id
       name
     }
     user_service {
