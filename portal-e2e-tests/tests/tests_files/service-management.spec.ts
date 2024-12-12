@@ -32,7 +32,7 @@ test('should confirm service management is ok', async ({ page }) => {
   await page.getByLabel('Organization', { exact: true }).click();
   await page.getByLabel('Thales').click();
   await page.getByRole('button', { name: 'Validate' }).click();
-  await page.getByRole('main').getByText('Filigran').click();
+  await page.getByRole('main').getByText('Filigran', { exact: true }).click();
   await page.getByRole('option', { name: 'Thales' }).click();
 
   await expect(
@@ -84,6 +84,6 @@ test('should confirm service management is ok', async ({ page }) => {
   // Unsubscribe organization
   await page.getByLabel('Delete Organization from the').click();
   await page.getByRole('button', { name: 'Remove' }).click();
-  await page.getByRole('main').getByText('Filigran').click();
+  await page.getByRole('main').getByText('Filigran', { exact: true }).click();
   await expect(page.getByRole('option', { name: 'Thales' })).not.toBeVisible();
 });

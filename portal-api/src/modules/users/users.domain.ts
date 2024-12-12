@@ -159,6 +159,11 @@ export const loadUsers = async (
   const loadUsersQuery = query
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
     .leftJoin(
+      'User_Organization as UserOrgFilter',
+      'User.id',
+      'UserOrgFilter.user_id'
+    )
+    .leftJoin(
       'Organization as org',
       'User_Organization.organization_id',
       '=',
@@ -223,14 +228,11 @@ export const loadUsers = async (
   }
   if (filter.organization) {
     const organizationId = extractId(filter.organization);
-    loadUsersQuery.where(
-      'User_Organization.organization_id',
-      '=',
-      organizationId
-    );
+    loadUsersQuery.where('UserOrgFilter.organization_id', '=', organizationId);
   }
 
   const userConnection = await loadUsersQuery.asConnection<UserConnection>();
+
   userConnection.edges = userConnection.edges.map((edge) => {
     const edgeUser = edge.node as unknown as UserLoadUserBy;
     return {
@@ -239,9 +241,27 @@ export const loadUsers = async (
     };
   });
 
-  const { totalCount } = await db<User>(context, 'User', opts)
+  const queryTotalCount = db<User>(context, 'User', opts)
+    .leftJoin(
+      'User_Organization as UserOrgFilter',
+      'User.id',
+      'UserOrgFilter.user_id'
+    )
     .countDistinct('User.id as totalCount')
     .first();
+  if (filter.search) {
+    queryTotalCount
+      .where('email', 'LIKE', `%${filter.search}%`)
+      .orWhere('first_name', 'LIKE', `%${filter.search}%`)
+      .orWhere('last_name', 'LIKE', `%${filter.search}%`);
+  }
+  if (filter.organization) {
+    const organizationId = extractId(filter.organization);
+    queryTotalCount.where('UserOrgFilter.organization_id', '=', organizationId);
+  }
+
+  const { totalCount } = await queryTotalCount;
+
   return {
     totalCount,
     ...userConnection,
