@@ -1,5 +1,6 @@
 name: Run XTM Hub CI/CD
 on:
+  workflow_dispatch:
   push:
     branches:
       - "main"
