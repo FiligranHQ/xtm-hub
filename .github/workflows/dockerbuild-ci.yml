@@ -203,3 +203,5 @@ jobs:
     steps:
       - name: restart deployment on staging
         run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN }}" -n xtmhub rollout restart deployment
+      - name: restart deployment on development
+        run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN_DEV }}" -n 'xtmhub-dev' rollout restart deployment
