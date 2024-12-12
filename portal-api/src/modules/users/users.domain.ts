@@ -158,7 +158,6 @@ export const loadUsers = async (
 
   const loadUsersQuery = query
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
-
     .leftJoin(
       'Organization as org',
       'User_Organization.organization_id',
