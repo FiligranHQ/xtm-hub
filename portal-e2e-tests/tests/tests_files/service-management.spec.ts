@@ -6,9 +6,7 @@ import {
 } from '../db-utils/subscription.helper';
 
 test.beforeEach('Remove subscription', async () => {
-  console.log('-------------------beforeRemove-------------------');
   await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
-  console.log('-------------------afterRemove-------------------');
 });
 
 test.afterAll('Remove subscription', async () => {
@@ -40,8 +38,15 @@ test('should confirm service management is ok', async ({ page }) => {
 
   // Add user
   await page.getByLabel('Invite user').click();
-  await page.getByPlaceholder('Email').click();
-  await page.getByPlaceholder('Email').fill('user@thales.com');
+  await page.getByPlaceholder('EMAIL').click();
+  await page.getByPlaceholder('EMAIL').fill('use');
+  await page.getByText('user@thales.com').click();
+  await page.getByRole('dialog').nth(1).press('Enter');
+  await page
+    .locator('div')
+    .filter({ hasText: 'Access service' })
+    .nth(2)
+    .click();
   await page.getByLabel('Capabilities').click();
   await page.getByLabel('Suggestions').getByText('ACCESS_SERVICE').click();
   await page
@@ -51,9 +56,6 @@ test('should confirm service management is ok', async ({ page }) => {
     .click();
   await page.getByRole('button', { name: 'Validate' }).click();
 
-  const buffer1 = await page.screenshot();
-  console.log('buffer1--', buffer1.toString('base64'));
-  console.log('---');
   await expect(
     page.getByRole('cell', { name: 'user@thales.com' })
   ).toBeVisible();
