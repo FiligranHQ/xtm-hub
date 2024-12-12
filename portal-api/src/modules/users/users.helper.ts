@@ -143,7 +143,7 @@ export const insertUserIntoOrganization = async (
   });
   if (subscription.organization_id !== organization.id) {
     throw new GraphQLError(
-      'The email address does not correspond to organization',
+      'The email address does not correspond to the current organization',
       {
         extensions: { code: '[User_Service] EMAIL ADDRESS WRONG DOMAIN' },
       }
