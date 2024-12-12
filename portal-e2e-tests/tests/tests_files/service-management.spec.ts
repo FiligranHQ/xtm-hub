@@ -1,9 +1,14 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import { removeSubscription } from '../db-utils/subscription.helper';
+import {
+  getSubscriptions,
+  removeSubscription,
+} from '../db-utils/subscription.helper';
 
 test.beforeEach('Remove subscription', async () => {
+  console.log('-------------------beforeRemove-------------------');
   await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
+  console.log('-------------------afterRemove-------------------');
 });
 
 test.afterAll('Remove subscription', async () => {
@@ -12,6 +17,8 @@ test.afterAll('Remove subscription', async () => {
 
 test('should confirm service management is ok', async ({ page }) => {
   await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
+  const essai = await getSubscriptions();
+  console.log('*****************essai', essai);
   const loginPage = new LoginPage(page);
   await loginPage.login();
 
