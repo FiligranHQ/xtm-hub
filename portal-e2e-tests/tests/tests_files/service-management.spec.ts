@@ -17,8 +17,7 @@ test.afterAll('Remove subscription', async () => {
 
 test('should confirm service management is ok', async ({ page }) => {
   await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
-  const essai = await getSubscriptions();
-  console.log('*****************essai', essai);
+
   const loginPage = new LoginPage(page);
   await loginPage.login();
 
@@ -51,6 +50,10 @@ test('should confirm service management is ok', async ({ page }) => {
     .nth(1)
     .click();
   await page.getByRole('button', { name: 'Validate' }).click();
+
+  const buffer1 = await page.screenshot();
+  console.log('buffer1--', buffer1.toString('base64'));
+  console.log('---');
   await expect(
     page.getByRole('cell', { name: 'user@thales.com' })
   ).toBeVisible();
