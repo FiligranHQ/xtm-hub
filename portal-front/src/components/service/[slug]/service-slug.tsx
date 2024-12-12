@@ -203,10 +203,14 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         </GuardCapacityComponent>
         {useAdminPath() && (
           <ServiceSlugAddOrgaFormSheet
+            subscriptions={
+              queryData?.serviceByIdWithSubscriptions
+                ?.subscriptions as subscriptionWithUserService_fragment$data[]
+            }
+            setSelectedSubscription={setSelectedSubscription}
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
             serviceId={serviceId}
-            connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
             trigger={
               <Button
                 className="text-nowrap"

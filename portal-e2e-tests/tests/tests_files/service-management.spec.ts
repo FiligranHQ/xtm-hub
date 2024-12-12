@@ -32,8 +32,7 @@ test('should confirm service management is ok', async ({ page }) => {
   await page.getByLabel('Organization', { exact: true }).click();
   await page.getByLabel('Thales').click();
   await page.getByRole('button', { name: 'Validate' }).click();
-  await page.getByRole('main').getByText('Filigran', { exact: true }).click();
-  await page.getByRole('option', { name: 'Thales' }).click();
+  await page.getByRole('main').getByText('Thales', { exact: true }).click();
 
   await expect(
     page.getByRole('cell', { name: 'admin@thales.com' })
