@@ -202,4 +202,4 @@ jobs:
     if: github.event_name != 'pull_request'
     steps:
       - name: restart deployment on staging
-        run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN }}" -n xtmhub rollout restart deployment
+        run: kubectl --server=https://api.staging.eu-west.filigran.io --token=${{ secrets.K8S_TOKEN }} -n xtmhub rollout restart deployment
