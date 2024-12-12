@@ -85,7 +85,7 @@ const httpServer = createServer(app);
 const schema = createSchema();
 app.use(graphqlUploadExpress());
 
-if (!['production', 'staging'].includes(process.env.NODE_ENV)) {
+if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
   const printedSchema = printSchema(schema);
   fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
 }
