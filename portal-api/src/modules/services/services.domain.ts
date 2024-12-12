@@ -15,7 +15,7 @@ import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
-import { ROLE_ADMIN_ORGA } from '../../portal.const';
+import { CAPABILITY_BYPASS, ROLE_ADMIN_ORGA } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscription } from '../subcription/subscription.domain';
@@ -216,7 +216,7 @@ export const loadServiceWithSubscriptions = async (
     )
     .groupBy(['User_Service.id']);
 
-  const querySubscriptions = await db<Subscription>(context, 'Subscription')
+  const querySubscriptions = db<Subscription>(context, 'Subscription')
     .where('Subscription.service_id', '=', service_id)
     .leftJoin(
       queryUserServiceWithCapa.as('userService'),
@@ -244,7 +244,7 @@ export const loadServiceWithSubscriptions = async (
         `COALESCE( CASE WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg( json_build_object( 'id', "userService".id, 'service_capability', "userService".service_capabilities, 'user', CASE WHEN "user".id IS NOT NULL THEN json_build_object( 'id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, '__typename', 'User' ) ELSE NULL END, '__typename', 'User_Service' ) )::json END, '[]'::json ) AS user_service`
       )
     )
-    .groupBy(['Subscription.id', 'org.*']);
+    .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.*']);
 
   const [service] = await db<Service>(context, 'Service').where(
     'Service.id',
@@ -252,7 +252,17 @@ export const loadServiceWithSubscriptions = async (
     service_id
   );
 
-  return { ...service, subscriptions: querySubscriptions };
+  if (!context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)) {
+    querySubscriptions.where(
+      'Subscription.organization_id',
+      '=',
+      context.user.selected_organization_id
+    );
+  }
+
+  const subscriptions = await querySubscriptions;
+
+  return { ...service, subscriptions };
 };
 
 export const insertService = async (context: PortalContext, dataService) => {
