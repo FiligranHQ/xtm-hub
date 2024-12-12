@@ -61,7 +61,6 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         accessorKey: 'user.last_name',
         id: 'last_name',
         header: 'Last Name',
-        hidden: true,
       },
       {
         accessorKey: 'user.email',
