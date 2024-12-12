@@ -195,7 +195,7 @@ jobs:
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
-  restart-staging:
+  restart-deployment:
     needs: build-images-prod
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -203,5 +203,7 @@ jobs:
     steps:
       - name: restart deployment on staging
         run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN }}" -n xtmhub rollout restart deployment
+        if: github.ref == 'refs/heads/main'
       - name: restart deployment on development
         run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN_DEV }}" -n 'xtmhub-dev' rollout restart deployment
+        if: github.ref == 'refs/heads/development'
