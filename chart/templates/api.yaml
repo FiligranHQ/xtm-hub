@@ -24,7 +24,7 @@ spec:
       - name: xtmhub-api
         #TODO: Rename portal to xtmhub once docker image has been renamed
         image: filigran/portal-api-prod:{{ .Values.xtmhub.version }}
-        {{- if eq .Values.xtmhub.version "main" }}
+        {{- if or (eq .Values.xtmhub.version "main") (eq .Values.xtmhub.version "development") }}
         imagePullPolicy: "Always"
         {{- else }}
         imagePullPolicy: "IfNotPresent"
@@ -83,7 +83,7 @@ spec:
             secretKeyRef:
               name: xtmhub-api-config
               key: OIDC_CLIENT_SECRET
-              optional: false      
+              optional: false
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
