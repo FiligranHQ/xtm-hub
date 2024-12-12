@@ -194,4 +194,6 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   );
 }
 
-logApp.info(`🚀 Server ready at http://localhost:` + portalConfig.port);
+logApp.info(
+  `🚀 Server ready at http://localhost:${portalConfig.port} (ENV: ${process.env.NODE_ENV})`
+);
