@@ -40,11 +40,17 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
 
       onCompleted: () => {
         setOpenSheet(false);
+        toast({
+          title: t('Utils.Success'),
+          description: t('OrganizationActions.OrganizationUpdated', {
+            name: values.name,
+          }),
+        });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },

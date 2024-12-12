@@ -2,6 +2,7 @@ import { organizationDeletion } from '@/components/organization/organization.gra
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
@@ -18,12 +19,17 @@ export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
 }) => {
   const [deleteOrganizationMutation] =
     useMutation<organizationDeletionMutation>(organizationDeletion);
-
+  const t = useTranslations();
   const { toast } = useToast();
   const onDeletedOrganization = (deletedOrganizationId: string) => {
     deleteOrganizationMutation({
       variables: { id: deletedOrganizationId, connections: [connectionId] },
-
+      onCompleted: () => {
+        toast({
+          title: t('Utils.Success'),
+          description: t('OrganizationActions.OrganizationDeleted'),
+        });
+      },
       onError: (error) => {
         const message = error.message.includes(
           'violates foreign key constraint "user_organization_id_foreign" on table "User"'
@@ -33,7 +39,7 @@ export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
 
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{message}</>,
         });
       },
