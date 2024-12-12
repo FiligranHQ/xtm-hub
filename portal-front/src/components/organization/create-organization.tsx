@@ -42,10 +42,17 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
         });
       },
       onError: (error) => {
+        const message = error.message.includes(
+          'duplicate key value violates unique constraint "organization_name_unique"'
+        )
+          ? t('OrganizationActions.ErrorNameAlreadyExists', {
+              name: values.name,
+            })
+          : error.message;
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: <>{message}</>,
         });
       },
     });
