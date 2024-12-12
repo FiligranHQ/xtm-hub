@@ -24,6 +24,7 @@ import {
   useToast,
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
@@ -42,7 +43,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
 > = ({ open, setOpen, trigger, serviceId, connectionId }) => {
   const [organizations] = getOrganizations();
-
+  const t = useTranslations();
   const { toast } = useToast();
 
   const [commitSubscriptionCreateMutation] =
@@ -71,14 +72,14 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       },
       onCompleted: () => {
         toast({
-          title: 'Success',
-          description: 'Organization added',
+          title: t('Utils.Success'),
+          description: t('ServiceActions.OrganizationAdded'),
         });
       },
       onError: (error: Error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },

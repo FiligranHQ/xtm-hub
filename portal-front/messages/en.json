@@ -85,6 +85,16 @@
       "VaultTitle": "Vault Administration"
     }
   },
+  "ServiceActions": {
+    "OrganizationDeleted": "Organization {name} has been deleted",
+    "OrganizationAdded": "Organization has been added",
+    "UserCapabilitiesModified": "{email}'s capabilities have been modified"
+  },
+  "VaultActions": {
+    "DocumentDeleted": "{file_name} has been deleted",
+    "DocumentAdded": "{file_name} has been added",
+    "DocumentUpdated": "{file_name} has been modified"
+  },
   "Utils": {
     "Cancel": "Cancel",
     "Continue": "Continue",
@@ -112,9 +122,14 @@
   "RemoveUserOrgDialog": {
     "TextRemoveThisUser": "Are you sure you want to remove this user {email} from your organization ?"
   },
+  "OrganizationActions": {
+    "OrganizationCreated": "Organization {name} has been created",
+    "OrganizationUpdated": "Organization {name} has been modified",
+    "OrganizationDeleted": "Organization has been deleted"
+  },
   "OrganizationInServiceAction": {
     "RemoveOrganization": "Remove organization",
-    "DeleteOrgFromService":"Delete Organization from the service",
+    "DeleteOrgFromService": "Delete Organization from the service",
     "SelectOrganization": "Select an organization",
     "ConfirmDelete1": "Are you sure you want to delete this organization",
     "ConfirmDelete2": "from this service ? This action cannot be undone."
@@ -124,7 +139,10 @@
     "UpdateUser": "Update user",
     "DetailsUser": "Details user",
     "AddUser": "Add user",
-    "RemoveUser": "Remove user"
+    "RemoveUser": "Remove user",
+    "UserCreated": "User {email} has been created",
+    "UserUpdated": "User {email} has been modified",
+    "UserDeleted": "User has been deleted"
   },
   "UserListPage": {
     "Title": "Users list",

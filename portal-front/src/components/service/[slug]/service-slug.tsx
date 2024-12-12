@@ -114,8 +114,10 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       },
       onCompleted: (response) => {
         toast({
-          title: 'Success',
-          description: `${subscription.organization.name} ${t('Utils.Deleted')}`,
+          title: t('Utils.Success'),
+          description: t('ServiceActions.OrganizationDeleted', {
+            name: subscription.organization.name,
+          }),
         });
         setSelectedSubscription(
           response.deleteSubscription
@@ -126,7 +128,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },

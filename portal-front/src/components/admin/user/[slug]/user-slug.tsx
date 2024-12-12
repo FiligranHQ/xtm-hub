@@ -50,6 +50,10 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       variables: { id: user.id },
       onCompleted: () => {
         router.replace('/admin/user');
+        toast({
+          title: t('Utils.Success'),
+          description: t('UserActions.UserDeleted'),
+        });
       },
       onError: (error) => {
         toast({

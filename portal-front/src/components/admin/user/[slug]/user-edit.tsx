@@ -33,11 +33,15 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
       variables: { input: { ...valuesWithoutPasswordField }, id: user.id },
       onCompleted: () => {
         setOpenSheet(false);
+        toast({
+          title: t('Utils.Success'),
+          description: t('UserActions.UserUpdated', { email: values.email }),
+        });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },

@@ -38,16 +38,17 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
       },
       onCompleted: (response) => {
         toast({
-          title: 'Success',
-          description:
-            response.deleteDocument.file_name + ' ' + t('Utils.Deleted'),
+          title: t('Utils.Success'),
+          description: t('VaultActions.DocumentDeleted', {
+            file_name: response.deleteDocument.file_name,
+          }),
         });
         setMenuOpen(false);
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: t('Utils.Error'),
           description: <>{error.message}</>,
         });
       },
