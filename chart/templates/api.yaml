@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: xtmhub-api
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '4001'
+    prometheus.io/metrics-prefix: "xtmhub_"
 spec:
   replicas: {{ .Values.xtmhub.api.replicas }}
   selector:
@@ -39,10 +43,6 @@ spec:
             path: /health
             port: 4001
             scheme: HTTP
-        annotations:
-          prometheus.io/scrape: 'true'
-          prometheus.io/port: '4001'
-          prometheus.io/metrics-prefix: "xtmhub_"
         env:
         - name: NODE_ENV
           value: {{ .Values.xtmhub.node_env }}
