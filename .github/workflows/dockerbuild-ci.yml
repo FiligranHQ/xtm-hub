@@ -13,6 +13,7 @@ on:
   pull_request:
     branches:
       - "main"
+      - "development"
     paths:
       - "portal-api/**"
       - "portal-front/**"
@@ -195,6 +196,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}:main
+            type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
   restart-deployment:
