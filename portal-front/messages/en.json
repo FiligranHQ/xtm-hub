@@ -131,7 +131,8 @@
     "Email": "Email",
     "FirstName": "First name",
     "LastName": "Last name",
-    "Roles": "Roles"
+    "Roles": "Roles",
+    "Organizations": "Organizations"
   },
   "MenuActions": {
     "Delete": "Delete",

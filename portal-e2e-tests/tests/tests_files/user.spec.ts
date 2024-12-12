@@ -23,10 +23,12 @@ test('should confirm CRUD of users is ok', async ({ page }) => {
   await page.getByLabel('Roles').press('Enter');
   await page.getByRole('option', { name: 'USER' }).click();
   await page.getByLabel('Organizations').press('Enter');
-  await page.getByText('Thales', { exact: true }).click();
+  await page.getByRole('option', { name: 'Thales' }).click();
   await page.getByRole('button', { name: 'Validate' }).click();
   await expect(
-    page.getByRole('cell', { name: 'userInE2E@thales.com' })
+    page
+      .getByRole('cell', { name: 'userInE2E@thales.com', exact: true })
+      .locator('span')
   ).toBeVisible();
 
   // Edit user
