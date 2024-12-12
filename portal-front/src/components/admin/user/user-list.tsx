@@ -9,10 +9,11 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
 import { RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
 import { Badge, Input } from 'filigran-ui/servers';
@@ -103,6 +104,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     resetAll,
   } = useUserListLocalstorage();
 
+  const isAdminPath = useAdminPath();
   const router = useRouter();
   const { me } = useContext<Portal>(portalContext);
 
@@ -151,6 +153,25 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
         );
       },
     },
+    ...(isAdminPath
+      ? [
+          {
+            accessorKey: 'organizations',
+            id: 'organizations',
+            header: t('UserListPage.Organizations'),
+            cell: ({ row }: { row: Row<userList_fragment$data> }) => {
+              return (
+                <div className="flex gap-xs">
+                  {row.original.organizations.map(
+                    ({ id, name, personal_space }) =>
+                      !personal_space ? <Badge key={id}>{name}</Badge> : null
+                  )}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
     {
       id: 'actions',
       size: 100,

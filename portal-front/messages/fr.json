@@ -131,7 +131,8 @@
     "Email": "Email",
     "FirstName": "Prénom",
     "LastName": "Nom de famille",
-    "Roles": "Rôles"
+    "Roles": "Rôles",
+    "Organizations": "Organisations"
   },
   "MenuActions": {
     "Delete": "Supprimer",
