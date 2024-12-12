@@ -42,6 +42,7 @@ spec:
         annotations:
           prometheus.io/scrape: 'true'
           prometheus.io/port: '4001'
+          prometheus.io/metrics-prefix: "xtmhub_"
         env:
         - name: NODE_ENV
           value: {{ .Values.xtmhub.node_env }}
