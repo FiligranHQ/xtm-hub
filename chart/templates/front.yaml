@@ -23,7 +23,7 @@ spec:
       containers:
       - name: xtmhub-front
         #TODO: Rename portal to xtmhub once docker image has been renamed
-        image: filigran/portal-front:{{ .Values.xtmhub.version }}
+        image: filigran/portal-front-prod:{{ .Values.xtmhub.version }}
         {{- if eq .Values.xtmhub.version "main" }}
         imagePullPolicy: "Always"
         {{- else }}
