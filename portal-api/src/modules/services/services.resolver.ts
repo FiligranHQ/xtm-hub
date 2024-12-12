@@ -15,6 +15,7 @@ import ServicePrice, {
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
+import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import {
   loadPublicServices,
@@ -38,7 +39,7 @@ const resolvers: Resolvers = {
       );
     },
     serviceByIdWithSubscriptions: async (_, { service_id }, context) => {
-      return loadServiceWithSubscriptions(context, fromGlobalId(service_id).id);
+      return loadServiceWithSubscriptions(context, extractId(service_id));
     },
   },
   Mutation: {
