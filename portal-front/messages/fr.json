@@ -125,7 +125,8 @@
   "OrganizationActions": {
     "OrganizationCreated": "L'organisation {name} a été créée",
     "OrganizationUpdated": "L'organisation {name} a été modifiée",
-    "OrganizationDeleted": "L'organisation a été supprimée"
+    "OrganizationDeleted": "L'organisation a été supprimée",
+    "ErrorNameAlreadyExists": "L'organisation {name} existe déjà."
   },
   "OrganizationInServiceAction": {
     "RemoveOrganization": "Supprimer l'organisation",
