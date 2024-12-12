@@ -133,7 +133,9 @@
     "DeleteOrgFromService": "Delete Organization from the service",
     "SelectOrganization": "Select an organization",
     "ConfirmDelete1": "Are you sure you want to delete this organization",
-    "ConfirmDelete2": "from this service ? This action cannot be undone."
+    "ConfirmDelete2": "from this service ? This action cannot be undone.",
+    "AddOrganization": "Subscribe organization to the service",
+    "AddOrganizationDescription": "Invite an organization on the service."
   },
   "UserActions": {
     "DeleteUser": "Delete user",
