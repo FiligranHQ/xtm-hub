@@ -1,9 +1,8 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import { removeOrganization } from '../db-utils/organization.helper';
 import { removeSubscription } from '../db-utils/subscription.helper';
 
-test.beforeAll('Remove subscription', async () => {
+test.beforeEach('Remove subscription', async () => {
   await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
 });
 
