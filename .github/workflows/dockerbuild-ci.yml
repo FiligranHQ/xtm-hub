@@ -2,18 +2,18 @@ name: Run XTM Hub CI/CD
 on:
   push:
     branches:
-      - 'main'
+      - "main"
     paths:
-      - 'portal-api/**'
-      - 'portal-front/**'
+      - "portal-api/**"
+      - "portal-front/**"
     tags:
-      - 'v*'
+      - "v*"
   pull_request:
     branches:
-      - 'main'
+      - "main"
     paths:
-      - 'portal-api/**'
-      - 'portal-front/**'
+      - "portal-api/**"
+      - "portal-front/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -88,7 +88,7 @@ jobs:
       - name: Install docker compose
         uses: KengoTODA/actions-setup-docker-compose@v1
         with:
-          version: '2.29.6'
+          version: "2.29.6"
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS=${{ needs.build-images.outputs.docker-tags }}
@@ -114,7 +114,7 @@ jobs:
       - name: Install docker compose
         uses: KengoTODA/actions-setup-docker-compose@v1
         with:
-          version: '2.29.6'
+          version: "2.29.6"
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS=${{ needs.build-images.outputs.docker-tags }}
@@ -140,7 +140,7 @@ jobs:
       - name: Install docker compose
         uses: KengoTODA/actions-setup-docker-compose@v1
         with:
-          version: '2.29.6'
+          version: "2.29.6"
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS=${{ needs.build-images.outputs.docker-tags }}
@@ -201,4 +201,4 @@ jobs:
     if: github.event_name != 'pull_request'
     steps:
       - name: restart deployment on staging
-        run: kubectl --server=https://api.staging.eu-west.filigran.io --token=${{ secrets.K8S_TOKEN }} -n xtmhub rollout restart deployment
+        run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN }}" -n xtmhub rollout restart deployment
