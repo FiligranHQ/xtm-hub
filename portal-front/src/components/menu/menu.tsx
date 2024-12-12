@@ -44,7 +44,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
 };
 
 const Menu = () => {
-  const [open, setOpen] = useLocalStorage<boolean>('menu-open', false);
+  const [open, setOpen] = useLocalStorage<boolean>('menu-open', true);
   const handleOpenMenu = useCallback(
     () => setOpen((prev0pen) => !prev0pen),
     [setOpen]

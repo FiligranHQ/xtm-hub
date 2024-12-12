@@ -5,7 +5,7 @@ import { removeOrganization } from '../db-utils/organization.helper';
 test('should confirm CRUD of organizations is OK', async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.login();
-  await page.getByLabel('Settings menu').click();
+  await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByRole('link', { name: 'Organizations' })).toBeVisible();
   await page.getByText('Organizations').click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
