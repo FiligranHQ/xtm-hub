@@ -1,7 +1,7 @@
 import { Portal, portalContext } from '@/components/portal-context';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { IconActions } from '@/components/ui/icon-actions';
+import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { DataTable } from 'filigran-ui/clients';
@@ -112,20 +112,18 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                 <IconActions
                   icon={
                     <>
-                      <MoreVertIcon className="h-4 w-4" />
+                      <MoreVertIcon className="h-4 w-4 text-primary" />
                       <span className="sr-only">Open menu</span>
                     </>
                   }>
-                  <Button
-                    variant={'ghost'}
-                    className="w-full justify-start"
+                  <IconActionsButton
                     aria-label="Edit user rights"
                     onClick={() => {
                       setCurrentUser(row.original);
                       setOpenSheet(true);
                     }}>
                     Edit
-                  </Button>
+                  </IconActionsButton>
                   <AlertDialogComponent
                     AlertTitle={'Remove access'}
                     actionButtonText={'Remove rights'}
@@ -133,7 +131,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                     triggerElement={
                       <Button
                         variant="ghost"
-                        className="w-full justify-start"
+                        className="w-full justify-start normal-case"
                         aria-label="Remove access">
                         Delete
                       </Button>

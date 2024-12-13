@@ -144,7 +144,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           <IconActions
             icon={
               <>
-                <MoreVertIcon className="text-primary h-4 w-4" />
+                <MoreVertIcon className="h-4 w-4 text-primary" />
                 <span className="sr-only">{t('Utils.OpenMenu')}</span>
               </>
             }>
