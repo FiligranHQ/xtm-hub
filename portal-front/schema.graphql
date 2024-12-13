@@ -24,8 +24,8 @@ type Mutation {
   addSubscriptionInService(service_id: String, organization_id: ID): Service
   deleteSubscription(subscription_id: ID!): Service
   editServiceCapability(input: EditServiceCapabilityInput): Subscription
-  addUserService(input: UserServiceInput!): Subscription
-  deleteUserService(input: UserServiceInput!): Subscription
+  addUserService(input: UserServiceAddInput!): Subscription
+  deleteUserService(input: UserServiceDeleteInput!): Subscription
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User!
@@ -283,12 +283,17 @@ enum UserServiceOrdering {
   subscription_status
 }
 
-input UserServiceInput {
+input UserServiceAddInput {
   email: String!
   capabilities: [String]
-  serviceId: String
-  organizationId: String
-  subscriptionId: String
+  serviceId: String!
+  organizationId: String!
+}
+
+input UserServiceDeleteInput {
+  email: String!
+  capabilities: [String]
+  subscriptionId: String!
 }
 
 type UserServiceConnection {

@@ -12,7 +12,7 @@ export const ServiceDescribeCapabilitiesSheet: FunctionComponent<
       <div className="flex flex-row">
         <div className="font-bold">
           {t('Service.Capabilities.ManageAccessName')}
-        </div>{' '}
+        </div>
         <div className="flex items-center">
           <UnknownIcon className="h-4 w-4 ml-s" />{' '}
         </div>

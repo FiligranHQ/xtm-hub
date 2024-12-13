@@ -138,8 +138,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
   }, [subscription]);
   const { slug } = useDecodedParams();
   const onSubmit = (values: any) => {
-    console.log('values', values);
-    console.log('form', form);
     if (userService.id) {
       const editCapaValues = {
         capabilities: values.capabilities,
@@ -244,9 +242,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
         <Form {...form}>
           <form
             className="space-y-xl"
-            onSubmit={form.handleSubmit(onSubmit, (errors) =>
-              console.log('Validation errors:', errors)
-            )}>
+            onSubmit={form.handleSubmit(onSubmit)}>
             {userService.id ? (
               <></>
             ) : (
