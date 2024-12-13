@@ -37,7 +37,7 @@ input UserFilter {
 }
 
 type Query {
-  me: User @auth
+  me: User
   user(id: ID!): User @auth
   users(
     first: Int!

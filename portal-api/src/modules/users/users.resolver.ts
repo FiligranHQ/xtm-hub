@@ -43,6 +43,10 @@ const validPassword = (user: UserLoadUserBy, password: string): boolean => {
 const resolvers: Resolvers = {
   Query: {
     me: async (_, __, context) => {
+      // User is not logged in
+      if (!context.user) {
+        return null;
+      }
       return mapUserToGraphqlUser(context.user);
     },
     user: async (_, { id }) => {
