@@ -8,6 +8,7 @@ import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/cap
 import { ServiceDescribeCapabilitiesSheet } from '@/components/service/[slug]/service-describe-capabilities';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { emailRegex } from '@/lib/regexs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Combobox,
@@ -200,6 +201,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
   });
   let filterTimeout: NodeJS.Timeout;
   const handleInputChange = (inputValue: string) => {
+    console.log('dd');
     clearTimeout(filterTimeout);
     filterTimeout = setTimeout(() => {
       setFilter((prevFilter) => ({
@@ -226,6 +228,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
   const { setValue } = form;
 
   const [tags, setTags] = useState<Tag[]>([]);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   return (
     <Sheet
@@ -259,11 +262,12 @@ export const ServiceSlugFormSheet: FunctionComponent<
                           {...field}
                           placeholder={t('Service.Management.Email')}
                           tags={tags}
-                          activeTagIndex={0}
-                          setActiveTagIndex={() => {}}
+                          activeTagIndex={activeTagIndex}
+                          setActiveTagIndex={setActiveTagIndex}
                           enableAutocomplete={true}
                           autocompleteOptions={tagsAutocomplete}
                           maxTags={1}
+                          validateTag={(tag: string) => !!tag.match(emailRegex)}
                           placeholderWhenFull={t(
                             'Service.Management.OneUserMax'
                           )}
