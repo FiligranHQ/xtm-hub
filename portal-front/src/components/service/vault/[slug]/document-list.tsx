@@ -22,6 +22,7 @@ import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
+import { commitLocalUpdate, useRelayEnvironment } from 'react-relay';
 
 import GuardCapacityComponent from '@/components/admin-guard';
 import { ServiceById } from '@/components/service/service.graphql';
@@ -81,6 +82,18 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
         ...node,
       }) as documentItem_fragment$data
   );
+  const environment = useRelayEnvironment();
+
+  const setDownloadNumber = (documentId: string) => {
+    commitLocalUpdate(environment, (store) => {
+      const documentRecord = store.get(documentId);
+      if (documentRecord) {
+        const currentDownloadNumber: number =
+          (documentRecord.getValue('download_number') as number) ?? 0;
+        documentRecord.setValue(currentDownloadNumber + 1, 'download_number');
+      }
+    });
+  };
 
   const columns: ColumnDef<documentItem_fragment$data>[] = [
     {
@@ -140,7 +153,10 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               displayError={false}>
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
-            <DownloadDocument documentData={row.original} />
+            <DownloadDocument
+              documentData={row.original}
+              downloadClicked={setDownloadNumber}
+            />
             <GuardCapacityComponent
               capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
               displayError={false}>
@@ -238,6 +254,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           rowCount: data.documents.totalCount,
         }}
         onClickRow={(row) => {
+          setDownloadNumber(row.id);
           window.location.href = `/document/get/${queryDataService.serviceById?.id}/${row.id}`;
         }}
         toolbar={
