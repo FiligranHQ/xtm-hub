@@ -83,6 +83,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
   const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
     UserServiceCreateMutation
   );
+  const { slug } = useDecodedParams();
   const { me } = useContext<Portal>(portalContext);
   const { toast } = useToast();
   const t = useTranslations();
@@ -135,8 +136,8 @@ export const ServiceSlugFormSheet: FunctionComponent<
       capabilities: currentCapabilities,
       organizationId: subscription?.organization?.id,
     });
-  }, [subscription]);
-  const { slug } = useDecodedParams();
+  }, [form, currentCapabilities, subscription]);
+
   const onSubmit = (values: any) => {
     if (userService.id) {
       const editCapaValues = {
@@ -197,20 +198,20 @@ export const ServiceSlugFormSheet: FunctionComponent<
     search: undefined,
     organization: me?.selected_organization_id,
   });
+  let filterTimeout: NodeJS.Timeout;
   const handleInputChange = (inputValue: string) => {
-    setFilter((prevFilter) => {
-      const updatedFilter = {
+    clearTimeout(filterTimeout);
+    filterTimeout = setTimeout(() => {
+      setFilter((prevFilter) => ({
         ...prevFilter,
         search: inputValue,
-      };
-      refetch({ filter: updatedFilter });
-      return updatedFilter;
-    });
+      }));
+    }, 400);
   };
   const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
     count: pageSize,
-    orderMode: orderMode,
-    orderBy: orderBy,
+    orderMode,
+    orderBy,
     filter,
   });
   const [data, refetch] = useRefetchableFragment<
