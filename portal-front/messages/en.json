@@ -154,6 +154,19 @@
     "UserUpdated": "User {email} has been modified",
     "UserDeleted": "User has been deleted"
   },
+  "OrganizationForm": {
+    "EditOrganization": "Edit organization",
+    "CreateOrganization": "Create organization",
+    "Name": "Name",
+    "Domains": "Domains",
+    "DomainsPlaceholder": "Add a domain",
+    "Error": {
+      "Domain": "At least one domain is required",
+      "Name": "Organization name is required",
+      "DomainsInvalid": "The value as domain is invalid",
+      "DuplicateName": "An organization with this name already exists"
+    }
+  },
   "UserListPage": {
     "Title": "Users list",
     "Email": "Email",

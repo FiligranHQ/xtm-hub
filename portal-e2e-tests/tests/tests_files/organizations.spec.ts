@@ -15,9 +15,9 @@ test('should confirm CRUD of organizations is OK', async ({ page }) => {
   // Create organization
   await page.getByLabel('Create Organization').click();
   await page.getByPlaceholder('Name').fill('newOrgae2e');
-  await page.getByPlaceholder('Enter a domain').click();
-  await page.getByPlaceholder('Enter a domain').fill('newOrgae2e.fr');
-  await page.getByPlaceholder('Enter a domain').press('Enter');
+  await page.getByPlaceholder('Add a domain').click();
+  await page.getByPlaceholder('Add a domain').fill('newOrgae2e.fr');
+  await page.getByPlaceholder('Add a domain').press('Enter');
   await page.getByRole('button', { name: 'Validate' }).click();
   await expect(
     page.getByRole('cell', { name: 'newOrgae2e', exact: true })

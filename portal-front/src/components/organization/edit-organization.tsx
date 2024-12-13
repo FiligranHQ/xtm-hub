@@ -65,11 +65,11 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
         <Button
           variant="ghost"
           className="w-full justify-start"
-          aria-label="Edit Organization">
+          aria-label={t('OrganizationForm.EditOrganization')}>
           {t('Utils.Update')}
         </Button>
       }
-      title={"Edit the organization's name"}
+      title={t('OrganizationForm.EditOrganization')}
       handleSubmit={handleSubmit}
     />
   );
