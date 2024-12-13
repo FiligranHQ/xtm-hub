@@ -37,10 +37,10 @@ export type DatabaseType =
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {
-  first: number;
-  after: string;
-  orderMode: string;
-  orderBy: string;
+  first?: number;
+  after?: string;
+  orderMode?: string;
+  orderBy?: string;
 }
 
 const knex = pkg;
