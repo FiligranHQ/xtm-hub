@@ -18,6 +18,7 @@ import {
   TagInput,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -35,6 +36,8 @@ interface OrganizationFormSheetProps {
 export const OrganizationFormSheet: FunctionComponent<
   OrganizationFormSheetProps
 > = ({ organization, open, setOpen, trigger, title, handleSubmit }) => {
+  const t = useTranslations();
+
   const form = useForm<z.infer<typeof organizationFormSchema>>({
     resolver: zodResolver(organizationFormSchema),
     defaultValues: {
@@ -42,6 +45,7 @@ export const OrganizationFormSheet: FunctionComponent<
       domains: (organization?.domains as string[]) ?? [],
     },
   });
+
   useEffect(
     () =>
       form.reset({
@@ -56,13 +60,36 @@ export const OrganizationFormSheet: FunctionComponent<
     });
   };
 
-  const { setValue } = form;
+  const { setValue, setError, clearErrors } = form;
   const [tags, setTags] = useState<Tag[]>(
     (organization?.domains ?? []).map(
       (domain) => ({ id: domain, text: domain }) as Tag
     )
   );
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+
+  const validTagDomain = (tag: string) => {
+    // Exemple of valid domain : example.com, sub.example.com, my-site.co.uk
+    const domainRegex = /^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
+    const domainsValue = form.getValues('domains');
+
+    if (!domainRegex.test(tag)) {
+      setError('domains', {
+        message: t('OrganizationForm.Error.DomainsInvalid'),
+      });
+      return false;
+    } else if (
+      domainsValue.some((d) => d.toLowerCase() === tag.toLowerCase())
+    ) {
+      setError('domains', {
+        message: t('OrganizationForm.Error.DuplicateName'),
+      });
+      return false;
+    } else {
+      clearErrors('domains');
+    }
+    return true;
+  };
 
   return (
     <Sheet
@@ -83,10 +110,10 @@ export const OrganizationFormSheet: FunctionComponent<
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t('OrganizationForm.Name')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Name"
+                      placeholder={t('OrganizationForm.Name')}
                       {...field}
                     />
                   </FormControl>
@@ -98,12 +125,15 @@ export const OrganizationFormSheet: FunctionComponent<
               name="domains"
               render={({ field }) => (
                 <FormItem className="flex flex-col items-start">
-                  <FormLabel className="text-left">Domains</FormLabel>
+                  <FormLabel className="text-left">
+                    {t('OrganizationForm.Domains')}
+                  </FormLabel>
                   <FormControl>
                     <TagInput
                       {...field}
-                      placeholder="Enter a domain"
+                      placeholder={t('OrganizationForm.DomainsPlaceholder')}
                       tags={tags}
+                      validateTag={validTagDomain}
                       className="sm:min-w-[450px]"
                       activeTagIndex={activeTagIndex}
                       setActiveTagIndex={setActiveTagIndex}
@@ -125,12 +155,12 @@ export const OrganizationFormSheet: FunctionComponent<
 
             <SheetFooter className="pt-2">
               <SheetClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline">{t('Utils.Cancel')}</Button>
               </SheetClose>
               <Button
                 disabled={!form.formState.isDirty}
                 type="submit">
-                Validate
+                {t('Utils.Validate')}
               </Button>
             </SheetFooter>
           </form>
