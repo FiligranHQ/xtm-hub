@@ -6,7 +6,10 @@ import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-f
 import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import {
+  BreadcrumbNav,
+  BreadcrumbNavLink,
+} from '@/components/ui/breadcrumb-nav';
 import TriggerButton from '@/components/ui/trigger-button';
 import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
@@ -45,6 +48,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
+  const isAdminPath = useAdminPath();
 
   const [selectedSubscription, setSelectedSubscription] =
     useState<subscriptionWithUserService_fragment$data>(
@@ -56,15 +60,26 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const { toast } = useToast();
   const t = useTranslations();
 
-  const breadcrumbValue = [
-    {
-      label: t('MenuLinks.Home'),
-      href: '/',
-    },
-    {
-      label: queryData.serviceByIdWithSubscriptions?.name,
-    },
-  ];
+  const breadcrumbValue: BreadcrumbNavLink[] = isAdminPath
+    ? [
+        {
+          label: t('MenuLinks.Settings'),
+        },
+        {
+          label: t('MenuLinks.Services'),
+          href: '/admin/service',
+        },
+      ]
+    : [
+        {
+          label: t('MenuLinks.Home'),
+          href: '/',
+        },
+      ];
+
+  breadcrumbValue.push({
+    label: queryData.serviceByIdWithSubscriptions?.name,
+  });
 
   const dataOrganizationsTab = (
     queryData.serviceByIdWithSubscriptions?.subscriptions ?? []
