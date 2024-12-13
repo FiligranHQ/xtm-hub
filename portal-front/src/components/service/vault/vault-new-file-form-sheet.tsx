@@ -65,7 +65,8 @@ export const VaultNewFileFormSheet: FunctionComponent<
 
   const { documentExists } = useLazyLoadQuery<documentExistsQuery>(
     DocumentExistsQuery,
-    { documentName, serviceId: slug }
+    { documentName, serviceId: slug },
+    { fetchPolicy: 'store-and-network' }
   );
 
   const onSubmit = (values: z.infer<typeof newDocumentSchema>) => {
