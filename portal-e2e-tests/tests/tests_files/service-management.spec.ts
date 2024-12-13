@@ -29,7 +29,10 @@ test('should confirm service management is ok', async ({ page }) => {
 
   // Add organization
   await page.getByLabel('Subscribe organization').click();
-  await page.locator('aside').getByLabel('Select an organization').click();
+  await page
+    .locator('div[role="dialog"]')
+    .getByLabel('Select an organization')
+    .click();
   await page.getByLabel('Thales').click();
   await page.getByRole('button', { name: 'Validate' }).click();
   await page.getByRole('main').getByText('Thales', { exact: true }).click();
