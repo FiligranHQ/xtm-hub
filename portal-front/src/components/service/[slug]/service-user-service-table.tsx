@@ -71,6 +71,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         accessorKey: 'service_capability_names',
         id: 'service_capability_names',
         header: 'Capabilities',
+        size: -1,
         enableSorting: false,
         cell: ({ row }) => {
           return (
@@ -88,6 +89,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
       },
       {
         id: 'actions',
+        size: 40,
         cell: ({ row }) => {
           return (
             <div className="flex items-center justify-end">
