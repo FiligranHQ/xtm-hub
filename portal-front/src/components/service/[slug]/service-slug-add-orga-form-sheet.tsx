@@ -124,9 +124,11 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
         <SheetHeader className="bg-page-background">
-          <SheetTitle className="txt-title">{'Add organization'}</SheetTitle>
+          <SheetTitle className="txt-title">
+            {t('OrganizationInServiceAction.AddOrganization')}
+          </SheetTitle>
           <SheetDescription>
-            Invite an organization on the service.
+            {t('OrganizationInServiceAction.AddOrganizationDescription')}
           </SheetDescription>
         </SheetHeader>
 
@@ -139,13 +141,19 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
               name="organization_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization</FormLabel>
+                  <FormLabel>
+                    {t('OrganizationInServiceAction.Organization')}
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select an organization" />
+                        <SelectValue
+                          placeholder={t(
+                            'OrganizationInServiceAction.SelectOrganization'
+                          )}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -165,12 +173,12 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
 
             <SheetFooter className="pt-2">
               <SheetClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline">{t('Utils.Cancel')}</Button>
               </SheetClose>
               <Button
                 disabled={!form.formState.isDirty}
                 type="submit">
-                Validate
+                {t('Utils.Validate')}
               </Button>
             </SheetFooter>
           </form>

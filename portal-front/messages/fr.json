@@ -132,8 +132,11 @@
     "RemoveOrganization": "Supprimer l'organisation",
     "DeleteOrgFromService": "Supprimer l'organisation du service",
     "SelectOrganization": "Sélectionner une organisation",
+    "Organization": "Organisation",
     "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
-    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée."
+    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
+    "AddOrganization": "Abonnement de l'organisation au service",
+    "AddOrganizationDescription": "Inviter une organisation sur le service."
   },
   "UserActions": {
     "DeleteUser": "Supprimer l'utilisateur",
