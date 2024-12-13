@@ -75,7 +75,7 @@ export const userServicesOwnedFragment = graphql`
 
 export const UserServiceCreateMutation = graphql`
   mutation userServiceCreateMutation(
-    $input: UserServiceInput!
+    $input: UserServiceAddInput!
     $connections: [ID!]!
   ) {
     addUserService(input: $input)
@@ -97,7 +97,7 @@ export const UserServiceCreateMutation = graphql`
 `;
 
 export const UserServiceDeleteMutation = graphql`
-  mutation userServiceDeleteMutation($input: UserServiceInput!) {
+  mutation userServiceDeleteMutation($input: UserServiceDeleteInput!) {
     deleteUserService(input: $input) {
       id
       organization {

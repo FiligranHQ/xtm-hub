@@ -189,7 +189,7 @@ export type MutationAddUserArgs = {
 
 
 export type MutationAddUserServiceArgs = {
-  input: UserServiceInput;
+  input: UserServiceAddInput;
 };
 
 
@@ -225,7 +225,7 @@ export type MutationDeleteUserArgs = {
 
 
 export type MutationDeleteUserServiceArgs = {
-  input: UserServiceInput;
+  input: UserServiceDeleteInput;
 };
 
 
@@ -643,11 +643,24 @@ export type UserService = Node & {
   user_id: Scalars['ID']['output'];
 };
 
+export type UserServiceAddInput = {
+  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  email: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  serviceId: Scalars['String']['input'];
+};
+
 export type UserServiceConnection = {
   __typename?: 'UserServiceConnection';
   edges: Array<UserServiceEdge>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int']['output'];
+};
+
+export type UserServiceDeleteInput = {
+  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  email: Scalars['String']['input'];
+  subscriptionId: Scalars['String']['input'];
 };
 
 export type UserServiceDeleted = Node & {
@@ -661,12 +674,6 @@ export type UserServiceEdge = {
   __typename?: 'UserServiceEdge';
   cursor: Scalars['String']['output'];
   node?: Maybe<UserService>;
-};
-
-export type UserServiceInput = {
-  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  email: Scalars['String']['input'];
-  subscriptionId: Scalars['String']['input'];
 };
 
 export enum UserServiceOrdering {
@@ -818,10 +825,11 @@ export type ResolversTypes = ResolversObject<{
   UserFilter: UserFilter;
   UserOrdering: UserOrdering;
   UserService: ResolverTypeWrapper<UserService>;
+  UserServiceAddInput: UserServiceAddInput;
   UserServiceConnection: ResolverTypeWrapper<UserServiceConnection>;
+  UserServiceDeleteInput: UserServiceDeleteInput;
   UserServiceDeleted: ResolverTypeWrapper<UserServiceDeleted>;
   UserServiceEdge: ResolverTypeWrapper<UserServiceEdge>;
-  UserServiceInput: UserServiceInput;
   UserServiceOrdering: UserServiceOrdering;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
 }>;
@@ -874,10 +882,11 @@ export type ResolversParentTypes = ResolversObject<{
   UserEdge: UserEdge;
   UserFilter: UserFilter;
   UserService: UserService;
+  UserServiceAddInput: UserServiceAddInput;
   UserServiceConnection: UserServiceConnection;
+  UserServiceDeleteInput: UserServiceDeleteInput;
   UserServiceDeleted: UserServiceDeleted;
   UserServiceEdge: UserServiceEdge;
-  UserServiceInput: UserServiceInput;
   UserSubscription: UserSubscription;
 }>;
 
