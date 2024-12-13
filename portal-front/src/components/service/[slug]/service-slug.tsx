@@ -1,6 +1,5 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 
-import GuardCapacityComponent from '@/components/admin-guard';
 import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
@@ -10,7 +9,7 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import TriggerButton from '@/components/ui/trigger-button';
 import useAdminPath from '@/hooks/useAdminPath';
-import { RESTRICTION } from '@/utils/constant';
+import useGranted from '@/hooks/useGranted';
 import { DeleteIcon } from 'filigran-icon';
 import {
   Combobox,
@@ -88,22 +87,22 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     );
   };
 
-  const isAllowedInviteUser = () => {
-    return (
-      queryData?.serviceByIdWithSubscriptions?.subscriptions?.map(
-        (subscription) => {
-          subscription?.user_service.map((user_service) => {
-            user_service?.service_capability?.some(
-              (c) => c?.service_capability_name === 'MANAGE_ACCESS'
-            ) && user_service?.user?.id === me?.id;
-          });
+  const canManageAccess =
+    queryData?.serviceByIdWithSubscriptions?.subscriptions?.some(
+      (subscription) => {
+        const user_service = subscription?.user_service.find(
+          (userService) => userService?.user?.id === me?.id
+        );
+        if (!user_service) {
+          return false;
         }
-      ) ||
-      me?.capabilities?.some((capability) => {
-        capability?.name === 'BYPASS';
-      })
+        return user_service.service_capability?.some(
+          (c) => c?.service_capability_name === 'MANAGE_ACCESS'
+        );
+      }
     );
-  };
+
+  const isAllowedInviteUser = canManageAccess || useGranted('BYPASS');
 
   const removeOrganization = (
     subscription: subscriptionWithUserService_fragment$data
@@ -179,28 +178,20 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       </div>
       <div className="flex gap-s flex-wrap">
         <DataTableHeadBarOptions />
-        <GuardCapacityComponent
-          displayError
-          capacityRestriction={[
-            RESTRICTION.CAPABILITY_BYPASS,
-            RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-          ]}>
-          <ServiceSlugFormSheet
-            open={openSheet}
-            setOpen={setOpenSheet}
-            userService={currentUser}
-            connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
-            subscriptionId={selectedSubscription?.id ?? ''}
-            trigger={
-              isAllowedInviteUser() && (
-                <TriggerButton
-                  onClick={() => setCurrentUser({})}
-                  label={t('Service.InviteUser')}
-                />
-              )
-            }
-          />
-        </GuardCapacityComponent>
+        <ServiceSlugFormSheet
+          open={openSheet}
+          setOpen={setOpenSheet}
+          userService={currentUser}
+          connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
+          subscriptionId={selectedSubscription?.id ?? ''}
+          trigger={
+            <TriggerButton
+              onClick={() => setCurrentUser({})}
+              label={t('Service.InviteUser')}
+            />
+          }
+        />
+
         {useAdminPath() && (
           <ServiceSlugAddOrgaFormSheet
             subscriptions={
@@ -228,27 +219,31 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{queryData.serviceByIdWithSubscriptions?.name}</h1>
-      <div className="pb-s">
-        {queryData.serviceByIdWithSubscriptions?.description}
-      </div>
+      {isAllowedInviteUser ? (
+        <>
+          <h1 className="pb-s">
+            {queryData.serviceByIdWithSubscriptions?.name}
+          </h1>
+          <div className="pb-s">
+            {queryData.serviceByIdWithSubscriptions?.description}
+          </div>
 
-      <GuardCapacityComponent
-        displayError
-        capacityRestriction={[
-          RESTRICTION.CAPABILITY_BYPASS,
-          RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-        ]}>
-        <ServiceUserServiceSlug
-          subscriptionId={selectedSubscription?.id}
-          data={
-            queryData.serviceByIdWithSubscriptions as serviceWithSubscriptions_fragment$data
-          }
-          setOpenSheet={setOpenSheet}
-          setCurrentUser={setCurrentUser}
-          toolbar={toolbar}
-        />
-      </GuardCapacityComponent>
+          <ServiceUserServiceSlug
+            subscriptionId={selectedSubscription?.id}
+            data={
+              queryData.serviceByIdWithSubscriptions as serviceWithSubscriptions_fragment$data
+            }
+            setOpenSheet={setOpenSheet}
+            setCurrentUser={setCurrentUser}
+            toolbar={toolbar}
+          />
+        </>
+      ) : (
+        <>
+          <h1 className={'txt-title'}>{t('Utils.Error')}</h1>
+          {t('Error.YouAreNotAuthorized')}
+        </>
+      )}
     </>
   );
 };
