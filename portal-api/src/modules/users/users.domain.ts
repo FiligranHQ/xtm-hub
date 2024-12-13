@@ -3,6 +3,7 @@ import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   AddUserInput,
   EditUserInput,
+  QueryUsersArgs,
   UserConnection,
   UserFilter,
   User as UserGenerated,
@@ -151,7 +152,7 @@ export const loadUserBy = async (
 
 export const loadUsers = async (
   context: PortalContext,
-  opts,
+  opts: Pick<QueryUsersArgs, 'first' | 'after' | 'orderMode' | 'orderBy'>,
   filter: UserFilter
 ): Promise<UserConnection> => {
   const query = paginate<UserGenerated>(context, 'User', opts);
@@ -221,14 +222,20 @@ export const loadUsers = async (
     .groupBy(['User.id']);
 
   if (filter.search) {
-    loadUsersQuery
-      .where('email', 'LIKE', `%${filter.search}%`)
-      .orWhere('first_name', 'LIKE', `%${filter.search}%`)
-      .orWhere('last_name', 'LIKE', `%${filter.search}%`);
+    loadUsersQuery.where((builder) =>
+      builder
+        .where('email', 'LIKE', `%${filter.search}%`)
+        .orWhere('first_name', 'LIKE', `%${filter.search}%`)
+        .orWhere('last_name', 'LIKE', `%${filter.search}%`)
+    );
   }
   if (filter.organization) {
     const organizationId = extractId(filter.organization);
-    loadUsersQuery.where('UserOrgFilter.organization_id', '=', organizationId);
+    loadUsersQuery.andWhere(
+      'UserOrgFilter.organization_id',
+      '=',
+      organizationId
+    );
   }
 
   const userConnection = await loadUsersQuery.asConnection<UserConnection>();
