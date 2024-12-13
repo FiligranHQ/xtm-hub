@@ -42,13 +42,16 @@ interface RootLayoutProps {
 const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
   children,
 }) => {
-  try {
-    // @ts-ignore
-    const { data: meData }: { data: meLoaderQuery$data } =
-      await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
-        meLoaderQueryNode,
-        {}
-      );
+  // @ts-ignore
+  const { data: meData }: { data: meLoaderQuery$data } =
+    await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
+      meLoaderQueryNode,
+      {}
+    );
+
+  const me = meData.me as unknown as meContext_fragment$data;
+
+  if (me) {
     // @ts-ignore
     const { data }: { data: meUserHasSomeSubscription$data } =
       await serverPortalApiFetch<
@@ -56,10 +59,10 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
         meUserHasSomeSubscription
       >(meUserHasSomeSubscriptionNode, {});
 
-    const me = meData.me as unknown as meContext_fragment$data;
     const userHasBypassCapability = me.capabilities.some(
       (capability) => capability.name === 'BYPASS'
     );
+
     return (
       <I18nContext>
         <AppContext>
@@ -82,7 +85,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
         </AppContext>
       </I18nContext>
     );
-  } catch (e) {
+  } else {
     return (
       <I18nContext>
         <AppContext>
