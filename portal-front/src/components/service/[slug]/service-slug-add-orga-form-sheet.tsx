@@ -142,7 +142,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t('OrganizationInServiceAction.SelectOrganization')}
+                    {t('OrganizationInServiceAction.Organization')}
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}
