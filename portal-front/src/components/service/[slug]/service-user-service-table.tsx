@@ -146,7 +146,11 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
       columns={columns}
       data={(subscription?.user_service as userService_fragment$data[]) ?? {}}
       toolbar={toolbar}
-      tableState={{ pagination, columnPinning: { right: ['actions'] } }}
+      tableState={{
+        pagination,
+        columnPinning: { right: ['actions'] },
+        columnVisibility: { first_name: false, last_name: false },
+      }}
     />
   );
 };
