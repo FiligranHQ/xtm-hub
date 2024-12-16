@@ -2,10 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: xtmhub-api
-  annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/port: '4001'
-    prometheus.io/metrics-prefix: "xtmhub_"
 spec:
   replicas: {{ .Values.xtmhub.api.replicas }}
   selector:
@@ -15,6 +11,10 @@ spec:
     metadata:
       labels:
         app: xtmhub-api
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '4001'
+        prometheus.io/metrics-prefix: "xtmhub_"
     spec:
     {{- with .Values.xtmhub.imagePullSecrets }}
       imagePullSecrets:
