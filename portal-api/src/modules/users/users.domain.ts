@@ -1,8 +1,10 @@
+import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   AddUserInput,
   EditUserInput,
+  QueryUsersArgs,
   UserConnection,
   UserFilter,
   User as UserGenerated,
@@ -152,10 +154,25 @@ export const loadUserBy = async (
 
 export const loadUsers = async (
   context: PortalContext,
-  opts,
+  opts: QueryUsersArgs,
   filter: UserFilter
 ): Promise<UserConnection> => {
   const query = paginate<UserGenerated>(context, 'User', opts);
+
+  const addWhereClauses = (query: Knex.QueryInterface) => {
+    if (filter.search) {
+      query.where((builder) =>
+        builder
+          .where('email', 'ILIKE', `%${filter.search}%`)
+          .orWhere('first_name', 'ILIKE', `%${filter.search}%`)
+          .orWhere('last_name', 'ILIKE', `%${filter.search}%`)
+      );
+    }
+    if (filter.organization) {
+      const organizationId = extractId(filter.organization);
+      query.andWhere('UserOrgFilter.organization_id', '=', organizationId);
+    }
+  };
 
   const loadUsersQuery = query
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
@@ -221,16 +238,7 @@ export const loadUsers = async (
     ])
     .groupBy(['User.id']);
 
-  if (filter.search) {
-    loadUsersQuery
-      .where('email', 'LIKE', `%${filter.search}%`)
-      .orWhere('first_name', 'LIKE', `%${filter.search}%`)
-      .orWhere('last_name', 'LIKE', `%${filter.search}%`);
-  }
-  if (filter.organization) {
-    const organizationId = extractId(filter.organization);
-    loadUsersQuery.where('UserOrgFilter.organization_id', '=', organizationId);
-  }
+  addWhereClauses(loadUsersQuery);
 
   const userConnection = await loadUsersQuery.asConnection<UserConnection>();
 
@@ -242,7 +250,7 @@ export const loadUsers = async (
     };
   });
 
-  const queryTotalCount = db<User>(context, 'User', opts)
+  const queryTotalCount = db<User>(context, 'User')
     .leftJoin(
       'User_Organization as UserOrgFilter',
       'User.id',
@@ -250,16 +258,8 @@ export const loadUsers = async (
     )
     .countDistinct('User.id as totalCount')
     .first();
-  if (filter.search) {
-    queryTotalCount
-      .where('email', 'LIKE', `%${filter.search}%`)
-      .orWhere('first_name', 'LIKE', `%${filter.search}%`)
-      .orWhere('last_name', 'LIKE', `%${filter.search}%`);
-  }
-  if (filter.organization) {
-    const organizationId = extractId(filter.organization);
-    queryTotalCount.where('UserOrgFilter.organization_id', '=', organizationId);
-  }
+
+  addWhereClauses(queryTotalCount);
 
   const { totalCount } = await queryTotalCount;
 
