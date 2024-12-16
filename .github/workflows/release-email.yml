@@ -1,0 +1,53 @@
+name: Send Release Email
+
+on:
+  release:
+    types:
+      - published
+  push:
+    branches:
+      - "issue/207/mail-on-release"
+  workflow_dispatch:
+
+jobs:
+  send_email:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Get Last Release
+        id: last_release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: release } = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            core.setOutput("release_name", release.name);
+            core.setOutput("release_tag", release.tag_name);
+            core.setOutput("release_body", release.body);
+      - name: Send Email
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: ${{ secrets.SMTP_ADDRESS }}
+          server_port: 465
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "[XTM Hub] Version: ${{ steps.last_release.outputs.release_tag }}"
+          to: "tiffaine.hervy@filigran.io" #TODO Modify with all-employees@filigran.io but not now...
+          from: "automation@filigran.io"
+          convert_markdown: true
+          html_body:
+           🔔 DING DING 🔔
+
+           Dear Filigran team,
+           The Engineering team is glad to inform you that XTM Hub ${{ steps.last_release.outputs.release_tag }} has been released 🥳!
+           Release Node
+           
+           ${{ steps.last_release.outputs.release_body }}
+            
+            Don't hesitate to reach the product management team to get more information 🚀
+  
+           Thank you all for your efforts in serving our community and our customers 🎀
