@@ -137,7 +137,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
       capabilities: currentCapabilities,
       organizationId: subscription?.organization?.id,
     });
-  }, [form, currentCapabilities, subscription]);
+  }, [subscription]);
 
   const onSubmit = (values: any) => {
     if (userService.id) {
