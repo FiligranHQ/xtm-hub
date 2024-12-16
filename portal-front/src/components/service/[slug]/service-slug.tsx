@@ -193,20 +193,22 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       </div>
       <div className="flex gap-s flex-wrap">
         <DataTableHeadBarOptions />
-        <ServiceSlugFormSheet
-          open={openSheet}
-          setOpen={setOpenSheet}
-          userService={currentUser}
-          connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
-          dataOrganizationsTab={dataOrganizationsTab}
-          subscription={selectedSubscription}
-          trigger={
-            <TriggerButton
-              onClick={() => setCurrentUser({})}
-              label={t('Service.InviteUser')}
-            />
-          }
-        />
+        {dataOrganizationsTab.length > 0 && (
+          <ServiceSlugFormSheet
+            open={openSheet}
+            setOpen={setOpenSheet}
+            userService={currentUser}
+            connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
+            dataOrganizationsTab={dataOrganizationsTab}
+            subscription={selectedSubscription}
+            trigger={
+              <TriggerButton
+                onClick={() => setCurrentUser({})}
+                label={t('Service.InviteUser')}
+              />
+            }
+          />
+        )}
 
         {useAdminPath() && (
           <ServiceSlugAddOrgaFormSheet

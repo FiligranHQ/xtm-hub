@@ -197,13 +197,13 @@ export const ServiceSlugFormSheet: FunctionComponent<
 
   const [filter, setFilter] = useState<UserFilter>({
     search: undefined,
-    organization: subscription.organization.id,
+    organization: subscription?.organization?.id,
   });
 
   useEffect(() => {
     setFilter((prevFilter) => ({
       ...prevFilter,
-      organization: subscription.organization.id,
+      organization: subscription?.organization?.id,
     }));
   }, [subscription]);
 
