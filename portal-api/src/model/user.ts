@@ -10,13 +10,14 @@ export interface UserInfo {
   roles: string[];
 }
 
-export interface UserLoadUserBy extends User {
+export interface UserWithOrganizations extends User {
   organizations: Organization[];
-  roles_portal: RolePortal[];
-  capabilities: CapabilityPortal[];
 }
 
-export interface UserWithOrganizationsAndRole extends User {
-  organizations: Organization[];
+export interface UserWithOrganizationsAndRole extends UserWithOrganizations {
   roles_portal: RolePortal[];
+}
+
+export interface UserLoadUserBy extends UserWithOrganizationsAndRole {
+  capabilities: CapabilityPortal[];
 }

@@ -4054,6 +4054,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/passport@npm:^1.0.17":
+  version: 1.0.17
+  resolution: "@types/passport@npm:1.0.17"
+  dependencies:
+    "@types/express": "*"
+  checksum: b131d5963576e759f972f038bb7461dcaaa1dc484a488eb093eac6a9f8d4f51c9b7adcd432ae84e3ecb68839dfba16f6d569f36664330b6af59d36ff3c4c64e2
+  languageName: node
+  linkType: hard
+
 "@types/qs@npm:*":
   version: 6.9.14
   resolution: "@types/qs@npm:6.9.14"
@@ -9121,6 +9130,7 @@ __metadata:
     "@types/graphql-upload": 16.0.7
     "@types/node": 22.5.5
     "@types/nodemailer": 6.4.16
+    "@types/passport": ^1.0.17
     "@types/uuid": 10.0.0
     "@typescript-eslint/eslint-plugin": 8.6.0
     "@typescript-eslint/parser": 8.6.0
