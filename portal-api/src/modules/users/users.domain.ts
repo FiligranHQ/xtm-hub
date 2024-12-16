@@ -162,9 +162,9 @@ export const loadUsers = async (
     if (filter.search) {
       query.where((builder) =>
         builder
-          .where('email', 'LIKE', `%${filter.search}%`)
-          .orWhere('first_name', 'LIKE', `%${filter.search}%`)
-          .orWhere('last_name', 'LIKE', `%${filter.search}%`)
+          .where('email', 'ILIKE', `%${filter.search}%`)
+          .orWhere('first_name', 'ILIKE', `%${filter.search}%`)
+          .orWhere('last_name', 'ILIKE', `%${filter.search}%`)
       );
     }
     if (filter.organization) {
