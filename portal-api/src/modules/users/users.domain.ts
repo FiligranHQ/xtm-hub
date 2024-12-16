@@ -153,7 +153,7 @@ export const loadUserBy = async (
 
 export const loadUsers = async (
   context: PortalContext,
-  opts: Pick<QueryUsersArgs, 'first' | 'after' | 'orderMode' | 'orderBy'>,
+  opts: QueryUsersArgs,
   filter: UserFilter
 ): Promise<UserConnection> => {
   const query = paginate<UserGenerated>(context, 'User', opts);
@@ -249,7 +249,7 @@ export const loadUsers = async (
     };
   });
 
-  const queryTotalCount = db<User>(context, 'User', opts)
+  const queryTotalCount = db<User>(context, 'User')
     .leftJoin(
       'User_Organization as UserOrgFilter',
       'User.id',

@@ -197,11 +197,18 @@ export const ServiceSlugFormSheet: FunctionComponent<
 
   const [filter, setFilter] = useState<UserFilter>({
     search: undefined,
-    organization: me?.selected_organization_id,
+    organization: subscription.organization.id,
   });
+
+  useEffect(() => {
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      organization: subscription.organization.id,
+    }));
+  }, [subscription]);
+
   let filterTimeout: NodeJS.Timeout;
   const handleInputChange = (inputValue: string) => {
-    console.log('dd');
     clearTimeout(filterTimeout);
     filterTimeout = setTimeout(() => {
       setFilter((prevFilter) => ({
@@ -216,10 +223,10 @@ export const ServiceSlugFormSheet: FunctionComponent<
     orderBy,
     filter,
   });
-  const [data, refetch] = useRefetchableFragment<
-    userListQuery,
-    userList_users$key
-  >(userListFragment, queryData);
+  const [data] = useRefetchableFragment<userListQuery, userList_users$key>(
+    userListFragment,
+    queryData
+  );
 
   const tagsAutocomplete = data?.users?.edges?.map((edge) => ({
     id: edge.node.id,
