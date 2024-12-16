@@ -197,14 +197,16 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             <IconActions
               icon={
                 <>
-                  <MoreVertIcon className="h-4 w-4" />
+                  <MoreVertIcon className="h-4 w-4 text-primary" />
                   <span className="sr-only">Open menu</span>
                 </>
               }>
               <EditUser
                 user={row.original}
                 trigger={
-                  <IconActionsButton aria-label={t('UserActions.UpdateUser')}>
+                  <IconActionsButton
+                    className="normal-case"
+                    aria-label={t('UserActions.UpdateUser')}>
                     {t('MenuActions.Update')}
                   </IconActionsButton>
                 }
@@ -219,6 +221,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
               <GuardCapacityComponent
                 capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
                 <IconActionsButton
+                  className="normal-case"
                   aria-label={t('UserActions.DetailsUser')}
                   onClick={() => router.push(`/admin/user/${row.original.id}`)}>
                   {t('MenuActions.Details')}

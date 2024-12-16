@@ -64,7 +64,7 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
       trigger={
         <Button
           variant="ghost"
-          className="w-full justify-start"
+          className="w-full justify-start normal-case"
           aria-label={t('OrganizationForm.EditOrganization')}>
           {t('Utils.Update')}
         </Button>

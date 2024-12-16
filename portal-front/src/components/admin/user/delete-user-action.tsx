@@ -49,7 +49,9 @@ export const DeleteUserAction: FunctionComponent<DeleteUserActionsProps> = ({
   };
 
   const defaultTrigger = (
-    <IconActionsButton aria-label={t('UserActions.DeleteUser')}>
+    <IconActionsButton
+      className="normal-case"
+      aria-label={t('UserActions.DeleteUser')}>
       {t('MenuActions.Delete')}
     </IconActionsButton>
   );

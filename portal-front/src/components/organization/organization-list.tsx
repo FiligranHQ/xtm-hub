@@ -62,7 +62,7 @@ const OrganizationList: FunctionComponent = () => {
           <IconActions
             icon={
               <>
-                <MoreVertIcon className="h-4 w-4" />
+                <MoreVertIcon className="h-4 w-4 text-primary" />
                 <span className="sr-only">Open menu</span>
               </>
             }>
