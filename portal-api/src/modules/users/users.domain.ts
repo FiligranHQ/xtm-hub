@@ -444,7 +444,6 @@ export const selectOrganizationAtLogin = async <
   user: T
 ): Promise<T> => {
   const organizations = user.organizations.filter((o) => !o.personal_space);
-  console.log(organizations);
   if (organizations.length === 1) {
     const updatedUser = await updateSelectedOrganization(
       user.id,
