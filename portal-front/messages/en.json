@@ -41,7 +41,9 @@
     "SubscribeService": "Subscribe service",
     "SubscribeOrganization": "Subscribe organization",
     "GoTo": "Go to service page",
+    "GoToLabel": "Go to",
     "GoToManagement": "Go to service management",
+    "GoToAdminLabel": "Admin",
     "Capabilities": {
       "ManageAccessName": "Manage access",
       "ManageAccessDescription": "You can access the service and invite users to this service",
@@ -49,7 +51,7 @@
       "AccessServiceDescription": "You just have access to a service"
     },
     "Management": {
-      "Email": "EMAIL",
+      "Email": "Email",
       "OneUserMax": "Add 1 user max"
     },
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",

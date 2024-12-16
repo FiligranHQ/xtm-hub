@@ -25,7 +25,7 @@ test('should confirm service management is ok', async ({ page }) => {
     .getByRole('row', { name: 'Partner Vault This service' })
     .getByRole('button')
     .click();
-  await page.getByText('Manage').click();
+  await page.getByLabel('Service.GoToAdmin').click();
 
   // Add organization
   await page.getByLabel('Subscribe organization').click();

@@ -313,6 +313,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
                   <FormLabel>Capabilities</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
+                      noResultString={t('Utils.NotFound')}
                       options={capabilitiesData}
                       value={field.value}
                       onValueChange={field.onChange}

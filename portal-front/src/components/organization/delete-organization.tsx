@@ -53,7 +53,7 @@ export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
       triggerElement={
         <Button
           variant="ghost"
-          className="w-full justify-start"
+          className="w-full justify-start normal-case"
           aria-label="Delete Organization">
           Delete
         </Button>
