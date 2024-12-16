@@ -8,6 +8,7 @@ import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/cap
 import { ServiceDescribeCapabilitiesSheet } from '@/components/service/[slug]/service-describe-capabilities';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { emailRegex } from '@/lib/regexs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Combobox,
@@ -83,6 +84,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
   const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
     UserServiceCreateMutation
   );
+  const { slug } = useDecodedParams();
   const { me } = useContext<Portal>(portalContext);
   const { toast } = useToast();
   const t = useTranslations();
@@ -136,7 +138,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
       organizationId: subscription?.organization?.id,
     });
   }, [subscription]);
-  const { slug } = useDecodedParams();
+
   const onSubmit = (values: any) => {
     if (userService.id) {
       const editCapaValues = {
@@ -195,28 +197,36 @@ export const ServiceSlugFormSheet: FunctionComponent<
 
   const [filter, setFilter] = useState<UserFilter>({
     search: undefined,
-    organization: me?.selected_organization_id,
+    organization: subscription.organization.id,
   });
+
+  useEffect(() => {
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      organization: subscription.organization.id,
+    }));
+  }, [subscription]);
+
+  let filterTimeout: NodeJS.Timeout;
   const handleInputChange = (inputValue: string) => {
-    setFilter((prevFilter) => {
-      const updatedFilter = {
+    clearTimeout(filterTimeout);
+    filterTimeout = setTimeout(() => {
+      setFilter((prevFilter) => ({
         ...prevFilter,
         search: inputValue,
-      };
-      refetch({ filter: updatedFilter });
-      return updatedFilter;
-    });
+      }));
+    }, 400);
   };
   const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
     count: pageSize,
-    orderMode: orderMode,
-    orderBy: orderBy,
+    orderMode,
+    orderBy,
     filter,
   });
-  const [data, refetch] = useRefetchableFragment<
-    userListQuery,
-    userList_users$key
-  >(userListFragment, queryData);
+  const [data] = useRefetchableFragment<userListQuery, userList_users$key>(
+    userListFragment,
+    queryData
+  );
 
   const tagsAutocomplete = data?.users?.edges?.map((edge) => ({
     id: edge.node.id,
@@ -225,6 +235,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
   const { setValue } = form;
 
   const [tags, setTags] = useState<Tag[]>([]);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   return (
     <Sheet
@@ -258,11 +269,12 @@ export const ServiceSlugFormSheet: FunctionComponent<
                           {...field}
                           placeholder={t('Service.Management.Email')}
                           tags={tags}
-                          activeTagIndex={0}
-                          setActiveTagIndex={() => {}}
+                          activeTagIndex={activeTagIndex}
+                          setActiveTagIndex={setActiveTagIndex}
                           enableAutocomplete={true}
                           autocompleteOptions={tagsAutocomplete}
                           maxTags={1}
+                          validateTag={(tag: string) => !!tag.match(emailRegex)}
                           placeholderWhenFull={t(
                             'Service.Management.OneUserMax'
                           )}
