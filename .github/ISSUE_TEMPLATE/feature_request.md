@@ -1,8 +1,8 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: "[ISSUE]"
-labels: Feature
+title: "[ISSUE] - [SCOPEChangeMe] : "
+labels: Feature, needs triage
 assignees: ''
 
 ---
@@ -14,7 +14,7 @@ A clear and concise description of what the feature is about. The scope should b
 Describe the use case for which you need a solution
 
 **Wireframes**
-Add here all Balsamic/Models validated here for this feature. 
+Add here all Balsamic/Models/Figma validated here for this feature. 
 
 **Notion**
 Add the notion link here.
