@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+      - "development"
     paths:
       - "portal-api/**"
       - "portal-front/**"
@@ -12,6 +13,7 @@ on:
   pull_request:
     branches:
       - "main"
+      - "development"
     paths:
       - "portal-api/**"
       - "portal-front/**"
@@ -66,10 +68,11 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}:main
+            type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
 
-  run-tests:
+  run-e2e-tests:
     needs: build-images
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -102,6 +105,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+    if: '!startsWith(github.ref , "refs/tags/")'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -128,6 +132,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+    if: '!startsWith(github.ref , "refs/tags/")'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -193,13 +198,21 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}:main
+            type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
-  restart-staging:
+  restart-deployment:
     needs: build-images-prod
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name != 'pull_request'
     steps:
+      #- name: restart deployment on production
+      #  run: kubectl --server=https://api.PROD.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN_PROD }}" -n xtmhub rollout restart deployment
+      #  if: startsWith(github.ref, 'refs/tags/')
       - name: restart deployment on staging
         run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN }}" -n xtmhub rollout restart deployment
+        if: github.ref == 'refs/heads/main'
+      - name: restart deployment on development
+        run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN_DEV }}" -n 'xtmhub-dev' rollout restart deployment
+        if: github.ref == 'refs/heads/development'

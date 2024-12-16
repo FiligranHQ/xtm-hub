@@ -11,6 +11,10 @@ spec:
     metadata:
       labels:
         app: xtmhub-api
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '4001'
+        prometheus.io/metrics-prefix: "xtmhub_"
     spec:
     {{- with .Values.xtmhub.imagePullSecrets }}
       imagePullSecrets:
@@ -24,7 +28,7 @@ spec:
       - name: xtmhub-api
         #TODO: Rename portal to xtmhub once docker image has been renamed
         image: filigran/portal-api-prod:{{ .Values.xtmhub.version }}
-        {{- if eq .Values.xtmhub.version "main" }}
+        {{- if or (eq .Values.xtmhub.version "main") (eq .Values.xtmhub.version "development") }}
         imagePullPolicy: "Always"
         {{- else }}
         imagePullPolicy: "IfNotPresent"
@@ -39,9 +43,6 @@ spec:
             path: /health
             port: 4001
             scheme: HTTP
-        annotations:
-          prometheus.io/scrape: 'true'
-          prometheus.io/port: '4001'
         env:
         - name: NODE_ENV
           value: {{ .Values.xtmhub.node_env }}
@@ -82,7 +83,7 @@ spec:
             secretKeyRef:
               name: xtmhub-api-config
               key: OIDC_CLIENT_SECRET
-              optional: false      
+              optional: false
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
