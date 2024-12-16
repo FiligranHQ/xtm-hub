@@ -449,7 +449,10 @@ export const selectOrganizationAtLogin = async <
       user.id,
       organizations[0].id
     );
-    user.selected_organization_id = updatedUser.selected_organization_id;
+    return {
+      ...user,
+      selected_organization_id: updatedUser.selected_organization_id,
+    };
   }
   return user;
 };
