@@ -85,7 +85,7 @@ const httpServer = createServer(app);
 const schema = createSchema();
 app.use(graphqlUploadExpress());
 
-if (!['production', 'staging'].includes(process.env.NODE_ENV)) {
+if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
   const printedSchema = printSchema(schema);
   fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
 }
@@ -194,4 +194,6 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   );
 }
 
-logApp.info(`🚀 Server ready at http://localhost:` + portalConfig.port);
+logApp.info(
+  `🚀 Server ready at http://localhost:${portalConfig.port} (ENV: ${process.env.NODE_ENV})`
+);

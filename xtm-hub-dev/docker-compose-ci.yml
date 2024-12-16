@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 services:
   portal-front:
     container_name: portal-front
@@ -11,7 +11,7 @@ services:
       portal-api:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "wget", "-qO-", "http://portal-front:3000/" ]
+      test: ["CMD", "wget", "-qO-", "http://portal-front:3000/"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -50,14 +50,13 @@ services:
       - DATABASE_PASSWORD=portal-password
       - ADMIN_EMAIL=admin@filigran.io
       - ADMIN_PASSWORD=admin
-      - NODE_ENV=staging
+      - NODE_ENV=development
       - MINIO_BUCKET_NAME=xtmhubbucket
       - MINIO_ENDPOINT=portal-minio
       - MINIO_PORT=9000
       - MINIO_ACCESS_KEY=minio
       - MINIO_SECRET_KEY=password
       - MINIO_USE_SSL=false
-
 
   portal-api:
     container_name: portal-api
@@ -67,7 +66,7 @@ services:
         - type=registry,ref=filigran/portal-api:${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-api:main
     healthcheck:
-      test: [ "CMD", "wget", "-qO-", "http://portal-api:4001/health" ]
+      test: ["CMD", "wget", "-qO-", "http://portal-api:4001/health"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -91,7 +90,7 @@ services:
       - MINIO_ACCESS_KEY=portal
       - MINIO_SECRET_KEY=changeme
       - MINIO_USE_SSL=false
-      - NODE_ENV=staging
+      - NODE_ENV=development
 
   portal-postgres:
     container_name: portal-postgres
@@ -105,33 +104,32 @@ services:
       - PGDATA=/data/postgres
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "-d", "cloud-portal" ]
+      test: ["CMD-SHELL", "pg_isready", "-d", "cloud-portal"]
       interval: 10s
       timeout: 5s
       retries: 10
 
   portal-minio:
     container_name: portal-minio
-    image: 'minio/minio:RELEASE.2024-08-03T04-33-23Z'
+    image: "minio/minio:RELEASE.2024-08-03T04-33-23Z"
     environment:
       MINIO_ROOT_USER: portal
       MINIO_ROOT_PASSWORD: changeme
     volumes:
-      - 'minio:/data/minio'
-    command: 'minio server /data/minio'
+      - "minio:/data/minio"
+    command: "minio server /data/minio"
     healthcheck:
-      test: [ "CMD", "mc", "ready", "local" ]
+      test: ["CMD", "mc", "ready", "local"]
       interval: 10s
       timeout: 5s
       retries: 10
-
 
   portal-e2e-tests:
     build:
       context: ../portal-e2e-tests/.
       cache_from:
-      - "type=registry,ref=filigran/portal-e2e-tests:main"
-      - "type=registry,ref=filigran/portal-e2e-tests:${IMAGE_TAGS}"
+        - "type=registry,ref=filigran/portal-e2e-tests:main"
+        - "type=registry,ref=filigran/portal-e2e-tests:${IMAGE_TAGS}"
     depends_on:
       portal-front:
         condition: service_healthy

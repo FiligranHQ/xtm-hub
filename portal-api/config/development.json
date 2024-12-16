@@ -1,6 +1,11 @@
 {
-  "environment": "staging",
+  "environment": "development",
   "login_settings": [
+    {
+      "name": "local",
+      "type": "FORM",
+      "provider": "local"
+    },
     {
       "name": "Login with Filigran",
       "type": "SSO",
