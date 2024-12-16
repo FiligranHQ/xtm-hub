@@ -23,6 +23,7 @@ import {
   loadUserBy,
   loadUserDetails,
   loadUsers,
+  selectOrganizationAtLogin,
   updateSelectedOrganization,
   updateUser,
   userHasSomeSubscription,
@@ -192,12 +193,11 @@ const resolvers: Resolvers = {
       });
       return mapUserToGraphqlUser(user);
     },
-    // Login / logout
     login: async (_, { email, password }, context) => {
       const { req } = context;
       const logged = await loadUserBy({ email });
       if (logged && validPassword(logged, password)) {
-        req.session.user = logged;
+        req.session.user = await selectOrganizationAtLogin(logged);
         return mapUserToGraphqlUser(logged);
       }
       return undefined;

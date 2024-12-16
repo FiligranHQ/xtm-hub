@@ -18,6 +18,7 @@ import { PortalContext } from '../../model/portal-context';
 import {
   UserInfo,
   UserLoadUserBy,
+  UserWithOrganizations,
   UserWithOrganizationsAndRole,
 } from '../../model/user';
 import {
@@ -432,4 +433,26 @@ export const userHasSomeSubscription = async (context: PortalContext) => {
     .first(); // Fetch only the first matching record
 
   return !!exists;
+};
+
+/**
+ * #185: If the user has only ONE organization, land him on it rather than its personal space
+ */
+export const selectOrganizationAtLogin = async <
+  T extends UserWithOrganizations,
+>(
+  user: T
+): Promise<T> => {
+  const organizations = user.organizations.filter((o) => !o.personal_space);
+  if (organizations.length === 1) {
+    const updatedUser = await updateSelectedOrganization(
+      user.id,
+      organizations[0].id
+    );
+    return {
+      ...user,
+      selected_organization_id: updatedUser.selected_organization_id,
+    };
+  }
+  return user;
 };
