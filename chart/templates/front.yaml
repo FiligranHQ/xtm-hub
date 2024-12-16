@@ -11,6 +11,8 @@ spec:
     metadata:
       labels:
         app: xtmhub-front
+      annotations:
+        blackbox.io/path: health
     spec:
     {{- with .Values.xtmhub.imagePullSecrets }}
       imagePullSecrets:

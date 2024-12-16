@@ -15,6 +15,7 @@ spec:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '4001'
         prometheus.io/metrics-prefix: "xtmhub_"
+        blackbox.io/path: health
     spec:
     {{- with .Values.xtmhub.imagePullSecrets }}
       imagePullSecrets:
