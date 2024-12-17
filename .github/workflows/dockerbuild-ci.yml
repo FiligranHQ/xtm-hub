@@ -228,8 +228,13 @@ jobs:
     needs: build-images-prod
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    #if: contains(github.ref, 'refs/tags/')
+    if: contains(github.ref, 'refs/tags/')
     steps:
+      - name: Extract Tag Version
+        id: tag_version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "VERSION=$TAG" >> $GITHUB_ENV
       - name: Post deployment message to platform
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
@@ -252,7 +257,7 @@ jobs:
                         "size": "large",
                         "weight": "bolder",
                         "color": "accent",
-                        "text": "🚀 XTM Hub {{version}} Ready for Deployment",
+                        "text": "🚀 XTM Hub ${{ env.VERSION }} Ready for Deployment",
                         "wrap": true
                       },
                       {
@@ -273,7 +278,7 @@ jobs:
                         "facts": [
                             {
                               "title": "Version:",
-                              "value": "{{version}}"
+                              "value": "${{ env.VERSION }}"
                             },
                             {
                               "title": "Environment:",
