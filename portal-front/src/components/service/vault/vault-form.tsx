@@ -5,13 +5,13 @@ import {
   newDocumentSchema,
   VaultNewFileFormSheet,
 } from '@/components/service/vault/vault-new-file-form-sheet';
-import TriggerButton from '@/components/ui/trigger-button';
 import { RESTRICTION } from '@/utils/constant';
 import { useToast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
 
+import TriggerButton from '@/components/ui/trigger-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { useMutation } from 'react-relay';
 import { UploadableMap } from 'relay-runtime';
