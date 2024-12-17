@@ -1,13 +1,22 @@
+import GuardCapacityComponent from '@/components/admin-guard';
+import { ServiceById } from '@/components/service/service.graphql';
+import DeleteDocument from '@/components/service/vault/delete-document';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import {
   DocumentsListQuery,
   documentsFragment,
 } from '@/components/service/vault/document.graphql';
+import DownloadDocument from '@/components/service/vault/download-document';
+import EditDocument from '@/components/service/vault/edit-document';
 import { VaultForm } from '@/components/service/vault/vault-form';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import { IconActions } from '@/components/ui/icon-actions';
+import useDecodedParams from '@/hooks/useDecodedParams';
+import { RESTRICTION } from '@/utils/constant';
+import { FormatDate } from '@/utils/date';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import {
@@ -20,24 +29,15 @@ import {
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import * as React from 'react';
 import { useState } from 'react';
-import { commitLocalUpdate, useRelayEnvironment } from 'react-relay';
-
-import GuardCapacityComponent from '@/components/admin-guard';
-import { ServiceById } from '@/components/service/service.graphql';
-import DeleteDocument from '@/components/service/vault/delete-document';
-import DownloadDocument from '@/components/service/vault/download-document';
-import EditDocument from '@/components/service/vault/edit-document';
-import { IconActions } from '@/components/ui/icon-actions';
-import useDecodedParams from '@/hooks/useDecodedParams';
-import { RESTRICTION } from '@/utils/constant';
-import { FormatDate } from '@/utils/date';
-import Link from 'next/link';
 import {
   PreloadedQuery,
+  commitLocalUpdate,
   usePreloadedQuery,
   useRefetchableFragment,
+  useRelayEnvironment,
 } from 'react-relay';
 import { documentItem_fragment$data } from '../../../../../__generated__/documentItem_fragment.graphql';
 import { documentsList$key } from '../../../../../__generated__/documentsList.graphql';
@@ -266,7 +266,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
             />
             <div className="justify-between flex w-full sm:w-auto items-center gap-s">
               <DataTableHeadBarOptions />
-              <VaultForm connectionId={data?.documents?.__id} />
+
               {canManageService && (
                 <Button
                   asChild
@@ -276,6 +276,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                   </Link>
                 </Button>
               )}
+              <VaultForm connectionId={data?.documents?.__id} />
             </div>
           </div>
         }
