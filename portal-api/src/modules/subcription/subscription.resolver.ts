@@ -4,9 +4,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import {
+  SubscriptionId,
+  SubscriptionMutator,
+} from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
+import { extractId } from '../../utils/utils';
 import {
   grantServiceAccessUsers,
   loadServiceWithSubscriptions,
@@ -145,10 +149,9 @@ const resolvers: Resolvers = {
       }
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
-      const [subscription] = await loadSubscriptionBy(
-        'id',
-        fromGlobalId(subscription_id).id
-      );
+      const [subscription] = await loadSubscriptionBy({
+        id: extractId(subscription_id),
+      } as SubscriptionMutator);
 
       if (subscription.billing !== 0) {
         throw new Error('You can not delete a subscription with billing.');

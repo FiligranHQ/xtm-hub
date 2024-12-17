@@ -61,7 +61,9 @@ export const RemoveUserFromOrga: FunctionComponent<RemoveUserFromOrgaProps> = ({
   };
 
   const defaultTrigger = (
-    <IconActionsButton aria-label={t('UserActions.RemoveUser')}>
+    <IconActionsButton
+      className="normal-case"
+      aria-label={t('UserActions.RemoveUser')}>
       {t('MenuActions.Remove')}
     </IconActionsButton>
   );

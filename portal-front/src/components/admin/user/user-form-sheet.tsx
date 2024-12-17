@@ -24,6 +24,7 @@ import {
   SheetTrigger,
 } from 'filigran-ui/clients';
 import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { z, ZodSchema } from 'zod';
@@ -78,6 +79,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
   validationSchema,
 }) => {
   const { me } = useContext<Portal>(portalContext);
+  const t = useTranslations();
   const currentRolesPortal = user?.roles_portal.map(
     (rolePortalData) => rolePortalData.id
   );
@@ -182,6 +184,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
                   <FormLabel>Roles</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
+                      noResultString={t('Utils.NotFound')}
                       options={rolePortalData}
                       defaultValue={field.value}
                       onValueChange={field.onChange}
@@ -204,6 +207,7 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
                     <FormLabel>Organizations</FormLabel>
                     <FormControl>
                       <MultiSelectFormField
+                        noResultString={t('Utils.NotFound')}
                         options={orgData}
                         defaultValue={field.value}
                         onValueChange={field.onChange}

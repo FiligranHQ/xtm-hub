@@ -15,7 +15,7 @@ interface BreadcrumbProps {
   value: BreadcrumbNavLink[];
 }
 
-interface BreadcrumbNavLink {
+export interface BreadcrumbNavLink {
   href?: string;
   label: ReactNode;
 }

@@ -1,16 +1,18 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 
-import GuardCapacityComponent from '@/components/admin-guard';
 import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
 import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import {
+  BreadcrumbNav,
+  BreadcrumbNavLink,
+} from '@/components/ui/breadcrumb-nav';
 import TriggerButton from '@/components/ui/trigger-button';
 import useAdminPath from '@/hooks/useAdminPath';
-import { RESTRICTION } from '@/utils/constant';
+import useGranted from '@/hooks/useGranted';
 import { DeleteIcon } from 'filigran-icon';
 import {
   Combobox,
@@ -46,6 +48,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
+  const isAdminPath = useAdminPath();
 
   const [selectedSubscription, setSelectedSubscription] =
     useState<subscriptionWithUserService_fragment$data>(
@@ -57,21 +60,32 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const { toast } = useToast();
   const t = useTranslations();
 
-  const breadcrumbValue = [
-    {
-      label: t('MenuLinks.Home'),
-      href: '/',
-    },
-    {
-      label: queryData.serviceByIdWithSubscriptions?.name,
-    },
-  ];
+  const breadcrumbValue: BreadcrumbNavLink[] = isAdminPath
+    ? [
+        {
+          label: t('MenuLinks.Settings'),
+        },
+        {
+          label: t('MenuLinks.Services'),
+          href: '/admin/service',
+        },
+      ]
+    : [
+        {
+          label: t('MenuLinks.Home'),
+          href: '/',
+        },
+      ];
+
+  breadcrumbValue.push({
+    label: queryData.serviceByIdWithSubscriptions?.name,
+  });
 
   const dataOrganizationsTab = (
     queryData.serviceByIdWithSubscriptions?.subscriptions ?? []
   ).map((subscription) => {
     return {
-      value: subscription?.organization?.name ?? '',
+      value: subscription?.organization?.id ?? '',
       label: subscription?.organization?.name ?? '',
     };
   });
@@ -80,7 +94,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     const subscription =
       queryData.serviceByIdWithSubscriptions?.subscriptions?.find(
         (subscription) => {
-          return subscription?.organization.name === value;
+          return subscription?.organization.id === value;
         }
       );
     setSelectedSubscription(
@@ -88,22 +102,22 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     );
   };
 
-  const isAllowedInviteUser = () => {
-    return (
-      queryData?.serviceByIdWithSubscriptions?.subscriptions?.map(
-        (subscription) => {
-          subscription?.user_service.map((user_service) => {
-            user_service?.service_capability?.some(
-              (c) => c?.service_capability_name === 'MANAGE_ACCESS'
-            ) && user_service?.user?.id === me?.id;
-          });
+  const canManageAccess =
+    queryData?.serviceByIdWithSubscriptions?.subscriptions?.some(
+      (subscription) => {
+        const user_service = subscription?.user_service.find(
+          (userService) => userService?.user?.id === me?.id
+        );
+        if (!user_service) {
+          return false;
         }
-      ) ||
-      me?.capabilities?.some((capability) => {
-        capability?.name === 'BYPASS';
-      })
+        return user_service.service_capability?.some(
+          (c) => c?.service_capability_name === 'MANAGE_ACCESS'
+        );
+      }
     );
-  };
+
+  const isAllowedInviteUser = canManageAccess || useGranted('BYPASS');
 
   const removeOrganization = (
     subscription: subscriptionWithUserService_fragment$data
@@ -148,7 +162,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               placeholder={t('OrganizationInServiceAction.SelectOrganization')}
               emptyCommand={t('Utils.NotFound')}
               onValueChange={onValueChange}
-              value={selectedSubscription?.organization.name ?? ''}
+              value={selectedSubscription?.organization.id ?? ''}
               onInputChange={() => {}}
             />
 
@@ -179,34 +193,33 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       </div>
       <div className="flex gap-s flex-wrap">
         <DataTableHeadBarOptions />
-        <GuardCapacityComponent
-          displayError
-          capacityRestriction={[
-            RESTRICTION.CAPABILITY_BYPASS,
-            RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-          ]}>
+        {dataOrganizationsTab.length > 0 && (
           <ServiceSlugFormSheet
             open={openSheet}
             setOpen={setOpenSheet}
             userService={currentUser}
             connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
-            subscriptionId={selectedSubscription?.id ?? ''}
+            dataOrganizationsTab={dataOrganizationsTab}
+            subscription={selectedSubscription}
             trigger={
-              isAllowedInviteUser() && (
-                <TriggerButton
-                  onClick={() => setCurrentUser({})}
-                  label={t('Service.InviteUser')}
-                />
-              )
+              <TriggerButton
+                onClick={() => setCurrentUser({})}
+                label={t('Service.InviteUser')}
+              />
             }
           />
-        </GuardCapacityComponent>
+        )}
+
         {useAdminPath() && (
           <ServiceSlugAddOrgaFormSheet
+            subscriptions={
+              queryData?.serviceByIdWithSubscriptions
+                ?.subscriptions as subscriptionWithUserService_fragment$data[]
+            }
+            setSelectedSubscription={setSelectedSubscription}
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
             serviceId={serviceId}
-            connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
             trigger={
               <Button
                 className="text-nowrap"
@@ -224,27 +237,31 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{queryData.serviceByIdWithSubscriptions?.name}</h1>
-      <div className="pb-s">
-        {queryData.serviceByIdWithSubscriptions?.description}
-      </div>
+      {isAllowedInviteUser ? (
+        <>
+          <h1 className="pb-s">
+            {queryData.serviceByIdWithSubscriptions?.name}
+          </h1>
+          <div className="pb-s">
+            {queryData.serviceByIdWithSubscriptions?.description}
+          </div>
 
-      <GuardCapacityComponent
-        displayError
-        capacityRestriction={[
-          RESTRICTION.CAPABILITY_BYPASS,
-          RESTRICTION.CAPABILITY_BCK_MANAGE_SERVICES,
-        ]}>
-        <ServiceUserServiceSlug
-          subscriptionId={selectedSubscription?.id}
-          data={
-            queryData.serviceByIdWithSubscriptions as serviceWithSubscriptions_fragment$data
-          }
-          setOpenSheet={setOpenSheet}
-          setCurrentUser={setCurrentUser}
-          toolbar={toolbar}
-        />
-      </GuardCapacityComponent>
+          <ServiceUserServiceSlug
+            subscriptionId={selectedSubscription?.id}
+            data={
+              queryData.serviceByIdWithSubscriptions as serviceWithSubscriptions_fragment$data
+            }
+            setOpenSheet={setOpenSheet}
+            setCurrentUser={setCurrentUser}
+            toolbar={toolbar}
+          />
+        </>
+      ) : (
+        <>
+          <h1 className={'txt-title'}>{t('Utils.Error')}</h1>
+          {t('Error.YouAreNotAuthorized')}
+        </>
+      )}
     </>
   );
 };

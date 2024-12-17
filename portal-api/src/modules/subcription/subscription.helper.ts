@@ -19,8 +19,8 @@ export const loadUnsecureSubscriptionBy = async (
   return dbUnsecure<Subscription>('Subscription').where(field);
 };
 
-export const loadSubscriptionBy = async (field: string, value: string) => {
-  return dbUnsecure<Subscription>('Subscription').where(field, value);
+export const loadSubscriptionBy = async (field: SubscriptionMutator) => {
+  return dbUnsecure<Subscription>('Subscription').where(field);
 };
 
 export const isOrgMatchingSub = async (

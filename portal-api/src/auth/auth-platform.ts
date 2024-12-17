@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import { UserInfo } from '../model/user';
 import { logApp } from '../utils/app-logger.util';
 import { setCookieError } from '../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
@@ -28,17 +29,20 @@ export const initAuthPlatform = async (app) => {
       const { provider } = req.params;
       let referer = req.session.referer;
       try {
-        const user = await new Promise((resolve, reject) => {
-          passport.authenticate(provider, {}, (err, user) => {
-            if (!user) {
-              reject(new Error('User not provided'));
+        const user: UserInfo = await new Promise((resolve, reject) => {
+          passport.authenticate(
+            provider,
+            {},
+            (err: unknown, user: UserInfo | false | null) => {
+              if (!user) {
+                reject(new Error('User not provided'));
+              } else if (err) {
+                reject(err || new Error('Invalid authentication'));
+              } else {
+                resolve(user);
+              }
             }
-            if (err) {
-              reject(err || new Error('Invalid authentication'));
-            } else {
-              resolve(user);
-            }
-          })(req, res, next);
+          )(req, res, next);
         });
 
         await authenticateUser(req, user);

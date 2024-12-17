@@ -7,7 +7,7 @@ export const db = knex({
     host: process.env.E2E_BASE_URL ? process.env.DATABASE_HOST : '127.0.0.1',
     database: process.env.E2E_BASE_URL
       ? process.env.POSTGRES_DB
-      : 'cloud-portal',
+      : 'test_database',
     password: process.env.E2E_BASE_URL
       ? process.env.POSTGRES_PASSWORD
       : 'portal-password',

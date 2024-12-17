@@ -24,7 +24,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-  baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3001',
+    baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3001',
 
     // Capture screenshot after each test failure.
     screenshot: 'only-on-failure',
@@ -43,10 +43,6 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        viewport: {
-          width: 1920,
-          height: 1080,
-        },
       },
       dependencies: ['setup'],
     },

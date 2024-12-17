@@ -9,16 +9,23 @@ enum UserServiceOrdering {
   subscription_status
 }
 
-input UserServiceInput {
+input UserServiceAddInput {
+  email: String!
+  capabilities: [String]
+  serviceId: String!
+  organizationId: String!
+}
+
+input UserServiceDeleteInput {
   email: String!
   capabilities: [String]
   subscriptionId: String!
 }
 
 type Mutation {
-  addUserService(input: UserServiceInput!): Subscription
+  addUserService(input: UserServiceAddInput!): Subscription
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_SERVICES])
-  deleteUserService(input: UserServiceInput!): Subscription
+  deleteUserService(input: UserServiceDeleteInput!): Subscription
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_SERVICES])
 }
 type Query {

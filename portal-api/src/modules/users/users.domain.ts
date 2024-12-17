@@ -1,8 +1,10 @@
+import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   AddUserInput,
   EditUserInput,
+  QueryUsersArgs,
   UserConnection,
   UserFilter,
   User as UserGenerated,
@@ -18,6 +20,7 @@ import { PortalContext } from '../../model/portal-context';
 import {
   UserInfo,
   UserLoadUserBy,
+  UserWithOrganizations,
   UserWithOrganizationsAndRole,
 } from '../../model/user';
 import {
@@ -151,14 +154,33 @@ export const loadUserBy = async (
 
 export const loadUsers = async (
   context: PortalContext,
-  opts,
+  opts: QueryUsersArgs,
   filter: UserFilter
 ): Promise<UserConnection> => {
   const query = paginate<UserGenerated>(context, 'User', opts);
 
+  const addWhereClauses = (query: Knex.QueryInterface) => {
+    if (filter.search) {
+      query.where((builder) =>
+        builder
+          .where('email', 'ILIKE', `%${filter.search}%`)
+          .orWhere('first_name', 'ILIKE', `%${filter.search}%`)
+          .orWhere('last_name', 'ILIKE', `%${filter.search}%`)
+      );
+    }
+    if (filter.organization) {
+      const organizationId = extractId(filter.organization);
+      query.andWhere('UserOrgFilter.organization_id', '=', organizationId);
+    }
+  };
+
   const loadUsersQuery = query
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
-
+    .leftJoin(
+      'User_Organization as UserOrgFilter',
+      'User.id',
+      'UserOrgFilter.user_id'
+    )
     .leftJoin(
       'Organization as org',
       'User_Organization.organization_id',
@@ -216,22 +238,10 @@ export const loadUsers = async (
     ])
     .groupBy(['User.id']);
 
-  if (filter.search) {
-    loadUsersQuery
-      .where('email', 'LIKE', `%${filter.search}%`)
-      .orWhere('first_name', 'LIKE', `%${filter.search}%`)
-      .orWhere('last_name', 'LIKE', `%${filter.search}%`);
-  }
-  if (filter.organization) {
-    const organizationId = extractId(filter.organization);
-    loadUsersQuery.where(
-      'User_Organization.organization_id',
-      '=',
-      organizationId
-    );
-  }
+  addWhereClauses(loadUsersQuery);
 
   const userConnection = await loadUsersQuery.asConnection<UserConnection>();
+
   userConnection.edges = userConnection.edges.map((edge) => {
     const edgeUser = edge.node as unknown as UserLoadUserBy;
     return {
@@ -240,9 +250,19 @@ export const loadUsers = async (
     };
   });
 
-  const { totalCount } = await db<User>(context, 'User', opts)
+  const queryTotalCount = db<User>(context, 'User')
+    .leftJoin(
+      'User_Organization as UserOrgFilter',
+      'User.id',
+      'UserOrgFilter.user_id'
+    )
     .countDistinct('User.id as totalCount')
     .first();
+
+  addWhereClauses(queryTotalCount);
+
+  const { totalCount } = await queryTotalCount;
+
   return {
     totalCount,
     ...userConnection,
@@ -413,4 +433,26 @@ export const userHasSomeSubscription = async (context: PortalContext) => {
     .first(); // Fetch only the first matching record
 
   return !!exists;
+};
+
+/**
+ * #185: If the user has only ONE organization, land him on it rather than its personal space
+ */
+export const selectOrganizationAtLogin = async <
+  T extends UserWithOrganizations,
+>(
+  user: T
+): Promise<T> => {
+  const organizations = user.organizations.filter((o) => !o.personal_space);
+  if (organizations.length === 1) {
+    const updatedUser = await updateSelectedOrganization(
+      user.id,
+      organizations[0].id
+    );
+    return {
+      ...user,
+      selected_organization_id: updatedUser.selected_organization_id,
+    };
+  }
+  return user;
 };
