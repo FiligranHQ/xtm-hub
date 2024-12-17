@@ -16,7 +16,6 @@ test.afterAll('Remove subscription', async () => {
 test('should confirm service management is ok', async ({ page }) => {
   await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
 
-  await page.reload();
   const loginPage = new LoginPage(page);
   await loginPage.login();
 
@@ -82,8 +81,8 @@ test('should confirm service management is ok', async ({ page }) => {
   await expect(page.getByText('ACCESS_SERVICE').first()).toBeVisible();
 
   // Unsubscribe organization
-  // await page.getByLabel('Delete Organization from the').click();
-  // await page.getByRole('button', { name: 'Remove' }).click();
-  // await page.getByRole('main').getByText('Internal', { exact: true }).click();
-  // await expect(page.getByRole('option', { name: 'Thales' })).not.toBeVisible();
+  await page.getByLabel('Delete Organization from the').click();
+  await page.getByRole('button', { name: 'Remove' }).click();
+  await page.getByRole('main').getByText('Filigran', { exact: true }).click();
+  await expect(page.getByRole('option', { name: 'Thales' })).not.toBeVisible();
 });
