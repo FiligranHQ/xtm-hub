@@ -252,7 +252,7 @@ jobs:
                         "size": "large",
                         "weight": "bolder",
                         "color": "accent",
-                        "text": "🚀 XTM Hub ${{ version }} Ready for Deployment",
+                        "text": "🚀 XTM Hub {{ version }} Ready for Deployment",
                         "wrap": true
                       },
                       {
