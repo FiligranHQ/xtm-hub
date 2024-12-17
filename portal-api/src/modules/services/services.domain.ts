@@ -237,7 +237,7 @@ export const loadServiceWithSubscriptions = async (
       'Subscription.organization_id'
     )
     .select(
-      dbRaw('DISTINCT ON ("Subscription".id) "Subscription".*'),
+      dbRaw('"Subscription".*'),
       dbRaw(
         formatRawObject({
           columnName: 'org',
@@ -249,7 +249,10 @@ export const loadServiceWithSubscriptions = async (
         `COALESCE( CASE WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg( json_build_object( 'id', "userService".id, 'service_capability', "userService".service_capabilities, 'user', CASE WHEN "user".id IS NOT NULL THEN json_build_object( 'id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, '__typename', 'User' ) ELSE NULL END, '__typename', 'User_Service' ) )::json END, '[]'::json ) AS user_service`
       )
     )
-    .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.*']);
+    .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
+    .orderByRaw(
+      `CASE WHEN org.id = '${context.user.selected_organization_id}' THEN 0 ELSE 1 END, "Subscription".id`
+    );
 
   const [service] = await db<Service>(context, 'Service').where(
     'Service.id',
