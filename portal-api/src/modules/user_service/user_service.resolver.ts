@@ -1,12 +1,13 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { db } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
 import Subscription, {
   SubscriptionId,
+  SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
+import { extractId } from '../../utils/utils';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../subcription/subscription.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
@@ -43,28 +44,29 @@ const resolvers: Resolvers = {
         email: input.email,
       });
 
-      const subscription_id = fromGlobalId(input.subscriptionId)
-        .id as SubscriptionId;
-      await insertUserIntoOrganization(context, user, subscription_id);
-      if (!subscription_id) {
+      const [subscription] = await loadSubscriptionBy({
+        service_id: extractId(input.serviceId),
+        organization_id: extractId(input.organizationId),
+      } as SubscriptionMutator);
+
+      await insertUserIntoOrganization(context, user, subscription.id);
+      if (!subscription) {
         throw new GraphQLError('Sorry the subscription does not exist', {
           extensions: { code: '[User_Service] UNKNOWN SUBSCRIPTION' },
         });
       }
-
-      if (await isUserServiceExist(user.id as UserId, subscription_id)) {
+      if (await isUserServiceExist(user.id as UserId, subscription.id)) {
         throw new GraphQLError(' The User access to service is already exist', {
           extensions: { code: '[User_Service] ALREADY_EXIST' },
         });
       }
 
       await createUserServiceAccess(context, {
-        subscription_id,
+        subscription_id: subscription.id,
         user_id: user.id as UserId,
         capabilities: input.capabilities,
       });
 
-      const [subscription] = await loadSubscriptionBy('id', subscription_id);
       const returningSubscription =
         await fillSubscriptionWithOrgaServiceAndUserService(
           context,
@@ -79,7 +81,7 @@ const resolvers: Resolvers = {
         'User_Service'
       )
         .where('user_id', '=', userToDelete.id)
-        .where('subscription_id', '=', fromGlobalId(input.subscriptionId).id)
+        .where('subscription_id', '=', extractId(input.subscriptionId))
         .delete('*')
         .returning('*');
 
@@ -89,10 +91,9 @@ const resolvers: Resolvers = {
       });
 
       if (usersServices.length === 0) {
-        const [subscription] = await loadSubscriptionBy(
-          'id',
-          deletedUserService.subscription_id
-        );
+        const [subscription] = await loadSubscriptionBy({
+          id: deletedUserService.subscription_id,
+        });
         await db<Subscription>(context, 'Subscription')
           .where('id', '=', subscription.id)
           .delete('*')
@@ -101,7 +102,7 @@ const resolvers: Resolvers = {
 
       const subscription = await fillSubscriptionWithOrgaServiceAndUserService(
         context,
-        fromGlobalId(input.subscriptionId).id as SubscriptionId
+        extractId(input.subscriptionId) as SubscriptionId
       );
 
       return subscription;

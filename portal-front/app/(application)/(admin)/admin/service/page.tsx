@@ -4,11 +4,10 @@ import {
   servicesListFragment,
 } from '@/components/service/service.graphql';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { IconActions } from '@/components/ui/icon-actions';
+import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import { UseTranslationsProps } from '@/i18n/config';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui';
 import { DataTable } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -53,26 +52,22 @@ const Page = () => {
             <IconActions
               icon={
                 <>
-                  <MoreVertIcon className="h-4 w-4" />
+                  <MoreVertIcon className="h-4 w-4 text-primary" />
                   <span className="sr-only">Open menu</span>
                 </>
               }>
-              <Button
-                variant={'ghost'}
-                className="w-full justify-start"
-                aria-label={t('Service.GoToManagement')}
+              <IconActionsButton
+                aria-label={t('Service.GoToAdmin')}
                 onClick={() => {
                   router.push(`/admin/service/${row.id}`);
                 }}>
-                Manage
-              </Button>
-              <Button
-                variant={'ghost'}
-                className="w-full justify-start"
-                aria-label={t('Service.GoToManagement')}
+                {t('Service.GoToAdminLabel')}
+              </IconActionsButton>
+              <IconActionsButton
+                aria-label={t('Service.GoTo')}
                 onClick={() => router.push(`/service/vault/${row.id}`)}>
-                Go to
-              </Button>
+                {t('Service.GoToLabel')}
+              </IconActionsButton>
             </IconActions>
           </div>
         );

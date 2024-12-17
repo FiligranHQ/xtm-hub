@@ -64,10 +64,10 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
       trigger={
         <TriggerButton
           className="truncate inline-block "
-          label="Create organization"
+          label={t('OrganizationForm.CreateOrganization')}
         />
       }
-      title={'Create a new organization'}
+      title={t('OrganizationForm.CreateOrganization')}
       handleSubmit={handleSubmit}
     />
   );

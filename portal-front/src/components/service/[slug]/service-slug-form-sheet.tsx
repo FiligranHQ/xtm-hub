@@ -5,10 +5,13 @@ import {
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
+import { ServiceDescribeCapabilitiesSheet } from '@/components/service/[slug]/service-describe-capabilities';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
+import useDecodedParams from '@/hooks/useDecodedParams';
+import { emailRegex } from '@/lib/regexs';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UnknownIcon } from 'filigran-icon';
 import {
+  Combobox,
   Form,
   FormControl,
   FormField,
@@ -29,7 +32,13 @@ import {
 } from 'filigran-ui/clients';
 import { Button, MultiSelectFormField } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, ReactNode, useContext, useState } from 'react';
+import {
+  FunctionComponent,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useForm } from 'react-hook-form';
 import {
   useLazyLoadQuery,
@@ -38,6 +47,7 @@ import {
 } from 'react-relay';
 import { z } from 'zod';
 import { serviceCapabilityMutation } from '../../../../__generated__/serviceCapabilityMutation.graphql';
+import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
 import {
   UserFilter,
@@ -51,21 +61,30 @@ interface ServiceSlugFormSheetProps {
   trigger: ReactNode;
   connectionId: string;
   userService: any;
-  subscriptionId: string;
+  subscription: subscriptionWithUserService_fragment$data;
+  dataOrganizationsTab: {
+    value: string;
+    label: string;
+  }[];
 }
-
-const capabilitiesFormSchema = z.object({
-  capabilities: z.array(z.string()),
-});
 
 export const ServiceSlugFormSheet: FunctionComponent<
   ServiceSlugFormSheetProps
-> = ({ open, setOpen, trigger, connectionId, userService, subscriptionId }) => {
+> = ({
+  open,
+  setOpen,
+  trigger,
+  connectionId,
+  userService,
+  subscription,
+  dataOrganizationsTab,
+}) => {
   const [commitServiceCapabilityMutation] =
     useMutation<serviceCapabilityMutation>(ServiceCapabilityCreateMutation);
   const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
     UserServiceCreateMutation
   );
+  const { slug } = useDecodedParams();
   const { me } = useContext<Portal>(portalContext);
   const { toast } = useToast();
   const t = useTranslations();
@@ -89,7 +108,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
     capabilities: z.array(z.string()),
   });
 
-  // Schéma étendu
   const extendedSchema = capabilitiesFormSchema.extend({
     email: z
       .array(
@@ -99,9 +117,9 @@ export const ServiceSlugFormSheet: FunctionComponent<
         })
       )
       .min(1, { message: 'Please provide at least one email.' }),
+    organizationId: z.string(),
   });
 
-  // Utilisation de `useForm`
   const form = useForm({
     resolver: zodResolver(
       !userService.id ? extendedSchema : capabilitiesFormSchema
@@ -109,8 +127,17 @@ export const ServiceSlugFormSheet: FunctionComponent<
     defaultValues: {
       email: [{ id: '', text: '' }],
       capabilities: currentCapabilities,
+      organizationId: subscription?.organization?.id,
     },
   });
+
+  useEffect(() => {
+    form.reset({
+      email: [{ id: '', text: '' }],
+      capabilities: currentCapabilities,
+      organizationId: subscription?.organization?.id,
+    });
+  }, [subscription]);
 
   const onSubmit = (values: any) => {
     if (userService.id) {
@@ -144,7 +171,8 @@ export const ServiceSlugFormSheet: FunctionComponent<
           input: {
             email: values.email[0].text,
             capabilities: values.capabilities,
-            subscriptionId: subscriptionId,
+            serviceId: slug ?? '',
+            organizationId: values.organizationId,
           },
         },
         onCompleted() {
@@ -169,28 +197,36 @@ export const ServiceSlugFormSheet: FunctionComponent<
 
   const [filter, setFilter] = useState<UserFilter>({
     search: undefined,
-    organization: me?.selected_organization_id,
+    organization: subscription?.organization?.id,
   });
+
+  useEffect(() => {
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      organization: subscription?.organization?.id,
+    }));
+  }, [subscription]);
+
+  let filterTimeout: NodeJS.Timeout;
   const handleInputChange = (inputValue: string) => {
-    setFilter((prevFilter) => {
-      const updatedFilter = {
+    clearTimeout(filterTimeout);
+    filterTimeout = setTimeout(() => {
+      setFilter((prevFilter) => ({
         ...prevFilter,
         search: inputValue,
-      };
-      refetch({ filter: updatedFilter });
-      return updatedFilter;
-    });
+      }));
+    }, 400);
   };
   const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
     count: pageSize,
-    orderMode: orderMode,
-    orderBy: orderBy,
+    orderMode,
+    orderBy,
     filter,
   });
-  const [data, refetch] = useRefetchableFragment<
-    userListQuery,
-    userList_users$key
-  >(userListFragment, queryData);
+  const [data] = useRefetchableFragment<userListQuery, userList_users$key>(
+    userListFragment,
+    queryData
+  );
 
   const tagsAutocomplete = data?.users?.edges?.map((edge) => ({
     id: edge.node.id,
@@ -199,6 +235,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
   const { setValue } = form;
 
   const [tags, setTags] = useState<Tag[]>([]);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   return (
     <Sheet
@@ -220,34 +257,65 @@ export const ServiceSlugFormSheet: FunctionComponent<
             {userService.id ? (
               <></>
             ) : (
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <TagInput
-                        {...field}
-                        placeholder={t('Service.Management.Email')}
-                        tags={tags}
-                        activeTagIndex={0}
-                        setActiveTagIndex={() => {}}
-                        enableAutocomplete={true}
-                        autocompleteOptions={tagsAutocomplete}
-                        maxTags={1}
-                        placeholderWhenFull={t('Service.Management.OneUserMax')}
-                        setTags={(newTags) => {
-                          setTags(newTags);
-                          setValue('email', newTags as Tag[]);
-                        }}
-                        onInputChange={handleInputChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <TagInput
+                          {...field}
+                          placeholder={t('Service.Management.Email')}
+                          tags={tags}
+                          activeTagIndex={activeTagIndex}
+                          setActiveTagIndex={setActiveTagIndex}
+                          enableAutocomplete={true}
+                          autocompleteOptions={tagsAutocomplete}
+                          maxTags={1}
+                          validateTag={(tag: string) => !!tag.match(emailRegex)}
+                          placeholderWhenFull={t(
+                            'Service.Management.OneUserMax'
+                          )}
+                          setTags={(newTags) => {
+                            setTags(newTags);
+                            setValue('email', newTags as Tag[]);
+                          }}
+                          onInputChange={handleInputChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="organizationId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Organization</FormLabel>
+                      <FormControl>
+                        <Combobox
+                          dataTab={dataOrganizationsTab}
+                          order={t(
+                            'OrganizationInServiceAction.SelectOrganization'
+                          )}
+                          placeholder={t(
+                            'OrganizationInServiceAction.SelectOrganization'
+                          )}
+                          emptyCommand={t('Utils.NotFound')}
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          onInputChange={() => {}}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
             )}
             <FormField
               control={form.control}
@@ -257,6 +325,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
                   <FormLabel>Capabilities</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
+                      noResultString={t('Utils.NotFound')}
                       options={capabilitiesData}
                       value={field.value}
                       onValueChange={field.onChange}
@@ -278,20 +347,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
                 Validate
               </Button>
             </SheetFooter>
-            <div className="flex flex-row">
-              <div className="font-bold">Manage access</div>{' '}
-              <div className="flex items-center">
-                <UnknownIcon className="h-4 w-4 ml-s" />{' '}
-              </div>
-            </div>
-            You can access the service and invite users to this service
-            <div className="flex flex-row">
-              <div className="font-bold">Access service</div>
-              <div className="flex items-center">
-                <UnknownIcon className="h-4 w-4 ml-s" />
-              </div>
-            </div>
-            You just have access to a service
+            <ServiceDescribeCapabilitiesSheet />
           </form>
         </Form>
       </SheetContent>

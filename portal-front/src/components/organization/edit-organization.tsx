@@ -64,12 +64,12 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
       trigger={
         <Button
           variant="ghost"
-          className="w-full justify-start"
-          aria-label="Edit Organization">
+          className="w-full justify-start normal-case"
+          aria-label={t('OrganizationForm.EditOrganization')}>
           {t('Utils.Update')}
         </Button>
       }
-      title={"Edit the organization's name"}
+      title={t('OrganizationForm.EditOrganization')}
       handleSubmit={handleSubmit}
     />
   );

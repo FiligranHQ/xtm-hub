@@ -9,7 +9,9 @@ import {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceMutator } from '../../model/kanel/public/Service';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
-import Subscription from '../../model/kanel/public/Subscription';
+import Subscription, {
+  SubscriptionMutator,
+} from '../../model/kanel/public/Subscription';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
@@ -324,7 +326,9 @@ export const grantServiceAccess = async (
     dataUserServices
   )) as [UserService];
 
-  const [subscription] = await loadSubscriptionBy('id', subscriptionId);
+  const [subscription] = await loadSubscriptionBy({
+    'Subscription.id': subscriptionId,
+  } as SubscriptionMutator);
   for (const userId of usersId) {
     const user = await loadUserBy({ 'User.id': userId } as UserMutator);
 

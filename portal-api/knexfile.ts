@@ -37,10 +37,10 @@ export type DatabaseType =
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {
-  first: number;
-  after: string;
-  orderMode: string;
-  orderBy: string;
+  first?: number;
+  after?: string;
+  orderMode?: string;
+  orderBy?: string;
 }
 
 const knex = pkg;
@@ -92,7 +92,7 @@ export const dbTx = () => database.transaction();
 export const db = <T>(
   context: PortalContext,
   type: DatabaseType,
-  opts: QueryOpts = {}
+  opts: Partial<QueryOpts> = {}
 ) => {
   const queryContext = database<T>(type).queryContext({ __typename: type });
   return applyDbSecurity<T>(context, type, queryContext, opts);
@@ -129,7 +129,7 @@ export const paginate = <T>(
   context: PortalContext,
   type: DatabaseType,
   pagination: Pagination,
-  opts: QueryOpts = {},
+  opts: Partial<QueryOpts> = {},
   queryContext = db<T>(context, type, opts)
 ) => {
   const { first, after, orderMode, orderBy } = pagination;

@@ -5,7 +5,9 @@ import { loadSubscriptionBy } from '../modules/subcription/subscription.helper';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { ServiceCapabilityArgs } from './directive-auth';
 
+import { SubscriptionMutator } from '../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../model/user';
+import { extractId } from '../utils/utils';
 
 export const loadCapabilitiesByServiceId = async (
   user: UserLoadUserBy,
@@ -54,7 +56,8 @@ export const getCapabilityUser = (
 ) =>
   args.service_id
     ? loadCapabilitiesByServiceId(user, fromGlobalId(args.service_id).id)
-    : loadSubscriptionBy('id', fromGlobalId(args.subscription_id).id).then(
-        ([subscription]) =>
-          loadCapabilitiesByServiceId(user, subscription.service_id)
+    : loadSubscriptionBy({
+        id: extractId(args.subscription_id),
+      } as SubscriptionMutator).then(([subscription]) =>
+        loadCapabilitiesByServiceId(user, subscription.service_id)
       );

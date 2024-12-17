@@ -9,7 +9,7 @@ import {
 } from '../src/portal.const';
 
 export const DEFAULT_ADMIN_EMAIL = 'admin@filigran.io';
-export const DEFAULT_ORG = 'internal';
+export const DEFAULT_ORG = 'Filigran';
 
 export const contextAdminUser: PortalContext = {
   user: {

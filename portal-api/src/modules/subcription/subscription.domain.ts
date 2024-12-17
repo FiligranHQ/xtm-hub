@@ -1,6 +1,9 @@
 import { db, dbUnsecure } from '../../../knexfile';
 import { Subscription } from '../../__generated__/resolvers-types';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import {
+  SubscriptionId,
+  SubscriptionMutator,
+} from '../../model/kanel/public/Subscription';
 import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
@@ -59,7 +62,9 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
   context: PortalContext,
   subscriptionId: SubscriptionId
 ) => {
-  const [sub] = await loadSubscriptionBy('Subscription.id', subscriptionId);
+  const [sub] = await loadSubscriptionBy({
+    'Subscription.id': subscriptionId,
+  } as SubscriptionMutator);
 
   const organization = await loadOrganizationBy(
     context,

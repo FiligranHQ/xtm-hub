@@ -25,26 +25,46 @@ import {
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, ReactNode } from 'react';
+import { Dispatch, FunctionComponent, ReactNode, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
 import { subscriptionInServiceCreateMutation } from '../../../../__generated__/subscriptionInServiceCreateMutation.graphql';
+import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
 
 interface ServiceSlugAddOrgaFormSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   trigger: ReactNode;
   serviceId: string;
-  connectionId: string;
+  subscriptions: subscriptionWithUserService_fragment$data[];
+  setSelectedSubscription: Dispatch<
+    SetStateAction<subscriptionWithUserService_fragment$data>
+  >;
 }
 
 export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ open, setOpen, trigger, serviceId, connectionId }) => {
+> = ({
+  open,
+  setOpen,
+  trigger,
+  serviceId,
+  subscriptions,
+  setSelectedSubscription,
+}) => {
   const [organizations] = getOrganizations();
   const t = useTranslations();
   const { toast } = useToast();
+
+  const currentOrganizationSubscriptions = subscriptions.map(
+    ({ organization }) => organization.name
+  );
+
+  const canBeSelectedOrganizations = organizations.organizations.edges.filter(
+    (organization) =>
+      !currentOrganizationSubscriptions.includes(organization.node.name)
+  );
 
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionInServiceCreateMutation>(
@@ -70,7 +90,16 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
         service_id: serviceId,
         organization_id: inputValue.organization_id,
       },
-      onCompleted: () => {
+      onCompleted: (response) => {
+        const findOrganization =
+          response.addSubscriptionInService?.subscriptions?.find(
+            (sub) => sub?.organization.id === inputValue.organization_id
+          );
+        if (findOrganization) {
+          setSelectedSubscription(
+            findOrganization as subscriptionWithUserService_fragment$data
+          );
+        }
         toast({
           title: t('Utils.Success'),
           description: t('ServiceActions.OrganizationAdded'),
@@ -95,9 +124,11 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
         <SheetHeader className="bg-page-background">
-          <SheetTitle className="txt-title">{'Add organization'}</SheetTitle>
+          <SheetTitle className="txt-title">
+            {t('OrganizationInServiceAction.AddOrganization')}
+          </SheetTitle>
           <SheetDescription>
-            Invite an organization on the service.
+            {t('OrganizationInServiceAction.AddOrganizationDescription')}
           </SheetDescription>
         </SheetHeader>
 
@@ -110,17 +141,23 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
               name="organization_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization</FormLabel>
+                  <FormLabel>
+                    {t('OrganizationInServiceAction.Organization')}
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select an organization" />
+                        <SelectValue
+                          placeholder={t(
+                            'OrganizationInServiceAction.SelectOrganization'
+                          )}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {organizations.organizations.edges.map(({ node }) => (
+                      {canBeSelectedOrganizations.map(({ node }) => (
                         <SelectItem
                           key={node.id}
                           value={node.id}>
@@ -136,12 +173,12 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
 
             <SheetFooter className="pt-2">
               <SheetClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline">{t('Utils.Cancel')}</Button>
               </SheetClose>
               <Button
                 disabled={!form.formState.isDirty}
                 type="submit">
-                Validate
+                {t('Utils.Validate')}
               </Button>
             </SheetFooter>
           </form>

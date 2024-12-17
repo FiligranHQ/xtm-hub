@@ -91,7 +91,8 @@ export const insertPlatformOrganization = async (trx) => {
     await dbUnsecure<Organization>('Organization')
       .insert({
         id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
-        name: 'Internal',
+        name: 'Filigran',
+        domains: ['filigran.io'],
       })
       .transacting(trx);
   }

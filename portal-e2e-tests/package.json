@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test:e2e": "yarn playwright test",
-    "test:e2e:ui": "yarn playwright test --ui",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --debug --project=chromium",
     "generate-test-e2e": "npx playwright codegen http://localhost:3001/"
   },
   "dependencies": {

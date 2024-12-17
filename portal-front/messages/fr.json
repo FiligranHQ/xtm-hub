@@ -41,9 +41,17 @@
     "SubscribeService": "Souscrire au service",
     "SubscribeOrganization": "Souscrire une organisation",
     "GoTo": "Aller au service",
-    "GoToManagement": "Aller à la page de management du service",
+    "GoToLabel": "Consulter",
+    "GoToAdmin": "Aller à la page de management du service",
+    "GoToAdminLabel": "Administrer",
+    "Capabilities": {
+      "ManageAccessName": "Manage access",
+      "ManageAccessDescription": "Vous pouvez accéder au service et inviter des utilisateurs à ce service",
+      "AccessServiceName": "Access service",
+      "AccessServiceDescription": "Vous avez uniquement accès à un service"
+    },
     "Management": {
-      "Email": "EMAIL",
+      "Email": "Email",
       "OneUserMax": "1 utilisateur max"
     },
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
@@ -132,8 +140,11 @@
     "RemoveOrganization": "Supprimer l'organisation",
     "DeleteOrgFromService": "Supprimer l'organisation du service",
     "SelectOrganization": "Sélectionner une organisation",
+    "Organization": "Organisation",
     "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
-    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée."
+    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
+    "AddOrganization": "Abonnement de l'organisation au service",
+    "AddOrganizationDescription": "Inviter une organisation sur le service."
   },
   "UserActions": {
     "DeleteUser": "Supprimer l'utilisateur",
@@ -144,6 +155,19 @@
     "UserCreated": "L'utilisateur {email} a été créé",
     "UserUpdated": "L'utilisateur {email} a été modifié",
     "UserDeleted": "L'utilisateur a été supprimé"
+  },
+  "OrganizationForm": {
+    "EditOrganization": "Modifier l'organisation",
+    "CreateOrganization": "Créer une organisation",
+    "Name": "Nom",
+    "Domains": "Domaines",
+    "DomainsPlaceholder": "Ajouter un domaine",
+    "Error": {
+      "Domain": "Au moins un domaine est requis",
+      "Name": "Le nom de l'organisation est requis",
+      "DomainsInvalid": "La valeur du domaine n'est pas valide",
+      "DuplicateName": "Une organisation portant ce nom existe déjà"
+    }
   },
   "UserListPage": {
     "Title": "Liste des utilisateurs",
