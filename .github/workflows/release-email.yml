@@ -4,9 +4,6 @@ on:
   release:
     types:
       - published
-  push:
-    branches:
-      - "issue/207/mail-on-release"
   workflow_dispatch:
 
 jobs:
@@ -28,6 +25,7 @@ jobs:
             core.setOutput("release_name", release.name);
             core.setOutput("release_tag", release.tag_name);
             core.setOutput("release_body", release.body);
+            core.setOutput("release_url", release.html_url);
       - name: Send Email
         uses: dawidd6/action-send-mail@v4
         with:
@@ -36,18 +34,21 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "[XTM Hub] Version: ${{ steps.last_release.outputs.release_tag }}"
-          to: "tiffaine.hervy@filigran.io" #TODO Modify with all-employees@filigran.io but not now...
-          from: "automation@filigran.io"
+          to: "all-employees@filigran.io"
+          from: "XTM Hub Team"
           convert_markdown: true
           html_body:
            🔔 DING DING 🔔
-
+            </br> </br>
            Dear Filigran team,
-           The Engineering team is glad to inform you that XTM Hub ${{ steps.last_release.outputs.release_tag }} has been released 🥳!
-           Release Node
-           
+            </br> </br>
+           The Engineering team is glad to inform you that <a href=${{steps.last_release.outputs.release_url}} target="_blank"> XTM Hub ${{ steps.last_release.outputs.release_tag }}</a> has been released 🥳!
+           </br> </br>
+           <h2>Release Note</h2>
+            
            ${{ steps.last_release.outputs.release_body }}
             
-            Don't hesitate to reach the product management team to get more information 🚀
-  
+            </br></br>
+            Don't hesitate to reach the <a href="mailto:engineering-product-management@filigran.io">product management team</a> to get more information 🚀
+            </br></br>
            Thank you all for your efforts in serving our community and our customers 🎀
