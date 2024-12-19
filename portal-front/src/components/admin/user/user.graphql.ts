@@ -17,14 +17,6 @@ export const UserSlugEditMutation = graphql`
   }
 `;
 
-export const userSlugDeletion = graphql`
-  mutation userSlugDeletionMutation($id: ID!) {
-    deleteUser(id: $id) {
-      id
-    }
-  }
-`;
-
 export const userDeletion = graphql`
   mutation userDeletionMutation($connections: [ID!]!, $id: ID!) {
     deleteUser(id: $id) {
