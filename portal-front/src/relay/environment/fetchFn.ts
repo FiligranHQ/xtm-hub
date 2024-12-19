@@ -39,7 +39,6 @@ export async function networkFetch(
   if (portalCookie) {
     headers.cookie = portalCookie.name + '=' + portalCookie.value;
   }
-
   const resp = await fetch(apiUri, {
     method: 'POST',
     credentials: 'same-origin',
@@ -52,12 +51,10 @@ export async function networkFetch(
   // property of the response. If any exceptions occurred when processing the request,
   // throw an error to indicate to the developer what went wrong.
   if (Array.isArray(json.errors)) {
-    const containsAuthenticationFailure = json.errors.find(
-      (e: any) => e.message === 'Not authenticated.'
-    );
+    const containsAuthenticationFailure =
+      json.errors.find((e: any) => e.extensions.code === 'UNAUTHENTICATED') !==
+      undefined;
     if (containsAuthenticationFailure) {
-      // redirect to login page
-      window.location.href = '/';
       throw new Error('UNAUTHENTICATED');
     }
     throw new Error(json.errors[0].message);
