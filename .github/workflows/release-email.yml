@@ -49,6 +49,6 @@ jobs:
            ${{ steps.last_release.outputs.release_body }}
             
             </br></br>
-            Don't hesitate to reach the <a href="mailto:engineering-product-management@filigran.io">product management team</a> to get more information 🚀
+            Feel free to reach out to the <a href="mailto:engineering-product-management@filigran.io">product management team</a> to get more information 🚀
             </br></br>
            Thank you all for your efforts in serving our community and our customers 🎀
