@@ -1,17 +1,6 @@
-import { useRouter } from 'next/navigation';
-import * as React from 'react';
-import {
-  PreloadedQuery,
-  useFragment,
-  useMutation,
-  usePreloadedQuery,
-  useSubscription,
-} from 'react-relay';
-import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
-
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
 import {
-  userSlugDeletion,
+  userDeletion,
   userSlugFragment,
   UserSlugQuery,
   userSlugSubscription,
@@ -23,6 +12,20 @@ import { DeleteIcon } from 'filigran-icon';
 import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useRelayEnvironment } from 'react-relay';
+
+import { logFrontendError } from '@/components/error-frontend-log.graphql';
+import { useConnectionId } from '@/hooks/useConnectionId';
+import {
+  PreloadedQuery,
+  useFragment,
+  useMutation,
+  usePreloadedQuery,
+  useSubscription,
+} from 'react-relay';
+import { userDeletionMutation } from '../../../../../__generated__/userDeletionMutation.graphql';
 import { userSlugQuery } from '../../../../../__generated__/userSlugQuery.graphql';
 import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 import {
@@ -41,13 +44,25 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const data = usePreloadedQuery<userSlugQuery>(UserSlugQuery, queryRef);
 
   const t = useTranslations();
-  const [deleteUserMutation] =
-    useMutation<userSlugDeletionMutation>(userSlugDeletion);
+  const [deleteUserMutation] = useMutation<userDeletionMutation>(userDeletion);
   const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
+
   const { toast } = useToast();
+  const connections: string[] = [];
+  const connectionID = useConnectionId('UserConnection');
+  if (connectionID) {
+    connections.push(connectionID);
+  } else {
+    console.warn('recovered ConnectionID from UserConnection is empty');
+    logFrontendError(
+      useRelayEnvironment(),
+      '[user-slug] - Recovered ConnectionID from UserConnection is empty'
+    );
+  }
+
   const onDeleteUser = (user: userSlug_fragment$data): void => {
     deleteUserMutation({
-      variables: { id: user.id },
+      variables: { id: user.id, connections },
       onCompleted: () => {
         router.replace('/admin/user');
         toast({
