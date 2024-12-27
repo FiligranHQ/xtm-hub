@@ -15,11 +15,33 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     addOrganization: async (_, { input }, context) => {
-      const data = { id: uuidv4(), ...input };
-      const [addOrganization] = await db<Organization>(context, 'Organization')
-        .insert(data)
-        .returning('*');
-      return addOrganization;
+      // Check if an organization exists with the same name (case insensitive)
+      const existingOrganization: Organization | undefined =
+        await db<Organization>(context, 'Organization')
+          .whereRaw('LOWER(name) = LOWER(?)', input.name)
+          .first('id');
+      if (existingOrganization?.id) {
+        throw new Error('ORGANIZATION_SAME_NAME_EXISTS');
+      }
+
+      try {
+        const [addOrganization] = await db<Organization>(
+          context,
+          'Organization'
+        )
+          .insert({ id: uuidv4(), ...input })
+          .returning('*');
+        return addOrganization;
+      } catch (error) {
+        if (
+          error.message.includes(
+            'duplicate key value violates unique constraint "organization_name_unique"'
+          )
+        )
+          throw new Error('ORGANIZATION_SAME_NAME_EXISTS');
+        logApp.error('ERROR', error);
+        throw new Error(error);
+      }
     },
     editOrganization: async (_, { id, input }, context) => {
       try {
