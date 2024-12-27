@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useRelayEnvironment } from 'react-relay';
 
+import { AdminCallout } from '@/components/admin/admin-callout';
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { useConnectionId } from '@/hooks/useConnectionId';
 import {
@@ -107,6 +108,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
     ];
     return (
       <>
+        <AdminCallout />
         <BreadcrumbNav value={breadcrumbValue} />
 
         <div className="m-2 flex justify-between">

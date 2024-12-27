@@ -1,5 +1,6 @@
 'use client';
 
+import { AdminCallout } from '@/components/admin/admin-callout';
 import UserList from '@/components/admin/user/user-list';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { UseTranslationsProps } from '@/i18n/config';
@@ -23,6 +24,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
 
   return (
     <>
+      <AdminCallout />
       <BreadcrumbNav value={breadcrumbValue(t)} />
       <h1 className="pb-s">{t('MenuLinks.Users')}</h1>
       <UserList />

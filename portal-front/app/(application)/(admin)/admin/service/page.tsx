@@ -1,4 +1,5 @@
 'use client';
+import { AdminCallout } from '@/components/admin/admin-callout';
 import {
   ServiceListQuery,
   servicesListFragment,
@@ -89,6 +90,7 @@ const Page = () => {
   );
   return (
     <>
+      <AdminCallout />
       <BreadcrumbNav value={breadcrumbValue(t)} />
       <h1>{t('MenuLinks.Services')}</h1>
       <DataTable
