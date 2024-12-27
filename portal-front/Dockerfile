@@ -1,3 +1,4 @@
+ARG APP_VERSION=0.0.0-dev
 FROM node:20-alpine AS base
 
 # Install dependencies only when needed
@@ -21,6 +22,9 @@ COPY . .
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
+
+# Set the version of the app
+ENV NEXT_PUBLIC_APP_VERSION=${APP_VERSION}
 
 RUN yarn build
 # If using npm comment out above and use below instead
