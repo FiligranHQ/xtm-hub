@@ -11,7 +11,7 @@
     {
       "service": {
         "id": "bed61a7c-a6dd-4a1e-919f-021fb867cc76",
-        "name": "NEMEA Partner Vault",
+        "name": "North EMEA Partner Vault",
         "provider": "FILIGRAN",
         "type": "Intel",
         "description": "This service allows you to gather information from Filigran."
@@ -25,6 +25,72 @@
       "price": {
         "id": "fe567c4c-f337-4c77-8674-965277e812e8",
         "service_id": "bed61a7c-a6dd-4a1e-919f-021fb867cc76",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
+    },
+    {
+      "service": {
+        "id": "023e0071-8ced-4c38-82e3-dc5fcdb013fb",
+        "name": "South EMEA Partner Vault",
+        "provider": "FILIGRAN",
+        "type": "Intel",
+        "description": "This service allows you to gather information from Filigran."
+      },
+      "link": {
+        "id": "c8ab91d8-7ecd-4ebf-9094-a383d4130a19",
+        "service_id": "023e0071-8ced-4c38-82e3-dc5fcdb013fb",
+        "url": "",
+        "name": "Vault"
+      },
+      "price": {
+        "id": "feb51442-79b2-4eaa-bcbc-6de6aab73531",
+        "service_id": "023e0071-8ced-4c38-82e3-dc5fcdb013fb",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
+    },
+    {
+      "service": {
+        "id": "c9d8ec84-2071-4e04-aca5-b0d65a7748c0",
+        "name": "APJ Partner Vault",
+        "provider": "FILIGRAN",
+        "type": "Intel",
+        "description": "This service allows you to gather information from Filigran."
+      },
+      "link": {
+        "id": "3bcead6e-9380-411a-9ec2-aa6c7c0a4ab8",
+        "service_id": "c9d8ec84-2071-4e04-aca5-b0d65a7748c0",
+        "url": "",
+        "name": "Vault"
+      },
+      "price": {
+        "id": "5a62730e-e174-4093-bb1e-c3e05db0043e",
+        "service_id": "c9d8ec84-2071-4e04-aca5-b0d65a7748c0",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
+    },
+    {
+      "service": {
+        "id": "58b224be-d76b-472c-82f1-2addbfaa566f",
+        "name": "Americas Partner Vault",
+        "provider": "FILIGRAN",
+        "type": "Intel",
+        "description": "This service allows you to gather information from Filigran."
+      },
+      "link": {
+        "id": "9a38f07c-f987-4b19-a179-7417e8fd9abb",
+        "service_id": "58b224be-d76b-472c-82f1-2addbfaa566f",
+        "url": "",
+        "name": "Vault"
+      },
+      "price": {
+        "id": "4c41c2ff-0fb4-4d81-aaf8-4c614ac707d6",
+        "service_id": "58b224be-d76b-472c-82f1-2addbfaa566f",
         "fee_type": "YEARLY",
         "start_date": null,
         "price": 0
