@@ -228,7 +228,10 @@ jobs:
     needs: build-images-prod
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: contains(github.ref, 'refs/tags/')
+    if: |
+      always() &&
+      contains(github.ref, 'refs/tags/') &&
+      (needs.build-images-prod.result == 'success')
     steps:
       - name: Extract Tag Version
         id: tag_version
@@ -257,7 +260,7 @@ jobs:
                         "size": "large",
                         "weight": "bolder",
                         "color": "accent",
-                        "text": "🚀 XTM Hub ${{ env.VERSION }} Ready for Deployment",
+                        "text": "🚀 XTM Hub ${{ env.VERSION }} ready for deployment",
                         "wrap": true
                       },
                       {
@@ -292,7 +295,7 @@ jobs:
                         },
                         {
                           "type": "TextBlock",
-                          "text": "Thanks!\n\n**- JB**",
+                          "text": "Thanks!\n\n**- JBx**",
                           "spacing": "Medium",
                           "wrap": true,
                           "horizontalAlignment": "Right"
