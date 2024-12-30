@@ -26,7 +26,7 @@ import {
   selectOrganizationAtLogin,
   updateSelectedOrganization,
   updateUser,
-  userHasSomeSubscription,
+  userHasOrganizationWithSubscription,
 } from './users.domain';
 import {
   addNewUserWithRoles,
@@ -58,8 +58,8 @@ const resolvers: Resolvers = {
     users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
       return loadUsers(context, { first, after, orderMode, orderBy }, filter);
     },
-    userHasSomeSubscription: async (_, __, context) => {
-      return userHasSomeSubscription(context);
+    userHasOrganizationWithSubscription: async (_, __, context) => {
+      return userHasOrganizationWithSubscription(context);
     },
   },
   Mutation: {

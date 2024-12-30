@@ -5,6 +5,7 @@ import {
   AddUserInput,
   EditUserInput,
   QueryUsersArgs,
+  Subscription,
   UserConnection,
   UserFilter,
   User as UserGenerated,
@@ -427,12 +428,18 @@ export const loadUserDetails = async (
     .first();
 };
 
-export const userHasSomeSubscription = async (context: PortalContext) => {
-  const exists = await dbUnsecure('User_Service')
-    .where({ user_id: context.user.id })
-    .first(); // Fetch only the first matching record
-
-  return !!exists;
+export const userHasOrganizationWithSubscription = async (
+  context: PortalContext
+) => {
+  const organizationIds = context.user.organizations.map((org) => org.id);
+  if (organizationIds.length === 0) {
+    return false;
+  }
+  const subscriptions: Subscription[] = await db<Subscription>(
+    context,
+    'Subscription'
+  ).whereIn('organization_id', organizationIds);
+  return subscriptions.length !== 0;
 };
 
 /**
