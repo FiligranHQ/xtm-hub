@@ -9,10 +9,12 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  useToast,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -26,8 +28,6 @@ const formSchema = z.object({
 const LoginForm = () => {
   const router = useRouter();
   const t = useTranslations();
-  const { pathname } = useDecodedQuery();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,12 +37,29 @@ const LoginForm = () => {
   });
 
   const [commitLoginFormMutation] = useMutation(LoginFormMutation);
+  const { toast } = useToast();
+
+  const { redirect } = useDecodedQuery();
+  const currentPath = usePathname();
+
+  useEffect(() => {
+    if (redirect) {
+      router.push(redirect);
+
+      toast({
+        variant: 'destructive',
+        title: t('Utils.Error'),
+        description: t('Error.Disconnected'),
+      });
+    }
+  }, [currentPath]);
+
   const onSubmit = (variables: z.infer<typeof formSchema>) => {
     commitLoginFormMutation({
       variables,
       onCompleted() {
-        if (pathname) {
-          router.push(pathname);
+        if (redirect) {
+          router.push(redirect);
         }
         // If login succeed, refresh the page
         router.refresh();

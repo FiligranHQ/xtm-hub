@@ -1,5 +1,7 @@
 import useDecodedQuery from '@/hooks/useDecodedQuery';
+import { useToast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { FunctionComponent, useEffect } from 'react';
@@ -16,12 +18,19 @@ export const PlatformProviderButton: FunctionComponent<
   LoginButtonProviderProps
 > = ({ platformProvider }) => {
   const router = useRouter();
-  const { pathname } = useDecodedQuery();
+  const { redirect } = useDecodedQuery();
   const currentPath = usePathname();
-
+  const { toast } = useToast();
+  const t = useTranslations();
   useEffect(() => {
-    if (pathname) {
-      router.push(pathname);
+    if (redirect) {
+      router.push(redirect);
+
+      toast({
+        variant: 'destructive',
+        title: t('Utils.Error'),
+        description: t('Error.Disconnected'),
+      });
     }
   }, [currentPath]);
 

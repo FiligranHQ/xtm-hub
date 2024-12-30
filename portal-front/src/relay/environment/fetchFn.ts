@@ -58,7 +58,7 @@ export async function networkFetch(
     if (containsAuthenticationFailure) {
       // redirect to login page
       const location = window.location.pathname;
-      window.location.href = `/?pathname=${location}`;
+      window.location.href = `/?redirect=${location}`;
       throw new Error('UNAUTHENTICATED');
     }
     throw new Error(json.errors[0].message);

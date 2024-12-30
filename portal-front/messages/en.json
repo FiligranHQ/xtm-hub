@@ -4,7 +4,8 @@
     "Title": "XTM Hub"
   },
   "Error": {
-    "YouAreNotAuthorized": "You are not authorized to get this page."
+    "YouAreNotAuthorized": "You are not authorized to get this page.",
+    "Disconnected": "You have been disconnected"
   },
   "HomePage": {
     "AvailableServices": "Available services",
