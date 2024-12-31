@@ -3,6 +3,7 @@ import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
 import { CityIcon, UnfoldMoreIcon } from 'filigran-icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FunctionComponent, useContext, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
@@ -37,6 +38,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
       changeSelectedOrganizationMutation
     );
 
+  const t = useTranslations();
   const [openPopover, setOpenPopover] = useState(false);
   const handleSelectOrganisation = (organization_id: string) => {
     commitOrganizationSwitcherMutation({
@@ -55,7 +57,10 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
 
   const parsedOrganization = me.organizations.map((org) => ({
     ...org,
-    name: org.name === me.email ? 'Personal space' : org.name,
+    name:
+      org.name === me.email
+        ? t('OrganizationSwitcher.PersonalSpace')
+        : org.name,
   }));
   const selectedOrganisation = parsedOrganization.find(
     ({ id }) => me.selected_organization_id === id
@@ -70,19 +75,30 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
           <Button
             variant="ghost"
             role="combobox"
-            aria-label="Select an organization"
+            aria-label={t('OrganizationSwitcher.SelectOrganization')}
             className={cn(
               'px-m w-full justify-between rounded-none normal-case'
             )}>
             <span className={'flex w-8 flex-shrink-0 justify-center'}>
-              <CityIcon className="h-4 w-4" />
+              <CityIcon
+                aria-hidden={true}
+                focusable={false}
+                className="h-4 w-4"
+              />
             </span>
             {open && (
               <>
+                <span className="sr-only">
+                  {t('OrganizationSwitcher.SelectedOrganization')}
+                </span>
                 <span className="ml-s text-left truncate inline-block">
                   {selectedOrganisation?.name}
                 </span>
-                <UnfoldMoreIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                <UnfoldMoreIcon
+                  aria-hidden={true}
+                  focusable={false}
+                  className="ml-auto h-4 w-4 shrink-0 opacity-50"
+                />
               </>
             )}
           </Button>
@@ -98,6 +114,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
             <li key={group.id}>
               <Button
                 variant="ghost"
+                aria-label={t('OrganizationSwitcher.SelectedOrganization')}
                 onClick={() => handleSelectOrganisation(group.id)}
                 className={cn(
                   'flex items-center w-full justify-between txt-sub-content rounded-none normal-case',

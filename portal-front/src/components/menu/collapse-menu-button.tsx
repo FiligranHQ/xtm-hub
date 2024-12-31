@@ -18,6 +18,7 @@ export const CollapseMenuButton: FunctionComponent<CollapseMenuButtonProps> = ({
     <div className="flex-shrink-0 pb-s">
       <Button
         variant="ghost"
+        aria-label={t('App.CollapseSidebar')}
         className="h-9 px-m w-full justify-start rounded-none"
         onClick={handleOpenMenu}>
         <span className="flex w-8 flex-shrink-0 justify-center">

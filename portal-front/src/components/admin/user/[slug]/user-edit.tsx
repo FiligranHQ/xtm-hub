@@ -48,7 +48,7 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
     });
   };
 
-  const defaultTrigger = <TriggerButton label={t('update')} />;
+  const defaultTrigger = <TriggerButton label={t('Utils.Update')} />;
   return (
     <UserFormSheet
       title={t('UserActions.UpdateUser')}

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode } from 'react';
 
 interface ErrorMessageProps {
@@ -7,15 +8,15 @@ interface ErrorMessageProps {
 const LoginErrorMessage: FunctionComponent<ErrorMessageProps> = ({
   errorKey,
 }) => {
+  const t = useTranslations();
   const errorMap: Record<string, ReactNode> = {
     'not-provided': (
       <>
         <h1 className="pt-l txt-title text-center text-red">
-          Your account has not been provided!
+          {t('LoginPage.Errors.AccountNotProvidedTitle')}
         </h1>
         <p className="txt-subtitle text-center text-red">
-          This platform is dedicated to Filigran&rsquo;s closest partners for
-          now.
+          {t('LoginPage.Errors.AccountNotProvided')}
         </p>
       </>
     ),

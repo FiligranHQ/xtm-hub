@@ -19,6 +19,7 @@ import {
   SheetTrigger,
 } from 'filigran-ui/clients';
 import { MenuIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
@@ -33,6 +34,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const { me } = useContext<Portal>(portalContext);
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
+  const t = useTranslations();
   useEffect(() => {
     setOpen(false);
   }, [currentPath]);
@@ -56,8 +58,12 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         <IconActions
           icon={
             <>
-              <IndividualIcon className="h-6 w-6" />
-              <span className="sr-only">Open user menu</span>
+              <IndividualIcon
+                aria-hidden={true}
+                focusable={false}
+                className="h-6 w-6"
+              />
+              <span className="sr-only">{t('Utils.OpenMenu')}</span>
             </>
           }>
           <Logout className="normal-case w-full justify-start" />
@@ -72,7 +78,11 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
           open={open}
           onOpenChange={setOpen}>
           <SheetTrigger>
-            <MenuIcon className="h-6 w-6" />
+            <MenuIcon
+              aria-hidden={true}
+              focusable={false}
+              className="h-6 w-6"
+            />
           </SheetTrigger>
           <SheetContent side="left">
             <SheetHeader>

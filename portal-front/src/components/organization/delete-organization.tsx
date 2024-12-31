@@ -46,20 +46,21 @@ export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
   };
   return (
     <AlertDialogComponent
-      actionButtonText={'Delete'}
+      actionButtonText={t('Utils.Delete')}
       variantName={'destructive'}
-      AlertTitle={'Delete organization'}
+      AlertTitle={t('OrganizationForm.DeleteOrganization')}
       triggerElement={
         <Button
           variant="ghost"
           className="w-full justify-start normal-case"
-          aria-label="Delete Organization">
-          Delete
+          aria-label={t('OrganizationForm.DeleteOrganization')}>
+          {t('Utils.Delete')}
         </Button>
       }
       onClickContinue={() => onDeletedOrganization(organization.id)}>
-      Are you sure you want to delete this organization {organization.name}?
-      This action can not be undone.
+      {t('OrganizationForm.SureDeleteOrganization', {
+        organizationName: organization.name,
+      })}
     </AlertDialogComponent>
   );
 };

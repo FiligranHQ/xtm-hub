@@ -197,7 +197,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
               icon={
                 <>
                   <MoreVertIcon className="h-4 w-4 text-primary" />
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
               }>
               <EditUser
@@ -311,7 +311,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
         <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
           <Input
             className="w-full sm:w-1/3"
-            placeholder={'Search with email...'}
+            placeholder={t('UserActions.SearchUserWithEmail')}
             onChange={(e) => handleInputChange(e.target.value)}
           />
 

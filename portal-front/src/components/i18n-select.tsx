@@ -35,11 +35,15 @@ export default function I18nSelect() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
+          aria-label={t('LocaleSwitcher.Label')}
           variant="ghost"
           size="icon"
           className="w-9 px-0">
-          <LanguageIcon className="h-4 w-4" />
-          <span className="sr-only">{t('label')}</span>
+          <LanguageIcon
+            aria-hidden={true}
+            focusable={false}
+            className="h-4 w-4"
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

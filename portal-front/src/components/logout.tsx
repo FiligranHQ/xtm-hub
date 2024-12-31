@@ -2,6 +2,7 @@
 
 import { LogoutMutation } from '@/components/logout.graphql';
 import { Button } from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useMutation } from 'react-relay';
@@ -15,6 +16,8 @@ interface LogoutProps {
 const Logout: React.FunctionComponent<LogoutProps> = ({ className }) => {
   const router = useRouter();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
+  const t = useTranslations();
+
   const logout = () => {
     commitLogoutMutation({
       variables: {},
@@ -32,7 +35,7 @@ const Logout: React.FunctionComponent<LogoutProps> = ({ className }) => {
       onClick={logout}
       variant="ghost"
       className={className}>
-      Logout
+      {t('LoginPage.Logout')}
     </Button>
   );
 };

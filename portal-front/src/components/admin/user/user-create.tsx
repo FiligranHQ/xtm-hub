@@ -53,7 +53,7 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
   };
   return (
     <UserFormSheet
-      title={'Create a new user'}
+      title={t('UserActions.CreateUser')}
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}

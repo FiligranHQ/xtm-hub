@@ -123,7 +123,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
                   variant="ghost"
                   size="icon"
                   aria-label={t('UserActions.DeleteUser')}>
-                  <DeleteIcon className="h-4 w-4" />
+                  <DeleteIcon
+                    aria-hidden={true}
+                    focusable={false}
+                    className="h-4 w-4"
+                  />
                 </Button>
               }
               onClickContinue={() => onDeleteUser(user)}>
