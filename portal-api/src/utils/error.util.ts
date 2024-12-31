@@ -1,7 +1,10 @@
 import { createError } from 'apollo-errors';
 
-export const FORBIDDEN_ACCESS = 'FORBIDDEN_ACCESS';
-const CATEGORY_TECHNICAL = 'TECHNICAL';
+enum ErrorCategory {
+  BAD_REQUEST = 'BAD_REQUEST',
+  CONFLICT = 'CONFLICT',
+  TECHNICAL = 'TECHNICAL',
+}
 
 export const errorUtil = (
   name: string,
@@ -12,19 +15,29 @@ export const errorUtil = (
   return new Exception();
 };
 
-export const ForbiddenAccess = (
-  message: string,
+export const AlreadyExistsError = (
+  message?: string,
   data?: Record<string, unknown>
 ) =>
-  errorUtil(FORBIDDEN_ACCESS, message || 'You are not allowed to do this.', {
+  errorUtil('ALREAY_EXISTS', message, {
+    http_status: 409,
+    genre: ErrorCategory.CONFLICT,
+    ...data,
+  });
+
+export const ForbiddenAccessError = (
+  message?: string,
+  data?: Record<string, unknown>
+) =>
+  errorUtil('FORBIDDEN_ACCESS', message, {
     http_status: 403,
-    genre: CATEGORY_TECHNICAL,
+    genre: ErrorCategory.TECHNICAL,
     ...data,
   });
 
 export const UnknownError = (message: string, data?: Record<string, unknown>) =>
-  errorUtil('UNKNOWN_ERROR', message || 'An unknown error has occurred', {
+  errorUtil('UNKNOWN_ERROR', message, {
     http_status: 500,
-    genre: CATEGORY_TECHNICAL,
+    genre: ErrorCategory.TECHNICAL,
     ...data,
   });
