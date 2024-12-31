@@ -140,10 +140,17 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         setOpenSheet(false);
       },
       onError: (error) => {
+        console.log('error', error);
+        console.log('errortype', typeof error);
+        const message = error.message.includes(
+          'You can not delete a subscription with billing'
+        )
+          ? t('Error.Subscription.DeleteSubscriptionWithBilling')
+          : t('Error.Subscription.DeleteSubscription');
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: <>{message}</>,
         });
       },
     });

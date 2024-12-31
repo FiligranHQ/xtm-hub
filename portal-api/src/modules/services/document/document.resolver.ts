@@ -4,6 +4,7 @@ import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceId } from '../../../model/kanel/public/Service';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
+import { UnknownError } from '../../../utils/error.util';
 import {
   deleteDocument,
   getDocuments,
@@ -35,7 +36,7 @@ const resolvers: Resolvers = {
         return addedDocument;
       } catch (error) {
         logApp.error('Error while inserting document:', error);
-        throw error;
+        throw UnknownError('Error while inserting document', error);
       }
     },
     editDocument: async (_, { documentId, newDescription }, context) => {
@@ -49,7 +50,7 @@ const resolvers: Resolvers = {
         return document;
       } catch (error) {
         logApp.error('Error while updating document:', error);
-        throw error;
+        throw UnknownError('Error while updating document.');
       }
     },
     deleteDocument: async (_, { documentId }, context) => {
@@ -61,7 +62,7 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         logApp.error('Error while deleting document:', error);
-        throw error;
+        throw UnknownError('Error while deleting document.');
       }
     },
   },

@@ -48,7 +48,7 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
           ? t('OrganizationActions.ErrorNameAlreadyExists', {
               name: values.name,
             })
-          : error.message;
+          : t('Error.Organization.CreateOrganization');
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),

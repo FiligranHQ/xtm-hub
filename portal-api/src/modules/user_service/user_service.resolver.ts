@@ -1,5 +1,4 @@
-import { GraphQLError } from 'graphql/error/index.js';
-import { db } from '../../../knexfile';
+import { db, dbTx } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
 import Subscription, {
   SubscriptionId,
@@ -7,6 +6,14 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
+import { logApp } from '../../utils/app-logger.util';
+import {
+  ALREADY_EXISTS,
+  AlreadyExistsError,
+  NOT_FOUND,
+  NotFoundError,
+  UnknownError,
+} from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../subcription/subscription.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
@@ -40,39 +47,55 @@ const resolvers: Resolvers = {
   Mutation: {
     //TODO Modify for the use case
     addUserService: async (_, { input }, context) => {
-      const user = await getOrCreateUser({
-        email: input.email,
-      });
-
-      const [subscription] = await loadSubscriptionBy({
-        service_id: extractId(input.serviceId),
-        organization_id: extractId(input.organizationId),
-      } as SubscriptionMutator);
-
-      await insertUserIntoOrganization(context, user, subscription.id);
-      if (!subscription) {
-        throw new GraphQLError('Sorry the subscription does not exist', {
-          extensions: { code: '[User_Service] UNKNOWN SUBSCRIPTION' },
+      const trx = await dbTx();
+      try {
+        const user = await getOrCreateUser({
+          email: input.email,
         });
-      }
-      if (await isUserServiceExist(user.id as UserId, subscription.id)) {
-        throw new GraphQLError(' The User access to service is already exist', {
-          extensions: { code: '[User_Service] ALREADY_EXIST' },
+
+        const [subscription] = await loadSubscriptionBy({
+          service_id: extractId(input.serviceId),
+          organization_id: extractId(input.organizationId),
+        } as SubscriptionMutator);
+
+        await insertUserIntoOrganization(context, user, subscription.id);
+        if (!subscription) {
+          throw NotFoundError('Sorry the subscription does not exist');
+        }
+        if (await isUserServiceExist(user.id as UserId, subscription.id)) {
+          throw AlreadyExistsError(
+            'The User access to service is already exist'
+          );
+        }
+
+        await createUserServiceAccess(context, {
+          subscription_id: subscription.id,
+          user_id: user.id as UserId,
+          capabilities: input.capabilities,
         });
+
+        const returningSubscription =
+          await fillSubscriptionWithOrgaServiceAndUserService(
+            context,
+            subscription.id as SubscriptionId
+          );
+        await trx.commit();
+        return returningSubscription;
+      } catch (error) {
+        await trx.rollback();
+        if (error.name.includes(ALREADY_EXISTS)) {
+          logApp.warn('The User access to service is already exist');
+          throw AlreadyExistsError(
+            'The user access to service is already exist'
+          );
+        }
+        if (error.name.includes(NOT_FOUND)) {
+          logApp.error('The subscription has not been found');
+          throw NotFoundError('Sorry the subscription does not exist');
+        }
+        logApp.error('Error while adding the userService.', error);
+        throw UnknownError('Error while adding userService.');
       }
-
-      await createUserServiceAccess(context, {
-        subscription_id: subscription.id,
-        user_id: user.id as UserId,
-        capabilities: input.capabilities,
-      });
-
-      const returningSubscription =
-        await fillSubscriptionWithOrgaServiceAndUserService(
-          context,
-          subscription.id as SubscriptionId
-        );
-      return returningSubscription;
     },
     deleteUserService: async (_, { input }, context) => {
       const userToDelete = await loadUserBy({ email: input.email });

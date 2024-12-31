@@ -8,6 +8,7 @@ import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/cap
 import { ServiceDescribeCapabilitiesSheet } from '@/components/service/[slug]/service-describe-capabilities';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { UseTranslationsProps } from '@/i18n/config';
 import { emailRegex } from '@/lib/regexs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -68,6 +69,25 @@ interface ServiceSlugFormSheetProps {
     label: string;
   }[];
 }
+
+const getErrorMessage = (error: Error, t: UseTranslationsProps) => {
+  const errorMessages = {
+    'The user access to service is already exist': t(
+      'Error.Subscription.AddUserAccessAlreadyExists'
+    ),
+    'The subscription does not exist': t(
+      'Error.Subscription.SubscriptionDoesNotExists'
+    ),
+  };
+
+  const errorKey = Object.keys(errorMessages).find((key) =>
+    error.message.includes(key)
+  );
+
+  return errorKey
+    ? errorMessages[errorKey as keyof typeof errorMessages]
+    : t('Error.Organization.AddUserAccess');
+};
 
 export const ServiceSlugFormSheet: FunctionComponent<
   ServiceSlugFormSheetProps
@@ -157,11 +177,11 @@ export const ServiceSlugFormSheet: FunctionComponent<
             }),
           });
         },
-        onError(error) {
+        onError() {
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),
-            description: <>{error.message}</>,
+            description: t('Error.Capabilities.EditingCapabilities'),
           });
         },
       });
@@ -183,10 +203,11 @@ export const ServiceSlugFormSheet: FunctionComponent<
           });
         },
         onError(error) {
+          const message = getErrorMessage(error, t);
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),
-            description: <>{error.message}</>,
+            description: <>{message}</>,
           });
         },
       });

@@ -47,11 +47,11 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
           }),
         });
       },
-      onError: (error) => {
+      onError: () => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t('Error.Document.InsertDocument'),
         });
       },
     });

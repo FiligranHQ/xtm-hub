@@ -38,11 +38,11 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
           description: t('UserActions.UserUpdated', { email: values.email }),
         });
       },
-      onError: (error) => {
+      onError: () => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t('Error.User.EditUser'),
         });
       },
     });

@@ -11,6 +11,11 @@ import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
+import {
+  FORBIDDEN_ACCESS,
+  ForbiddenAccess,
+  UnknownError,
+} from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import {
   removeUserFromOrganization,
@@ -129,20 +134,15 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         logApp.error('Error while adding the new user.', error);
-        throw new GraphQLError('Error while adding the new user.', {
-          extensions: { code: '[Users] addUser mutation' },
-          originalError: error,
-        });
+        throw UnknownError('Error while adding the new user.');
       }
     },
     editUser: async (_, { id, input }, context) => {
-      if (id === context.user.id) {
-        throw new GraphQLError('You cannot edit yourself', {
-          extensions: { code: '[User] editUser' },
-        });
-      }
       const trx = await dbTx();
       try {
+        if (id === context.user.id) {
+          throw ForbiddenAccess('You cannot edit yourself');
+        }
         await updateUser(context, id as UserId, input);
         const user = await loadUserDetails({
           'User.id': id as UserId,
@@ -153,15 +153,24 @@ const resolvers: Resolvers = {
         return user;
       } catch (error) {
         await trx.rollback();
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          logApp.warn('You cannot edit yourself');
+          throw ForbiddenAccess('You cannot edit yourself');
+        }
         logApp.error('Error while editing the new user.');
-        throw error;
+        throw UnknownError('Error while editing user', error);
       }
     },
     deleteUser: async (_, { id }, context) => {
-      const deletedUser = await removeUser(context, { id: id as UserId });
+      try {
+        const deletedUser = await removeUser(context, { id: id as UserId });
 
-      await dispatch('User', 'delete', deletedUser);
-      return deletedUser as User;
+        await dispatch('User', 'delete', deletedUser);
+        return deletedUser as User;
+      } catch (error) {
+        logApp.error('Error while deleting the user.');
+        throw UnknownError('Error while deleting user', error);
+      }
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateSelectedOrganization(
@@ -178,20 +187,31 @@ const resolvers: Resolvers = {
       { user_id, organization_id },
       context
     ) => {
-      if (extractId(user_id) === context.user.id) {
-        throw new GraphQLError('You cannot remove yourself from organization', {
-          extensions: { code: '[User] removeUserFromOrganization' },
+      try {
+        if (extractId(user_id) === context.user.id) {
+          throw new GraphQLError(
+            'You cannot remove yourself from organization',
+            {
+              extensions: { code: '[User] removeUserFromOrganization' },
+            }
+          );
+        }
+        await removeUserFromOrganization(
+          context,
+          extractId(user_id),
+          extractId(organization_id)
+        );
+        const user = await loadUserBy({
+          'User.id': extractId(user_id),
         });
+        return mapUserToGraphqlUser(user);
+      } catch (error) {
+        logApp.error('Error while removing the user from organization.');
+        throw UnknownError(
+          'Error while removing user from organization',
+          error
+        );
       }
-      await removeUserFromOrganization(
-        context,
-        extractId(user_id),
-        extractId(organization_id)
-      );
-      const user = await loadUserBy({
-        'User.id': extractId(user_id),
-      });
-      return mapUserToGraphqlUser(user);
     },
     login: async (_, { email, password }, context) => {
       const { req } = context;

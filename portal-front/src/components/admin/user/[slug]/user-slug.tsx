@@ -69,11 +69,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           description: t('UserActions.UserDeleted'),
         });
       },
-      onError: (error) => {
+      onError: () => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t('Error.User.DeleteUser'),
         });
       },
     });

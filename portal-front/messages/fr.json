@@ -7,6 +7,39 @@
   },
   "Error": {
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page.",
+    "Document": {
+      "InsertDocument": "Erreur lors de l'insertion du document",
+      "DeleteDocument": "Erreur lors de la suppression du document",
+      "UpdateDocument": "Erreur lors de la mise à jour du document"
+    },
+    "User": {
+      "EditUser": "Erreur lors de la mise à jour de l'utilisateur",
+      "DeleteUser": "Erreur lors de la suppression de l'utilisateur",
+      "CreateUser": "Erreur lors de la création de l'utilisateur",
+      "RemoveFromOrganization": "Erreur lors de la suppression de l'utilisateur de l'organisation",
+      "EmailOutsideOrganization": "Vous ne pouvez pas ajouter un user dont l'email n'est pas dans l'organisation"
+    },
+    "Organization": {
+      "CreateOrganization": "Erreur lors de la création de l'organisation",
+      "DeleteOrganization": "Erreur lors de la suppression de l'organisation",
+      "EditOrganization": "Erreur lors de la mise à jour de l'organisation",
+      "StillReferencedWithUser": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
+      "StillReferencedWithSubscription": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins une souscription y est toujours affiliée. Supprimez la/les souscription(s) d'abord."
+
+    },
+    "Subscription": {
+      "AddSubscriptionInService": "Erreur lors de l'insertion de la souscription dans le service",
+      "SubscriptionAlreadyExists": "Vous avez déjà souscrit à ce service pour cette organisation",
+      "DeleteSubscription": "Erreur lors de la suppression de la souscription",
+      "DeleteSubscriptionWithBilling": "Erreur lors de la suppression de la souscription: vous ne pouvez pas retirer une souscription avec un prix",
+      "AddUserAccess": "Erreur lors de l'ajout des accès à l'utilisateur",
+      "AddUserAccessAlreadyExists": "L'utilisateur a déjà accès",
+      "SubscriptionDoesNotExists": "La souscription n'existe pas"
+    },
+    "Capabilities": {
+      "EditingCapabilities": "Erreur lors de la mise à jour des capacité"
+    },
+    "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page.",
     "Disconnected": "Votre session a expiré"
   },
   "HomePage": {

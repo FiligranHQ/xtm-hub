@@ -68,10 +68,15 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
         });
       };
       const handleError = (error: Error) => {
+        const message = error.message.includes(
+          'You have already subscribed this service'
+        )
+          ? t('Error.Subscription.SubscriptionAlreadyExists')
+          : t('Error.Subscription.AddSubscriptionInService');
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: <>{message}</>,
         });
       };
 

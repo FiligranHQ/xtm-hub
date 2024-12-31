@@ -13,17 +13,17 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 
 export default function I18nSelect() {
-  const t = useTranslations('LocaleSwitcher');
+  const t = useTranslations();
   const defaultValue = useLocale();
 
   const items = [
     {
       value: 'en',
-      label: t('en'),
+      label: t('LocaleSwitcher.en'),
     },
     {
       value: 'fr',
-      label: t('fr'),
+      label: t('LocaleSwitcher.fr'),
     },
   ];
   function onChange(value: string) {
