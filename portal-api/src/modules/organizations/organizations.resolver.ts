@@ -3,6 +3,7 @@ import { db } from '../../../knexfile';
 import { Organization, Resolvers } from '../../__generated__/resolvers-types';
 import { dispatch } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
+import { errorUtil, UnknownError } from '../../utils/error.util';
 import { loadOrganizationBy, loadOrganizations } from './organizations.domain';
 
 const resolvers: Resolvers = {
@@ -18,10 +19,10 @@ const resolvers: Resolvers = {
       // Check if an organization exists with the same name (case insensitive)
       const existingOrganization: Organization | undefined =
         await db<Organization>(context, 'Organization')
-          .whereRaw('LOWER(name) = LOWER(?)', input.name)
+          .where('name', 'ILIKE', input.name)
           .first('id');
       if (existingOrganization?.id) {
-        throw new Error('ORGANIZATION_SAME_NAME_EXISTS');
+        throw errorUtil('ORGANIZATION_SAME_NAME_EXISTS');
       }
 
       try {
@@ -37,10 +38,11 @@ const resolvers: Resolvers = {
           error.message.includes(
             'duplicate key value violates unique constraint "organization_name_unique"'
           )
-        )
-          throw new Error('ORGANIZATION_SAME_NAME_EXISTS');
+        ) {
+          throw errorUtil('ORGANIZATION_SAME_NAME_EXISTS');
+        }
         logApp.error('ERROR', error);
-        throw new Error(error);
+        throw UnknownError(error.message);
       }
     },
     editOrganization: async (_, { id, input }, context) => {

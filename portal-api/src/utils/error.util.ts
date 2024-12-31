@@ -3,12 +3,12 @@ import { createError } from 'apollo-errors';
 export const FORBIDDEN_ACCESS = 'FORBIDDEN_ACCESS';
 const CATEGORY_TECHNICAL = 'TECHNICAL';
 
-const errorUtil = (
+export const errorUtil = (
   name: string,
-  message: string,
-  data: Record<string, unknown>
+  message?: string,
+  data?: Record<string, unknown>
 ) => {
-  const Exception = createError(name, { data, message });
+  const Exception = createError(name, { data, message: message ?? name });
   return new Exception();
 };
 
