@@ -9,6 +9,7 @@ import {
 import DownloadDocument from '@/components/service/vault/download-document';
 import EditDocument from '@/components/service/vault/edit-document';
 import { VaultForm } from '@/components/service/vault/vault-form';
+import VisualizeDocument from '@/components/service/vault/visualize-document';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
@@ -34,10 +35,8 @@ import * as React from 'react';
 import { useState } from 'react';
 import {
   PreloadedQuery,
-  commitLocalUpdate,
   usePreloadedQuery,
   useRefetchableFragment,
-  useRelayEnvironment,
 } from 'react-relay';
 import { documentItem_fragment$data } from '../../../../../__generated__/documentItem_fragment.graphql';
 import { documentsList$key } from '../../../../../__generated__/documentsList.graphql';
@@ -82,18 +81,6 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
         ...node,
       }) as documentItem_fragment$data
   );
-  const environment = useRelayEnvironment();
-
-  const setDownloadNumber = (documentId: string) => {
-    commitLocalUpdate(environment, (store) => {
-      const documentRecord = store.get(documentId);
-      if (documentRecord) {
-        const currentDownloadNumber: number =
-          (documentRecord.getValue('download_number') as number) ?? 0;
-        documentRecord.setValue(currentDownloadNumber + 1, 'download_number');
-      }
-    });
-  };
 
   const columns: ColumnDef<documentItem_fragment$data>[] = [
     {
@@ -153,10 +140,8 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               displayError={false}>
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
-            <DownloadDocument
-              documentData={row.original}
-              downloadClicked={setDownloadNumber}
-            />
+            <DownloadDocument documentData={row.original} />
+            <VisualizeDocument documentData={row.original} />
             <GuardCapacityComponent
               capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
               displayError={false}>
@@ -254,8 +239,8 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           rowCount: data.documents.totalCount,
         }}
         onClickRow={(row) => {
-          setDownloadNumber(row.id);
-          window.location.href = `/document/get/${queryDataService.serviceById?.id}/${row.id}`;
+          const url = `/document/visualize/${queryDataService.serviceById?.id}/${row.id}`;
+          window.open(url, '_blank', 'noopener noreferrer');
         }}
         toolbar={
           <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
