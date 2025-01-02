@@ -63,7 +63,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
                 focusable={false}
                 className="h-6 w-6"
               />
-              <span className="sr-only">{t('Utils.OpenMenu')}</span>
+              <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
             </>
           }>
           <Logout className="normal-case w-full justify-start" />

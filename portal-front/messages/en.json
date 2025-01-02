@@ -56,6 +56,9 @@
     "fr": "Français",
     "Label": "Language"
   },
+  "MenuUser": {
+    "ToggleUser": "Open menu user"
+  },
   "ThemeToggle": {
     "ToggleTheme": "Toggle Theme",
     "SetTheme": "Set theme",

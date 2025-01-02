@@ -62,7 +62,7 @@ const Page = () => {
                 </>
               }>
               <IconActionsButton
-                aria-label={t('Service.GoToAdmin')}
+                aria-label={t('Service.GoToAdminLabel')}
                 onClick={() => {
                   router.push(`/admin/service/${row.id}`);
                 }}>
