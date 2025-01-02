@@ -6,9 +6,11 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { PortalContext } from '../../model/portal-context';
 
-export const deleteSubscriptionUnsecure = async (serviceId: string) => {
+export const deleteSubscriptionUnsecure = async (
+  field: SubscriptionMutator
+) => {
   return dbUnsecure<Subscription>('Subscription')
-    .where('Subscription.service_id', '=', serviceId)
+    .where(field)
     .delete('*')
     .returning('*');
 };
@@ -38,6 +40,12 @@ export const insertSubscription = async (
   dataSubscription
 ) => {
   return db<Subscription>(context, 'Subscription')
+    .insert(dataSubscription)
+    .returning('*');
+};
+
+export const insertUnsecureSubscription = async (dataSubscription) => {
+  return dbUnsecure<Subscription>('Subscription')
     .insert(dataSubscription)
     .returning('*');
 };

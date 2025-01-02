@@ -30,8 +30,8 @@ export const MeQuery = graphql`
   }
 `;
 
-export const meUserHasSomeSubscription = graphql`
-  query meUserHasSomeSubscription {
-    userHasSomeSubscription
+export const meUserHasOrganizationWithSubscription = graphql`
+  query meUserHasOrganizationWithSubscription {
+    userHasOrganizationWithSubscription
   }
 `;
