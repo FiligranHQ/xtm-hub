@@ -110,6 +110,7 @@
     "Delete": "Delete",
     "Deleted": "has been deleted",
     "Download": "Download",
+    "Visualize": "Visualize",
     "Error": "Error",
     "Form": {
       "ResetFile": "Remove the current selected document."

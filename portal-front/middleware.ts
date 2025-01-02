@@ -11,5 +11,6 @@ export const config = {
     '/graphql-sse',
     '/auth/:path*',
     '/document/get/:filename*',
+    '/document/visualize/:filename*',
   ],
 };
