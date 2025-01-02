@@ -46,11 +46,11 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
           }),
         });
       },
-      onError: () => {
+      onError: (error) => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: t('Error.Organization.EditOrganization'),
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

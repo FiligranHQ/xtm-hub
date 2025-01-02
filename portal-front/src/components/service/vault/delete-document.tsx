@@ -44,11 +44,11 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
         });
         setMenuOpen(false);
       },
-      onError: () => {
+      onError: (error) => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: t('Error.Document.DeleteDocument'),
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

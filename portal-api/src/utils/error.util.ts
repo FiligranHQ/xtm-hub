@@ -1,4 +1,5 @@
 import { createError } from 'apollo-errors';
+import { logApp } from './app-logger.util';
 enum ErrorCategory {
   BAD_REQUEST = 'BAD_REQUEST',
   CONFLICT = 'CONFLICT',
@@ -33,19 +34,28 @@ export const ForbiddenAccess = (
   );
 };
 
-export const UnknownError = (message: string, data?: Record<string, unknown>) =>
-  errorUtil(UNKNOWN_ERROR, message || 'An unknown error has occurred', {
+export const UnknownError = (
+  message: string,
+  details?: Record<string, unknown>,
+  data?: Record<string, unknown>
+) => {
+  logApp.error(message + ' details: ' + details);
+  return errorUtil(UNKNOWN_ERROR, message || 'An unknown error has occurred', {
     http_status: 500,
     genre: ErrorCategory.TECHNICAL,
     ...data,
   });
+};
 
 export const StillReferencedError = (
   message?: string,
+  details?: Record<string, unknown>,
   data?: Record<string, unknown>
 ) => {
+  logApp.error(message + ' details: ' + details);
+
   return errorUtil(STILL_REFERENCED, message, {
-    http_status: 409,
+    http_status: 200,
     genre: ErrorCategory.CONFLICT,
     ...data,
   });
@@ -53,10 +63,13 @@ export const StillReferencedError = (
 
 export const AlreadyExistsError = (
   message?: string,
+  details?: Record<string, unknown>,
   data?: Record<string, unknown>
 ) => {
+  logApp.error(message + ' details: ' + details);
+
   return errorUtil(ALREADY_EXISTS, message, {
-    http_status: 409,
+    http_status: 200,
     genre: ErrorCategory.CONFLICT,
     ...data,
   });
@@ -64,10 +77,13 @@ export const AlreadyExistsError = (
 
 export const NotFoundError = (
   message?: string,
+  details?: Record<string, unknown>,
   data?: Record<string, unknown>
 ) => {
+  logApp.error(message + ' details: ' + details);
+
   return errorUtil(NOT_FOUND, message, {
-    http_status: 404,
+    http_status: 200,
     genre: ErrorCategory.BAD_REQUEST,
     ...data,
   });

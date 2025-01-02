@@ -42,11 +42,11 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
           description: t('UserActions.UserCreated', { email: values.email }),
         });
       },
-      onError: () => {
+      onError: (error) => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: t('Error.User.CreateUser'),
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

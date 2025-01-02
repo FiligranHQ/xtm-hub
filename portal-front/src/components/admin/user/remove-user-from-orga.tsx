@@ -50,11 +50,11 @@ export const RemoveUserFromOrga: FunctionComponent<RemoveUserFromOrgaProps> = ({
     setMenuOpen(false);
     removeUserMutation({
       variables: { user_id, organization_id, connections: [connectionID] },
-      onError: () => {
+      onError: (error) => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: t('Error.User.RemoveFromOrganization'),
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

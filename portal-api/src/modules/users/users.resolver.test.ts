@@ -330,7 +330,7 @@ describe('User mutation resolver', () => {
         );
       } catch (error) {
         expect(error).toBeTruthy();
-        expect(error.message).toEqual('You cannot edit yourself');
+        expect(error.message).toEqual('CANT_EDIT_YOURSELF_ERROR');
       }
     });
   });

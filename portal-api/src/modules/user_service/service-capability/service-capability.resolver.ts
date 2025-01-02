@@ -6,7 +6,6 @@ import {
   ServiceCapability,
 } from '../../../__generated__/resolvers-types';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
-import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
 import { loadUserServiceById } from '../user_service.domain';
@@ -19,7 +18,8 @@ const resolvers: Resolvers = {
         const user_service_id = fromGlobalId(input.user_service_id).id;
         await db<ServiceCapability>(context, 'Service_Capability')
           .where('user_service_id', '=', user_service_id)
-          .delete('*');
+          .delete('*')
+          .transacting(trx);
 
         for (const capability of input.capabilities) {
           const service_capability = {
@@ -40,8 +40,7 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         await trx.rollback();
-        logApp.error('Error while editing the capabilities.', error);
-        throw UnknownError('Error while editing the capabilities.');
+        throw UnknownError('EDIT_CAPABILITIES_ERROR', { detail: error });
       }
     },
   },

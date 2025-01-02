@@ -50,11 +50,11 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
           }),
         });
       },
-      onError: () => {
+      onError: (error) => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: t('Error.Document.UpdateDocument'),
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

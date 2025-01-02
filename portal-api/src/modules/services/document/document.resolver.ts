@@ -35,8 +35,7 @@ const resolvers: Resolvers = {
         const [addedDocument] = await insertDocument(data);
         return addedDocument;
       } catch (error) {
-        logApp.error('Error while inserting document:', error);
-        throw UnknownError('Error while inserting document', error);
+        throw UnknownError('INSERT_DOCUMENT_ERROR', { detail: error });
       }
     },
     editDocument: async (_, { documentId, newDescription }, context) => {
@@ -49,8 +48,7 @@ const resolvers: Resolvers = {
         );
         return document;
       } catch (error) {
-        logApp.error('Error while updating document:', error);
-        throw UnknownError('Error while updating document.');
+        throw UnknownError('UPDATE_DOCUMENT_ERROR', { detail: error });
       }
     },
     deleteDocument: async (_, { documentId }, context) => {
@@ -61,8 +59,7 @@ const resolvers: Resolvers = {
           context.serviceId as ServiceId
         );
       } catch (error) {
-        logApp.error('Error while deleting document:', error);
-        throw UnknownError('Error while deleting document.');
+        throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }
     },
   },

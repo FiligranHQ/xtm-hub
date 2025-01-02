@@ -6,40 +6,32 @@
     "Title": "XTM Hub"
   },
   "Error": {
-    "YouAreNotAuthorized": "You are not authorized to get this page.",
-    "Document": {
-      "InsertDocument": "Error while inserting document",
-      "DeleteDocument": "Error while deleting document",
-      "UpdateDocument": "Error while updating document"
-    },
-    "User": {
-      "EditUser": "Error while editing user",
-      "DeleteUser": "Error while deleting user",
-      "CreateUser": "Error while creating user",
-      "RemoveFromOrganization": "Error while removing user from organization",
-      "EmailOutsideOrganization": "You cannot add a user whose email domain is outside your organization"
-    },
-    "Organization": {
-      "CreateOrganization": "Error while creating organization",
-      "DeleteOrganization": "Error while deleting organization",
-      "EditOrganization": "Error while editing organization",
-      "StillReferencedWithUser": "Error while deleting organization. The organization could not be deleted because at least one user is affiliated with it. Delete the user(s) first.",
-      "StillReferencedWithSubscription": "Error while deleting organization. The organization could not be deleted because at least one subscription is affiliated with it. Delete the subscription(s) first."
-    },
-    "Subscription": {
-      "AddSubscriptionInService": "Error while adding a subscription to the service",
-      "SubscriptionAlreadyExistsForOrganization": "You have already subscribed this organization to this service",
-      "SubscriptionAlreadyExists": "You have already subscribed to this service",
-      "DeleteSubscription": "Error while deleting the subscription",
-      "DeleteSubscriptionWithBilling": "Error while deleting the subscription: you are not allowed to delete a subscription with billing",
-      "AddUserAccess": "Error while granting access to the user",
-      "AddUserAccessAlreadyExists": "The user already has access",
-      "SubscriptionDoesNotExists": "The subscription does not exists"
+    "Server": {
+        "DELETE_ORGANIZATION": "Error while deleting organization",
+        "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
+        "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
+        "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
+        "ADDING_USER_ERROR": "Error while creating user",
+        "EDIT_USER_ERROR": "Error while editing user",
+        "DELETE_USER_ERROR": "Error while deleting user",
+        "CANT_EDIT_YOURSELF_ERROR": "You cannot edit yourself",
+        "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
+        "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
+        "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
+        "INSERT_DOCUMENT_ERROR": "Error while inserting document",
+        "UPDATE_DOCUMENT_ERROR": "Error while updating document",
+        "DELETE_DOCUMENT_ERROR": "Error while deleting document",
+        "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
+        "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
+        "ALREADY_SUBSCRIBED": "You have already subscribed to this service",
+        "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "You have already subscribed this organization to this service",
+        "ERROR_SUBSCRIPTION_WITH_BILLING": "Error while deleting the subscription: you are not allowed to delete a subscription with billing",
+        "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
+        "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exists",
+        "USER_ALREADY_EXISTS_ERROR": "The user already has access",
+        "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities"
+      },
 
-    },
-    "Capabilities": {
-      "EditingCapabilities": "Error while editing capabilities"
-    },
     "YouAreNotAuthorized": "You are not authorized to get this page.",
     "Disconnected": "Your session have expired"
   },

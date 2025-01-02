@@ -6,7 +6,6 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
-import { logApp } from '../../utils/app-logger.util';
 import {
   ALREADY_EXISTS,
   AlreadyExistsError,
@@ -60,7 +59,7 @@ const resolvers: Resolvers = {
 
         await insertUserIntoOrganization(context, user, subscription.id);
         if (!subscription) {
-          throw NotFoundError('Sorry the subscription does not exist');
+          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
         }
         if (await isUserServiceExist(user.id as UserId, subscription.id)) {
           throw AlreadyExistsError(
@@ -84,17 +83,12 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         if (error.name.includes(ALREADY_EXISTS)) {
-          logApp.warn('The User access to service is already exist');
-          throw AlreadyExistsError(
-            'The user access to service is already exist'
-          );
+          throw AlreadyExistsError('USER_ALREADY_EXISTS_ERROR');
         }
         if (error.name.includes(NOT_FOUND)) {
-          logApp.error('The subscription has not been found');
-          throw NotFoundError('Sorry the subscription does not exist');
+          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
         }
-        logApp.error('Error while adding the userService.', error);
-        throw UnknownError('Error while adding userService.');
+        throw UnknownError('ADD_USER_SERVICE_ERROR', { detail: error });
       }
     },
     deleteUserService: async (_, { input }, context) => {

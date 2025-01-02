@@ -40,7 +40,7 @@ const resolvers: Resolvers = {
         );
 
         if (subscription) {
-          throw ForbiddenAccess('You have already subscribed this service.');
+          throw ForbiddenAccess('ALREADY_SUBSCRIBED');
         }
 
         const subscriptionData = {
@@ -91,10 +91,9 @@ const resolvers: Resolvers = {
           logApp.warn(
             'Forbidden access while adding subscription: you have already subscribed this service.'
           );
-          throw ForbiddenAccess('You have already subscribed this service');
+          throw ForbiddenAccess('ALREADY_SUBSCRIBED');
         }
-        logApp.error('Error while subscribing the service.', error);
-        throw UnknownError('Error while subscribing the service.');
+        throw UnknownError('SERVICE_SUBSCRIPTION_ERROR', { detail: error });
       }
     },
     addSubscriptionInService: async (
@@ -113,9 +112,7 @@ const resolvers: Resolvers = {
           fromGlobalId(service_id).id
         );
         if (subscription) {
-          throw ForbiddenAccess(
-            'You have already subscribed this organization to this service.'
-          );
+          throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
         }
 
         const subscriptionData = {
@@ -156,12 +153,9 @@ const resolvers: Resolvers = {
           logApp.warn(
             "Forbidden access while adding subscription: You've already subscribed this organization to this service."
           );
-          throw ForbiddenAccess(
-            "You've already subscribed this organization to this service."
-          );
+          throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
         }
-        logApp.error('Error while subscribing the service.', error);
-        throw UnknownError('Error while subscribing the service.');
+        throw UnknownError('SERVICE_SUBSCRIPTION_ERROR', { detail: error });
       }
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
@@ -171,9 +165,7 @@ const resolvers: Resolvers = {
         } as SubscriptionMutator);
 
         if (subscription.billing !== 0) {
-          throw ForbiddenAccess(
-            'You can not delete a subscription with billing.'
-          );
+          throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
         }
         await db<Subscription>(context, 'Subscription')
           .where({ id: fromGlobalId(subscription_id).id })
@@ -185,12 +177,9 @@ const resolvers: Resolvers = {
           logApp.warn(
             'Forbidden access while deleting subscription: you can not delete a subscription with billing.'
           );
-          throw ForbiddenAccess(
-            'You can not delete a subscription with billing.'
-          );
+          throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
         }
-        logApp.error('Error while deleting the subscription.', error);
-        throw UnknownError('Error while deleting the subscription.');
+        throw UnknownError('DELETE_SUBSCRIPTION_ERROR', { detail: error });
       }
     },
   },

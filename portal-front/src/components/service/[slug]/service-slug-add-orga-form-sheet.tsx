@@ -106,15 +106,10 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
         });
       },
       onError: (error: Error) => {
-        const message = error.message.includes(
-          "You've already subscribed this organization to this service"
-        )
-          ? t('Error.Subscription.SubscriptionAlreadyExistsForOrganization')
-          : t('Error.Subscription.AddSubscriptionInService');
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{message}</>,
+          description: <>{t(`Error.Server.${error.message}`)}</>,
         });
       },
     });
