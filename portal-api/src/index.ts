@@ -21,6 +21,7 @@ import { awxEndpoint } from './managers/awx/awx-endpoint';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
+import { documentVisualizeEndpoint } from './modules/services/document/visualize-document-endpoint';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
@@ -173,6 +174,7 @@ await initAuthPlatform(app);
 // It lacks the level of abstraction needed to attach a file to the response (using res.attachment).
 // Therefore, we have to handle it through this route instead.
 documentDownloadEndpoint(app);
+documentVisualizeEndpoint(app);
 awxEndpoint(app);
 healthEndpoint(app);
 
