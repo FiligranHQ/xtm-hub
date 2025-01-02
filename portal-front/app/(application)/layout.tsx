@@ -19,10 +19,10 @@ import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '../../__generated__/meLoaderQuery.graphql';
-import meUserHasSomeSubscriptionNode, {
-  meUserHasSomeSubscription,
-  meUserHasSomeSubscription$data,
-} from '../../__generated__/meUserHasSomeSubscription.graphql';
+import meUserHasOrganizationWithSubscriptionNode, {
+  meUserHasOrganizationWithSubscription,
+  meUserHasOrganizationWithSubscription$data,
+} from '../../__generated__/meUserHasOrganizationWithSubscription.graphql';
 import PageLoader from './page-loader';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -53,11 +53,11 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
 
   if (me) {
     // @ts-ignore
-    const { data }: { data: meUserHasSomeSubscription$data } =
+    const { data }: { data: meUserHasOrganizationWithSubscription$data } =
       await serverPortalApiFetch<
-        typeof meUserHasSomeSubscriptionNode,
-        meUserHasSomeSubscription
-      >(meUserHasSomeSubscriptionNode, {});
+        typeof meUserHasOrganizationWithSubscriptionNode,
+        meUserHasOrganizationWithSubscription
+      >(meUserHasOrganizationWithSubscriptionNode, {});
 
     const userHasBypassCapability = me.capabilities.some(
       (capability) => capability.name === 'BYPASS'
@@ -66,7 +66,8 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
     return (
       <I18nContext>
         <AppContext>
-          {data.userHasSomeSubscription || userHasBypassCapability ? (
+          {data.userHasOrganizationWithSubscription ||
+          userHasBypassCapability ? (
             <PageLoader>
               <Menu />
               <div className="w-full overflow-auto h-screen">

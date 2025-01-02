@@ -46,7 +46,7 @@ type Query {
     orderMode: OrderingMode!
     filter: UserFilter
   ): UserConnection! @auth
-  userHasSomeSubscription: Boolean! @auth
+  userHasOrganizationWithSubscription: Boolean! @auth
 }
 
 input EditUserInput {
