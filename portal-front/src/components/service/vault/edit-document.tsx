@@ -1,13 +1,14 @@
 import { DocumentUpdateMutation } from '@/components/service/vault/document.graphql';
 import {
   newDocumentSchema,
-  VaultNewFileFormSheet,
-} from '@/components/service/vault/vault-new-file-form-sheet';
+  VaultNewFileForm,
+} from '@/components/service/vault/vault-new-file-form';
 import { IconActionContext } from '@/components/ui/icon-actions';
 import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useState } from 'react';
 
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -18,7 +19,7 @@ interface EditDocumentProps {
   documentData: documentItem_fragment$data;
 }
 
-export const EditDocument: FunctionComponent<EditDocumentProps> = ({
+const EditDocument: FunctionComponent<EditDocumentProps> = ({
   documentData,
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
@@ -60,23 +61,24 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
     });
   };
   return (
-    <div onClick={(e) => e.stopPropagation()}>
-      <VaultNewFileFormSheet
-        open={openSheet}
-        setOpen={setOpenSheet}
+    <SheetWithPreventingDialog
+      open={openSheet}
+      setOpen={setOpenSheet}
+      trigger={
+        <Button
+          onClick={(e) => e.stopPropagation()}
+          variant="ghost"
+          className="w-full justify-start normal-case"
+          aria-label={t('Service.Vault.UpdateDocument')}>
+          {t('Utils.Update')}
+        </Button>
+      }
+      title={t('Service.Vault.FileForm.EditFile')}>
+      <VaultNewFileForm
         document={documentData}
-        trigger={
-          <Button
-            onClick={(e) => e.stopPropagation()}
-            variant="ghost"
-            className="w-full justify-start normal-case"
-            aria-label={t('VaultActions.UpdateDocument')}>
-            {t('Utils.Update')}
-          </Button>
-        }
         handleSubmit={updateDocumentDescription}
       />
-    </div>
+    </SheetWithPreventingDialog>
   );
 };
 
