@@ -144,6 +144,9 @@ services:
       - POSTGRES_DB=cloud-portal
       - POSTGRES_PASSWORD=portal-password
       - DATABASE_PORT=5432
+      - TEAMS_WEBHOOK_E2E=${TEAMS_WEBHOOK_E2E}
+      - GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}
+      - GITHUB_PR_TITLE=${GITHUB_PR_TITLE}
 
 volumes:
   pgdata:

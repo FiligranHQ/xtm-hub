@@ -17,6 +17,7 @@ on:
     paths:
       - "portal-api/**"
       - "portal-front/**"
+      - "portal-e2e-tests/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -95,7 +96,10 @@ jobs:
           version: "2.29.6"
       - name: Launch docker compose
         run: |
-          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
+          export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
+           TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
+           GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
+           GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests
 
   run-front-unit-tests:
