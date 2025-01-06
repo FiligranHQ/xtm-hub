@@ -1,6 +1,5 @@
 import cors from 'cors';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import mime from 'mime-types';
 import { Readable } from 'stream';
 import {
   DocumentId,
@@ -39,10 +38,7 @@ export const documentVisualizeEndpoint = (app) => {
         }
         const stream = (await downloadFile(document.minio_name)) as Readable;
 
-        const mimeType =
-          mime.lookup(document.file_name) || 'application/octet-stream';
-
-        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Content-Type', document.mime_type);
         res.setHeader(
           'Content-Disposition',
           `inline; filename="${document.file_name}"`

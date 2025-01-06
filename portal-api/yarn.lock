@@ -8053,7 +8053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:2.1.35, mime-types@npm:^2.1.12, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.1.12, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -9086,7 +9086,6 @@ __metadata:
     kanel: 3.9.1
     knex: 3.1.0
     lint-staged: 15.2.10
-    mime-types: 2.1.35
     nodemailer: 6.9.15
     openid-client: 5.7.0
     passport: 0.7.0
