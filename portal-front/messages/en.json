@@ -5,7 +5,7 @@
   },
   "Error": {
     "YouAreNotAuthorized": "You are not authorized to get this page.",
-    "Disconnected": "You have been disconnected"
+    "Disconnected": "Your session have expired"
   },
   "HomePage": {
     "AvailableServices": "Available services",

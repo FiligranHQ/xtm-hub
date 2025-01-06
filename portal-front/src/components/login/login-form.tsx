@@ -1,7 +1,6 @@
 'use client';
 
 import { LoginFormMutation } from '@/components/login/login.graphql';
-import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -9,12 +8,10 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  useToast,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -35,31 +32,11 @@ const LoginForm = () => {
       password: '',
     },
   });
-
   const [commitLoginFormMutation] = useMutation(LoginFormMutation);
-  const { toast } = useToast();
-
-  const { redirect } = useDecodedQuery();
-  const currentPath = usePathname();
-
-  useEffect(() => {
-    if (redirect) {
-      router.push(atob(redirect));
-      toast({
-        variant: 'destructive',
-        title: t('Utils.Error'),
-        description: t('Error.Disconnected'),
-      });
-    }
-  }, [currentPath]);
-
   const onSubmit = (variables: z.infer<typeof formSchema>) => {
     commitLoginFormMutation({
       variables,
       onCompleted() {
-        if (redirect) {
-          router.push(redirect);
-        }
         // If login succeed, refresh the page
         router.refresh();
       },
