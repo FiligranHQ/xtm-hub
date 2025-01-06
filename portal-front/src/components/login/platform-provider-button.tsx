@@ -24,7 +24,7 @@ export const PlatformProviderButton: FunctionComponent<
   const t = useTranslations();
   useEffect(() => {
     if (redirect) {
-      router.push(redirect);
+      router.push(atob(redirect));
 
       toast({
         variant: 'destructive',

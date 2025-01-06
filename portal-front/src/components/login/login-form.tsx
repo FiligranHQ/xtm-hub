@@ -44,8 +44,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (redirect) {
-      router.push(redirect);
-
+      router.push(atob(redirect));
       toast({
         variant: 'destructive',
         title: t('Utils.Error'),
