@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import notificationWebhook from './tests/webhooks/notification-webhook';
 
 /**
  * Read environment variables from file.
@@ -20,7 +21,25 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['list'],
+    [
+      'monocart-reporter',
+      {
+        name: `XTM Hub e2e Report`,
+        outputFile: './test-results/report.html',
+        onEnd: async (reportData) => {
+          // teams integration with webhook
+          const e2eFailed =
+            reportData.summary.failed.value > 0 ||
+            reportData.summary.flaky.value > 0;
+          if (!!process.env.GITHUB_PR_NUMBER && e2eFailed) {
+            await notificationWebhook(reportData);
+          }
+        },
+      },
+    ],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
