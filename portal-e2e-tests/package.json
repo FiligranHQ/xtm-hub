@@ -9,15 +9,15 @@
   },
   "dependencies": {
     "knex": "3.1.0",
-    "pg": "8.13.0",
+    "pg": "8.13.1",
     "react": "18.3.1",
-    "uuid": "10.0.0"
+    "uuid": "11.0.4"
   },
   "devDependencies": {
-    "@playwright/test": "1.47.2",
-    "@types/node": "^22.9.3",
-    "monocart-reporter": "2.8.4",
-    "prettier": "3.3.3"
+    "@playwright/test": "1.49.1",
+    "@types/node": "22.10.5",
+    "monocart-reporter": "2.9.12",
+    "prettier": "3.4.2"
   },
   "packageManager": "yarn@3.6.3",
   "prettier": {
