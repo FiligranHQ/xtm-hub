@@ -23,7 +23,7 @@ export function AdminCallout() {
     isAdminPath && (
       <Callout
         variant="warning"
-        className="absolute z-50 top-0 left-0 right-0 rounded-none !text-black">
+        className="absolute z-50 top-0 left-0 right-0 rounded-none !text-black justify-center uppercase">
         {t('AdminCallout')}
       </Callout>
     )
