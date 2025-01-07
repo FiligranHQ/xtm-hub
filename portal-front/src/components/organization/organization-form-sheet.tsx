@@ -1,12 +1,14 @@
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  Input,
   Sheet,
   SheetClose,
   SheetContent,
@@ -16,8 +18,7 @@ import {
   SheetTrigger,
   Tag,
   TagInput,
-} from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';

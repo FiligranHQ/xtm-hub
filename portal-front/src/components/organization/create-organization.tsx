@@ -2,7 +2,7 @@ import { OrganizationFormSheet } from '@/components/organization/organization-fo
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
 import TriggerButton from '@/components/ui/trigger-button';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';

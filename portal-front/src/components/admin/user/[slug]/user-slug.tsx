@@ -9,8 +9,7 @@ import { trackingSubscription } from '@/components/data-tracking/tracking.graphq
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { DeleteIcon } from 'filigran-icon';
-import { useToast } from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';

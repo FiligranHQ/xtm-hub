@@ -1,4 +1,4 @@
-import { Button } from 'filigran-ui/servers';
+import { Button } from 'filigran-ui';
 import * as React from 'react';
 
 interface CreateButtonProps

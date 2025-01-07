@@ -7,7 +7,7 @@ import { DocumentsListQuery } from '@/components/service/vault/document.graphql'
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { FormatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from 'filigran-ui/clients';
+import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useEffect, useState } from 'react';

@@ -1,11 +1,11 @@
 'use client';
 import { cn } from '@/lib/utils';
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
 import React, {
   createContext,
   FunctionComponent,

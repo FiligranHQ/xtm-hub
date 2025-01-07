@@ -15,11 +15,11 @@ import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
 import { DeleteIcon } from 'filigran-icon';
 import {
+  Button,
   Combobox,
   DataTableHeadBarOptions,
   useToast,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';

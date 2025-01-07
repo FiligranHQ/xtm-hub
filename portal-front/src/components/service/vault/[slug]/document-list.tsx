@@ -21,14 +21,15 @@ import { FormatDate } from '@/utils/date';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import {
+  Button,
   DataTable,
   DataTableHeadBarOptions,
+  Input,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';

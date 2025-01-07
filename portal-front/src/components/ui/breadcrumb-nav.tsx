@@ -7,7 +7,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from 'filigran-ui/servers';
+} from 'filigran-ui';
 import Link from 'next/link';
 import { Fragment, FunctionComponent, ReactNode } from 'react';
 

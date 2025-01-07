@@ -2,7 +2,7 @@ import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import TriggerButton from '@/components/ui/trigger-button';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useState } from 'react';
 import { useMutation } from 'react-relay';

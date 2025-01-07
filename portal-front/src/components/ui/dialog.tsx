@@ -1,4 +1,5 @@
 import {
+  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -6,8 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { FunctionComponent, ReactNode } from 'react';
 
 interface DialogInformativeProps {

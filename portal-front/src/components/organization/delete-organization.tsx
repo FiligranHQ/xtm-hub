@@ -1,7 +1,6 @@
 import { organizationDeletion } from '@/components/organization/organization.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { useToast } from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';

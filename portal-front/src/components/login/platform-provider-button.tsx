@@ -1,4 +1,4 @@
-import { Button } from 'filigran-ui/servers';
+import { Button } from 'filigran-ui';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
 
