@@ -1,7 +1,7 @@
 import { IconActionContext } from '@/components/ui/icon-actions';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from 'filigran-ui/servers';
+import { buttonVariants } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { commitLocalUpdate, useRelayEnvironment } from 'react-relay';

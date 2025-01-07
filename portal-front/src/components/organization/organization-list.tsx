@@ -12,8 +12,7 @@ import {
 import { IconActions } from '@/components/ui/icon-actions';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { DataTable, DataTableHeadBarOptions } from 'filigran-ui/clients';
-import { Badge } from 'filigran-ui/servers';
+import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { FunctionComponent, Suspense, useState } from 'react';
 import {
   OrderingMode,

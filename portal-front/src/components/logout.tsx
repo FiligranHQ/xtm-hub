@@ -1,7 +1,7 @@
 'use client';
 
 import { LogoutMutation } from '@/components/logout.graphql';
-import { Button } from 'filigran-ui/servers';
+import { Button } from 'filigran-ui';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useMutation } from 'react-relay';

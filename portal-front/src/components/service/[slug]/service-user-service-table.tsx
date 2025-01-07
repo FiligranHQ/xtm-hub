@@ -4,8 +4,7 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { DataTable } from 'filigran-ui/clients';
-import { Badge, Button } from 'filigran-ui/servers';
+import { Badge, Button, DataTable } from 'filigran-ui';
 import {
   FunctionComponent,
   ReactNode,

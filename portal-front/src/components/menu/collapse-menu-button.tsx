@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { KeyboardArrowLeftIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
+import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 

@@ -5,7 +5,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from 'filigran-ui/clients';
+} from 'filigran-ui';
 import { FunctionComponent } from 'react';
 import { useFragment } from 'react-relay';
 import {

@@ -8,8 +8,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from 'filigran-ui/clients';
-import { buttonVariants } from 'filigran-ui/servers';
+  buttonVariants,
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode } from 'react';
 

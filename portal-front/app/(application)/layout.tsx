@@ -5,6 +5,7 @@ import '../../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 
+import { AdminCallout } from '@/components/admin/admin-callout';
 import AppContext from '@/components/app-context';
 import { ContentLayout } from '@/components/content-layout';
 import HeaderComponent from '@/components/header';
@@ -69,6 +70,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
           {data.userHasOrganizationWithSubscription ||
           userHasBypassCapability ? (
             <PageLoader>
+              <AdminCallout />
               <Menu />
               <div className="w-full overflow-auto h-screen">
                 <HeaderComponent />

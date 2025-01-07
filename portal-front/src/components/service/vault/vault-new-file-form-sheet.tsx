@@ -3,8 +3,9 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { FileInput } from 'filigran-ui';
 import {
+  Button,
+  FileInput,
   FileInputDropZone,
   Form,
   FormControl,
@@ -19,8 +20,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from 'filigran-ui/clients';
-import { Button, Textarea } from 'filigran-ui/servers';
+  Textarea,
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode } from 'react';
 import { useForm } from 'react-hook-form';

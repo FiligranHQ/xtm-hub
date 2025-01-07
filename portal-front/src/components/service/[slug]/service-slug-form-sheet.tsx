@@ -11,6 +11,7 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
   Combobox,
   Form,
   FormControl,
@@ -18,6 +19,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  MultiSelectFormField,
   Sheet,
   SheetClose,
   SheetContent,
@@ -29,8 +31,7 @@ import {
   Tag,
   TagInput,
   useToast,
-} from 'filigran-ui/clients';
-import { Button, MultiSelectFormField } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import {
   FunctionComponent,

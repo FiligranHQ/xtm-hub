@@ -2,6 +2,7 @@ import { getOrganizations } from '@/components/organization/organization.service
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
@@ -22,8 +23,7 @@ import {
   SheetTitle,
   SheetTrigger,
   useToast,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { Dispatch, FunctionComponent, ReactNode, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';

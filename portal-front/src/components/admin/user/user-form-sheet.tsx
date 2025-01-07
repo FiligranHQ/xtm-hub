@@ -9,12 +9,15 @@ import useAdminPath from '@/hooks/useAdminPath';
 import { isDevelopment } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  Input,
+  MultiSelectFormField,
   Sheet,
   SheetClose,
   SheetContent,
@@ -22,8 +25,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from 'filigran-ui/clients';
-import { Button, Input, MultiSelectFormField } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useContext } from 'react';
 import { useForm } from 'react-hook-form';
