@@ -38,7 +38,7 @@ export const documentVisualizeEndpoint = (app) => {
         }
         const stream = (await downloadFile(document.minio_name)) as Readable;
 
-        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Type', document.mime_type);
         res.setHeader(
           'Content-Disposition',
           `inline; filename="${document.file_name}"`
