@@ -6817,9 +6817,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.24.4":
-  version: 0.24.4
-  resolution: "filigran-ui@npm:0.24.4"
+"filigran-icon@npm:^0.10.0":
+  version: 0.10.1
+  resolution: "filigran-icon@npm:0.10.1"
+  checksum: d40ab213c746d2d20340cdbc65c2700c281193e94799362bed09a966eef5d72dcae782da31a3044b9aa17250436bc78767866031d22ec827e68c9c2202a43ea4
+  languageName: node
+  linkType: hard
+
+"filigran-ui@npm:0.25.0":
+  version: 0.25.0
+  resolution: "filigran-ui@npm:0.25.0"
   dependencies:
     "@dnd-kit/core": 6.1.0
     "@dnd-kit/modifiers": 7.0.0
@@ -6842,16 +6849,16 @@ __metadata:
     class-variance-authority: 0.7.0
     clsx: 2.1.1
     cmdk: 1.0.0
-    lucide-react: 0.399.0
+    filigran-icon: ^0.10.0
     react-easy-sort: 1.6.0
     react-hook-form: 7.52.0
     tailwind-merge: 2.3.0
     tailwindcss-animate: 1.0.7
     zod: 3.23.8
   peerDependencies:
-    react: 18.2.0
-    react-dom: 18.2.0
-  checksum: 780bdf4d8eb8112c957fd59051b50d2b927022f9501793a4e3798a4afa498873edb72dd408de3ee93177028d513e504639ca989fa207b2bb3f0c7ddc96576a1e
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+  checksum: e4ebfbea3ef0d5b0ff73a2815a7a71c03bc0502519c633b452f36f1afea06632da5fedd868fb4baf64fce3b365ef04b2c80285df4ec09638472d7ef425faad14
   languageName: node
   linkType: hard
 
@@ -8562,12 +8569,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:0.399.0":
-  version: 0.399.0
-  resolution: "lucide-react@npm:0.399.0"
+"lucide-react@npm:0.447.0":
+  version: 0.447.0
+  resolution: "lucide-react@npm:0.447.0"
   peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 017a2c624e2fd5f29777e18d2607b3c2f24ebfb1600b6978392bb03a51b48eff44888a966b6ddf38bf204aaf10f1ef50b82a1f0a1878996e38cd35f0b934abb6
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
+  checksum: c634a6d6fac1799d3ba8c342dd95be75a9c2a74db9576d875b77008f31a9bfb3b0128c039d41dbe5bbdece7e200c6ae3e89760f2e8674863cd972046bdb2b82f
   languageName: node
   linkType: hard
 
@@ -9549,13 +9556,14 @@ __metadata:
     eslint-config-prettier: 9.1.0
     extract-files: 13.0.0
     filigran-icon: 0.9.0
-    filigran-ui: 0.24.4
+    filigran-ui: 0.25.0
     graphql: 16.9.0
     graphql-sse: 2.5.3
     husky: 9.1.6
     i18n-auto-translation: 1.8.2
     jsdom: 25.0.1
     lint-staged: 15.2.10
+    lucide-react: 0.447.0
     monocart-reporter: 2.9.6
     next: 14.2.15
     next-intl: 3.21.1

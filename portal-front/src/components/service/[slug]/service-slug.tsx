@@ -1,6 +1,5 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 
-import { AdminCallout } from '@/components/admin/admin-callout';
 import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
 import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
@@ -237,7 +236,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   return (
     <>
-      {useAdminPath() && <AdminCallout />}
       <BreadcrumbNav value={breadcrumbValue} />
       {isAllowedInviteUser ? (
         <>

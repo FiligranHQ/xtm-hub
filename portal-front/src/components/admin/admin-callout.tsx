@@ -1,14 +1,31 @@
+'use client';
+
+import { Callout } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { Callout } from '../ui/callout';
+import { useEffect } from 'react';
+import useAdminPath from '../../hooks/useAdminPath';
 
 export function AdminCallout() {
   const t = useTranslations();
+  const isAdminPath = useAdminPath();
+
+  useEffect(() => {
+    if (isAdminPath) {
+      document.body.classList.add('pt-9');
+    } else {
+      document.body.classList.remove('pt-9');
+    }
+
+    return () => document.body.classList.remove('pt-9');
+  }, [isAdminPath]);
 
   return (
-    <Callout
-      variant="warning"
-      className="mb-s">
-      {t('AdminCallout')}
-    </Callout>
+    isAdminPath && (
+      <Callout
+        variant="warning"
+        className="absolute z-50 top-0 left-0 right-0 rounded-none">
+        {t('AdminCallout')}
+      </Callout>
+    )
   );
 }
