@@ -3,13 +3,14 @@
 import { LoginFormMutation } from '@/components/login/login.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
+  Input,
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';

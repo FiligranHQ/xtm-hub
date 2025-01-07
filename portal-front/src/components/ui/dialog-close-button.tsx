@@ -1,4 +1,5 @@
 import {
+  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -7,8 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { FunctionComponent, ReactNode } from 'react';
 
 interface DialogCloseButtonProps {

@@ -6,7 +6,7 @@ import {
   VaultNewFileFormSheet,
 } from '@/components/service/vault/vault-new-file-form-sheet';
 import { RESTRICTION } from '@/utils/constant';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';

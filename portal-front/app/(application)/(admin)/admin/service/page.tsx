@@ -8,7 +8,7 @@ import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import { UseTranslationsProps } from '@/i18n/config';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { DataTable } from 'filigran-ui/clients';
+import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';

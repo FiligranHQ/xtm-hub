@@ -8,14 +8,16 @@ import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import useAdminPath from '@/hooks/useAdminPath';
 import { isDevelopment } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Input, MultiSelectFormField } from 'filigran-ui';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  Input,
+  MultiSelectFormField,
   Sheet,
   SheetClose,
   SheetContent,
@@ -23,7 +25,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from 'filigran-ui/clients';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useContext } from 'react';
 import { useForm } from 'react-hook-form';

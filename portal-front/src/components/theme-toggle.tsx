@@ -3,12 +3,12 @@
 import { useTheme } from 'next-themes';
 
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { MoonIcon, SunIcon } from 'lucide-react';
 
 export function ThemeToggle() {

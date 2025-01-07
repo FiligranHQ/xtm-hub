@@ -5,7 +5,7 @@ import {
 } from '@/components/admin/user/user-form.schema';
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import TriggerButton from '@/components/ui/trigger-button';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';

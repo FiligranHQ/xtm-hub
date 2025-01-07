@@ -9,12 +9,13 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Button,
+  buttonVariants,
   Popover,
   PopoverContent,
   PopoverTrigger,
   Separator,
-} from 'filigran-ui/clients';
-import { Button, buttonVariants } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

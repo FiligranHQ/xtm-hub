@@ -3,7 +3,7 @@ import { dataTrackingFragment } from '@/components/data-tracking/tracking.graphq
 import { DialogCloseButton } from '@/components/ui/dialog-close-button';
 import { FormatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from 'filigran-ui/clients';
+import { DataTable } from 'filigran-ui';
 import { FunctionComponent } from 'react';
 import { useFragment } from 'react-relay';
 import { trackingData_fragment$key } from '../../../__generated__/trackingData_fragment.graphql';

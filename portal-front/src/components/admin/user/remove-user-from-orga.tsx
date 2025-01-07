@@ -3,7 +3,7 @@ import {
   IconActionContext,
   IconActionsButton,
 } from '@/components/ui/icon-actions';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useContext } from 'react';
 import { graphql, useMutation } from 'react-relay';
