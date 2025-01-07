@@ -29,6 +29,7 @@ const resolvers: Resolvers = {
           file_name: normalizeDocumentName(opt.document.file.filename),
           service_id: context.serviceId,
           created_at: new Date(),
+          mime_type: opt.document.file.mimetype,
         } as unknown as Document;
         const [addedDocument] = await insertDocument(data);
         return addedDocument;
