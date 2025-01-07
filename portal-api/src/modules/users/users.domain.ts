@@ -407,6 +407,18 @@ export const loadUserDetails = async (
       '=',
       'rolePortal.id'
     )
+    .leftJoin(
+      'RolePortal_CapabilityPortal as roleCapaPortal',
+      'rolePortal.id',
+      '=',
+      'roleCapaPortal.role_portal_id'
+    )
+    .leftJoin(
+      'CapabilityPortal as capabilityPortal',
+      'roleCapaPortal.capability_portal_id',
+      '=',
+      'capabilityPortal.id'
+    )
     .select([
       'User.*',
       dbRaw(
@@ -421,6 +433,13 @@ export const loadUserDetails = async (
           columnName: 'rolePortal',
           typename: 'RolePortal',
           as: 'roles_portal',
+        })
+      ),
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'capabilityPortal',
+          typename: 'CapabilityPortal',
+          as: 'capabilities',
         })
       ),
     ])

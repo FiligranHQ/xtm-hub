@@ -45,6 +45,13 @@ export const isNodeAccessible = async (
     return true;
   }
   if (type === 'User') {
+    // Concerned users are notified on deletion/edition of their profiles
+    const actions = ['delete', 'edit'];
+    for (const action of actions) {
+      if (data[action]?.id === user.id) {
+        return true;
+      }
+    }
     // Users can only be dispatched to admin
     return isUserGranted(user, CAPABILITY_FRT_MANAGE_USER);
   }

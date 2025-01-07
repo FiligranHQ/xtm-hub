@@ -195,7 +195,13 @@
     "NotFound": "Non trouvé"
   },
   "DeleteUserDialog": {
-    "TextDeleteThisUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur {email} ? ?"
+    "TextDeleteThisUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur {email} ? ?",
+    "TextDeletedUser": "Votre compte a été supprimé par un administrateur. Vous avez été déconnecté.",
+    "TextDeletedUserTitle": "Compte supprimé !"
+  },
+  "UpdateUserDialog": {
+    "TextUpdatedUser": "Votre compte a été modifié par un administrateur. Le comportement de l'application peut donc évoluer.",
+    "TextUpdatedUserTitle":  "Compte modifié !"
   },
   "RemoveUserOrgDialog": {
     "TextRemoveThisUser": "Êtes-vous sûr de vouloir retirer cet utilisateur {email} de votre organisation ?"

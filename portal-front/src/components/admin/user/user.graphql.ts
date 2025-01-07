@@ -56,6 +56,19 @@ export const userSlugSubscription = graphql`
   }
 `;
 
+export const userMeSubscription = graphql`
+  subscription userMeSubscription {
+    MeUser {
+      delete {
+        id
+      }
+      edit {
+        ...meContext_fragment @relay(mask: false)
+      }
+    }
+  }
+`;
+
 export const UserSlugQuery = graphql`
   query userSlugQuery($id: ID!) {
     user(id: $id) {

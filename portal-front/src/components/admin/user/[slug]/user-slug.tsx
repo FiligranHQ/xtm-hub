@@ -14,6 +14,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useRelayEnvironment } from 'react-relay';
+import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { useConnectionId } from '@/hooks/useConnectionId';
@@ -26,7 +27,6 @@ import {
 } from 'react-relay';
 import { userDeletionMutation } from '../../../../../__generated__/userDeletionMutation.graphql';
 import { userSlugQuery } from '../../../../../__generated__/userSlugQuery.graphql';
-import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 import {
   userSlug_fragment$data,
   userSlug_fragment$key,
