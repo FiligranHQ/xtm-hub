@@ -42,7 +42,7 @@ export const DeleteUserAction: FunctionComponent<DeleteUserActionsProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

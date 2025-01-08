@@ -10,8 +10,10 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions } from '@/components/ui/icon-actions';
+import { i18nKey } from '@/utils/datatable';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
+import { useTranslations } from 'next-intl';
 import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { FunctionComponent, Suspense, useState } from 'react';
 import {
@@ -20,13 +22,13 @@ import {
 } from '../../../__generated__/OrganizationsPaginationQuery.graphql';
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
 import { OrganizationOrdering } from '../../../__generated__/organizationSelectQuery.graphql';
-
 const OrganizationList: FunctionComponent = () => {
+  const t = useTranslations();
   const columns: ColumnDef<organizationItem_fragment$data>[] = [
     {
       accessorKey: 'name',
       id: 'name',
-      header: 'Name',
+      header: t('OrganizationForm.Name'),
       cell: ({ row }) => {
         return <>{row.original.name}</>;
       },
@@ -34,7 +36,7 @@ const OrganizationList: FunctionComponent = () => {
     {
       accessorKey: 'domains',
       id: 'domains',
-      header: 'Domains',
+      header: t('OrganizationForm.Domains'),
       enableSorting: false,
       cell: ({ row }) => {
         return (
@@ -62,7 +64,7 @@ const OrganizationList: FunctionComponent = () => {
             icon={
               <>
                 <MoreVertIcon className="h-4 w-4 text-primary" />
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">{t('Utils.OpenMenu')}</span>
               </>
             }>
             <EditOrganization organization={row.original} />
@@ -102,6 +104,7 @@ const OrganizationList: FunctionComponent = () => {
     pageIndex: 0,
     pageSize,
   });
+
   const handleRefetchData = (
     args?: Partial<OrganizationsPaginationQuery$variables>
   ) => {
@@ -148,6 +151,7 @@ const OrganizationList: FunctionComponent = () => {
     <Suspense
       fallback={
         <DataTable
+          i18nKey={i18nKey(t)}
           data={[]}
           columns={columns}
           isLoading={true}
@@ -174,6 +178,7 @@ const OrganizationList: FunctionComponent = () => {
           onColumnVisibilityChange: setColumnVisibility,
           rowCount: organizationData.organizations.totalCount,
         }}
+        i18nKey={i18nKey(t)}
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),
           pagination,

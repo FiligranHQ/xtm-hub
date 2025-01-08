@@ -46,14 +46,14 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });
   };
   return (
     <UserFormSheet
-      title={'Create a new user'}
+      title={t('UserActions.CreateUser')}
       handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}

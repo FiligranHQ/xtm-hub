@@ -2,9 +2,36 @@
   "AdminCallout": "Vous êtes actuellement en mode administrateur.",
   "App": {
     "Collapse": "Réduire",
+    "CollapseSidebar": "Réduire la sidebar",
     "Title": "XTM Hub"
   },
   "Error": {
+    "Server": {
+        "DELETE_ORGANIZATION": "Erreur lors de la suppression de l'organisation",
+        "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
+        "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
+        "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins une souscription y est toujours affiliée. Supprimez la/les souscription(s) d'abord.",
+        "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
+        "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
+        "DELETE_USER_ERROR": "Erreur lors de la suppression de l'utilisateur",
+        "CANT_EDIT_YOURSELF_ERROR": "Vous ne pouvez pas vous modifier vous-même",
+        "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
+        "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
+        "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
+        "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
+        "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
+        "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
+        "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
+        "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
+        "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
+        "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation est déjà abonnée à ce service",
+        "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
+        "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
+        "SUBSCRIPTION_NOT_FOUND_ERROR": "La souscription n'existe pas",
+        "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
+        "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités"
+
+    },
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page.",
     "Disconnected": "Votre session a expiré"
   },
@@ -19,13 +46,37 @@
   "LocaleSwitcher": {
     "en": "English",
     "fr": "Français",
-    "label": "Langage"
+    "Label": "Langage"
+  },
+  "MenuUser": {
+    "ToggleUser": "Ouvrir menu utilisateur"
+  },
+  "ThemeToggle": {
+    "ToggleTheme": "Ouvrir menu thème",
+    "SetTheme": "Appliquer le thème",
+    "Light": "Clair",
+    "Dark": "Foncé",
+    "Automatic": "Automatique"
+  },
+  "OrganizationSwitcher": {
+    "SelectOrganization": "Choisir une organisation",
+    "SelectedOrganization": "Organisation choisie",
+    "PersonalSpace": "Espace personnel"
   },
   "LoginPage": {
     "Email": "Email",
     "Login": "Connexion",
+    "SignIn": "S'inscrire",
+    "Logout": "Déconnexion",
     "Password": "Mot de passe",
-    "Title": "Page de connexion XTM Hub"
+    "Title": "Page de connexion XTM Hub",
+    "ToLoginPlease": "Pour vous connecter, veuillez",
+    "CreateYourAccount": "créer votre compte",
+    "OnFiligranWebsite": "sur le site Filigran",
+    "Errors": {
+      "AccountNotProvidedTitle": "Votre compte n'existe pas !",
+      "AccountNotProvided": "Cette plateforme est pour l'instant dédiée aux partenaires de Filigran."
+    }
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",
@@ -37,6 +88,10 @@
     "Settings": "Réglages"
   },
   "Service": {
+    "CreationStatus": "Statut de la création",
+    "Description": "Description",
+    "Name": "Nom",
+    "ServiceName": "Nom du service",
     "NoOwnedService": "Vous n'avez pas encore de service.",
     "NoService": "Il n'y a pas encore de service...",
     "Subscribe": "Souscrire",
@@ -44,9 +99,10 @@
     "SubscribeOrganization": "Souscrire une organisation",
     "GoTo": "Aller au service",
     "GoToLabel": "Consulter",
-    "GoToAdmin": "Aller à la page de management du service",
     "GoToAdminLabel": "Administrer",
     "Capabilities": {
+      "CapabilitiesTitle": "Capacités",
+      "SelectCapabilities": "Sélectionner les capacités",
       "ManageAccessName": "Manage access",
       "ManageAccessDescription": "Vous pouvez accéder au service et inviter des utilisateurs à ce service",
       "AccessServiceName": "Access service",
@@ -54,13 +110,22 @@
     },
     "Management": {
       "Email": "Email",
-      "OneUserMax": "1 utilisateur max"
+      "FirstName": "Prénom",
+      "LastName": "Nom",
+      "OneUserMax": "1 utilisateur max",
+      "RemoveAccess": "Retirer les accès",
+      "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
+      "InviteUser": {
+        "TitleInviteUser": "Inviter un utilisateur",
+        "InviteUser": "Ajouter un utilisateur au service",
+        "InviteUserSubtitle": "Éditer les droits d'accès ici. Cliquer sur valider quand c'est terminé.",
+        "Organization": "Organisation"
+      }
     },
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
     "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
-    "InviteUser": "Inviter un utilisateur",
     "Vault": {
       "DropFile": "Lâchez le document ici",
       "File": "Document à transmettre",
@@ -103,10 +168,12 @@
   "VaultActions": {
     "DocumentDeleted": "{file_name} a été supprimé",
     "DocumentAdded": "{file_name} a été ajouté",
-    "DocumentUpdated": "{file_name} a été modifié"
+    "DocumentUpdated": "{file_name} a été modifié",
+    "UpdateDocument": "Modifier le document"
   },
   "Utils": {
     "Cancel": "Annuler",
+    "Close": "Fermer",
     "Continue": "Continuer",
     "Create": "Créer",
     "Delete": "Supprimer",
@@ -153,15 +220,20 @@
     "DeleteUser": "Supprimer l'utilisateur",
     "UpdateUser": "Mettre à jour l'utilisateur",
     "DetailsUser": "Détails de l'utilisateur",
+    "CreateUser": "Créer un nouvel utilisateur",
     "AddUser": "Ajouter un utilisateur",
     "RemoveUser": "Retirer l'utilisateur",
     "UserCreated": "L'utilisateur {email} a été créé",
     "UserUpdated": "L'utilisateur {email} a été modifié",
-    "UserDeleted": "L'utilisateur a été supprimé"
+    "UserDeleted": "L'utilisateur a été supprimé",
+    "SearchUserWithEmail": "Rechercher l'utilisateur par email..."
+
   },
   "OrganizationForm": {
     "EditOrganization": "Modifier l'organisation",
     "CreateOrganization": "Créer une organisation",
+    "DeleteOrganization": "Supprimer une organisation",
+    "SureDeleteOrganization": "Êtes-vous sûr de vouloir supprimer l'organisation {organizationName} ? Cette action ne pourra pas être annulée.",
     "Name": "Nom",
     "Domains": "Domaines",
     "DomainsPlaceholder": "Ajouter un domaine",
@@ -178,7 +250,13 @@
     "FirstName": "Prénom",
     "LastName": "Nom de famille",
     "Roles": "Rôles",
-    "Organizations": "Organisations"
+    "Organizations": "Organisations",
+    "UserForm": {
+      "SelectRoles": "Sélectionner rôles",
+      "SelectOrganization": "Sélectionner une organisation",
+      "Email": "Email",
+      "Password": "Password"
+    }
   },
   "MenuActions": {
     "Delete": "Supprimer",

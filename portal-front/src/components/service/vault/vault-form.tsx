@@ -51,7 +51,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

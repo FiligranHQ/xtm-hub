@@ -17,6 +17,7 @@ import {
 import { IconActions } from '@/components/ui/icon-actions';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { RESTRICTION } from '@/utils/constant';
+import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
@@ -48,6 +49,7 @@ import {
   documentsQuery$variables,
 } from '../../../../../__generated__/documentsQuery.graphql';
 import { serviceByIdQuery } from '../../../../../__generated__/serviceByIdQuery.graphql';
+
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;
   queryRefService: PreloadedQuery<serviceByIdQuery>;
@@ -132,7 +134,11 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           <IconActions
             icon={
               <>
-                <MoreVertIcon className="h-4 w-4 text-primary" />
+                <MoreVertIcon
+                  aria-hidden={true}
+                  focusable={false}
+                  className="h-4 w-4 text-primary"
+                />
                 <span className="sr-only">{t('Utils.OpenMenu')}</span>
               </>
             }>
@@ -227,6 +233,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       <h1 className="pb-s">{queryDataService.serviceById?.name}</h1>
 
       <DataTable
+        i18nKey={i18nKey(t)}
         columns={columns}
         data={documentData}
         onResetTable={resetAll}
