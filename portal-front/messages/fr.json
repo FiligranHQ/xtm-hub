@@ -82,6 +82,7 @@
     "Backoffice": "Backoffice",
     "Home": "Accueil",
     "Organizations": "Organisations",
+    "Parameters": "Paramètres",
     "Services": "Services",
     "Users": "Utilisateurs",
     "SettingsLabel": "Menu des paramètres",
@@ -280,5 +281,8 @@
     "GoLastPage": "Aller à la dernière page",
     "Columns": "Colonnes",
     "ResetTable": "Réinitialiser"
+  },
+  "Parameters": {
+    "Version": "Version"
   }
 }
