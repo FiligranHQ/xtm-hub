@@ -25,6 +25,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 # Set the version of the app
 ENV NEXT_PUBLIC_APP_VERSION=${APP_VERSION}
+RUN echo "NEXT_PUBLIC_APP_VERSION=${APP_VERSION}" > .env.local
 
 RUN yarn build
 # If using npm comment out above and use below instead
