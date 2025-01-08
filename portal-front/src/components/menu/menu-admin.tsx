@@ -100,6 +100,10 @@ const ClosedMenuAdmin = () => {
 
 const adminLinksData = (t: UseTranslationsProps) => [
   {
+    href: '/admin/parameters',
+    label: t('MenuLinks.Parameters'),
+  },
+  {
     href: '/admin/user',
     label: t('MenuLinks.Users'),
     restriction: [RESTRICTION.CAPABILITY_FRT_MANAGE_USER],
