@@ -212,6 +212,7 @@ jobs:
             echo "VERSION=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
           else
             echo "VERSION=local-${GITHUB_SHA::8}" >> $GITHUB_ENV
+          fi
       - name: Build and push images
         uses: docker/build-push-action@v6
         with:
