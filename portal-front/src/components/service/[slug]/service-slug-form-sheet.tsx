@@ -161,7 +161,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),
-            description: <>{error.message}</>,
+            description: t(`Error.Server.${error.message}`),
           });
         },
       });
@@ -178,15 +178,15 @@ export const ServiceSlugFormSheet: FunctionComponent<
         },
         onCompleted() {
           toast({
-            title: 'Success',
+            title: t('Utils.Success'),
             description: `${values.email[0].text} ${t('Utils.Modified')}`,
           });
         },
         onError(error) {
           toast({
             variant: 'destructive',
-            title: 'Error',
-            description: <>{error.message}</>,
+            title: t('Utils.Error'),
+            description: <>{t(`Error.Server.${error.message}`)}</>,
           });
         },
       });
@@ -246,9 +246,11 @@ export const ServiceSlugFormSheet: FunctionComponent<
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent side={'right'}>
         <SheetHeader className="bg-page-background">
-          <SheetTitle>{'Invite user to the service'}</SheetTitle>
+          <SheetTitle>
+            {t('Service.Management.InviteUser.InviteUser')}
+          </SheetTitle>
           <SheetDescription>
-            {'Set the access rights here. Click Validate when you are done.'}
+            {t('Service.Management.InviteUser.InviteUserSubtitle')}
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -264,7 +266,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t('Service.Management.Email')}</FormLabel>
                       <FormControl>
                         <TagInput
                           {...field}
@@ -296,7 +298,9 @@ export const ServiceSlugFormSheet: FunctionComponent<
                   name="organizationId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Organization</FormLabel>
+                      <FormLabel>
+                        {t('Service.Management.InviteUser.Organization')}
+                      </FormLabel>
                       <FormControl>
                         <Combobox
                           dataTab={dataOrganizationsTab}
@@ -323,14 +327,16 @@ export const ServiceSlugFormSheet: FunctionComponent<
               name="capabilities"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Capabilities</FormLabel>
+                  <FormLabel>
+                    {t('Service.Capabilities.CapabilitiesTitle')}
+                  </FormLabel>
                   <FormControl>
                     <MultiSelectFormField
                       noResultString={t('Utils.NotFound')}
                       options={capabilitiesData}
                       value={field.value}
                       onValueChange={field.onChange}
-                      placeholder="Select capabilities"
+                      placeholder={t('Service.Capabilities.SelectCapabilities')}
                       variant="inverted"
                     />
                   </FormControl>
@@ -340,12 +346,12 @@ export const ServiceSlugFormSheet: FunctionComponent<
             />
             <SheetFooter className="pt-2">
               <SheetClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline">{t('Utils.Cancel')}</Button>
               </SheetClose>
               <Button
                 disabled={!form.formState.isDirty}
                 type="submit">
-                Validate
+                {t('Utils.Validate')}
               </Button>
             </SheetFooter>
             <ServiceDescribeCapabilitiesSheet />

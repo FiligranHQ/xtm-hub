@@ -83,7 +83,7 @@ const LoginForm = () => {
           <Button
             className="w-full"
             type="submit">
-            Sign in
+            {t('LoginPage.SignIn')}
           </Button>
         </form>
       </Form>

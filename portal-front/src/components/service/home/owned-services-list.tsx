@@ -45,7 +45,12 @@ export const OwnedServicesList: FunctionComponent<ServicesListProps> = ({
                         variant={'ghost'}>
                         <Link
                           href={`/service/vault/${subscription?.service?.id}`}>
-                          <LinkIcon className="mr-3 h-3 w-3" /> {link?.name}
+                          <LinkIcon
+                            aria-hidden={true}
+                            focusable={false}
+                            className="mr-3 h-3 w-3"
+                          />{' '}
+                          {link?.name}
                         </Link>
                       </Button>
                     </li>

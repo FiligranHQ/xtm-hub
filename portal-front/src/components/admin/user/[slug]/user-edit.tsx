@@ -42,13 +42,13 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });
   };
 
-  const defaultTrigger = <TriggerButton label={t('update')} />;
+  const defaultTrigger = <TriggerButton label={t('Utils.Update')} />;
   return (
     <UserFormSheet
       title={t('UserActions.UpdateUser')}

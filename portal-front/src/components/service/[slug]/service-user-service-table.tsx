@@ -2,9 +2,11 @@ import { Portal, portalContext } from '@/components/portal-context';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import { i18nKey } from '@/utils/datatable';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, Button, DataTable } from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import {
   FunctionComponent,
   ReactNode,
@@ -33,6 +35,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
   toolbar,
 }) => {
   const { me } = useContext<Portal>(portalContext);
+  const t = useTranslations();
   const [commitUserServiceDeletingMutation] =
     useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
 
@@ -62,22 +65,22 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
       {
         accessorKey: 'user.first_name',
         id: 'first_name',
-        header: 'First Name',
+        header: t('Service.Management.FirstName'),
       },
       {
         accessorKey: 'user.last_name',
         id: 'last_name',
-        header: 'Last Name',
+        header: t('Service.Management.LastName'),
       },
       {
         accessorKey: 'user.email',
         id: 'email',
-        header: 'Email',
+        header: t('Service.Management.Email'),
       },
       {
         accessorKey: 'service_capability_names',
         id: 'service_capability_names',
-        header: 'Capabilities',
+        header: t('Service.Capabilities.CapabilitiesTitle'),
         size: -1,
         enableSorting: false,
         cell: ({ row }) => {
@@ -112,7 +115,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                   icon={
                     <>
                       <MoreVertIcon className="h-4 w-4 text-primary" />
-                      <span className="sr-only">Open menu</span>
+                      <span className="sr-only">{t('Utils.OpenMenu')}</span>
                     </>
                   }>
                   <IconActionsButton
@@ -121,26 +124,27 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                       setCurrentUser(row.original);
                       setOpenSheet(true);
                     }}>
-                    Edit
+                    {t('Utils.Update')}
                   </IconActionsButton>
                   <AlertDialogComponent
-                    AlertTitle={'Remove access'}
-                    actionButtonText={'Remove rights'}
+                    AlertTitle={t('Service.Management.RemoveAccess')}
+                    actionButtonText={t('Service.Management.RemoveAccess')}
                     variantName={'destructive'}
                     triggerElement={
                       <Button
                         variant="ghost"
                         className="w-full justify-start normal-case"
-                        aria-label="Remove access">
-                        Delete
+                        aria-label={t('Service.Management.RemoveAccess')}>
+                        {t('Utils.Delete')}
                       </Button>
                     }
                     onClickContinue={() =>
                       deleteCurrentUser(row.original.user?.email ?? '')
                     }>
-                    Are you sure you want to remove the access for the user
-                    {row.original.user?.first_name}{' '}
-                    {row.original.user?.last_name} for this service ?
+                    {t('Service.Management.AreYouSureRemoveAccess', {
+                      firstname: row.original.user?.first_name,
+                      lastname: row.original.user?.last_name,
+                    })}
                   </AlertDialogComponent>
                 </IconActions>
               )}
@@ -154,6 +158,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
 
   return (
     <DataTable
+      i18nKey={i18nKey(t)}
       columns={columns}
       data={(subscription?.user_service as userService_fragment$data[]) ?? {}}
       toolbar={toolbar}

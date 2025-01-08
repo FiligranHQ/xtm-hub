@@ -148,10 +148,10 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('UserListPage.UserForm.Email')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Email"
+                      placeholder={t('UserListPage.UserForm.Email')}
                       {...field}
                     />
                   </FormControl>
@@ -165,11 +165,11 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{t('UserListPage.UserForm.Password')}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Password"
+                        placeholder={t('UserListPage.UserForm.Password')}
                         {...field}
                       />
                     </FormControl>
@@ -183,14 +183,14 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
               name="roles_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Roles</FormLabel>
+                  <FormLabel>{t('UserListPage.Roles')}</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
                       noResultString={t('Utils.NotFound')}
                       options={rolePortalData}
                       defaultValue={field.value}
                       onValueChange={field.onChange}
-                      placeholder="Select roles"
+                      placeholder={t('UserListPage.UserForm.SelectRoles')}
                       variant="inverted"
                     />
                   </FormControl>
@@ -206,14 +206,16 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
                 name="organizations"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organizations</FormLabel>
+                    <FormLabel>{t('UserListPage.Organizations')}</FormLabel>
                     <FormControl>
                       <MultiSelectFormField
                         noResultString={t('Utils.NotFound')}
                         options={orgData}
                         defaultValue={field.value}
                         onValueChange={field.onChange}
-                        placeholder="Select an organization"
+                        placeholder={t(
+                          'UserListPage.UserForm.SelectOrganization'
+                        )}
                         variant="inverted"
                       />
                     </FormControl>
@@ -225,12 +227,13 @@ export const UserFormSheet: FunctionComponent<UserFormSheetProps> = ({
 
             <SheetFooter className="pt-2">
               <SheetClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline">{t('Utils.Cancel')}</Button>
               </SheetClose>
               <Button
+                aria-label={t('Utils.ValidateForm')}
                 disabled={!form.formState.isDirty}
                 type="submit">
-                Validate
+                {t('Utils.Validate')}
               </Button>
             </SheetFooter>
           </form>

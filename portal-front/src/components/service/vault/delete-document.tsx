@@ -48,7 +48,7 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

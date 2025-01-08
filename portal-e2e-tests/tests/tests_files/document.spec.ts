@@ -36,7 +36,7 @@ test('should confirm CRUD of documents is OK', async ({ page }) => {
   // Delete ok
   await page.getByPlaceholder('Search with document name...').click();
   await page.getByPlaceholder('Search with document name...').fill('');
-  await page.getByRole('button', { name: 'Open menu' }).click();
+  await page.getByRole('cell', { name: 'Open menu' }).click();
   await page.getByText('Delete').click();
 
   await expect(
