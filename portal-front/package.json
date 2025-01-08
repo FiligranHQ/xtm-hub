@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"relay-compiler\" \"next dev -p 3001\"",
+    "dev": "concurrently \"relay-compiler\" \"NEXT_PUBLIC_APP_VERSION=0.0.0-dev next dev -p 3001\"",
     "build": "relay-compiler && next build",
     "check-ts": "tsc --noEmit",
     "check-ts-test": "tsc --project tsconfig.test.json",

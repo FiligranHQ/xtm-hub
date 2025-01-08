@@ -203,5 +203,8 @@
     "GoLastPage": "Go to last page",
     "Columns": "Columns",
     "ResetTable": "Reset table"
+  },
+  "Parameters": {
+    "Version": "Version"
   }
 }
