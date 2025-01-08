@@ -15,7 +15,7 @@ export const Parameters = () => {
   return (
     <>
       <h1 className="pb-s"></h1>
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-3">
         <Card className="w-1-3">
           <CardHeader>
             <CardTitle>XTM Hub</CardTitle>
