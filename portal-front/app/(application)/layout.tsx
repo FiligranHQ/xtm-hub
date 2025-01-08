@@ -19,10 +19,6 @@ import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '../../__generated__/meLoaderQuery.graphql';
-import meUserHasOrganizationWithSubscriptionNode, {
-  meUserHasOrganizationWithSubscription,
-  meUserHasOrganizationWithSubscription$data,
-} from '../../__generated__/meUserHasOrganizationWithSubscription.graphql';
 import PageLoader from './page-loader';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -52,17 +48,6 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
   const me = meData.me as unknown as meContext_fragment$data;
 
   if (me) {
-    // @ts-ignore
-    const { data }: { data: meUserHasOrganizationWithSubscription$data } =
-      await serverPortalApiFetch<
-        typeof meUserHasOrganizationWithSubscriptionNode,
-        meUserHasOrganizationWithSubscription
-      >(meUserHasOrganizationWithSubscriptionNode, {});
-
-    const userHasBypassCapability = me.capabilities.some(
-      (capability) => capability.name === 'BYPASS'
-    );
-
     return (
       <I18nContext>
         <AppContext>
