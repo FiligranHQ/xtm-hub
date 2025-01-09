@@ -10,7 +10,7 @@ import {
   ensureUserOrganizationExist,
   ensureUserRoleExist,
 } from '../server/initialize.helper';
-import { ForbiddenAccessError } from '../utils/error.util';
+import { ForbiddenAccess } from '../utils/error.util';
 import { isEmptyField } from '../utils/utils';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {
@@ -18,7 +18,7 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   // endregion
   const { email } = userInfo;
   if (isEmptyField(email)) {
-    throw ForbiddenAccessError('User email not provided');
+    throw ForbiddenAccess('User email not provided');
   }
 
   const user = await getOrCreateUser(userInfo);
