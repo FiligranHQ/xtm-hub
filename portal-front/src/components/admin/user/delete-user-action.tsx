@@ -32,10 +32,12 @@ export const DeleteUserAction: FunctionComponent<DeleteUserActionsProps> = ({
     setMenuOpen(false);
     deleteUserMutation({
       variables: { id, connections: [connectionID] },
-      onCompleted: () => {
+      onCompleted: (data) => {
         toast({
           title: 'Success',
-          description: t('UserActions.UserDeleted'),
+          description: t('UserActions.UserDeleted', {
+            email: data?.deleteUser?.email,
+          }),
         });
       },
       onError: (error) => {

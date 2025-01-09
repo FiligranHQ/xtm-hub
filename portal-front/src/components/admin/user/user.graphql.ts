@@ -21,6 +21,7 @@ export const userDeletion = graphql`
   mutation userDeletionMutation($connections: [ID!]!, $id: ID!) {
     deleteUser(id: $id) {
       id @deleteEdge(connections: $connections)
+      email
     }
   }
 `;
@@ -51,6 +52,19 @@ export const userSlugSubscription = graphql`
       }
       delete {
         id @deleteRecord
+      }
+    }
+  }
+`;
+
+export const userMeSubscription = graphql`
+  subscription userMeSubscription {
+    MeUser {
+      delete {
+        id
+      }
+      edit {
+        ...meContext_fragment @relay(mask: false)
       }
     }
   }

@@ -145,7 +145,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-xs">
-            {row.original.roles_portal.map(({ id, name }) => (
+            {row.original.roles_portal?.map(({ id, name }) => (
               <Badge key={id}>{name}</Badge>
             ))}
           </div>

@@ -199,7 +199,13 @@
     "NotFound": "Not found"
   },
   "DeleteUserDialog": {
-    "TextDeleteThisUser": "Are you sure you want to delete this user {email} ?"
+    "TextDeleteThisUser": "Are you sure you want to delete this user {email} ?",
+    "TextDeletedUser": "Your account has been deleted by an administrator. You have been logout.",
+    "TextDeletedUserTitle": "Account deleted!"
+  },
+  "UpdateUserDialog": {
+    "TextUpdatedUser": "Your account has been modified by an administrator. The behaviour of the app may change.",
+    "TextUpdatedUserTitle": "Account modified!"
   },
   "RemoveUserOrgDialog": {
     "TextRemoveThisUser": "Are you sure you want to remove this user {email} from your organization ?"
@@ -229,7 +235,7 @@
     "RemoveUser": "Remove user",
     "UserCreated": "User {email} has been created",
     "UserUpdated": "User {email} has been modified",
-    "UserDeleted": "User has been deleted",
+    "UserDeleted": "User {email} has been deleted",
     "SearchUserWithEmail": "Search user with email..."
   },
   "OrganizationForm": {
