@@ -143,7 +143,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: <>{t(`Error.Server.${error.message}`)}</>,
         });
       },
     });
@@ -205,9 +205,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             setOpen={setOpenSheetAddOrga}
             serviceId={serviceId}
             trigger={
-              <Button
-                variant="outline"
-                aria-label={t('Service.SubscribeOrganization')}>
+              <Button variant="outline">
                 {t('Service.SubscribeOrganization')}
               </Button>
             }
@@ -225,7 +223,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             trigger={
               <TriggerButton
                 onClick={() => setCurrentUser({})}
-                label={t('Service.InviteUser')}
+                label={t('Service.Management.InviteUser.TitleInviteUser')}
               />
             }
           />

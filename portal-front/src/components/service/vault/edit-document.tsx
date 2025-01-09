@@ -54,7 +54,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });
@@ -70,7 +70,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
             onClick={(e) => e.stopPropagation()}
             variant="ghost"
             className="w-full justify-start normal-case"
-            aria-label="Update document">
+            aria-label={t('VaultActions.UpdateDocument')}>
             {t('Utils.Update')}
           </Button>
         }

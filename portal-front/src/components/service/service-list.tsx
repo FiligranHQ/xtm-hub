@@ -63,15 +63,15 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     (service: serviceList_fragment$data) => {
       const handleSuccess = (message: string) => {
         toast({
-          title: 'Success',
+          title: t('Utils.Success'),
           description: <>{message}</>,
         });
       };
       const handleError = (error: Error) => {
         toast({
           variant: 'destructive',
-          title: 'Error',
-          description: <>{error.message}</>,
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${error.message}`)}</>,
         });
       };
 
@@ -125,9 +125,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
                           AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
                           actionButtonText={t('Utils.Continue')}
                           triggerElement={
-                            <Button
-                              onClick={(e) => e.stopPropagation()}
-                              aria-label="Subscribe service">
+                            <Button onClick={(e) => e.stopPropagation()}>
                               {t('Service.Subscribe')}
                             </Button>
                           }

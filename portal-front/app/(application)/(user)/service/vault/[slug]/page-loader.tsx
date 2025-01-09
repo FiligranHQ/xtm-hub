@@ -5,6 +5,7 @@ import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import { DocumentsListQuery } from '@/components/service/vault/document.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui';
@@ -94,6 +95,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
         />
       ) : (
         <DataTable
+          i18nKey={i18nKey(t)}
           data={[]}
           columns={columns}
           isLoading={true}

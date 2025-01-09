@@ -50,7 +50,7 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

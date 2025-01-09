@@ -30,36 +30,31 @@ export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
         });
       },
       onError: (error) => {
-        const message = error.message.includes(
-          'violates foreign key constraint "user_organization_id_foreign" on table "User"'
-        )
-          ? 'The organization could not be deleted because at least one user is affiliated with it. Delete the user(s) first. '
-          : error.message;
-
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{message}</>,
+          description: <>{t(`Error.Server.${error.message}`)}</>,
         });
       },
     });
   };
   return (
     <AlertDialogComponent
-      actionButtonText={'Delete'}
+      actionButtonText={t('Utils.Delete')}
       variantName={'destructive'}
-      AlertTitle={'Delete organization'}
+      AlertTitle={t('OrganizationForm.DeleteOrganization')}
       triggerElement={
         <Button
           variant="ghost"
           className="w-full justify-start normal-case"
-          aria-label="Delete Organization">
-          Delete
+          aria-label={t('OrganizationForm.DeleteOrganization')}>
+          {t('Utils.Delete')}
         </Button>
       }
       onClickContinue={() => onDeletedOrganization(organization.id)}>
-      Are you sure you want to delete this organization {organization.name}?
-      This action can not be undone.
+      {t('OrganizationForm.SureDeleteOrganization', {
+        organizationName: organization.name,
+      })}
     </AlertDialogComponent>
   );
 };

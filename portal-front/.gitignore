@@ -39,11 +39,6 @@ next-env.d.ts
 
 # Yarn
 .yarn/*
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
 .pnp.*
 /test-results/
 /playwright-report/

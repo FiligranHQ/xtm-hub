@@ -36,7 +36,11 @@ const OpenedMenuAdmin = () => {
         value="item-1">
         <AccordionTrigger className="h-9 px-m py-s hover:bg-hover hover:no-underline">
           <span className="flex w-8 flex-shrink-0 justify-center">
-            <SettingsIcon className="h-4 w-4" />
+            <SettingsIcon
+              aria-hidden={true}
+              focusable={false}
+              className="h-4 w-4"
+            />
           </span>
           <span className="flex-1 px-s text-left txt-default">
             {t('MenuLinks.Settings')}
@@ -73,7 +77,11 @@ const ClosedMenuAdmin = () => {
           )}
           aria-label={t('MenuLinks.SettingsLabel')}>
           <span className="flex w-8 flex-shrink-0 justify-center">
-            <SettingsIcon className="h-4 w-4" />
+            <SettingsIcon
+              aria-hidden={true}
+              focusable={false}
+              className="h-4 w-4"
+            />
           </span>
         </Button>
       </PopoverTrigger>
@@ -91,6 +99,10 @@ const ClosedMenuAdmin = () => {
 };
 
 const adminLinksData = (t: UseTranslationsProps) => [
+  {
+    href: '/admin/parameters',
+    label: t('MenuLinks.Parameters'),
+  },
   {
     href: '/admin/user',
     label: t('MenuLinks.Users'),
