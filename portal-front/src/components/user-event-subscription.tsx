@@ -49,9 +49,9 @@ const UserEventSubscription: React.FunctionComponent<UserEventProps> = ({
       subscription: userMeSubscription,
       variables: {},
       onNext: (data: userMeSubscription$data | null | undefined) => {
-        if (data?.MeUser?.edit?.id === me?.id) {
+        if (data?.MeUser?.edit) {
           setIsOpen(true);
-        } else if (data?.MeUser?.delete?.id === me?.id) {
+        } else if (data?.MeUser?.delete) {
           logout();
         }
       },
@@ -62,7 +62,7 @@ const UserEventSubscription: React.FunctionComponent<UserEventProps> = ({
       isOpen={isOpen}
       onOpenChange={setIsOpen}
       AlertTitle={t('UpdateUserDialog.TextUpdatedUserTitle')}
-      onClickContinue={logout}
+      onClickContinue={() => {}}
       displayCancelButton={false}
       actionButtonText={t('Utils.Continue')}>
       <p>{t('UpdateUserDialog.TextUpdatedUser')}</p>

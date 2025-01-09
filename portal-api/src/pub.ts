@@ -34,8 +34,8 @@ export const listen = (context: PortalContext, topics: string[]) => {
     if (!payload) return false;
 
     const values = Object.values(event);
-    const isAccessible = await isNodeAccessible(context.user, values[0]);
 
+    const isAccessible = await isNodeAccessible(context.user, topic, values[0]);
     return isAccessible;
   };
   return withFilter(iteratorFn, filterFn)();

@@ -11,7 +11,7 @@ import {
   buttonVariants,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, ReactNode, useState } from 'react';
+import { FunctionComponent, ReactNode } from 'react';
 
 interface AlertDialogProps {
   triggerElement?: ReactNode;
@@ -71,20 +71,14 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
   variantName = 'default',
 }) => {
   const t = useTranslations();
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const isOpened = isOpen ?? internalIsOpen;
-  const handleOpenChange = (open: boolean) => {
-    if (onOpenChange) {
-      onOpenChange(open);
-    } else {
-      setInternalIsOpen(open);
-    }
-  };
+
   return (
     <AlertDialog
-      open={isOpened}
-      onOpenChange={handleOpenChange}>
-      <AlertDialogTrigger asChild>{triggerElement}</AlertDialogTrigger>
+      open={isOpen}
+      onOpenChange={onOpenChange}>
+      {triggerElement && (
+        <AlertDialogTrigger asChild>{triggerElement}</AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{AlertTitle}</AlertDialogTitle>
@@ -95,15 +89,10 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
         {children}
         <AlertDialogFooter>
           {displayCancelButton && (
-            <AlertDialogCancel onClick={() => handleOpenChange(false)}>
-              {t('Utils.Cancel')}
-            </AlertDialogCancel>
+            <AlertDialogCancel>{t('Utils.Cancel')}</AlertDialogCancel>
           )}
           <AlertDialogAction
-            onClick={() => {
-              onClickContinue();
-              handleOpenChange(false);
-            }}
+            onClick={onClickContinue}
             className={buttonVariants({ variant: variantName })}>
             {actionButtonText}
           </AlertDialogAction>
