@@ -497,6 +497,7 @@ export type Service = Node & {
   public?: Maybe<Scalars['Boolean']['output']>;
   subscribed?: Maybe<Scalars['Boolean']['output']>;
   subscriptions?: Maybe<Array<Maybe<Subscription>>>;
+  tags?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1101,6 +1102,7 @@ export type ServiceResolvers<ContextType = PortalContext, ParentType extends Res
   public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   subscriptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

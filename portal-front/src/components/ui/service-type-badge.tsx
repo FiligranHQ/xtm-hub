@@ -4,17 +4,21 @@ import { FunctionComponent } from 'react';
 
 export type ServiceTypeBadge = 'COMMUNITY' | 'Intel' | 'Feed' | 'Analysis';
 
+const BADGE_COLORS = {
+  COMMUNITY: 'text-green',
+  Intel: 'text-orange',
+  Feed: 'text-yellow-500',
+  Analysis: 'text-turquoise',
+};
+
 interface ServiceTypeBadgeProps {
   type: ServiceTypeBadge;
+  label: string;
 }
+
 export const ServiceTypeBadge: FunctionComponent<ServiceTypeBadgeProps> = ({
   type,
+  label,
 }) => {
-  const badgeColor = {
-    COMMUNITY: 'text-green',
-    Intel: 'text-orange',
-    Feed: 'text-yellow-500',
-    Analysis: 'text-turquoise',
-  };
-  return <Badge className={cn('uppercase', badgeColor[type])}>{type}</Badge>;
+  return <Badge className={cn('uppercase', BADGE_COLORS[type])}>{label}</Badge>;
 };

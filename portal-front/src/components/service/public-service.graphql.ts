@@ -15,6 +15,10 @@ export const publicServiceListFragment = graphql`
         node {
           id
           ...serviceList_fragment @relay(mask: false)
+          links {
+            name
+            url
+          }
         }
       }
     }

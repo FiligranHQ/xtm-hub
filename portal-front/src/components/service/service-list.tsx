@@ -10,7 +10,9 @@ import { subscription } from '@/components/service/service.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { Button, useToast } from 'filigran-ui';
+import { LinkIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import * as React from 'react';
 import { useCallback, useMemo } from 'react';
 import {
@@ -22,8 +24,8 @@ import {
 } from 'react-relay';
 import { publicServiceList_services$key } from '../../../__generated__/publicServiceList_services.graphql';
 import { publicServiceQuery } from '../../../__generated__/publicServiceQuery.graphql';
-import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
 import { subscriptionCreateMutation } from '../../../__generated__/subscriptionCreateMutation.graphql';
+import type { PublicService } from './service.const';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<publicServiceQuery>;
@@ -41,7 +43,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     publicServiceListQuery,
     queryRef
   );
-  const [data, refetch] = useRefetchableFragment<
+  const [data] = useRefetchableFragment<
     publicServiceQuery,
     publicServiceList_services$key
   >(publicServiceListFragment, queryData);
@@ -60,7 +62,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
 
   const addSubscriptionInDb = useCallback(
-    (service: serviceList_fragment$data) => {
+    (service: PublicService) => {
       const handleSuccess = (message: string) => {
         toast({
           title: t('Utils.Success'),
@@ -98,9 +100,50 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     [connectionID]
   );
 
-  const servicesData = data.publicServices.edges.map(
+  const servicesData: PublicService[] = data.publicServices.edges.map(
     ({ node }) => node
-  ) as serviceList_fragment$data[];
+  );
+
+  const getAction = (service: PublicService) => {
+    if (!service.public) {
+      return service.subscribed ||
+        service.type === 'COMMUNITY' ||
+        service.join_type !== JOIN_TYPE.JOIN_SELF ? null : (
+        <AlertDialogComponent
+          AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
+          actionButtonText={t('Utils.Continue')}
+          triggerElement={
+            <Button onClick={(e) => e.stopPropagation()}>
+              {t('Service.Subscribe')}
+            </Button>
+          }
+          onClickContinue={() => addSubscriptionInDb(service)}>
+          {t('Service.SureWantSubscriptionDirect')}
+        </AlertDialogComponent>
+      );
+    } else {
+      if (service.type === 'link') {
+        const name = service.links?.[0]?.name;
+        const url = service.links?.[0]?.url;
+        if (name && url)
+          return (
+            <Button
+              className={'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800'}
+              asChild
+              variant={'ghost'}>
+              <Link href={url}>
+                <LinkIcon
+                  aria-hidden={true}
+                  focusable={false}
+                  className="mr-3 h-3 w-3"
+                />
+                {name}
+              </Link>
+            </Button>
+          );
+      }
+    }
+  };
 
   return (
     <>
@@ -111,30 +154,14 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
             className={
               'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'
             }>
-            {servicesData.map((service: serviceList_fragment$data) => {
+            {servicesData.map((service) => {
               return (
                 !service.subscribed && (
                   <ServiceCard
                     key={service.id}
-                    bottomLeftAction={
-                      service.subscribed ||
-                      service.type === 'COMMUNITY' ||
-                      !service.public ||
-                      service.join_type !== JOIN_TYPE.JOIN_SELF ? null : (
-                        <AlertDialogComponent
-                          AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
-                          actionButtonText={t('Utils.Continue')}
-                          triggerElement={
-                            <Button onClick={(e) => e.stopPropagation()}>
-                              {t('Service.Subscribe')}
-                            </Button>
-                          }
-                          onClickContinue={() => addSubscriptionInDb(service)}>
-                          {t('Service.SureWantSubscriptionDirect')}
-                        </AlertDialogComponent>
-                      )
-                    }
+                    bottomLeftAction={getAction(service)}
                     service={service}
+                    serviceLink={service.links?.[0]?.url}
                   />
                 )
               );

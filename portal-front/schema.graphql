@@ -165,6 +165,7 @@ type Service implements Node {
   capabilities: [String!]
   public: Boolean
   join_type: String
+  tags: String
 }
 
 type ServiceEdge {
