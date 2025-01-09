@@ -1,15 +1,27 @@
 import { createError } from 'apollo-errors';
 import { logApp } from './app-logger.util';
+
 enum ErrorCategory {
-  BAD_REQUEST = 'BAD_REQUEST',
-  CONFLICT = 'CONFLICT',
-  TECHNICAL = 'TECHNICAL',
+  BadRequest = 'BAD_REQUEST',
+  Conflict = 'CONFLICT',
+  Technical = 'TECHNICAL',
+}
+
+export enum ErrorType {
+  ForbiddenAccess = 'FORBIDDEN_ACCESS',
+  UnknownError = 'UNKNOWN_ERROR',
+  StillReference = 'STILL_REFERENCED',
+  AlreadyExists = 'ALREADY_EXISTS',
+  NotFound = 'NOT_FOUND',
 }
 
 const errorUtil = (
-  name: string,
+  name: ErrorType,
   message: string,
-  data: Record<string, unknown>
+  data: Record<string, unknown> & {
+    genre?: ErrorCategory;
+    http_status?: number;
+  }
 ) => {
   const Exception = createError(name, { data, message });
   return new Exception();
@@ -24,11 +36,11 @@ export const ForbiddenAccess = (
   data?: Record<string, unknown>
 ) => {
   return errorUtil(
-    FORBIDDEN_ACCESS,
+    ErrorType.ForbiddenAccess,
     message || 'You are not allowed to do this.',
     {
       http_status: 403,
-      genre: ErrorCategory.TECHNICAL,
+      genre: ErrorCategory.Technical,
       ...data,
     }
   );
@@ -40,11 +52,15 @@ export const UnknownError = (
   data?: Record<string, unknown>
 ) => {
   logApp.error(message + ' details: ' + details);
-  return errorUtil(UNKNOWN_ERROR, message || 'An unknown error has occurred', {
-    http_status: 500,
-    genre: ErrorCategory.TECHNICAL,
-    ...data,
-  });
+  return errorUtil(
+    ErrorType.UnknownError,
+    message || 'An unknown error has occurred',
+    {
+      http_status: 500,
+      genre: ErrorCategory.Technical,
+      ...data,
+    }
+  );
 };
 
 export const StillReferencedError = (
@@ -54,9 +70,9 @@ export const StillReferencedError = (
 ) => {
   logApp.error(message + ' details: ' + details);
 
-  return errorUtil(STILL_REFERENCED, message, {
+  return errorUtil(ErrorType.StillReference, message, {
     http_status: 200,
-    genre: ErrorCategory.CONFLICT,
+    genre: ErrorCategory.Conflict,
     ...data,
   });
 };
@@ -68,9 +84,9 @@ export const AlreadyExistsError = (
 ) => {
   logApp.error(message + ' details: ' + details);
 
-  return errorUtil(ALREADY_EXISTS, message, {
+  return errorUtil(ErrorType.AlreadyExists, message, {
     http_status: 200,
-    genre: ErrorCategory.CONFLICT,
+    genre: ErrorCategory.Conflict,
     ...data,
   });
 };
@@ -82,9 +98,9 @@ export const NotFoundError = (
 ) => {
   logApp.error(message + ' details: ' + details);
 
-  return errorUtil(NOT_FOUND, message, {
+  return errorUtil(ErrorType.NotFound, message, {
     http_status: 200,
-    genre: ErrorCategory.BAD_REQUEST,
+    genre: ErrorCategory.BadRequest,
     ...data,
   });
 };
