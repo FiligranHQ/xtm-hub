@@ -234,7 +234,7 @@
     "RemoveUser": "Remove user",
     "UserCreated": "User {email} has been created",
     "UserUpdated": "User {email} has been modified",
-    "UserDeleted": "User has been deleted",
+    "UserDeleted": "User {email} has been deleted",
     "SearchUserWithEmail": "Search user with email..."
   },
   "OrganizationForm": {

@@ -1,5 +1,5 @@
+import { Knex } from 'knex';
 import { PortalContext } from '../model/portal-context';
-
 export const setQueryForDocument = <T>(
   context: PortalContext,
   queryContext: Knex.QueryBuilder<T>

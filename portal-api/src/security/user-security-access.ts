@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import { ActionType } from '../../knexfile';
 import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
@@ -6,13 +7,13 @@ import { TypedNode } from '../pub';
 import { isUserGranted } from './access';
 
 // Used to check access in SSE
-export const checkIsNodeAccessibleMeUser = (
-  user: UserLoadUserBy,
-  data: { [action in ActionType]: TypedNode }
-) => {
+export const meUserSSESecurity = (opt: {
+  user: UserLoadUserBy;
+  data: { [action in ActionType]: TypedNode };
+}) => {
   const actions = ['delete', 'edit'];
   for (const action of actions) {
-    if (data[action]?.id === user.id) {
+    if (opt.data[action]?.id === opt.user.id) {
       return true;
     }
   }
@@ -21,11 +22,11 @@ export const checkIsNodeAccessibleMeUser = (
 
 // Used to check access in SSE
 
-export const checkIsNodeAccessibleUser = (user: UserLoadUserBy) => {
-  if (isUserGranted(user, CAPABILITY_BYPASS)) {
+export const userSSESecurity = (opt: { user: UserLoadUserBy }) => {
+  if (isUserGranted(opt.user, CAPABILITY_BYPASS)) {
     return true;
   }
-  return isUserGranted(user, CAPABILITY_FRT_MANAGE_USER);
+  return isUserGranted(opt.user, CAPABILITY_FRT_MANAGE_USER);
 };
 
 export const setQueryForUser = <T>(

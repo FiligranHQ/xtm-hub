@@ -62,11 +62,13 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const onDeleteUser = (user: userSlug_fragment$data): void => {
     deleteUserMutation({
       variables: { id: user.id, connections },
-      onCompleted: () => {
+      onCompleted: (data) => {
         router.replace('/admin/user');
         toast({
           title: t('Utils.Success'),
-          description: t('UserActions.UserDeleted'),
+          description: t('UserActions.UserDeleted', {
+            email: data?.deleteUser?.email,
+          }),
         });
       },
       onError: (error) => {

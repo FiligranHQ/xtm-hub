@@ -21,6 +21,7 @@ export const userDeletion = graphql`
   mutation userDeletionMutation($connections: [ID!]!, $id: ID!) {
     deleteUser(id: $id) {
       id @deleteEdge(connections: $connections)
+      email
     }
   }
 `;

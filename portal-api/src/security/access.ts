@@ -8,9 +8,9 @@ import { TypedNode } from '../pub';
 import { UserLoadUserBy } from '../model/user';
 import { setQueryForDocument } from './document-security-access';
 import {
-  checkIsNodeAccessibleMeUser,
-  checkIsNodeAccessibleUser,
+  meUserSSESecurity,
   setQueryForUser,
+  userSSESecurity,
 } from './user-security-access';
 
 export const isUserGranted = (
@@ -29,16 +29,16 @@ export const isUserGranted = (
  * Data event must be consistent to provide all information needed to infer security access.
  */
 
-export const checkIsNodeAccessible = (
-  user: UserLoadUserBy,
-  data: { [action in ActionType]: TypedNode },
-  type: string,
-  topic: string
-) => {
-  if (isUserGranted(user, CAPABILITY_BYPASS)) {
+export const applySSESecurity = (opt: {
+  user: UserLoadUserBy;
+  data: { [action in ActionType]: TypedNode };
+  type: string;
+  topic: string;
+}) => {
+  if (isUserGranted(opt.user, CAPABILITY_BYPASS)) {
     return true;
   }
-  if (type === topic) {
+  if (opt.type === opt.topic) {
     return true;
   }
   return false;
@@ -55,32 +55,25 @@ export const isNodeAccessible = async (
     // Event can only be setup to one action
     throw new Error('Invalid action size', { cause: data });
   }
-  type AccessibilityChecker = (
-    user: UserLoadUserBy,
-    data?: { [action in ActionType]: TypedNode },
-    type?: string,
-    topic?: string
-  ) => boolean;
+  type AccessibilityChecker = (opt: {
+    user: UserLoadUserBy;
+    data?: { [action in ActionType]: TypedNode };
+    type?: string;
+    topic?: string;
+  }) => boolean;
 
   const mapping: Partial<Record<AccessibleTopics, AccessibilityChecker>> = {
-    Service: checkIsNodeAccessible,
-    Service_Price: checkIsNodeAccessible,
-    Service_Link: checkIsNodeAccessible,
-    User_Service: checkIsNodeAccessible,
-    Service_Capability: checkIsNodeAccessible,
-    ActionTracking: checkIsNodeAccessible,
-    Document: checkIsNodeAccessible,
-    User: checkIsNodeAccessibleUser,
-    MeUser: checkIsNodeAccessibleMeUser,
+    User: userSSESecurity,
+    MeUser: meUserSSESecurity,
   };
   const node = Object.values(data)[0];
   const type = node.__typename;
 
-  const selectedFunction = mapping[topic];
+  const selectedFunction = mapping[topic] || applySSESecurity;
   if (!selectedFunction) {
     throw new Error(`Security behavior must be defined for type ${type}`);
   }
-  return selectedFunction(user, data, type, topic);
+  return selectedFunction({ user, data, type, topic });
 };
 
 export const setQuery = <T>(
@@ -115,21 +108,9 @@ export const applyDbSecurity = <T>(
   const mapping: Partial<Record<DatabaseType, AccessibilityChecker>> = {
     Document: setQueryForDocument,
     User: setQueryForUser,
-    Service: setQuery,
-    RolePortal: setQuery,
-    Subscription: setQuery,
-    Service_Price: setQuery,
-    Service_Link: setQuery,
-    User_Service: setQuery,
-    Service_Capability: setQuery,
-    MalwareAnalysis: setQuery,
-    Organization: setQuery,
-    ActionTracking: setQuery,
-    User_Organization: setQuery,
-    User_RolePortal: setQuery,
   };
 
-  const selectedFunction = mapping[type];
+  const selectedFunction = mapping[type] || setQuery;
   if (!selectedFunction) {
     throw new Error(`Security behavior must be defined for type ${type}`);
   }
