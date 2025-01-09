@@ -19,7 +19,7 @@ export const LoginLayout: FunctionComponent<LoginLayoutProps> = ({
 }) => {
   const data = usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
   const router = useRouter();
-  const { redirect } = useDecodedQuery();
+  const { redirect, error } = useDecodedQuery();
   const currentPath = usePathname();
   const { toast } = useToast();
   const t = useTranslations();
@@ -31,6 +31,13 @@ export const LoginLayout: FunctionComponent<LoginLayoutProps> = ({
         variant: 'destructive',
         title: t('Utils.Error'),
         description: t('Error.Disconnected'),
+      });
+    }
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: t('DeleteUserDialog.TextDeletedUserTitle'),
+        description: t('DeleteUserDialog.TextDeletedUser'),
       });
     }
   }, [currentPath]);

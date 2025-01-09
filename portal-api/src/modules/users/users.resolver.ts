@@ -150,6 +150,7 @@ const resolvers: Resolvers = {
         });
 
         await dispatch('User', 'edit', user);
+        await dispatch('MeUser', 'edit', user, 'User');
         await trx.commit();
         return user;
       } catch (error) {
@@ -166,7 +167,8 @@ const resolvers: Resolvers = {
       try {
         const deletedUser = await removeUser(context, { id: id as UserId });
 
-        await dispatch('User', 'delete', deletedUser);
+      await dispatch('User', 'delete', deletedUser);
+      await dispatch('MeUser', 'delete', deletedUser, 'User');
         return deletedUser as User;
       } catch (error) {
         throw UnknownError('DELETE_USER_ERROR', {
@@ -232,6 +234,11 @@ const resolvers: Resolvers = {
     User: {
       subscribe: (_, __, context) => ({
         [Symbol.asyncIterator]: () => listen(context, ['User']),
+      }),
+    },
+    MeUser: {
+      subscribe: (_, __, context) => ({
+        [Symbol.asyncIterator]: () => listen(context, ['MeUser']),
       }),
     },
   },

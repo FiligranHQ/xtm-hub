@@ -12,6 +12,7 @@ export const EmptyServicesRedirect = () => {
 
     return () => clearTimeout(timer); // Cleanup the timer on component unmount
   }, []);
+
   return (
     <section className="center flex flex-col items-center gap-s pt-[2vh]">
       <h2> {t('HomePage.Welcome')} 🎉</h2>

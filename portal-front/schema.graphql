@@ -203,6 +203,7 @@ type Subscription implements Node {
   user_service: [UserService]!
   ActionTracking: TrackingSubscription
   User: UserSubscription
+  MeUser: MeUserSubscription
 }
 
 type PlatformProvider {
@@ -378,6 +379,11 @@ type UserSubscription {
   edit: User
   delete: User
   merge: MergeEvent
+}
+
+type MeUserSubscription {
+  edit: User
+  delete: User
 }
 
 enum Restriction {

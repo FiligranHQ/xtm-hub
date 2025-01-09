@@ -84,6 +84,12 @@ type UserSubscription {
   merge: MergeEvent
 }
 
+type MeUserSubscription {
+  edit: User
+  delete: User
+}
+
 type Subscription {
   User: UserSubscription @auth
+  MeUser: MeUserSubscription @auth
 }
