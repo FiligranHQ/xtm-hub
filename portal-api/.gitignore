@@ -15,11 +15,6 @@ __pycache__
 
 # Yarn
 .yarn/*
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
 .pnp.*
 
 /config/local*.json
