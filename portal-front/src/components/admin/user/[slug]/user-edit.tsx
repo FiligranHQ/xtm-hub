@@ -1,6 +1,10 @@
-import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
-import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
+import { UserForm } from '@/components/admin/user/user-form';
+import {
+  userEditFormSchema,
+  userFormSchema,
+} from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -50,14 +54,16 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
 
   const defaultTrigger = <TriggerButton label={t('Utils.Update')} />;
   return (
-    <UserFormSheet
+    <SheetWithPreventingDialog
       title={t('UserActions.UpdateUser')}
-      handleSubmit={handleSubmit}
       open={openSheet}
       setOpen={setOpenSheet}
-      user={user}
-      validationSchema={userEditFormSchema}
-      trigger={trigger ?? defaultTrigger}
-    />
+      trigger={trigger ?? defaultTrigger}>
+      <UserForm
+        handleSubmit={handleSubmit}
+        user={user}
+        validationSchema={userFormSchema}
+      />
+    </SheetWithPreventingDialog>
   );
 };

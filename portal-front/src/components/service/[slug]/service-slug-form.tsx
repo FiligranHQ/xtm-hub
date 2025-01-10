@@ -3,10 +3,10 @@ import {
   UserListQuery,
 } from '@/components/admin/user/user-list';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
-import { Portal, portalContext } from '@/components/portal-context';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { ServiceDescribeCapabilitiesSheet } from '@/components/service/[slug]/service-describe-capabilities';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
+import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,26 +20,13 @@ import {
   FormLabel,
   FormMessage,
   MultiSelectFormField,
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
   SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
   Tag,
   TagInput,
   useToast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import {
-  FunctionComponent,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   useLazyLoadQuery,
@@ -57,9 +44,6 @@ import {
 import { userServiceCreateMutation } from '../../../../__generated__/userServiceCreateMutation.graphql';
 
 interface ServiceSlugFormSheetProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  trigger: ReactNode;
   connectionId: string;
   userService: any;
   subscription: subscriptionWithUserService_fragment$data;
@@ -69,24 +53,19 @@ interface ServiceSlugFormSheetProps {
   }[];
 }
 
-export const ServiceSlugFormSheet: FunctionComponent<
-  ServiceSlugFormSheetProps
-> = ({
-  open,
-  setOpen,
-  trigger,
+export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   connectionId,
   userService,
   subscription,
   dataOrganizationsTab,
 }) => {
+  const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const [commitServiceCapabilityMutation] =
     useMutation<serviceCapabilityMutation>(ServiceCapabilityCreateMutation);
   const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
     UserServiceCreateMutation
   );
   const { slug } = useDecodedParams();
-  const { me } = useContext<Portal>(portalContext);
   const { toast } = useToast();
   const t = useTranslations();
 
@@ -131,6 +110,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
       organizationId: subscription?.organization?.id,
     },
   });
+  setIsDirty(form.formState.isDirty);
 
   useEffect(() => {
     form.reset({
@@ -156,6 +136,7 @@ export const ServiceSlugFormSheet: FunctionComponent<
               email: userService.user.email,
             }),
           });
+          setOpenSheet(false);
         },
         onError(error) {
           toast({
@@ -181,7 +162,9 @@ export const ServiceSlugFormSheet: FunctionComponent<
             title: t('Utils.Success'),
             description: `${values.email[0].text} ${t('Utils.Modified')}`,
           });
+          setOpenSheet(false);
         },
+
         onError(error) {
           toast({
             variant: 'destructive',
@@ -191,7 +174,6 @@ export const ServiceSlugFormSheet: FunctionComponent<
         },
       });
     }
-    setOpen(false);
   };
 
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
@@ -239,125 +221,108 @@ export const ServiceSlugFormSheet: FunctionComponent<
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   return (
-    <Sheet
-      key={'right'}
-      open={open}
-      onOpenChange={setOpen}>
-      <SheetTrigger asChild>{trigger}</SheetTrigger>
-      <SheetContent side={'right'}>
-        <SheetHeader className="bg-page-background">
-          <SheetTitle>
-            {t('Service.Management.InviteUser.InviteUser')}
-          </SheetTitle>
-          <SheetDescription>
-            {t('Service.Management.InviteUser.InviteUserSubtitle')}
-          </SheetDescription>
-        </SheetHeader>
-        <Form {...form}>
-          <form
-            className="space-y-xl"
-            onSubmit={form.handleSubmit(onSubmit)}>
-            {userService.id ? (
-              <></>
-            ) : (
-              <>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('Service.Management.Email')}</FormLabel>
-                      <FormControl>
-                        <TagInput
-                          {...field}
-                          placeholder={t('Service.Management.Email')}
-                          tags={tags}
-                          activeTagIndex={activeTagIndex}
-                          setActiveTagIndex={setActiveTagIndex}
-                          enableAutocomplete={true}
-                          autocompleteOptions={tagsAutocomplete}
-                          maxTags={1}
-                          validateTag={(tag: string) => !!tag.match(emailRegex)}
-                          placeholderWhenFull={t(
-                            'Service.Management.OneUserMax'
-                          )}
-                          setTags={(newTags) => {
-                            setTags(newTags);
-                            setValue('email', newTags as Tag[]);
-                          }}
-                          onInputChange={handleInputChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="organizationId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t('Service.Management.InviteUser.Organization')}
-                      </FormLabel>
-                      <FormControl>
-                        <Combobox
-                          dataTab={dataOrganizationsTab}
-                          order={t(
-                            'OrganizationInServiceAction.SelectOrganization'
-                          )}
-                          placeholder={t(
-                            'OrganizationInServiceAction.SelectOrganization'
-                          )}
-                          emptyCommand={t('Utils.NotFound')}
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          onInputChange={() => {}}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
+    <Form {...form}>
+      <form
+        className="space-y-xl"
+        onSubmit={form.handleSubmit(onSubmit)}>
+        {!userService.id && (
+          <>
             <FormField
               control={form.control}
-              name="capabilities"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t('Service.Capabilities.CapabilitiesTitle')}
-                  </FormLabel>
+                  <FormLabel>={t('InviteUserServiceForm.Email')}</FormLabel>
                   <FormControl>
-                    <MultiSelectFormField
-                      noResultString={t('Utils.NotFound')}
-                      options={capabilitiesData}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      placeholder={t('Service.Capabilities.SelectCapabilities')}
-                      variant="inverted"
+                    <TagInput
+                      {...field}
+                      placeholder={t('Service.Management.Email')}
+                      tags={tags}
+                      activeTagIndex={activeTagIndex}
+                      setActiveTagIndex={setActiveTagIndex}
+                      enableAutocomplete={true}
+                      autocompleteOptions={tagsAutocomplete}
+                      maxTags={1}
+                      validateTag={(tag: string) => !!tag.match(emailRegex)}
+                      placeholderWhenFull={t('Service.Management.OneUserMax')}
+                      setTags={(newTags) => {
+                        setTags(newTags);
+                        setValue('email', newTags as Tag[]);
+                      }}
+                      onInputChange={handleInputChange}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <SheetFooter className="pt-2">
-              <SheetClose asChild>
-                <Button variant="outline">{t('Utils.Cancel')}</Button>
-              </SheetClose>
-              <Button
-                disabled={!form.formState.isDirty}
-                type="submit">
-                {t('Utils.Validate')}
-              </Button>
-            </SheetFooter>
-            <ServiceDescribeCapabilitiesSheet />
-          </form>
-        </Form>
-      </SheetContent>
-    </Sheet>
+
+            <FormField
+              control={form.control}
+              name="organizationId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('InviteUserServiceForm.Organization')}
+                  </FormLabel>
+                  <FormControl>
+                    <Combobox
+                      dataTab={dataOrganizationsTab}
+                      order={t(
+                        'OrganizationInServiceAction.SelectOrganization'
+                      )}
+                      placeholder={t(
+                        'OrganizationInServiceAction.SelectOrganization'
+                      )}
+                      emptyCommand={t('Utils.NotFound')}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      onInputChange={() => {}}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
+        <FormField
+          control={form.control}
+          name="capabilities"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('InviteUserServiceForm.Capabilities')}</FormLabel>
+              <FormControl>
+                <MultiSelectFormField
+                  noResultString={t('Utils.NotFound')}
+                  options={capabilitiesData}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  placeholder={t(
+                    'InviteUserServiceForm.CapabilitiesPlaceholder'
+                  )}
+                  variant="inverted"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <SheetFooter className="pt-2">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={(e) => handleCloseSheet(e)}>
+            {t('Utils.Cancel')}
+          </Button>
+          <Button
+            disabled={!form.formState.isDirty}
+            type="submit">
+            {t('Utils.Validate')}
+          </Button>
+        </SheetFooter>
+        <ServiceDescribeCapabilitiesSheet />
+      </form>
+    </Form>
   );
 };

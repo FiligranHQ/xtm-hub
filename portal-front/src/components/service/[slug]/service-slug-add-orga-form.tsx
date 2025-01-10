@@ -1,5 +1,6 @@
 import { getOrganizations } from '@/components/organization/organization.service';
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
+import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -14,18 +15,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
   SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
   useToast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { Dispatch, FunctionComponent, ReactNode, SetStateAction } from 'react';
+import { Dispatch, FunctionComponent, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
@@ -33,9 +27,6 @@ import { subscriptionInServiceCreateMutation } from '../../../../__generated__/s
 import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
 
 interface ServiceSlugAddOrgaFormSheetProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  trigger: ReactNode;
   serviceId: string;
   subscriptions: subscriptionWithUserService_fragment$data[];
   setSelectedSubscription: Dispatch<
@@ -43,16 +34,10 @@ interface ServiceSlugAddOrgaFormSheetProps {
   >;
 }
 
-export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
+export const ServiceSlugAddOrgaForm: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({
-  open,
-  setOpen,
-  trigger,
-  serviceId,
-  subscriptions,
-  setSelectedSubscription,
-}) => {
+> = ({ serviceId, subscriptions, setSelectedSubscription }) => {
+  const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const [organizations] = getOrganizations();
   const t = useTranslations();
   const { toast } = useToast();
@@ -83,7 +68,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
       organization_id: '',
     },
   });
-
+  setIsDirty(form.formState.isDirty);
   const onSubmit = (inputValue: z.infer<ZodSchema>) => {
     commitSubscriptionCreateMutation({
       variables: {
@@ -104,6 +89,7 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
           title: t('Utils.Success'),
           description: t('ServiceActions.OrganizationAdded'),
         });
+        setOpenSheet(false);
       },
       onError: (error: Error) => {
         toast({
@@ -113,77 +99,61 @@ export const ServiceSlugAddOrgaFormSheet: FunctionComponent<
         });
       },
     });
-    setOpen(false);
   };
 
   return (
-    <Sheet
-      key={'right'}
-      open={open}
-      onOpenChange={setOpen}>
-      <SheetTrigger asChild>{trigger}</SheetTrigger>
-      <SheetContent side={'right'}>
-        <SheetHeader className="bg-page-background">
-          <SheetTitle className="txt-title">
-            {t('OrganizationInServiceAction.AddOrganization')}
-          </SheetTitle>
-          <SheetDescription>
-            {t('OrganizationInServiceAction.AddOrganizationDescription')}
-          </SheetDescription>
-        </SheetHeader>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full space-y-xl">
+        <FormField
+          control={form.control}
+          name="organization_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t('OrganizationInServiceAction.Organization')}
+              </FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={t(
+                        'OrganizationInServiceAction.SelectOrganization'
+                      )}
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {canBeSelectedOrganizations.map(({ node }) => (
+                    <SelectItem
+                      key={node.id}
+                      value={node.id}>
+                      {node.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-xl">
-            <FormField
-              control={form.control}
-              name="organization_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t('OrganizationInServiceAction.Organization')}
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            'OrganizationInServiceAction.SelectOrganization'
-                          )}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {canBeSelectedOrganizations.map(({ node }) => (
-                        <SelectItem
-                          key={node.id}
-                          value={node.id}>
-                          {node.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <SheetFooter className="pt-2">
-              <SheetClose asChild>
-                <Button variant="outline">{t('Utils.Cancel')}</Button>
-              </SheetClose>
-              <Button
-                disabled={!form.formState.isDirty}
-                type="submit">
-                {t('Utils.Validate')}
-              </Button>
-            </SheetFooter>
-          </form>
-        </Form>
-      </SheetContent>
-    </Sheet>
+        <SheetFooter className="pt-2">
+          <Button
+            variant="outline"
+            onClick={(e) => handleCloseSheet(e)}>
+            {t('Utils.Cancel')}
+          </Button>
+          <Button
+            disabled={!form.formState.isDirty}
+            type="submit">
+            {t('Utils.Validate')}
+          </Button>
+        </SheetFooter>
+      </form>
+    </Form>
   );
 };

@@ -160,7 +160,8 @@
         "NumberDownload": "Downloads"
       },
       "Vault": "Partner Vault",
-      "VaultTitle": "Vault Administration"
+      "VaultTitle": "Vault Administration",
+      "UpdateDocument": "Update document"
     }
   },
   "ServiceActions": {
@@ -226,6 +227,14 @@
     "AddOrganization": "Subscribe organization",
     "AddOrganizationDescription": "Subscribe an organization to the service"
   },
+  "InviteUserServiceForm": {
+    "Title":"Invite user to the service",
+    "Description": "Set the access rights here. Click Validate when you are done.",
+    "Email": "Email",
+    "Organization": "Organization",
+    "Capabilities": "Capabilities",
+    "CapabilitiesPlaceholder": "Select capabilities"
+  },
   "UserActions": {
     "DeleteUser": "Delete user",
     "UpdateUser": "Update user",
@@ -237,6 +246,14 @@
     "UserUpdated": "User {email} has been modified",
     "UserDeleted": "User {email} has been deleted",
     "SearchUserWithEmail": "Search user with email..."
+  },
+  "UserForm": {
+    "Organizations": "Organizations",
+    "OrganizationsPlaceholder": "Select an organization",
+    "Roles": "Roles",
+    "RolesPlaceholder": "Select roles",
+    "Password": "Password",
+    "Email": "Email"
   },
   "OrganizationForm": {
     "EditOrganization": "Edit organization",
@@ -271,7 +288,12 @@
     "Delete": "Delete",
     "Update": "Update",
     "Details": "Details",
-    "Remove": "Remove"
+    "Remove": "Remove",
+    "Continue": "Continue"
+  },
+  "DialogActions": {
+    "ContinueTitle": "Unsaved progress",
+    "ContinueSentence": "You have started filling out the form. Closing it now will discard any unsaved progress. Do you want to proceed?"
   },
   "RedirectPage": {
     "YourFutureHub": "Your future Filigran community hub is taking shape !",
