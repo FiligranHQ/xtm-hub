@@ -14,8 +14,8 @@ const resolvers: Resolvers = {
   Query: {
     organization: async (_, { id }, context) =>
       loadOrganizationBy(context, 'Organization.id', id),
-    organizations: async (_, { first, after, orderMode, orderBy }, context) => {
-      return loadOrganizations(context, { first, after, orderMode, orderBy });
+    organizations: async (_, opts, context) => {
+      return loadOrganizations(context, opts);
     },
   },
   Mutation: {

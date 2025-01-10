@@ -6,6 +6,7 @@ import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
 import {
   OrderingMode,
+  OrganizationFilter,
   OrganizationOrdering,
   organizationSelectQuery,
 } from '../../../__generated__/organizationSelectQuery.graphql';
@@ -14,11 +15,13 @@ interface OrganizationParamsQuery {
   count: number;
   orderBy: OrganizationOrdering;
   orderMode: OrderingMode;
+  filter?: OrganizationFilter;
 }
 export const getOrganizations = ({
   count = 50,
   orderBy = 'name',
   orderMode = 'asc',
+  filter,
 }: Partial<OrganizationParamsQuery> = {}) => {
   const organizationData = useLazyLoadQuery<organizationSelectQuery>(
     organizationFetch,
@@ -26,6 +29,7 @@ export const getOrganizations = ({
       count,
       orderBy,
       orderMode,
+      filter,
     }
   );
   return useRefetchableFragment<
