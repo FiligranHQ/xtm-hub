@@ -96,11 +96,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   } else {
     const breadcrumbValue = [
       {
-        label: t('MenuLinks.Settings'),
+        label: 'MenuLinks.Settings',
       },
       {
         href: '/admin/user',
-        label: t('MenuLinks.Users'),
+        label: 'MenuLinks.Users',
       },
       {
         label: user.email,

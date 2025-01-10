@@ -64,16 +64,16 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const breadcrumbValue: BreadcrumbNavLink[] = isAdminPath
     ? [
         {
-          label: t('MenuLinks.Settings'),
+          label: 'MenuLinks.Settings',
         },
         {
-          label: t('MenuLinks.Services'),
+          label: 'MenuLinks.Services',
           href: '/admin/service',
         },
       ]
     : [
         {
-          label: t('MenuLinks.Home'),
+          label: 'MenuLinks.Home',
           href: '/',
         },
       ];

@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Fragment, FunctionComponent, ReactNode } from 'react';
 
@@ -23,6 +24,7 @@ export interface BreadcrumbNavLink {
 export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
   value,
 }) => {
+  const t = useTranslations();
   return (
     <Breadcrumb className="pb-s sm:pb-l">
       <BreadcrumbList>
@@ -37,7 +39,7 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
                       <Link
                         className="hover:underline"
                         href={href}>
-                        {label}
+                        {t(label)}
                       </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
@@ -46,7 +48,7 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
                 <BreadcrumbItem>
                   <BreadcrumbPage
                     className={cn(!lastIndex && 'text-muted-foreground')}>
-                    {label}
+                    {t(label)}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               )}
