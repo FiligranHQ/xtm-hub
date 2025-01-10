@@ -1,6 +1,7 @@
-import { OrganizationFormSheet } from '@/components/organization/organization-form-sheet';
+import { OrganizationForm } from '@/components/organization/organization-form';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -57,7 +58,7 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
     });
   };
   return (
-    <OrganizationFormSheet
+    <SheetWithPreventingDialog
       open={openSheet}
       setOpen={setOpenSheet}
       trigger={
@@ -66,8 +67,8 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
           label={t('OrganizationForm.CreateOrganization')}
         />
       }
-      title={t('OrganizationForm.CreateOrganization')}
-      handleSubmit={handleSubmit}
-    />
+      title={t('OrganizationForm.CreateOrganization')}>
+      <OrganizationForm handleSubmit={handleSubmit} />
+    </SheetWithPreventingDialog>
   );
 };

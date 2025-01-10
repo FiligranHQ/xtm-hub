@@ -1,4 +1,4 @@
-import { OrganizationFormSheet } from '@/components/organization/organization-form-sheet';
+import { OrganizationForm } from '@/components/organization/organization-form';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { OrganizationEditMutation } from '@/components/organization/organization.graphql';
 import { IconActionContext } from '@/components/ui/icon-actions';
@@ -9,6 +9,7 @@ import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { organizationEditMutation } from '../../../__generated__/organizationEditMutation.graphql';
 import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
+import { SheetWithPreventingDialog } from '../ui/sheet-with-preventing-dialog';
 
 interface EditOrganizationProps {
   organization: organizationItem_fragment$data;
@@ -56,10 +57,9 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
     });
   };
   return (
-    <OrganizationFormSheet
+    <SheetWithPreventingDialog
       open={openSheet ?? false}
       setOpen={setOpenSheet}
-      organization={organization}
       trigger={
         <Button
           variant="ghost"
@@ -68,8 +68,11 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
           {t('Utils.Update')}
         </Button>
       }
-      title={t('OrganizationForm.EditOrganization')}
-      handleSubmit={handleSubmit}
-    />
+      title={t('OrganizationForm.EditOrganization')}>
+      <OrganizationForm
+        organization={organization}
+        handleSubmit={handleSubmit}
+      />
+    </SheetWithPreventingDialog>
   );
 };
