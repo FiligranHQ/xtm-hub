@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions } from '@/components/ui/icon-actions';
 import useDecodedParams from '@/hooks/useDecodedParams';
-import { RESTRICTION } from '@/utils/constant';
+import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
@@ -40,6 +40,7 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
+import { useDebounceCallback } from 'usehooks-ts';
 import { documentItem_fragment$data } from '../../../../../__generated__/documentItem_fragment.graphql';
 import { documentsList$key } from '../../../../../__generated__/documentsList.graphql';
 import {
@@ -228,6 +229,11 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     });
   };
 
+  const debounceHandleInput = useDebounceCallback(
+    (e) => handleInputChange(e.target.value),
+    DEBOUNCE_TIME
+  );
+
   return (
     <>
       <h1 className="pb-s">{queryDataService.serviceById?.name}</h1>
@@ -255,7 +261,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
             <Input
               className="w-full sm:w-1/3"
               placeholder={t('Service.Vault.FileTab.Search')}
-              onChange={(e) => handleInputChange(e.target.value)}
+              onChange={debounceHandleInput}
             />
             <div className="justify-between flex w-full sm:w-auto items-center gap-s">
               <DataTableHeadBarOptions />

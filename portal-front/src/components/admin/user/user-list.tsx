@@ -11,7 +11,7 @@ import {
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
-import { RESTRICTION } from '@/utils/constant';
+import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
@@ -20,6 +20,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { graphql, useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import { useDebounceCallback } from 'usehooks-ts';
 import { userList_fragment$data } from '../../../../__generated__/userList_fragment.graphql';
 import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
 import {
@@ -292,6 +293,11 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     });
   };
 
+  const debounceHandleInput = useDebounceCallback(
+    (e) => handleInputChange(e.target.value),
+    DEBOUNCE_TIME
+  );
+
   return (
     <DataTable
       columns={columns}
@@ -312,9 +318,8 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           <Input
             className="w-full sm:w-1/3"
             placeholder={t('UserActions.SearchUserWithEmail')}
-            onChange={(e) => handleInputChange(e.target.value)}
+            onChange={debounceHandleInput}
           />
-
           <div className="flex w-full items-center justify-between gap-s sm:w-auto">
             <DataTableHeadBarOptions />
             <AddUser connectionId={data?.users?.__id} />

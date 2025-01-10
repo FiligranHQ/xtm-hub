@@ -19,6 +19,10 @@ type OrganizationConnection {
   pageInfo: PageInfo!
 }
 
+input OrganizationFilter {
+  search: String
+}
+
 type Query {
   organization(id: ID!): Organization @auth
   organizations(
@@ -26,6 +30,7 @@ type Query {
     after: ID
     orderBy: OrganizationOrdering!
     orderMode: OrderingMode!
+    filter: OrganizationFilter
   ): OrganizationConnection! @auth
 }
 
