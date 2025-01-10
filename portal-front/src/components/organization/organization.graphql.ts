@@ -8,6 +8,7 @@ export const organizationsFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
+      filter: $filter
     ) {
       __id
       totalCount
@@ -34,6 +35,7 @@ export const organizationFetch = graphql`
     $cursor: ID
     $orderBy: OrganizationOrdering!
     $orderMode: OrderingMode!
+    $filter: OrganizationFilter
   ) {
     ...organizationList_organizations
   }

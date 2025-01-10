@@ -10,12 +10,14 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions } from '@/components/ui/icon-actions';
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
+import { Badge, DataTable, DataTableHeadBarOptions, Input } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { FunctionComponent, Suspense, useState } from 'react';
+import { useDebounceCallback } from 'usehooks-ts';
 import {
   OrderingMode,
   OrganizationsPaginationQuery$variables,
@@ -114,6 +116,7 @@ const OrganizationList: FunctionComponent = () => {
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
       orderBy,
       orderMode,
+      filter: undefined,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
@@ -147,6 +150,15 @@ const OrganizationList: FunctionComponent = () => {
     }
   };
 
+  const handleInputChange = (inputValue: string) => {
+    handleRefetchData({ filter: { search: inputValue } });
+  };
+
+  const debounceHandleInput = useDebounceCallback(
+    (e) => handleInputChange(e.target.value),
+    DEBOUNCE_TIME
+  );
+
   return (
     <Suspense
       fallback={
@@ -161,11 +173,24 @@ const OrganizationList: FunctionComponent = () => {
         columns={columns}
         data={organizationDataTable}
         toolbar={
-          <div className="flex items-center justify-between sm:justify-end gap-s">
-            <DataTableHeadBarOptions />
-            <CreateOrganization
-              connectionId={organizationData.organizations.__id}
+          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+            <label
+              htmlFor="organization-email"
+              className="sr-only">
+              {t('OrganizationActions.SearchOrganizationWithEmail')}
+            </label>
+            <Input
+              id="organization-email"
+              className="w-full sm:w-1/3"
+              placeholder={t('OrganizationActions.SearchOrganizationWithEmail')}
+              onChange={debounceHandleInput}
             />
+            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+              <DataTableHeadBarOptions />
+              <CreateOrganization
+                connectionId={organizationData.organizations.__id}
+              />
+            </div>
           </div>
         }
         onResetTable={resetAll}

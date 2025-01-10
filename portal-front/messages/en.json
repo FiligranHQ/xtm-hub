@@ -215,7 +215,8 @@
     "OrganizationCreated": "Organization {name} has been created",
     "OrganizationUpdated": "Organization {name} has been modified",
     "OrganizationDeleted": "Organization has been deleted",
-    "ErrorNameAlreadyExists": "The organization {name} already exists."
+    "ErrorNameAlreadyExists": "The organization {name} already exists.",
+    "SearchOrganizationWithEmail": "Search organization with email..."
   },
   "OrganizationInServiceAction": {
     "RemoveOrganization": "Remove organization",

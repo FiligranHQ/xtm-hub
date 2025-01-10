@@ -58,9 +58,13 @@ type OrganizationConnection {
   pageInfo: PageInfo!
 }
 
+input OrganizationFilter {
+  search: String
+}
+
 type Query {
   organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, filter: OrganizationFilter): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   documentExists(documentName: String, serviceId: String): Boolean

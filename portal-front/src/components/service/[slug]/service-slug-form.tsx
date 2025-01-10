@@ -9,6 +9,7 @@ import { UserServiceCreateMutation } from '@/components/service/user_service.gra
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -33,6 +34,7 @@ import {
   useMutation,
   useRefetchableFragment,
 } from 'react-relay';
+import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 import { serviceCapabilityMutation } from '../../../../__generated__/serviceCapabilityMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
@@ -190,16 +192,18 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     }));
   }, [subscription]);
 
-  let filterTimeout: NodeJS.Timeout;
   const handleInputChange = (inputValue: string) => {
-    clearTimeout(filterTimeout);
-    filterTimeout = setTimeout(() => {
-      setFilter((prevFilter) => ({
-        ...prevFilter,
-        search: inputValue,
-      }));
-    }, 400);
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      search: inputValue,
+    }));
   };
+
+  const debounceHandleInput = useDebounceCallback(
+    handleInputChange,
+    DEBOUNCE_TIME
+  );
+
   const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
     count: pageSize,
     orderMode,
@@ -232,7 +236,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>={t('InviteUserServiceForm.Email')}</FormLabel>
+                  <FormLabel>{t('InviteUserServiceForm.Email')}</FormLabel>
                   <FormControl>
                     <TagInput
                       {...field}
@@ -249,7 +253,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
                         setTags(newTags);
                         setValue('email', newTags as Tag[]);
                       }}
-                      onInputChange={handleInputChange}
+                      onInputChange={debounceHandleInput}
                     />
                   </FormControl>
                   <FormMessage />

@@ -80,6 +80,10 @@ const database = knex(config);
 
 export interface QueryOpts {
   unsecured?: boolean;
+  first?: number;
+  after?: string;
+  orderMode?: string;
+  orderBy?: string;
 }
 
 export const dbRaw = (

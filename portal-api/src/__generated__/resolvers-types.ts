@@ -319,6 +319,10 @@ export type OrganizationEdge = {
   node: Organization;
 };
 
+export type OrganizationFilter = {
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type OrganizationInput = {
   domains?: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
@@ -394,6 +398,7 @@ export type QueryOrganizationArgs = {
 
 export type QueryOrganizationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
+  filter?: InputMaybe<OrganizationFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: OrganizationOrdering;
   orderMode: OrderingMode;
@@ -803,6 +808,7 @@ export type ResolversTypes = ResolversObject<{
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationConnection: ResolverTypeWrapper<OrganizationConnection>;
   OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
+  OrganizationFilter: OrganizationFilter;
   OrganizationInput: OrganizationInput;
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
@@ -867,6 +873,7 @@ export type ResolversParentTypes = ResolversObject<{
   Organization: Organization;
   OrganizationConnection: OrganizationConnection;
   OrganizationEdge: OrganizationEdge;
+  OrganizationFilter: OrganizationFilter;
   OrganizationInput: OrganizationInput;
   PageInfo: PageInfo;
   PlatformProvider: PlatformProvider;
