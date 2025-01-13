@@ -3,7 +3,6 @@
 import UserList from '@/components/admin/user/user-list';
 import { Portal, portalContext } from '@/components/portal-context';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { UseTranslationsProps } from '@/i18n/config';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -11,13 +10,13 @@ import { useContext } from 'react';
 // Component interface
 interface PreloaderProps {}
 
-const breadcrumbValue = (t: UseTranslationsProps) => [
+const breadcrumbValue = [
   {
-    label: t('MenuLinks.Home'),
+    label: 'MenuLinks.Home',
     href: '/',
   },
   {
-    label: t('MenuLinks.Users'),
+    label: 'MenuLinks.Users',
   },
 ];
 
@@ -28,7 +27,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
 
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue(t)} />
+      <BreadcrumbNav value={breadcrumbValue} />
       <h1 className="pb-s">{t('UserListPage.Title')}</h1>
       <UserList organization={me?.selected_organization_id} />
     </>
