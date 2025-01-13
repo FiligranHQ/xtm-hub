@@ -1,21 +1,20 @@
 import OrganizationList from '@/components/organization/organization-list';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { UseTranslationsProps } from '@/i18n/config';
 import { useTranslations } from 'next-intl';
 
-const breadcrumbValue = (t: UseTranslationsProps) => [
+const breadcrumbValue = [
   {
-    label: t('MenuLinks.Settings'),
+    label: 'MenuLinks.Settings',
   },
   {
-    label: t('MenuLinks.Organizations'),
+    label: 'MenuLinks.Organizations',
   },
 ];
 const PageLoader = () => {
   const t = useTranslations();
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue(t)} />
+      <BreadcrumbNav value={breadcrumbValue} />
       <h1 className="pb-s">{t('MenuLinks.Organizations')}</h1>
       <OrganizationList />
     </>

@@ -5,7 +5,6 @@ import {
 } from '@/components/service/service.graphql';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
-import { UseTranslationsProps } from '@/i18n/config';
 import { i18nKey } from '@/utils/datatable';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
@@ -17,12 +16,12 @@ import { serviceList_fragment$data } from '../../../../../__generated__/serviceL
 import { serviceQuery } from '../../../../../__generated__/serviceQuery.graphql';
 import { servicesList_services$key } from '../../../../../__generated__/servicesList_services.graphql';
 
-const breadcrumbValue = (t: UseTranslationsProps) => [
+const breadcrumbValue = [
   {
-    label: t('MenuLinks.Settings'),
+    label: 'MenuLinks.Settings',
   },
   {
-    label: t('MenuLinks.Services'),
+    label: 'MenuLinks.Services',
   },
 ];
 
@@ -94,7 +93,7 @@ const Page = () => {
   );
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue(t)} />
+      <BreadcrumbNav value={breadcrumbValue} />
       <h1>{t('MenuLinks.Services')}</h1>
       <DataTable
         columns={columns}
