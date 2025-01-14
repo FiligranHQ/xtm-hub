@@ -1,6 +1,6 @@
 import ServiceCard from '@/components/service/service-card';
+import { LinkIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
-import { LinkIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

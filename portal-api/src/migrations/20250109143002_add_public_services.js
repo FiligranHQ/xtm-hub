@@ -165,12 +165,30 @@ export async function up(knex) {
  * @returns { Promise<void> }
  */
 export async function down(knex) {
-  await knex.raw(
-    "DELETE FROM \"Service_Link\" WHERE \"url\" IN ('https://demo.opencti.io', 'https://demo.openbas.io', 'https://docs.openbas.io/latest/', 'https://docs.opencti.io/latest/', 'https://filigran.io/solutions/xtm-hub/')"
-  );
-  await knex.raw(
-    "DELETE FROM \"Service\" WHERE \"name\" IN ('openCTI Demo', 'openBAS Demo', 'openBAS doc', 'openCTI doc', 'Slack', 'Blog', 'Filigran Academy', 'openCTI custom Dashboards Library')"
-  );
+  await knex
+    .delete()
+    .from('Service_Link')
+    .whereIn('url', [
+      'https://demo.opencti.io',
+      'https://demo.openbas.io',
+      'https://docs.openbas.io/latest/',
+      'https://docs.opencti.io/latest/',
+      'https://filigran.io/solutions/xtm-hub/',
+    ]);
+  await knex
+    .delete()
+    .from('Service')
+    .whereIn('name', [
+      'openCTI Demo',
+      'openBAS Demo',
+      'openBAS documentation',
+      'openCTI documentation',
+      'Slack',
+      'Filigran Blog',
+      'Filigran Academy',
+      'openCTI custom Dashboards Library',
+    ]);
+
   await knex.schema.table('Service', function (table) {
     table.dropColumn('tags');
   });

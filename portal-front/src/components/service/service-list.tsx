@@ -9,8 +9,8 @@ import { JOIN_TYPE } from '@/components/service/service.const';
 import { subscription } from '@/components/service/service.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { LinkIcon } from 'filigran-icon';
 import { Button, useToast } from 'filigran-ui';
-import { LinkIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';
@@ -121,27 +121,26 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
           {t('Service.SureWantSubscriptionDirect')}
         </AlertDialogComponent>
       );
-    } else {
-      if (service.type === 'link') {
-        const name = service.links?.[0]?.name;
-        const url = service.links?.[0]?.url;
-        if (name && url)
-          return (
-            <Button
-              className={'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800'}
-              asChild
-              variant={'ghost'}>
-              <Link href={url}>
-                <LinkIcon
-                  aria-hidden={true}
-                  focusable={false}
-                  className="mr-3 h-3 w-3"
-                />
-                {name}
-              </Link>
-            </Button>
-          );
-      }
+    }
+    if (service.type === 'link') {
+      const name = service.links?.[0]?.name;
+      const url = service.links?.[0]?.url;
+      if (name && url)
+        return (
+          <Button
+            className={'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800'}
+            asChild
+            variant={'ghost'}>
+            <Link href={url}>
+              <LinkIcon
+                aria-hidden={true}
+                focusable={false}
+                className="mr-3 h-3 w-3"
+              />
+              {name}
+            </Link>
+          </Button>
+        );
     }
   };
 
