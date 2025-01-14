@@ -89,6 +89,7 @@
   },
   "Service": {
     "CreationStatus": "Statut de la création",
+    "ComingSoon": "Bientôt disponible",
     "Description": "Description",
     "Name": "Nom",
     "ServiceName": "Nom du service",

@@ -1,4 +1,5 @@
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ReactNode } from 'react';
@@ -15,6 +16,7 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   bottomLeftAction,
 }) => {
   const router = useRouter();
+  const t = useTranslations();
 
   const goTo = () => {
     if (serviceLink) {
@@ -26,31 +28,44 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
     }
   };
 
+  const Badge = () => {
+    if (service.type !== 'link')
+      return (
+        <ServiceTypeBadge
+          type={service.type as ServiceTypeBadge}
+          label={service.type as string}
+        />
+      );
+
+    if (!service.links?.[0]?.url)
+      return (
+        <ServiceTypeBadge
+          type={service.type as ServiceTypeBadge}
+          label={t('Service.ComingSoon') as ServiceTypeBadge}
+        />
+      );
+
+    return service.tags?.split(',').map((tag) => (
+      <ServiceTypeBadge
+        type={service.type as ServiceTypeBadge}
+        label={tag}
+        key={tag}
+      />
+    ));
+  };
+
   return (
     <li
-      className="border-light flex flex-col rounded border bg-page-background p-l gap-l hover:cursor-pointer"
+      className={`border-light flex flex-col rounded border bg-page-background p-l gap-l hover:cursor-pointer ${service.type === 'link' && !service.links?.[0]?.url ? 'opacity-60' : ''}`}
       onClick={goTo}
       key={service.id}>
-      <div className=" flex items-center">
+      <div className="flex items-center">
         <h3>{service.name}</h3>
       </div>
       <p className={'flex-1 txt-sub-content'}>{service.description}</p>
       <div className="flex justify-between items-center gap-s flex-row">
         <div>
-          {service.type !== 'link' ? (
-            <ServiceTypeBadge
-              type={service.type as ServiceTypeBadge}
-              label={service.type as string}
-            />
-          ) : (
-            service.tags?.split(',').map((tag) => (
-              <ServiceTypeBadge
-                type={service.type as ServiceTypeBadge}
-                label={tag}
-                key={tag}
-              />
-            ))
-          )}
+          <Badge />
         </div>
         {bottomLeftAction}
       </div>
