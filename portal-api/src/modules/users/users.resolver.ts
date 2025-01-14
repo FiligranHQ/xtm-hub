@@ -10,11 +10,13 @@ import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
+
 import {
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   UnknownError,
 } from '../../utils/error.util';
+import { updateUserSession } from '../../utils/session.util';
 import { extractId } from '../../utils/utils';
 import {
   removeUserFromOrganization,
@@ -148,9 +150,21 @@ const resolvers: Resolvers = {
         const user = await loadUserDetails({
           'User.id': id as UserId,
         });
+        const shouldChangeSelectedOrga = user.organizations.some(
+          (organization) => {
+            return organization.id === user.selected_organization_id;
+          }
+        );
+        if (!shouldChangeSelectedOrga) {
+          user.selected_organization_id = user.organizations[0].id;
+        }
+        updateUserSession(user);
 
         await dispatch('User', 'edit', user);
-        await dispatch('MeUser', 'edit', user, 'User');
+
+        const userMapped = mapUserToGraphqlUser(user);
+        await dispatch('MeUser', 'edit', userMapped, 'User');
+
         await trx.commit();
         return user;
       } catch (error) {
@@ -159,7 +173,7 @@ const resolvers: Resolvers = {
           throw ForbiddenAccess('CANT_EDIT_YOURSELF_ERROR');
         }
         throw UnknownError('EDIT_USER_ERROR', {
-          detail: error,
+          detail: error.message,
         });
       }
     },
@@ -167,8 +181,8 @@ const resolvers: Resolvers = {
       try {
         const deletedUser = await removeUser(context, { id: id as UserId });
 
-      await dispatch('User', 'delete', deletedUser);
-      await dispatch('MeUser', 'delete', deletedUser, 'User');
+        await dispatch('User', 'delete', deletedUser);
+        await dispatch('MeUser', 'delete', deletedUser, 'User');
         return deletedUser as User;
       } catch (error) {
         throw UnknownError('DELETE_USER_ERROR', {

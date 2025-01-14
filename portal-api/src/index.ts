@@ -8,7 +8,7 @@ import express from 'express';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 
 import promBundle from 'express-prom-bundle';
-import expressSession, { SessionData } from 'express-session';
+import expressSession, { MemoryStore, SessionData } from 'express-session';
 import { createHandler } from 'graphql-sse/lib/use/express';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 import { printSchema } from 'graphql/utilities/index.js';
@@ -28,7 +28,6 @@ import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
 import { logApp } from './utils/app-logger.util';
 import { extractId } from './utils/utils';
-
 const { json } = pkg;
 
 // region GraphQL server initialization
@@ -38,9 +37,10 @@ const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
 const app = express();
-
+export const memoryStore = new MemoryStore({});
 const sessionMiddleware = expressSession({
   name: PORTAL_COOKIE_NAME,
+  store: memoryStore,
   secret: PORTAL_COOKIE_SECRET,
   saveUninitialized: true,
   proxy: true,
