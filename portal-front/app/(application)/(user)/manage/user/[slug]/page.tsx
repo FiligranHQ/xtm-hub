@@ -1,10 +1,15 @@
 import { redirect } from 'next/navigation';
+import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
 
 // Component
-const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+const Page: FunctionComponent<PageProps> = async ({ params }) => {
   const { slug } = await params;
   const id = decodeURIComponent(slug);
   try {
