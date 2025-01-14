@@ -49,6 +49,7 @@ const UserEventSubscription: React.FunctionComponent<UserEventProps> = ({
       subscription: userMeSubscription,
       variables: {},
       onNext: (data: userMeSubscription$data | null | undefined) => {
+        console.log('coucou');
         if (data?.MeUser?.edit) {
           setIsOpen(true);
         } else if (data?.MeUser?.delete) {
