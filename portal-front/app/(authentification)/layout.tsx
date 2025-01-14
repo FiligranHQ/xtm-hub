@@ -5,10 +5,11 @@ import { headers } from 'next/headers';
 import * as React from 'react';
 
 export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
   return {
     title: 'XTM Hub',
     description: 'XTM Hub application by Filigran',
-    metadataBase: new URL(`https://${headers().get('host')}`),
+    metadataBase: new URL(`https://${h.get('host')}`),
   };
 }
 

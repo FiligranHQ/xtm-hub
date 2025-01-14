@@ -7,7 +7,6 @@ import { useRelayEnvironment } from 'react-relay';
 
 export default function Error({
   error,
-  reset,
 }: {
   error: Error & { digest?: string; componentStack?: string };
   reset: () => void;

@@ -1,6 +1,6 @@
 import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 

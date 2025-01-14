@@ -10,21 +10,13 @@ import { GraphQLSubscriptionConfig } from 'relay-runtime';
 import { userMeSubscription } from '@/components/admin/user/user.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useMutation, useSubscription } from 'react-relay';
-import { meContext_fragment$data } from '../../__generated__/meContext_fragment.graphql';
 import {
   userMeSubscription$data,
   userMeSubscription as userMeSubscriptionType,
 } from '../../__generated__/userMeSubscription.graphql';
 
-// Component interface
-interface UserEventProps {
-  me?: meContext_fragment$data | null;
-}
-
 // Component
-const UserEventSubscription: React.FunctionComponent<UserEventProps> = ({
-  me,
-}) => {
+const UserEventSubscription: React.FunctionComponent = () => {
   const [commitLogoutMutation] = useMutation(LogoutMutation);
   const t = useTranslations();
 

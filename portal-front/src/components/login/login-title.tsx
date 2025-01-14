@@ -5,9 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { FunctionComponent } from 'react';
 
-interface LoginTitleProps {}
-
-const LoginTitleForm: FunctionComponent<LoginTitleProps> = ({}) => {
+const LoginTitleForm: FunctionComponent = ({}) => {
   const searchParams = useSearchParams();
   const errorKey = searchParams?.get('error');
   const t = useTranslations();

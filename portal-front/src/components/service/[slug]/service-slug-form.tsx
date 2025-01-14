@@ -43,11 +43,12 @@ import {
   UserFilter,
   userListQuery,
 } from '../../../../__generated__/userListQuery.graphql';
+import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 import { userServiceCreateMutation } from '../../../../__generated__/userServiceCreateMutation.graphql';
 
 interface ServiceSlugFormSheetProps {
   connectionId: string;
-  userService: any;
+  userService: userService_fragment$data;
   subscription: subscriptionWithUserService_fragment$data;
   dataOrganizationsTab: {
     value: string;
@@ -72,7 +73,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   const t = useTranslations();
 
   const currentCapabilities = userService?.service_capability?.map(
-    (capability: any) => capability?.service_capability_name
+    (capability) => capability?.service_capability_name
   );
 
   const capabilitiesData = [
@@ -122,61 +123,67 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     });
   }, [subscription]);
 
-  const onSubmit = (values: any) => {
-    if (userService.id) {
-      const editCapaValues = {
-        capabilities: values.capabilities,
-      };
-      commitServiceCapabilityMutation({
-        variables: {
-          input: { user_service_id: userService?.id, ...editCapaValues },
-        },
-        onCompleted() {
-          toast({
-            title: t('Utils.Success'),
-            description: t('ServiceActions.UserCapabilitiesModified', {
-              email: userService.user.email,
-            }),
-          });
-          setOpenSheet(false);
-        },
-        onError(error) {
-          toast({
-            variant: 'destructive',
-            title: t('Utils.Error'),
-            description: t(`Error.Server.${error.message}`),
-          });
-        },
-      });
-    } else {
-      commitUserServiceMutation({
-        variables: {
-          connections: [connectionId],
-          input: {
-            email: values.email[0].text,
-            capabilities: values.capabilities,
-            serviceId: slug ?? '',
-            organizationId: values.organizationId,
-          },
-        },
-        onCompleted() {
-          toast({
-            title: t('Utils.Success'),
-            description: `${values.email[0].text} ${t('Utils.Modified')}`,
-          });
-          setOpenSheet(false);
-        },
-
-        onError(error) {
-          toast({
-            variant: 'destructive',
-            title: t('Utils.Error'),
-            description: <>{t(`Error.Server.${error.message}`)}</>,
-          });
-        },
-      });
-    }
+  const onSubmitCapabilitiesSchema = (
+    values: z.infer<typeof capabilitiesFormSchema>
+  ) => {
+    const editCapaValues = {
+      capabilities: values.capabilities,
+    };
+    commitServiceCapabilityMutation({
+      variables: {
+        input: { user_service_id: userService?.id, ...editCapaValues },
+      },
+      onCompleted() {
+        toast({
+          title: t('Utils.Success'),
+          description: t('ServiceActions.UserCapabilitiesModified', {
+            email: userService?.user?.email,
+          }),
+        });
+        setOpenSheet(false);
+      },
+      onError(error) {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+    });
   };
+
+  const onSubmitExtendSchema = (values: z.infer<typeof extendedSchema>) => {
+    commitUserServiceMutation({
+      variables: {
+        connections: [connectionId],
+        input: {
+          email: values.email[0]!.text,
+          capabilities: values.capabilities,
+          serviceId: slug ?? '',
+          organizationId: values.organizationId,
+        },
+      },
+      onCompleted() {
+        toast({
+          title: t('Utils.Success'),
+          description: `${values.email[0]!.text} ${t('Utils.Modified')}`,
+        });
+        setOpenSheet(false);
+      },
+
+      onError(error) {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${error.message}`)}</>,
+        });
+      },
+    });
+  };
+
+  const onSubmit = !userService.id
+    ? onSubmitExtendSchema
+    : onSubmitCapabilitiesSchema;
 
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
 
@@ -210,6 +217,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     orderBy,
     filter,
   });
+
   const [data] = useRefetchableFragment<userListQuery, userList_users$key>(
     userListFragment,
     queryData
@@ -228,6 +236,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     <Form {...form}>
       <form
         className="space-y-xl"
+        // @ts-expect-error TODO: improve typing
         onSubmit={form.handleSubmit(onSubmit)}>
         {!userService.id && (
           <>
@@ -300,7 +309,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
                 <MultiSelectFormField
                   noResultString={t('Utils.NotFound')}
                   options={capabilitiesData}
-                  value={field.value}
+                  value={field.value as string[]}
                   onValueChange={field.onChange}
                   placeholder={t(
                     'InviteUserServiceForm.CapabilitiesPlaceholder'
