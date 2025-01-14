@@ -56,7 +56,7 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
 
   return (
     <li
-      className={`border-light flex flex-col rounded border bg-page-background p-l gap-l hover:cursor-pointer ${service.type === 'link' && !service.links?.[0]?.url ? 'opacity-60' : ''}`}
+      className={`border-light flex flex-col rounded border bg-page-background p-l gap-l ${service.type === 'link' && !service.links?.[0]?.url ? 'opacity-60 cursor-default' : 'cursor-pointer'}`}
       onClick={goTo}
       key={service.id}>
       <div className="flex items-center">
