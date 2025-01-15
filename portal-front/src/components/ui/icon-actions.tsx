@@ -30,8 +30,6 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const closeMenu = () => setMenuOpen(false);
-
   return (
     <DropdownMenu
       open={menuOpen}

@@ -2,10 +2,7 @@ import { UnknownIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
-interface ServiceDescribeCapabilitiesProps {}
-export const ServiceDescribeCapabilitiesSheet: FunctionComponent<
-  ServiceDescribeCapabilitiesProps
-> = ({}) => {
+export const ServiceDescribeCapabilitiesSheet: FunctionComponent = () => {
   const t = useTranslations();
   return (
     <>

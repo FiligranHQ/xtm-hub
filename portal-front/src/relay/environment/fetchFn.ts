@@ -53,7 +53,7 @@ export async function networkFetch(
   // throw an error to indicate to the developer what went wrong.
   if (Array.isArray(json.errors)) {
     const containsAuthenticationFailure = json.errors.find(
-      (e: any) => e.message === 'Not authenticated.'
+      (e: { message: string }) => e.message === 'Not authenticated.'
     );
     if (containsAuthenticationFailure) {
       // redirect to login page
@@ -74,7 +74,7 @@ const subscriptionsClient = createClient({
 export function fetchOrSubscribe(
   operation: RequestParameters,
   variables: Variables
-): Observable<any> {
+): Observable<never> {
   return Observable.create((sink) => {
     if (!operation.text) {
       return sink.error(new Error('Operation text cannot be empty'));

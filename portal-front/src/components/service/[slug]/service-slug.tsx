@@ -28,6 +28,7 @@ import { serviceByIdWithSubscriptionsQuery } from '../../../../__generated__/ser
 import { serviceWithSubscriptions_fragment$data } from '../../../../__generated__/serviceWithSubscriptions_fragment.graphql';
 import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
+import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
   serviceId: string;
@@ -48,7 +49,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState<userService_fragment$data>(
+    {} as userService_fragment$data
+  );
   const isAdminPath = useAdminPath();
 
   const [selectedSubscription, setSelectedSubscription] =
@@ -225,7 +228,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             setOpen={setOpenSheet}
             trigger={
               <TriggerButton
-                onClick={() => setCurrentUser({})}
+                onClick={() => setCurrentUser({} as userService_fragment$data)}
                 label={t('Service.Management.InviteUser.TitleInviteUser')}
               />
             }

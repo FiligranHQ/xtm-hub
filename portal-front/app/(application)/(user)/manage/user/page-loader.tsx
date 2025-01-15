@@ -7,9 +7,6 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
 
-// Component interface
-interface PreloaderProps {}
-
 const breadcrumbValue = [
   {
     label: 'MenuLinks.Home',
@@ -21,7 +18,7 @@ const breadcrumbValue = [
 ];
 
 // Component
-const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
+const PageLoader: React.FunctionComponent = () => {
   const t = useTranslations();
   const { me } = useContext<Portal>(portalContext);
 

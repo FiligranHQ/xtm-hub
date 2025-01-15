@@ -22,10 +22,11 @@ import meLoaderQueryNode, {
 import PageLoader from './page-loader';
 
 export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
   return {
     title: 'XTM Hub',
     description: 'XTM Hub application by Filigran',
-    metadataBase: new URL(`https://${headers().get('host')}`),
+    metadataBase: new URL(`https://${h.get('host')}`),
   };
 }
 
@@ -38,7 +39,7 @@ interface RootLayoutProps {
 const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
   children,
 }) => {
-  // @ts-ignore
+  // @ts-expect-error
   const { data: meData }: { data: meLoaderQuery$data } =
     await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
       meLoaderQueryNode,

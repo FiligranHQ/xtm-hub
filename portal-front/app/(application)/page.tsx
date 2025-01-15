@@ -24,24 +24,15 @@ import { userServiceOwnedQuery } from '../../__generated__/userServiceOwnedQuery
 
 export const dynamic = 'force-dynamic';
 
-// Component interface
-interface PageProps {}
-
 // Component
-const Page: React.FunctionComponent<PageProps> = () => {
+const Page: React.FunctionComponent = () => {
   const { isPersonalSpace } = useContext(portalContext);
   if (isPersonalSpace) {
     return <EmptyServices />;
   }
-  const [count, setCount] = useLocalStorage('countServiceOwned', 50);
-  const [orderMode, setOrderMode] = useLocalStorage(
-    'orderModeServiceOwned',
-    'asc'
-  );
-  const [orderBy, setOrderBy] = useLocalStorage(
-    'orderByServiceOwned',
-    'service_name'
-  );
+  const [count] = useLocalStorage('countServiceOwned', 50);
+  const [orderMode] = useLocalStorage('orderModeServiceOwned', 'asc');
+  const [orderBy] = useLocalStorage('orderByServiceOwned', 'service_name');
   const [queryRef, loadQuery] = useQueryLoader<userServiceOwnedQuery>(
     UserServiceOwnedQuery
   );
@@ -58,14 +49,15 @@ const Page: React.FunctionComponent<PageProps> = () => {
     );
   }, []);
 
-  const [countServiceList, setCountServiceList] = useLocalStorage(
-    'countServiceList',
-    50
+  const [countServiceList] = useLocalStorage('countServiceList', 50);
+  const [orderModeServiceList] = useLocalStorage<OrderingMode>(
+    'orderModeServiceList',
+    'asc'
   );
-  const [orderModeServiceList, setOrderModeServiceList] =
-    useLocalStorage<OrderingMode>('orderModeServiceList', 'asc');
-  const [orderByServiceList, setOrderByServiceList] =
-    useLocalStorage<ServiceOrdering>('orderByServiceList', 'name');
+  const [orderByServiceList] = useLocalStorage<ServiceOrdering>(
+    'orderByServiceList',
+    'name'
+  );
 
   const [queryRefServiceList, loadQueryServiceList] =
     useQueryLoader<publicServiceQuery>(publicServiceListQuery);

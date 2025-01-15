@@ -70,14 +70,15 @@ export function createClientSideRelayEnvironment() {
   clientSideRelayEnvironment ||= new Environment({
     network: Network.create(curriedFetchFn, fetchOrSubscribe),
     store: new Store(new RecordSource()),
-    // @ts-ignore https://github.com/facebook/relay/issues/4666
+    // @ts-expect-error https://github.com/facebook/relay/issues/4666
     relayFieldLogger: fieldLogger,
   });
   return clientSideRelayEnvironment;
 }
 
 function tryResolveReplaySubject(queryId: string) {
-  const win = window as any;
+  const win = window as Window & typeof globalThis;
+  // @ts-expect-error
   const rawResponses = win[RELAY_WINDOW_KEY]?.[queryId];
 
   const responses: GraphQLResponse[] = Array.isArray(rawResponses)
@@ -103,7 +104,7 @@ function tryResolveReplaySubject(queryId: string) {
     }
   }
 
-  function handlePushResponses(responses: any) {
+  function handlePushResponses(responses: GraphQLResponse[]) {
     if (Array.isArray(responses)) {
       for (const response of responses) {
         replayResponse(response);
@@ -118,6 +119,7 @@ function tryResolveReplaySubject(queryId: string) {
 
   // Setup a listener for responses that are pushed onto the window
   // by script tags that are being inserted later.
+  // @ts-expect-error
   win[RELAY_WINDOW_KEY][queryId] = {
     push: handlePushResponses,
   };
