@@ -5,11 +5,8 @@ import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
 
-// Component interface
-interface PageProps {}
-
 // Component
-const Page: React.FunctionComponent<PageProps> = async () => {
+const Page: React.FunctionComponent = async () => {
   return (
     <GuardCapacityComponent
       displayError

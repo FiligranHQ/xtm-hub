@@ -84,7 +84,7 @@ const Page = () => {
     orderBy: 'name',
     orderMode: 'asc',
   });
-  const [data, refetch] = useRefetchableFragment<
+  const [data] = useRefetchableFragment<
     serviceQuery,
     servicesList_services$key
   >(servicesListFragment, queryData);

@@ -1,21 +1,16 @@
-import { redirect } from 'next/navigation';
-import * as React from 'react';
+import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-const Page: React.FunctionComponent<PageProps> = async ({ params }) => {
-  const id = decodeURIComponent(params.slug);
-  try {
-    return <PageLoader id={id} />;
-  } catch (e) {
-    // If error at user loading, redirect to the list
-    redirect('/');
-  }
+const Page: FunctionComponent<PageProps> = async ({ params }) => {
+  const { slug } = await params;
+  const id = decodeURIComponent(slug);
+  return <PageLoader id={id} />;
 };
 
 export default Page;

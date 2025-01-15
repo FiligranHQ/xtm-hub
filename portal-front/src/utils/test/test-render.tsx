@@ -44,6 +44,7 @@ export const ProvidersWrapper = ({
 }: ProvidersWrapperProps) => {
   const relayEnv = createMockEnvironment(relayConfig);
   return (
+    // @ts-expect-error https://github.com/facebook/relay/issues/4598 no solution find yet
     <RelayEnvironmentProvider environment={relayEnv}>
       <PortalContext me={me}>{children}</PortalContext>
     </RelayEnvironmentProvider>

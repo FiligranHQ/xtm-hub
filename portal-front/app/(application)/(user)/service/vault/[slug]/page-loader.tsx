@@ -18,9 +18,8 @@ import { useQueryLoader } from 'react-relay';
 import { documentItem_fragment$data } from '../../../../../../__generated__/documentItem_fragment.graphql';
 import { documentsQuery } from '../../../../../../__generated__/documentsQuery.graphql';
 import { serviceByIdQuery } from '../../../../../../__generated__/serviceByIdQuery.graphql';
-interface PreloaderProps {}
 
-const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
+const PageLoader: React.FunctionComponent = ({}) => {
   const t = useTranslations();
 
   const columns: ColumnDef<documentItem_fragment$data>[] = [
@@ -45,14 +44,6 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
       id: 'download_number',
       size: 40,
       header: t('Service.Vault.FileTab.NumberDownload'),
-    },
-    {
-      id: 'actions',
-      size: 100,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => ({}),
     },
   ];
 

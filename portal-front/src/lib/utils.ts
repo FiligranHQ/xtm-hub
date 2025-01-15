@@ -32,5 +32,5 @@ export const isEmpty = (value: unknown): boolean => {
 export const getEnv = () => process.env.NODE_ENV;
 export const isProduction = () => getEnv() === 'production';
 export const isDevelopment = () =>
-  //@ts-expect-error we have staging
+  // @ts-expect-error we have staging
   getEnv() !== 'staging' && getEnv() !== 'production';

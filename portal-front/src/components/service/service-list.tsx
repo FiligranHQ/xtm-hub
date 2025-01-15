@@ -41,7 +41,7 @@ const ServiceList: React.FunctionComponent<ServiceProps> = ({
     publicServiceListQuery,
     queryRef
   );
-  const [data, refetch] = useRefetchableFragment<
+  const [data] = useRefetchableFragment<
     publicServiceQuery,
     publicServiceList_services$key
   >(publicServiceListFragment, queryData);

@@ -1,6 +1,6 @@
 import { FormatDate } from '@/utils/date';
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 describe('date', () => {
