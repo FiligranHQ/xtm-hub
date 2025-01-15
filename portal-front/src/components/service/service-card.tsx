@@ -18,6 +18,10 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   const router = useRouter();
   const t = useTranslations();
 
+  const isLinkService = service.type === 'link';
+  const hasUrl = service.links?.[0]?.url;
+  const isDisabled = isLinkService && !hasUrl;
+
   const goTo = () => {
     if (serviceLink) {
       if (serviceLink.startsWith('http')) {
@@ -29,7 +33,8 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   };
 
   const Badge = () => {
-    if (service.type !== 'link')
+    // If it's not a link service, show the regular badge
+    if (!isLinkService)
       return (
         <ServiceTypeBadge
           type={service.type as ServiceTypeBadge}
@@ -37,7 +42,8 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
         />
       );
 
-    if (!service.links?.[0]?.url)
+    // If it's a link service and has no url, show coming soon badge
+    if (!hasUrl)
       return (
         <ServiceTypeBadge
           type={service.type as ServiceTypeBadge}
@@ -45,7 +51,8 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
         />
       );
 
-    return service.tags?.split(',').map((tag) => (
+    // If it's a link service and has url, show the tags as badges
+    return service.tags?.map((tag) => (
       <ServiceTypeBadge
         type={service.type as ServiceTypeBadge}
         label={tag}
@@ -56,13 +63,14 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
 
   return (
     <li
-      className={`border-light flex flex-col rounded border bg-page-background p-l gap-l ${service.type === 'link' && !service.links?.[0]?.url ? 'opacity-60 cursor-default' : 'cursor-pointer'}`}
+      className="border-light flex flex-col rounded border bg-page-background p-l gap-l cursor-pointer aria-disabled:cursor-default aria-disabled:opacity-60"
+      aria-disabled={isDisabled}
       onClick={goTo}
       key={service.id}>
       <div className="flex items-center">
         <h3>{service.name}</h3>
       </div>
-      <p className={'flex-1 txt-sub-content'}>{service.description}</p>
+      <p className="flex-1 txt-sub-content">{service.description}</p>
       <div className="flex justify-between items-center gap-s flex-row">
         <div>
           <Badge />

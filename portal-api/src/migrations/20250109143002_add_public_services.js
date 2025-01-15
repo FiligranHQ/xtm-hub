@@ -10,7 +10,7 @@ const SERVICES = {
     creation_status: 'READY',
     public: true,
     join_type: 'JOIN_AUTO',
-    tags: 'openCTI',
+    tags: ['openCTI'],
   },
   obas: {
     id: v4(),
@@ -21,7 +21,7 @@ const SERVICES = {
     creation_status: 'READY',
     public: true,
     join_type: 'JOIN_AUTO',
-    tags: 'openBAS',
+    tags: ['openBAS'],
   },
   obas_doc: {
     id: v4(),
@@ -32,7 +32,7 @@ const SERVICES = {
     creation_status: 'READY',
     public: true,
     join_type: 'JOIN_AUTO',
-    tags: 'openBAS',
+    tags: ['openBAS'],
   },
   octi_doc: {
     id: v4(),
@@ -43,7 +43,7 @@ const SERVICES = {
     creation_status: 'READY',
     public: true,
     join_type: 'JOIN_AUTO',
-    tags: 'openCTI',
+    tags: ['openCTI'],
   },
   slack: {
     id: v4(),
@@ -54,7 +54,7 @@ const SERVICES = {
     creation_status: 'READY',
     public: true,
     join_type: 'JOIN_AUTO',
-    tags: null,
+    tags: [],
   },
   blog: {
     id: v4(),
@@ -65,7 +65,7 @@ const SERVICES = {
     creation_status: 'READY',
     public: true,
     join_type: 'JOIN_AUTO',
-    tags: null,
+    tags: [],
   },
   academy: {
     id: v4(),
@@ -77,7 +77,7 @@ const SERVICES = {
     creation_status: 'PENDING',
     public: true,
     join_type: 'JOIN_AUTO',
-    tags: null,
+    tags: [],
   },
   custom_dashboards: {
     id: v4(),
@@ -150,7 +150,7 @@ const SERVICE_LINKS = {
 export async function up(knex) {
   // Add tags column to Service table
   await knex.schema.table('Service', function (table) {
-    table.string('tags');
+    table.specificType('tags', 'varchar(20)[]');
   });
 
   // Insert new services
