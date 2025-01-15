@@ -26,9 +26,9 @@ import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
+import { getSessionStoreInstance } from './sessionStoreManager';
 import { logApp } from './utils/app-logger.util';
 import { extractId } from './utils/utils';
-
 const { json } = pkg;
 
 // region GraphQL server initialization
@@ -38,9 +38,9 @@ const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
 const app = express();
-
 const sessionMiddleware = expressSession({
   name: PORTAL_COOKIE_NAME,
+  store: getSessionStoreInstance(),
   secret: PORTAL_COOKIE_SECRET,
   saveUninitialized: true,
   proxy: true,

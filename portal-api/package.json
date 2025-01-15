@@ -35,12 +35,14 @@
     "seed:make:test": "VITEST_MODE=true && yarn knex:run seed:make",
     "start-dev-test": "VITEST_MODE=true && START_DEV_SERVER=true && yarn start-dev",
     "test:w": "VITEST_MODE=true && vitest",
-    "init-db-test": "VITEST_MODE=true tsx tests/script/create-database.ts"
+    "init-db-test": "VITEST_MODE=true tsx tests/script/create-database.ts",
+    "lint-staged": "lint-staged"
   },
   "dependencies": {
     "@apollo/server": "4.11.0",
     "@aws-sdk/client-s3": "3.670.0",
     "@aws-sdk/lib-storage": "3.670.0",
+    "@graphql-codegen/plugin-helpers": "5.1.0",
     "@graphql-tools/load-files": "7.0.0",
     "@graphql-tools/merge": "9.0.7",
     "@graphql-tools/schema": "10.0.6",
@@ -69,7 +71,7 @@
     "winston": "3.17.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.10.0",
+    "@eslint/js": "9.18.0",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/typescript": "4.0.9",
     "@graphql-codegen/typescript-resolvers": "4.2.1",
@@ -82,13 +84,13 @@
     "@types/nodemailer": "6.4.16",
     "@types/passport": "1.0.17",
     "@types/uuid": "10.0.0",
-    "@typescript-eslint/eslint-plugin": "8.6.0",
-    "@typescript-eslint/parser": "8.6.0",
+    "@typescript-eslint/eslint-plugin": "8.20.0",
+    "@typescript-eslint/parser": "8.20.0",
     "chokidar": "3.6.0",
     "concurrently": "9.0.1",
     "esbuild": "0.23.1",
     "eslint": "9.x",
-    "eslint-config-prettier": "9.1.0",
+    "eslint-config-prettier": "10.0.1",
     "globals": "15.9.0",
     "husky": "9.1.6",
     "kanel": "3.9.1",
@@ -98,7 +100,7 @@
     "supertest": "7.0.0",
     "tsx": "4.19.2",
     "typescript": "5.6.2",
-    "typescript-eslint": "8.6.0",
+    "typescript-eslint": "8.20.0",
     "vitest": "2.1.1"
   },
   "packageManager": "yarn@3.6.3",

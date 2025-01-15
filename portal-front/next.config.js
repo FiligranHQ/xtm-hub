@@ -1,16 +1,25 @@
-/** @type {import('next').NextConfig} */
-const createNextIntlPlugin = require('next-intl/plugin');
+import createNextIntlPlugin from 'next-intl/plugin';
+
 const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   output: 'standalone',
   skipTrailingSlashRedirect: true,
-  reactStrictMode: false,
-  swcMinify: true,
+  reactStrictMode: true,
   compiler: {
     relay: {
       src: './',
       language: 'typescript',
       artifactDirectory: '__generated__',
+    },
+  },
+  experimental: {
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
     },
   },
   webpack(config) {
@@ -42,4 +51,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withNextIntl(nextConfig);
+export default withNextIntl(nextConfig);

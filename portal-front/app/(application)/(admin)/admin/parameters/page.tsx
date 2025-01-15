@@ -6,8 +6,6 @@ import { RESTRICTION } from '@/utils/constant';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-interface PageProps {}
-
 const breadcrumbValue = [
   {
     label: 'MenuLinks.Settings',
@@ -18,7 +16,7 @@ const breadcrumbValue = [
 ];
 
 // Component
-const Page: React.FunctionComponent<PageProps> = () => {
+const Page: React.FunctionComponent = () => {
   const t = useTranslations();
 
   return (

@@ -32,6 +32,8 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
     useMutation<userSlugEditMutation>(UserSlugEditMutation);
 
   const handleSubmit = (values: z.infer<typeof userEditFormSchema>) => {
+    // Here we need everything except the password
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...valuesWithoutPasswordField } = values;
     commitUserMutation({
       variables: { input: { ...valuesWithoutPasswordField }, id: user.id },

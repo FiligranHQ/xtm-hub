@@ -4,7 +4,9 @@
 import type { UserOrganizationId } from './UserOrganization';
 
 /** Identifier type for public.UserOrganization_Capability */
-export type UserOrganizationCapabilityId = number & { __brand: 'UserOrganizationCapabilityId' };
+export type UserOrganizationCapabilityId = number & {
+  __brand: 'UserOrganizationCapabilityId';
+};
 
 /** Represents the table public.UserOrganization_Capability */
 export default interface UserOrganizationCapability {
