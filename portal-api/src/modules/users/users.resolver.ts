@@ -11,12 +11,12 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
+import { updateUserSession } from '../../sessionStoreManager';
 import {
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   UnknownError,
 } from '../../utils/error.util';
-import { updateUserSession } from '../../utils/session.util';
 import { extractId } from '../../utils/utils';
 import {
   removeUserFromOrganization,
