@@ -55,7 +55,7 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
     return service.tags?.map((tag) => (
       <ServiceTypeBadge
         type={service.type as ServiceTypeBadge}
-        label={tag}
+        label={tag as string}
         key={tag}
       />
     ));

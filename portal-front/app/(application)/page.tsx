@@ -5,14 +5,10 @@ import useMountingLoader from '@/hooks/useMountingLoader';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 
-import { portalContext } from '@/components/portal-context';
-import { EmptyServices } from '@/components/service/home/empty-services';
-import OwnedServices from '@/components/service/home/owned-services';
 import { publicServiceListQuery } from '@/components/service/public-service.graphql';
 import ServiceList from '@/components/service/service-list';
 import { UserServiceOwnedQuery } from '@/components/service/user_service.graphql';
-import { useTranslations } from 'next-intl';
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import {
@@ -24,22 +20,17 @@ import { userServiceOwnedQuery } from '../../__generated__/userServiceOwnedQuery
 
 export const dynamic = 'force-dynamic';
 
-// Component
 const Page: React.FunctionComponent = () => {
-  const { isPersonalSpace } = useContext(portalContext);
-  if (isPersonalSpace) {
-    return <EmptyServices />;
-  }
+  // Owned services
   const [count] = useLocalStorage('countServiceOwned', 50);
   const [orderMode] = useLocalStorage('orderModeServiceOwned', 'asc');
   const [orderBy] = useLocalStorage('orderByServiceOwned', 'service_name');
-  const [queryRef, loadQuery] = useQueryLoader<userServiceOwnedQuery>(
-    UserServiceOwnedQuery
-  );
-  useMountingLoader(loadQuery, { count, orderBy, orderMode });
+  const [queryRefUserServiceOwned, loadQueryUserServiceOwned] =
+    useQueryLoader<userServiceOwnedQuery>(UserServiceOwnedQuery);
+  useMountingLoader(loadQueryUserServiceOwned, { count, orderBy, orderMode });
 
   const handleUpdate = useCallback(() => {
-    loadQuery(
+    loadQueryUserServiceOwned(
       {
         count,
         orderBy: 'service_name',
@@ -49,6 +40,7 @@ const Page: React.FunctionComponent = () => {
     );
   }, []);
 
+  // Public services
   const [countServiceList] = useLocalStorage('countServiceList', 50);
   const [orderModeServiceList] = useLocalStorage<OrderingMode>(
     'orderModeServiceList',
@@ -59,30 +51,24 @@ const Page: React.FunctionComponent = () => {
     'name'
   );
 
-  const [queryRefServiceList, loadQueryServiceList] =
+  const [queryRefPublicServiceList, loadQueryPublicServiceList] =
     useQueryLoader<publicServiceQuery>(publicServiceListQuery);
 
-  useMountingLoader(loadQueryServiceList, {
+  useMountingLoader(loadQueryPublicServiceList, {
     count: countServiceList,
     orderBy: orderByServiceList,
     orderMode: orderModeServiceList,
   });
 
-  const t = useTranslations();
+  if (!queryRefUserServiceOwned || !queryRefPublicServiceList)
+    return <Loader />;
 
   return (
-    <>
-      <h1 className="mb-l">{t('HomePage.Homepage')}</h1>{' '}
-      {queryRef ? <OwnedServices queryRef={queryRef} /> : <Loader />}
-      {queryRefServiceList ? (
-        <ServiceList
-          queryRef={queryRefServiceList}
-          onUpdate={handleUpdate}
-        />
-      ) : (
-        <>{t('Utils.Loading')}</>
-      )}
-    </>
+    <ServiceList
+      queryRefUserServiceOwned={queryRefUserServiceOwned}
+      queryRefServiceList={queryRefPublicServiceList}
+      onUpdate={handleUpdate}
+    />
   );
 };
 

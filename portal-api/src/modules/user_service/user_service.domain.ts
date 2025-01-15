@@ -68,9 +68,9 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
     .select(
       'Service.*',
       dbRaw(
-        `CASE 
+        `CASE
         WHEN COUNT(service_link.id) = 0 THEN NULL
-        ELSE (json_agg(json_build_object('id', service_link.id, 'name', service_link.name, 'url', service_link.url)))::json 
+        ELSE (json_agg(json_build_object('id', service_link.id, 'name', service_link.name, 'url', service_link.url)))::json
       END AS services_link`
       )
     )
