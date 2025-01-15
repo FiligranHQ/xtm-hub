@@ -1,8 +1,8 @@
-import { v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 const SERVICES = {
   octi: {
-    id: v4(),
+    id: uuidv4(),
     name: 'openCTI Demo',
     description: 'Try openCTI',
     provider: 'FILIGRAN',
@@ -13,7 +13,7 @@ const SERVICES = {
     tags: ['openCTI'],
   },
   obas: {
-    id: v4(),
+    id: uuidv4(),
     name: 'openBAS Demo',
     description: 'Try openBAS',
     provider: 'FILIGRAN',
@@ -24,7 +24,7 @@ const SERVICES = {
     tags: ['openBAS'],
   },
   obas_doc: {
-    id: v4(),
+    id: uuidv4(),
     name: 'openBAS documentation',
     description: 'Find all documents related to openBAS',
     provider: 'FILIGRAN',
@@ -35,7 +35,7 @@ const SERVICES = {
     tags: ['openBAS'],
   },
   octi_doc: {
-    id: v4(),
+    id: uuidv4(),
     name: 'openCTI documentation',
     description: 'Find all documents related to openCTI',
     provider: 'FILIGRAN',
@@ -46,7 +46,7 @@ const SERVICES = {
     tags: ['openCTI'],
   },
   slack: {
-    id: v4(),
+    id: uuidv4(),
     name: 'Slack',
     description: 'Join our slack community',
     provider: 'FILIGRAN',
@@ -57,7 +57,7 @@ const SERVICES = {
     tags: [],
   },
   blog: {
-    id: v4(),
+    id: uuidv4(),
     name: 'Filigran Blog',
     description: 'Read our latest articles',
     provider: 'FILIGRAN',
@@ -68,7 +68,7 @@ const SERVICES = {
     tags: [],
   },
   academy: {
-    id: v4(),
+    id: uuidv4(),
     name: 'Filigran Academy',
     description:
       'Master OpenCTI and OpenBAS with Filigran Academy—your ultimate guide to success across all skill levels!',
@@ -80,7 +80,7 @@ const SERVICES = {
     tags: [],
   },
   custom_dashboards: {
-    id: v4(),
+    id: uuidv4(),
     name: 'openCTI custom Dashboards Library',
     description: '',
     provider: 'FILIGRAN',
@@ -94,49 +94,49 @@ const SERVICES = {
 
 const SERVICE_LINKS = {
   octi: {
-    id: v4(),
+    id: uuidv4(),
     service_id: SERVICES.octi.id,
     url: 'https://demo.opencti.io',
     name: 'openCTI Demo',
   },
   obas: {
-    id: v4(),
+    id: uuidv4(),
     service_id: SERVICES.obas.id,
     url: 'https://demo.openbas.io',
     name: 'openBAS Demo',
   },
   obas_doc: {
-    id: v4(),
+    id: uuidv4(),
     service_id: SERVICES.obas_doc.id,
     url: 'https://docs.openbas.io/latest/',
     name: 'openBAS doc',
   },
   octi_doc: {
-    id: v4(),
+    id: uuidv4(),
     service_id: SERVICES.octi_doc.id,
     url: 'https://docs.opencti.io/latest/',
     name: 'openCTI doc',
   },
   slack: {
-    id: v4(),
+    id: uuidv4(),
     service_id: SERVICES.slack.id,
     url: 'https://filigran.io/solutions/xtm-hub/',
     name: 'Slack',
   },
   blog: {
-    id: v4(),
+    id: uuidv4(),
     service_id: SERVICES.blog.id,
     url: 'https://filigran.io/solutions/xtm-hub/',
     name: 'Blog',
   },
   academy: {
-    id: v4(),
+    id: uuidv4(),
     service_id: SERVICES.academy.id,
     url: '',
     name: 'Filigran Academy',
   },
   custom_dashboards: {
-    id: v4(),
+    id: uuidv4(),
     service_id: SERVICES.custom_dashboards.id,
     url: '',
     name: '',
