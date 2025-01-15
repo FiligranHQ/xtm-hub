@@ -1,8 +1,8 @@
 import GuardCapacityComponent from '@/components/admin-guard';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import { LinkMenu } from '@/components/menu/menu';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { OrganizationSwitcher } from '@/components/menu/organization-switcher';
-import { Portal, portalContext } from '@/components/portal-context';
 import { RESTRICTION } from '@/utils/constant';
 import { HomeIcon } from 'filigran-icon';
 import { UsersIcon } from 'lucide-react';
@@ -24,6 +24,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   return (
     <nav className="flex-1 flex-shrink-0 pt-s">
       <OrganizationSwitcher open={open} />
+
       <ul className="space-y-s">
         <li>
           <LinkMenu

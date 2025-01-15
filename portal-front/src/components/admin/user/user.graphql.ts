@@ -17,6 +17,14 @@ export const UserSlugEditMutation = graphql`
   }
 `;
 
+export const UserMeEditMutation = graphql`
+  mutation userMeEditMutation($input: EditMeUserInput!) {
+    editMeUser(input: $input) {
+      ...userSlug_fragment
+    }
+  }
+`;
+
 export const userDeletion = graphql`
   mutation userDeletionMutation($connections: [ID!]!, $id: ID!) {
     deleteUser(id: $id) {

@@ -1,4 +1,4 @@
-import { Portal, portalContext } from '@/components/portal-context';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';

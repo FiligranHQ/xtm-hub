@@ -1,7 +1,7 @@
 'use client';
 
 import UserList from '@/components/admin/user/user-list';
-import { Portal, portalContext } from '@/components/portal-context';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';

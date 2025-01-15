@@ -5,7 +5,7 @@ import useMountingLoader from '@/hooks/useMountingLoader';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 
-import { portalContext } from '@/components/portal-context';
+import { portalContext } from '@/components/me/portal-context';
 import { EmptyServices } from '@/components/service/home/empty-services';
 import OwnedServices from '@/components/service/home/owned-services';
 import { publicServiceListQuery } from '@/components/service/public-service.graphql';

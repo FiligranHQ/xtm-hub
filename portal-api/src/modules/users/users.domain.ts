@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   AddUserInput,
+  EditMeUserInput,
   EditUserInput,
   QueryUsersArgs,
   Subscription,
@@ -302,6 +303,14 @@ export const updateSelectedOrganization = async (
   const [updatedUser] = await dbUnsecure<User>('User')
     .where({ id: id as UserId })
     .update({ selected_organization_id })
+    .returning('*');
+  return updatedUser;
+};
+
+export const updateMeUser = async (userId: UserId, input: EditMeUserInput) => {
+  const [updatedUser] = await dbUnsecure<User>('User')
+    .where({ id: userId })
+    .update({ first_name: input.first_name, last_name: input.last_name })
     .returning('*');
   return updatedUser;
 };

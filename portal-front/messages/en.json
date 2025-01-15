@@ -254,7 +254,15 @@
     "Roles": "Roles",
     "RolesPlaceholder": "Select roles",
     "Password": "Password",
-    "Email": "Email"
+    "Email": "Email",
+    "FirstName": "First name",
+    "LastName": "Last name",
+    "WhoAreYou": "Who are you?",
+    "WhoAreYouDescription": "Let us know you first name and last name",
+    "Error": {
+      "FirstName": "First_name is required",
+      "LastName": "Last_name is required"
+    }
   },
   "OrganizationForm": {
     "EditOrganization": "Edit organization",

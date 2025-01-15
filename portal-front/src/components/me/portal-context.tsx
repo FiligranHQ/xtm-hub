@@ -4,7 +4,7 @@ import { createContext, FunctionComponent } from 'react';
 import {
   meContext_fragment$data,
   Restriction,
-} from '../../__generated__/meContext_fragment.graphql';
+} from '../../../__generated__/meContext_fragment.graphql';
 
 export interface Portal {
   me?: meContext_fragment$data | null;
