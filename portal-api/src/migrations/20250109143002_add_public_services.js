@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 const SERVICES = {
   octi: {
     id: uuidv4(),
-    name: 'openCTI Demo',
+    name: 'OpenCTI Demo',
     description: 'Try openCTI',
     provider: 'FILIGRAN',
     type: 'link',
@@ -14,7 +14,7 @@ const SERVICES = {
   },
   obas: {
     id: uuidv4(),
-    name: 'openBAS Demo',
+    name: 'OpenBAS Demo',
     description: 'Try openBAS',
     provider: 'FILIGRAN',
     type: 'link',
@@ -25,7 +25,7 @@ const SERVICES = {
   },
   obas_doc: {
     id: uuidv4(),
-    name: 'openBAS documentation',
+    name: 'OpenBAS Documentation',
     description: 'Find all documents related to openBAS',
     provider: 'FILIGRAN',
     type: 'link',
@@ -36,7 +36,7 @@ const SERVICES = {
   },
   octi_doc: {
     id: uuidv4(),
-    name: 'openCTI documentation',
+    name: 'OpenCTI Cocumentation',
     description: 'Find all documents related to openCTI',
     provider: 'FILIGRAN',
     type: 'link',
@@ -81,7 +81,7 @@ const SERVICES = {
   },
   custom_dashboards: {
     id: uuidv4(),
-    name: 'openCTI custom Dashboards Library',
+    name: 'OpenCTI Custom Dashboards Library',
     description: '',
     provider: 'FILIGRAN',
     type: 'link',
@@ -97,25 +97,25 @@ const SERVICE_LINKS = {
     id: uuidv4(),
     service_id: SERVICES.octi.id,
     url: 'https://demo.opencti.io',
-    name: 'openCTI Demo',
+    name: 'OpenCTI Demo',
   },
   obas: {
     id: uuidv4(),
     service_id: SERVICES.obas.id,
     url: 'https://demo.openbas.io',
-    name: 'openBAS Demo',
+    name: 'OpenBAS Demo',
   },
   obas_doc: {
     id: uuidv4(),
     service_id: SERVICES.obas_doc.id,
     url: 'https://docs.openbas.io/latest/',
-    name: 'openBAS doc',
+    name: 'OpenBAS doc',
   },
   octi_doc: {
     id: uuidv4(),
     service_id: SERVICES.octi_doc.id,
     url: 'https://docs.opencti.io/latest/',
-    name: 'openCTI doc',
+    name: 'OpenCTI doc',
   },
   slack: {
     id: uuidv4(),
@@ -179,14 +179,14 @@ export async function down(knex) {
     .delete()
     .from('Service')
     .whereIn('name', [
-      'openCTI Demo',
-      'openBAS Demo',
-      'openBAS documentation',
-      'openCTI documentation',
+      'OpenCTI Demo',
+      'OpenBAS Demo',
+      'OpenBAS documentation',
+      'OpenCTI documentation',
       'Slack',
       'Filigran Blog',
       'Filigran Academy',
-      'openCTI custom Dashboards Library',
+      'OpenCTI Custom Dashboards Library',
     ]);
 
   await knex.schema.table('Service', function (table) {

@@ -60,7 +60,6 @@ const ServiceList = ({
 
   return (
     <>
-      <h1>{t('HomePage.Welcome')}</h1>
       <OwnedServices
         services={ownedServices}
         publicServices={publicOwnedServices}

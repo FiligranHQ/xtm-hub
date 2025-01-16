@@ -3,7 +3,6 @@
 import { portalContext } from '@/components/portal-context';
 import { LinkIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Suspense, useContext } from 'react';
 import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
@@ -17,7 +16,6 @@ interface OwnedServicesProps {
 }
 
 const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
-  const t = useTranslations();
   const { isPersonalSpace } = useContext(portalContext);
 
   const getAction = (service: PublicService) => {
@@ -46,7 +44,6 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
   if (services.length > 0 || publicServices.length > 0)
     return (
       <Suspense>
-        <h2 className="pb-m">{t('HomePage.YourServices')}</h2>
         <ul
           className={
             'grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'

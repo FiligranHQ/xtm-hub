@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { Button } from 'filigran-ui';
+import { Button, Separator } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 import ServiceCard from '../service-card';
@@ -38,7 +38,7 @@ const AvailableServices = ({
   if (services.length > 0)
     return (
       <Suspense>
-        <h2 className="pb-m pt-m">{t('HomePage.AvailableServices')}</h2>
+        <Separator className="my-4" />
         <ul
           className={
             'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'
