@@ -53,9 +53,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
                 <ServiceCard
                   serviceLink={`/service/vault/${subscription?.service?.id}`}
                   key={id}
-                  service={
-                    subscription?.service as unknown as serviceList_fragment$data
-                  }
+                  service={subscription?.service as serviceList_fragment$data}
                   bottomLeftAction={
                     <ul className="flex space-x-s">
                       {subscription?.service?.links?.map((link) => (

@@ -37,10 +37,9 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
     userServiceOwnedUser$key
   >(userServiceOwnedFragment, queryData);
 
-  const ownedServices: userServicesOwned_fragment$data[] =
-    data.userServiceOwned?.edges.map(
-      (userService) => userService.node
-    ) as unknown as userServicesOwned_fragment$data[];
+  const ownedServices: userServicesOwned_fragment$data[] = (
+    data.userServiceOwned?.edges ?? []
+  ).map((userService) => userService.node as userServicesOwned_fragment$data);
 
   return ownedServices;
 };
