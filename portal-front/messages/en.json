@@ -36,12 +36,9 @@
     "Disconnected": "Your session have expired"
   },
   "HomePage": {
-    "AvailableServices": "Available services",
     "Homepage": "Homepage",
     "Manage": "Manage",
-    "OpenManagement": "Go to management page",
-    "Welcome": "Hi ! Welcome on the XTM Hub",
-    "YourServices": "Your services"
+    "OpenManagement": "Go to management page"
   },
   "LocaleSwitcher": {
     "en": "English",
