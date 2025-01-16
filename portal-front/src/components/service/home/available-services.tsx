@@ -4,12 +4,13 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { Button, Separator } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
+import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
 import ServiceCard from '../service-card';
-import { JOIN_TYPE, PublicService } from '../service.const';
+import { JOIN_TYPE } from '../service.const';
 
 interface PublicServicesProps {
-  services: PublicService[];
-  addSubscriptionInDb: (service: PublicService) => void;
+  services: serviceList_fragment$data[];
+  addSubscriptionInDb: (service: serviceList_fragment$data) => void;
 }
 
 const AvailableServices = ({
@@ -17,7 +18,7 @@ const AvailableServices = ({
   services,
 }: PublicServicesProps) => {
   const t = useTranslations();
-  const getAction = (service: PublicService) => {
+  const getAction = (service: serviceList_fragment$data) => {
     return service.subscribed ||
       service.type === 'COMMUNITY' ||
       service.join_type !== JOIN_TYPE.JOIN_SELF ? null : (

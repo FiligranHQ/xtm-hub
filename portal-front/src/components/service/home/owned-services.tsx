@@ -8,17 +8,16 @@ import { Suspense, useContext } from 'react';
 import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
 import ServiceCard from '../service-card';
-import { PublicService } from '../service.const';
 
 interface OwnedServicesProps {
   services: userServicesOwned_fragment$data[];
-  publicServices: PublicService[];
+  publicServices: serviceList_fragment$data[];
 }
 
 const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
   const { isPersonalSpace } = useContext(portalContext);
 
-  const getAction = (service: PublicService) => {
+  const getAction = (service: serviceList_fragment$data) => {
     if (service.type === 'link') {
       const name = service.links?.[0]?.name;
       const url = service.links?.[0]?.url;

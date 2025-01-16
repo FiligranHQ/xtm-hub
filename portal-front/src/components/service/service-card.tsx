@@ -3,10 +3,10 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ReactNode } from 'react';
-import type { PublicService } from './service.const';
+import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
 
 interface ServiceCardProps {
-  service: PublicService;
+  service: serviceList_fragment$data;
   serviceLink?: string | null;
   bottomLeftAction: ReactNode;
 }

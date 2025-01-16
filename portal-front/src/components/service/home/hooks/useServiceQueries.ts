@@ -10,6 +10,7 @@ import {
 } from 'react-relay';
 import { publicServiceList_services$key } from '../../../../../__generated__/publicServiceList_services.graphql';
 import { publicServiceQuery } from '../../../../../__generated__/publicServiceQuery.graphql';
+import { serviceList_fragment$data } from '../../../../../__generated__/serviceList_fragment.graphql';
 import { subscriptionCreateMutation } from '../../../../../__generated__/subscriptionCreateMutation.graphql';
 import { userServiceOwnedQuery } from '../../../../../__generated__/userServiceOwnedQuery.graphql';
 import { userServiceOwnedUser$key } from '../../../../../__generated__/userServiceOwnedUser.graphql';
@@ -18,7 +19,7 @@ import {
   publicServiceListFragment,
   publicServiceListQuery,
 } from '../../public-service.graphql';
-import { JOIN_TYPE, PublicService } from '../../service.const';
+import { JOIN_TYPE } from '../../service.const';
 import { subscription } from '../../service.graphql';
 import {
   userServiceOwnedFragment,
@@ -75,7 +76,7 @@ const getPublicServices = (
     useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
 
   const addSubscriptionInDb = useCallback(
-    (service: PublicService) => {
+    (service: serviceList_fragment$data) => {
       const commitMutation = (status: string, successMessage: string) => {
         commitSubscriptionCreateMutation({
           variables: {
@@ -99,9 +100,10 @@ const getPublicServices = (
     [connectionID]
   );
 
-  const publicServices: PublicService[] = data.publicServices.edges.map(
-    ({ node }) => node
-  );
+  const publicServices: serviceList_fragment$data[] =
+    data.publicServices.edges.map(
+      ({ node }) => node as serviceList_fragment$data
+    );
 
   return {
     publicServices,
