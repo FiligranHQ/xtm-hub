@@ -1,14 +1,13 @@
 'use client';
 
 import Loader from '@/components/loader';
-import useMountingLoader from '@/hooks/useMountingLoader';
-import * as React from 'react';
-import { useQueryLoader } from 'react-relay';
-
 import { publicServiceListQuery } from '@/components/service/public-service.graphql';
 import ServiceList from '@/components/service/service-list';
 import { UserServiceOwnedQuery } from '@/components/service/user_service.graphql';
+import useMountingLoader from '@/hooks/useMountingLoader';
+import * as React from 'react';
 import { useCallback } from 'react';
+import { useQueryLoader } from 'react-relay';
 import { useLocalStorage } from 'usehooks-ts';
 
 import {

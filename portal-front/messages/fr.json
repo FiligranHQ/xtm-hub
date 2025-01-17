@@ -251,7 +251,15 @@
     "Roles": "Rôles",
     "RolesPlaceholder": "Sélectionner les rôles",
     "Password": "Mot de passe",
-    "Email": "Courriel"
+    "Email": "Courriel",
+    "FirstName": "Prénom",
+    "LastName": "Nom de famille",
+    "WhoAreYou": "Qui êtes-vous ?",
+    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom",
+    "Error": {
+      "FirstName": "Le prénom est requis",
+      "LastName": "Le nom de famille est requis"
+    }
   },
   "OrganizationForm": {
     "EditOrganization": "Modifier l'organisation",

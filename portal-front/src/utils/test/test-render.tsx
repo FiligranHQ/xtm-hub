@@ -1,4 +1,4 @@
-import { PortalContext } from '@/components/portal-context';
+import { PortalContext } from '@/components/me/portal-context';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
