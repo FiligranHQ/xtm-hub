@@ -7,7 +7,7 @@ import { getOrganizations } from '@/components/organization/organization.service
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
-import { isDevelopment } from '@/lib/utils';
+import { isDevelopment, isEmpty } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -104,7 +104,10 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
       organizations: initOrganizations,
     },
   });
-  setIsDirty(form.formState.isDirty);
+
+  // Some issue with addUser, the formState isDirty without any modification, so for now we check if dirtyFields get any key
+  setIsDirty(!isEmpty(form.formState.dirtyFields));
+
   const onSubmit = (values: z.infer<typeof validationSchema>) => {
     handleSubmit({
       ...values,

@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,9 +83,9 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{AlertTitle}</AlertDialogTitle>
-          {description && (
-            <AlertDialogDescription>{description}</AlertDialogDescription>
-          )}
+          <AlertDialogDescription className={cn(!description && 'sr-only')}>
+            {description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         {children}
         <AlertDialogFooter>

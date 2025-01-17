@@ -17,6 +17,7 @@ import { useRelayEnvironment } from 'react-relay';
 import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
+import TriggerButton from '@/components/ui/trigger-button';
 import { useConnectionId } from '@/hooks/useConnectionId';
 import {
   PreloadedQuery,
@@ -104,6 +105,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       },
       {
         label: user.email,
+        original: true,
       },
     ];
     return (
@@ -115,7 +117,10 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             {user.first_name} {user.last_name} - {user.email}
           </h2>
           <div className="space-x-2 flex items-center">
-            <EditUser user={user} />
+            <EditUser
+              user={user}
+              trigger={<TriggerButton label={t('Utils.Update')} />}
+            />
             <AlertDialogComponent
               AlertTitle={t('UserActions.DeleteUser')}
               actionButtonText={t('MenuActions.Delete')}
