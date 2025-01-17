@@ -488,6 +488,7 @@ export type Service = Node & {
   public?: Maybe<Scalars['Boolean']['output']>;
   subscribed?: Maybe<Scalars['Boolean']['output']>;
   subscriptions?: Maybe<Array<Maybe<Subscription>>>;
+  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1534,6 +1535,11 @@ export type ServiceResolvers<
   >;
   subscriptions?: Resolver<
     Maybe<Array<Maybe<ResolversTypes['Subscription']>>>,
+    ParentType,
+    ContextType
+  >;
+  tags?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['String']>>>,
     ParentType,
     ContextType
   >;
