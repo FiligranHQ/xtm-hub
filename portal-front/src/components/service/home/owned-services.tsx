@@ -1,6 +1,6 @@
 'use client';
 
-import { portalContext } from '@/components/portal-context';
+import { portalContext } from '@/components/me/portal-context';
 import { LinkIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
 import Link from 'next/link';
