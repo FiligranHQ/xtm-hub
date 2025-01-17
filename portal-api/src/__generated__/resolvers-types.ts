@@ -111,6 +111,11 @@ export enum DocumentOrdering {
   FileName = 'file_name',
 }
 
+export type EditMeUserInput = {
+  first_name: Scalars['String']['input'];
+  last_name: Scalars['String']['input'];
+};
+
 export type EditServiceCapabilityInput = {
   capabilities: Array<InputMaybe<Scalars['String']['input']>>;
   user_service_id?: InputMaybe<Scalars['String']['input']>;
@@ -163,6 +168,7 @@ export type Mutation = {
   deleteUser?: Maybe<User>;
   deleteUserService?: Maybe<Subscription>;
   editDocument: Document;
+  editMeUser: User;
   editOrganization?: Maybe<Organization>;
   editService?: Maybe<Service>;
   editServiceCapability?: Maybe<Subscription>;
@@ -242,6 +248,10 @@ export type MutationEditDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   newDescription?: InputMaybe<Scalars['String']['input']>;
   serviceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MutationEditMeUserArgs = {
+  input: EditMeUserInput;
 };
 
 export type MutationEditOrganizationArgs = {
@@ -830,6 +840,7 @@ export type ResolversTypes = ResolversObject<{
   DocumentConnection: ResolverTypeWrapper<DocumentConnection>;
   DocumentEdge: ResolverTypeWrapper<DocumentEdge>;
   DocumentOrdering: DocumentOrdering;
+  EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
@@ -896,6 +907,7 @@ export type ResolversParentTypes = ResolversObject<{
   Document: Document;
   DocumentConnection: DocumentConnection;
   DocumentEdge: DocumentEdge;
+  EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
   ID: Scalars['ID']['output'];
@@ -1196,6 +1208,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     Partial<MutationEditDocumentArgs>
+  >;
+  editMeUser?: Resolver<
+    ResolversTypes['User'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationEditMeUserArgs, 'input'>
   >;
   editOrganization?: Resolver<
     Maybe<ResolversTypes['Organization']>,

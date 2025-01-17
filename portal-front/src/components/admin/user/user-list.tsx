@@ -3,7 +3,7 @@ import { EditUser } from '@/components/admin/user/[slug]/user-edit';
 import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
 import { AddUser } from '@/components/admin/user/user-create';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
-import { Portal, portalContext } from '@/components/portal-context';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,

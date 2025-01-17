@@ -2,8 +2,8 @@
 
 import I18nSelect from '@/components/i18n-select';
 import Logout from '@/components/logout';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import { NavigationApp } from '@/components/navigation';
-import { Portal, portalContext } from '@/components/portal-context';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions } from '@/components/ui/icon-actions';

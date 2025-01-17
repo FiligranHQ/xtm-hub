@@ -18,8 +18,8 @@ export async function seed(knex) {
         salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
         password:
           'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
-        first_name: null,
-        last_name: null,
+        first_name: 'firstname',
+        last_name: 'lastname',
         selected_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
       },
     ])

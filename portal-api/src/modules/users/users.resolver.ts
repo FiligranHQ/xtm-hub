@@ -30,6 +30,7 @@ import {
   loadUserDetails,
   loadUsers,
   selectOrganizationAtLogin,
+  updateMeUser,
   updateSelectedOrganization,
   updateUser,
   userHasOrganizationWithSubscription,
@@ -174,6 +175,25 @@ const resolvers: Resolvers = {
         }
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
+        });
+      }
+    },
+
+    editMeUser: async (_, { input }, context) => {
+      const trx = await dbTx();
+      try {
+        await updateMeUser(context.user.id, input);
+        const user = await loadUserDetails({
+          'User.id': context.user.id,
+        });
+
+        await dispatch('User', 'edit', user);
+        await trx.commit();
+        return user;
+      } catch (error) {
+        await trx.rollback();
+        throw UnknownError('EDIT_USER_ERROR', {
+          detail: error,
         });
       }
     },

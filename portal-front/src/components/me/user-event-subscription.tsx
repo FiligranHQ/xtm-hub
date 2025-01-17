@@ -13,7 +13,7 @@ import { useMutation, useSubscription } from 'react-relay';
 import {
   userMeSubscription$data,
   userMeSubscription as userMeSubscriptionType,
-} from '../../__generated__/userMeSubscription.graphql';
+} from '../../../__generated__/userMeSubscription.graphql';
 
 // Component
 const UserEventSubscription: React.FunctionComponent = () => {

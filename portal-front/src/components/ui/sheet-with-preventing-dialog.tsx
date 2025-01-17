@@ -19,7 +19,7 @@ import {
 interface UserFormSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  trigger: ReactNode;
+  trigger?: ReactNode;
   title: string;
   description?: string;
   children: ReactNode;
@@ -62,7 +62,7 @@ export const SheetWithPreventingDialog: FunctionComponent<
         key={'right'}
         open={open}
         onOpenChange={setOpen}>
-        <SheetTrigger asChild>{trigger}</SheetTrigger>
+        {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent
           side={'right'}
           onInteractOutside={(e) => alertDialogSheetClose(e)}>

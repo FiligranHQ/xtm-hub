@@ -2,8 +2,8 @@ import {
   userEditFormSchema,
   userFormSchema,
 } from '@/components/admin/user/user-form.schema';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import { getOrganizations } from '@/components/organization/organization.service';
-import { Portal, portalContext } from '@/components/portal-context';
 import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';

@@ -1,12 +1,13 @@
 'use client';
 
-import { MeContextFragment, MeQuery } from '@/components/me.graphql';
-import { PortalContext } from '@/components/portal-context';
-import UserEventSubscription from '@/components/user-event-subscription';
+import MeFilling from '@/components/me/me-filling';
+import { MeContextFragment, MeQuery } from '@/components/me/me.graphql';
+import { PortalContext } from '@/components/me/portal-context';
+import UserEventSubscription from '@/components/me/user-event-subscription';
 import * as React from 'react';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
-import { meContext_fragment$key } from '../../__generated__/meContext_fragment.graphql';
-import { meLoaderQuery } from '../../__generated__/meLoaderQuery.graphql';
+import { meContext_fragment$key } from '../../../__generated__/meContext_fragment.graphql';
+import { meLoaderQuery } from '../../../__generated__/meLoaderQuery.graphql';
 
 // Component interface
 interface ContextProps {
@@ -25,6 +26,8 @@ const MeContext: React.FunctionComponent<ContextProps> = ({
   return (
     <PortalContext me={me}>
       <UserEventSubscription />
+      <MeFilling />
+
       {children}
     </PortalContext>
   );
