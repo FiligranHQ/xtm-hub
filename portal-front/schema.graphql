@@ -29,6 +29,7 @@ type Mutation {
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User!
+  editMeUser(input: EditMeUserInput!): User!
   deleteUser(id: ID!): User
   changeSelectedOrganization(organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
@@ -369,6 +370,11 @@ input EditUserInput {
   email: String!
   organizations: [String]!
   roles_id: [String]!
+}
+
+input EditMeUserInput {
+  first_name: String!
+  last_name: String!
 }
 
 input AddUserInput {

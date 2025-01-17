@@ -48,10 +48,10 @@ export const ForbiddenAccess = (
 
 export const UnknownError = (
   message: string,
-  details?: Record<string, unknown>,
+  information?: Record<string, unknown>,
   data?: Record<string, unknown>
 ) => {
-  logApp.error(message + ' details: ' + details);
+  logApp.error(message + ' details: ' + information.detail);
   return errorUtil(
     ErrorType.UnknownError,
     message || 'An unknown error has occurred',
@@ -65,10 +65,10 @@ export const UnknownError = (
 
 export const StillReferencedError = (
   message?: string,
-  details?: Record<string, unknown>,
+  information?: Record<string, unknown>,
   data?: Record<string, unknown>
 ) => {
-  logApp.error(message + ' details: ' + details);
+  logApp.error(message + ' details: ' + information.detail);
 
   return errorUtil(ErrorType.StillReference, message, {
     http_status: 200,
@@ -79,10 +79,10 @@ export const StillReferencedError = (
 
 export const AlreadyExistsError = (
   message?: string,
-  details?: Record<string, unknown>,
+  information?: Record<string, unknown>,
   data?: Record<string, unknown>
 ) => {
-  logApp.error(message + ' details: ' + details);
+  logApp.error(message + ' details: ' + information.detail);
 
   return errorUtil(ErrorType.AlreadyExists, message, {
     http_status: 200,
@@ -93,10 +93,10 @@ export const AlreadyExistsError = (
 
 export const NotFoundError = (
   message?: string,
-  details?: Record<string, unknown>,
+  information?: Record<string, unknown>,
   data?: Record<string, unknown>
 ) => {
-  logApp.error(message + ' details: ' + details);
+  logApp.error(message + ' details: ' + information.detail);
 
   return errorUtil(ErrorType.NotFound, message, {
     http_status: 200,

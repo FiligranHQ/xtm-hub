@@ -1,4 +1,4 @@
-import { Portal, portalContext } from '@/components/portal-context';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import { useContext, useEffect } from 'react';
 import { VariablesOf } from 'relay-runtime';
 

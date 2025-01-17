@@ -1,6 +1,6 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 
-import { Portal, portalContext } from '@/components/portal-context';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/service-slug-add-orga-form';
 import { ServiceSlugForm } from '@/components/service/[slug]/service-slug-form';
 import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';

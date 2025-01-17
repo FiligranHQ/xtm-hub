@@ -1,7 +1,7 @@
 'use client';
 
-import Context from '@/components/me-context';
-import { MeQuery } from '@/components/me.graphql';
+import Context from '@/components/me/me-context';
+import { MeQuery } from '@/components/me/me.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';

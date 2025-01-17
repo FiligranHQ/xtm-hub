@@ -1,4 +1,4 @@
-import { Portal, portalContext } from '@/components/portal-context';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
 import { CityIcon, UnfoldMoreIcon } from 'filigran-icon';
