@@ -144,6 +144,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
         <SheetFooter className="pt-2">
           <Button
             variant="outline"
+            type="button"
             onClick={(e) => handleCloseSheet(e)}>
             {t('Utils.Cancel')}
           </Button>

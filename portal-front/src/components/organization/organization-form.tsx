@@ -40,6 +40,7 @@ export const OrganizationForm: FunctionComponent<
     },
   });
   setIsDirty(form.formState.isDirty);
+
   const onSubmit = (values: z.infer<typeof organizationFormSchema>) => {
     handleSubmit({
       ...values,
@@ -133,6 +134,7 @@ export const OrganizationForm: FunctionComponent<
         <SheetFooter className="pt-2">
           <Button
             variant="outline"
+            type="button"
             onClick={(e) => handleCloseSheet(e)}>
             {t('Utils.Cancel')}
           </Button>
