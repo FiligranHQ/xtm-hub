@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import useAdminPath from '@/hooks/useAdminPath';
+import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import useGranted from '@/hooks/useGranted';
 import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
@@ -107,6 +108,9 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   const isAdminPath = useAdminPath();
   const router = useRouter();
   const { me } = useContext<Portal>(portalContext);
+  const [userEdit, setUserEdit] = useState<userList_fragment$data | undefined>(
+    undefined
+  );
 
   const [filter, setFilter] = useState<UserFilter>({
     search: undefined,
@@ -201,16 +205,12 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
                   <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
               }>
-              <EditUser
-                user={row.original}
-                trigger={
-                  <IconActionsButton
-                    className="normal-case"
-                    aria-label={t('UserActions.UpdateUser')}>
-                    {t('MenuActions.Update')}
-                  </IconActionsButton>
-                }
-              />
+              <IconActionsButton
+                className="normal-case"
+                onClick={() => setUserEdit(row.original)}
+                aria-label={t('UserActions.UpdateUser')}>
+                {t('MenuActions.Update')}
+              </IconActionsButton>
               {organization && (
                 <RemoveUserFromOrga
                   organization_id={organization}
@@ -223,7 +223,10 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
                 <IconActionsButton
                   className="normal-case"
                   aria-label={t('UserActions.DetailsUser')}
-                  onClick={() => router.push(`/admin/user/${row.original.id}`)}>
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/admin/user/${row.original.id}`);
+                  }}>
                   {t('MenuActions.Details')}
                 </IconActionsButton>
               </GuardCapacityComponent>
@@ -299,41 +302,52 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   );
 
   return (
-    <DataTable
-      columns={columns}
-      data={userData}
-      i18nKey={i18nKey(t)}
-      onResetTable={resetAll}
-      tableOptions={{
-        onSortingChange: onSortingChange,
-        onPaginationChange: onPaginationChange,
-        onColumnOrderChange: setColumnOrder,
-        onColumnVisibilityChange: setColumnVisibility,
-        manualSorting: true,
-        manualPagination: true,
-        rowCount: data.users.totalCount,
-      }}
-      toolbar={
-        <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
-          <Input
-            className="w-full sm:w-1/3"
-            placeholder={t('UserActions.SearchUserWithEmail')}
-            onChange={debounceHandleInput}
-          />
-          <div className="flex w-full items-center justify-between gap-s sm:w-auto">
-            <DataTableHeadBarOptions />
-            <AddUser connectionId={data?.users?.__id} />
+    <>
+      <DataTable
+        columns={columns}
+        data={userData}
+        i18nKey={i18nKey(t)}
+        onResetTable={resetAll}
+        tableOptions={{
+          onSortingChange: onSortingChange,
+          onPaginationChange: onPaginationChange,
+          onColumnOrderChange: setColumnOrder,
+          onColumnVisibilityChange: setColumnVisibility,
+          manualSorting: true,
+          manualPagination: true,
+          rowCount: data.users.totalCount,
+        }}
+        onClickRow={(row) => setUserEdit(row.original)}
+        toolbar={
+          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+            <Input
+              className="w-full sm:w-1/3"
+              placeholder={t('UserActions.SearchUserWithEmail')}
+              onChange={debounceHandleInput}
+            />
+            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+              <DataTableHeadBarOptions />
+              <AddUser connectionId={data?.users?.__id} />
+            </div>
           </div>
-        </div>
-      }
-      tableState={{
-        sorting: mapToSortingTableValue(orderBy, orderMode),
-        pagination,
-        columnOrder,
-        columnVisibility,
-        columnPinning: { right: ['actions'] },
-      }}
-    />
+        }
+        tableState={{
+          sorting: mapToSortingTableValue(orderBy, orderMode),
+          pagination,
+          columnOrder,
+          columnVisibility,
+          columnPinning: { right: ['actions'] },
+        }}
+      />
+      <EditUser
+        user={userEdit}
+        key={userEdit?.id}
+        defaultStateOpen={!!userEdit}
+        onCloseSheet={() =>
+          useExecuteAfterAnimation(() => setUserEdit(undefined))
+        }
+      />
+    </>
   );
 };
 

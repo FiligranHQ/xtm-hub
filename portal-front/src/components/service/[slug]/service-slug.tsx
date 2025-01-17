@@ -64,26 +64,15 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const { toast } = useToast();
   const t = useTranslations();
 
-  const breadcrumbValue: BreadcrumbNavLink[] = isAdminPath
-    ? [
-        {
-          label: 'MenuLinks.Settings',
-        },
-        {
-          label: 'MenuLinks.Services',
-          href: '/admin/service',
-        },
-      ]
-    : [
-        {
-          label: 'MenuLinks.Home',
-          href: '/',
-        },
-      ];
-
-  breadcrumbValue.push({
-    label: queryData.serviceByIdWithSubscriptions?.name,
-  });
+  const breadcrumbValue: BreadcrumbNavLink[] = [
+    ...(isAdminPath
+      ? [
+          { label: 'MenuLinks.Settings' },
+          { label: 'MenuLinks.Services', href: '/admin/service' },
+        ]
+      : [{ label: 'MenuLinks.Home', href: '/' }]),
+    { label: queryData.serviceByIdWithSubscriptions?.name, original: true },
+  ];
 
   const dataOrganizationsTab = (
     queryData.serviceByIdWithSubscriptions?.subscriptions ?? []
