@@ -53,6 +53,8 @@ export const SheetWithPreventingDialog: FunctionComponent<
     if (isDirty) {
       e.preventDefault();
       setOpenDialog(true);
+    } else {
+      setOpen(false);
     }
   };
 

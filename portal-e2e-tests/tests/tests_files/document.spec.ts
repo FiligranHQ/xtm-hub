@@ -1,49 +1,57 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import { removeDocument } from '../db-utils/document.helper';
+import DocumentPage from '../model/document.pageModel';
 
-test('should confirm CRUD of documents is OK', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.login();
+const TEST_FILE = {
+  path: './tests/tests_files/assets/teste2e.pdf',
+  name: 'teste2e.pdf',
+  description: 'Test document description',
+};
 
-  await page.getByRole('button', { name: 'Collapse' }).click();
-  await page.getByRole('link', { name: 'Vault' }).first().click();
-  await expect(
-    page.getByRole('heading', { name: 'Partner Vault' })
-  ).toBeVisible();
+test.describe('Document Management', () => {
+  let loginPage;
+  let documentPage;
 
-  // Upload file
-  await page.getByLabel('Add new document').click();
-  await page
-    .getByPlaceholder('This is a short paragraph to describe the document.')
-    .fill('description');
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    documentPage = new DocumentPage(page);
 
-  const fileInput = await page.locator('input[type="file"]');
+    await loginPage.login();
+    await documentPage.navigateToVault();
+  });
 
-  await fileInput.setInputFiles('./tests/tests_files/assets/teste2e.pdf');
-  await page.getByRole('button', { name: 'Validate' }).click();
+  test('should perform complete CRUD operations on documents', async ({
+    page,
+  }) => {
+    await test.step('Upload new document', async () => {
+      await documentPage.uploadDocument(TEST_FILE.path, TEST_FILE.description);
+      await expect(
+        page.getByRole('cell', { name: TEST_FILE.name })
+      ).toBeVisible();
+    });
 
-  await expect(page.getByRole('cell', { name: 'teste2e.pdf' })).toBeVisible();
+    await test.step('Filter documents', async () => {
+      await documentPage.searchDocument('a');
+      await expect(
+        page.getByRole('cell', { name: TEST_FILE.name })
+      ).not.toBeVisible();
 
-  // Filter ok
-  await page.getByPlaceholder('Search with document name...').click();
-  await page.getByPlaceholder('Search with document name...').fill('a');
+      await documentPage.searchDocument('');
+      await expect(
+        page.getByRole('cell', { name: TEST_FILE.name })
+      ).toBeVisible();
+    });
 
-  await expect(
-    page.getByRole('cell', { name: 'teste2e.pdf' })
-  ).not.toBeVisible();
+    await test.step('Delete document', async () => {
+      await documentPage.deleteDocument(TEST_FILE.name);
+      await expect(
+        page.getByRole('cell', { name: TEST_FILE.name })
+      ).not.toBeVisible();
+    });
+  });
 
-  // Delete ok
-  await page.getByPlaceholder('Search with document name...').click();
-  await page.getByPlaceholder('Search with document name...').fill('');
-  await page.getByRole('cell', { name: 'Open menu' }).click();
-  await page.getByText('Delete').click();
-
-  await expect(
-    page.getByRole('cell', { name: 'teste2e.pdf' })
-  ).not.toBeVisible();
-});
-
-test.afterAll('Remove newly created subscription', async () => {
-  await removeDocument('teste2e.pdf');
+  test.afterEach(async () => {
+    await removeDocument(TEST_FILE.name);
+  });
 });

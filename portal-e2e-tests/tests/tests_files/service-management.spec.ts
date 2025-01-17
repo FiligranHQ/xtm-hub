@@ -1,89 +1,80 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import {
-  getSubscriptions,
-  removeSubscription,
-} from '../db-utils/subscription.helper';
+import { removeSubscription } from '../db-utils/subscription.helper';
+import ServicePage from '../model/service.pageModel';
 
-test.beforeEach('Remove subscription', async () => {
-  await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
-});
+const TEST_SUBSCRIPTION = {
+  organizationName: 'Thales',
+  organizationId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
+  adminOrgaEmail: 'admin@thales.com',
+  userInOrgaEmail: 'user@thales.com',
+};
+test.describe('Service Management', () => {
+  let loginPage;
+  let servicePage;
 
-test.afterAll('Remove subscription', async () => {
-  await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
-});
+  test.beforeEach(async ({ page }) => {
+    await removeSubscription(TEST_SUBSCRIPTION.organizationId);
 
-test('should confirm service management is ok', async ({ page }) => {
-  await removeSubscription('681fb117-e2c3-46d3-945a-0e921b5d4b6c');
+    loginPage = new LoginPage(page);
+    servicePage = new ServicePage(page);
 
-  const loginPage = new LoginPage(page);
-  await loginPage.login();
+    await loginPage.login();
+    await servicePage.navigateToServiceListAdmin();
+  });
 
-  await page.getByRole('button', { name: 'Settings' }).click();
-  await page.getByRole('link', { name: 'Services' }).click();
+  test('should be able to admin service', async ({ page }) => {
+    await test.step("Add orga's sub + admin_orga's access", async () => {
+      await servicePage.addOrganizationIntoService(
+        TEST_SUBSCRIPTION.organizationName
+      );
 
-  await page
-    .getByRole('row', { name: 'Partner Vault This service' })
-    .getByRole('button')
-    .click();
-  await page.getByLabel('Admin').click();
+      await expect(
+        page.getByRole('cell', { name: TEST_SUBSCRIPTION.adminOrgaEmail })
+      ).toBeVisible();
+      await expect(page.getByText('ACCESS_SERVICE')).toBeVisible();
+      await expect(page.getByText('MANAGE_ACCESS')).toBeVisible();
+    });
 
-  // Add organization
-  await page.getByRole('button', { name: 'Subscribe organization' }).click();
-  await page.getByLabel('Organization', { exact: true }).click();
-  await page.getByLabel('Thales').click();
-  await page.getByRole('button', { name: 'Validate' }).click();
-  await page.getByRole('main').getByText('Thales', { exact: true }).click();
+    await test.step("Add user's rights for service", async () => {
+      await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);
 
-  await expect(
-    page.getByRole('cell', { name: 'admin@thales.com' })
-  ).toBeVisible();
-  await expect(page.getByText('ACCESS_SERVICE')).toBeVisible();
-  await expect(page.getByText('MANAGE_ACCESS')).toBeVisible();
+      await expect(
+        page.getByRole('cell', { name: TEST_SUBSCRIPTION.userInOrgaEmail })
+      ).toBeVisible();
+      await expect(page.getByText('ACCESS_SERVICE').nth(1)).toBeVisible();
+      await expect(page.getByText('MANAGE_ACCESS').nth(1)).not.toBeVisible();
+    });
 
-  // Add user
-  await page.getByLabel('Invite user').click();
-  await page.getByPlaceholder('EMAIL').click();
-  await page.getByPlaceholder('EMAIL').fill('use');
-  await page.getByText('user@thales.com').click();
-  await page.getByRole('dialog').nth(1).press('Enter');
-  await page
-    .locator('div')
-    .filter({ hasText: 'Access service' })
-    .nth(2)
-    .click();
-  await page.getByLabel('Capabilities').click();
-  await page.getByLabel('Suggestions').getByText('ACCESS_SERVICE').click();
-  await page
-    .locator('div')
-    .filter({ hasText: 'Invite user to the serviceSet' })
-    .nth(1)
-    .click();
-  await page.getByRole('button', { name: 'Validate' }).click();
+    await test.step("Edit user's rights for service", async () => {
+      await servicePage.editUsersRightsForService(
+        TEST_SUBSCRIPTION.userInOrgaEmail
+      );
+      await expect(page.getByText('MANAGE_ACCESS').first()).toBeVisible();
+      await expect(page.getByText('ACCESS_SERVICE').first()).toBeVisible();
+    });
 
-  await expect(
-    page.getByRole('cell', { name: 'user@thales.com' })
-  ).toBeVisible();
-  await expect(page.getByText('ACCESS_SERVICE').nth(1)).toBeVisible();
-  await expect(page.getByText('MANAGE_ACCESS').nth(1)).not.toBeVisible();
+    await test.step('Add user that is not in organization', async () => {
+      await page.getByRole('button', { name: 'Invite user' }).click();
+      await page.getByPlaceholder('EMAIL').click();
+      await page.getByPlaceholder('EMAIL').fill('user15');
+      await expect(page.getByText('No results found.')).toBeVisible();
+      await page.getByRole('button', { name: 'Cancel' }).click();
+    });
 
-  // Edit user
-  await page
-    .getByRole('row', { name: 'user@thales.com' })
-    .getByRole('button')
-    .click();
-  await page.getByLabel('Edit user rights').click();
-  await page.getByLabel('Capabilities').click();
-  await page.getByLabel('Suggestions').getByText('MANAGE_ACCESS').click();
-  await page.getByLabel('Suggestions').getByText('ACCESS_SERVICE').click();
-  await page.getByRole('option', { name: 'Close' }).click();
-  await page.getByRole('button', { name: 'Validate' }).click();
-  await expect(page.getByText('MANAGE_ACCESS').first()).toBeVisible();
-  await expect(page.getByText('ACCESS_SERVICE').first()).toBeVisible();
+    await test.step("Delete an organization's subscription", async () => {
+      await servicePage.deleteOrganizationFromService();
+      await page
+        .getByRole('main')
+        .getByText('Filigran', { exact: true })
+        .click();
+      await expect(
+        page.getByRole('option', { name: TEST_SUBSCRIPTION.organizationName })
+      ).not.toBeVisible();
+    });
+  });
 
-  // Unsubscribe organization
-  await page.getByLabel('Delete Organization from the').click();
-  await page.getByRole('button', { name: 'Remove' }).click();
-  await page.getByRole('main').getByText('Filigran', { exact: true }).click();
-  await expect(page.getByRole('option', { name: 'Thales' })).not.toBeVisible();
+  test.afterEach(async ({}) => {
+    await removeSubscription(TEST_SUBSCRIPTION.organizationId);
+  });
 });
