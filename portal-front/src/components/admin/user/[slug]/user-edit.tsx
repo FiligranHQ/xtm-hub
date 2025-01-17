@@ -5,7 +5,6 @@ import {
 } from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useState } from 'react';
@@ -16,25 +15,42 @@ import { userSlugEditMutation } from '../../../../../__generated__/userSlugEditM
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
 
 interface EditUserProps {
-  user: userSlug_fragment$data | userList_fragment$data;
+  user?: userSlug_fragment$data | userList_fragment$data;
   trigger?: ReactNode;
+  onCloseSheet?: () => void;
+  defaultStateOpen?: boolean;
 }
 
 export const EditUser: FunctionComponent<EditUserProps> = ({
   user,
   trigger,
+  onCloseSheet,
+  defaultStateOpen = false,
 }) => {
-  const [openSheet, setOpenSheet] = useState(false);
+  const [openSheet, setOpenSheet] = useState(defaultStateOpen);
   const t = useTranslations();
 
   const { toast } = useToast();
   const [commitUserMutation] =
     useMutation<userSlugEditMutation>(UserSlugEditMutation);
 
+  const handleOpenSheet = (open: boolean) => {
+    setOpenSheet((prevState) => {
+      const sheetIsClosing = prevState !== open && !open;
+      if (sheetIsClosing && onCloseSheet) {
+        onCloseSheet();
+      }
+      return open;
+    });
+  };
+
   const handleSubmit = (values: z.infer<typeof userEditFormSchema>) => {
     // Here we need everything except the password
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...valuesWithoutPasswordField } = values;
+    if (!user) {
+      return;
+    }
     commitUserMutation({
       variables: { input: { ...valuesWithoutPasswordField }, id: user.id },
       onCompleted: () => {
@@ -54,13 +70,12 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
     });
   };
 
-  const defaultTrigger = <TriggerButton label={t('Utils.Update')} />;
   return (
     <SheetWithPreventingDialog
       title={t('UserActions.UpdateUser')}
       open={openSheet}
-      setOpen={setOpenSheet}
-      trigger={trigger ?? defaultTrigger}>
+      setOpen={handleOpenSheet}
+      trigger={trigger}>
       <UserForm
         handleSubmit={handleSubmit}
         user={user}

@@ -42,7 +42,7 @@ export const useDialogContext = () => {
 
 export const SheetWithPreventingDialog: FunctionComponent<
   UserFormSheetProps
-> = ({ open, setOpen, trigger, title, description, children }) => {
+> = ({ open, setOpen, trigger, title, description = '', children }) => {
   const t = useTranslations();
   const [openDialog, setOpenDialog] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -70,7 +70,7 @@ export const SheetWithPreventingDialog: FunctionComponent<
           onInteractOutside={(e) => alertDialogSheetClose(e)}>
           <SheetHeader className="bg-page-background">
             <SheetTitle>{title}</SheetTitle>
-            {description && <SheetDescription>{description}</SheetDescription>}
+            <SheetDescription>{description}</SheetDescription>
           </SheetHeader>
           <DialogContext.Provider
             value={{

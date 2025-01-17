@@ -19,6 +19,7 @@ interface BreadcrumbProps {
 export interface BreadcrumbNavLink {
   href?: string;
   label: ReactNode;
+  original?: boolean;
 }
 
 export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
@@ -28,7 +29,7 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
   return (
     <Breadcrumb className="pb-s sm:pb-l">
       <BreadcrumbList>
-        {value.map(({ href, label }, index) => {
+        {value.map(({ href, label, original }, index) => {
           const lastIndex = value.length - 1 === index;
           return (
             <Fragment key={index}>
@@ -39,7 +40,7 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
                       <Link
                         className="hover:underline"
                         href={href}>
-                        {t(label)}
+                        {original ? label : t(label)}
                       </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
@@ -48,7 +49,7 @@ export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
                 <BreadcrumbItem>
                   <BreadcrumbPage
                     className={cn(!lastIndex && 'text-muted-foreground')}>
-                    {t(label)}
+                    {original ? label : t(label)}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               )}
