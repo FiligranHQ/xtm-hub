@@ -60,6 +60,12 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
       '=',
       'userService.id'
     )
+    .leftJoin(
+      'Service_Link as serviceLinks',
+      'serviceLinks.service_id',
+      '=',
+      'Service.id'
+    )
     .select([
       'Service.*',
       dbRaw(`
@@ -68,9 +74,10 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
           ELSE false
         END AS subscribed
         `),
-      dbRaw(`
-      COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
-    `),
+      dbRaw(
+        'COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), \'[]\'::json) AS capabilities'
+      ),
+      dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
     ])
     .whereRaw(`"subscription"."id" IS NULL`)
     .groupBy(['Service.id', 'subscription.id'])
@@ -172,9 +179,9 @@ export const loadServiceByWithCapabilities = async (
     .select(
       'Service.*',
       dbRaw(
-        `CASE 
-             WHEN COUNT("Service_Capability".id) = 0 THEN ARRAY[]::text[] 
-             ELSE array_agg("Service_Capability".service_capability_name)::text[] 
+        `CASE
+             WHEN COUNT("Service_Capability".id) = 0 THEN ARRAY[]::text[]
+             ELSE array_agg("Service_Capability".service_capability_name)::text[]
           END AS capabilities`
       )
     )
