@@ -14,7 +14,8 @@ graphql.schema.json
 __pycache__
 
 # Yarn
-.yarn/*
+.yarn
+.yarnrc.yml
 .pnp.*
 
 /config/local*.json
