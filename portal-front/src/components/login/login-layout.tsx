@@ -3,10 +3,13 @@ import LoginMessage from '@/components/login/login-message';
 import LoginTitleForm from '@/components/login/login-title';
 import { PlatformProviderButton } from '@/components/login/platform-provider-button';
 import { SettingsQuery } from '@/components/login/settings.graphql';
-import { FunctionComponent } from 'react';
+import useDecodedQuery from '@/hooks/useDecodedQuery';
+import { useToast } from 'filigran-ui/clients';
+import { useTranslations } from 'next-intl';
+import { usePathname, useRouter } from 'next/navigation';
+import { FunctionComponent, useEffect } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
-
 interface LoginLayoutProps {
   queryRef: PreloadedQuery<settingsQuery>;
 }
@@ -15,6 +18,29 @@ export const LoginLayout: FunctionComponent<LoginLayoutProps> = ({
   queryRef,
 }) => {
   const data = usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
+  const router = useRouter();
+  const { redirect, error } = useDecodedQuery();
+  const currentPath = usePathname();
+  const { toast } = useToast();
+  const t = useTranslations();
+  useEffect(() => {
+    if (redirect) {
+      router.push(atob(redirect));
+
+      toast({
+        variant: 'destructive',
+        title: t('Utils.Error'),
+        description: t('Error.Disconnected'),
+      });
+    }
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: t('DeleteUserDialog.TextDeletedUserTitle'),
+        description: t('DeleteUserDialog.TextDeletedUser'),
+      });
+    }
+  }, [currentPath]);
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
       <div className="flex flex-col items-center p-xl sm:p-0">

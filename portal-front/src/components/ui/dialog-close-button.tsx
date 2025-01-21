@@ -1,4 +1,5 @@
 import {
+  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -7,8 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode } from 'react';
 
 interface DialogCloseButtonProps {
@@ -24,6 +25,7 @@ export const DialogCloseButton: FunctionComponent<DialogCloseButtonProps> = ({
   description,
   children,
 }) => {
+  const t = useTranslations();
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -41,7 +43,7 @@ export const DialogCloseButton: FunctionComponent<DialogCloseButtonProps> = ({
               className="mt-2"
               type="button"
               variant="secondary">
-              Close
+              {t('Utils.Close')}
             </Button>
           </DialogClose>
         </DialogFooter>

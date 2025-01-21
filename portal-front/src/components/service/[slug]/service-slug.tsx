@@ -1,8 +1,8 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 
-import { Portal, portalContext } from '@/components/portal-context';
-import { ServiceSlugAddOrgaFormSheet } from '@/components/service/[slug]/service-slug-add-orga-form-sheet';
-import { ServiceSlugFormSheet } from '@/components/service/[slug]/service-slug-form-sheet';
+import { Portal, portalContext } from '@/components/me/portal-context';
+import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/service-slug-add-orga-form';
+import { ServiceSlugForm } from '@/components/service/[slug]/service-slug-form';
 import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
@@ -10,16 +10,17 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
 import { DeleteIcon } from 'filigran-icon';
 import {
+  Button,
   Combobox,
   DataTableHeadBarOptions,
   useToast,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
@@ -27,6 +28,7 @@ import { serviceByIdWithSubscriptionsQuery } from '../../../../__generated__/ser
 import { serviceWithSubscriptions_fragment$data } from '../../../../__generated__/serviceWithSubscriptions_fragment.graphql';
 import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
+import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
   serviceId: string;
@@ -47,7 +49,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState<userService_fragment$data>(
+    {} as userService_fragment$data
+  );
   const isAdminPath = useAdminPath();
 
   const [selectedSubscription, setSelectedSubscription] =
@@ -60,26 +64,15 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const { toast } = useToast();
   const t = useTranslations();
 
-  const breadcrumbValue: BreadcrumbNavLink[] = isAdminPath
-    ? [
-        {
-          label: t('MenuLinks.Settings'),
-        },
-        {
-          label: t('MenuLinks.Services'),
-          href: '/admin/service',
-        },
-      ]
-    : [
-        {
-          label: t('MenuLinks.Home'),
-          href: '/',
-        },
-      ];
-
-  breadcrumbValue.push({
-    label: queryData.serviceByIdWithSubscriptions?.name,
-  });
+  const breadcrumbValue: BreadcrumbNavLink[] = [
+    ...(isAdminPath
+      ? [
+          { label: 'MenuLinks.Settings' },
+          { label: 'MenuLinks.Services', href: '/admin/service' },
+        ]
+      : [{ label: 'MenuLinks.Home', href: '/' }]),
+    { label: queryData.serviceByIdWithSubscriptions?.name, original: true },
+  ];
 
   const dataOrganizationsTab = (
     queryData.serviceByIdWithSubscriptions?.subscriptions ?? []
@@ -143,7 +136,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: <>{t(`Error.Server.${error.message}`)}</>,
         });
       },
     });
@@ -193,42 +186,50 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       </div>
       <div className="flex gap-s flex-wrap">
         <DataTableHeadBarOptions />
-        {dataOrganizationsTab.length > 0 && (
-          <ServiceSlugFormSheet
-            open={openSheet}
-            setOpen={setOpenSheet}
-            userService={currentUser}
-            connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
-            dataOrganizationsTab={dataOrganizationsTab}
-            subscription={selectedSubscription}
-            trigger={
-              <TriggerButton
-                onClick={() => setCurrentUser({})}
-                label={t('Service.InviteUser')}
-              />
-            }
-          />
-        )}
 
         {useAdminPath() && (
-          <ServiceSlugAddOrgaFormSheet
-            subscriptions={
-              queryData?.serviceByIdWithSubscriptions
-                ?.subscriptions as subscriptionWithUserService_fragment$data[]
-            }
-            setSelectedSubscription={setSelectedSubscription}
+          <SheetWithPreventingDialog
             open={openSheetAddOrga}
             setOpen={setOpenSheetAddOrga}
-            serviceId={serviceId}
             trigger={
-              <Button
-                className="text-nowrap"
-                variant="outline"
-                aria-label={t('Service.SubscribeOrganization')}>
+              <Button variant="outline">
                 {t('Service.SubscribeOrganization')}
               </Button>
             }
-          />
+            title={t('OrganizationInServiceAction.AddOrganization')}
+            description={t(
+              'OrganizationInServiceAction.AddOrganizationDescription'
+            )}>
+            <ServiceSlugAddOrgaForm
+              subscriptions={
+                queryData?.serviceByIdWithSubscriptions
+                  ?.subscriptions as subscriptionWithUserService_fragment$data[]
+              }
+              setSelectedSubscription={setSelectedSubscription}
+              serviceId={serviceId}
+            />
+          </SheetWithPreventingDialog>
+        )}
+
+        {dataOrganizationsTab.length > 0 && (
+          <SheetWithPreventingDialog
+            open={openSheet}
+            setOpen={setOpenSheet}
+            trigger={
+              <TriggerButton
+                onClick={() => setCurrentUser({} as userService_fragment$data)}
+                label={t('Service.Management.InviteUser.TitleInviteUser')}
+              />
+            }
+            title={t('InviteUserServiceForm.Title')}
+            description={t('InviteUserServiceForm.Description')}>
+            <ServiceSlugForm
+              userService={currentUser}
+              connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
+              dataOrganizationsTab={dataOrganizationsTab}
+              subscription={selectedSubscription}
+            />
+          </SheetWithPreventingDialog>
         )}
       </div>
     </div>

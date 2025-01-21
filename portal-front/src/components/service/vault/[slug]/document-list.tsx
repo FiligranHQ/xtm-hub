@@ -1,44 +1,46 @@
+import GuardCapacityComponent from '@/components/admin-guard';
+import { ServiceById } from '@/components/service/service.graphql';
+import DeleteDocument from '@/components/service/vault/delete-document';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import {
   DocumentsListQuery,
   documentsFragment,
 } from '@/components/service/vault/document.graphql';
+import DownloadDocument from '@/components/service/vault/download-document';
+import EditDocument from '@/components/service/vault/edit-document';
 import { VaultForm } from '@/components/service/vault/vault-form';
+import VisualizeDocument from '@/components/service/vault/visualize-document';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import { IconActions } from '@/components/ui/icon-actions';
+import useDecodedParams from '@/hooks/useDecodedParams';
+import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
+import { i18nKey } from '@/utils/datatable';
+import { FormatDate } from '@/utils/date';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import {
+  Button,
   DataTable,
   DataTableHeadBarOptions,
+  Input,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import * as React from 'react';
 import { useState } from 'react';
-import { commitLocalUpdate, useRelayEnvironment } from 'react-relay';
-
-import GuardCapacityComponent from '@/components/admin-guard';
-import { ServiceById } from '@/components/service/service.graphql';
-import DeleteDocument from '@/components/service/vault/delete-document';
-import DownloadDocument from '@/components/service/vault/download-document';
-import EditDocument from '@/components/service/vault/edit-document';
-import { IconActions } from '@/components/ui/icon-actions';
-import useDecodedParams from '@/hooks/useDecodedParams';
-import { RESTRICTION } from '@/utils/constant';
-import { FormatDate } from '@/utils/date';
-import Link from 'next/link';
 import {
   PreloadedQuery,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
+import { useDebounceCallback } from 'usehooks-ts';
 import { documentItem_fragment$data } from '../../../../../__generated__/documentItem_fragment.graphql';
 import { documentsList$key } from '../../../../../__generated__/documentsList.graphql';
 import {
@@ -48,6 +50,7 @@ import {
   documentsQuery$variables,
 } from '../../../../../__generated__/documentsQuery.graphql';
 import { serviceByIdQuery } from '../../../../../__generated__/serviceByIdQuery.graphql';
+
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;
   queryRefService: PreloadedQuery<serviceByIdQuery>;
@@ -82,18 +85,6 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
         ...node,
       }) as documentItem_fragment$data
   );
-  const environment = useRelayEnvironment();
-
-  const setDownloadNumber = (documentId: string) => {
-    commitLocalUpdate(environment, (store) => {
-      const documentRecord = store.get(documentId);
-      if (documentRecord) {
-        const currentDownloadNumber: number =
-          (documentRecord.getValue('download_number') as number) ?? 0;
-        documentRecord.setValue(currentDownloadNumber + 1, 'download_number');
-      }
-    });
-  };
 
   const columns: ColumnDef<documentItem_fragment$data>[] = [
     {
@@ -144,7 +135,11 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           <IconActions
             icon={
               <>
-                <MoreVertIcon className="h-4 w-4 text-primary" />
+                <MoreVertIcon
+                  aria-hidden={true}
+                  focusable={false}
+                  className="h-4 w-4 text-primary"
+                />
                 <span className="sr-only">{t('Utils.OpenMenu')}</span>
               </>
             }>
@@ -153,10 +148,8 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               displayError={false}>
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
-            <DownloadDocument
-              documentData={row.original}
-              downloadClicked={setDownloadNumber}
-            />
+            <DownloadDocument documentData={row.original} />
+            <VisualizeDocument documentData={row.original} />
             <GuardCapacityComponent
               capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
               displayError={false}>
@@ -236,11 +229,17 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     });
   };
 
+  const debounceHandleInput = useDebounceCallback(
+    (e) => handleInputChange(e.target.value),
+    DEBOUNCE_TIME
+  );
+
   return (
     <>
       <h1 className="pb-s">{queryDataService.serviceById?.name}</h1>
 
       <DataTable
+        i18nKey={i18nKey(t)}
         columns={columns}
         data={documentData}
         onResetTable={resetAll}
@@ -254,19 +253,19 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           rowCount: data.documents.totalCount,
         }}
         onClickRow={(row) => {
-          setDownloadNumber(row.id);
-          window.location.href = `/document/get/${queryDataService.serviceById?.id}/${row.id}`;
+          const url = `/document/visualize/${queryDataService.serviceById?.id}/${row.id}`;
+          window.open(url, '_blank', 'noopener noreferrer');
         }}
         toolbar={
           <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
             <Input
               className="w-full sm:w-1/3"
               placeholder={t('Service.Vault.FileTab.Search')}
-              onChange={(e) => handleInputChange(e.target.value)}
+              onChange={debounceHandleInput}
             />
             <div className="justify-between flex w-full sm:w-auto items-center gap-s">
               <DataTableHeadBarOptions />
-              <VaultForm connectionId={data?.documents?.__id} />
+
               {canManageService && (
                 <Button
                   asChild
@@ -276,6 +275,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                   </Link>
                 </Button>
               )}
+              <VaultForm connectionId={data?.documents?.__id} />
             </div>
           </div>
         }

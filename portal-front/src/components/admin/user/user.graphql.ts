@@ -17,10 +17,10 @@ export const UserSlugEditMutation = graphql`
   }
 `;
 
-export const userSlugDeletion = graphql`
-  mutation userSlugDeletionMutation($id: ID!) {
-    deleteUser(id: $id) {
-      id
+export const UserMeEditMutation = graphql`
+  mutation userMeEditMutation($input: EditMeUserInput!) {
+    editMeUser(input: $input) {
+      ...userSlug_fragment
     }
   }
 `;
@@ -29,6 +29,7 @@ export const userDeletion = graphql`
   mutation userDeletionMutation($connections: [ID!]!, $id: ID!) {
     deleteUser(id: $id) {
       id @deleteEdge(connections: $connections)
+      email
     }
   }
 `;
@@ -59,6 +60,19 @@ export const userSlugSubscription = graphql`
       }
       delete {
         id @deleteRecord
+      }
+    }
+  }
+`;
+
+export const userMeSubscription = graphql`
+  subscription userMeSubscription {
+    MeUser {
+      delete {
+        id
+      }
+      edit {
+        ...meContext_fragment @relay(mask: false)
       }
     }
   }

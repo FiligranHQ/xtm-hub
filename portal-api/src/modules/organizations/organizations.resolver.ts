@@ -3,23 +3,51 @@ import { db } from '../../../knexfile';
 import { Organization, Resolvers } from '../../__generated__/resolvers-types';
 import { dispatch } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
+import {
+  AlreadyExistsError,
+  StillReferencedError,
+  UnknownError,
+} from '../../utils/error.util';
 import { loadOrganizationBy, loadOrganizations } from './organizations.domain';
 
 const resolvers: Resolvers = {
   Query: {
     organization: async (_, { id }, context) =>
       loadOrganizationBy(context, 'Organization.id', id),
-    organizations: async (_, { first, after, orderMode, orderBy }, context) => {
-      return loadOrganizations(context, { first, after, orderMode, orderBy });
+    organizations: async (_, opts, context) => {
+      return loadOrganizations(context, opts);
     },
   },
   Mutation: {
     addOrganization: async (_, { input }, context) => {
-      const data = { id: uuidv4(), ...input };
-      const [addOrganization] = await db<Organization>(context, 'Organization')
-        .insert(data)
-        .returning('*');
-      return addOrganization;
+      // Check if an organization exists with the same name (case insensitive)
+      const existingOrganization: Organization | undefined =
+        await db<Organization>(context, 'Organization')
+          .where('name', 'ILIKE', input.name)
+          .first('id');
+      if (existingOrganization?.id) {
+        throw AlreadyExistsError('ORGANIZATION_SAME_NAME_EXISTS');
+      }
+
+      try {
+        const [addOrganization] = await db<Organization>(
+          context,
+          'Organization'
+        )
+          .insert({ id: uuidv4(), ...input })
+          .returning('*');
+        return addOrganization;
+      } catch (error) {
+        if (
+          error.message.includes(
+            'duplicate key value violates unique constraint "organization_name_unique"'
+          )
+        ) {
+          throw AlreadyExistsError('ORGANIZATION_SAME_NAME_EXISTS');
+        }
+        logApp.error('ADD_ORGANIZATION_ERROR', error);
+        throw UnknownError('ADD_ORGANIZATION_ERROR', { detail: error });
+      }
     },
     editOrganization: async (_, { id, input }, context) => {
       try {
@@ -32,18 +60,33 @@ const resolvers: Resolvers = {
           .returning('*');
         return updatedOrganization;
       } catch (error) {
-        logApp.error('ERROR', error);
+        logApp.error('EDIT_ORGANIZATION_ERROR', error);
+        throw UnknownError('EDIT_ORGANIZATION_ERROR', { detail: error });
       }
     },
     deleteOrganization: async (_, { id }, context) => {
-      const [deletedOrganization] = await db<Organization>(
-        context,
-        'Organization'
-      )
-        .where({ id })
-        .delete('*');
-      await dispatch('Organization', 'delete', deletedOrganization);
-      return deletedOrganization;
+      try {
+        const [deletedOrganization] = await db<Organization>(
+          context,
+          'Organization'
+        )
+          .where({ id })
+          .delete('*');
+        await dispatch('Organization', 'delete', deletedOrganization);
+        return deletedOrganization;
+      } catch (error) {
+        const regexErrorName = /is still referenced from table "([^"]+)"/;
+        const match =
+          error.detail.match(regexErrorName) ||
+          error.message.match(regexErrorName);
+        if (match) {
+          const tableName = match[1];
+          throw StillReferencedError(
+            `${tableName.toUpperCase()}_STILL_IN_ORGANIZATION`
+          );
+        }
+        throw UnknownError('DELETE_ORGANIZATION', { detail: error });
+      }
     },
   },
 };

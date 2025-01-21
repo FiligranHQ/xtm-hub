@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.47.2-noble
+FROM mcr.microsoft.com/playwright:v1.49.1-noble
 
 WORKDIR /app
 
@@ -7,6 +7,7 @@ COPY .yarn/releases ./.yarn/releases
 COPY .yarnrc.yml package.json yarn.lock playwright.config.ts ./
 RUN yarn install --immutable
 
+
 COPY ./tests ./tests
 
-CMD ["yarn", "playwright", "test", "--reporter=list"]
+CMD ["yarn", "playwright", "test"]

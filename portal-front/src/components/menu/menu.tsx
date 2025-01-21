@@ -3,7 +3,7 @@ import { CollapseMenuButton } from '@/components/menu/collapse-menu-button';
 import { MenuLogo } from '@/components/menu/menu-logo';
 import { NavigationApp } from '@/components/navigation';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from 'filigran-ui/servers';
+import { buttonVariants } from 'filigran-ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ElementType, FunctionComponent, useCallback } from 'react';

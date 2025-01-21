@@ -21,14 +21,15 @@ test('should confirm service management is ok', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Settings' }).click();
   await page.getByRole('link', { name: 'Services' }).click();
+
   await page
     .getByRole('row', { name: 'Partner Vault This service' })
     .getByRole('button')
     .click();
-  await page.getByLabel('Service.GoToAdmin').click();
+  await page.getByLabel('Admin').click();
 
   // Add organization
-  await page.getByLabel('Subscribe organization').click();
+  await page.getByRole('button', { name: 'Subscribe organization' }).click();
   await page.getByLabel('Organization', { exact: true }).click();
   await page.getByLabel('Thales').click();
   await page.getByRole('button', { name: 'Validate' }).click();

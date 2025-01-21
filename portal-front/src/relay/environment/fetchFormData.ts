@@ -20,7 +20,10 @@ export const fetchFormData = async (
   }
 
   const formData = new FormData();
-  formData.append('operations', JSON.stringify({ query: request.text, variables }));
+  formData.append(
+    'operations',
+    JSON.stringify({ query: request.text, variables })
+  );
   const uploadablesArray = Array.from(uploadables);
   const map = uploadablesArray.reduce<{ [key: number]: string[] }>(
     (acc, _, index) => {
@@ -53,8 +56,10 @@ export const fetchFormData = async (
   // throw an error to indicate to the developer what went wrong.
   if (Array.isArray(json.errors)) {
     const containsAuthenticationFailure =
-      json.errors.find((e: any) => e.extensions.code === 'UNAUTHENTICATED') !==
-      undefined;
+      json.errors.find(
+        (e: { extensions: { code: string } }) =>
+          e.extensions.code === 'UNAUTHENTICATED'
+      ) !== undefined;
     if (containsAuthenticationFailure) {
       throw new Error('UNAUTHENTICATED');
     }

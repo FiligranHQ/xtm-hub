@@ -33,6 +33,11 @@ export const serviceListFragment = graphql`
     capabilities
     public
     join_type
+    tags
+    links {
+      name
+      url
+    }
   }
 `;
 

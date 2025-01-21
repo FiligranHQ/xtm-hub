@@ -1,11 +1,12 @@
-import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
+import { UserForm } from '@/components/admin/user/user-form';
 import {
   userEditFormSchema,
   userFormSchema,
 } from '@/components/admin/user/user-form.schema';
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -46,20 +47,23 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });
   };
+
   return (
-    <UserFormSheet
-      title={'Create a new user'}
-      handleSubmit={handleSubmit}
-      open={openSheet}
+    <SheetWithPreventingDialog
+      title={t('UserActions.AddUser')}
       setOpen={setOpenSheet}
-      validationSchema={userFormSchema}
-      user={undefined}
-      trigger={<TriggerButton label={t('UserActions.AddUser')} />}
-    />
+      open={openSheet}
+      trigger={<TriggerButton label={t('UserActions.AddUser')} />}>
+      <UserForm
+        handleSubmit={handleSubmit}
+        user={undefined}
+        validationSchema={userFormSchema}
+      />
+    </SheetWithPreventingDialog>
   );
 };

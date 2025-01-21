@@ -1,7 +1,6 @@
 import { DocumentDeleteMutation } from '@/components/service/vault/document.graphql';
 import { IconActionContext } from '@/components/ui/icon-actions';
-import { useToast } from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { useMutation } from 'react-relay';
@@ -49,7 +48,7 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

@@ -17,6 +17,7 @@ on:
     paths:
       - "portal-api/**"
       - "portal-front/**"
+      - "portal-e2e-tests/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -66,6 +67,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_VERSION=0.0.0-e2e
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:development
@@ -95,7 +98,10 @@ jobs:
           version: "2.29.6"
       - name: Launch docker compose
         run: |
-          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
+          export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
+           TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
+           GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
+           GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests
 
   run-front-unit-tests:
@@ -195,12 +201,26 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             ${{ contains(github.ref, 'refs/tags/') && 'latest' }} # Add `latest` only for tags (production)
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            echo "VERSION=staging-${GITHUB_SHA::8}" >> $GITHUB_ENV
+          elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
+            echo "VERSION=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
+          else
+            echo "VERSION=local-${GITHUB_SHA::8}" >> $GITHUB_ENV
+          fi
       - name: Build and push images
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.image }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            APP_VERSION=${{ env.VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
             type=registry,ref=filigran/${{ matrix.image }}:main

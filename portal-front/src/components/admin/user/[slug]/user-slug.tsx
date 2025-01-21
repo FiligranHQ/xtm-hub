@@ -1,17 +1,6 @@
-import { useRouter } from 'next/navigation';
-import * as React from 'react';
-import {
-  PreloadedQuery,
-  useFragment,
-  useMutation,
-  usePreloadedQuery,
-  useSubscription,
-} from 'react-relay';
-import { userSlugDeletionMutation } from '../../../../../__generated__/userSlugDeletionMutation.graphql';
-
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
 import {
-  userSlugDeletion,
+  userDeletion,
   userSlugFragment,
   UserSlugQuery,
   userSlugSubscription,
@@ -20,11 +9,25 @@ import { trackingSubscription } from '@/components/data-tracking/tracking.graphq
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { DeleteIcon } from 'filigran-icon';
-import { useToast } from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { userSlugQuery } from '../../../../../__generated__/userSlugQuery.graphql';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useRelayEnvironment } from 'react-relay';
 import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
+
+import { logFrontendError } from '@/components/error-frontend-log.graphql';
+import TriggerButton from '@/components/ui/trigger-button';
+import { useConnectionId } from '@/hooks/useConnectionId';
+import {
+  PreloadedQuery,
+  useFragment,
+  useMutation,
+  usePreloadedQuery,
+  useSubscription,
+} from 'react-relay';
+import { userDeletionMutation } from '../../../../../__generated__/userDeletionMutation.graphql';
+import { userSlugQuery } from '../../../../../__generated__/userSlugQuery.graphql';
 import {
   userSlug_fragment$data,
   userSlug_fragment$key,
@@ -41,25 +44,39 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const data = usePreloadedQuery<userSlugQuery>(UserSlugQuery, queryRef);
 
   const t = useTranslations();
-  const [deleteUserMutation] =
-    useMutation<userSlugDeletionMutation>(userSlugDeletion);
+  const [deleteUserMutation] = useMutation<userDeletionMutation>(userDeletion);
   const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
+
   const { toast } = useToast();
+  const connections: string[] = [];
+  const connectionID = useConnectionId('UserConnection');
+  if (connectionID) {
+    connections.push(connectionID);
+  } else {
+    console.warn('recovered ConnectionID from UserConnection is empty');
+    logFrontendError(
+      useRelayEnvironment(),
+      '[user-slug] - Recovered ConnectionID from UserConnection is empty'
+    );
+  }
+
   const onDeleteUser = (user: userSlug_fragment$data): void => {
     deleteUserMutation({
-      variables: { id: user.id },
-      onCompleted: () => {
+      variables: { id: user.id, connections },
+      onCompleted: (data) => {
         router.replace('/admin/user');
         toast({
           title: t('Utils.Success'),
-          description: t('UserActions.UserDeleted'),
+          description: t('UserActions.UserDeleted', {
+            email: data?.deleteUser?.email,
+          }),
         });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });
@@ -80,14 +97,15 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   } else {
     const breadcrumbValue = [
       {
-        label: t('MenuLinks.Settings'),
+        label: 'MenuLinks.Settings',
       },
       {
         href: '/admin/user',
-        label: t('MenuLinks.Users'),
+        label: 'MenuLinks.Users',
       },
       {
         label: user.email,
+        original: true,
       },
     ];
     return (
@@ -99,7 +117,10 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             {user.first_name} {user.last_name} - {user.email}
           </h2>
           <div className="space-x-2 flex items-center">
-            <EditUser user={user} />
+            <EditUser
+              user={user}
+              trigger={<TriggerButton label={t('Utils.Update')} />}
+            />
             <AlertDialogComponent
               AlertTitle={t('UserActions.DeleteUser')}
               actionButtonText={t('MenuActions.Delete')}
@@ -109,7 +130,11 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
                   variant="ghost"
                   size="icon"
                   aria-label={t('UserActions.DeleteUser')}>
-                  <DeleteIcon className="h-4 w-4" />
+                  <DeleteIcon
+                    aria-hidden={true}
+                    focusable={false}
+                    className="h-4 w-4"
+                  />
                 </Button>
               }
               onClickContinue={() => onDeleteUser(user)}>

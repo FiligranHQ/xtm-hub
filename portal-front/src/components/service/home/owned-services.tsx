@@ -1,52 +1,97 @@
 'use client';
 
-import { EmptyServices } from '@/components/service/home/empty-services';
-import { OwnedServicesList } from '@/components/service/home/owned-services-list';
-import {
-  userServiceOwnedFragment,
-  UserServiceOwnedQuery,
-} from '@/components/service/user_service.graphql';
-import * as React from 'react';
-import {
-  PreloadedQuery,
-  usePreloadedQuery,
-  useRefetchableFragment,
-} from 'react-relay';
-import { userServiceOwnedQuery } from '../../../../__generated__/userServiceOwnedQuery.graphql';
-import { userServiceOwnedUser$key } from '../../../../__generated__/userServiceOwnedUser.graphql';
+import { portalContext } from '@/components/me/portal-context';
+import { LinkIcon } from 'filigran-icon';
+import { Button } from 'filigran-ui';
+import Link from 'next/link';
+import { Suspense, useContext } from 'react';
+import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
+import ServiceCard from '../service-card';
 
 interface OwnedServicesProps {
-  queryRef: PreloadedQuery<userServiceOwnedQuery>;
+  services: userServicesOwned_fragment$data[];
+  publicServices: serviceList_fragment$data[];
 }
 
-const OwnedServices: React.FunctionComponent<OwnedServicesProps> = ({
-  queryRef,
-}) => {
-  const queryData = usePreloadedQuery<userServiceOwnedQuery>(
-    UserServiceOwnedQuery,
-    queryRef
-  );
+const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
+  const { isPersonalSpace } = useContext(portalContext);
 
-  const [data] = useRefetchableFragment<
-    userServiceOwnedQuery,
-    userServiceOwnedUser$key
-  >(userServiceOwnedFragment, queryData);
+  const getAction = (service: serviceList_fragment$data) => {
+    if (service.type === 'link') {
+      const name = service.links?.[0]?.name;
+      const url = service.links?.[0]?.url;
+      if (name && url)
+        return (
+          <Button
+            className="h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800"
+            asChild
+            variant="ghost">
+            <Link href={url}>
+              <LinkIcon
+                aria-hidden={true}
+                focusable={false}
+                className="mr-3 h-3 w-3"
+              />
+              {name}
+            </Link>
+          </Button>
+        );
+    }
+  };
 
-  const ownedServices: userServicesOwned_fragment$data[] =
-    data.userServiceOwned?.edges.map(
-      (userService) => userService.node
-    ) as unknown as userServicesOwned_fragment$data[];
-
-  return (
-    <>
-      {ownedServices.length > 0 ? (
-        <OwnedServicesList services={ownedServices} />
-      ) : (
-        <EmptyServices />
-      )}
-    </>
-  );
+  if (services.length > 0 || publicServices.length > 0)
+    return (
+      <Suspense>
+        <ul
+          className={
+            'grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'
+          }>
+          {!isPersonalSpace &&
+            services.map(({ subscription, id }) => {
+              return (
+                <ServiceCard
+                  serviceLink={`/service/vault/${subscription?.service?.id}`}
+                  key={id}
+                  service={subscription?.service as serviceList_fragment$data}
+                  bottomLeftAction={
+                    <ul className="flex space-x-s">
+                      {subscription?.service?.links?.map((link) => (
+                        <li key={link?.name}>
+                          <Button
+                            className={
+                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800'
+                            }
+                            asChild
+                            variant={'ghost'}>
+                            <Link
+                              href={`/service/vault/${subscription?.service?.id}`}>
+                              <LinkIcon
+                                aria-hidden={true}
+                                focusable={false}
+                                className="mr-3 h-3 w-3"
+                              />
+                              {link?.name}
+                            </Link>
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  }
+                />
+              );
+            })}
+          {publicServices.map((service) => (
+            <ServiceCard
+              key={service.id}
+              bottomLeftAction={getAction(service)}
+              service={service}
+              serviceLink={service.links?.[0]?.url}
+            />
+          ))}
+        </ul>
+      </Suspense>
+    );
 };
 
 export default OwnedServices;

@@ -10,7 +10,8 @@ export default async function serverPortalApiFetch<
   TRequest extends ConcreteRequest,
   TQuery extends OperationType,
 >(request: TRequest, variables: VariablesOf<TQuery>): Promise<GraphQLResponse> {
-  const portalCookie = cookies().get('cloud-portal');
+  const c = await cookies();
+  const portalCookie = c.get('cloud-portal');
   const apiDestination = getGraphqlApi(true, 'api');
   return networkFetch(apiDestination, request.params, variables, portalCookie);
 }

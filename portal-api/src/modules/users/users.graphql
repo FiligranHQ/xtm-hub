@@ -46,13 +46,18 @@ type Query {
     orderMode: OrderingMode!
     filter: UserFilter
   ): UserConnection! @auth
-  userHasSomeSubscription: Boolean! @auth
+  userHasOrganizationWithSubscription: Boolean! @auth
 }
 
 input EditUserInput {
   email: String!
   organizations: [String]!
   roles_id: [String]!
+}
+
+input EditMeUserInput {
+  first_name: String!
+  last_name: String!
 }
 
 input AddUserInput {
@@ -68,6 +73,7 @@ type Mutation {
   addUser(input: AddUserInput!): User @auth(requires: [FRT_MANAGE_USER])
   editUser(id: ID!, input: EditUserInput!): User!
     @auth(requires: [FRT_MANAGE_USER])
+  editMeUser(input: EditMeUserInput!): User! @auth
   deleteUser(id: ID!): User @auth(requires: [FRT_MANAGE_USER])
   changeSelectedOrganization(organization_id: ID!): User @auth
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
@@ -84,6 +90,12 @@ type UserSubscription {
   merge: MergeEvent
 }
 
+type MeUserSubscription {
+  edit: User
+  delete: User
+}
+
 type Subscription {
   User: UserSubscription @auth
+  MeUser: MeUserSubscription @auth
 }

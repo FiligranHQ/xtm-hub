@@ -1,6 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterAll, describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
+import { ServiceId } from '../../model/kanel/public/Service';
 import { deleteSubscriptionUnsecure } from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
@@ -22,7 +23,9 @@ describe('Subscription mutation resolver', () => {
       expect(response.name).toEqual('Malware analysis');
     });
     afterAll(async () => {
-      await deleteSubscriptionUnsecure('234a5d21-8a1f-4d3f-8f57-7fd21c321bd4');
+      await deleteSubscriptionUnsecure({
+        service_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4' as ServiceId,
+      });
     });
   });
 });

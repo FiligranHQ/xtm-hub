@@ -1,4 +1,4 @@
-import { PortalContext } from '@/components/portal-context';
+import { PortalContext } from '@/components/me/portal-context';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
@@ -44,6 +44,7 @@ export const ProvidersWrapper = ({
 }: ProvidersWrapperProps) => {
   const relayEnv = createMockEnvironment(relayConfig);
   return (
+    // @ts-expect-error https://github.com/facebook/relay/issues/4598 no solution find yet
     <RelayEnvironmentProvider environment={relayEnv}>
       <PortalContext me={me}>{children}</PortalContext>
     </RelayEnvironmentProvider>

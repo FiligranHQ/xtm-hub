@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,13 +9,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from 'filigran-ui/clients';
-import { buttonVariants } from 'filigran-ui/servers';
+  buttonVariants,
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode } from 'react';
 
 interface AlertDialogProps {
-  triggerElement: ReactNode;
+  triggerElement?: ReactNode;
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
+  displayCancelButton?: boolean;
   AlertTitle: string;
   description?: string;
   actionButtonText?: string;
@@ -39,6 +43,7 @@ Example of use :
             AlertTitle={'AlertDialog title, string'}
             variantName={"destructive"} /*optional
             actionButtonText={"Delete"} /*optional
+            displayCancelButton={false} /*optional, default true
             triggerElement={
               <Button
                 variant="ghost"
@@ -46,7 +51,7 @@ Example of use :
                 aria-label="aria-description">
                 My button trigger text.
               </Button>
-            }
+            } /* If you dont want to trigger it with triggerButton, you can choose open/isOpen option instead.
             onClickContinue={() => myCustomFunction(randomParam)}>
             Are you sure XXX ?
           </AlertDialogComponent>
@@ -55,7 +60,10 @@ Example of use :
 
  */
 export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
+  isOpen,
+  onOpenChange,
   triggerElement,
+  displayCancelButton = true,
   AlertTitle,
   description,
   actionButtonText = 'Continue',
@@ -64,19 +72,26 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
   variantName = 'default',
 }) => {
   const t = useTranslations();
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{triggerElement}</AlertDialogTrigger>
+    <AlertDialog
+      open={isOpen}
+      onOpenChange={onOpenChange}>
+      {triggerElement && (
+        <AlertDialogTrigger asChild>{triggerElement}</AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{AlertTitle}</AlertDialogTitle>
-          {description && (
-            <AlertDialogDescription>{description}</AlertDialogDescription>
-          )}
+          <AlertDialogDescription className={cn(!description && 'sr-only')}>
+            {description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         {children}
         <AlertDialogFooter>
-          <AlertDialogCancel>{t('Utils.Cancel')}</AlertDialogCancel>
+          {displayCancelButton && (
+            <AlertDialogCancel>{t('Utils.Cancel')}</AlertDialogCancel>
+          )}
           <AlertDialogAction
             onClick={onClickContinue}
             className={buttonVariants({ variant: variantName })}>

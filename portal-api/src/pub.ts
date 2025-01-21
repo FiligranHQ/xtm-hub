@@ -17,19 +17,26 @@ type PubEvent = {
 const pubsub = new PubSub();
 
 export const dispatch = async (
-  type: DatabaseType,
+  type: string,
   action: ActionType,
-  data: Node
+  data: Node,
+  typename?: DatabaseType
 ) => {
-  const node = { [action]: { ...data, __typename: type } };
+  const node = { [action]: { ...data, __typename: typename ?? type } };
   await pubsub.publish(type, { [type]: node });
 };
 
-export const listen = (context: PortalContext, topics: DatabaseType[]) => {
+export const listen = (context: PortalContext, topics: string[]) => {
   const iteratorFn = () => pubsub.asyncIterator(topics);
   const filterFn = async (event: PubEvent) => {
+    const [topic] = Object.keys(event);
+    const payload = event[topic];
+    if (!payload) return false;
+
     const values = Object.values(event);
-    return await isNodeAccessible(context.user, values[0]);
+
+    const isAccessible = await isNodeAccessible(context.user, topic, values[0]);
+    return isAccessible;
   };
   return withFilter(iteratorFn, filterFn)();
 };

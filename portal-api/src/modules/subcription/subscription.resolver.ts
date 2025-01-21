@@ -1,5 +1,4 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
@@ -10,6 +9,11 @@ import {
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
+import {
+  FORBIDDEN_ACCESS,
+  ForbiddenAccess,
+  UnknownError,
+} from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import {
   grantServiceAccessUsers,
@@ -36,9 +40,7 @@ const resolvers: Resolvers = {
         );
 
         if (subscription) {
-          throw new GraphQLError('You have already subscribed this service.', {
-            extensions: { code: '[Subscription] addSubscription' },
-          });
+          throw ForbiddenAccess('ALREADY_SUBSCRIBED');
         }
 
         const subscriptionData = {
@@ -85,8 +87,13 @@ const resolvers: Resolvers = {
         };
       } catch (error) {
         await trx.rollback();
-        logApp.error('Error while subscribing the service.', error);
-        throw error;
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          logApp.warn(
+            'Forbidden access while adding subscription: you have already subscribed this service.'
+          );
+          throw ForbiddenAccess('ALREADY_SUBSCRIBED');
+        }
+        throw UnknownError('SERVICE_SUBSCRIPTION_ERROR', { detail: error });
       }
     },
     addSubscriptionInService: async (
@@ -105,9 +112,7 @@ const resolvers: Resolvers = {
           fromGlobalId(service_id).id
         );
         if (subscription) {
-          throw new Error(
-            `You've already subscribed this organization to this service.`
-          );
+          throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
         }
 
         const subscriptionData = {
@@ -144,23 +149,38 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         await trx.rollback();
-        logApp.error('Error while subscribing the service.', error);
-        throw error;
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          logApp.warn(
+            "Forbidden access while adding subscription: You've already subscribed this organization to this service."
+          );
+          throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
+        }
+        throw UnknownError('SERVICE_SUBSCRIPTION_ERROR', { detail: error });
       }
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
-      const [subscription] = await loadSubscriptionBy({
-        id: extractId(subscription_id),
-      } as SubscriptionMutator);
+      try {
+        const [subscription] = await loadSubscriptionBy({
+          id: extractId(subscription_id),
+        } as SubscriptionMutator);
 
-      if (subscription.billing !== 0) {
-        throw new Error('You can not delete a subscription with billing.');
+        if (subscription.billing !== 0) {
+          throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
+        }
+        await db<Subscription>(context, 'Subscription')
+          .where({ id: fromGlobalId(subscription_id).id })
+          .delete('*');
+
+        return loadServiceWithSubscriptions(context, subscription.service_id);
+      } catch (error) {
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          logApp.warn(
+            'Forbidden access while deleting subscription: you can not delete a subscription with billing.'
+          );
+          throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
+        }
+        throw UnknownError('DELETE_SUBSCRIPTION_ERROR', { detail: error });
       }
-      await db<Subscription>(context, 'Subscription')
-        .where({ id: fromGlobalId(subscription_id).id })
-        .delete('*');
-
-      return loadServiceWithSubscriptions(context, subscription.service_id);
     },
   },
 };

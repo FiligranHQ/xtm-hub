@@ -1,4 +1,4 @@
-import { Portal, portalContext } from '@/components/portal-context';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import { useContext } from 'react';
 import { Restriction } from '../../__generated__/meContext_fragment.graphql';
 
