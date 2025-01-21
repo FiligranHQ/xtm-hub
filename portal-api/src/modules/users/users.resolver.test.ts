@@ -4,6 +4,10 @@ import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
+  DEFAULT_ADMIN_EMAIL,
+  SERVICE_VAULT_ID,
+  SIMPLE_USER_ID,
+  THALES_ORGA_ID,
 } from '../../../tests/tests.const';
 import {
   AddUserInput,
@@ -23,20 +27,23 @@ import {
 import { deleteUserById, loadUserBy } from './users.domain';
 import usersResolver from './users.resolver';
 
+const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
+const OTHER_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
+
 describe('User query resolver', () => {
   describe('userHasOrganizationWithSubscription', () => {
     beforeEach(async () => {
       await insertUnsecureSubscription({
-        id: '7c6e887e-9553-439b-aeaf-a81911c399d2',
-        organization_id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
-        service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        id: SUBSCRIPTION_ID,
+        organization_id: THALES_ORGA_ID,
+        service_id: SERVICE_VAULT_ID,
       });
     });
     it.each`
-      expected | organizations                                                                                                       | description
-      ${true}  | ${[{ id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c', name: 'Thales', personal_space: false, domains: ['thales.com'] }]} | ${'organization has subscription'}
-      ${false} | ${[]}                                                                                                               | ${'has no organization'}
-      ${false} | ${[{ id: '681fb117-e2c3-46d3-945a-0e921b5d4b6d', name: 'Thales', personal_space: false, domains: ['thales.com'] }]} | ${'no organization has subscription'}
+      expected | organizations                                                                               | description
+      ${true}  | ${[{ id: THALES_ORGA_ID, name: 'Thales', personal_space: false, domains: ['thales.com'] }]} | ${'organization has subscription'}
+      ${false} | ${[]}                                                                                       | ${'has no organization'}
+      ${false} | ${[{ id: OTHER_ORGA_ID, name: 'Other', personal_space: false, domains: ['thales.com'] }]}   | ${'no organization has subscription'}
     `(
       'Should return $expected if $description',
       async ({ expected, organizations }) => {
@@ -59,7 +66,7 @@ describe('User query resolver', () => {
     );
     afterEach(async () => {
       await deleteSubscriptionUnsecure({
-        id: '7c6e887e-9553-439b-aeaf-a81911c399d2' as SubscriptionId,
+        id: SUBSCRIPTION_ID as SubscriptionId,
       });
     });
   });
@@ -82,7 +89,7 @@ describe('User mutation resolver', () => {
     // @ts-ignore
     const response = await usersResolver.Mutation.login(
       undefined,
-      { email: 'admin@filigran.io', password: 'admin' },
+      { email: DEFAULT_ADMIN_EMAIL, password: 'admin' },
       {
         req: {
           session: {
@@ -102,7 +109,7 @@ describe('User mutation resolver', () => {
           undefined,
           {
             input: {
-              email: 'admin@filigran.io',
+              email: DEFAULT_ADMIN_EMAIL,
               password: 'admin',
               roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
             } as AddUserInput,
@@ -194,12 +201,7 @@ describe('User mutation resolver', () => {
               email: testMail,
               password: 'admin',
               roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
-              organizations: [
-                toGlobalId(
-                  'Organization',
-                  '681fb117-e2c3-46d3-945a-0e921b5d4b6c'
-                ),
-              ],
+              organizations: [toGlobalId('Organization', THALES_ORGA_ID)],
             } as AddUserInput,
           },
           contextAdminOrgaThales
@@ -222,9 +224,7 @@ describe('User mutation resolver', () => {
           email: testMail,
           password: 'admin',
           roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
-          organizations: [
-            toGlobalId('Organization', '681fb117-e2c3-46d3-945a-0e921b5d4b6c'),
-          ],
+          organizations: [toGlobalId('Organization', THALES_ORGA_ID)],
         } as AddUserInput,
       },
       contextAdminOrgaThales
@@ -233,9 +233,7 @@ describe('User mutation resolver', () => {
     it('should have Personal space and Thales as organization', async () => {
       expect(response).toBeTruthy();
       expect(
-        user.organizations.some(
-          (org) => org.id === '681fb117-e2c3-46d3-945a-0e921b5d4b6c'
-        )
+        user.organizations.some((org) => org.id === THALES_ORGA_ID)
       ).toBeTruthy();
       expect(
         user.organizations.some(
@@ -258,18 +256,12 @@ describe('User mutation resolver', () => {
       const response = await usersResolver.Mutation.editUser(
         undefined,
         {
-          id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
+          id: SIMPLE_USER_ID,
           input: {
             organizations: [
-              toGlobalId(
-                'Organization',
-                'e389e507-f1cd-4f2f-bfb2-274140d87d28'
-              ),
+              toGlobalId('Organization', SIMPLE_USER_ID),
               toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
-              toGlobalId(
-                'Organization',
-                '681fb117-e2c3-46d3-945a-0e921b5d4b6c' // Thales
-              ),
+              toGlobalId('Organization', THALES_ORGA_ID),
             ],
           } as EditUserInput,
         },
@@ -292,13 +284,10 @@ describe('User mutation resolver', () => {
         await usersResolver.Mutation.editUser(
           undefined,
           {
-            id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
+            id: SIMPLE_USER_ID,
             input: {
               organizations: [
-                toGlobalId(
-                  'Organization',
-                  'e389e507-f1cd-4f2f-bfb2-274140d87d28'
-                ),
+                toGlobalId('Organization', SIMPLE_USER_ID),
                 toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
               ],
             } as EditUserInput,
@@ -319,10 +308,7 @@ describe('User mutation resolver', () => {
               organizations: [
                 toGlobalId('Organization', ADMIN_UUID),
                 toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
-                toGlobalId(
-                  'Organization',
-                  '681fb117-e2c3-46d3-945a-0e921b5d4b6c'
-                ),
+                toGlobalId('Organization', THALES_ORGA_ID),
               ],
             } as EditUserInput,
           },
