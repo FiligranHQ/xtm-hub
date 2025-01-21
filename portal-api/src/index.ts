@@ -21,13 +21,14 @@ import { awxEndpoint } from './managers/awx/awx-endpoint';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
+import { documentVisualizeEndpoint } from './modules/services/document/visualize-document-endpoint';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
+import { getSessionStoreInstance } from './sessionStoreManager';
 import { logApp } from './utils/app-logger.util';
 import { extractId } from './utils/utils';
-
 const { json } = pkg;
 
 // region GraphQL server initialization
@@ -37,9 +38,9 @@ const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
 const app = express();
-
 const sessionMiddleware = expressSession({
   name: PORTAL_COOKIE_NAME,
+  store: getSessionStoreInstance(),
   secret: PORTAL_COOKIE_SECRET,
   saveUninitialized: true,
   proxy: true,
@@ -173,6 +174,7 @@ await initAuthPlatform(app);
 // It lacks the level of abstraction needed to attach a file to the response (using res.attachment).
 // Therefore, we have to handle it through this route instead.
 documentDownloadEndpoint(app);
+documentVisualizeEndpoint(app);
 awxEndpoint(app);
 healthEndpoint(app);
 

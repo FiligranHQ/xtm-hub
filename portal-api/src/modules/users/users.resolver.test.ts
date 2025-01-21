@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { v4 as uuidv4 } from 'uuid';
-import { afterAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
@@ -9,14 +9,61 @@ import {
   AddUserInput,
   EditUserInput,
 } from '../../__generated__/resolvers-types';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import {
   ADMIN_UUID,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_USER,
 } from '../../portal.const';
+import {
+  deleteSubscriptionUnsecure,
+  insertUnsecureSubscription,
+} from '../subcription/subscription.helper';
 import { deleteUserById, loadUserBy } from './users.domain';
 import usersResolver from './users.resolver';
+
+describe('User query resolver', () => {
+  describe('userHasOrganizationWithSubscription', () => {
+    beforeEach(async () => {
+      await insertUnsecureSubscription({
+        id: '7c6e887e-9553-439b-aeaf-a81911c399d2',
+        organization_id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
+        service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+      });
+    });
+    it.each`
+      expected | organizations                                                                                                       | description
+      ${true}  | ${[{ id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c', name: 'Thales', personal_space: false, domains: ['thales.com'] }]} | ${'organization has subscription'}
+      ${false} | ${[]}                                                                                                               | ${'has no organization'}
+      ${false} | ${[{ id: '681fb117-e2c3-46d3-945a-0e921b5d4b6d', name: 'Thales', personal_space: false, domains: ['thales.com'] }]} | ${'no organization has subscription'}
+    `(
+      'Should return $expected if $description',
+      async ({ expected, organizations }) => {
+        const currentContext = {
+          ...contextAdminOrgaThales,
+          user: {
+            ...contextAdminOrgaThales.user,
+            organizations: organizations,
+          },
+        };
+        const response =
+          await usersResolver.Query.userHasOrganizationWithSubscription(
+            undefined,
+            {},
+            currentContext
+          );
+
+        expect(response).toStrictEqual(expected);
+      }
+    );
+    afterEach(async () => {
+      await deleteSubscriptionUnsecure({
+        id: '7c6e887e-9553-439b-aeaf-a81911c399d2' as SubscriptionId,
+      });
+    });
+  });
+});
 
 describe('Query resolver', () => {
   it('should fetch User', async () => {
@@ -283,7 +330,7 @@ describe('User mutation resolver', () => {
         );
       } catch (error) {
         expect(error).toBeTruthy();
-        expect(error.message).toEqual('You cannot edit yourself');
+        expect(error.message).toEqual('CANT_EDIT_YOURSELF_ERROR');
       }
     });
   });

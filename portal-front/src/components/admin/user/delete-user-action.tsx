@@ -4,7 +4,7 @@ import {
   IconActionContext,
   IconActionsButton,
 } from '@/components/ui/icon-actions';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useContext } from 'react';
 import { useMutation } from 'react-relay';
@@ -32,17 +32,19 @@ export const DeleteUserAction: FunctionComponent<DeleteUserActionsProps> = ({
     setMenuOpen(false);
     deleteUserMutation({
       variables: { id, connections: [connectionID] },
-      onCompleted: () => {
+      onCompleted: (data) => {
         toast({
           title: 'Success',
-          description: t('UserActions.UserDeleted'),
+          description: t('UserActions.UserDeleted', {
+            email: data?.deleteUser?.email,
+          }),
         });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });

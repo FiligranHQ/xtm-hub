@@ -2,28 +2,24 @@
 
 import UserList from '@/components/admin/user/user-list';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { UseTranslationsProps } from '@/i18n/config';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-// Component interface
-interface PreloaderProps {}
-
-const breadcrumbValue = (t: UseTranslationsProps) => [
+const breadcrumbValue = [
   {
-    label: t('MenuLinks.Settings'),
+    label: 'MenuLinks.Settings',
   },
   {
-    label: t('MenuLinks.Users'),
+    label: 'MenuLinks.Users',
   },
 ];
 // Component
-const PageLoader: React.FunctionComponent<PreloaderProps> = () => {
+const PageLoader: React.FunctionComponent = () => {
   const t = useTranslations();
 
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue(t)} />
+      <BreadcrumbNav value={breadcrumbValue} />
       <h1 className="pb-s">{t('MenuLinks.Users')}</h1>
       <UserList />
     </>

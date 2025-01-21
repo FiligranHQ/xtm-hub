@@ -1,11 +1,11 @@
 'use client';
 import { cn } from '@/lib/utils';
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
 import React, {
   createContext,
   FunctionComponent,
@@ -29,8 +29,6 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
   icon,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const closeMenu = () => setMenuOpen(false);
 
   return (
     <DropdownMenu

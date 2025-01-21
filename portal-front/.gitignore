@@ -38,12 +38,8 @@ yarn-error.log*
 next-env.d.ts
 
 # Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
+.yarn
+.yarnrc.yml
 .pnp.*
 /test-results/
 /playwright-report/

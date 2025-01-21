@@ -39,6 +39,7 @@ export async function networkFetch(
   if (portalCookie) {
     headers.cookie = portalCookie.name + '=' + portalCookie.value;
   }
+
   const resp = await fetch(apiUri, {
     method: 'POST',
     credentials: 'same-origin',
@@ -51,10 +52,13 @@ export async function networkFetch(
   // property of the response. If any exceptions occurred when processing the request,
   // throw an error to indicate to the developer what went wrong.
   if (Array.isArray(json.errors)) {
-    const containsAuthenticationFailure =
-      json.errors.find((e: any) => e.extensions.code === 'UNAUTHENTICATED') !==
-      undefined;
+    const containsAuthenticationFailure = json.errors.find(
+      (e: { message: string }) => e.message === 'Not authenticated.'
+    );
     if (containsAuthenticationFailure) {
+      // redirect to login page
+      const location = window.location.pathname;
+      window.location.href = `/?redirect=${btoa(location)}`;
       throw new Error('UNAUTHENTICATED');
     }
     throw new Error(json.errors[0].message);
@@ -70,7 +74,7 @@ const subscriptionsClient = createClient({
 export function fetchOrSubscribe(
   operation: RequestParameters,
   variables: Variables
-): Observable<any> {
+): Observable<never> {
   return Observable.create((sink) => {
     if (!operation.text) {
       return sink.error(new Error('Operation text cannot be empty'));

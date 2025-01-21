@@ -1,6 +1,6 @@
 'use client';
 
-import { Portal, portalContext } from '@/components/portal-context';
+import { Portal, portalContext } from '@/components/me/portal-context';
 import useGranted from '@/hooks/useGranted';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';

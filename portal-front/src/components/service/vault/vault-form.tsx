@@ -3,15 +3,16 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import { DocumentAddMutation } from '@/components/service/vault/document.graphql';
 import {
   newDocumentSchema,
-  VaultNewFileFormSheet,
-} from '@/components/service/vault/vault-new-file-form-sheet';
-import TriggerButton from '@/components/ui/trigger-button';
+  VaultNewFileForm,
+} from '@/components/service/vault/vault-new-file-form';
 import { RESTRICTION } from '@/utils/constant';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
 
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import TriggerButton from '@/components/ui/trigger-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { useMutation } from 'react-relay';
 import { UploadableMap } from 'relay-runtime';
@@ -51,7 +52,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });
@@ -62,14 +63,15 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
       <GuardCapacityComponent
         capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
         displayError={false}>
-        <VaultNewFileFormSheet
+        <SheetWithPreventingDialog
           open={openSheet}
+          setOpen={setOpenSheet}
           trigger={
             <TriggerButton label={t('Service.Vault.FileForm.AddFile')} />
           }
-          setOpen={setOpenSheet}
-          handleSubmit={sendDocument}
-        />
+          title={t('Service.Vault.FileForm.AddFile')}>
+          <VaultNewFileForm handleSubmit={sendDocument} />
+        </SheetWithPreventingDialog>
       </GuardCapacityComponent>
     </>
   );

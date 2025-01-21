@@ -3,8 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   AddUserInput,
+  EditMeUserInput,
   EditUserInput,
   QueryUsersArgs,
+  Subscription,
   UserConnection,
   UserFilter,
   User as UserGenerated,
@@ -305,6 +307,14 @@ export const updateSelectedOrganization = async (
   return updatedUser;
 };
 
+export const updateMeUser = async (userId: UserId, input: EditMeUserInput) => {
+  const [updatedUser] = await dbUnsecure<User>('User')
+    .where({ id: userId })
+    .update({ first_name: input.first_name, last_name: input.last_name })
+    .returning('*');
+  return updatedUser;
+};
+
 export const updateUser = async (
   context: PortalContext,
   id: UserId,
@@ -406,6 +416,18 @@ export const loadUserDetails = async (
       '=',
       'rolePortal.id'
     )
+    .leftJoin(
+      'RolePortal_CapabilityPortal as roleCapaPortal',
+      'rolePortal.id',
+      '=',
+      'roleCapaPortal.role_portal_id'
+    )
+    .leftJoin(
+      'CapabilityPortal as capabilityPortal',
+      'roleCapaPortal.capability_portal_id',
+      '=',
+      'capabilityPortal.id'
+    )
     .select([
       'User.*',
       dbRaw(
@@ -422,17 +444,30 @@ export const loadUserDetails = async (
           as: 'roles_portal',
         })
       ),
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'capabilityPortal',
+          typename: 'CapabilityPortal',
+          as: 'capabilities',
+        })
+      ),
     ])
     .groupBy(['User.id'])
     .first();
 };
 
-export const userHasSomeSubscription = async (context: PortalContext) => {
-  const exists = await dbUnsecure('User_Service')
-    .where({ user_id: context.user.id })
-    .first(); // Fetch only the first matching record
-
-  return !!exists;
+export const userHasOrganizationWithSubscription = async (
+  context: PortalContext
+) => {
+  const organizationIds = context.user.organizations.map((org) => org.id);
+  if (organizationIds.length === 0) {
+    return false;
+  }
+  const subscriptions: Subscription[] = await db<Subscription>(
+    context,
+    'Subscription'
+  ).whereIn('organization_id', organizationIds);
+  return subscriptions.length !== 0;
 };
 
 /**

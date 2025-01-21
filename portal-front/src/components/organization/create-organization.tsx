@@ -1,8 +1,9 @@
-import { OrganizationFormSheet } from '@/components/organization/organization-form-sheet';
+import { OrganizationForm } from '@/components/organization/organization-form';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -42,13 +43,12 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
         });
       },
       onError: (error) => {
-        const message = error.message.includes(
-          'duplicate key value violates unique constraint "organization_name_unique"'
-        )
-          ? t('OrganizationActions.ErrorNameAlreadyExists', {
-              name: values.name,
-            })
-          : error.message;
+        const message =
+          error.message === 'ORGANIZATION_SAME_NAME_EXISTS'
+            ? t('OrganizationActions.ErrorNameAlreadyExists', {
+                name: values.name,
+              })
+            : error.message;
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
@@ -58,7 +58,7 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
     });
   };
   return (
-    <OrganizationFormSheet
+    <SheetWithPreventingDialog
       open={openSheet}
       setOpen={setOpenSheet}
       trigger={
@@ -67,8 +67,8 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
           label={t('OrganizationForm.CreateOrganization')}
         />
       }
-      title={t('OrganizationForm.CreateOrganization')}
-      handleSubmit={handleSubmit}
-    />
+      title={t('OrganizationForm.CreateOrganization')}>
+      <OrganizationForm handleSubmit={handleSubmit} />
+    </SheetWithPreventingDialog>
   );
 };

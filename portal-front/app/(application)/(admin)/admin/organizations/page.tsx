@@ -4,10 +4,8 @@ import { RESTRICTION } from '@/utils/constant';
 import * as React from 'react';
 import PageLoader from './page-loader';
 
-interface PageProps {}
-
 // Component
-const Page: React.FunctionComponent<PageProps> = () => {
+const Page: React.FunctionComponent = () => {
   return (
     <GuardCapacityComponent
       displayError

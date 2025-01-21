@@ -26,7 +26,7 @@ export type QueryResponsePayload = {
 export function createServerSideRelayEnvironment(
   observer: Observer<QueryResponsePayload>
 ) {
-  const curriedFetchFn: FetchFunction = (request, variables, ...rest) => {
+  const curriedFetchFn: FetchFunction = (request, variables) => {
     const observable = networkFetch('/graphql-api', request, variables);
 
     if (isRelayObservable(observable)) {
@@ -51,7 +51,7 @@ export function createServerSideRelayEnvironment(
     network: Network.create(curriedFetchFn, fetchOrSubscribe),
     store: new Store(new RecordSource()),
     isServer: true,
-    // @ts-ignore
+    // @ts-expect-error
     relayFieldLogger: fieldLogger,
   });
 }

@@ -5,9 +5,10 @@ import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import { DocumentsListQuery } from '@/components/service/vault/document.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from 'filigran-ui/clients';
+import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -17,9 +18,8 @@ import { useQueryLoader } from 'react-relay';
 import { documentItem_fragment$data } from '../../../../../../__generated__/documentItem_fragment.graphql';
 import { documentsQuery } from '../../../../../../__generated__/documentsQuery.graphql';
 import { serviceByIdQuery } from '../../../../../../__generated__/serviceByIdQuery.graphql';
-interface PreloaderProps {}
 
-const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
+const PageLoader: React.FunctionComponent = ({}) => {
   const t = useTranslations();
 
   const columns: ColumnDef<documentItem_fragment$data>[] = [
@@ -44,14 +44,6 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
       id: 'download_number',
       size: 40,
       header: t('Service.Vault.FileTab.NumberDownload'),
-    },
-    {
-      id: 'actions',
-      size: 100,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => ({}),
     },
   ];
 
@@ -94,6 +86,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({}) => {
         />
       ) : (
         <DataTable
+          i18nKey={i18nKey(t)}
           data={[]}
           columns={columns}
           isLoading={true}

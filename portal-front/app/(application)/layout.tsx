@@ -5,12 +5,12 @@ import '../../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 
+import { AdminCallout } from '@/components/admin/admin-callout';
 import AppContext from '@/components/app-context';
 import { ContentLayout } from '@/components/content-layout';
 import HeaderComponent from '@/components/header';
 import Login from '@/components/login/login';
 import Menu from '@/components/menu/menu';
-import { EmptyServicesRedirect } from '@/components/service/home/empty-services-redirect';
 import I18nContext from '@/i18n/i18n-context';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
@@ -19,17 +19,14 @@ import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '../../__generated__/meLoaderQuery.graphql';
-import meUserHasSomeSubscriptionNode, {
-  meUserHasSomeSubscription,
-  meUserHasSomeSubscription$data,
-} from '../../__generated__/meUserHasSomeSubscription.graphql';
 import PageLoader from './page-loader';
 
 export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
   return {
     title: 'XTM Hub',
     description: 'XTM Hub application by Filigran',
-    metadataBase: new URL(`https://${headers().get('host')}`),
+    metadataBase: new URL(`https://${h.get('host')}`),
   };
 }
 
@@ -42,7 +39,7 @@ interface RootLayoutProps {
 const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
   children,
 }) => {
-  // @ts-ignore
+  // @ts-expect-error
   const { data: meData }: { data: meLoaderQuery$data } =
     await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
       meLoaderQueryNode,
@@ -52,36 +49,17 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
   const me = meData.me as unknown as meContext_fragment$data;
 
   if (me) {
-    // @ts-ignore
-    const { data }: { data: meUserHasSomeSubscription$data } =
-      await serverPortalApiFetch<
-        typeof meUserHasSomeSubscriptionNode,
-        meUserHasSomeSubscription
-      >(meUserHasSomeSubscriptionNode, {});
-
-    const userHasBypassCapability = me.capabilities.some(
-      (capability) => capability.name === 'BYPASS'
-    );
-
     return (
       <I18nContext>
         <AppContext>
-          {data.userHasSomeSubscription || userHasBypassCapability ? (
-            <PageLoader>
-              <Menu />
-              <div className="w-full overflow-auto h-screen">
-                <HeaderComponent />
-                <ContentLayout>{children}</ContentLayout>
-              </div>
-            </PageLoader>
-          ) : (
-            <PageLoader>
-              <div className="w-full overflow-auto h-screen">
-                <HeaderComponent displayLogo={true} />
-                <EmptyServicesRedirect />
-              </div>
-            </PageLoader>
-          )}
+          <PageLoader>
+            <AdminCallout />
+            <Menu />
+            <div className="w-full overflow-auto h-screen">
+              <HeaderComponent />
+              <ContentLayout>{children}</ContentLayout>
+            </div>
+          </PageLoader>
         </AppContext>
       </I18nContext>
     );

@@ -29,6 +29,7 @@ type Mutation {
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User!
+  editMeUser(input: EditMeUserInput!): User!
   deleteUser(id: ID!): User
   changeSelectedOrganization(organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
@@ -58,9 +59,13 @@ type OrganizationConnection {
   pageInfo: PageInfo!
 }
 
+input OrganizationFilter {
+  search: String
+}
+
 type Query {
   organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!): OrganizationConnection!
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, filter: OrganizationFilter): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   documentExists(documentName: String, serviceId: String): Boolean
@@ -75,7 +80,7 @@ type Query {
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: UserFilter): UserConnection!
-  userHasSomeSubscription: Boolean!
+  userHasOrganizationWithSubscription: Boolean!
   node(id: ID!): Node
 }
 
@@ -161,6 +166,7 @@ type Service implements Node {
   capabilities: [String!]
   public: Boolean
   join_type: String
+  tags: [String]
 }
 
 type ServiceEdge {
@@ -203,6 +209,7 @@ type Subscription implements Node {
   user_service: [UserService]!
   ActionTracking: TrackingSubscription
   User: UserSubscription
+  MeUser: MeUserSubscription
 }
 
 type PlatformProvider {
@@ -366,6 +373,11 @@ input EditUserInput {
   roles_id: [String]!
 }
 
+input EditMeUserInput {
+  first_name: String!
+  last_name: String!
+}
+
 input AddUserInput {
   email: String!
   password: String
@@ -378,6 +390,11 @@ type UserSubscription {
   edit: User
   delete: User
   merge: MergeEvent
+}
+
+type MeUserSubscription {
+  edit: User
+  delete: User
 }
 
 enum Restriction {

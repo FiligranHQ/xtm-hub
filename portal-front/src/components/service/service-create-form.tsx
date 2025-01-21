@@ -1,20 +1,21 @@
 import { ServiceListCreateMutation } from '@/components/service/service.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
+  Input,
+} from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { serviceListMutation } from '../../../__generated__/serviceListMutation.graphql';
-
 interface ServiceCreateFormProps {
   connectionID: string;
 }
@@ -30,6 +31,7 @@ const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({
   const [commitServiceMutation] = useMutation<serviceListMutation>(
     ServiceListCreateMutation
   );
+  const t = useTranslations();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,11 +58,11 @@ const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{t('Service.Name')}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder={'Service name'}
+                    placeholder={t('Service.ServiceName')}
                   />
                 </FormControl>
                 <FormMessage />
@@ -70,7 +72,7 @@ const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({
           <Button
             className="mb-2 mt-3 w-full"
             type="submit">
-            Create
+            {t('Utils.Create')}
           </Button>
         </form>
       </Form>

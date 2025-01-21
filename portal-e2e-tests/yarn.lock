@@ -48,23 +48,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:1.47.2":
-  version: 1.47.2
-  resolution: "@playwright/test@npm:1.47.2"
+"@playwright/test@npm:1.49.1":
+  version: 1.49.1
+  resolution: "@playwright/test@npm:1.49.1"
   dependencies:
-    playwright: 1.47.2
+    playwright: 1.49.1
   bin:
     playwright: cli.js
-  checksum: 4f149613c0fd4a40061425efdf5c7a257df09e1b6b797ad221597ddde52381edb69fce6645bf3b95a11eee74147a2025c1951041f29dbc717dab0cc46d9c3427
+  checksum: cdbd16df3d773dc8e522d79b4b961e25c2e1b1d4f3ec45eb711078ab5d11bca47caafe833e2be2f923328fbd012405a9ee31d9b449d184077598546a36847e69
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.9.3":
-  version: 22.9.3
-  resolution: "@types/node@npm:22.9.3"
+"@types/node@npm:22.10.5":
+  version: 22.10.5
+  resolution: "@types/node@npm:22.10.5"
   dependencies:
-    undici-types: ~6.19.8
-  checksum: 274cced37a8a11cd89827c551de73980a174e00bef0768c10c1fb7d3887a26b4fade25f870e3fd870432b93546e092cdbe0979e65110c0839982dc2b5938aabc
+    undici-types: ~6.20.0
+  checksum: 3b0e966df4e130edac3ad034f1cddbe134e70f11556062468c9fbd749a3b07a44445a3a75a7eec68a104930bf05d4899f1a418c4ae48493d2c8c1544d8594bcc
   languageName: node
   linkType: hard
 
@@ -103,12 +103,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.11.0, acorn@npm:^8.12.1":
+"acorn@npm:^8.11.0":
   version: 8.12.1
   resolution: "acorn@npm:8.12.1"
   bin:
     acorn: bin/acorn
   checksum: 677880034aee5bdf7434cc2d25b641d7bedb0b5ef47868a78dadabedccf58e1c5457526d9d8249cd253f2df087e081c3fe7d903b448d8e19e5131a3065b83c07
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.14.0":
+  version: 8.14.0
+  resolution: "acorn@npm:8.14.0"
+  bin:
+    acorn: bin/acorn
+  checksum: 8755074ba55fff94e84e81c72f1013c2d9c78e973c31231c8ae505a5f966859baf654bddd75046bffd73ce816b149298977fff5077a3033dedba0ae2aad152d4
   languageName: node
   linkType: hard
 
@@ -1107,11 +1116,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocart-coverage-reports@npm:^2.10.9":
-  version: 2.11.0
-  resolution: "monocart-coverage-reports@npm:2.11.0"
+"monocart-coverage-reports@npm:^2.11.3":
+  version: 2.11.5
+  resolution: "monocart-coverage-reports@npm:2.11.5"
   dependencies:
-    acorn: ^8.12.1
+    acorn: ^8.14.0
     acorn-loose: ^8.4.0
     acorn-walk: ^8.3.4
     commander: ^12.1.0
@@ -1125,7 +1134,7 @@ __metadata:
     monocart-locator: ^1.0.2
   bin:
     mcr: lib/cli.js
-  checksum: 541a39334eb6b2fd44f013ad6b7b4883526d9df95afd4612434274e61bf03a6f04f9965a976460ddd402e36d7330d9db184329e57a8988abca328398a9247c41
+  checksum: f2153ab48c237aab73bd0257630d627b0e21d87a778127410e1aeec31c2729ef205391c6d123e852ae74af6ed5a57e0835e61a3f33b011945ee9a8772641e10c
   languageName: node
   linkType: hard
 
@@ -1136,21 +1145,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocart-reporter@npm:2.8.4":
-  version: 2.8.4
-  resolution: "monocart-reporter@npm:2.8.4"
+"monocart-reporter@npm:2.9.12":
+  version: 2.9.12
+  resolution: "monocart-reporter@npm:2.9.12"
   dependencies:
     console-grid: ^2.2.2
     eight-colors: ^1.3.1
     koa: ^2.15.3
     koa-static-resolver: ^1.0.6
     lz-utils: ^2.1.0
-    monocart-coverage-reports: ^2.10.9
+    monocart-coverage-reports: ^2.11.3
     monocart-locator: ^1.0.2
-    nodemailer: ^6.9.15
+    nodemailer: ^6.9.16
   bin:
     monocart: lib/cli.js
-  checksum: abb795b8eb507f6c59a41e489fdcc4255f28f36d314a48f7564df02eaab0ea08a19c7187a0e3810e3e6f61f0b5c04643ccb1bcf68fba29912336f5b41e40b41b
+  checksum: 06b6817c80f40bfe6cc6b393bea726c329103548c03b30e6e26677e1bb027db7531a1e032e67e5ab1a051555ec632184d3d77238b032e9e4a3c6c079b7bd7d69
   languageName: node
   linkType: hard
 
@@ -1195,10 +1204,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^6.9.15":
-  version: 6.9.15
-  resolution: "nodemailer@npm:6.9.15"
-  checksum: 2d975f5c60f84acde52d79d43287c70197fe94bde4a731682f306e9636a148c49de29a5dd92ce7dc5aac068a148cd91da3401ede80f8f52b9f2bc00439f36ced
+"nodemailer@npm:^6.9.16":
+  version: 6.9.16
+  resolution: "nodemailer@npm:6.9.16"
+  checksum: a031d243914ab5a3bb48c75e1fab02d25fb45c2b5b9bc15569cce45ec851235bc970087de99477ca6e7ee88fab2cb6a590a714af310f58532dbcc31396f68b1c
   languageName: node
   linkType: hard
 
@@ -1333,9 +1342,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:8.13.0":
-  version: 8.13.0
-  resolution: "pg@npm:8.13.0"
+"pg@npm:8.13.1":
+  version: 8.13.1
+  resolution: "pg@npm:8.13.1"
   dependencies:
     pg-cloudflare: ^1.1.1
     pg-connection-string: ^2.7.0
@@ -1351,7 +1360,7 @@ __metadata:
   peerDependenciesMeta:
     pg-native:
       optional: true
-  checksum: 81560755ff4ee62b71bf1204dd696f66451574d1db56cbd5aa514ce91c6474030ee8078461b3cb85cce8d2f185be5846e0a7a707a818f5e2e3fb198a7ea795ea
+  checksum: 22cb97fcbee3348d5ee0b195071cc572f9c88eb40cbb61fe6726af68d55d5962121b2d630509bb907703e1c8bdc33de775462029c5399e2a841fa9e6c9da0242
   languageName: node
   linkType: hard
 
@@ -1364,27 +1373,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.47.2":
-  version: 1.47.2
-  resolution: "playwright-core@npm:1.47.2"
+"playwright-core@npm:1.49.1":
+  version: 1.49.1
+  resolution: "playwright-core@npm:1.49.1"
   bin:
     playwright-core: cli.js
-  checksum: c06109a08dd672a92eb048ce7c9a1451ed701e62ff78f0d67c67ee6b06c88f0dc5422c2a7bb26e5fca05840e2adba154a25ca988e56f76c233affe61f42453a3
+  checksum: a940f4b10ff1de033b4b8594b5104b02849a892d9adda0d42330a872cd3d8d287ffd2b01fc33f33ccd34f8904bb8ae8220b878b62e899f3d9bcd1b0945ab45c7
   languageName: node
   linkType: hard
 
-"playwright@npm:1.47.2":
-  version: 1.47.2
-  resolution: "playwright@npm:1.47.2"
+"playwright@npm:1.49.1":
+  version: 1.49.1
+  resolution: "playwright@npm:1.49.1"
   dependencies:
     fsevents: 2.3.2
-    playwright-core: 1.47.2
+    playwright-core: 1.49.1
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 41ec99d62c9d7282a3d0dd2444892a379be2f4c61e9045a0b1cfc5897796747d220df5af11c6a7515c56c82df02a1025a46a5da7abc17485b4e981e133588261
+  checksum: c136d42d625e32614f90e5228a165dc8be48c5bfb52aca9210c6ff04161a409dbe42fe5ae4f05a2653f6a1b836876a04d3b0f24bcbbc053d1509c1d605b7c8d5
   languageName: node
   linkType: hard
 
@@ -1418,12 +1427,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.3.3":
-  version: 3.3.3
-  resolution: "prettier@npm:3.3.3"
+"prettier@npm:3.4.2":
+  version: 3.4.2
+  resolution: "prettier@npm:3.4.2"
   bin:
     prettier: bin/prettier.cjs
-  checksum: bc8604354805acfdde6106852d14b045bb20827ad76a5ffc2455b71a8257f94de93f17f14e463fe844808d2ccc87248364a5691488a3304f1031326e62d9276e
+  checksum: 061c84513db62d3944c8dc8df36584dad82883ce4e49efcdbedd8703dce5b173c33fd9d2a4e1725d642a3b713c932b55418342eaa347479bc4a9cca114a04cd0
   languageName: node
   linkType: hard
 
@@ -1703,14 +1712,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "test_e2e@workspace:."
   dependencies:
-    "@playwright/test": 1.47.2
-    "@types/node": ^22.9.3
+    "@playwright/test": 1.49.1
+    "@types/node": 22.10.5
     knex: 3.1.0
-    monocart-reporter: 2.8.4
-    pg: 8.13.0
-    prettier: 3.3.3
+    monocart-reporter: 2.9.12
+    pg: 8.13.1
+    prettier: 3.4.2
     react: 18.3.1
-    uuid: 10.0.0
+    uuid: 11.0.4
   languageName: unknown
   linkType: soft
 
@@ -1745,10 +1754,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.19.8":
-  version: 6.19.8
-  resolution: "undici-types@npm:6.19.8"
-  checksum: de51f1b447d22571cf155dfe14ff6d12c5bdaec237c765085b439c38ca8518fc360e88c70f99469162bf2e14188a7b0bcb06e1ed2dc031042b984b0bb9544017
+"undici-types@npm:~6.20.0":
+  version: 6.20.0
+  resolution: "undici-types@npm:6.20.0"
+  checksum: b7bc50f012dc6afbcce56c9fd62d7e86b20a62ff21f12b7b5cbf1973b9578d90f22a9c7fe50e638e96905d33893bf2f9f16d98929c4673c2480de05c6c96ea8b
   languageName: node
   linkType: hard
 
@@ -1770,12 +1779,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:10.0.0":
-  version: 10.0.0
-  resolution: "uuid@npm:10.0.0"
+"uuid@npm:11.0.4":
+  version: 11.0.4
+  resolution: "uuid@npm:11.0.4"
   bin:
-    uuid: dist/bin/uuid
-  checksum: 4b81611ade2885d2313ddd8dc865d93d8dccc13ddf901745edca8f86d99bc46d7a330d678e7532e7ebf93ce616679fb19b2e3568873ac0c14c999032acb25869
+    uuid: dist/esm/bin/uuid
+  checksum: 88860d20dafa648642581b2e7bb364588149df50d41c812100839aec095593fcc8548fde6929605efd42f556455cf5683e3bad9e9e311f4b62d7efbb68598d3e
   languageName: node
   linkType: hard
 

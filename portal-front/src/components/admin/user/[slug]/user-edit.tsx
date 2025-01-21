@@ -1,8 +1,11 @@
-import { UserFormSheet } from '@/components/admin/user/user-form-sheet';
-import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
+import { UserForm } from '@/components/admin/user/user-form';
+import {
+  userEditFormSchema,
+  userFormSchema,
+} from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
-import TriggerButton from '@/components/ui/trigger-button';
-import { useToast } from 'filigran-ui/clients';
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -12,23 +15,42 @@ import { userSlugEditMutation } from '../../../../../__generated__/userSlugEditM
 import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
 
 interface EditUserProps {
-  user: userSlug_fragment$data | userList_fragment$data;
+  user?: userSlug_fragment$data | userList_fragment$data;
   trigger?: ReactNode;
+  onCloseSheet?: () => void;
+  defaultStateOpen?: boolean;
 }
 
 export const EditUser: FunctionComponent<EditUserProps> = ({
   user,
   trigger,
+  onCloseSheet,
+  defaultStateOpen = false,
 }) => {
-  const [openSheet, setOpenSheet] = useState(false);
+  const [openSheet, setOpenSheet] = useState(defaultStateOpen);
   const t = useTranslations();
 
   const { toast } = useToast();
   const [commitUserMutation] =
     useMutation<userSlugEditMutation>(UserSlugEditMutation);
 
+  const handleOpenSheet = (open: boolean) => {
+    setOpenSheet((prevState) => {
+      const sheetIsClosing = prevState !== open && !open;
+      if (sheetIsClosing && onCloseSheet) {
+        onCloseSheet();
+      }
+      return open;
+    });
+  };
+
   const handleSubmit = (values: z.infer<typeof userEditFormSchema>) => {
+    // Here we need everything except the password
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...valuesWithoutPasswordField } = values;
+    if (!user) {
+      return;
+    }
     commitUserMutation({
       variables: { input: { ...valuesWithoutPasswordField }, id: user.id },
       onCompleted: () => {
@@ -42,22 +64,23 @@ export const EditUser: FunctionComponent<EditUserProps> = ({
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: <>{error.message}</>,
+          description: t(`Error.Server.${error.message}`),
         });
       },
     });
   };
 
-  const defaultTrigger = <TriggerButton label={t('update')} />;
   return (
-    <UserFormSheet
+    <SheetWithPreventingDialog
       title={t('UserActions.UpdateUser')}
-      handleSubmit={handleSubmit}
       open={openSheet}
-      setOpen={setOpenSheet}
-      user={user}
-      validationSchema={userEditFormSchema}
-      trigger={trigger ?? defaultTrigger}
-    />
+      setOpen={handleOpenSheet}
+      trigger={trigger}>
+      <UserForm
+        handleSubmit={handleSubmit}
+        user={user}
+        validationSchema={userFormSchema}
+      />
+    </SheetWithPreventingDialog>
   );
 };
