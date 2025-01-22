@@ -12,7 +12,7 @@ export function AdminCallout() {
     isAdminPath && (
       <Callout
         variant="warning"
-        className="rounded-none !text-black justify-center uppercase">
+        className="rounded-none text-black justify-center uppercase">
         {t('AdminCallout')}
       </Callout>
     )
