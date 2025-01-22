@@ -120,13 +120,13 @@ const SERVICE_LINKS = {
   slack: {
     id: uuidv4(),
     service_id: SERVICES.slack.id,
-    url: 'https://filigran.io/solutions/xtm-hub/',
+    url: 'https://community.filigran.io/',
     name: 'Slack',
   },
   blog: {
     id: uuidv4(),
     service_id: SERVICES.blog.id,
-    url: 'https://filigran.io/solutions/xtm-hub/',
+    url: 'https://filigran.io/our-blog/',
     name: 'Blog',
   },
   academy: {
