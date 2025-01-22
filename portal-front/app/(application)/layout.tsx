@@ -53,11 +53,15 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
       <I18nContext>
         <AppContext>
           <PageLoader>
-            <AdminCallout />
-            <Menu />
-            <div className="w-full overflow-auto h-screen">
-              <HeaderComponent />
-              <ContentLayout>{children}</ContentLayout>
+            <div className="flex flex-col w-full h-screen">
+              <AdminCallout />
+              <div className="flex flex-row flex-grow overflow-hidden">
+                <Menu />
+                <div className="flex flex-col w-full h-full overflow-auto">
+                  <HeaderComponent />
+                  <ContentLayout>{children}</ContentLayout>
+                </div>
+              </div>
             </div>
           </PageLoader>
         </AppContext>
