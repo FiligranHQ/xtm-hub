@@ -55,7 +55,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
           <PageLoader>
             <div className="flex flex-col w-full h-screen">
               <AdminCallout />
-              <div className="flex flex-row flex-grow">
+              <div className="flex flex-row flex-grow overflow-hidden">
                 <Menu />
                 <div className="flex flex-col w-full h-full overflow-auto">
                   <HeaderComponent />
