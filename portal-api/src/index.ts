@@ -45,6 +45,7 @@ const sessionMiddleware = expressSession({
   saveUninitialized: true,
   proxy: true,
   rolling: true,
+  resave: false,
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
