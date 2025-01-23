@@ -1,50 +1,61 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import { removeOrganization } from '../db-utils/organization.helper';
+import OrganizationPage from '../model/organization.pageModel';
 
-test('should confirm CRUD of organizations is OK', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.login();
-  await page.getByRole('button', { name: 'Settings' }).click();
-  await expect(page.getByRole('link', { name: 'Organizations' })).toBeVisible();
-  await page.getByText('Organizations').click();
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(
-    'Organizations'
-  );
+const TEST_ORGANIZATION = {
+  name: 'newOrgae2e',
+  newName: 'newName',
+  domain: 'newOrgae2e.fr',
+};
+test.describe('Organization Management', () => {
+  let loginPage;
+  let organizationPage;
 
-  // Create organization
-  await page.getByLabel('Create Organization').click();
-  await page.getByPlaceholder('Name').fill('newOrgae2e');
-  await page.getByPlaceholder('Add a domain').click();
-  await page.getByPlaceholder('Add a domain').fill('newOrgae2e.fr');
-  await page.getByPlaceholder('Add a domain').press('Enter');
-  await page.getByRole('button', { name: 'Validate' }).click();
-  await expect(
-    page.getByRole('cell', { name: 'newOrgae2e', exact: true })
-  ).toBeVisible();
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    organizationPage = new OrganizationPage(page);
 
-  // Edit Organization
-  await page
-    .getByRole('row', { name: 'newOrgae2e newOrgae2e.fr Open' })
-    .getByRole('button')
-    .click();
-  await page.getByLabel('Edit Organization').click();
-  await page.getByPlaceholder('Name').fill('newName');
-  await page.getByRole('button', { name: 'Validate' }).click();
-  await expect(
-    page.getByRole('cell', { name: 'newName', exact: true })
-  ).toBeVisible();
+    await loginPage.login();
+    await organizationPage.navigateToOrgaAdmin();
+  });
 
-  // Delete Organization
-  await page
-    .getByRole('row', { name: 'newName newOrgae2e.fr Open' })
-    .getByRole('button')
-    .click();
-  await page.getByLabel('Delete Organization').click();
-  await page.getByRole('button', { name: 'Delete' }).click();
-  await expect(page.getByRole('cell', { name: 'newName' })).not.toBeVisible();
-});
+  test('should perform complete CRUD operations on organizations', async ({
+    page,
+  }) => {
+    await test.step('Create new organization', async () => {
+      await organizationPage.createOrganization(
+        TEST_ORGANIZATION.name,
+        TEST_ORGANIZATION.domain
+      );
+      await expect(
+        page.getByRole('cell', { name: TEST_ORGANIZATION.name, exact: true })
+      ).toBeVisible();
+    });
 
-test.afterAll('Remove organization', async () => {
-  await removeOrganization('newName');
+    await test.step('Edit organization', async () => {
+      await organizationPage.editOrganization(
+        TEST_ORGANIZATION.name,
+        TEST_ORGANIZATION.domain,
+        TEST_ORGANIZATION.newName
+      );
+      await expect(
+        page.getByRole('cell', { name: TEST_ORGANIZATION.newName, exact: true })
+      ).toBeVisible();
+    });
+
+    await test.step('Delete organization', async () => {
+      await organizationPage.deleteOrganization(
+        TEST_ORGANIZATION.newName,
+        TEST_ORGANIZATION.domain
+      );
+      await expect(
+        page.getByRole('cell', { name: TEST_ORGANIZATION.newName })
+      ).not.toBeVisible();
+    });
+  });
+
+  test.afterEach('Remove organization', async () => {
+    await removeOrganization(TEST_ORGANIZATION.newName);
+  });
 });
