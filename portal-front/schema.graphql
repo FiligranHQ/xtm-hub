@@ -13,16 +13,16 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addDocument(document: Upload, description: String, serviceId: String): Document!
-  editDocument(documentId: ID, newDescription: String, serviceId: String): Document!
-  deleteDocument(documentId: ID, serviceId: String): Document!
+  addDocument(document: Upload, description: String, serviceInstanceId: String): Document!
+  editDocument(documentId: ID, newDescription: String, serviceInstanceId: String): Document!
+  deleteDocument(documentId: ID, serviceInstanceId: String): Document!
   addServicePrice(input: AddServicePriceInput): ServicePrice
-  editService(id: ID!, name: String!): Service
-  addService(input: AddServiceInput): Subscription
-  deleteService(id: ID!): Service
-  addSubscription(service_id: String): Service
-  addSubscriptionInService(service_id: String, organization_id: ID): Service
-  deleteSubscription(subscription_id: ID!): Service
+  editServiceInstance(id: ID!, name: String!): ServiceInstance
+  addServiceInstance(input: AddServiceInput): Subscription
+  deleteServiceInstance(id: ID!): ServiceInstance
+  addSubscription(service_instance_id: String): ServiceInstance
+  addSubscriptionInService(service_instance_id: String, organization_id: ID): ServiceInstance
+  deleteSubscription(subscription_id: ID!): ServiceInstance
   editServiceCapability(input: EditServiceCapabilityInput): Subscription
   addUserService(input: UserServiceAddInput!): Subscription
   deleteUserService(input: UserServiceDeleteInput!): Subscription
@@ -68,12 +68,12 @@ type Query {
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, filter: OrganizationFilter): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  documentExists(documentName: String, serviceId: String): Boolean
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, serviceId: String): DocumentConnection!
-  publicServices(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  serviceById(service_id: ID): Service
-  serviceByIdWithSubscriptions(service_id: ID): Service
+  documentExists(documentName: String, serviceInstanceId: String): Boolean
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, serviceInstanceId: String): DocumentConnection!
+  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstanceById(service_instance_id: ID): ServiceInstance
+  serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
   settings: Settings!
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
@@ -104,7 +104,7 @@ enum DocumentOrdering {
 type Document implements Node {
   id: ID!
   uploader_id: String!
-  service_id: String!
+  service_instance_id: String!
   description: String
   file_name: String!
   minio_name: String!
@@ -126,33 +126,33 @@ type DocumentConnection {
 
 type ServiceLink implements Node {
   id: ID!
-  service_id: ID
+  service_instance_id: ID
   url: String
   name: String
 }
 
 input AddServicePriceInput {
-  service_id: ID
+  service_instance_id: ID
   price: Int
   fee_type: String
 }
 
 type ServicePrice implements Node {
   id: ID!
-  service_id: ID
+  service_instance_id: ID
   fee_type: String
   start_date: Date
   price: Int
 }
 
-enum ServiceOrdering {
+enum ServiceInstanceOrdering {
   name
   description
   provider
   type
 }
 
-type Service implements Node {
+type ServiceInstance implements Node {
   id: ID!
   name: String!
   description: String
@@ -169,43 +169,43 @@ type Service implements Node {
   tags: [String]
 }
 
-type ServiceEdge {
+type ServiceInstanceEdge {
   cursor: String!
-  node: Service!
+  node: ServiceInstance!
 }
 
 type ServiceConnection {
   totalCount: Int!
-  edges: [ServiceEdge!]!
+  edges: [ServiceInstanceEdge!]!
   pageInfo: PageInfo!
 }
 
 input AddServiceInput {
-  service_name: String
-  service_description: String
+  service_instance_name: String
+  service_instance_description: String
   fee_type: String
   price: Int
   organization_id: String
   url: String
 }
 
-type ServiceSubscription {
-  add: Service
-  edit: Service
-  delete: Service
+type ServiceInstanceSubscription {
+  add: ServiceInstance
+  edit: ServiceInstance
+  delete: ServiceInstance
 }
 
 type Subscription implements Node {
-  Service: ServiceSubscription
+  ServiceInstance: ServiceInstanceSubscription
   id: ID!
   organization_id: ID!
-  service_id: ID!
+  service_instance_id: ID!
   start_date: Date
   end_date: Date
   status: String
   organization: Organization!
   service_url: String!
-  service: Service
+  service_instance: ServiceInstance
   user_service: [UserService]!
   ActionTracking: TrackingSubscription
   User: UserSubscription
@@ -236,11 +236,6 @@ enum SubscriptionOrdering {
 type SubscriptionEdge {
   cursor: String!
   node: Subscription!
-}
-
-type SubscriptionByService {
-  subscriptions: [Subscription!]!
-  service: Service
 }
 
 type ActionTracking implements Node {
@@ -293,7 +288,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: String!
   capabilities: [String]
-  serviceId: String!
+  serviceInstanceId: String!
   organizationId: String!
 }
 

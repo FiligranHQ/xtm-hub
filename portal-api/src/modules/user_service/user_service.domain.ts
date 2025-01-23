@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
-import { UserServiceConnection } from '../../__generated__/resolvers-types';
-import Service from '../../model/kanel/public/Service';
+import {
+  ServiceInstance,
+  UserServiceConnection,
+} from '../../__generated__/resolvers-types';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -36,7 +38,12 @@ export const loadUserServiceById = async (
       '=',
       'servcapa.user_service_id'
     )
-    .leftJoin('Service as service', 'sub.service_id', '=', 'service.id')
+    .leftJoin(
+      'ServiceInstance as service',
+      'sub.service_instance_id',
+      '=',
+      'service.id'
+    )
     .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
     .select([
       'User_Service.*',
@@ -44,7 +51,7 @@ export const loadUserServiceById = async (
         "(json_agg(json_build_object('id', \"user\".id,'last_name', \"user\".last_name, 'first_name', \"user\".first_name,  'email', \"user\".email, '__typename', 'User')) ->> 0)::json as user"
       ),
       dbRaw(
-        "(json_agg(json_build_object('id', \"sub\".id,'service_id', \"sub\".service_id, 'service', json_build_object('id', \"service\".id,'name', \"service\".name,'__typename', 'Service'), '__typename', 'Subscription')) ->> 0)::json as subscription"
+        "(json_agg(json_build_object('id', \"sub\".id,'service_instance_id', \"sub\".service_instance_id, 'service_instance', json_build_object('id', \"service\".id,'name', \"service\".name,'__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription"
       ),
       dbRaw(
         "(json_agg(json_build_object('id', \"servcapa\".id, 'service_capability_name', \"servcapa\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
@@ -58,15 +65,15 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
   const userSelectedOrganization = context.user.selected_organization_id;
   const userId = context.user.id;
 
-  const queryServicesWithLinks = db<Service>(context, 'Service')
+  const queryServicesWithLinks = db<ServiceInstance>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link as service_link',
-      'Service.id',
+      'ServiceInstance.id',
       '=',
-      'service_link.service_id'
+      'service_link.service_instance_id'
     )
     .select(
-      'Service.*',
+      'ServiceInstance.*',
       dbRaw(
         `CASE
         WHEN COUNT(service_link.id) = 0 THEN NULL
@@ -74,7 +81,7 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
       END AS services_link`
       )
     )
-    .groupBy(['Service.id']);
+    .groupBy(['ServiceInstance.id']);
 
   const userServiceConnection = await paginate<UserService>(
     context,
@@ -90,7 +97,7 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
     )
     .leftJoin(
       queryServicesWithLinks.as('service'),
-      'sub.service_id',
+      'sub.service_instance_id',
       '=',
       'service.id'
     )
@@ -109,7 +116,7 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
         "(json_agg(json_build_object('id', \"user\".id, 'last_name', \"user\".last_name, 'first_name', \"user\".first_name, 'email', \"user\".email, '__typename', 'User')) ->> 0)::json as user"
       ),
       dbRaw(
-        `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_id', "sub".service_id, 'service', json_build_object('id', "service".id, 'name', "service".name, 'type', "service".type, 'provider', "service".provider, 'description', "service".description, 'links', "service".services_link, '__typename', 'Service'), '__typename', 'Subscription')) ->> 0)::json as subscription`
+        `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_instance_id', "sub".service_instance_id, 'service_instance', json_build_object('id', "service".id, 'name', "service".name, 'type', "service".type, 'provider', "service".provider, 'description', "service".description, 'links', "service".services_link, '__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription`
       ),
       dbRaw(
         "(json_agg(json_build_object('id', \"servcapa\".id, 'service_capability_name', \"servcapa\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
@@ -151,6 +158,10 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
     .where('sub.organization_id', userSelectedOrganization)
     .countDistinct('User_Service.id as totalCount')
     .first();
+  console.log(
+    'userServiceConnection',
+    userServiceConnection.edges[0].node.subscription
+  );
 
   return { totalCount, ...userServiceConnection };
 };
@@ -177,7 +188,12 @@ export const loadUsersBySubscription = async (
       'sub.id'
     )
     .leftJoin('Organization as org', 'sub.organization_id', '=', 'org.id')
-    .leftJoin('Service as service', 'sub.service_id', '=', 'service.id')
+    .leftJoin(
+      'ServiceInstance as service',
+      'sub.service_instance_id',
+      '=',
+      'service.id'
+    )
     .leftJoin(
       'Service_Capability as servcapa',
       'User_Service.id',
@@ -191,7 +207,7 @@ export const loadUsersBySubscription = async (
         "(json_agg(json_build_object('id', \"user\".id,'last_name', \"user\".last_name, 'first_name', \"user\".first_name,  'email', \"user\".email, '__typename', 'User')) ->> 0)::json as user"
       ),
       dbRaw(
-        "(json_agg(json_build_object('id', \"sub\".id,'billing', \"sub\".billing, 'status', \"sub\".status,'justification', \"sub\".justification, 'service_id', \"sub\".service_id, 'organization', json_build_object('id', \"org\".id,'name', \"org\".name,'__typename', 'Organization'), 'service',json_build_object('id', \"service\".id,'name', \"service\".name, 'description', \"service\".description, '__typename', 'Service'), '__typename', 'Subscription')) ->> 0)::json as subscription"
+        "(json_agg(json_build_object('id', \"sub\".id,'billing', \"sub\".billing, 'status', \"sub\".status,'justification', \"sub\".justification, 'service_instance_id', \"sub\".service_instance_id, 'organization', json_build_object('id', \"org\".id,'name', \"org\".name,'__typename', 'Organization'), 'service',json_build_object('id', \"service\".id,'name', \"service\".name, 'description', \"service\".description, '__typename', 'Service'), '__typename', 'Subscription')) ->> 0)::json as subscription"
       ),
       dbRaw(
         "(json_agg(json_build_object('id', \"servcapa\".id, 'service_capability_name', \"servcapa\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"

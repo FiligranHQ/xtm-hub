@@ -1,11 +1,11 @@
 import { dbUnsecure } from '../../knexfile';
+import { ServiceInstance } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
 import Organization, {
   OrganizationId,
 } from '../model/kanel/public/Organization';
 import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
-import Service from '../model/kanel/public/Service';
 import ServiceLink from '../model/kanel/public/ServiceLink';
 import ServicePrice from '../model/kanel/public/ServicePrice';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
@@ -13,13 +13,19 @@ import UserOrganization from '../model/kanel/public/UserOrganization';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 
 export const ensureServiceExists = async (service) => {
-  const services = await dbUnsecure('Service');
+  const serviceInstances = await dbUnsecure('ServiceInstance');
   const links = await dbUnsecure('Service_Link');
   const prices = await dbUnsecure('Service_Price');
-  if (!services.find((s) => s.id === service.service.id)) {
-    await dbUnsecure<Service>('Service').insert(service.service);
+  if (
+    !serviceInstances.find(
+      (serviceInstance) => serviceInstance.id === service.service.id
+    )
+  ) {
+    await dbUnsecure<ServiceInstance>('ServiceInstance').insert(
+      service.service
+    );
   } else {
-    await dbUnsecure<Service>('Service')
+    await dbUnsecure<ServiceInstance>('ServiceInstance')
       .where({ id: service.service.id })
       .update(service.service)
       .returning('*');

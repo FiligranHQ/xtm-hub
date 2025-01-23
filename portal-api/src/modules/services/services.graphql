@@ -1,11 +1,11 @@
-enum ServiceOrdering {
+enum ServiceInstanceOrdering {
   name
   description
   provider
   type
 }
 
-type Service implements Node {
+type ServiceInstance implements Node {
   id: ID!
   name: String!
   description: String
@@ -22,20 +22,20 @@ type Service implements Node {
   tags: [String]
 }
 
-type ServiceEdge {
+type ServiceInstanceEdge {
   cursor: String!
-  node: Service!
+  node: ServiceInstance!
 }
 
 type ServiceConnection {
   totalCount: Int!
-  edges: [ServiceEdge!]!
+  edges: [ServiceInstanceEdge!]!
   pageInfo: PageInfo!
 }
 
 input AddServiceInput {
-  service_name: String
-  service_description: String
+  service_instance_name: String
+  service_instance_description: String
   fee_type: String
   price: Int
   organization_id: String
@@ -43,39 +43,40 @@ input AddServiceInput {
 }
 
 type Mutation {
-  editService(id: ID!, name: String!): Service
+  editServiceInstance(id: ID!, name: String!): ServiceInstance
     @auth(requires: [BCK_MANAGE_SERVICES])
-  addService(input: AddServiceInput): Subscription
+  addServiceInstance(input: AddServiceInput): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES])
-  deleteService(id: ID!): Service @auth(requires: [BCK_MANAGE_SERVICES])
+  deleteServiceInstance(id: ID!): ServiceInstance
+    @auth(requires: [BCK_MANAGE_SERVICES])
 }
 
 type Query {
-  publicServices(
+  publicServiceInstances(
     first: Int!
     after: ID
-    orderBy: ServiceOrdering!
+    orderBy: ServiceInstanceOrdering!
     orderMode: OrderingMode!
   ): ServiceConnection!
     @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_SERVICES])
-  services(
+  serviceInstances(
     first: Int!
     after: ID
-    orderBy: ServiceOrdering!
+    orderBy: ServiceInstanceOrdering!
     orderMode: OrderingMode!
   ): ServiceConnection! @auth(requires: [BYPASS])
-  serviceById(service_id: ID): Service @auth
-  serviceByIdWithSubscriptions(service_id: ID): Service
-    @auth
-    @service_capa(requires: [MANAGE_ACCESS])
+  serviceInstanceById(service_instance_id: ID): ServiceInstance @auth
+  serviceInstanceByIdWithSubscriptions(
+    service_instance_id: ID
+  ): ServiceInstance @auth @service_capa(requires: [MANAGE_ACCESS])
 }
 
-type ServiceSubscription {
-  add: Service
-  edit: Service
-  delete: Service
+type ServiceInstanceSubscription {
+  add: ServiceInstance
+  edit: ServiceInstance
+  delete: ServiceInstance
 }
 
 type Subscription {
-  Service: ServiceSubscription @auth
+  ServiceInstance: ServiceInstanceSubscription @auth
 }

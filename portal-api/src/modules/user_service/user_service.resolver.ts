@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
         });
 
         const [subscription] = await loadSubscriptionBy({
-          service_id: extractId(input.serviceId),
+          service_instance_id: extractId(input.serviceInstanceId),
           organization_id: extractId(input.organizationId),
         } as SubscriptionMutator);
 

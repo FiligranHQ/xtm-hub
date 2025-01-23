@@ -4,7 +4,6 @@ import {
   Organization,
   OrganizationConnection,
   QueryOrganizationsArgs,
-  Service,
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 
@@ -44,7 +43,7 @@ export const loadOrganizations = async (
     .where('personal_space', false)
     .asConnection<OrganizationConnection>();
 
-  const queryTotalCount = db<Service>(context, 'Organization', {
+  const queryTotalCount = db<Organization>(context, 'Organization', {
     first,
     after,
     orderMode,

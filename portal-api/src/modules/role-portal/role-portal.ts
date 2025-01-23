@@ -1,32 +1,6 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { dbUnsecure } from '../../../knexfile';
 import RolePortal from '../../model/kanel/public/RolePortal';
-import { UserId } from '../../model/kanel/public/User';
-import UserRolePortal from '../../model/kanel/public/UserRolePortal';
-import { PortalContext } from '../../model/portal-context';
-
-export const getRolePortal = (): Promise<RolePortal[]> => {
-  return dbUnsecure<RolePortal>('RolePortal');
-};
-
-export const getRolePortalByUserId = (
-  user_id: UserId
-): Promise<UserRolePortal[]> => {
-  return dbUnsecure<UserRolePortal>('User_RolePortal')
-    .where({ user_id })
-    .join('RolePortal', 'role_portal_id', '=', 'RolePortal.id');
-};
 
 export const getRolePortalByName = (name: string) => {
   return dbUnsecure<RolePortal>('RolePortal').where({ name }).first();
-};
-
-export const getRolePortalBy = async (
-  context: PortalContext,
-  field: string,
-  value: string
-): Promise<RolePortal> => {
-  return db<RolePortal>(context, 'RolePortal')
-    .where({ [field]: value })
-    .select('*')
-    .first();
 };

@@ -1,5 +1,5 @@
 export async function seed(knex) {
-  await knex('Service')
+  await knex('ServiceInstance')
     .insert([
       {
         id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
@@ -18,7 +18,7 @@ export async function seed(knex) {
     .insert([
       {
         id: '2baba29b-62f5-4d50-8d68-eb8a25887d9c',
-        service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         url: '/service/vault',
         name: 'Vault',
       },
@@ -29,7 +29,7 @@ export async function seed(knex) {
     .insert([
       {
         id: '65ca846b-b4ff-42ec-bafa-cc604eea11f5',
-        service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         fee_type: 'MONTHLY',
         start_date: '2024-08-08',
         price: 1000,
@@ -42,7 +42,7 @@ export async function seed(knex) {
       {
         id: '7f17820c-3a36-4023-ae3c-e2c15613b518',
         organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
-        service_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         start_date: '2024-08-08',
         end_date: null,
         status: 'ACCEPTED',

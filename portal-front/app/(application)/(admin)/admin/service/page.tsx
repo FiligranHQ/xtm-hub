@@ -88,7 +88,7 @@ const Page = () => {
     serviceQuery,
     servicesList_services$key
   >(servicesListFragment, queryData);
-  const serviceData = data?.services?.edges.map(
+  const serviceData = data?.serviceInstances?.edges.map(
     (service) => service.node as serviceList_fragment$data
   );
   return (

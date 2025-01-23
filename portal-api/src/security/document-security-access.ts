@@ -6,7 +6,11 @@ export const setQueryForDocument = <T>(
 ): Knex.QueryBuilder<T> => {
   queryContext
     .innerJoin('Subscription as securitySubscription', function () {
-      this.onVal('securitySubscription.service_id', '=', context.serviceId);
+      this.onVal(
+        'securitySubscription.service_instance_id',
+        '=',
+        context.serviceInstanceId
+      );
     })
     .innerJoin('User_Service as securityUserService', function () {
       this.on(
