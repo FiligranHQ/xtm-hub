@@ -26,7 +26,9 @@ const AvailableServices = ({
         AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
         actionButtonText={t('Utils.Continue')}
         triggerElement={
-          <Button onClick={(e) => e.stopPropagation()}>
+          <Button
+            className={'after:absolute after:inset-0'}
+            onClick={(e) => e.stopPropagation()}>
             {t('Service.Subscribe')}
           </Button>
         }
@@ -51,7 +53,6 @@ const AvailableServices = ({
                   key={service.id}
                   bottomLeftAction={getAction(service)}
                   service={service}
-                  serviceLink={service.links?.[0]?.url}
                 />
               )
             );

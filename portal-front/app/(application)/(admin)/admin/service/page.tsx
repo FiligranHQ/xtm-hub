@@ -48,32 +48,34 @@ const Page = () => {
       id: 'actions',
       cell: ({ row }) => {
         return (
-          <div className="flex items-center justify-end">
-            <IconActions
-              icon={
-                <>
-                  <MoreVertIcon
-                    aria-hidden={true}
-                    focusable={false}
-                    className="h-4 w-4 text-primary"
-                  />
-                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                </>
-              }>
-              <IconActionsButton
-                aria-label={t('Service.GoToAdminLabel')}
-                onClick={() => {
-                  router.push(`/admin/service/${row.id}`);
-                }}>
-                {t('Service.GoToAdminLabel')}
-              </IconActionsButton>
-              <IconActionsButton
-                aria-label={t('Service.GoTo')}
-                onClick={() => router.push(`/service/vault/${row.id}`)}>
-                {t('Service.GoToLabel')}
-              </IconActionsButton>
-            </IconActions>
-          </div>
+          row.original.type !== 'link' && (
+            <div className="flex items-center justify-end">
+              <IconActions
+                icon={
+                  <>
+                    <MoreVertIcon
+                      aria-hidden={true}
+                      focusable={false}
+                      className="h-4 w-4 text-primary"
+                    />
+                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                  </>
+                }>
+                <IconActionsButton
+                  aria-label={t('Service.GoToAdminLabel')}
+                  onClick={() => {
+                    router.push(`/admin/service/${row.id}`);
+                  }}>
+                  {t('Service.GoToAdminLabel')}
+                </IconActionsButton>
+                <IconActionsButton
+                  aria-label={t('Service.GoTo')}
+                  onClick={() => router.push(`/service/vault/${row.id}`)}>
+                  {t('Service.GoToLabel')}
+                </IconActionsButton>
+              </IconActions>
+            </div>
+          )
         );
       },
     },

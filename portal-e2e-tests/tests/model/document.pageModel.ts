@@ -7,7 +7,7 @@ export default class DocumentPage {
   async navigateToVault() {
     await this.page.getByRole('link', { name: 'Vault' }).first().click();
     await expect(
-      this.page.getByRole('heading', { name: 'Partner Vault' })
+      this.page.getByRole('heading', { name: 'Vault' })
     ).toBeVisible();
   }
 

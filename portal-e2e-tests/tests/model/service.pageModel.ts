@@ -9,7 +9,7 @@ export default class ServicePage {
     await this.page.getByRole('link', { name: 'Services' }).click();
 
     await this.page
-      .getByRole('row', { name: 'Partner Vault This service' })
+      .getByRole('row', { name: 'Vault short description for' })
       .getByRole('button')
       .click();
     await this.page.getByLabel('Admin').click();

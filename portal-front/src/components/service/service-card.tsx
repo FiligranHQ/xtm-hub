@@ -1,36 +1,22 @@
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ReactNode } from 'react';
 import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
 
 interface ServiceCardProps {
   service: serviceList_fragment$data;
-  serviceLink?: string | null;
   bottomLeftAction: ReactNode;
 }
 const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   service,
-  serviceLink,
   bottomLeftAction,
 }) => {
-  const router = useRouter();
   const t = useTranslations();
 
   const isLinkService = service.type === 'link';
   const hasUrl = service.links?.[0]?.url;
   const isDisabled = isLinkService && !hasUrl;
-
-  const goTo = () => {
-    if (serviceLink) {
-      if (serviceLink.startsWith('http')) {
-        window.open(serviceLink, '_blank');
-        return;
-      }
-      router.push(serviceLink);
-    }
-  };
 
   const Badge = () => {
     // If it's not a link service, show the regular badge
@@ -63,9 +49,8 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
 
   return (
     <li
-      className="border-light flex flex-col rounded border bg-page-background p-l gap-l cursor-pointer aria-disabled:cursor-default aria-disabled:opacity-60"
+      className="border-light flex flex-col relative rounded border bg-page-background p-l gap-l aria-disabled:opacity-60"
       aria-disabled={isDisabled}
-      onClick={goTo}
       key={service.id}>
       <div className="flex items-center">
         <h3>{service.name}</h3>

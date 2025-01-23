@@ -24,10 +24,14 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
       if (name && url)
         return (
           <Button
-            className="h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800"
+            className={
+              "h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:content-[''] after:absolute after:inset-0"
+            }
             asChild
             variant="ghost">
-            <Link href={url}>
+            <Link
+              href={url}
+              target={url.startsWith('http') ? '_blank' : '_self'}>
               <LinkIcon
                 aria-hidden={true}
                 focusable={false}
@@ -51,7 +55,6 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
             services.map(({ subscription, id }) => {
               return (
                 <ServiceCard
-                  serviceLink={`/service/vault/${subscription?.service_instance?.id}`}
                   key={id}
                   service={
                     subscription?.service_instance as serviceList_fragment$data
@@ -62,7 +65,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
                         <li key={link?.name}>
                           <Button
                             className={
-                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800'
+                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:absolute after:inset-0'
                             }
                             asChild
                             variant={'ghost'}>
@@ -88,7 +91,6 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
               key={service.id}
               bottomLeftAction={getAction(service)}
               service={service}
-              serviceLink={service.links?.[0]?.url}
             />
           ))}
         </ul>
