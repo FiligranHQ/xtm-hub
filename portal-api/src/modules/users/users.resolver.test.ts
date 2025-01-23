@@ -6,7 +6,7 @@ import {
   contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
   SERVICE_VAULT_ID,
-  SIMPLE_USER_ID,
+  SIMPLE_USER_FILIGRAN_ID,
   THALES_ORGA_ID,
 } from '../../../tests/tests.const';
 import {
@@ -28,7 +28,7 @@ import { deleteUserById, loadUserBy } from './users.domain';
 import usersResolver from './users.resolver';
 
 const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
-const OTHER_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
+const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
 
 describe('User query resolver', () => {
   describe('userHasOrganizationWithSubscription', () => {
@@ -43,7 +43,7 @@ describe('User query resolver', () => {
       expected | organizations                                                                               | description
       ${true}  | ${[{ id: THALES_ORGA_ID, name: 'Thales', personal_space: false, domains: ['thales.com'] }]} | ${'organization has subscription'}
       ${false} | ${[]}                                                                                       | ${'has no organization'}
-      ${false} | ${[{ id: OTHER_ORGA_ID, name: 'Other', personal_space: false, domains: ['thales.com'] }]}   | ${'no organization has subscription'}
+      ${false} | ${[{ id: RANDOM_ORGA_ID, name: 'Other', personal_space: false, domains: ['thales.com'] }]}  | ${'no organization has subscription'}
     `(
       'Should return $expected if $description',
       async ({ expected, organizations }) => {
@@ -256,10 +256,10 @@ describe('User mutation resolver', () => {
       const response = await usersResolver.Mutation.editUser(
         undefined,
         {
-          id: SIMPLE_USER_ID,
+          id: SIMPLE_USER_FILIGRAN_ID,
           input: {
             organizations: [
-              toGlobalId('Organization', SIMPLE_USER_ID),
+              toGlobalId('Organization', SIMPLE_USER_FILIGRAN_ID),
               toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
               toGlobalId('Organization', THALES_ORGA_ID),
             ],
@@ -284,10 +284,10 @@ describe('User mutation resolver', () => {
         await usersResolver.Mutation.editUser(
           undefined,
           {
-            id: SIMPLE_USER_ID,
+            id: SIMPLE_USER_FILIGRAN_ID,
             input: {
               organizations: [
-                toGlobalId('Organization', SIMPLE_USER_ID),
+                toGlobalId('Organization', SIMPLE_USER_FILIGRAN_ID),
                 toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
               ],
             } as EditUserInput,

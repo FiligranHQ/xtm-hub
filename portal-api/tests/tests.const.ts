@@ -9,7 +9,7 @@ import {
 } from '../src/portal.const';
 
 export const DEFAULT_ADMIN_EMAIL = 'admin@filigran.io';
-export const SIMPLE_USER_ID = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
+export const SIMPLE_USER_FILIGRAN_ID = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
 export const DEFAULT_ORG = 'Filigran';
 
 export const THALES_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6c';
