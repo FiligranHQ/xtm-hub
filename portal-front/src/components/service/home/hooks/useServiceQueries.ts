@@ -61,7 +61,7 @@ const getPublicServices = (
     publicServiceList_services$key
   >(publicServiceListFragment, queryData);
 
-  const connectionID = data?.publicServices?.__id;
+  const connectionID = data?.publicServiceInstances?.__id;
   const config = useMemo(
     () => ({
       variables: { connections: [connectionID] },
@@ -100,7 +100,7 @@ const getPublicServices = (
   );
 
   const publicServices: serviceList_fragment$data[] =
-    data.publicServices.edges.map(
+    data.publicServiceInstances.edges.map(
       ({ node }) => node as serviceList_fragment$data
     );
 

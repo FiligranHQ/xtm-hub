@@ -2,7 +2,7 @@ import { graphql } from 'react-relay';
 
 export const ServiceListCreateMutation = graphql`
   mutation serviceListMutation($input: AddServiceInput, $connections: [ID!]!) {
-    addService(input: $input)
+    addServiceInstance(input: $input)
       @prependNode(
         connections: $connections
         edgeTypeName: "ServiceInstanceEdge"
@@ -14,7 +14,7 @@ export const ServiceListCreateMutation = graphql`
 
 export const ServiceById = graphql`
   query serviceByIdQuery($service_instance_id: ID) {
-    serviceById(service_instance_id: $service_instance_id) {
+    serviceInstanceById(service_instance_id: $service_instance_id) {
       id
       name
       description
@@ -67,7 +67,7 @@ export const subscription = graphql`
 export const servicesListFragment = graphql`
   fragment servicesList_services on Query
   @refetchable(queryName: "ServicesPaginationQuery") {
-    services(
+    serviceInstances(
       first: $count
       after: $cursor
       orderBy: $orderBy
@@ -89,7 +89,7 @@ export const ServiceListQuery = graphql`
   query serviceQuery(
     $count: Int!
     $cursor: ID
-    $orderBy: ServiceOrdering!
+    $orderBy: ServiceInstanceOrdering!
     $orderMode: OrderingMode!
   ) {
     ...servicesList_services
@@ -98,7 +98,9 @@ export const ServiceListQuery = graphql`
 
 export const ServiceByIdWithSubscriptions = graphql`
   query serviceByIdWithSubscriptionsQuery($service_instance_id: ID) {
-    serviceByIdWithSubscriptions(service_instance_id: $service_instance_id) {
+    serviceInstanceByIdWithSubscriptions(
+      service_instance_id: $service_instance_id
+    ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }
   }

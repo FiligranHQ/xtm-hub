@@ -17,9 +17,9 @@ type Mutation {
   editDocument(documentId: ID, newDescription: String, serviceInstanceId: String): Document!
   deleteDocument(documentId: ID, serviceInstanceId: String): Document!
   addServicePrice(input: AddServicePriceInput): ServicePrice
-  editService(id: ID!, name: String!): ServiceInstance
-  addService(input: AddServiceInput): Subscription
-  deleteService(id: ID!): ServiceInstance
+  editServiceInstance(id: ID!, name: String!): ServiceInstance
+  addServiceInstance(input: AddServiceInput): Subscription
+  deleteServiceInstance(id: ID!): ServiceInstance
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
@@ -70,10 +70,10 @@ type Query {
   rolesPortal: [RolePortal!]!
   documentExists(documentName: String, serviceInstanceId: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, serviceInstanceId: String): DocumentConnection!
-  publicServices(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  services(first: Int!, after: ID, orderBy: ServiceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  serviceById(service_instance_id: ID): ServiceInstance
-  serviceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
+  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstanceById(service_instance_id: ID): ServiceInstance
+  serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
   settings: Settings!
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
@@ -145,7 +145,7 @@ type ServicePrice implements Node {
   price: Int
 }
 
-enum ServiceOrdering {
+enum ServiceInstanceOrdering {
   name
   description
   provider

@@ -57,9 +57,6 @@ const ServiceList = ({
     () => publicServices.filter((service) => !service.public),
     [publicServices]
   );
-  console.log('ownedServices [serviceList]', ownedServices);
-  console.log('publicOwnedServices [serviceList]', publicOwnedServices);
-  console.log('availableServices [serviceList]', availableServices);
 
   return (
     <>

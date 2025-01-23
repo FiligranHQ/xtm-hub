@@ -1,4 +1,4 @@
-enum ServiceOrdering {
+enum ServiceInstanceOrdering {
   name
   description
   provider
@@ -43,31 +43,32 @@ input AddServiceInput {
 }
 
 type Mutation {
-  editService(id: ID!, name: String!): ServiceInstance
+  editServiceInstance(id: ID!, name: String!): ServiceInstance
     @auth(requires: [BCK_MANAGE_SERVICES])
-  addService(input: AddServiceInput): Subscription
+  addServiceInstance(input: AddServiceInput): Subscription
     @auth(requires: [BCK_MANAGE_SERVICES])
-  deleteService(id: ID!): ServiceInstance @auth(requires: [BCK_MANAGE_SERVICES])
+  deleteServiceInstance(id: ID!): ServiceInstance
+    @auth(requires: [BCK_MANAGE_SERVICES])
 }
 
 type Query {
-  publicServices(
+  publicServiceInstances(
     first: Int!
     after: ID
-    orderBy: ServiceOrdering!
+    orderBy: ServiceInstanceOrdering!
     orderMode: OrderingMode!
   ): ServiceConnection!
     @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_SERVICES])
-  services(
+  serviceInstances(
     first: Int!
     after: ID
-    orderBy: ServiceOrdering!
+    orderBy: ServiceInstanceOrdering!
     orderMode: OrderingMode!
   ): ServiceConnection! @auth(requires: [BYPASS])
-  serviceById(service_instance_id: ID): ServiceInstance @auth
-  serviceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
-    @auth
-    @service_capa(requires: [MANAGE_ACCESS])
+  serviceInstanceById(service_instance_id: ID): ServiceInstance @auth
+  serviceInstanceByIdWithSubscriptions(
+    service_instance_id: ID
+  ): ServiceInstance @auth @service_capa(requires: [MANAGE_ACCESS])
 }
 
 type ServiceInstanceSubscription {

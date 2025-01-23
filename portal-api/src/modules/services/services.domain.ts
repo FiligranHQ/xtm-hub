@@ -25,7 +25,10 @@ import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 
-export const loadPublicServices = async (context: PortalContext, opts) => {
+export const loadPublicServiceInstances = async (
+  context: PortalContext,
+  opts
+) => {
   const { first, after, orderMode, orderBy } = opts;
   const query = paginate<ServiceInstance>(context, 'ServiceInstance', {
     first,
@@ -101,7 +104,7 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
   };
 };
 
-export const loadServices = async (context: PortalContext, opts) => {
+export const loadServiceInstances = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
   const query = paginate<ServiceInstance>(context, 'ServiceInstance', {
     first,
@@ -167,7 +170,7 @@ export const loadServices = async (context: PortalContext, opts) => {
     ...servicesConnection,
   };
 };
-export const loadServiceByWithCapabilities = async (
+export const loadServiceInstanceByIdWithCapabilities = async (
   context: PortalContext,
   service_instance_id: string
 ): Promise<ServiceInstance> => {
@@ -341,7 +344,7 @@ export const grantServiceAccess = async (
       template: 'partnerVault',
       params: {
         name: user.email,
-        partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('Service', serviceInstance.id)}`,
+        partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
         partnerVault: serviceInstance.name,
       },
     });

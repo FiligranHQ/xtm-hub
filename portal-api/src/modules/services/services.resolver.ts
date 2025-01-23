@@ -18,27 +18,27 @@ import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import {
-  loadPublicServices,
-  loadServiceByWithCapabilities,
-  loadServices,
+  loadPublicServiceInstances,
+  loadServiceInstanceByIdWithCapabilities,
+  loadServiceInstances,
   loadServiceWithSubscriptions,
 } from './services.domain';
 
 const resolvers: Resolvers = {
   Query: {
-    services: async (_, opt, context) => {
-      return loadServices(context, opt);
+    serviceInstances: async (_, opt, context) => {
+      return loadServiceInstances(context, opt);
     },
-    publicServices: async (_, opt, context) => {
-      return loadPublicServices(context, opt);
+    publicServiceInstances: async (_, opt, context) => {
+      return loadPublicServiceInstances(context, opt);
     },
-    serviceById: async (_, { service_instance_id }, context) => {
-      return await loadServiceByWithCapabilities(
+    serviceInstanceById: async (_, { service_instance_id }, context) => {
+      return await loadServiceInstanceByIdWithCapabilities(
         context,
         fromGlobalId(service_instance_id).id
       );
     },
-    serviceByIdWithSubscriptions: async (
+    serviceInstanceByIdWithSubscriptions: async (
       _,
       { service_instance_id },
       context
@@ -50,7 +50,7 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    deleteService: async (_, { id }, context) => {
+    deleteServiceInstance: async (_, { id }, context) => {
       const { id: databaseId } = fromGlobalId(id) as {
         type: DatabaseType;
         id: string;
@@ -64,7 +64,7 @@ const resolvers: Resolvers = {
       await dispatch('ServiceInstance', 'delete', deletedServiceInstance);
       return deletedServiceInstance;
     },
-    editService: async (_, { id, name }, context) => {
+    editServiceInstance: async (_, { id, name }, context) => {
       const { id: databaseId } = fromGlobalId(id) as {
         type: DatabaseType;
         id: string;
@@ -79,7 +79,7 @@ const resolvers: Resolvers = {
       await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
       return updatedServiceInstance;
     },
-    addService: async (_, { input }, context) => {
+    addServiceInstance: async (_, { input }, context) => {
       const trx = await dbTx();
 
       try {

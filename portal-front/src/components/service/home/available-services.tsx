@@ -35,7 +35,6 @@ const AvailableServices = ({
       </AlertDialogComponent>
     );
   };
-  console.log('service [AvailableServices]', services);
 
   if (services.length > 0)
     return (
