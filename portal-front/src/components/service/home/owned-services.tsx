@@ -31,7 +31,9 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
             className="h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800"
             asChild
             variant="ghost">
-            <Link href={url}>
+            <Link
+              href={url}
+              onClick={(e) => e.preventDefault()}>
               <LinkIcon
                 aria-hidden={true}
                 focusable={false}
