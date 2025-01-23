@@ -12,9 +12,9 @@ export async function up(knex) {
   await knex.schema.table('Service_Link', function (table) {
     table.renameColumn('service_id', 'service_instance_id');
   });
-  await knex.schema.table('Service_Price', function (table) {
-    table.renameColumn('service_id', 'service_instance_id');
-  });
+  // await knex.schema.table('Service_Price', function (table) {
+  //   table.renameColumn('service_id', 'service_instance_id');
+  // });
 }
 
 /**
@@ -31,7 +31,7 @@ export async function down(knex) {
   await knex.schema.table('Service_Link', function (table) {
     table.renameColumn('service_instance_id', 'service_id');
   });
-  await knex.schema.table('Service_Price', function (table) {
-    table.renameColumn('service_instance_id', 'service_id');
-  });
+  // await knex.schema.table('Service_Price', function (table) {
+  //   table.renameColumn('service_instance_id', 'service_id');
+  // });
 }

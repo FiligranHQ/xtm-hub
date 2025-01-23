@@ -5,7 +5,7 @@ import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
-import { ServiceId } from '../../../model/kanel/public/Service';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
 import { downloadFile } from './document-storage';
@@ -13,7 +13,7 @@ import { loadDocumentBy } from './document.domain';
 
 export const documentVisualizeEndpoint = (app) => {
   app.get(
-    `/document/visualize/:serviceId/:filename`,
+    `/document/visualize/:serviceInstanceId/:filename`,
     cors(),
     async (req, res) => {
       const { user } = req.session;
@@ -24,7 +24,8 @@ export const documentVisualizeEndpoint = (app) => {
       try {
         const context: PortalContext = {
           user: user,
-          serviceId: fromGlobalId(req.params.serviceId).id as ServiceId,
+          serviceInstanceId: fromGlobalId(req.params.serviceInstanceId)
+            .id as ServiceInstanceId,
           req,
           res,
         };

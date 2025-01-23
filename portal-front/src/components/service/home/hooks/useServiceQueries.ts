@@ -79,7 +79,7 @@ const getPublicServices = (
       const commitMutation = (status: string, successMessage: string) => {
         commitSubscriptionCreateMutation({
           variables: {
-            service_id: service.id,
+            service_instance_id: service.id,
             connections: [connectionID],
           },
           onCompleted: () => {

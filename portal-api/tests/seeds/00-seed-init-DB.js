@@ -135,7 +135,7 @@ export async function seed(knex) {
     },
   ]);
 
-  await knex('Service')
+  await knex('ServiceInstance')
     .insert([
       {
         id: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
@@ -172,19 +172,19 @@ export async function seed(knex) {
     .insert([
       {
         id: 'f4f539f8-1d16-479d-9e72-185c9e02c6af',
-        service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
+        service_instance_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
         url: 'https://weather.dev.scredplatform.io/',
         name: 'CyberWeatherApp',
       },
       {
         id: 'b0e5df84-512a-4ced-8968-7bb4916edd33',
-        service_id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
+        service_instance_id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
         url: 'https://opencti-test2.non-prod.scredplatform.io/',
         name: 'OpenFeed',
       },
       {
         id: 'b3c1664d-2337-46f5-a3ce-c3b72460e71a',
-        service_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
+        service_instance_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
         url: '/service/malware-analysis',
         name: 'MalwareAnalysis',
       },
@@ -196,21 +196,21 @@ export async function seed(knex) {
     .insert([
       {
         id: '7c6c5d07-07d4-4418-b441-bc19f2d14825',
-        service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
+        service_instance_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
         fee_type: 'YEARLY',
         start_date: null,
         price: 0,
       },
       {
         id: '18becc6c-6912-498b-868d-062d4f0d05c5',
-        service_id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
+        service_instance_id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
         fee_type: 'YEARLY',
         start_date: null,
         price: 0,
       },
       {
         id: '59a3db90-f963-4560-a0c1-ee29f6a221c1',
-        service_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
+        service_instance_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
         fee_type: 'YEARLY',
         start_date: null,
         price: 20000,

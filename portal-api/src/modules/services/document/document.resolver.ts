@@ -1,7 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
-import { ServiceId } from '../../../model/kanel/public/Service';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
@@ -21,14 +21,14 @@ const resolvers: Resolvers = {
         const minioName = await sendFileToS3(
           opt.document.file,
           context.user.id,
-          context.serviceId as ServiceId
+          context.serviceInstanceId as ServiceInstanceId
         );
         const data: Document = {
           uploader_id: context.user.id as UserId,
           description: opt.description,
           minio_name: minioName,
           file_name: normalizeDocumentName(opt.document.file.filename),
-          service_id: context.serviceId,
+          service_instance_id: context.serviceInstanceId,
           created_at: new Date(),
           mime_type: opt.document.file.mimetype,
         } as unknown as Document;
@@ -44,7 +44,7 @@ const resolvers: Resolvers = {
           context,
           { description: newDescription },
           fromGlobalId(documentId).id as DocumentId,
-          context.serviceId as ServiceId
+          context.serviceInstanceId as ServiceInstanceId
         );
         return document;
       } catch (error) {
@@ -56,7 +56,7 @@ const resolvers: Resolvers = {
         return deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
-          context.serviceId as ServiceId
+          context.serviceInstanceId as ServiceInstanceId
         );
       } catch (error) {
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
@@ -68,7 +68,7 @@ const resolvers: Resolvers = {
       try {
         return checkDocumentExists(
           input.documentName ?? '',
-          fromGlobalId(input.serviceId).id as ServiceId
+          fromGlobalId(input.serviceInstanceId).id as ServiceInstanceId
         );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);
@@ -77,7 +77,7 @@ const resolvers: Resolvers = {
     },
     documents: async (
       _,
-      { first, after, orderMode, orderBy, filter, serviceId },
+      { first, after, orderMode, orderBy, filter, serviceInstanceId },
       context
     ) => {
       try {
@@ -85,7 +85,7 @@ const resolvers: Resolvers = {
           context,
           { first, after, orderMode, orderBy },
           normalizeDocumentName(filter ?? ''),
-          fromGlobalId(serviceId).id as ServiceId
+          fromGlobalId(serviceInstanceId).id as ServiceInstanceId
         );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);

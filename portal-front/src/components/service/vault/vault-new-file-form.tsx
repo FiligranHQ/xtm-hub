@@ -63,7 +63,7 @@ export const VaultNewFileForm: FunctionComponent<
 
   const { documentExists } = useLazyLoadQuery<documentExistsQuery>(
     DocumentExistsQuery,
-    { documentName, serviceId: slug },
+    { documentName, serviceInstanceId: slug },
     { fetchPolicy: 'store-and-network' }
   );
 

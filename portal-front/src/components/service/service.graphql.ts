@@ -3,15 +3,18 @@ import { graphql } from 'react-relay';
 export const ServiceListCreateMutation = graphql`
   mutation serviceListMutation($input: AddServiceInput, $connections: [ID!]!) {
     addService(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "ServiceEdge") {
+      @prependNode(
+        connections: $connections
+        edgeTypeName: "ServiceInstanceEdge"
+      ) {
       ...subscription_fragment
     }
   }
 `;
 
 export const ServiceById = graphql`
-  query serviceByIdQuery($service_id: ID) {
-    serviceById(service_id: $service_id) {
+  query serviceByIdQuery($service_instance_id: ID) {
+    serviceById(service_instance_id: $service_instance_id) {
       id
       name
       description
@@ -22,7 +25,7 @@ export const ServiceById = graphql`
 `;
 
 export const serviceListFragment = graphql`
-  fragment serviceList_fragment on Service {
+  fragment serviceList_fragment on ServiceInstance {
     id
     name
     description
@@ -43,8 +46,12 @@ export const serviceListFragment = graphql`
 
 export const subscription = graphql`
   subscription serviceListSubscription($connections: [ID!]!) {
-    Service {
-      add @prependNode(connections: $connections, edgeTypeName: "ServiceEdge") {
+    ServiceInstance {
+      add
+        @prependNode(
+          connections: $connections
+          edgeTypeName: "ServiceInstanceEdge"
+        ) {
         ...serviceList_fragment
       }
       edit {
@@ -90,15 +97,15 @@ export const ServiceListQuery = graphql`
 `;
 
 export const ServiceByIdWithSubscriptions = graphql`
-  query serviceByIdWithSubscriptionsQuery($service_id: ID) {
-    serviceByIdWithSubscriptions(service_id: $service_id) {
+  query serviceByIdWithSubscriptionsQuery($service_instance_id: ID) {
+    serviceByIdWithSubscriptions(service_instance_id: $service_instance_id) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }
   }
 `;
 
 export const serviceWithSubscriptionsFragment = graphql`
-  fragment serviceWithSubscriptions_fragment on Service {
+  fragment serviceWithSubscriptions_fragment on ServiceInstance {
     __id
     name
     id
@@ -140,7 +147,7 @@ export const serviceUsersFragment = graphql`
               name
               id
             }
-            service {
+            service_instance {
               name
               id
             }

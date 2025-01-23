@@ -38,14 +38,19 @@ export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
       '=',
       'User_Service.subscription_id'
     )
-    .leftJoin('Service', 'Service.id', '=', 'Subscription.service_id')
+    .leftJoin(
+      'ServiceInstance',
+      'ServiceInstance.id',
+      '=',
+      'Subscription.service_instance_id'
+    )
     .select(
       'User_Service.*',
       dbRaw(
         "(json_agg(json_build_object('id', \"Service_Capability\".id, 'service_capability_name', \"Service_Capability\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
       ),
       dbRaw(
-        '(json_agg(json_build_object(\'id\', "Service".id, \'type\', "Service".type))->>0)::json as service'
+        '(json_agg(json_build_object(\'id\', "ServiceInstance".id, \'type\', "ServiceInstance".type))->>0)::json as service'
       )
     )
     .groupBy(['User_Service.id']);
@@ -108,13 +113,17 @@ export const createUserServiceAccess = async (
       .returning('*');
   }
   const user = await loadUserBy({ 'User.id': user_id });
-  const service = await loadServiceBy(context, 'id', subscription.service_id);
+  const service = await loadServiceBy(
+    context,
+    'id',
+    subscription.service_instance_id
+  );
   await sendMail({
     to: user.email,
     template: 'partnerVault',
     params: {
       name: user.email,
-      partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('Service', service.id)}`,
+      partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('ServiceInstance', service.id)}`,
       partnerVault: service.name,
     },
   });
@@ -140,7 +149,7 @@ export const createUserAccessForOtherOrg = async (
   });
   const [subOrga] = await loadUnsecureSubscriptionBy({
     organization_id,
-    service_id: subscription.service_id,
+    service_instance_id: subscription.service_instance_id,
   });
 
   // In case the subscription already exist for the organization

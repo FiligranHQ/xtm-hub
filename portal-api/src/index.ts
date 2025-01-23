@@ -137,11 +137,11 @@ const middlewareExpress = expressMiddleware(server, {
     req?.body?.variables?.id &&
       (req.body.variables.id = extractId(req.body.variables.id));
 
-    const serviceId = req?.body?.variables?.serviceId
-      ? fromGlobalId(req?.body?.variables?.serviceId)?.id
+    const serviceInstanceId = req?.body?.variables?.serviceInstanceId
+      ? fromGlobalId(req?.body?.variables?.serviceInstanceId)?.id
       : '';
     // TODO Add build session from request authorization
-    return { user, req, res, serviceId };
+    return { user, req, res, serviceInstanceId };
   },
 });
 const handler = createHandler({
