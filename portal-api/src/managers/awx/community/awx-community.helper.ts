@@ -1,16 +1,16 @@
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
-import { ServiceId } from '../../../model/kanel/public/Service';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { loadUnsecureServiceBy } from '../../../modules/services/services.domain';
 import { loadUnsecureUserBy } from '../../../modules/users/users.domain';
 
 export interface InputCreateCommunity {
-  id: ServiceId;
+  id: ServiceInstanceId;
   adminCommuId: UserId;
 }
 
 export interface InputUpdateCommunity {
-  id: ServiceId;
+  id: ServiceInstanceId;
   community_display_name: string;
 }
 export interface AWXCommunity {

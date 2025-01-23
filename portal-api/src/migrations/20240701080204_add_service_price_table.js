@@ -4,7 +4,7 @@ export async function up(knex) {
     table.integer('price');
     table.enum('type', ['MONTHLY', 'YEARLY']).defaultTo('YEARLY');
     table
-      .uuid('service_id')
+      .uuid('service_instance_id')
       .references('id')
       .inTable('Service')
       .onDelete('CASCADE');

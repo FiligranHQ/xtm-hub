@@ -159,7 +159,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
         input: {
           email: values.email[0]!.text,
           capabilities: values.capabilities,
-          serviceId: slug ?? '',
+          serviceInstanceId: slug ?? '',
           organizationId: values.organizationId,
         },
       },

@@ -19,7 +19,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
     useQueryLoader<serviceByIdWithSubscriptionsQuery>(
       ServiceByIdWithSubscriptions
     );
-  useMountingLoader(loadQuery, { service_id: id });
+  useMountingLoader(loadQuery, { service_instance_id: id });
 
   return (
     <>

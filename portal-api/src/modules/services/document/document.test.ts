@@ -3,7 +3,7 @@ import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import { DocumentMutator } from '../../../model/kanel/public/Document';
-import { ServiceId } from '../../../model/kanel/public/Service';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import * as FileStorage from './document-storage';
 import { insertDocument, sendFileToS3 } from './document.domain';
@@ -61,7 +61,8 @@ describe('should add new file', () => {
       description: 'description',
       minio_name: 'minioName',
       file_name: 'filename',
-      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+      service_instance_id:
+        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
     });
   });
   it('should create Document entry in DB', async () => {
@@ -70,7 +71,8 @@ describe('should add new file', () => {
       description: 'description2',
       minio_name: 'minioName2',
       file_name: 'filename2',
-      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+      service_instance_id:
+        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
     };
     await insertDocument(data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
@@ -84,7 +86,8 @@ describe('should add new file', () => {
       description: 'description3',
       minio_name: 'minioName3',
       file_name: 'filename',
-      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+      service_instance_id:
+        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
     };
     await insertDocument(data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
@@ -107,7 +110,8 @@ describe('Should modify document', () => {
       description: 'description',
       minio_name: 'minioName',
       file_name: 'filename',
-      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+      service_instance_id:
+        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
     });
   });
   it('Should update document description', async () => {
@@ -118,8 +122,8 @@ describe('Should modify document', () => {
           'Document',
           'bc348e84-3635-46de-9b56-38db09c35f4d'
         ),
-        serviceId: toGlobalId(
-          'Service',
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
           'c6343882-f609-4a3f-abe0-a34f8cb11302'
         ),
         newDescription: 'NEW',
@@ -135,7 +139,7 @@ describe('Should modify document', () => {
     } as DocumentMutator);
     const result = await checkDocumentExists(
       'filename',
-      'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId
+      'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId
     );
     expect(result).toBe(false);
   });
@@ -168,19 +172,20 @@ describe('should check if file already exists', () => {
       description: 'description',
       minio_name: 'minioName',
       file_name: 'filename',
-      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+      service_instance_id:
+        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
     });
   });
 
   it.each`
-    expected | fileName      | title               | serviceId
+    expected | fileName      | title               | serviceInstanceId
     ${true}  | ${'filename'} | ${'Already exists'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11302'}
     ${false} | ${'test'}     | ${'Does not exist'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11302'}
     ${false} | ${'test'}     | ${'Does not exist'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11301'}
   `(
     'Should return $expected if filename $title',
-    async ({ expected, fileName, serviceId }) => {
-      const result = await checkDocumentExists(fileName, serviceId);
+    async ({ expected, fileName, serviceInstanceId }) => {
+      const result = await checkDocumentExists(fileName, serviceInstanceId);
       expect(result).toEqual(expected);
     }
   );
@@ -198,7 +203,8 @@ describe('Documents loading', () => {
       description: 'description',
       minio_name: 'minioName',
       file_name: 'filename',
-      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+      service_instance_id:
+        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
     });
     await createDocument({
       id: '96847916-2f35-4402-8e64-888c5d5e8b7a',
@@ -206,7 +212,8 @@ describe('Documents loading', () => {
       description: 'xdescription',
       minio_name: 'xminioName',
       file_name: 'xfilename',
-      service_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceId,
+      service_instance_id:
+        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
     });
   });
 
@@ -218,8 +225,8 @@ describe('Documents loading', () => {
         filter: '',
         orderBy: 'file_name',
         orderMode: 'asc',
-        serviceId: toGlobalId(
-          'Service',
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
           'c6343882-f609-4a3f-abe0-a34f8cb11302'
         ),
       },
@@ -238,8 +245,8 @@ describe('Documents loading', () => {
         filter: '',
         orderBy: 'file_name',
         orderMode: 'desc',
-        serviceId: toGlobalId(
-          'Service',
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
           'c6343882-f609-4a3f-abe0-a34f8cb11302'
         ),
       },
@@ -259,8 +266,8 @@ describe('Documents loading', () => {
         filter: 'xfi',
         orderBy: 'file_name',
         orderMode: 'asc',
-        serviceId: toGlobalId(
-          'Service',
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
           'c6343882-f609-4a3f-abe0-a34f8cb11302'
         ),
       },

@@ -51,12 +51,14 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
             services.map(({ subscription, id }) => {
               return (
                 <ServiceCard
-                  serviceLink={`/service/vault/${subscription?.service?.id}`}
+                  serviceLink={`/service/vault/${subscription?.service_instance?.id}`}
                   key={id}
-                  service={subscription?.service as serviceList_fragment$data}
+                  service={
+                    subscription?.service_instance as serviceList_fragment$data
+                  }
                   bottomLeftAction={
                     <ul className="flex space-x-s">
-                      {subscription?.service?.links?.map((link) => (
+                      {subscription?.service_instance?.links?.map((link) => (
                         <li key={link?.name}>
                           <Button
                             className={
@@ -65,7 +67,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
                             asChild
                             variant={'ghost'}>
                             <Link
-                              href={`/service/vault/${subscription?.service?.id}`}>
+                              href={`/service/vault/${subscription?.service_instance?.id}`}>
                               <LinkIcon
                                 aria-hidden={true}
                                 focusable={false}

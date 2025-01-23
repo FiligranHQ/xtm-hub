@@ -72,7 +72,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
   const onSubmit = (inputValue: z.infer<ZodSchema>) => {
     commitSubscriptionCreateMutation({
       variables: {
-        service_id: serviceId,
+        service_instance_id: serviceId,
         organization_id: inputValue.organization_id,
       },
       onCompleted: (response) => {

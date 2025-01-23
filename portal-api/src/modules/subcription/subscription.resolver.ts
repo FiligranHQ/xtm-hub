@@ -28,7 +28,7 @@ import { loadSubscriptionBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
-    addSubscription: async (_, { service_id }, context) => {
+    addSubscription: async (_, { service_instance_id }, context) => {
       const trx = await dbTx();
 
       // Check the subscription does not already exist :
@@ -36,7 +36,7 @@ const resolvers: Resolvers = {
         const subscription = await checkSubscriptionExists(
           context,
           context.user.selected_organization_id,
-          fromGlobalId(service_id).id
+          fromGlobalId(service_instance_id).id
         );
 
         if (subscription) {
@@ -45,7 +45,7 @@ const resolvers: Resolvers = {
 
         const subscriptionData = {
           id: uuidv4(),
-          service_id: fromGlobalId(service_id).id,
+          service_instance_id: fromGlobalId(service_instance_id).id,
           organization_id: context.user.selected_organization_id,
           start_date: new Date(),
           end_date: undefined,
@@ -81,7 +81,7 @@ const resolvers: Resolvers = {
 
         await trx.commit();
         return {
-          ...filledSubscription.service,
+          ...filledSubscription.service_instance,
           subscribed: true,
           capabilities: ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
         };
@@ -98,7 +98,7 @@ const resolvers: Resolvers = {
     },
     addSubscriptionInService: async (
       _,
-      { service_id, organization_id },
+      { service_instance_id, organization_id },
       context
     ) => {
       const trx = await dbTx();
@@ -109,7 +109,7 @@ const resolvers: Resolvers = {
           context,
           fromGlobalId(organization_id).id ??
             context.user.selected_organization_id,
-          fromGlobalId(service_id).id
+          fromGlobalId(service_instance_id).id
         );
         if (subscription) {
           throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
@@ -117,7 +117,7 @@ const resolvers: Resolvers = {
 
         const subscriptionData = {
           id: uuidv4(),
-          service_id: fromGlobalId(service_id).id,
+          service_instance_id: fromGlobalId(service_instance_id).id,
           organization_id:
             fromGlobalId(organization_id).id ??
             context.user.selected_organization_id,
@@ -145,7 +145,7 @@ const resolvers: Resolvers = {
         await trx.commit();
         return loadServiceWithSubscriptions(
           context,
-          fromGlobalId(service_id).id
+          fromGlobalId(service_instance_id).id
         );
       } catch (error) {
         await trx.rollback();
@@ -171,7 +171,10 @@ const resolvers: Resolvers = {
           .where({ id: fromGlobalId(subscription_id).id })
           .delete('*');
 
-        return loadServiceWithSubscriptions(context, subscription.service_id);
+        return loadServiceWithSubscriptions(
+          context,
+          subscription.service_instance_id
+        );
       } catch (error) {
         if (error.name.includes(FORBIDDEN_ACCESS)) {
           logApp.warn(

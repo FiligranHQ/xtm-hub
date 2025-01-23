@@ -1,10 +1,10 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { dbRaw, dbUnsecure } from '../../knexfile';
-import Service from '../model/kanel/public/Service';
 import { loadSubscriptionBy } from '../modules/subcription/subscription.helper';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { ServiceCapabilityArgs } from './directive-auth';
 
+import { ServiceInstance } from '../__generated__/resolvers-types';
 import { SubscriptionMutator } from '../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../model/user';
 import { extractId } from '../utils/utils';
@@ -15,9 +15,13 @@ export const loadCapabilitiesByServiceId = async (
 ): Promise<{ capabilities: string[] } | undefined> => {
   const userId = user.id;
   const organizationId = user.selected_organization_id;
-  return dbUnsecure<Service>('Service')
+  return dbUnsecure<ServiceInstance>('ServiceInstance')
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOn(
+      this.on(
+        'subscription.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      ).andOn(
         'subscription.organization_id',
         '=',
         dbRaw('?', [organizationId])
@@ -41,8 +45,8 @@ export const loadCapabilitiesByServiceId = async (
       COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
     `),
     ])
-    .where('Service.id', '=', dbRaw('?', [serviceId]))
-    .groupBy(['Service.id', 'subscription.id'])
+    .where('ServiceInstance.id', '=', dbRaw('?', [serviceId]))
+    .groupBy(['ServiceInstance.id', 'subscription.id'])
     .first();
 };
 
@@ -59,5 +63,5 @@ export const getCapabilityUser = (
     : loadSubscriptionBy({
         id: extractId(args.subscription_id),
       } as SubscriptionMutator).then(([subscription]) =>
-        loadCapabilitiesByServiceId(user, subscription.service_id)
+        loadCapabilitiesByServiceId(user, subscription.service_instance_id)
       );

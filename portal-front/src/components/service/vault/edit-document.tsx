@@ -38,7 +38,7 @@ const EditDocument: FunctionComponent<EditDocumentProps> = ({
     vaultUpdateDocumentMutation({
       variables: {
         documentId: values.documentId,
-        serviceId: slug,
+        serviceInstanceId: slug,
         newDescription: values.description,
       },
       onCompleted: (response) => {

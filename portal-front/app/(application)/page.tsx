@@ -13,7 +13,7 @@ import { useLocalStorage } from 'usehooks-ts';
 import {
   OrderingMode,
   publicServiceQuery,
-  ServiceOrdering,
+  ServiceInstanceOrdering,
 } from '../../__generated__/publicServiceQuery.graphql';
 import { userServiceOwnedQuery } from '../../__generated__/userServiceOwnedQuery.graphql';
 
@@ -45,7 +45,7 @@ const Page: React.FunctionComponent = () => {
     'orderModeServiceList',
     'asc'
   );
-  const [orderByServiceList] = useLocalStorage<ServiceOrdering>(
+  const [orderByServiceList] = useLocalStorage<ServiceInstanceOrdering>(
     'orderByServiceList',
     'name'
   );

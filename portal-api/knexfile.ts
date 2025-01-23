@@ -17,7 +17,7 @@ declare module 'knex' {
 export type DatabaseType =
   | 'User'
   | 'Organization'
-  | 'Service'
+  | 'ServiceInstance'
   | 'User_RolePortal'
   | 'RolePortal'
   | 'CapabilityPortal'

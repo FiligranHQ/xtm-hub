@@ -5,7 +5,7 @@ import Document, {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
-import { ServiceId } from '../../../model/kanel/public/Service';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
@@ -17,14 +17,14 @@ import {
 export const sendFileToS3 = async (
   file: UploadedFile,
   userId: string,
-  serviceId: ServiceId
+  serviceInstanceId: ServiceInstanceId
 ) => {
   const fullMetadata = {
     mimetype: file.mimetype,
     filename: file.filename,
     encoding: file.encoding,
     Uploadinguserid: userId,
-    ServiceId: serviceId,
+    ServiceInstanceId: serviceInstanceId,
   };
 
   const fileParams = {
@@ -64,11 +64,11 @@ export const updateDocumentDescription = async (
   context: PortalContext,
   updateData: DocumentMutator,
   documentId: DocumentId,
-  serviceId: ServiceId
+  serviceInstanceId: ServiceInstanceId
 ): Promise<Document[]> => {
   return updateDocument(context, updateData, {
     id: documentId,
-    service_id: serviceId,
+    service_instance_id: serviceInstanceId,
   });
 };
 
@@ -96,11 +96,11 @@ export const incrementDocumentsDownloads = async (
 export const deleteDocument = async (
   context: PortalContext,
   documentId: DocumentId,
-  serviceId: ServiceId
+  serviceInstanceId: ServiceInstanceId
 ): Promise<Document> => {
   const [documentFromDb] = await loadDocumentBy(context, {
     id: documentId,
-    service_id: serviceId,
+    service_instance_id: serviceInstanceId,
   });
   await passDocumentToInactive(context, documentFromDb);
   return documentFromDb;
@@ -119,20 +119,20 @@ export const getDocuments = async (
   context: PortalContext,
   opts,
   filter,
-  serviceId: ServiceId
+  serviceInstanceId: ServiceInstanceId
 ): Promise<DocumentConnection> => {
-  return loadDocuments(context, opts, filter, serviceId);
+  return loadDocuments(context, opts, filter, serviceInstanceId);
 };
 
 export const loadDocuments = async (
   context: PortalContext,
   opts,
   filter,
-  serviceId: ServiceId
+  serviceInstanceId: ServiceInstanceId
 ): Promise<DocumentConnection> => {
   const query = paginate<Document>(context, 'Document', opts)
     .where('Document.active', '=', true)
-    .where('Document.service_id', '=', serviceId);
+    .where('Document.service_instance_id', '=', serviceInstanceId);
   if (filter) {
     query.andWhere(function () {
       this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(
@@ -149,7 +149,7 @@ export const loadDocuments = async (
 
   const queryCount = db<Document>(context, 'Document', opts)
     .where('Document.active', '=', true)
-    .where('Document.service_id', '=', serviceId);
+    .where('Document.service_instance_id', '=', serviceInstanceId);
   if (filter) {
     queryCount.andWhere(function () {
       this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(

@@ -32,7 +32,7 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
     vaultDeleteDocumentMutation({
       variables: {
         documentId: documentData.id,
-        serviceId: slug,
+        serviceInstanceId: slug,
         connections: [connectionId],
       },
       onCompleted: (response) => {

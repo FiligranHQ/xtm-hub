@@ -36,7 +36,7 @@ describe('User query resolver', () => {
       await insertUnsecureSubscription({
         id: SUBSCRIPTION_ID,
         organization_id: THALES_ORGA_ID,
-        service_id: SERVICE_VAULT_ID,
+        service_instance_id: SERVICE_VAULT_ID,
       });
     });
     it.each`

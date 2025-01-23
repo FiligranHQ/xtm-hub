@@ -4,13 +4,13 @@ export const DocumentAddMutation = graphql`
   mutation documentAddMutation(
     $document: Upload
     $description: String
-    $serviceId: String
+    $serviceInstanceId: String
     $connections: [ID!]!
   ) {
     addDocument(
       document: $document
       description: $description
-      serviceId: $serviceId
+      serviceInstanceId: $serviceInstanceId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       id
       description
@@ -25,12 +25,12 @@ export const DocumentUpdateMutation = graphql`
   mutation documentUpdateMutation(
     $documentId: ID
     $newDescription: String
-    $serviceId: String
+    $serviceInstanceId: String
   ) {
     editDocument(
       documentId: $documentId
       newDescription: $newDescription
-      serviceId: $serviceId
+      serviceInstanceId: $serviceInstanceId
     ) {
       id
       file_name
@@ -45,9 +45,12 @@ export const DocumentDeleteMutation = graphql`
   mutation documentDeleteMutation(
     $documentId: ID
     $connections: [ID!]!
-    $serviceId: String
+    $serviceInstanceId: String
   ) {
-    deleteDocument(documentId: $documentId, serviceId: $serviceId) {
+    deleteDocument(
+      documentId: $documentId
+      serviceInstanceId: $serviceInstanceId
+    ) {
       id @deleteEdge(connections: $connections)
       file_name
     }
@@ -55,8 +58,11 @@ export const DocumentDeleteMutation = graphql`
 `;
 
 export const DocumentExistsQuery = graphql`
-  query documentExistsQuery($documentName: String, $serviceId: String) {
-    documentExists(documentName: $documentName, serviceId: $serviceId)
+  query documentExistsQuery($documentName: String, $serviceInstanceId: String) {
+    documentExists(
+      documentName: $documentName
+      serviceInstanceId: $serviceInstanceId
+    )
   }
 `;
 
@@ -78,7 +84,7 @@ export const documentsFragment = graphql`
       orderBy: $orderBy
       orderMode: $orderMode
       filter: $filter
-      serviceId: $serviceId
+      serviceInstanceId: $serviceInstanceId
     ) {
       __id
       totalCount
@@ -98,7 +104,7 @@ export const DocumentsListQuery = graphql`
     $orderBy: DocumentOrdering!
     $orderMode: OrderingMode!
     $filter: String
-    $serviceId: String
+    $serviceInstanceId: String
   ) {
     ...documentsList
   }
