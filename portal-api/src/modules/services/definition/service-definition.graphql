@@ -1,0 +1,7 @@
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  route_name: String
+}

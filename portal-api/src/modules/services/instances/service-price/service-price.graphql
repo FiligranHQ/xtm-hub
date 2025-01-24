@@ -1,5 +1,5 @@
 input AddServicePriceInput {
-  service_instance_id: ID
+  service_definition_id: ID
   price: Int
   fee_type: String
 }

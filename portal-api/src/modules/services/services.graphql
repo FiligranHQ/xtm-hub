@@ -1,16 +1,12 @@
 enum ServiceInstanceOrdering {
   name
   description
-  provider
-  type
 }
 
 type ServiceInstance implements Node {
   id: ID!
   name: String!
   description: String
-  provider: String
-  type: String
   creation_status: String
   subscribed: Boolean
   links: [ServiceLink]
@@ -20,6 +16,7 @@ type ServiceInstance implements Node {
   public: Boolean
   join_type: String
   tags: [String]
+  service_definition: ServiceDefinition
 }
 
 type ServiceInstanceEdge {

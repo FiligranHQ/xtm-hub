@@ -12,6 +12,7 @@ import UserService, {
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
+import { formatRawObject } from '../../utils/queryRaw.util';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
 
 export const insertUserService = async (context, userServiceData) => {
@@ -72,6 +73,12 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
       '=',
       'service_link.service_instance_id'
     )
+    .leftJoin(
+      'ServiceDefinition as service_def',
+      'service_def.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
     .select(
       'ServiceInstance.*',
       dbRaw(
@@ -79,9 +86,26 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
         WHEN COUNT(service_link.id) = 0 THEN NULL
         ELSE (json_agg(json_build_object('id', service_link.id, 'name', service_link.name, 'url', service_link.url)))::json
       END AS services_link`
-      )
+      ),
+      dbRaw(
+        formatRawObject({
+          columnName: 'service_def',
+          typename: 'ServiceDefinition',
+          as: 'service_definition',
+        })
+      ),
+      'service_def.name as service_definition_name',
+      'service_def.description as service_definition_description',
+      'service_def.public as service_definition_public',
+      'service_def.route_name as service_definition_route_name'
     )
-    .groupBy(['ServiceInstance.id']);
+    .groupBy([
+      'ServiceInstance.id',
+      'service_def.id',
+      'service_def.name',
+      'service_def.description',
+      'service_def.public',
+    ]);
 
   const userServiceConnection = await paginate<UserService>(
     context,
@@ -116,14 +140,12 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
         "(json_agg(json_build_object('id', \"user\".id, 'last_name', \"user\".last_name, 'first_name', \"user\".first_name, 'email', \"user\".email, '__typename', 'User')) ->> 0)::json as user"
       ),
       dbRaw(
-        `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_instance_id', "sub".service_instance_id, 'service_instance', json_build_object('id', "service".id, 'name', "service".name, 'type', "service".type, 'provider', "service".provider, 'description', "service".description, 'links', "service".services_link, '__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription`
+        `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_instance_id', "sub".service_instance_id, 'service_instance', json_build_object('id', "service".id, 'name', "service".name, 'description', "service".description, 'links', "service".services_link, 'service_definition', json_build_object('id', "service".service_definition_id, 'name', "service".service_definition_name, 'description', "service".service_definition_description, 'public', "service".service_definition_public, 'route_name', "service".service_definition_route_name, '__typename', 'ServiceDefinition'), '__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription`
       ),
       dbRaw(
         "(json_agg(json_build_object('id', \"servcapa\".id, 'service_capability_name', \"servcapa\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
       ),
       dbRaw('(service."name") as service_name'),
-      dbRaw('(service."provider") as service_provider'),
-      dbRaw('(service."type") as service_type'),
       dbRaw('(service."description") as service_description'),
       dbRaw('(sub."status") as subscription_status'),
     ])
@@ -133,9 +155,8 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
       'user.last_name',
       'user.email',
       'service.name',
-      'service.type',
-      'service.provider',
       'service.description',
+      'service.service_definition',
       'sub.status',
     ])
     .asConnection<UserServiceConnection>();
@@ -158,10 +179,6 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
     .where('sub.organization_id', userSelectedOrganization)
     .countDistinct('User_Service.id as totalCount')
     .first();
-  console.log(
-    'userServiceConnection',
-    userServiceConnection.edges[0].node.subscription
-  );
 
   return { totalCount, ...userServiceConnection };
 };

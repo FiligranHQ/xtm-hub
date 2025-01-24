@@ -18,7 +18,6 @@ export const ServiceById = graphql`
       id
       name
       description
-      type
       capabilities @required(action: THROW)
     }
   }
@@ -29,8 +28,6 @@ export const serviceListFragment = graphql`
     id
     name
     description
-    provider
-    type
     creation_status
     subscribed
     capabilities
@@ -40,6 +37,10 @@ export const serviceListFragment = graphql`
     links {
       name
       url
+    }
+    service_definition {
+      id
+      name
     }
   }
 `;

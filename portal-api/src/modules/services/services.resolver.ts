@@ -87,8 +87,6 @@ const resolvers: Resolvers = {
           id: uuidv4(),
           name: input.service_instance_name,
           description: input.service_instance_description,
-          provider: 'SCRED_ONDEMAND',
-          type: 'PRIVATE',
           creation_status: 'READY',
         };
         const [addedServiceInstance] = await db<ServiceInstance>(
@@ -100,7 +98,7 @@ const resolvers: Resolvers = {
 
         const dataServicePrice = {
           id: uuidv4() as unknown as ServicePriceId,
-          service_instance_id:
+          service_definition_id:
             addedServiceInstance.id as unknown as ServiceInstanceId,
           fee_type: input.fee_type,
           start_date: new Date(),

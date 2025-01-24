@@ -1,3 +1,7 @@
+import {
+  SERVICE_CREATION_STATUS,
+  SERVICE_DEFINITION_NAME,
+} from '@/components/service/service.const';
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -18,9 +22,10 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   const router = useRouter();
   const t = useTranslations();
 
-  const isLinkService = service.type === 'link';
-  const hasUrl = service.links?.[0]?.url;
-  const isDisabled = isLinkService && !hasUrl;
+  const isLinkService =
+    service?.service_definition?.name === SERVICE_DEFINITION_NAME.LINKS;
+  const isDisabled =
+    service?.creation_status === SERVICE_CREATION_STATUS.PENDING;
 
   const goTo = () => {
     if (serviceLink) {
@@ -33,28 +38,28 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   };
 
   const Badge = () => {
-    // If it's not a link service, show the regular badge
-    if (!isLinkService)
+    // If the status is pending, coming soon badge
+    if (isDisabled)
       return (
         <ServiceTypeBadge
-          type={service.type as ServiceTypeBadge}
-          label={service.type as string}
+          type={service.creation_status as ServiceTypeBadge}
+          label={t('Service.ComingSoon') as ServiceTypeBadge}
         />
       );
 
-    // If it's a link service and has no url, show coming soon badge
-    if (!hasUrl)
+    // If not a link service, show the regular badge
+    if (!isLinkService)
       return (
         <ServiceTypeBadge
-          type={service.type as ServiceTypeBadge}
-          label={t('Service.ComingSoon') as ServiceTypeBadge}
+          type={service?.service_definition?.name as ServiceTypeBadge}
+          label={service?.service_definition?.name as string}
         />
       );
 
     // If it's a link service and has url, show the tags as badges
     return service.tags?.map((tag) => (
       <ServiceTypeBadge
-        type={service.type as ServiceTypeBadge}
+        type={SERVICE_DEFINITION_NAME.LINKS as ServiceTypeBadge}
         label={tag as string}
         key={tag}
       />

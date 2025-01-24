@@ -5,8 +5,6 @@ export async function seed(knex) {
         id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         name: 'Vault',
         description: 'short description for Vault',
-        provider: 'FILIGRAN',
-        type: 'Intel',
         creation_status: 'READY',
         public: false,
         join_type: 'JOIN_INVITE',
@@ -29,7 +27,7 @@ export async function seed(knex) {
     .insert([
       {
         id: '65ca846b-b4ff-42ec-bafa-cc604eea11f5',
-        service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
         fee_type: 'MONTHLY',
         start_date: '2024-08-08',
         price: 1000,

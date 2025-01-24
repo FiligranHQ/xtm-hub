@@ -2,7 +2,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../../knexfile';
 import { Resolvers } from '../../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import { ServiceDefinitionId } from '../../../../model/kanel/public/ServiceDefinition';
 import ServicePrice, {
   ServicePriceId,
 } from '../../../../model/kanel/public/ServicePrice';
@@ -12,8 +12,8 @@ const resolvers: Resolvers = {
     addServicePrice: async (_, { input }, context) => {
       const dataServicePrice = {
         id: uuidv4() as unknown as ServicePriceId,
-        service_instance_id: fromGlobalId(input.service_instance_id)
-          .id as ServiceInstanceId,
+        service_definition_id: fromGlobalId(input.service_definition_id)
+          .id as ServiceDefinitionId,
         fee_type: input.fee_type,
         start_date: new Date(),
         price: input.price,

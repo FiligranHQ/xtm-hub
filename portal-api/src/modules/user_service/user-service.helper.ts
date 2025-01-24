@@ -123,7 +123,7 @@ export const createUserServiceAccess = async (
     template: 'partnerVault',
     params: {
       name: user.email,
-      partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('ServiceInstance', service.id)}`,
+      partnerVaultLink: `${config.get('base_url_front')}/service/${service.service_definition.route_name}/${toGlobalId('ServiceInstance', service.id)}`,
       partnerVault: service.name,
     },
   });

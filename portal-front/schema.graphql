@@ -94,6 +94,14 @@ type RolePortal implements Node {
   name: String!
 }
 
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  route_name: String
+}
+
 enum DocumentOrdering {
   file_name
   description
@@ -132,7 +140,7 @@ type ServiceLink implements Node {
 }
 
 input AddServicePriceInput {
-  service_instance_id: ID
+  service_definition_id: ID
   price: Int
   fee_type: String
 }
@@ -148,16 +156,12 @@ type ServicePrice implements Node {
 enum ServiceInstanceOrdering {
   name
   description
-  provider
-  type
 }
 
 type ServiceInstance implements Node {
   id: ID!
   name: String!
   description: String
-  provider: String
-  type: String
   creation_status: String
   subscribed: Boolean
   links: [ServiceLink]
@@ -167,6 +171,7 @@ type ServiceInstance implements Node {
   public: Boolean
   join_type: String
   tags: [String]
+  service_definition: ServiceDefinition
 }
 
 type ServiceInstanceEdge {

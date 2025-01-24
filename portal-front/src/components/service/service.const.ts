@@ -9,3 +9,13 @@ export const JOIN_TYPE = {
   JOIN_AUTO: 'JOIN_AUTO',
   JOIN_SELF: 'JOIN_SELF',
 };
+
+export const SERVICE_DEFINITION_NAME = {
+  LINKS: 'Links',
+  VAULT: 'Vault',
+};
+
+export const SERVICE_CREATION_STATUS = {
+  PENDING: 'PENDING',
+  CREATED: 'CREATED',
+};

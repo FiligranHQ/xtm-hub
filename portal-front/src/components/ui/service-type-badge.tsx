@@ -2,13 +2,12 @@ import { cn } from '@/lib/utils';
 import { Badge } from 'filigran-ui';
 import { FunctionComponent } from 'react';
 
-export type ServiceTypeBadge = 'COMMUNITY' | 'Intel' | 'Feed' | 'Analysis';
+export type ServiceTypeBadge = 'PENDING' | 'Vault' | 'Links';
 
 const BADGE_COLORS = {
-  COMMUNITY: 'text-green',
-  Intel: 'text-orange',
-  Feed: 'text-yellow-500',
-  Analysis: 'text-turquoise',
+  PENDING: 'text-green',
+  Vault: 'text-orange',
+  Links: 'text-turquoise',
 };
 
 interface ServiceTypeBadgeProps {
