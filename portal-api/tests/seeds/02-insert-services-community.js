@@ -8,6 +8,8 @@ export async function seed(knex) {
         creation_status: 'READY',
         public: false,
         join_type: 'JOIN_INVITE',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
     ])
     .onConflict('id')

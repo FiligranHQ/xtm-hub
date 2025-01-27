@@ -236,8 +236,23 @@ export const loadServiceBy = async (
   value: string
 ): Promise<ServiceInstance> => {
   return db<ServiceInstance>(context, 'ServiceInstance')
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceInstance.service_definition_id',
+      '=',
+      'ServiceDefinition.id'
+    )
     .where({ [field]: value })
-    .select('*')
+    .select(
+      'ServiceInstance.*',
+      dbRaw(
+        formatRawObject({
+          columnName: 'ServiceDefinition',
+          typename: 'ServiceDefinition',
+          as: 'service_definition',
+        })
+      )
+    )
     .first();
 };
 
@@ -361,7 +376,7 @@ export const grantServiceAccess = async (
 
     const serviceInstance = await loadServiceBy(
       context,
-      'id',
+      'ServiceInstance.id',
       subscription.service_instance_id
     );
     await sendMail({

@@ -50,7 +50,7 @@ export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
         "(json_agg(json_build_object('id', \"Service_Capability\".id, 'service_capability_name', \"Service_Capability\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
       ),
       dbRaw(
-        '(json_agg(json_build_object(\'id\', "ServiceInstance".id, \'type\', "ServiceInstance".type))->>0)::json as service'
+        '(json_agg(json_build_object(\'id\', "ServiceInstance".id, \'type\', "ServiceInstance".name))->>0)::json as service'
       )
     )
     .groupBy(['User_Service.id']);
@@ -115,7 +115,7 @@ export const createUserServiceAccess = async (
   const user = await loadUserBy({ 'User.id': user_id });
   const service = await loadServiceBy(
     context,
-    'id',
+    'ServiceInstance.id',
     subscription.service_instance_id
   );
   await sendMail({

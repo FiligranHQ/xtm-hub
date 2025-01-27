@@ -16,7 +16,6 @@ type Mutation {
   addDocument(document: Upload, description: String, serviceInstanceId: String): Document!
   editDocument(documentId: ID, newDescription: String, serviceInstanceId: String): Document!
   deleteDocument(documentId: ID, serviceInstanceId: String): Document!
-  addServicePrice(input: AddServicePriceInput): ServicePrice
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): Subscription
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -137,20 +136,6 @@ type ServiceLink implements Node {
   service_instance_id: ID
   url: String
   name: String
-}
-
-input AddServicePriceInput {
-  service_definition_id: ID
-  price: Int
-  fee_type: String
-}
-
-type ServicePrice implements Node {
-  id: ID!
-  service_instance_id: ID
-  fee_type: String
-  start_date: Date
-  price: Int
 }
 
 enum ServiceInstanceOrdering {

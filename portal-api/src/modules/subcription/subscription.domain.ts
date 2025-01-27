@@ -25,7 +25,7 @@ export const fillSubscription = async (
 
   updatedSubscription.service_instance = await loadServiceBy(
     context,
-    'id',
+    'ServiceInstance.id',
     updatedSubscription.service_instance_id
   );
   return updatedSubscription;
@@ -59,7 +59,7 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
   );
   const serviceInstance = await loadServiceBy(
     context,
-    'id',
+    'ServiceInstance.id',
     sub.service_instance_id
   );
   const userServices = await loadUnsecureUserServiceBy({

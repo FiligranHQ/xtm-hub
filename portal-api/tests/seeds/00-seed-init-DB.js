@@ -153,6 +153,10 @@ export async function seed(knex) {
         description:
           'This is a short description to describe the CyberWeather app, how to use it, etc.',
         creation_status: 'READY',
+        public: true,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
       {
         id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
@@ -160,6 +164,10 @@ export async function seed(knex) {
         description:
           'This is a short description to describe the OpenFeed app, how to use it, etc.',
         creation_status: 'READY',
+        public: true,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
       {
         id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
@@ -167,6 +175,10 @@ export async function seed(knex) {
         description:
           'This is a short description to describe the Malware analysis app, how to use it, etc.',
         creation_status: 'READY',
+        public: true,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
     ])
     .onConflict('id')
