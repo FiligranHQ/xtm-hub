@@ -1,7 +1,7 @@
 'use client';
 
 import { portalContext } from '@/components/me/portal-context';
-import { SERVICE_DEFINITION_NAME } from '@/components/service/service.const';
+import { SERVICE_DEFINITION_IDENTIFIER } from '@/components/service/service.const';
 import { LinkIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
 import Link from 'next/link';
@@ -19,7 +19,10 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
   const { isPersonalSpace } = useContext(portalContext);
 
   const getAction = (service: serviceList_fragment$data) => {
-    if (service.service_definition?.name === SERVICE_DEFINITION_NAME.LINKS) {
+    if (
+      service.service_definition?.identifier ===
+      SERVICE_DEFINITION_IDENTIFIER.LINK
+    ) {
       const name = service.links?.[0]?.name;
       const url = service.links?.[0]?.url;
       if (name && url)
@@ -52,7 +55,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
             services.map(({ subscription, id }) => {
               return (
                 <ServiceCard
-                  serviceLink={`/service/${subscription?.service_instance?.service_definition?.route_name}/${subscription?.service_instance?.id}`}
+                  serviceLink={`/service/${subscription?.service_instance?.service_definition?.identifier}/${subscription?.service_instance?.id}`}
                   key={id}
                   service={
                     subscription?.service_instance as serviceList_fragment$data
@@ -68,7 +71,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
                             asChild
                             variant={'ghost'}>
                             <Link
-                              href={`/service/${subscription?.service_instance?.service_definition?.route_name}/${subscription?.service_instance?.id}`}>
+                              href={`/service/${subscription?.service_instance?.service_definition?.identifier}/${subscription?.service_instance?.id}`}>
                               <LinkIcon
                                 aria-hidden={true}
                                 focusable={false}

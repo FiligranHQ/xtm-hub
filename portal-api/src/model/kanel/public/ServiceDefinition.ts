@@ -14,7 +14,7 @@ export default interface ServiceDefinition {
 
   public: boolean | null;
 
-  route_name: string | null;
+  identifier: string | null;
 }
 
 /** Represents the initializer for the table public.ServiceDefinition */
@@ -29,7 +29,7 @@ export interface ServiceDefinitionInitializer {
   /** Default value: true */
   public?: boolean | null;
 
-  route_name?: string | null;
+  identifier?: string | null;
 }
 
 /** Represents the mutator for the table public.ServiceDefinition */
@@ -42,5 +42,5 @@ export interface ServiceDefinitionMutator {
 
   public?: boolean | null;
 
-  route_name?: string | null;
+  identifier?: string | null;
 }

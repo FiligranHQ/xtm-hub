@@ -1,23 +1,28 @@
 import { cn } from '@/lib/utils';
 import { Badge } from 'filigran-ui';
 import { FunctionComponent } from 'react';
+import { ServiceDefinitionIdentifier } from '../../../__generated__/serviceList_fragment.graphql';
 
-export type ServiceTypeBadge = 'PENDING' | 'Vault' | 'Links';
-
-const BADGE_COLORS = {
-  PENDING: 'text-green',
-  Vault: 'text-orange',
-  Links: 'text-turquoise',
-};
+const BADGE_COLORS: Record<ServiceDefinitionIdentifier, string> = {
+  vault: 'text-orange',
+  link: 'text-darkblue',
+} as Record<ServiceDefinitionIdentifier, string>;
 
 interface ServiceTypeBadgeProps {
-  type: ServiceTypeBadge;
+  isPending?: boolean;
+  type?: ServiceDefinitionIdentifier;
   label: string;
 }
 
 export const ServiceTypeBadge: FunctionComponent<ServiceTypeBadgeProps> = ({
+  isPending = false,
   type,
   label,
 }) => {
-  return <Badge className={cn('uppercase', BADGE_COLORS[type])}>{label}</Badge>;
+  const badgeColor = isPending
+    ? 'text-green'
+    : type
+      ? BADGE_COLORS[type]
+      : 'text-gray';
+  return <Badge className={cn('uppercase', badgeColor)}>{label}</Badge>;
 };

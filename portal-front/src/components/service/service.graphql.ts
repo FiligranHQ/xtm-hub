@@ -41,6 +41,7 @@ export const serviceListFragment = graphql`
     service_definition {
       id
       name
+      identifier
     }
   }
 `;

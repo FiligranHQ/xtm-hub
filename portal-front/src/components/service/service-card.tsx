@@ -1,6 +1,6 @@
 import {
   SERVICE_CREATION_STATUS,
-  SERVICE_DEFINITION_NAME,
+  SERVICE_DEFINITION_IDENTIFIER,
 } from '@/components/service/service.const';
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
 import { useTranslations } from 'next-intl';
@@ -23,9 +23,11 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   const t = useTranslations();
 
   const isLinkService =
-    service?.service_definition?.name === SERVICE_DEFINITION_NAME.LINKS;
+    service?.service_definition?.identifier ===
+    SERVICE_DEFINITION_IDENTIFIER.LINK;
   const isDisabled =
     service?.creation_status === SERVICE_CREATION_STATUS.PENDING;
+  const hasUrl = service.links?.[0]?.url;
 
   const goTo = () => {
     if (serviceLink) {
@@ -39,11 +41,12 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
 
   const Badge = () => {
     // If the status is pending, coming soon badge
-    if (isDisabled)
+    // If it's a link service and has no url, show coming soon badge
+    if (isDisabled || (isLinkService && !hasUrl))
       return (
         <ServiceTypeBadge
-          type={service.creation_status as ServiceTypeBadge}
-          label={t('Service.ComingSoon') as ServiceTypeBadge}
+          isPending={true}
+          label={t('Service.ComingSoon')}
         />
       );
 
@@ -51,15 +54,14 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
     if (!isLinkService)
       return (
         <ServiceTypeBadge
-          type={service?.service_definition?.name as ServiceTypeBadge}
-          label={service?.service_definition?.name as string}
+          type={service?.service_definition?.identifier}
+          label={service?.service_definition?.name ?? ''}
         />
       );
 
-    // If it's a link service and has url, show the tags as badges
     return service.tags?.map((tag) => (
       <ServiceTypeBadge
-        type={SERVICE_DEFINITION_NAME.LINKS as ServiceTypeBadge}
+        type={service?.service_definition?.identifier}
         label={tag as string}
         key={tag}
       />

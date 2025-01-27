@@ -69,7 +69,7 @@ export const userServicesOwnedFragment = graphql`
         service_definition {
           id
           name
-          route_name
+          identifier
         }
       }
     }

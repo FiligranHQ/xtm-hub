@@ -4,12 +4,16 @@
  */
 export async function up(knex) {
   await knex.schema.table('ServiceDefinition', function (table) {
-    table.string('route_name');
+    table.string('identifier');
   });
 
   await knex('ServiceDefinition')
     .where({ name: 'Vault' })
-    .update({ route_name: 'vault' });
+    .update({ identifier: 'vault' });
+
+  await knex('ServiceDefinition')
+    .where({ name: 'Link' })
+    .update({ identifier: 'link' });
 }
 
 /**
@@ -18,6 +22,6 @@ export async function up(knex) {
  */
 export async function down(knex) {
   await knex.schema.table('ServiceDefinition', function (table) {
-    table.dropColumn('route_name');
+    table.dropColumn('identifier');
   });
 }

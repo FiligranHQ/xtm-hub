@@ -91,7 +91,7 @@ export const loadPublicServiceInstances = async (
       ),
     ])
     .whereRaw(`"subscription"."id" IS NULL`)
-    .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.*'])
+    .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.id'])
     .asConnection<ServiceConnection>();
 
   const { totalCount } = await db<ServiceInstance>(
@@ -172,7 +172,7 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
       COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
     `),
     ])
-    .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.*'])
+    .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.id'])
     .asConnection<ServiceConnection>();
 
   const { totalCount } = await db<ServiceInstance>(
@@ -230,7 +230,7 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     .first();
 };
 
-export const loadServiceBy = async (
+export const loadServiceInstanceBy = async (
   context: PortalContext,
   field: string,
   value: string
@@ -256,7 +256,9 @@ export const loadServiceBy = async (
     .first();
 };
 
-export const loadUnsecureServiceBy = async (field: ServiceInstanceMutator) => {
+export const loadUnsecureServiceInstanceBy = async (
+  field: ServiceInstanceMutator
+) => {
   return dbUnsecure<ServiceInstance>('ServiceInstance').where(field);
 };
 
@@ -374,7 +376,7 @@ export const grantServiceAccess = async (
   for (const userId of usersId) {
     const user = await loadUserBy({ 'User.id': userId } as UserMutator);
 
-    const serviceInstance = await loadServiceBy(
+    const serviceInstance = await loadServiceInstanceBy(
       context,
       'ServiceInstance.id',
       subscription.service_instance_id
@@ -384,7 +386,7 @@ export const grantServiceAccess = async (
       template: 'partnerVault',
       params: {
         name: user.email,
-        partnerVaultLink: `${config.get('base_url_front')}/service/${serviceInstance.service_definition.route_name}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
+        partnerVaultLink: `${config.get('base_url_front')}/service/${serviceInstance.service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
         partnerVault: serviceInstance.name,
       },
     });

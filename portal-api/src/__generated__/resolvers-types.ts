@@ -481,10 +481,15 @@ export type ServiceDefinition = Node & {
   __typename?: 'ServiceDefinition';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  identifier: ServiceDefinitionIdentifier;
   name: Scalars['String']['output'];
   public?: Maybe<Scalars['Boolean']['output']>;
-  route_name?: Maybe<Scalars['String']['output']>;
 };
+
+export enum ServiceDefinitionIdentifier {
+  Link = 'link',
+  Vault = 'vault',
+}
 
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
@@ -846,6 +851,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
+  ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
   ServiceInstance: ResolverTypeWrapper<ServiceInstance>;
   ServiceInstanceEdge: ResolverTypeWrapper<ServiceInstanceEdge>;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
@@ -1507,13 +1513,13 @@ export type ServiceDefinitionResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  route_name?: Resolver<
-    Maybe<ResolversTypes['String']>,
+  identifier?: Resolver<
+    ResolversTypes['ServiceDefinitionIdentifier'],
     ParentType,
     ContextType
   >;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

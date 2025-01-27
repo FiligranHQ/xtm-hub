@@ -97,15 +97,9 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
       'service_def.name as service_definition_name',
       'service_def.description as service_definition_description',
       'service_def.public as service_definition_public',
-      'service_def.route_name as service_definition_route_name'
+      'service_def.identifier as service_definition_identifier'
     )
-    .groupBy([
-      'ServiceInstance.id',
-      'service_def.id',
-      'service_def.name',
-      'service_def.description',
-      'service_def.public',
-    ]);
+    .groupBy(['ServiceInstance.id', 'service_def.id']);
 
   const userServiceConnection = await paginate<UserService>(
     context,
@@ -140,7 +134,7 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
         "(json_agg(json_build_object('id', \"user\".id, 'last_name', \"user\".last_name, 'first_name', \"user\".first_name, 'email', \"user\".email, '__typename', 'User')) ->> 0)::json as user"
       ),
       dbRaw(
-        `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_instance_id', "sub".service_instance_id, 'service_instance', json_build_object('id', "service".id, 'name', "service".name, 'description', "service".description, 'links', "service".services_link, 'service_definition', json_build_object('id', "service".service_definition_id, 'name', "service".service_definition_name, 'description', "service".service_definition_description, 'public', "service".service_definition_public, 'route_name', "service".service_definition_route_name, '__typename', 'ServiceDefinition'), '__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription`
+        `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_instance_id', "sub".service_instance_id, 'service_instance', json_build_object('id', "service".id, 'name', "service".name, 'description', "service".description, 'links', "service".services_link, 'service_definition', json_build_object('id', "service".service_definition_id, 'name', "service".service_definition_name, 'description', "service".service_definition_description, 'public', "service".service_definition_public, 'identifier', "service".service_definition_identifier, '__typename', 'ServiceDefinition'), '__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription`
       ),
       dbRaw(
         "(json_agg(json_build_object('id', \"servcapa\".id, 'service_capability_name', \"servcapa\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"

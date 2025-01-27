@@ -15,7 +15,7 @@ const SERVICE_DEFINITION = {
   },
   links: {
     id: link_serviceDef_id,
-    name: 'Links',
+    name: 'Link',
     description: 'These services are link type',
     public: true,
   },

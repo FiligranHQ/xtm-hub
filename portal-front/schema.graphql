@@ -93,12 +93,17 @@ type RolePortal implements Node {
   name: String!
 }
 
+enum ServiceDefinitionIdentifier {
+  vault
+  link
+}
+
 type ServiceDefinition implements Node {
   id: ID!
   name: String!
   description: String
   public: Boolean
-  route_name: String
+  identifier: ServiceDefinitionIdentifier!
 }
 
 enum DocumentOrdering {

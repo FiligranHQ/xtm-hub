@@ -1,7 +1,7 @@
 import { ActionTrackingId } from '../../../model/kanel/public/ActionTracking';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
-import { loadUnsecureServiceBy } from '../../../modules/services/services.domain';
+import { loadUnsecureServiceInstanceBy } from '../../../modules/services/service-instance.domain';
 import { loadUnsecureUserBy } from '../../../modules/users/users.domain';
 
 export interface InputCreateCommunity {
@@ -35,7 +35,7 @@ export const mapCreateCommunityAWX = async (
   { id, adminCommuId }: InputCreateCommunity,
   awx_client_request_id: ActionTrackingId
 ): Promise<AWXCommunity> => {
-  const [service] = await loadUnsecureServiceBy({
+  const [service] = await loadUnsecureServiceInstanceBy({
     id,
   });
   const [user] = await loadUnsecureUserBy({ id: adminCommuId });

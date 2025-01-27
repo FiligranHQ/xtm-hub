@@ -10,9 +10,9 @@ export const JOIN_TYPE = {
   JOIN_SELF: 'JOIN_SELF',
 };
 
-export const SERVICE_DEFINITION_NAME = {
-  LINKS: 'Links',
-  VAULT: 'Vault',
+export const SERVICE_DEFINITION_IDENTIFIER = {
+  LINK: 'link',
+  VAULT: 'vault',
 };
 
 export const SERVICE_CREATION_STATUS = {

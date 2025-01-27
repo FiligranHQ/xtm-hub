@@ -8,7 +8,7 @@ import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadUnsecureServiceCapabilitiesBy } from '../services/instances/service-capabilities/service_capabilities.helper';
-import { loadServiceBy } from '../services/services.domain';
+import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
 import { loadSubscriptionBy } from './subscription.helper';
@@ -23,7 +23,7 @@ export const fillSubscription = async (
     updatedSubscription.organization_id
   );
 
-  updatedSubscription.service_instance = await loadServiceBy(
+  updatedSubscription.service_instance = await loadServiceInstanceBy(
     context,
     'ServiceInstance.id',
     updatedSubscription.service_instance_id
@@ -57,7 +57,7 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
     'id',
     sub.organization_id
   );
-  const serviceInstance = await loadServiceBy(
+  const serviceInstance = await loadServiceInstanceBy(
     context,
     'ServiceInstance.id',
     sub.service_instance_id

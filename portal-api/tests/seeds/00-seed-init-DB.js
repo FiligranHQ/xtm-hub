@@ -141,7 +141,7 @@ export async function seed(knex) {
       name: 'ServiceDef',
       description: 'myDescription',
       public: true,
-      route_name: 'vault',
+      identifier: 'vault',
     },
   ]);
 

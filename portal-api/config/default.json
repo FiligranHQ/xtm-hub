@@ -60,7 +60,7 @@
         "id": "62fcd712-96dc-4714-820a-527be51e2a65",
         "name": "Vault",
         "description": "Gather all intel type services",
-        "route_name": "vault"
+        "identifier": "vault"
       },
       "price": {
         "id": "353cceeb-ada7-446d-a7f2-db1444b64cbd",
