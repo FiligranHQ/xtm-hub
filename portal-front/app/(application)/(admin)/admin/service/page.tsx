@@ -5,6 +5,7 @@ import {
 } from '@/components/service/service.graphql';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import useGoToServiceLink from '@/hooks/useGoToServiceLink';
 import { i18nKey } from '@/utils/datatable';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
@@ -28,6 +29,8 @@ const breadcrumbValue = [
 const Page = () => {
   const router = useRouter();
   const t = useTranslations();
+  const goToServiceLink = useGoToServiceLink();
+
   const columns: ColumnDef<serviceList_fragment$data>[] = [
     {
       accessorKey: 'name',
@@ -60,16 +63,19 @@ const Page = () => {
                   <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
               }>
-              <IconActionsButton
-                aria-label={t('Service.GoToAdminLabel')}
-                onClick={() => {
-                  router.push(`/admin/service/${row.id}`);
-                }}>
-                {t('Service.GoToAdminLabel')}
-              </IconActionsButton>
+              $
+              {row.original.service_definition?.identifier !== 'link' && (
+                <IconActionsButton
+                  aria-label={t('Service.GoToAdminLabel')}
+                  onClick={() => {
+                    router.push(`/admin/service/${row.id}`);
+                  }}>
+                  {t('Service.GoToAdminLabel')}
+                </IconActionsButton>
+              )}
               <IconActionsButton
                 aria-label={t('Service.GoTo')}
-                onClick={() => router.push(`/service/vault/${row.id}`)}>
+                onClick={() => goToServiceLink(row.original, row.id)}>
                 {t('Service.GoToLabel')}
               </IconActionsButton>
             </IconActions>

@@ -5,7 +5,7 @@ import { Button, Separator } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
-import ServiceCard from '../service-card';
+import ServiceInstanceCard from '../service-instance-card';
 import { JOIN_TYPE } from '../service.const';
 
 interface PublicServicesProps {
@@ -46,11 +46,10 @@ const AvailableServices = ({
           {services.map((service) => {
             return (
               !service.subscribed && (
-                <ServiceCard
+                <ServiceInstanceCard
                   key={service.id}
                   bottomLeftAction={getAction(service)}
-                  service={service}
-                  serviceLink={service.links?.[0]?.url}
+                  serviceInstance={service}
                 />
               )
             );
