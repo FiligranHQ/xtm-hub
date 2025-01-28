@@ -3,41 +3,28 @@ import {
   SERVICE_DEFINITION_IDENTIFIER,
 } from '@/components/service/service.const';
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
+import useGoToServiceLink from '@/hooks/useGoToServiceLink';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ReactNode } from 'react';
 import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
 
-interface ServiceCardProps {
-  service: serviceList_fragment$data;
-  serviceLink?: string | null;
+interface ServiceInstanceCardProps {
+  serviceInstance: serviceList_fragment$data;
   bottomLeftAction: ReactNode;
 }
-const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
-  service,
-  serviceLink,
-  bottomLeftAction,
-}) => {
-  const router = useRouter();
+const ServiceInstanceCard: React.FunctionComponent<
+  ServiceInstanceCardProps
+> = ({ serviceInstance, bottomLeftAction }) => {
+  const goToServiceLink = useGoToServiceLink();
   const t = useTranslations();
 
   const isLinkService =
-    service?.service_definition?.identifier ===
+    serviceInstance?.service_definition?.identifier ===
     SERVICE_DEFINITION_IDENTIFIER.LINK;
   const isPending =
-    service?.creation_status === SERVICE_CREATION_STATUS.PENDING;
-  const hasUrl = service.links?.[0]?.url;
-
-  const goTo = () => {
-    if (serviceLink) {
-      if (serviceLink.startsWith('http')) {
-        window.open(serviceLink, '_blank');
-        return;
-      }
-      router.push(serviceLink);
-    }
-  };
+    serviceInstance?.creation_status === SERVICE_CREATION_STATUS.PENDING;
+  const hasUrl = serviceInstance.links?.[0]?.url;
 
   const Badge = () => {
     // If the status is pending, coming soon badge
@@ -54,14 +41,14 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
     if (!isLinkService)
       return (
         <ServiceTypeBadge
-          type={service?.service_definition?.identifier}
-          label={service?.service_definition?.name ?? ''}
+          type={serviceInstance?.service_definition?.identifier}
+          label={serviceInstance?.service_definition?.name ?? ''}
         />
       );
 
-    return service.tags?.map((tag) => (
+    return serviceInstance.tags?.map((tag) => (
       <ServiceTypeBadge
-        type={service?.service_definition?.identifier}
+        type={serviceInstance?.service_definition?.identifier}
         label={tag as string}
         key={tag}
       />
@@ -72,12 +59,11 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
     <li
       className="border-light flex flex-col rounded border bg-page-background p-l gap-l cursor-pointer aria-disabled:cursor-default aria-disabled:opacity-60"
       aria-disabled={isPending}
-      onClick={goTo}
-      key={service.id}>
+      onClick={() => goToServiceLink(serviceInstance, serviceInstance.id)}>
       <div className="flex items-center">
-        <h3>{service.name}</h3>
+        <h3>{serviceInstance.name}</h3>
       </div>
-      <p className="flex-1 txt-sub-content">{service.description}</p>
+      <p className="flex-1 txt-sub-content">{serviceInstance.description}</p>
       <div className="flex justify-between items-center gap-s flex-row">
         <div>
           <Badge />
@@ -87,4 +73,4 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
     </li>
   );
 };
-export default ServiceCard;
+export default ServiceInstanceCard;

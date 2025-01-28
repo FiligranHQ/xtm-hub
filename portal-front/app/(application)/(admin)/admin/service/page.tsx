@@ -5,6 +5,7 @@ import {
 } from '@/components/service/service.graphql';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import useGoToServiceLink from '@/hooks/useGoToServiceLink';
 import { i18nKey } from '@/utils/datatable';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
@@ -28,6 +29,8 @@ const breadcrumbValue = [
 const Page = () => {
   const router = useRouter();
   const t = useTranslations();
+  const goToServiceLink = useGoToServiceLink();
+
   const columns: ColumnDef<serviceList_fragment$data>[] = [
     {
       accessorKey: 'name',
@@ -48,19 +51,20 @@ const Page = () => {
       id: 'actions',
       cell: ({ row }) => {
         return (
-          row.original.type !== 'link' && (
-            <div className="flex items-center justify-end">
-              <IconActions
-                icon={
-                  <>
-                    <MoreVertIcon
-                      aria-hidden={true}
-                      focusable={false}
-                      className="h-4 w-4 text-primary"
-                    />
-                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                  </>
-                }>
+          <div className="flex items-center justify-end">
+            <IconActions
+              icon={
+                <>
+                  <MoreVertIcon
+                    aria-hidden={true}
+                    focusable={false}
+                    className="h-4 w-4 text-primary"
+                  />
+                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                </>
+              }>
+              $
+              {row.original.service_definition?.identifier !== 'link' && (
                 <IconActionsButton
                   aria-label={t('Service.GoToAdminLabel')}
                   onClick={() => {
@@ -68,14 +72,14 @@ const Page = () => {
                   }}>
                   {t('Service.GoToAdminLabel')}
                 </IconActionsButton>
-                <IconActionsButton
-                  aria-label={t('Service.GoTo')}
-                  onClick={() => router.push(`/service/vault/${row.id}`)}>
-                  {t('Service.GoToLabel')}
-                </IconActionsButton>
-              </IconActions>
-            </div>
-          )
+              )}
+              <IconActionsButton
+                aria-label={t('Service.GoTo')}
+                onClick={() => goToServiceLink(row.original, row.id)}>
+                {t('Service.GoToLabel')}
+              </IconActionsButton>
+            </IconActions>
+          </div>
         );
       },
     },
