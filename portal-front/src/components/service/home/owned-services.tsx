@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Suspense, useContext } from 'react';
 import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
-import ServiceCard from '../service-card';
+import ServiceInstanceCard from '../service-instance-card';
 
 interface OwnedServicesProps {
   services: userServicesOwned_fragment$data[];
@@ -28,10 +28,14 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
       if (name && url)
         return (
           <Button
-            className="h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800"
+            className={
+              "h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:content-[''] after:absolute after:inset-0"
+            }
             asChild
             variant="ghost">
-            <Link href={url}>
+            <Link
+              href={url}
+              target={url.startsWith('http') ? '_blank' : '_self'}>
               <LinkIcon
                 aria-hidden={true}
                 focusable={false}
@@ -54,11 +58,10 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
           {!isPersonalSpace &&
             services.map(({ subscription, id }) => {
               return (
-                <ServiceCard
-                  serviceLink={`/service/${subscription?.service_instance?.service_definition?.identifier}/${subscription?.service_instance?.id}`}
+                <ServiceInstanceCard
                   key={id}
-                  service={
-                    subscription?.service_instance as serviceList_fragment$data
+                  serviceInstance={
+                    subscription!.service_instance as serviceList_fragment$data
                   }
                   bottomLeftAction={
                     <ul className="flex space-x-s">
@@ -66,7 +69,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
                         <li key={link?.name}>
                           <Button
                             className={
-                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800'
+                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:absolute after:inset-0'
                             }
                             asChild
                             variant={'ghost'}>
@@ -88,11 +91,10 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
               );
             })}
           {publicServices.map((service) => (
-            <ServiceCard
+            <ServiceInstanceCard
               key={service.id}
               bottomLeftAction={getAction(service)}
-              service={service}
-              serviceLink={service.links?.[0]?.url}
+              serviceInstance={service}
             />
           ))}
         </ul>
