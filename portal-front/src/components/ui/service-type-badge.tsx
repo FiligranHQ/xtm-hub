@@ -3,11 +3,11 @@ import { Badge } from 'filigran-ui';
 import { FunctionComponent } from 'react';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/serviceList_fragment.graphql';
 
-type RealServiceDefinitionIdentifier =
-  | Exclude<ServiceDefinitionIdentifier, '%future added value'>
+type ServiceDefinitionIdentifierWithDefault =
+  | ServiceDefinitionIdentifier
   | 'default';
 
-const BADGE_COLORS: Record<RealServiceDefinitionIdentifier, string> = {
+const BADGE_COLORS: Record<ServiceDefinitionIdentifierWithDefault, string> = {
   vault: 'text-orange',
   link: 'text-turquoise',
   default: 'text-gray',
@@ -15,7 +15,7 @@ const BADGE_COLORS: Record<RealServiceDefinitionIdentifier, string> = {
 
 interface ServiceTypeBadgeProps {
   isPending?: boolean;
-  type?: RealServiceDefinitionIdentifier;
+  type?: ServiceDefinitionIdentifierWithDefault;
   label: string;
 }
 
