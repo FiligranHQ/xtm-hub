@@ -19,7 +19,8 @@ import {
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect } from 'react';
+import { useDebounceValue } from 'usehooks-ts';
 
 export interface MenuAdminProps {
   open: boolean;
@@ -58,16 +59,19 @@ const OpenedMenuAdmin = () => {
 
 const ClosedMenuAdmin = () => {
   const t = useTranslations();
-  const [adminOpened, setAdminOpened] = useState<boolean>(false);
+  const [adminOpened, setAdminOpened] = useDebounceValue(false, 100);
   const currentPath = usePathname();
-  useEffect(() => {
-    setAdminOpened(false);
-  }, [currentPath]);
+  useEffect(() => setAdminOpened(false), [currentPath]);
+  const handleMouseEnter = () => setAdminOpened(true);
+  const handleMouseLeave = () => setAdminOpened(false);
   return (
     <Popover
       open={adminOpened}
       onOpenChange={setAdminOpened}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger
+        asChild
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}>
         <Button
           variant="ghost"
           className={cn(
@@ -89,7 +93,9 @@ const ClosedMenuAdmin = () => {
         sideOffset={0}
         side="right"
         align="start"
-        asChild>
+        asChild
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}>
         <ul className="flex-col gap-xs flex sm:w-[200px] p-s">
           <AdminLinks />
         </ul>
