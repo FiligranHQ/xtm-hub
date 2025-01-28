@@ -25,7 +25,7 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   const isLinkService =
     service?.service_definition?.identifier ===
     SERVICE_DEFINITION_IDENTIFIER.LINK;
-  const isDisabled =
+  const isPending =
     service?.creation_status === SERVICE_CREATION_STATUS.PENDING;
   const hasUrl = service.links?.[0]?.url;
 
@@ -42,7 +42,7 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   const Badge = () => {
     // If the status is pending, coming soon badge
     // If it's a link service and has no url, show coming soon badge
-    if (isDisabled || (isLinkService && !hasUrl))
+    if (isPending || (isLinkService && !hasUrl))
       return (
         <ServiceTypeBadge
           isPending={true}
@@ -71,7 +71,7 @@ const ServiceCard: React.FunctionComponent<ServiceCardProps> = ({
   return (
     <li
       className="border-light flex flex-col rounded border bg-page-background p-l gap-l cursor-pointer aria-disabled:cursor-default aria-disabled:opacity-60"
-      aria-disabled={isDisabled}
+      aria-disabled={isPending}
       onClick={goTo}
       key={service.id}>
       <div className="flex items-center">
