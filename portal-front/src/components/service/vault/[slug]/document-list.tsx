@@ -10,6 +10,7 @@ import DownloadDocument from '@/components/service/vault/download-document';
 import EditDocument from '@/components/service/vault/edit-document';
 import { VaultForm } from '@/components/service/vault/vault-form';
 import VisualizeDocument from '@/components/service/vault/visualize-document';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
@@ -236,8 +237,18 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     DEBOUNCE_TIME
   );
 
+  const breadcrumbs = [
+    {
+      label: 'MenuLinks.Home',
+    },
+    {
+      label: queryDataService.serviceInstanceById?.name,
+    },
+  ];
+
   return (
     <>
+      <BreadcrumbNav value={breadcrumbs} />
       <h1 className="pb-s">{queryDataService.serviceInstanceById?.name}</h1>
 
       <DataTable
