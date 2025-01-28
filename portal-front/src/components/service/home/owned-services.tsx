@@ -28,12 +28,14 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
       if (name && url)
         return (
           <Button
-            className="h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800"
+            className={
+              "h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:content-[''] after:absolute after:inset-0"
+            }
             asChild
             variant="ghost">
             <Link
               href={url}
-              onClick={(e) => e.preventDefault()}>
+              target={url.startsWith('http') ? '_blank' : '_self'}>
               <LinkIcon
                 aria-hidden={true}
                 focusable={false}
@@ -67,7 +69,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
                         <li key={link?.name}>
                           <Button
                             className={
-                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800'
+                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:absolute after:inset-0'
                             }
                             asChild
                             variant={'ghost'}>

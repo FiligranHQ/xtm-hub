@@ -3,7 +3,6 @@ import {
   SERVICE_DEFINITION_IDENTIFIER,
 } from '@/components/service/service.const';
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
-import useGoToServiceLink from '@/hooks/useGoToServiceLink';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { ReactNode } from 'react';
@@ -16,7 +15,6 @@ interface ServiceInstanceCardProps {
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, bottomLeftAction }) => {
-  const goToServiceLink = useGoToServiceLink();
   const t = useTranslations();
 
   const isLinkService =
@@ -57,9 +55,8 @@ const ServiceInstanceCard: React.FunctionComponent<
 
   return (
     <li
-      className="border-light flex flex-col rounded border bg-page-background p-l gap-l cursor-pointer aria-disabled:cursor-default aria-disabled:opacity-60"
-      aria-disabled={isPending}
-      onClick={() => goToServiceLink(serviceInstance, serviceInstance.id)}>
+      className="border-light flex flex-col relative rounded border bg-page-background p-l gap-l aria-disabled:opacity-60"
+      aria-disabled={isPending}>
       <div className="flex items-center">
         <h3>{serviceInstance.name}</h3>
       </div>
