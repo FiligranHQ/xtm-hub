@@ -10,7 +10,7 @@ export const useGoToServiceLink = () => {
         const serviceLink = serviceInstance.links?.[0]?.url;
         if (serviceLink) {
           if (serviceLink.startsWith('http')) {
-            window.open(serviceLink, '_blank');
+            window.open(serviceLink, '_blank', 'noopener,noreferrer');
             return;
           }
           router.push(serviceLink);

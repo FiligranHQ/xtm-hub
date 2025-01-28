@@ -256,7 +256,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
         }}
         onClickRow={(row) => {
           const url = `/document/visualize/${queryDataService.serviceInstanceById?.id}/${row.id}`;
-          window.open(url, '_blank', 'noopener noreferrer');
+          window.open(url, '_blank', 'noopener,noreferrer');
         }}
         toolbar={
           <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
