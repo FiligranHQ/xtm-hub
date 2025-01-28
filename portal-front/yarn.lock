@@ -7349,9 +7349,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.25.3":
-  version: 0.25.3
-  resolution: "filigran-ui@npm:0.25.3"
+"filigran-ui@npm:0.29.1":
+  version: 0.29.1
+  resolution: "filigran-ui@npm:0.29.1"
   dependencies:
     "@dnd-kit/core": 6.1.0
     "@dnd-kit/modifiers": 7.0.0
@@ -7383,7 +7383,7 @@ __metadata:
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
-  checksum: bb94a36bcb063231966d4298fcbade0de3908c3fd7487cf15bc0eef6a517bac0432fc1252dbdf855ccb341baf517ae8138d4493485d79ada2fca6b8e0cf0b084
+  checksum: 1876a1e7f2a2445cc7bf84f6dedb467a7d54fee44d7217ab612d52412276b8090040201de7daca7a8c277d606f4174fe134015e90a6a18e762adb4292c8f85bc
   languageName: node
   linkType: hard
 
@@ -10300,7 +10300,7 @@ __metadata:
     eslint-config-prettier: 10.0.1
     extract-files: 13.0.0
     filigran-icon: 0.11.0
-    filigran-ui: 0.25.3
+    filigran-ui: 0.29.1
     graphql: 16.10.0
     graphql-sse: 2.5.4
     husky: 9.1.7
