@@ -29,7 +29,7 @@ export type DatabaseType =
   | 'Service_Price'
   | 'Service_Link'
   | 'User_Service'
-  | 'Service_Capability'
+  | 'Generic_Service_Capability'
   | 'MalwareAnalysis'
   | 'UserService'
   | 'Document'

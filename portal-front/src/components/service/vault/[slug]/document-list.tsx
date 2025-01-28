@@ -1,4 +1,5 @@
 import GuardCapacityComponent from '@/components/admin-guard';
+import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { ServiceById } from '@/components/service/service.graphql';
 import DeleteDocument from '@/components/service/vault/delete-document';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
@@ -78,7 +79,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
 
   const canManageService =
     queryDataService.serviceInstanceById?.capabilities.includes(
-      'MANAGE_ACCESS'
+      GenericCapabilityName.ManageAccess
     );
 
   const documentData: documentItem_fragment$data[] = data.documents.edges.map(

@@ -1,4 +1,5 @@
 import { Portal, portalContext } from '@/components/me/portal-context';
+import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
@@ -86,7 +87,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         cell: ({ row }) => {
           return (
             <div className="truncate">
-              {row.original?.service_capability?.map((service_capa) => (
+              {row.original?.generic_service_capability?.map((service_capa) => (
                 <Badge
                   key={service_capa?.id}
                   className="mb-2 mr-2 mt-2">
@@ -107,9 +108,10 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
           }
           return (
             <div className="flex items-center justify-end">
-              {row.original.service_capability?.some(
-                (serv_capa) =>
-                  serv_capa?.service_capability_name !== 'MANAGE_ACCESS'
+              {row.original.generic_service_capability?.some(
+                (generic_serv_capa) =>
+                  generic_serv_capa?.service_capability_name !==
+                  GenericCapabilityName.ManageAccess
               ) && (
                 <IconActions
                   icon={

@@ -6,8 +6,8 @@ import {
   ServiceConnection,
   ServiceInstance,
 } from '../../__generated__/resolvers-types';
+import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceMutator } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionMutator,
@@ -58,8 +58,8 @@ export const loadPublicServiceInstances = async (
       );
     })
     .leftJoin(
-      'Service_Capability as serviceCapability',
-      'serviceCapability.user_service_id',
+      'Generic_Service_Capability as genericServiceCapability',
+      'genericServiceCapability.user_service_id',
       '=',
       'userService.id'
     )
@@ -78,7 +78,7 @@ export const loadPublicServiceInstances = async (
         END AS subscribed
         `),
       dbRaw(
-        'COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), \'[]\'::json) AS capabilities'
+        'COALESCE(json_agg("genericServiceCapability"."service_capability_name") FILTER (WHERE "genericServiceCapability"."service_capability_name" IS NOT NULL), \'[]\'::json) AS capabilities'
       ),
       dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
 
@@ -148,8 +148,8 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
       );
     })
     .leftJoin(
-      'Service_Capability as serviceCapability',
-      'serviceCapability.user_service_id',
+      'Generic_Service_Capability as genericServiceCapability',
+      'genericServiceCapability.user_service_id',
       '=',
       'userService.id'
     )
@@ -169,7 +169,7 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
         END AS subscribed
         `),
       dbRaw(`
-      COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
+      COALESCE(json_agg("genericServiceCapability"."service_capability_name") FILTER (WHERE "genericServiceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
     `),
     ])
     .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.id'])
@@ -207,17 +207,17 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     )
     .leftJoin('User_Service', 'Subscription.id', 'User_Service.subscription_id')
     .leftJoin(
-      'Service_Capability',
+      'Generic_Service_Capability',
       'User_Service.id',
       '=',
-      'Service_Capability.user_service_id'
+      'Generic_Service_Capability.user_service_id'
     )
     .select(
       'ServiceInstance.*',
       dbRaw(
         `CASE
-             WHEN COUNT("Service_Capability".id) = 0 THEN ARRAY[]::text[]
-             ELSE array_agg("Service_Capability".service_capability_name)::text[]
+             WHEN COUNT("Generic_Service_Capability".id) = 0 THEN ARRAY[]::text[]
+             ELSE array_agg("Generic_Service_Capability".service_capability_name)::text[]
           END AS capabilities`
       )
     )
@@ -268,15 +268,15 @@ export const loadServiceWithSubscriptions = async (
 ) => {
   const queryUserServiceWithCapa = db<UserService>(context, 'User_Service')
     .leftJoin(
-      'Service_Capability',
+      'Generic_Service_Capability',
       'User_Service.id',
       '=',
-      'Service_Capability.user_service_id'
+      'Generic_Service_Capability.user_service_id'
     )
     .select(
       'User_Service.*',
       dbRaw(
-        `CASE WHEN COUNT("Service_Capability".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "Service_Capability".id, 'service_capability_name', "Service_Capability".service_capability_name)))::json END AS service_capabilities`
+        `CASE WHEN COUNT("Generic_Service_Capability".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "Generic_Service_Capability".id, 'service_capability_name', "Generic_Service_Capability".service_capability_name)))::json END AS generic_service_capabilities`
       )
     )
     .groupBy(['User_Service.id']);
@@ -306,7 +306,7 @@ export const loadServiceWithSubscriptions = async (
         })
       ),
       dbRaw(
-        `COALESCE( CASE WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg( json_build_object( 'id', "userService".id, 'service_capability', "userService".service_capabilities, 'user', CASE WHEN "user".id IS NOT NULL THEN json_build_object( 'id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, '__typename', 'User' ) ELSE NULL END, '__typename', 'User_Service' ) )::json END, '[]'::json ) AS user_service`
+        `COALESCE( CASE WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg( json_build_object( 'id', "userService".id, 'generic_service_capability', "userService".generic_service_capabilities, 'user', CASE WHEN "user".id IS NOT NULL THEN json_build_object( 'id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, '__typename', 'User' ) ELSE NULL END, '__typename', 'User_Service' ) )::json END, '[]'::json ) AS user_service`
       )
     )
     .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
@@ -395,7 +395,7 @@ export const grantServiceAccess = async (
   for (const capability of capabilities) {
     const dataServiceCapabilities = insertedUserServices.map(
       (insertedUserService) => ({
-        id: uuidv4() as ServiceCapabilityId,
+        id: uuidv4() as GenericServiceCapabilityId,
         user_service_id: insertedUserService.id,
         service_capability_name: capability,
       })
