@@ -16,7 +16,6 @@ type Mutation {
   addDocument(document: Upload, description: String, serviceInstanceId: String): Document!
   editDocument(documentId: ID, newDescription: String, serviceInstanceId: String): Document!
   deleteDocument(documentId: ID, serviceInstanceId: String): Document!
-  addServicePrice(input: AddServicePriceInput): ServicePrice
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): Subscription
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -94,6 +93,19 @@ type RolePortal implements Node {
   name: String!
 }
 
+enum ServiceDefinitionIdentifier {
+  vault
+  link
+}
+
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  identifier: ServiceDefinitionIdentifier!
+}
+
 enum DocumentOrdering {
   file_name
   description
@@ -131,33 +143,15 @@ type ServiceLink implements Node {
   name: String
 }
 
-input AddServicePriceInput {
-  service_instance_id: ID
-  price: Int
-  fee_type: String
-}
-
-type ServicePrice implements Node {
-  id: ID!
-  service_instance_id: ID
-  fee_type: String
-  start_date: Date
-  price: Int
-}
-
 enum ServiceInstanceOrdering {
   name
   description
-  provider
-  type
 }
 
 type ServiceInstance implements Node {
   id: ID!
   name: String!
   description: String
-  provider: String
-  type: String
   creation_status: String
   subscribed: Boolean
   links: [ServiceLink]
@@ -167,6 +161,7 @@ type ServiceInstance implements Node {
   public: Boolean
   join_type: String
   tags: [String]
+  service_definition: ServiceDefinition
 }
 
 type ServiceInstanceEdge {

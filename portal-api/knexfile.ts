@@ -18,6 +18,7 @@ export type DatabaseType =
   | 'User'
   | 'Organization'
   | 'ServiceInstance'
+  | 'ServiceDefinition'
   | 'User_RolePortal'
   | 'RolePortal'
   | 'CapabilityPortal'

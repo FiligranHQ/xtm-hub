@@ -135,6 +135,16 @@ export async function seed(knex) {
     },
   ]);
 
+  await knex('ServiceDefinition').insert([
+    {
+      id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+      name: 'ServiceDef',
+      description: 'myDescription',
+      public: true,
+      identifier: 'vault',
+    },
+  ]);
+
   await knex('ServiceInstance')
     .insert([
       {
@@ -142,27 +152,33 @@ export async function seed(knex) {
         name: 'CyberWeather',
         description:
           'This is a short description to describe the CyberWeather app, how to use it, etc.',
-        provider: 'SCRED',
-        type: 'Intel',
         creation_status: 'READY',
+        public: true,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
       {
         id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
         name: 'OpenFeed',
         description:
           'This is a short description to describe the OpenFeed app, how to use it, etc.',
-        provider: 'SCRED',
-        type: 'Feed',
         creation_status: 'READY',
+        public: true,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
       {
         id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
         name: 'Malware analysis',
         description:
           'This is a short description to describe the Malware analysis app, how to use it, etc.',
-        provider: 'Glimps',
-        type: 'analysis',
         creation_status: 'READY',
+        public: true,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
     ])
     .onConflict('id')
@@ -196,24 +212,10 @@ export async function seed(knex) {
     .insert([
       {
         id: '7c6c5d07-07d4-4418-b441-bc19f2d14825',
-        service_instance_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
         fee_type: 'YEARLY',
         start_date: null,
         price: 0,
-      },
-      {
-        id: '18becc6c-6912-498b-868d-062d4f0d05c5',
-        service_instance_id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
-        fee_type: 'YEARLY',
-        start_date: null,
-        price: 0,
-      },
-      {
-        id: '59a3db90-f963-4560-a0c1-ee29f6a221c1',
-        service_instance_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
-        fee_type: 'YEARLY',
-        start_date: null,
-        price: 20000,
       },
     ])
     .onConflict('id')

@@ -16,7 +16,7 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import { sendMail } from '../../server/mail-service';
 import { loadUserOrganization } from '../common/user-organization.helper';
-import { loadServiceBy } from '../services/services.domain';
+import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import {
   insertSubscription,
   loadUnsecureSubscriptionBy,
@@ -50,7 +50,7 @@ export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
         "(json_agg(json_build_object('id', \"Service_Capability\".id, 'service_capability_name', \"Service_Capability\".service_capability_name, '__typename', 'Service_Capability'))) as service_capability"
       ),
       dbRaw(
-        '(json_agg(json_build_object(\'id\', "ServiceInstance".id, \'type\', "ServiceInstance".type))->>0)::json as service'
+        '(json_agg(json_build_object(\'id\', "ServiceInstance".id))->>0)::json as service'
       )
     )
     .groupBy(['User_Service.id']);
@@ -113,9 +113,9 @@ export const createUserServiceAccess = async (
       .returning('*');
   }
   const user = await loadUserBy({ 'User.id': user_id });
-  const service = await loadServiceBy(
+  const service = await loadServiceInstanceBy(
     context,
-    'id',
+    'ServiceInstance.id',
     subscription.service_instance_id
   );
   await sendMail({
@@ -123,7 +123,7 @@ export const createUserServiceAccess = async (
     template: 'partnerVault',
     params: {
       name: user.email,
-      partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('ServiceInstance', service.id)}`,
+      partnerVaultLink: `${config.get('base_url_front')}/service/${service.service_definition.identifier}/${toGlobalId('ServiceInstance', service.id)}`,
       partnerVault: service.name,
     },
   });

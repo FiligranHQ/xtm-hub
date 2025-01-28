@@ -7,6 +7,7 @@ import {
   ServiceLink,
   Subscription,
 } from '../../__generated__/resolvers-types';
+import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import ServicePrice, {
@@ -22,7 +23,7 @@ import {
   loadServiceInstanceByIdWithCapabilities,
   loadServiceInstances,
   loadServiceWithSubscriptions,
-} from './services.domain';
+} from './service-instance.domain';
 
 const resolvers: Resolvers = {
   Query: {
@@ -87,9 +88,7 @@ const resolvers: Resolvers = {
           id: uuidv4(),
           name: input.service_instance_name,
           description: input.service_instance_description,
-          provider: 'SCRED_ONDEMAND',
-          type: 'PRIVATE',
-          creation_status: 'READY',
+          creation_status: 'PENDING',
         };
         const [addedServiceInstance] = await db<ServiceInstance>(
           context,
@@ -100,8 +99,8 @@ const resolvers: Resolvers = {
 
         const dataServicePrice = {
           id: uuidv4() as unknown as ServicePriceId,
-          service_instance_id:
-            addedServiceInstance.id as unknown as ServiceInstanceId,
+          service_definition_id:
+            addedServiceInstance.id as unknown as ServiceDefinitionId,
           fee_type: input.fee_type,
           start_date: new Date(),
           price: input.price,

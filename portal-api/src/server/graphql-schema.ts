@@ -6,7 +6,6 @@ import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
-import servicePriceResolver from '../modules/services/instances/service-price/service-price.resolver';
 import servicesResolver from '../modules/services/services.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
@@ -37,7 +36,6 @@ const resolvers = mergeResolvers([
   subscriptionsResolver,
   userServiceResolver,
   serviceCapabilityResolver,
-  servicePriceResolver,
   logResolver,
 ]);
 

@@ -36,7 +36,7 @@ export async function up(knex) {
   await knex.schema.createTable('Service_Price', (table) => {
     table.uuid('id', { primaryKey: true }).defaultTo(knex.fn.uuid());
     table
-      .uuid('service_instance_id')
+      .uuid('service_id')
       .references('id')
       .inTable('Service')
       .onDelete('CASCADE');
