@@ -18,7 +18,7 @@ import { extractId } from '../../utils/utils';
 import {
   grantServiceAccessUsers,
   loadServiceWithSubscriptions,
-} from '../services/services.domain';
+} from '../services/service-instance.domain';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,

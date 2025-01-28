@@ -8,6 +8,12 @@ interface Services {
   description: string;
 }
 
+interface ServiceDefinitions {
+  name: string;
+  route_name: string;
+  description: string;
+}
+
 interface PortalConfig {
   port: number;
   admin: {
@@ -23,6 +29,7 @@ interface PortalConfig {
     seeds: string;
   };
   services: Services[];
+  service_definitions: ServiceDefinitions[];
 }
 
 const portalConfig: PortalConfig = {
@@ -47,5 +54,6 @@ const portalConfig: PortalConfig = {
         : 'src/seeds',
   },
   services: config.get('init_services'),
+  service_definitions: config.get('init_service_definitions'),
 };
 export default portalConfig;

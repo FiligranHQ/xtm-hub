@@ -20,7 +20,6 @@ const AvailableServices = ({
   const t = useTranslations();
   const getAction = (service: serviceList_fragment$data) => {
     return service.subscribed ||
-      service.type === 'COMMUNITY' ||
       service.join_type !== JOIN_TYPE.JOIN_SELF ? null : (
       <AlertDialogComponent
         AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}

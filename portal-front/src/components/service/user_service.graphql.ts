@@ -60,13 +60,16 @@ export const userServicesOwnedFragment = graphql`
       service_instance {
         name
         id
-        type
-        provider
         description
         links {
           id
           name
           url
+        }
+        service_definition {
+          id
+          name
+          identifier
         }
       }
     }
