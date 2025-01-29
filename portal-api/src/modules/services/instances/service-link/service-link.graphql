@@ -1,6 +1,6 @@
 type ServiceLink implements Node {
   id: ID!
-  service_id: ID
+  service_instance_id: ID
   url: String
   name: String
 }

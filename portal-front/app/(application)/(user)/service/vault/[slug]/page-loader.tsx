@@ -55,7 +55,7 @@ const PageLoader: React.FunctionComponent = ({}) => {
 
   const [queryRefService, loadQueryService] =
     useQueryLoader<serviceByIdQuery>(ServiceById);
-  useMountingLoader(loadQueryService, { service_id: slug });
+  useMountingLoader(loadQueryService, { service_instance_id: slug });
 
   useEffect(() => {
     if (slug) {
@@ -69,7 +69,7 @@ const PageLoader: React.FunctionComponent = ({}) => {
         count,
         orderBy,
         orderMode,
-        serviceId: slug,
+        serviceInstanceId: slug,
       });
       loadQuery(JSON.parse(variablesValues), {
         fetchPolicy: 'store-and-network',

@@ -10,7 +10,7 @@ export const ServiceCapabilityCreateMutation = graphql`
       user_service {
         ...userService_fragment @relay(mask: false)
       }
-      service {
+      service_instance {
         id
         name
         description

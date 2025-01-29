@@ -26,10 +26,15 @@ export default class LoginPage {
     return this.page.getByRole('button', { name: 'Sign in' });
   }
 
-  async login() {
+  async login(userEmail = 'admin@filigran.io') {
     await this.page.goto('/');
-    await this.fillLoginInput('admin@filigran.io');
+    await this.fillLoginInput(userEmail);
     await this.fillPasswordInput('admin');
     return this.getSignInButton().click();
+  }
+
+  async logout() {
+    await this.page.getByRole('button', { name: 'Open menu user' }).click();
+    await this.page.getByRole('button', { name: 'Logout' }).click();
   }
 }

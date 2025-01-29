@@ -1,0 +1,79 @@
+enum ServiceInstanceOrdering {
+  name
+  description
+}
+
+type ServiceInstance implements Node {
+  id: ID!
+  name: String!
+  description: String
+  creation_status: String
+  subscribed: Boolean
+  links: [ServiceLink]
+  organization: [Organization]
+  subscriptions: [Subscription]
+  capabilities: [String!]
+  public: Boolean
+  join_type: String
+  tags: [String]
+  service_definition: ServiceDefinition
+}
+
+type ServiceInstanceEdge {
+  cursor: String!
+  node: ServiceInstance!
+}
+
+type ServiceConnection {
+  totalCount: Int!
+  edges: [ServiceInstanceEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddServiceInput {
+  service_instance_name: String
+  service_instance_description: String
+  fee_type: String
+  price: Int
+  organization_id: String
+  url: String
+}
+
+type Mutation {
+  editServiceInstance(id: ID!, name: String!): ServiceInstance
+    @auth(requires: [BCK_MANAGE_SERVICES])
+  addServiceInstance(input: AddServiceInput): Subscription
+    @auth(requires: [BCK_MANAGE_SERVICES])
+  deleteServiceInstance(id: ID!): ServiceInstance
+    @auth(requires: [BCK_MANAGE_SERVICES])
+}
+
+type Query {
+  publicServiceInstances(
+    first: Int!
+    after: ID
+    orderBy: ServiceInstanceOrdering!
+    orderMode: OrderingMode!
+  ): ServiceConnection!
+    @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_SERVICES])
+  serviceInstances(
+    first: Int!
+    after: ID
+    orderBy: ServiceInstanceOrdering!
+    orderMode: OrderingMode!
+  ): ServiceConnection! @auth(requires: [BYPASS])
+  serviceInstanceById(service_instance_id: ID): ServiceInstance @auth
+  serviceInstanceByIdWithSubscriptions(
+    service_instance_id: ID
+  ): ServiceInstance @auth @service_capa(requires: [MANAGE_ACCESS])
+}
+
+type ServiceInstanceSubscription {
+  add: ServiceInstance
+  edit: ServiceInstance
+  delete: ServiceInstance
+}
+
+type Subscription {
+  ServiceInstance: ServiceInstanceSubscription @auth
+}

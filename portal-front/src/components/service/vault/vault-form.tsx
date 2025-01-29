@@ -35,7 +35,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
     vaultDocumentMutation({
       variables: {
         ...values,
-        serviceId: slug,
+        serviceInstanceId: slug,
         connections: [connectionId],
       },
       uploadables: values.document as unknown as UploadableMap,

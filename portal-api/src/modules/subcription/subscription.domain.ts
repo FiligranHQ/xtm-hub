@@ -1,31 +1,17 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { Subscription } from '../../__generated__/resolvers-types';
 import {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadUnsecureServiceCapabilitiesBy } from '../services/instances/service-capabilities/service_capabilities.helper';
-import { loadServiceBy } from '../services/services.domain';
+import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
 import { loadSubscriptionBy } from './subscription.helper';
-
-export const loadSubscription = (userId, serviceId) => {
-  return dbUnsecure<User>('User')
-    .leftJoin(
-      'Subscription as sub',
-      'sub.organization_id',
-      '=',
-      'User.organization_id'
-    )
-    .where('User.id', userId)
-    .where('sub.service_id', serviceId)
-    .select('sub.id');
-};
 
 export const fillSubscription = async (
   context: PortalContext,
@@ -37,10 +23,10 @@ export const fillSubscription = async (
     updatedSubscription.organization_id
   );
 
-  updatedSubscription.service = await loadServiceBy(
+  updatedSubscription.service_instance = await loadServiceInstanceBy(
     context,
-    'id',
-    updatedSubscription.service_id
+    'ServiceInstance.id',
+    updatedSubscription.service_instance_id
   );
   return updatedSubscription;
 };
@@ -48,10 +34,10 @@ export const fillSubscription = async (
 export const checkSubscriptionExists = async (
   context: PortalContext,
   organization_id: string,
-  service_id: string
+  service_instance_id: string
 ): Promise<Subscription | boolean> => {
   const subscriptionQuery = db<Subscription>(context, 'Subscription')
-    .where({ organization_id, service_id })
+    .where({ organization_id, service_instance_id })
     .select('*')
     .first();
   const sub = await subscriptionQuery;
@@ -71,7 +57,11 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
     'id',
     sub.organization_id
   );
-  const service = await loadServiceBy(context, 'id', sub.service_id);
+  const serviceInstance = await loadServiceInstanceBy(
+    context,
+    'ServiceInstance.id',
+    sub.service_instance_id
+  );
   const userServices = await loadUnsecureUserServiceBy({
     subscription_id: subscriptionId,
   });
@@ -79,7 +69,7 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
   const returningSubscription = {
     ...sub,
     organization,
-    service,
+    serviceInstance,
     user_service: populatedUserServices,
   };
   return returningSubscription;

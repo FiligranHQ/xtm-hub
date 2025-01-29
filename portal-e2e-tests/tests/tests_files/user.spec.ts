@@ -2,69 +2,70 @@ import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import { removeUser } from '../db-utils/user.helper';
 import { addOrganization } from '../db-utils/organization.helper';
+import UserPage from '../model/user.pageModel';
 
-test.beforeAll('Add necessary data for tests', async () => {
-  await addOrganization('Thales');
-});
-test('should confirm CRUD of users is ok', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.login();
-  await page.getByRole('button', { name: 'Settings' }).click();
-  await page
-    .getByLabel('Settings')
-    .getByRole('link', { name: 'Users' })
-    .click();
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Users');
+const TEST_USER = {
+  userOrganizationName: 'Thales',
+  userEmail: 'userInE2E@thales.com',
+  otherThalesUserEmail: 'user@thales.com',
+};
 
-  // Add User
+test.describe('User Management', () => {
+  let loginPage;
+  let userPage;
 
-  await page.getByLabel('Add user').click();
-  await page
-    .getByPlaceholder('Email', { exact: true })
-    .fill('userInE2E@thales.com');
-  await page.getByPlaceholder('Email', { exact: true }).press('Tab');
-  await page.getByLabel('Roles').press('Enter');
-  await page.getByRole('option', { name: 'USER' }).click();
-  await page.getByLabel('Organizations').press('Enter');
-  await page.getByRole('option', { name: 'Thales' }).click();
-  await page.getByRole('button', { name: 'Validate' }).click();
-  await expect(
-    page
-      .getByRole('cell', { name: 'userInE2E@thales.com', exact: true })
-      .locator('span')
-  ).toBeVisible();
+  test.beforeEach(async ({ page }) => {
+    await addOrganization(TEST_USER.userOrganizationName);
 
-  // Edit user
-  await page
-    .getByRole('row', { name: 'userInE2E@thales.com' })
-    .getByRole('button')
-    .click();
-  await page.getByLabel('Details User').click();
-  await expect(
-    page.getByRole('heading', { name: 'userInE2E@thales.com' })
-  ).toBeVisible();
+    loginPage = new LoginPage(page);
+    userPage = new UserPage(page);
 
-  await page.getByLabel('Update').click();
-  await page.getByLabel('Roles').press('Enter');
-  await page.getByRole('option', { name: 'ADMIN_ORGA' }).click();
-  await page.getByRole('button', { name: 'Validate' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'userInE2E@thales.com' })
-  ).toBeVisible();
+    await loginPage.login();
+    await userPage.navigateToUserListAdmin();
+  });
 
-  // Delete user
-  await page.getByLabel('Delete User').click();
-  await page.getByRole('button', { name: 'Cancel' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'userInE2E@thales.com' })
-  ).toBeVisible();
-  await page.getByLabel('Delete User').click();
-  await page.getByRole('button', { name: 'Delete' }).click();
-  await expect(
-    page.getByRole('cell', { name: 'userInE2E@thales.com' })
-  ).not.toBeVisible();
-});
+  test('Should perform complete CRUD of users', async ({ page }) => {
+    await test.step('Add user', async () => {
+      await userPage.addUser(
+        TEST_USER.userEmail,
+        TEST_USER.userOrganizationName
+      );
+      await expect(
+        page
+          .getByRole('cell', { name: TEST_USER.userEmail, exact: true })
+          .locator('span')
+      ).toBeVisible();
+    });
 
-test.afterAll('Remove newly created user', async () => {
-  await removeUser('userInE2E@thales.com');
+    await test.step('Edit user', async () => {
+      await userPage.editUser(TEST_USER.userEmail);
+      await expect(
+        page.getByRole('heading', { name: TEST_USER.userEmail })
+      ).toBeVisible();
+    });
+
+    await test.step('Delete user', async () => {
+      await userPage.deleteUser(TEST_USER.userEmail);
+      await expect(
+        page.getByRole('cell', { name: TEST_USER.userEmail })
+      ).not.toBeVisible();
+    });
+  });
+
+  test('Should only see authorized users', async ({ page }) => {
+    await userPage.navigateToUserListAdmin();
+    await expect(page.getByText(TEST_USER.otherThalesUserEmail)).toBeVisible();
+    await userPage.navigateToUserOrgaAdmin();
+    await expect(
+      page.getByText(TEST_USER.otherThalesUserEmail)
+    ).not.toBeVisible();
+    await loginPage.logout();
+    await loginPage.login(TEST_USER.userEmail);
+    await expect(
+      page.getByRole('button', { name: 'Settings' })
+    ).not.toBeVisible();
+  });
+  test.afterAll('Remove newly created user', async () => {
+    await removeUser(TEST_USER.userEmail);
+  });
 });

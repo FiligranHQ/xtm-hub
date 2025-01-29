@@ -52,9 +52,9 @@ export async function createDatabase() {
     const database = getDbTestConnection();
     await database.migrate.latest();
     await database.seed.run();
-    await database.destroy();
   } catch (err) {
     logApp.error(err);
+    throw err;
   } finally {
     await dbConnection.destroy();
   }

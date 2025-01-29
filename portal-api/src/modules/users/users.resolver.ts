@@ -188,7 +188,13 @@ const resolvers: Resolvers = {
         });
 
         await dispatch('User', 'edit', user);
+        context.req.session.user = {
+          ...context.user,
+          ...user,
+        };
+
         await trx.commit();
+
         return user;
       } catch (error) {
         await trx.rollback();

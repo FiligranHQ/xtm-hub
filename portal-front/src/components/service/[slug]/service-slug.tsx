@@ -56,7 +56,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const [selectedSubscription, setSelectedSubscription] =
     useState<subscriptionWithUserService_fragment$data>(
-      queryData.serviceByIdWithSubscriptions
+      queryData.serviceInstanceByIdWithSubscriptions
         ?.subscriptions?.[0] as subscriptionWithUserService_fragment$data
     );
 
@@ -71,11 +71,14 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           { label: 'MenuLinks.Services', href: '/admin/service' },
         ]
       : [{ label: 'MenuLinks.Home', href: '/' }]),
-    { label: queryData.serviceByIdWithSubscriptions?.name, original: true },
+    {
+      label: queryData.serviceInstanceByIdWithSubscriptions?.name,
+      original: true,
+    },
   ];
 
   const dataOrganizationsTab = (
-    queryData.serviceByIdWithSubscriptions?.subscriptions ?? []
+    queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? []
   ).map((subscription) => {
     return {
       value: subscription?.organization?.id ?? '',
@@ -85,7 +88,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const onValueChange = (value: string) => {
     const subscription =
-      queryData.serviceByIdWithSubscriptions?.subscriptions?.find(
+      queryData.serviceInstanceByIdWithSubscriptions?.subscriptions?.find(
         (subscription) => {
           return subscription?.organization.id === value;
         }
@@ -96,7 +99,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   };
 
   const canManageAccess =
-    queryData?.serviceByIdWithSubscriptions?.subscriptions?.some(
+    queryData?.serviceInstanceByIdWithSubscriptions?.subscriptions?.some(
       (subscription) => {
         const user_service = subscription?.user_service.find(
           (userService) => userService?.user?.id === me?.id
@@ -202,7 +205,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             )}>
             <ServiceSlugAddOrgaForm
               subscriptions={
-                queryData?.serviceByIdWithSubscriptions
+                queryData?.serviceInstanceByIdWithSubscriptions
                   ?.subscriptions as subscriptionWithUserService_fragment$data[]
               }
               setSelectedSubscription={setSelectedSubscription}
@@ -215,6 +218,16 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           <SheetWithPreventingDialog
             open={openSheet}
             setOpen={setOpenSheet}
+            onOpenAutoFocus={(event) => {
+              event.preventDefault();
+              // Wait for the drawer to open to set focus on the combobox
+              setTimeout(() => {
+                const input = document.querySelector(
+                  'div[role="dialog"][data-state="open"] form input'
+                ) as HTMLInputElement | null;
+                input?.focus();
+              }, 500); // Drawer animation time
+            }}
             trigger={
               <TriggerButton
                 onClick={() => setCurrentUser({} as userService_fragment$data)}
@@ -225,7 +238,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             description={t('InviteUserServiceForm.Description')}>
             <ServiceSlugForm
               userService={currentUser}
-              connectionId={queryData.serviceByIdWithSubscriptions?.__id ?? ''}
+              connectionId={
+                queryData.serviceInstanceByIdWithSubscriptions?.__id ?? ''
+              }
               dataOrganizationsTab={dataOrganizationsTab}
               subscription={selectedSubscription}
             />
@@ -241,16 +256,16 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       {isAllowedInviteUser ? (
         <>
           <h1 className="pb-s">
-            {queryData.serviceByIdWithSubscriptions?.name}
+            {queryData.serviceInstanceByIdWithSubscriptions?.name}
           </h1>
           <div className="pb-s">
-            {queryData.serviceByIdWithSubscriptions?.description}
+            {queryData.serviceInstanceByIdWithSubscriptions?.description}
           </div>
 
           <ServiceUserServiceSlug
             subscriptionId={selectedSubscription?.id}
             data={
-              queryData.serviceByIdWithSubscriptions as serviceWithSubscriptions_fragment$data
+              queryData.serviceInstanceByIdWithSubscriptions as serviceWithSubscriptions_fragment$data
             }
             setOpenSheet={setOpenSheet}
             setCurrentUser={setCurrentUser}

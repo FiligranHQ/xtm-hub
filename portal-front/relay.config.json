@@ -3,5 +3,6 @@
   "language": "typescript",
   "schema": "schema.graphql",
   "eagerEsModules": true,
-  "artifactDirectory": "./__generated__"
+  "artifactDirectory": "./__generated__",
+  "noFutureProofEnums": true
 }

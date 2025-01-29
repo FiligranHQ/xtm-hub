@@ -57,16 +57,19 @@ export const userServicesOwnedFragment = graphql`
     subscription {
       id
       status
-      service {
+      service_instance {
         name
         id
-        type
-        provider
         description
         links {
           id
           name
           url
+        }
+        service_definition {
+          id
+          name
+          identifier
         }
       }
     }
@@ -87,7 +90,7 @@ export const UserServiceCreateMutation = graphql`
       user_service {
         ...userService_fragment @relay(mask: false)
       }
-      service {
+      service_instance {
         id
         name
         description
@@ -106,7 +109,7 @@ export const UserServiceDeleteMutation = graphql`
       user_service {
         ...userService_fragment @relay(mask: false)
       }
-      service {
+      service_instance {
         id
         name
         description
