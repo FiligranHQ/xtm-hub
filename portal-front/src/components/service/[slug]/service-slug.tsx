@@ -218,6 +218,16 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           <SheetWithPreventingDialog
             open={openSheet}
             setOpen={setOpenSheet}
+            onOpenAutoFocus={(event) => {
+              event.preventDefault();
+              // Wait for the drawer to open to set focus on the combobox
+              setTimeout(() => {
+                const input = document.querySelector(
+                  'div[role="dialog"][data-state="open"] form input'
+                ) as HTMLInputElement | null;
+                input?.focus();
+              }, 500); // Drawer animation time
+            }}
             trigger={
               <TriggerButton
                 onClick={() => setCurrentUser({} as userService_fragment$data)}

@@ -35,9 +35,17 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
   const t = useTranslations();
-  useEffect(() => {
-    setOpen(false);
-  }, [currentPath]);
+  useEffect(() => setOpen(false), [currentPath]);
+
+  const User = () =>
+    me ? (
+      <span>
+        {me.first_name} {me.last_name}
+      </span>
+    ) : (
+      <Skeleton className="h-6 w-56" />
+    );
+
   return (
     <header
       className={cn(
@@ -52,9 +60,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       />
 
       <div className="mobile:hidden flex items-center gap-s">
-        <span>
-          {me?.email ? <> {me.email}</> : <Skeleton className="h-6 w-56" />}
-        </span>
+        <User />
         <IconActions
           icon={
             <>
@@ -88,11 +94,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
             <SheetHeader>
               <SheetTitle>Filigran</SheetTitle>
               <SheetDescription>
-                {me?.email ? (
-                  <span> {me.email}</span>
-                ) : (
-                  <Skeleton className="h-6 w-56" />
-                )}
+                <User />
               </SheetDescription>
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
