@@ -63,7 +63,6 @@ const Page = () => {
                   <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
               }>
-              $
               {row.original.service_definition?.identifier !== 'link' && (
                 <IconActionsButton
                   aria-label={t('Service.GoToAdminLabel')}
