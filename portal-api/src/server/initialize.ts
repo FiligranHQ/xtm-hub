@@ -22,6 +22,7 @@ import {
   ensureCapabilityExists,
   ensureRoleExists,
   ensureRoleHasCapability,
+  ensureServiceDefinitionExists,
   ensureServiceExists,
   ensureUserOrganizationExist,
   ensureUserRoleExist,
@@ -145,6 +146,9 @@ const initializeBuiltInAdministrator = async () => {
 };
 
 const initializeDefaultServices = async () => {
+  for (const serviceDefinition of portalConfig.service_definitions) {
+    await ensureServiceDefinitionExists(serviceDefinition);
+  }
   for (const service of portalConfig.services) {
     await ensureServiceExists(service);
   }

@@ -10,6 +10,7 @@ import DownloadDocument from '@/components/service/vault/download-document';
 import EditDocument from '@/components/service/vault/edit-document';
 import { VaultForm } from '@/components/service/vault/vault-form';
 import VisualizeDocument from '@/components/service/vault/visualize-document';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
@@ -77,7 +78,9 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
   );
 
   const canManageService =
-    queryDataService.serviceById?.capabilities.includes('MANAGE_ACCESS');
+    queryDataService.serviceInstanceById?.capabilities.includes(
+      'MANAGE_ACCESS'
+    );
 
   const documentData: documentItem_fragment$data[] = data.documents.edges.map(
     ({ node }) =>
@@ -234,9 +237,19 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     DEBOUNCE_TIME
   );
 
+  const breadcrumbs = [
+    {
+      label: 'MenuLinks.Home',
+    },
+    {
+      label: queryDataService.serviceInstanceById?.name,
+    },
+  ];
+
   return (
     <>
-      <h1 className="pb-s">{queryDataService.serviceById?.name}</h1>
+      <BreadcrumbNav value={breadcrumbs} />
+      <h1 className="pb-s">{queryDataService.serviceInstanceById?.name}</h1>
 
       <DataTable
         i18nKey={i18nKey(t)}
@@ -253,8 +266,8 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           rowCount: data.documents.totalCount,
         }}
         onClickRow={(row) => {
-          const url = `/document/visualize/${queryDataService.serviceById?.id}/${row.id}`;
-          window.open(url, '_blank', 'noopener noreferrer');
+          const url = `/document/visualize/${queryDataService.serviceInstanceById?.id}/${row.id}`;
+          window.open(url, '_blank', 'noopener,noreferrer');
         }}
         toolbar={
           <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">

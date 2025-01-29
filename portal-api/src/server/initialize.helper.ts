@@ -1,25 +1,61 @@
 import { dbUnsecure } from '../../knexfile';
+import {
+  ServiceDefinition,
+  ServiceInstance,
+} from '../__generated__/resolvers-types';
 import portalConfig from '../config';
 import Organization, {
   OrganizationId,
 } from '../model/kanel/public/Organization';
 import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
-import Service from '../model/kanel/public/Service';
 import ServiceLink from '../model/kanel/public/ServiceLink';
 import ServicePrice from '../model/kanel/public/ServicePrice';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
 import UserOrganization from '../model/kanel/public/UserOrganization';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 
-export const ensureServiceExists = async (service) => {
-  const services = await dbUnsecure('Service');
-  const links = await dbUnsecure('Service_Link');
-  const prices = await dbUnsecure('Service_Price');
-  if (!services.find((s) => s.id === service.service.id)) {
-    await dbUnsecure<Service>('Service').insert(service.service);
+export const ensureServiceDefinitionExists = async (service) => {
+  const serviceDefinitions = await dbUnsecure('ServiceDefinition');
+  if (
+    !serviceDefinitions.find(
+      (serviceDefinition) =>
+        serviceDefinition.id === service.serviceDefinition.id
+    )
+  ) {
+    await dbUnsecure<ServiceDefinition>('ServiceDefinition').insert(
+      service.serviceDefinition
+    );
   } else {
-    await dbUnsecure<Service>('Service')
+    await dbUnsecure<ServiceDefinition>('ServiceDefinition')
+      .where({ id: service.serviceDefinition.id })
+      .update(service.serviceDefinition)
+      .returning('*');
+  }
+
+  const prices = await dbUnsecure('Service_Price');
+  if (!prices.find((price) => price.id === service.price.id)) {
+    await dbUnsecure<ServicePrice>('Service_Price').insert(service.price);
+  } else {
+    await dbUnsecure<ServicePrice>('Service_Price')
+      .where({ id: service.price.id })
+      .update(service.price)
+      .returning('*');
+  }
+};
+export const ensureServiceExists = async (service) => {
+  const serviceInstances = await dbUnsecure('ServiceInstance');
+  const links = await dbUnsecure('Service_Link');
+  if (
+    !serviceInstances.find(
+      (serviceInstance) => serviceInstance.id === service.service.id
+    )
+  ) {
+    await dbUnsecure<ServiceInstance>('ServiceInstance').insert(
+      service.service
+    );
+  } else {
+    await dbUnsecure<ServiceInstance>('ServiceInstance')
       .where({ id: service.service.id })
       .update(service.service)
       .returning('*');
@@ -30,14 +66,6 @@ export const ensureServiceExists = async (service) => {
     await dbUnsecure<ServiceLink>('Service_Link')
       .where({ id: service.link.id })
       .update(service.link)
-      .returning('*');
-  }
-  if (!prices.find((price) => price.id === service.price.id)) {
-    await dbUnsecure<ServicePrice>('Service_Price').insert(service.price);
-  } else {
-    await dbUnsecure<ServicePrice>('Service_Price')
-      .where({ id: service.price.id })
-      .update(service.price)
       .returning('*');
   }
 };

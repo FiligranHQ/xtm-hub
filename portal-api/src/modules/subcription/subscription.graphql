@@ -11,13 +11,13 @@ enum SubscriptionOrdering {
 type Subscription implements Node {
   id: ID!
   organization_id: ID!
-  service_id: ID!
+  service_instance_id: ID!
   start_date: Date
   end_date: Date
   status: String
   organization: Organization!
   service_url: String!
-  service: Service
+  service_instance: ServiceInstance
   user_service: [UserService]!
 }
 
@@ -26,17 +26,14 @@ type SubscriptionEdge {
   node: Subscription!
 }
 
-type SubscriptionByService {
-  subscriptions: [Subscription!]!
-  service: Service
-}
-
 type Mutation {
-  addSubscription(service_id: String): Service
+  addSubscription(service_instance_id: String): ServiceInstance
     @auth(requires: [FRT_SERVICE_SUBSCRIBER])
-  addSubscriptionInService(service_id: String, organization_id: ID): Service
-    @auth(requires: [BYPASS])
-  deleteSubscription(subscription_id: ID!): Service
+  addSubscriptionInService(
+    service_instance_id: String
+    organization_id: ID
+  ): ServiceInstance @auth(requires: [BYPASS])
+  deleteSubscription(subscription_id: ID!): ServiceInstance
     @auth(requires: [BCK_MANAGE_SERVICES])
     @service_capa(requires: [MANAGE_ACCESS])
 }

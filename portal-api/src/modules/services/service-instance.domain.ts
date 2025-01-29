@@ -3,16 +3,16 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
-  Service,
   ServiceConnection,
+  ServiceInstance,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceMutator } from '../../model/kanel/public/Service';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
+import { ServiceInstanceMutator } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import User, { UserId, UserMutator } from '../../model/kanel/public/User';
+import User, { UserMutator } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
@@ -20,33 +20,36 @@ import { PortalContext } from '../../model/portal-context';
 import { CAPABILITY_BYPASS, ROLE_ADMIN_ORGA } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
-import { loadSubscription } from '../subcription/subscription.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
-import {
-  addAdminAccess,
-  insertUserService,
-} from '../user_service/user_service.domain';
+import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 
-export const loadPublicServices = async (context: PortalContext, opts) => {
+export const loadPublicServiceInstances = async (
+  context: PortalContext,
+  opts
+) => {
   const { first, after, orderMode, orderBy } = opts;
-  const query = paginate<Service>(context, 'Service', {
+  const query = paginate<ServiceInstance>(context, 'ServiceInstance', {
     first,
     after,
     orderMode,
     orderBy,
-  }).where('public', '=', true);
+  }).where('ServiceInstance.public', '=', true);
   const organizationId = context.user.selected_organization_id;
   const userId = context.user.id;
   const servicesConnection = await query
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOnVal(
-        'subscription.organization_id',
-        '=',
-        organizationId
-      );
+      this.on('subscription.service_instance_id', '=', 'ServiceInstance.id')
+
+        .andOnVal('subscription.organization_id', '=', organizationId);
     })
+    .leftJoin(
+      'ServiceDefinition as service_def',
+      'service_def.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
     .leftJoin('User_Service as userService', function () {
       this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
         'userService.user_id',
@@ -62,12 +65,12 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
     )
     .leftJoin(
       'Service_Link as serviceLinks',
-      'serviceLinks.service_id',
+      'serviceLinks.service_instance_id',
       '=',
-      'Service.id'
+      'ServiceInstance.id'
     )
     .select([
-      'Service.*',
+      'ServiceInstance.*',
       dbRaw(`
         CASE
           WHEN "subscription"."id" IS NOT NULL THEN true
@@ -78,21 +81,33 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
         'COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), \'[]\'::json) AS capabilities'
       ),
       dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
+
+      dbRaw(
+        formatRawObject({
+          columnName: 'service_def',
+          typename: 'ServiceDefinition',
+          as: 'service_definition',
+        })
+      ),
     ])
     .whereRaw(`"subscription"."id" IS NULL`)
-    .groupBy(['Service.id', 'subscription.id'])
+    .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.id'])
     .asConnection<ServiceConnection>();
 
-  const { totalCount } = await db<Service>(context, 'Service', opts)
+  const { totalCount } = await db<ServiceInstance>(
+    context,
+    'ServiceInstance',
+    opts
+  )
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOnVal(
-        'subscription.organization_id',
+      this.on(
+        'subscription.service_instance_id',
         '=',
-        organizationId
-      );
+        'ServiceInstance.id'
+      ).andOnVal('subscription.organization_id', '=', organizationId);
     })
     .whereRaw(`"subscription"."id" IS NULL`)
-    .countDistinct('Service.id as totalCount')
+    .countDistinct('ServiceInstance.id as totalCount')
     .first();
 
   return {
@@ -101,9 +116,9 @@ export const loadPublicServices = async (context: PortalContext, opts) => {
   };
 };
 
-export const loadServices = async (context: PortalContext, opts) => {
+export const loadServiceInstances = async (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
-  const query = paginate<Service>(context, 'Service', {
+  const query = paginate<ServiceInstance>(context, 'ServiceInstance', {
     first,
     after,
     orderMode,
@@ -112,12 +127,18 @@ export const loadServices = async (context: PortalContext, opts) => {
   const organizationId = context.user.selected_organization_id;
   const userId = context.user.id;
   const servicesConnection = await query
+    .leftJoin(
+      'ServiceDefinition as service_def',
+      'service_def.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOnVal(
-        'subscription.organization_id',
+      this.on(
+        'subscription.service_instance_id',
         '=',
-        organizationId
-      );
+        'ServiceInstance.id'
+      ).andOnVal('subscription.organization_id', '=', organizationId);
     })
     .leftJoin('User_Service as userService', function () {
       this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
@@ -133,7 +154,14 @@ export const loadServices = async (context: PortalContext, opts) => {
       'userService.id'
     )
     .select([
-      'Service.*',
+      'ServiceInstance.*',
+      dbRaw(
+        formatRawObject({
+          columnName: 'service_def',
+          typename: 'ServiceDefinition',
+          as: 'service_definition',
+        })
+      ),
       dbRaw(`
         CASE
           WHEN "subscription"."id" IS NOT NULL THEN true
@@ -144,18 +172,22 @@ export const loadServices = async (context: PortalContext, opts) => {
       COALESCE(json_agg("serviceCapability"."service_capability_name") FILTER (WHERE "serviceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
     `),
     ])
-    .groupBy(['Service.id', 'subscription.id'])
+    .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.id'])
     .asConnection<ServiceConnection>();
 
-  const { totalCount } = await db<Service>(context, 'Service', opts)
+  const { totalCount } = await db<ServiceInstance>(
+    context,
+    'ServiceInstance',
+    opts
+  )
     .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_id', '=', 'Service.id').andOnVal(
-        'subscription.organization_id',
+      this.on(
+        'subscription.service_instance_id',
         '=',
-        organizationId
-      );
+        'ServiceInstance.id'
+      ).andOnVal('subscription.organization_id', '=', organizationId);
     })
-    .countDistinct('Service.id as totalCount')
+    .countDistinct('ServiceInstance.id as totalCount')
     .first();
 
   return {
@@ -163,12 +195,16 @@ export const loadServices = async (context: PortalContext, opts) => {
     ...servicesConnection,
   };
 };
-export const loadServiceByWithCapabilities = async (
+export const loadServiceInstanceByIdWithCapabilities = async (
   context: PortalContext,
-  service_id: string
-): Promise<Service> => {
-  return db<Service>(context, 'Service')
-    .leftJoin('Subscription', 'Service.id', 'Subscription.service_id')
+  service_instance_id: string
+): Promise<ServiceInstance> => {
+  return db<ServiceInstance>(context, 'ServiceInstance')
+    .leftJoin(
+      'Subscription',
+      'ServiceInstance.id',
+      'Subscription.service_instance_id'
+    )
     .leftJoin('User_Service', 'Subscription.id', 'User_Service.subscription_id')
     .leftJoin(
       'Service_Capability',
@@ -177,7 +213,7 @@ export const loadServiceByWithCapabilities = async (
       'Service_Capability.user_service_id'
     )
     .select(
-      'Service.*',
+      'ServiceInstance.*',
       dbRaw(
         `CASE
              WHEN COUNT("Service_Capability".id) = 0 THEN ARRAY[]::text[]
@@ -187,31 +223,48 @@ export const loadServiceByWithCapabilities = async (
     )
 
     .where({
-      'Service.id': service_id,
+      'ServiceInstance.id': service_instance_id,
       'User_Service.user_id': context.user.id,
     })
-    .groupBy(['Service.id', 'User_Service.id'])
+    .groupBy(['ServiceInstance.id', 'User_Service.id'])
     .first();
 };
 
-export const loadServiceBy = async (
+export const loadServiceInstanceBy = async (
   context: PortalContext,
   field: string,
   value: string
-): Promise<Service> => {
-  return db<Service>(context, 'Service')
+): Promise<ServiceInstance> => {
+  return db<ServiceInstance>(context, 'ServiceInstance')
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceInstance.service_definition_id',
+      '=',
+      'ServiceDefinition.id'
+    )
     .where({ [field]: value })
-    .select('*')
+    .select(
+      'ServiceInstance.*',
+      dbRaw(
+        formatRawObject({
+          columnName: 'ServiceDefinition',
+          typename: 'ServiceDefinition',
+          as: 'service_definition',
+        })
+      )
+    )
     .first();
 };
 
-export const loadUnsecureServiceBy = async (field: ServiceMutator) => {
-  return dbUnsecure<Service>('Service').where(field);
+export const loadUnsecureServiceInstanceBy = async (
+  field: ServiceInstanceMutator
+) => {
+  return dbUnsecure<ServiceInstance>('ServiceInstance').where(field);
 };
 
 export const loadServiceWithSubscriptions = async (
   context: PortalContext,
-  service_id
+  service_instance_id
 ) => {
   const queryUserServiceWithCapa = db<UserService>(context, 'User_Service')
     .leftJoin(
@@ -229,7 +282,7 @@ export const loadServiceWithSubscriptions = async (
     .groupBy(['User_Service.id']);
 
   const querySubscriptions = db<Subscription>(context, 'Subscription')
-    .where('Subscription.service_id', '=', service_id)
+    .where('Subscription.service_instance_id', '=', service_instance_id)
     .leftJoin(
       queryUserServiceWithCapa.as('userService'),
       'userService.subscription_id',
@@ -261,11 +314,10 @@ export const loadServiceWithSubscriptions = async (
       `CASE WHEN org.id = '${context.user.selected_organization_id}' THEN 0 ELSE 1 END, "Subscription".id`
     );
 
-  const [service] = await db<Service>(context, 'Service').where(
-    'Service.id',
-    '=',
-    service_id
-  );
+  const [serviceInstance] = await db<ServiceInstance>(
+    context,
+    'ServiceInstance'
+  ).where('ServiceInstance.id', '=', service_instance_id);
 
   if (!context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)) {
     querySubscriptions.where(
@@ -277,25 +329,7 @@ export const loadServiceWithSubscriptions = async (
 
   const subscriptions = await querySubscriptions;
 
-  return { ...service, subscriptions };
-};
-
-export const insertService = async (context: PortalContext, dataService) => {
-  return db<Service>(context, 'Service').insert(dataService).returning('*');
-};
-
-export const grantServiceAdminAccess = async (
-  context: PortalContext,
-  adminId: string,
-  addedServiceId: string
-) => {
-  const [subscriptionOfAdmin] = await loadSubscription(adminId, addedServiceId);
-  await db<Subscription>(context, 'Subscription')
-    .where({ id: subscriptionOfAdmin.id })
-    .update({ billing: 100 })
-    .returning('*');
-
-  await addAdminAccess(context, adminId as UserId, subscriptionOfAdmin.id);
+  return { ...serviceInstance, subscriptions };
 };
 
 export const grantServiceAccessUsers = async (
@@ -342,14 +376,18 @@ export const grantServiceAccess = async (
   for (const userId of usersId) {
     const user = await loadUserBy({ 'User.id': userId } as UserMutator);
 
-    const service = await loadServiceBy(context, 'id', subscription.service_id);
+    const serviceInstance = await loadServiceInstanceBy(
+      context,
+      'ServiceInstance.id',
+      subscription.service_instance_id
+    );
     await sendMail({
       to: user.email,
       template: 'partnerVault',
       params: {
         name: user.email,
-        partnerVaultLink: `${config.get('base_url_front')}/service/vault/${toGlobalId('Service', service.id)}`,
-        partnerVault: service.name,
+        partnerVaultLink: `${config.get('base_url_front')}/service/${serviceInstance.service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
+        partnerVault: serviceInstance.name,
       },
     });
   }

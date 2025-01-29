@@ -20,8 +20,8 @@ export const subscriptionFragment = graphql`
       name
       id
     }
-    service_id
-    service {
+    service_instance_id
+    service_instance {
       name
     }
     start_date
@@ -40,11 +40,11 @@ export const SubscriptionDeleteMutation = graphql`
 
 export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
-    $service_id: String!
+    $service_instance_id: String!
     $organization_id: ID
   ) {
     addSubscriptionInService(
-      service_id: $service_id
+      service_instance_id: $service_instance_id
       organization_id: $organization_id
     ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
@@ -54,10 +54,10 @@ export const AddSubscriptionInServiceMutation = graphql`
 
 export const AddSubscriptionMutation = graphql`
   mutation subscriptionCreateMutation(
-    $service_id: String!
+    $service_instance_id: String!
     $connections: [ID!]!
   ) {
-    addSubscription(service_id: $service_id)
+    addSubscription(service_instance_id: $service_instance_id)
       @prependNode(connections: $connections, edgeTypeName: "Subscription") {
       ...serviceList_fragment
     }

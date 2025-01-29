@@ -2,32 +2,32 @@ import { graphql } from 'react-relay';
 
 export const ServiceListCreateMutation = graphql`
   mutation serviceListMutation($input: AddServiceInput, $connections: [ID!]!) {
-    addService(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "ServiceEdge") {
+    addServiceInstance(input: $input)
+      @prependNode(
+        connections: $connections
+        edgeTypeName: "ServiceInstanceEdge"
+      ) {
       ...subscription_fragment
     }
   }
 `;
 
 export const ServiceById = graphql`
-  query serviceByIdQuery($service_id: ID) {
-    serviceById(service_id: $service_id) {
+  query serviceByIdQuery($service_instance_id: ID) {
+    serviceInstanceById(service_instance_id: $service_instance_id) {
       id
       name
       description
-      type
       capabilities @required(action: THROW)
     }
   }
 `;
 
 export const serviceListFragment = graphql`
-  fragment serviceList_fragment on Service {
+  fragment serviceList_fragment on ServiceInstance {
     id
     name
     description
-    provider
-    type
     creation_status
     subscribed
     capabilities
@@ -38,13 +38,22 @@ export const serviceListFragment = graphql`
       name
       url
     }
+    service_definition {
+      id
+      name
+      identifier
+    }
   }
 `;
 
 export const subscription = graphql`
   subscription serviceListSubscription($connections: [ID!]!) {
-    Service {
-      add @prependNode(connections: $connections, edgeTypeName: "ServiceEdge") {
+    ServiceInstance {
+      add
+        @prependNode(
+          connections: $connections
+          edgeTypeName: "ServiceInstanceEdge"
+        ) {
         ...serviceList_fragment
       }
       edit {
@@ -60,7 +69,7 @@ export const subscription = graphql`
 export const servicesListFragment = graphql`
   fragment servicesList_services on Query
   @refetchable(queryName: "ServicesPaginationQuery") {
-    services(
+    serviceInstances(
       first: $count
       after: $cursor
       orderBy: $orderBy
@@ -82,7 +91,7 @@ export const ServiceListQuery = graphql`
   query serviceQuery(
     $count: Int!
     $cursor: ID
-    $orderBy: ServiceOrdering!
+    $orderBy: ServiceInstanceOrdering!
     $orderMode: OrderingMode!
   ) {
     ...servicesList_services
@@ -90,15 +99,17 @@ export const ServiceListQuery = graphql`
 `;
 
 export const ServiceByIdWithSubscriptions = graphql`
-  query serviceByIdWithSubscriptionsQuery($service_id: ID) {
-    serviceByIdWithSubscriptions(service_id: $service_id) {
+  query serviceByIdWithSubscriptionsQuery($service_instance_id: ID) {
+    serviceInstanceByIdWithSubscriptions(
+      service_instance_id: $service_instance_id
+    ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }
   }
 `;
 
 export const serviceWithSubscriptionsFragment = graphql`
-  fragment serviceWithSubscriptions_fragment on Service {
+  fragment serviceWithSubscriptions_fragment on ServiceInstance {
     __id
     name
     id
@@ -140,7 +151,7 @@ export const serviceUsersFragment = graphql`
               name
               id
             }
-            service {
+            service_instance {
               name
               id
             }

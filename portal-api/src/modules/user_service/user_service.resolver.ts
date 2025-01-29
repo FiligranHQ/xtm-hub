@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
         });
 
         const [subscription] = await loadSubscriptionBy({
-          service_id: extractId(input.serviceId),
+          service_instance_id: extractId(input.serviceInstanceId),
           organization_id: extractId(input.organizationId),
         } as SubscriptionMutator);
 
@@ -66,13 +66,14 @@ const resolvers: Resolvers = {
             'The User access to service is already exist'
           );
         }
-
+        console.log('ICI');
         await createUserServiceAccess(context, {
           subscription_id: subscription.id,
           user_id: user.id as UserId,
           capabilities: input.capabilities,
         });
 
+        console.log('LA ? ');
         const returningSubscription =
           await fillSubscriptionWithOrgaServiceAndUserService(
             context,

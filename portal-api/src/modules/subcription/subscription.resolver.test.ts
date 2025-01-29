@@ -1,7 +1,10 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterAll, describe, expect, it } from 'vitest';
-import { contextAdminUser } from '../../../tests/tests.const';
-import { ServiceId } from '../../model/kanel/public/Service';
+import {
+  contextAdminUser,
+  SERVICE_MALWARE_ID,
+} from '../../../tests/tests.const';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { deleteSubscriptionUnsecure } from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
@@ -12,9 +15,9 @@ describe('Subscription mutation resolver', () => {
       const response = await subscriptionResolver.Mutation.addSubscription(
         undefined,
         {
-          service_id: toGlobalId(
-            'Service',
-            '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4'
+          service_instance_id: toGlobalId(
+            'ServiceInstance',
+            SERVICE_MALWARE_ID
           ),
         },
         contextAdminUser
@@ -24,7 +27,7 @@ describe('Subscription mutation resolver', () => {
     });
     afterAll(async () => {
       await deleteSubscriptionUnsecure({
-        service_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4' as ServiceId,
+        service_instance_id: SERVICE_MALWARE_ID as ServiceInstanceId,
       });
     });
   });

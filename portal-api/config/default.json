@@ -54,27 +54,35 @@
       "provider": "oidc"
     }
   ],
+  "init_service_definitions": [
+    {
+      "serviceDefinition": {
+        "id": "62fcd712-96dc-4714-820a-527be51e2a65",
+        "name": "Vault",
+        "description": "Gather all intel type services",
+        "identifier": "vault"
+      },
+      "price": {
+        "id": "353cceeb-ada7-446d-a7f2-db1444b64cbd",
+        "service_definition_id": "62fcd712-96dc-4714-820a-527be51e2a65",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
+    }
+  ],
   "init_services": [
     {
       "service": {
         "id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
         "name": "Partner Vault",
-        "provider": "FILIGRAN",
-        "type": "Intel",
         "description": "This service allows you to gather information from Filigran."
       },
       "link": {
         "id": "5abcf40a-3d33-45d0-a6fd-fae350cdf8ec",
-        "service_id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
+        "service_instance_id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
         "url": "",
         "name": "Vault"
-      },
-      "price": {
-        "id": "353cceeb-ada7-446d-a7f2-db1444b64cbd",
-        "service_id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
-        "fee_type": "YEARLY",
-        "start_date": null,
-        "price": 0
       }
     }
   ],

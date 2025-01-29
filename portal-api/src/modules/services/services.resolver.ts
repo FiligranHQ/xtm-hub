@@ -3,11 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import {
   Resolvers,
-  Service,
+  ServiceInstance,
   ServiceLink,
   Subscription,
 } from '../../__generated__/resolvers-types';
-import { ServiceId } from '../../model/kanel/public/Service';
+import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
 import ServicePrice, {
   ServicePriceId,
@@ -18,73 +19,88 @@ import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import {
-  loadPublicServices,
-  loadServiceByWithCapabilities,
-  loadServices,
+  loadPublicServiceInstances,
+  loadServiceInstanceByIdWithCapabilities,
+  loadServiceInstances,
   loadServiceWithSubscriptions,
-} from './services.domain';
+} from './service-instance.domain';
 
 const resolvers: Resolvers = {
   Query: {
-    services: async (_, opt, context) => {
-      return loadServices(context, opt);
+    serviceInstances: async (_, opt, context) => {
+      return loadServiceInstances(context, opt);
     },
-    publicServices: async (_, opt, context) => {
-      return loadPublicServices(context, opt);
+    publicServiceInstances: async (_, opt, context) => {
+      return loadPublicServiceInstances(context, opt);
     },
-    serviceById: async (_, { service_id }, context) => {
-      return await loadServiceByWithCapabilities(
+    serviceInstanceById: async (_, { service_instance_id }, context) => {
+      return await loadServiceInstanceByIdWithCapabilities(
         context,
-        fromGlobalId(service_id).id
+        fromGlobalId(service_instance_id).id
       );
     },
-    serviceByIdWithSubscriptions: async (_, { service_id }, context) => {
-      return loadServiceWithSubscriptions(context, extractId(service_id));
+    serviceInstanceByIdWithSubscriptions: async (
+      _,
+      { service_instance_id },
+      context
+    ) => {
+      return loadServiceWithSubscriptions(
+        context,
+        extractId(service_instance_id)
+      );
     },
   },
   Mutation: {
-    deleteService: async (_, { id }, context) => {
+    deleteServiceInstance: async (_, { id }, context) => {
       const { id: databaseId } = fromGlobalId(id) as {
         type: DatabaseType;
         id: string;
       };
-      const [deletedService] = await db<Service>(context, 'Service')
+      const [deletedServiceInstance] = await db<ServiceInstance>(
+        context,
+        'ServiceInstance'
+      )
         .where({ id: databaseId })
         .delete('*');
-      await dispatch('Service', 'delete', deletedService);
-      return deletedService;
+      await dispatch('ServiceInstance', 'delete', deletedServiceInstance);
+      return deletedServiceInstance;
     },
-    editService: async (_, { id, name }, context) => {
+    editServiceInstance: async (_, { id, name }, context) => {
       const { id: databaseId } = fromGlobalId(id) as {
         type: DatabaseType;
         id: string;
       };
-      const [updatedService] = await db<Service>(context, 'Service')
+      const [updatedServiceInstance] = await db<ServiceInstance>(
+        context,
+        'ServiceInstance'
+      )
         .where({ id: databaseId })
         .update({ name })
         .returning('*');
-      await dispatch('Service', 'edit', updatedService);
-      return updatedService;
+      await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+      return updatedServiceInstance;
     },
-    addService: async (_, { input }, context) => {
+    addServiceInstance: async (_, { input }, context) => {
       const trx = await dbTx();
 
       try {
         const dataService = {
           id: uuidv4(),
-          name: input.service_name,
-          description: input.service_description,
-          provider: 'SCRED_ONDEMAND',
-          type: 'PRIVATE',
-          creation_status: 'READY',
+          name: input.service_instance_name,
+          description: input.service_instance_description,
+          creation_status: 'PENDING',
         };
-        const [addedService] = await db<Service>(context, 'Service')
+        const [addedServiceInstance] = await db<ServiceInstance>(
+          context,
+          'ServiceInstance'
+        )
           .insert(dataService)
           .returning('*');
 
         const dataServicePrice = {
           id: uuidv4() as unknown as ServicePriceId,
-          service_id: addedService.id as unknown as ServiceId,
+          service_definition_id:
+            addedServiceInstance.id as unknown as ServiceDefinitionId,
           fee_type: input.fee_type,
           start_date: new Date(),
           price: input.price,
@@ -96,20 +112,21 @@ const resolvers: Resolvers = {
 
         const dataServiceLink = {
           id: uuidv4() as unknown as ServiceLinkId,
-          service_id: addedService.id as unknown as ServiceId,
+          service_instance_id:
+            addedServiceInstance.id as unknown as ServiceInstanceId,
           url: input.url,
-          name: input.service_name,
+          name: input.service_instance_name,
         };
 
         await db<ServiceLink>(context, 'Service_Link')
           .insert(dataServiceLink)
           .returning('*');
-        await dispatch('Service', 'add', addedService);
+        await dispatch('ServiceInstance', 'add', addedServiceInstance);
 
         const dataSubscription = {
           id: uuidv4() as unknown as SubscriptionId,
           organization_id: fromGlobalId(input.organization_id).id,
-          service_id: addedService.id,
+          service_instance_id: addedServiceInstance.id,
           start_date: new Date(),
           end_date: null,
           status: 'ACCEPTED',
@@ -126,7 +143,7 @@ const resolvers: Resolvers = {
           'id',
           fromGlobalId(input.organization_id).id
         );
-        addedSubscription.service = addedService;
+        addedSubscription.service_instance = addedServiceInstance;
         await trx.commit();
         return addedSubscription;
       } catch (error) {
@@ -137,9 +154,9 @@ const resolvers: Resolvers = {
     },
   },
   Subscription: {
-    Service: {
+    ServiceInstance: {
       subscribe: (_, __, context) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['Service']),
+        [Symbol.asyncIterator]: () => listen(context, ['ServiceInstance']),
       }),
     },
   },
