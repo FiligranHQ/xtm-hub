@@ -23,6 +23,7 @@ interface UserFormSheetProps {
   title: string;
   description?: string;
   children: ReactNode;
+  onOpenAutoFocus?: (event: Event) => void;
 }
 
 interface DialogContextProps {
@@ -42,7 +43,15 @@ export const useDialogContext = () => {
 
 export const SheetWithPreventingDialog: FunctionComponent<
   UserFormSheetProps
-> = ({ open, setOpen, trigger, title, description = '', children }) => {
+> = ({
+  open,
+  setOpen,
+  trigger,
+  title,
+  description = '',
+  children,
+  onOpenAutoFocus,
+}) => {
   const t = useTranslations();
   const [openDialog, setOpenDialog] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -67,7 +76,8 @@ export const SheetWithPreventingDialog: FunctionComponent<
         {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent
           side={'right'}
-          onInteractOutside={(e) => alertDialogSheetClose(e)}>
+          onInteractOutside={(e) => alertDialogSheetClose(e)}
+          onOpenAutoFocus={onOpenAutoFocus}>
           <SheetHeader className="bg-page-background">
             <SheetTitle>{title}</SheetTitle>
             <SheetDescription>{description}</SheetDescription>
