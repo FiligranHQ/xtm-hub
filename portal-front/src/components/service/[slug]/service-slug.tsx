@@ -1,6 +1,10 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 
 import { Portal, portalContext } from '@/components/me/portal-context';
+import {
+  GenericCapabilityName,
+  hasGenericServiceCapa,
+} from '@/components/service/[slug]/capabilities/capability.helper';
 import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/service-slug-add-orga-form';
 import { ServiceSlugForm } from '@/components/service/[slug]/service-slug-form';
 import ServiceUserServiceSlug from '@/components/service/[slug]/service-user-service-table';
@@ -98,20 +102,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     );
   };
 
-  const canManageAccess =
-    queryData?.serviceInstanceByIdWithSubscriptions?.subscriptions?.some(
-      (subscription) => {
-        const user_service = subscription?.user_service.find(
-          (userService) => userService?.user?.id === me?.id
-        );
-        if (!user_service) {
-          return false;
-        }
-        return user_service.service_capability?.some(
-          (c) => c?.service_capability_name === 'MANAGE_ACCESS'
-        );
-      }
-    );
+  const canManageAccess = hasGenericServiceCapa(
+    GenericCapabilityName.ManageAccess,
+    queryData,
+    me?.id
+  );
 
   const isAllowedInviteUser = canManageAccess || useGranted('BYPASS');
 

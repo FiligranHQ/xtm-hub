@@ -3,6 +3,7 @@ import {
   UserListQuery,
 } from '@/components/admin/user/user-list';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { ServiceDescribeCapabilitiesSheet } from '@/components/service/[slug]/service-describe-capabilities';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
@@ -72,14 +73,14 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   const { toast } = useToast();
   const t = useTranslations();
 
-  const currentCapabilities = userService?.service_capability?.map(
+  const currentCapabilities = userService?.generic_service_capability?.map(
     (capability) => capability?.service_capability_name
   );
 
   const capabilitiesData = [
     {
-      label: 'MANAGE_ACCESS',
-      value: 'MANAGE_ACCESS',
+      label: GenericCapabilityName.ManageAccess,
+      value: GenericCapabilityName.ManageAccess,
     },
     {
       label: 'ACCESS_SERVICE',

@@ -1,20 +1,22 @@
 import { db, dbUnsecure } from '../../../../../knexfile';
-import ServiceCapability, {
-  ServiceCapabilityMutator,
-} from '../../../../model/kanel/public/ServiceCapability';
+import GenericServiceCapability, {
+  GenericServiceCapabilityMutator,
+} from '../../../../model/kanel/public/GenericServiceCapability';
 import { PortalContext } from '../../../../model/portal-context';
 
 export const loadUnsecureServiceCapabilitiesBy = async (
-  field: ServiceCapabilityMutator
+  field: GenericServiceCapabilityMutator
 ) => {
-  return dbUnsecure<ServiceCapability>('Service_Capability').where(field);
+  return dbUnsecure<GenericServiceCapability>(
+    'Generic_Service_Capability'
+  ).where(field);
 };
 
 export const insertServiceCapability = async (
   context: PortalContext,
-  serviceCapabilityData
+  genericServiceCapabilityData
 ) => {
-  return db<ServiceCapability>(context, 'Service_Capability')
-    .insert(serviceCapabilityData)
+  return db<GenericServiceCapability>(context, 'Generic_Service_Capability')
+    .insert(genericServiceCapabilityData)
     .returning('*');
 };
