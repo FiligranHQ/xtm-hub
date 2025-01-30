@@ -68,7 +68,6 @@ export async function networkFetch(
 
 const subscriptionsClient = createClient({
   url: '/graphql-sse',
-  onMessage: console.log,
 });
 
 export function fetchOrSubscribe(

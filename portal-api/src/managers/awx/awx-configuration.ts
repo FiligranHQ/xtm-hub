@@ -127,10 +127,7 @@ const executeAWXWorkflow = async (
   awxUUID: ActionTrackingId,
   keys: string[]
 ) => {
-  console.log('executeAWXWorkflow');
   const extraVars = await buildWorkflowInput(action, awxUUID, keys);
-  console.log({ action });
-  console.log({ extraVars });
   const response = await awxLaunchWorkflowId(workflow, {
     extra_vars: extraVars,
   });
@@ -139,6 +136,5 @@ const executeAWXWorkflow = async (
     tracking_id: awxUUID,
     tracking_info: response,
   });
-  console.log({ response });
   return response;
 };

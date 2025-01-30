@@ -28,9 +28,6 @@ export const logFrontendError = (
       codeStack,
       componentStack,
     },
-    onCompleted: (response) => {
-      console.log('Error logged successfully:', response);
-    },
     onError: (err) => {
       console.error('Error logging failed:', err);
     },
