@@ -153,6 +153,12 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
       '=',
       'userService.id'
     )
+    .leftJoin(
+      'Service_Link as serviceLinks',
+      'serviceLinks.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
     .select([
       'ServiceInstance.*',
       dbRaw(
@@ -171,6 +177,7 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
       dbRaw(`
       COALESCE(json_agg("genericServiceCapability"."service_capability_name") FILTER (WHERE "genericServiceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
     `),
+      dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
     ])
     .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.id'])
     .asConnection<ServiceConnection>();
