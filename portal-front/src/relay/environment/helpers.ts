@@ -67,7 +67,6 @@ export function fieldLogger(event: {
   fieldPath: string;
   error?: Error;
 }): void {
-  console.log(event);
   const handler = fieldHandlers[event.kind];
 
   if (handler) {

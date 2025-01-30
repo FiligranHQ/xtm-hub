@@ -28,6 +28,12 @@ export default [
           allowTaggedTemplates: true,
         },
       ],
+      'no-console': [
+        'error',
+        {
+          allow: ['warn', 'error'],
+        },
+      ],
     },
   },
 ];

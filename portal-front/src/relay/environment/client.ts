@@ -92,12 +92,9 @@ function tryResolveReplaySubject(queryId: string) {
   const replaySubject = new ReplaySubject<GraphQLResponse>();
 
   function replayResponse(response: GraphQLResponse) {
-    console.log('replaying response of', queryId, response);
-
     replaySubject.next(response);
 
     if (!('hasNext' in response) || !response.hasNext) {
-      console.log('complete replay of', queryId);
       replaySubject.complete();
 
       delete win[rawResponses];
