@@ -258,7 +258,7 @@ type TrackingSubscription {
   delete: ActionTracking
 }
 
-type ServiceCapability implements Node {
+type GenericServiceCapability implements Node {
   id: ID!
   service_capability_name: String
   user_service_id: ID!
@@ -310,7 +310,7 @@ type UserService implements Node {
   user_id: ID!
   user: User
   subscription: Subscription
-  service_capability: [ServiceCapability]
+  generic_service_capability: [GenericServiceCapability]
 }
 
 type UserServiceDeleted implements Node {

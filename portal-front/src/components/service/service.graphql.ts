@@ -141,7 +141,7 @@ export const serviceUsersFragment = graphql`
             first_name
             email
           }
-          service_capability {
+          generic_service_capability {
             id
             service_capability_name
           }

@@ -92,7 +92,7 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
         id: user.id,
         __typename: 'User',
       },
-      service_capability: serviceCapa,
+      generic_service_capability: serviceCapa,
     };
     userServicesData.push(userServiceData);
   }

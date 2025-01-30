@@ -62,7 +62,7 @@ export async function seed(knex) {
     .onConflict('id')
     .ignore();
 
-  await knex('Service_Capability')
+  await knex('Generic_Service_Capability')
     .insert([
       {
         id: '51491107-5dc5-4aee-bca6-e07410844477',

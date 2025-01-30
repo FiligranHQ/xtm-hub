@@ -19,16 +19,19 @@ export const setQueryForDocument = <T>(
         'securitySubscription.id'
       ).andOnVal('securityUserService.user_id', '=', context?.user?.id);
     })
-    .innerJoin('Service_Capability as securityServiceCapability', function () {
-      this.on(
-        'securityUserService.id',
-        '=',
-        'securityServiceCapability.user_service_id'
-      ).andOnVal(
-        'securityServiceCapability.service_capability_name',
-        '=',
-        'ACCESS_SERVICE'
-      );
-    });
+    .innerJoin(
+      'Generic_Service_Capability as securityServiceCapability',
+      function () {
+        this.on(
+          'securityUserService.id',
+          '=',
+          'securityServiceCapability.user_service_id'
+        ).andOnVal(
+          'securityServiceCapability.service_capability_name',
+          '=',
+          'ACCESS_SERVICE'
+        );
+      }
+    );
   return queryContext;
 };
