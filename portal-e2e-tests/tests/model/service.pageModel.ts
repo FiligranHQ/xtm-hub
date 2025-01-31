@@ -40,10 +40,7 @@ export default class ServicePage {
       .nth(2)
       .click();
     await this.page.getByLabel('Capabilities').click();
-    await this.page
-      .getByLabel('Suggestions')
-      .getByText('ACCESS_SERVICE')
-      .click();
+    await this.page.getByLabel('Suggestions').getByText('ACCESS').click();
     await this.page
       .locator('div')
       .filter({ hasText: 'Invite user to the serviceSet' })
@@ -63,10 +60,7 @@ export default class ServicePage {
       .getByLabel('Suggestions')
       .getByText('MANAGE_ACCESS')
       .click();
-    await this.page
-      .getByLabel('Suggestions')
-      .getByText('ACCESS_SERVICE')
-      .click();
+    await this.page.getByLabel('Suggestions').getByText('ACCESS').click();
     await this.page.getByRole('option', { name: 'Close' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }

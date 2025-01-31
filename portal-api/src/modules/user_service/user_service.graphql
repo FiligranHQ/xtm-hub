@@ -60,7 +60,7 @@ type UserService implements Node {
   user_id: ID!
   user: User
   subscription: Subscription
-  generic_service_capability: [GenericServiceCapability]
+  user_service_capability: [UserServiceCapability]
 }
 
 type UserServiceDeleted implements Node {

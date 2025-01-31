@@ -9,6 +9,11 @@ const TEST_SUBSCRIPTION = {
   adminOrgaEmail: 'admin@thales.com',
   userInOrgaEmail: 'user@thales.com',
 };
+
+const GENERIC_CAPABILITY = {
+  access: /^ACCESS$/,
+  manageAccess: 'MANAGE_ACCESS',
+};
 test.describe('Service Management', () => {
   let loginPage;
   let servicePage;
@@ -32,8 +37,10 @@ test.describe('Service Management', () => {
       await expect(
         page.getByRole('cell', { name: TEST_SUBSCRIPTION.adminOrgaEmail })
       ).toBeVisible();
-      await expect(page.getByText('ACCESS_SERVICE')).toBeVisible();
-      await expect(page.getByText('MANAGE_ACCESS')).toBeVisible();
+      await expect(page.getByText(GENERIC_CAPABILITY.access)).toBeVisible();
+      await expect(
+        page.getByText(GENERIC_CAPABILITY.manageAccess)
+      ).toBeVisible();
     });
 
     await test.step("Add user's rights for service", async () => {
@@ -42,16 +49,24 @@ test.describe('Service Management', () => {
       await expect(
         page.getByRole('cell', { name: TEST_SUBSCRIPTION.userInOrgaEmail })
       ).toBeVisible();
-      await expect(page.getByText('ACCESS_SERVICE').nth(1)).toBeVisible();
-      await expect(page.getByText('MANAGE_ACCESS').nth(1)).not.toBeVisible();
+      await expect(
+        page.getByText(GENERIC_CAPABILITY.access).nth(1)
+      ).toBeVisible();
+      await expect(
+        page.getByText(GENERIC_CAPABILITY.manageAccess).nth(1)
+      ).not.toBeVisible();
     });
 
     await test.step("Edit user's rights for service", async () => {
       await servicePage.editUsersRightsForService(
         TEST_SUBSCRIPTION.userInOrgaEmail
       );
-      await expect(page.getByText('MANAGE_ACCESS').first()).toBeVisible();
-      await expect(page.getByText('ACCESS_SERVICE').first()).toBeVisible();
+      await expect(
+        page.getByText(GENERIC_CAPABILITY.manageAccess).first()
+      ).toBeVisible();
+      await expect(
+        page.getByText(GENERIC_CAPABILITY.access).first()
+      ).toBeVisible();
     });
 
     await test.step('Add user that is not in organization', async () => {

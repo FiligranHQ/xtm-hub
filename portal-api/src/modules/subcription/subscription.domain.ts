@@ -1,13 +1,12 @@
 import { db } from '../../../knexfile';
-import { Subscription } from '../../__generated__/resolvers-types';
+import { Subscription, UserService } from '../../__generated__/resolvers-types';
 import {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import UserService from '../../model/kanel/public/UserService';
+import { UserMutator } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
-import { loadUnsecureServiceCapabilitiesBy } from '../services/instances/service-capabilities/service_capabilities.helper';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
@@ -77,12 +76,10 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
 export const fillUserServiceData = async (userServices: UserService[]) => {
   const userServicesData = [];
   for (const userService of userServices) {
-    const user = await loadUserBy({ 'User.id': userService.user_id });
+    const user = await loadUserBy({
+      'User.id': userService.user_id,
+    } as UserMutator);
 
-    const serviceCapa = await loadUnsecureServiceCapabilitiesBy({
-      user_service_id: userService.id,
-    });
-    // TODO: Issue 10 - Chunk 2, modify API we should pass the corresponding organization to fillUserServiceData
     const userServiceData = {
       id: userService.id,
       user: {
@@ -92,7 +89,7 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
         id: user.id,
         __typename: 'User',
       },
-      generic_service_capability: serviceCapa,
+      user_service_capability: userService.user_service_capability,
     };
     userServicesData.push(userServiceData);
   }

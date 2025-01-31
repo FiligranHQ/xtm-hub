@@ -65,14 +65,28 @@ export async function seed(knex) {
   await knex('Generic_Service_Capability')
     .insert([
       {
-        id: '51491107-5dc5-4aee-bca6-e07410844477',
-        user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
-        service_capability_name: 'MANAGE_ACCESS',
+        id: 'b3275212-6c80-42de-8508-b7b71d5926fc',
+        name: 'MANAGE_ACCESS',
       },
       {
-        id: 'ccb3c0e7-29dd-4cd0-bb9d-b428bd1f5cab',
+        id: 'cfa2f967-48ae-4057-b079-93daa4c22f2d',
+        name: 'ACCESS',
+      },
+    ])
+    .onConflict('id')
+    .ignore();
+
+  await knex('UserService_Capability')
+    .insert([
+      {
+        id: '4995ba04-4cdd-48f9-8246-48bf08c1b009',
         user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
-        service_capability_name: 'ACCESS_SERVICE',
+        generic_service_capability_id: 'b3275212-6c80-42de-8508-b7b71d5926fc',
+      },
+      {
+        id: '690bcde4-3c38-4b45-bdbb-9267da8385a0',
+        user_service_id: '4055e8a2-5ee2-4438-b422-62ff2e6c027f',
+        generic_service_capability_id: 'cfa2f967-48ae-4057-b079-93daa4c22f2d',
       },
     ])
     .onConflict('id')
