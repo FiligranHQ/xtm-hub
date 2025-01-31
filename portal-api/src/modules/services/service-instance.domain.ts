@@ -360,7 +360,8 @@ export const loadServiceWithSubscriptions = async (
       dbRaw(
         `COALESCE(
         CASE 
-          WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg(
+          WHEN COUNT("userService".id) = 0 THEN '[]'::json 
+          ELSE json_agg(
             json_build_object(
               'id', "userService".id,
               'subscription_id', "userService".subscription_id,
