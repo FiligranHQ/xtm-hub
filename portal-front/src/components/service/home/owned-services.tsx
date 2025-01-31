@@ -46,6 +46,31 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
           </Button>
         );
     }
+
+    return (
+      <ul className="flex space-x-s">
+        {service.links?.map((link) => (
+          <li key={link?.name}>
+            <Button
+              className={
+                'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:absolute after:inset-0'
+              }
+              asChild
+              variant={'ghost'}>
+              <Link
+                href={`/service/${service.service_definition?.identifier}/${service.id}`}>
+                <LinkIcon
+                  aria-hidden={true}
+                  focusable={false}
+                  className="mr-3 h-3 w-3"
+                />
+                {link?.name}
+              </Link>
+            </Button>
+          </li>
+        ))}
+      </ul>
+    );
   };
 
   if (services.length > 0 || publicServices.length > 0)
@@ -63,30 +88,9 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
                   serviceInstance={
                     subscription!.service_instance as serviceList_fragment$data
                   }
-                  bottomLeftAction={
-                    <ul className="flex space-x-s">
-                      {subscription?.service_instance?.links?.map((link) => (
-                        <li key={link?.name}>
-                          <Button
-                            className={
-                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:absolute after:inset-0'
-                            }
-                            asChild
-                            variant={'ghost'}>
-                            <Link
-                              href={`/service/${subscription?.service_instance?.service_definition?.identifier}/${subscription?.service_instance?.id}`}>
-                              <LinkIcon
-                                aria-hidden={true}
-                                focusable={false}
-                                className="mr-3 h-3 w-3"
-                              />
-                              {link?.name}
-                            </Link>
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  }
+                  bottomLeftAction={getAction(
+                    subscription!.service_instance as serviceList_fragment$data
+                  )}
                 />
               );
             })}

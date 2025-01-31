@@ -160,6 +160,9 @@
       "Vault": "Partner Vault",
       "VaultTitle": "Vault Administration",
       "UpdateDocument": "Update document"
+    },
+    "CustomDashboards": {
+      "AddDashboard": "Add new dashboard"
     }
   },
   "ServiceActions": {

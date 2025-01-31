@@ -10,6 +10,7 @@ type ServiceDefinitionIdentifierWithDefault =
 const BADGE_COLORS: Record<ServiceDefinitionIdentifierWithDefault, string> = {
   vault: 'text-orange',
   link: 'text-primary',
+  custom_dashboards: 'text-blue',
   default: 'text-gray',
 };
 

@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
  */
 export async function up(knex) {
   const serviceDefinitionId = uuidv4();
+  const serviceInstanceId = uuidv4();
 
   // Delete previous public link service
   await knex
@@ -28,7 +29,7 @@ export async function up(knex) {
   // Insert new service instance
   await knex('ServiceInstance').insert([
     {
-      id: uuidv4(),
+      id: serviceInstanceId,
       name: 'OpenCTI Custom Dashboards Library',
       description:
         'Explore a range of custom dashboards created and shared by the Filigran team',
@@ -37,6 +38,16 @@ export async function up(knex) {
       join_type: 'JOIN_AUTO',
       tags: ['openCTI'],
       service_definition_id: serviceDefinitionId,
+    },
+  ]);
+
+  // Insert new service link
+  await knex('Service_Link').insert([
+    {
+      id: uuidv4(),
+      name: 'Dashboards',
+      url: '',
+      service_instance_id: serviceInstanceId,
     },
   ]);
 }

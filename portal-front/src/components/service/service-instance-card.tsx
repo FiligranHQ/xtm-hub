@@ -35,8 +35,8 @@ const ServiceInstanceCard: React.FunctionComponent<
         />
       );
 
-    // If not a link service, show the regular badge
-    if (!isLinkService)
+    // If there are no tags, show the service type badge
+    if (!serviceInstance.tags || serviceInstance.tags.length === 0)
       return (
         <ServiceTypeBadge
           type={serviceInstance?.service_definition?.identifier}
