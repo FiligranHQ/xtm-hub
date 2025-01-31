@@ -505,6 +505,7 @@ export type ServiceDefinition = Node & {
 };
 
 export enum ServiceDefinitionIdentifier {
+  CustomDashboards = 'custom_dashboards',
   Link = 'link',
   Vault = 'vault'
 }

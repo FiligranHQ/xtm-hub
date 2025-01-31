@@ -13,6 +13,7 @@ export const JOIN_TYPE = {
 export const SERVICE_DEFINITION_IDENTIFIER = {
   LINK: 'link',
   VAULT: 'vault',
+  CUSTOM_DASHBOARDS: 'custom_dashboards',
 };
 
 export const SERVICE_CREATION_STATUS = {

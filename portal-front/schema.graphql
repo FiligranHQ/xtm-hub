@@ -96,6 +96,7 @@ type RolePortal implements Node {
 enum ServiceDefinitionIdentifier {
   vault
   link
+  custom_dashboards
 }
 
 type ServiceDefinition implements Node {
