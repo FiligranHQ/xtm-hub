@@ -1,0 +1,5 @@
+type UserServiceCapability implements Node {
+  id: ID!
+  user_service_id: ID!
+  generic_service_capability: GenericServiceCapability
+}

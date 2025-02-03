@@ -35,14 +35,20 @@ export const loadCapabilitiesByServiceId = async (
       );
     })
     .leftJoin(
-      'Generic_Service_Capability as genericServiceCapability',
-      'genericServiceCapability.user_service_id',
+      'UserService_Capability as userServiceCapa',
+      'userServiceCapa.user_service_id',
       '=',
       'userService.id'
     )
+    .leftJoin(
+      'Generic_Service_Capability as genericServiceCapability',
+      'genericServiceCapability.id',
+      '=',
+      'userServiceCapa.generic_service_capability_id'
+    )
     .select([
       dbRaw(`
-      COALESCE(json_agg("genericServiceCapability"."service_capability_name") FILTER (WHERE "genericServiceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
+      COALESCE(json_agg("genericServiceCapability"."name") FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL), '[]'::json) AS capabilities
     `),
     ])
     .where('ServiceInstance.id', '=', dbRaw('?', [serviceId]))

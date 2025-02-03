@@ -2,11 +2,7 @@ import config from 'config';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
-import GenericServiceCapability, {
-  GenericServiceCapabilityId,
-  GenericServiceCapabilityInitializer,
-} from '../../model/kanel/public/GenericServiceCapability';
-import { OrganizationId } from '../../model/kanel/public/Organization';
+import { UserServiceCapability } from '../../__generated__/resolvers-types';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService, {
@@ -14,23 +10,66 @@ import UserService, {
   UserServiceInitializer,
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
+import {
+  UserServiceCapabilityId,
+  UserServiceCapabilityInitializer,
+} from '../../model/kanel/public/UserServiceCapability';
 import { sendMail } from '../../server/mail-service';
 import { loadUserOrganization } from '../common/user-organization.helper';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
-import {
-  insertSubscription,
-  loadUnsecureSubscriptionBy,
-} from '../subcription/subscription.helper';
+import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
+import { loadGenericServiceCapabilityBy } from './service-capability/generic_service_capability.helper';
 
 export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
-  return dbUnsecure<UserService>('User_Service')
-    .where(field)
+  const queryUserServiceCapabilities = dbUnsecure<UserServiceCapability>(
+    'UserService_Capability'
+  )
     .leftJoin(
       'Generic_Service_Capability',
+      'UserService_Capability.generic_service_capability_id',
+      '=',
+      'Generic_Service_Capability.id'
+    )
+    .select(
+      'UserService_Capability.user_service_id',
+      dbRaw(
+        `json_agg(
+        json_build_object(
+          'id', "UserService_Capability".id,
+          'user_service_id', "UserService_Capability".user_service_id,
+          'generic_service_capability', json_build_object(
+            'id', "Generic_Service_Capability".id,
+            'name', "Generic_Service_Capability".name,
+            '__typename', 'Generic_Service_Capability'
+          ),
+          '__typename', 'UserServiceCapability'
+        )
+      ) FILTER (WHERE "UserService_Capability".id IS NOT NULL) as capabilities`
+      )
+    )
+
+    .groupBy('UserService_Capability.user_service_id')
+    .as('userServiceCapabilities');
+
+  const query = dbUnsecure<UserService>('User_Service')
+    .select(
+      'User_Service.*',
+      dbRaw(
+        `COALESCE("userServiceCapabilities".capabilities, '[]'::json) as user_service_capability`
+      ),
+      dbRaw(
+        `json_build_object(
+          'id', "ServiceInstance".id,
+          '__typename', 'ServiceInstance'
+        ) AS service`
+      )
+    )
+    .leftJoin(
+      queryUserServiceCapabilities,
       'User_Service.id',
       '=',
-      'Generic_Service_Capability.user_service_id'
+      'userServiceCapabilities.user_service_id'
     )
     .leftJoin(
       'Subscription',
@@ -43,17 +82,12 @@ export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
       'ServiceInstance.id',
       '=',
       'Subscription.service_instance_id'
-    )
-    .select(
-      'User_Service.*',
-      dbRaw(
-        "(json_agg(json_build_object('id', \"Generic_Service_Capability\".id, 'service_capability_name', \"Generic_Service_Capability\".service_capability_name, '__typename', 'Generic_Service_Capability'))) as generic_service_capability"
-      ),
-      dbRaw(
-        '(json_agg(json_build_object(\'id\', "ServiceInstance".id))->>0)::json as service'
-      )
-    )
-    .groupBy(['User_Service.id']);
+    );
+
+  if (field) {
+    query.where(field);
+  }
+  return query;
 };
 
 export const isUserServiceExist = async (
@@ -102,14 +136,19 @@ export const createUserServiceAccess = async (
     .insert(user_service)
     .returning('*');
 
-  for (const capability of capabilities) {
-    const generic_service_capa: GenericServiceCapabilityInitializer = {
-      id: uuidv4() as GenericServiceCapabilityId,
+  for (const capabilityName of capabilities) {
+    // TODO #261 Chunk 6 : get capabilty from front with ID directly
+    const [capability] = await loadGenericServiceCapabilityBy({
+      name: capabilityName,
+    });
+
+    const user_service_capa: UserServiceCapabilityInitializer = {
+      id: uuidv4() as UserServiceCapabilityId,
       user_service_id: addedUserService.id,
-      service_capability_name: capability,
+      generic_service_capability_id: capability.id,
     };
-    await db<GenericServiceCapability>(context, 'Generic_Service_Capability')
-      .insert(generic_service_capa)
+    await db<UserServiceCapability>(context, 'UserService_Capability')
+      .insert(user_service_capa)
       .returning('*');
   }
   const user = await loadUserBy({ 'User.id': user_id });
@@ -128,66 +167,4 @@ export const createUserServiceAccess = async (
     },
   });
   return addedUserService;
-};
-
-export const createUserAccessForOtherOrg = async (
-  context,
-  {
-    subscription_id,
-    user_id,
-    capabilities,
-    organization_id,
-  }: {
-    subscription_id: SubscriptionId;
-    user_id: UserId;
-    capabilities: string[];
-    organization_id: OrganizationId;
-  }
-) => {
-  const [subscription] = await loadUnsecureSubscriptionBy({
-    id: subscription_id,
-  });
-  const [subOrga] = await loadUnsecureSubscriptionBy({
-    organization_id,
-    service_instance_id: subscription.service_instance_id,
-  });
-
-  // In case the subscription already exist for the organization
-  if (subOrga) {
-    return await createUserServiceAccess(context, {
-      subscription_id: subOrga.id as SubscriptionId,
-      user_id,
-      capabilities,
-    });
-  }
-
-  const newSubForOrga = await createNewSubForOrga(context, {
-    subscription,
-    organization_id,
-  });
-
-  return await createUserServiceAccess(context, {
-    subscription_id: newSubForOrga.id as SubscriptionId,
-    user_id,
-    capabilities,
-  });
-};
-
-export const createNewSubForOrga = async (
-  context,
-  { subscription, organization_id }
-) => {
-  const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    __typename,
-    ...newSub
-  } = subscription;
-  const [newSubForOrga] = await insertSubscription(context, {
-    ...newSub,
-    id: uuidv4() as SubscriptionId,
-    justification: 'Invited from subscription_id',
-    organization_id,
-    billing: 0,
-  });
-  return newSubForOrga;
 };

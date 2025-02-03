@@ -6,7 +6,6 @@ import {
   ServiceConnection,
   ServiceInstance,
 } from '../../__generated__/resolvers-types';
-import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceMutator } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
@@ -16,11 +15,13 @@ import User, { UserMutator } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
+import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { PortalContext } from '../../model/portal-context';
 import { CAPABILITY_BYPASS, ROLE_ADMIN_ORGA } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
+import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
@@ -58,10 +59,16 @@ export const loadPublicServiceInstances = async (
       );
     })
     .leftJoin(
-      'Generic_Service_Capability as genericServiceCapability',
-      'genericServiceCapability.user_service_id',
+      'UserService_Capability as userServiceCapa',
+      'userServiceCapa.user_service_id',
       '=',
       'userService.id'
+    )
+    .leftJoin(
+      'Generic_Service_Capability as genericServiceCapability',
+      'genericServiceCapability.id',
+      '=',
+      'userServiceCapa.generic_service_capability_id'
     )
     .leftJoin(
       'Service_Link as serviceLinks',
@@ -78,7 +85,7 @@ export const loadPublicServiceInstances = async (
         END AS subscribed
         `),
       dbRaw(
-        'COALESCE(json_agg("genericServiceCapability"."service_capability_name") FILTER (WHERE "genericServiceCapability"."service_capability_name" IS NOT NULL), \'[]\'::json) AS capabilities'
+        'COALESCE(json_agg("genericServiceCapability"."name") FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL), \'[]\'::json) AS capabilities'
       ),
       dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
 
@@ -148,10 +155,16 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
       );
     })
     .leftJoin(
-      'Generic_Service_Capability as genericServiceCapability',
-      'genericServiceCapability.user_service_id',
+      'UserService_Capability as userServiceCapa',
+      'userServiceCapa.user_service_id',
       '=',
       'userService.id'
+    )
+    .leftJoin(
+      'Generic_Service_Capability as genericServiceCapability',
+      'genericServiceCapability.id',
+      '=',
+      'userServiceCapa.generic_service_capability_id'
     )
     .leftJoin(
       'Service_Link as serviceLinks',
@@ -175,7 +188,7 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
         END AS subscribed
         `),
       dbRaw(`
-      COALESCE(json_agg("genericServiceCapability"."service_capability_name") FILTER (WHERE "genericServiceCapability"."service_capability_name" IS NOT NULL), '[]'::json) AS capabilities
+      COALESCE(json_agg("genericServiceCapability"."name") FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL), '[]'::json) AS capabilities
     `),
       dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
     ])
@@ -214,17 +227,23 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     )
     .leftJoin('User_Service', 'Subscription.id', 'User_Service.subscription_id')
     .leftJoin(
-      'Generic_Service_Capability',
+      'UserService_Capability',
       'User_Service.id',
       '=',
-      'Generic_Service_Capability.user_service_id'
+      'UserService_Capability.user_service_id'
+    )
+    .leftJoin(
+      'Generic_Service_Capability',
+      'UserService_Capability.generic_service_capability_id',
+      '=',
+      'Generic_Service_Capability.id'
     )
     .select(
       'ServiceInstance.*',
       dbRaw(
         `CASE
              WHEN COUNT("Generic_Service_Capability".id) = 0 THEN ARRAY[]::text[]
-             ELSE array_agg("Generic_Service_Capability".service_capability_name)::text[]
+             ELSE array_agg("Generic_Service_Capability".name)::text[]
           END AS capabilities`
       )
     )
@@ -273,20 +292,46 @@ export const loadServiceWithSubscriptions = async (
   context: PortalContext,
   service_instance_id
 ) => {
-  const queryUserServiceWithCapa = db<UserService>(context, 'User_Service')
+  const queryUserServiceCapabilities = db(context, 'UserService_Capability')
+    .select(
+      'UserService_Capability.user_service_id',
+      dbRaw(
+        `json_agg(
+        json_build_object(
+          'id', "UserService_Capability".id,
+          'user_service_id', "UserService_Capability".user_service_id,
+          'generic_service_capability', json_build_object(
+            'id', "Generic_Service_Capability".id,
+            'name', "Generic_Service_Capability".name,
+            '__typename', 'Generic_Service_Capability'
+          ),
+          '__typename', 'UserServiceCapability'
+        )
+      ) as capabilities`
+      )
+    )
     .leftJoin(
       'Generic_Service_Capability',
-      'User_Service.id',
+      'UserService_Capability.generic_service_capability_id',
       '=',
-      'Generic_Service_Capability.user_service_id'
+      'Generic_Service_Capability.id'
     )
+    .groupBy('UserService_Capability.user_service_id')
+    .as('userServiceCapabilities');
+
+  const queryUserServiceWithCapa = db<UserService>(context, 'User_Service')
     .select(
       'User_Service.*',
       dbRaw(
-        `CASE WHEN COUNT("Generic_Service_Capability".id) = 0 THEN NULL ELSE (json_agg(json_build_object('id', "Generic_Service_Capability".id, 'service_capability_name', "Generic_Service_Capability".service_capability_name)))::json END AS generic_service_capabilities`
+        `COALESCE("userServiceCapabilities".capabilities, '[]'::json) as user_service_capability`
       )
     )
-    .groupBy(['User_Service.id']);
+    .leftJoin(
+      queryUserServiceCapabilities,
+      'User_Service.id',
+      '=',
+      'userServiceCapabilities.user_service_id'
+    );
 
   const querySubscriptions = db<Subscription>(context, 'Subscription')
     .where('Subscription.service_instance_id', '=', service_instance_id)
@@ -313,7 +358,28 @@ export const loadServiceWithSubscriptions = async (
         })
       ),
       dbRaw(
-        `COALESCE( CASE WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg( json_build_object( 'id', "userService".id, 'generic_service_capability', "userService".generic_service_capabilities, 'user', CASE WHEN "user".id IS NOT NULL THEN json_build_object( 'id', "user".id, 'email', "user".email, 'first_name', "user".first_name, 'last_name', "user".last_name, '__typename', 'User' ) ELSE NULL END, '__typename', 'User_Service' ) )::json END, '[]'::json ) AS user_service`
+        `COALESCE(
+          json_agg(
+            json_build_object(
+              'id', "userService".id,
+              'subscription_id', "userService".subscription_id,
+              'user_id', "userService".user_id,
+              'user_service_capability', "userService".user_service_capability,
+              'user', CASE 
+                WHEN "user".id IS NOT NULL THEN json_build_object(
+                  'id', "user".id,
+                  'email', "user".email,
+                  'first_name', "user".first_name,
+                  'last_name', "user".last_name,
+                  '__typename', 'User'
+                )
+                ELSE NULL
+              END,
+              '__typename', 'User_Service'
+            )
+          )::json,
+          '[]'::json
+        ) AS user_service`
       )
     )
     .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
@@ -354,7 +420,10 @@ export const grantServiceAccessUsers = async (
   return usersInOrga.length > 0
     ? await grantServiceAccess(
         context,
-        ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
+        [
+          GenericServiceCapabilityIds.AccessId,
+          GenericServiceCapabilityIds.ManageAccessId,
+        ],
         usersInOrga.map(({ id }) => id),
         subscriptionId
       )
@@ -363,7 +432,7 @@ export const grantServiceAccessUsers = async (
 
 export const grantServiceAccess = async (
   context: PortalContext,
-  capabilities: string[],
+  capabilitiesIds: string[],
   usersId: string[],
   subscriptionId: string
 ) => {
@@ -399,12 +468,12 @@ export const grantServiceAccess = async (
     });
   }
 
-  for (const capability of capabilities) {
+  for (const capabilityId of capabilitiesIds) {
     const dataServiceCapabilities = insertedUserServices.map(
       (insertedUserService) => ({
-        id: uuidv4() as GenericServiceCapabilityId,
+        id: uuidv4() as UserServiceCapabilityId,
         user_service_id: insertedUserService.id,
-        service_capability_name: capability,
+        generic_service_capability_id: capabilityId,
       })
     );
     await insertServiceCapability(context, dataServiceCapabilities);

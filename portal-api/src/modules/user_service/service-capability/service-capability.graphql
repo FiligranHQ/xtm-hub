@@ -1,7 +1,6 @@
 type GenericServiceCapability implements Node {
   id: ID!
-  service_capability_name: String
-  user_service_id: ID!
+  name: String
 }
 
 input EditServiceCapabilityInput {

@@ -1,19 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   ServiceInstance,
   UserServiceConnection,
 } from '../../__generated__/resolvers-types';
-import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
-  UserServiceMutator,
 } from '../../model/kanel/public/UserService';
+import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { PortalContext } from '../../model/portal-context';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
+import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
 
 export const insertUserService = async (context, userServiceData) => {
   return db<UserService>(context, 'User_Service')
@@ -34,10 +34,16 @@ export const loadUserServiceById = async (
       'sub.id'
     )
     .leftJoin(
-      'Generic_Service_Capability as genericServCapa',
+      'UserService_Capability as userServiceCapa',
       'User_Service.id',
       '=',
-      'genericServCapa.user_service_id'
+      'userServiceCapa.user_service_id'
+    )
+    .leftJoin(
+      'Generic_Service_Capability as genericServCapa',
+      'userServiceCapa.generic_service_capability_id',
+      '=',
+      'genericServCapa.id'
     )
     .leftJoin(
       'ServiceInstance as service',
@@ -55,7 +61,7 @@ export const loadUserServiceById = async (
         "(json_agg(json_build_object('id', \"sub\".id,'service_instance_id', \"sub\".service_instance_id, 'service_instance', json_build_object('id', \"service\".id,'name', \"service\".name,'__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription"
       ),
       dbRaw(
-        "(json_agg(json_build_object('id', \"genericServCapa\".id, 'service_capability_name', \"genericServCapa\".service_capability_name, '__typename', 'Generic_Service_Capability'))) as generic_service_capability"
+        "(json_agg(json_build_object('id', \"userServiceCapa\".id, 'generic_service_capability', json_build_object('id', \"genericServCapa\".id, 'name', \"genericServCapa\".name, '__typename', 'Generic_Service_Capability'), '__typename', 'UserService_Capability'))) as user_service_capability"
       ),
     ])
     .groupBy(['User_Service.id'])
@@ -120,10 +126,16 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
       'service.id'
     )
     .leftJoin(
-      'Generic_Service_Capability as genericservcapa',
+      'UserService_Capability as userServcapa',
       'User_Service.id',
       '=',
-      'genericservcapa.user_service_id'
+      'userServcapa.user_service_id'
+    )
+    .leftJoin(
+      'Generic_Service_Capability as genericservcapa',
+      'userServcapa.generic_service_capability_id',
+      '=',
+      'genericservcapa.id'
     )
     .where('sub.status', 'ACCEPTED')
     .where('user.id', userId)
@@ -137,7 +149,7 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
         `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_instance_id', "sub".service_instance_id, 'service_instance', json_build_object('id', "service".id, 'name', "service".name, 'description', "service".description, 'links', "service".services_link, 'service_definition', json_build_object('id', "service".service_definition_id, 'name', "service".service_definition_name, 'description', "service".service_definition_description, 'public', "service".service_definition_public, 'identifier', "service".service_definition_identifier, '__typename', 'ServiceDefinition'), '__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription`
       ),
       dbRaw(
-        "(json_agg(json_build_object('id', \"genericservcapa\".id, 'service_capability_name', \"genericservcapa\".service_capability_name, '__typename', 'Generic_Service_Capability'))) as generic_service_capability"
+        "(json_agg(json_build_object('id',\"userServcapa\".id ,'generic_service_capability', json_build_object('id', \"genericservcapa\".id, 'name', \"genericservcapa\".name, '__typename', 'Generic_Service_Capability'), '__typename', 'UserService_Capability'))) as user_service_capability"
       ),
       dbRaw('(service."name") as service_name'),
       dbRaw('(service."description") as service_description'),
@@ -177,10 +189,6 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
   return { totalCount, ...userServiceConnection };
 };
 
-export const loadUnsecureUserServiceBy = async (field: UserServiceMutator) => {
-  return dbUnsecure<UserService>('User_Service').where(field);
-};
-
 export const loadUsersBySubscription = async (
   context: PortalContext,
   serviceId,
@@ -207,9 +215,9 @@ export const loadUsersBySubscription = async (
     )
     .leftJoin(
       'Generic_Service_Capability as genericServCapa',
-      'User_Service.id',
+      'User_Service.generic_service_capability_id',
       '=',
-      'genericServCapa.user_service_id'
+      'genericServCapa.id'
     )
     .where('service.id', serviceId)
     .select([
@@ -255,11 +263,14 @@ export const addAdminAccess = async (
     subscription_id: subscriptionId,
   };
   const [userService] = await insertUserService(context, dataUserService);
-  const capabilities = ['ACCESS_SERVICE', 'MANAGE_ACCESS'];
-  const dataCapabilities = capabilities.map((capability) => ({
-    id: uuidv4() as GenericServiceCapabilityId,
+  const capabilitiesId = [
+    GenericServiceCapabilityIds.AccessId,
+    GenericServiceCapabilityIds.ManageAccessId,
+  ];
+  const dataCapabilities = capabilitiesId.map((capabilityId) => ({
+    id: uuidv4() as UserServiceCapabilityId,
     user_service_id: userService.id,
-    service_capability_name: capability,
+    generic_service_capability_id: capabilityId,
   }));
 
   await insertServiceCapability(context, dataCapabilities);

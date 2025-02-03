@@ -260,13 +260,18 @@ type TrackingSubscription {
 
 type GenericServiceCapability implements Node {
   id: ID!
-  service_capability_name: String
-  user_service_id: ID!
+  name: String
 }
 
 input EditServiceCapabilityInput {
   user_service_id: String
   capabilities: [String]!
+}
+
+type UserServiceCapability implements Node {
+  id: ID!
+  user_service_id: ID!
+  generic_service_capability: GenericServiceCapability
 }
 
 enum UserServiceOrdering {
@@ -310,7 +315,7 @@ type UserService implements Node {
   user_id: ID!
   user: User
   subscription: Subscription
-  generic_service_capability: [GenericServiceCapability]
+  user_service_capability: [UserServiceCapability]
 }
 
 type UserServiceDeleted implements Node {

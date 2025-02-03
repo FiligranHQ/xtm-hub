@@ -35,9 +35,11 @@ export const userServiceOwnedFragment = graphql`
 export const userServiceFragment = graphql`
   fragment userService_fragment on UserService {
     id
-    generic_service_capability {
-      id
-      service_capability_name
+    user_service_capability {
+      generic_service_capability {
+        id
+        name
+      }
     }
     user {
       id
@@ -51,8 +53,10 @@ export const userServiceFragment = graphql`
 export const userServicesOwnedFragment = graphql`
   fragment userServicesOwned_fragment on UserService {
     id
-    generic_service_capability {
-      service_capability_name
+    user_service_capability {
+      generic_service_capability {
+        name
+      }
     }
     subscription {
       id
