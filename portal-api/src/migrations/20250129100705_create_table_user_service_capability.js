@@ -54,11 +54,6 @@ export async function up(knex) {
     ACCESS_SERVICE: 'cfa2f967-48ae-4057-b079-93daa4c22f2d',
   };
   for (const genericServiceCapability of genericServiceCapabilities) {
-    console.log('genericServiceCapability', genericServiceCapability);
-    console.log(
-      'myCapaId',
-      capabilityIdMapping[genericServiceCapability.service_capability_name]
-    );
     await knex('UserService_Capability').insert({
       id: knex.fn.uuid(),
       user_service_id: genericServiceCapability.user_service_id,
