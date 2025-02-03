@@ -31,7 +31,7 @@ export async function up(knex) {
       id: knex.fn.uuid(),
       user_service_id: genericServiceCapability.user_service_id,
       generic_service_capability_id:
-        capabilityIdMapping[capabilityIdMapping.service_capability_name],
+        capabilityIdMapping[genericServiceCapability.name],
     });
   }
 
