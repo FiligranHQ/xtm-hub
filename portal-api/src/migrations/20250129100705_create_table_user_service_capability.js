@@ -21,19 +21,6 @@ export async function up(knex) {
   const genericServiceCapabilities = await knex(
     'Generic_Service_Capability'
   ).select();
-  const capabilityIdMapping = {
-    ADMIN_SUBSCRIPTION: '3d42ae4e-f727-4809-8aaf-b44fc0679291',
-    MANAGE_ACCESS: 'b3275212-6c80-42de-8508-b7b71d5926fc',
-    ACCESS_SERVICE: 'cfa2f967-48ae-4057-b079-93daa4c22f2d',
-  };
-  for (const genericServiceCapability of genericServiceCapabilities) {
-    await knex('UserService_Capability').insert({
-      id: knex.fn.uuid(),
-      user_service_id: genericServiceCapability.user_service_id,
-      generic_service_capability_id:
-        capabilityIdMapping[genericServiceCapability.service_capability_name],
-    });
-  }
 
   await knex.schema.table('Generic_Service_Capability', function (table) {
     table.dropColumn('user_service_id');
@@ -60,6 +47,25 @@ export async function up(knex) {
       name: 'ACCESS',
     },
   ]);
+
+  const capabilityIdMapping = {
+    ADMIN_SUBSCRIPTION: '3d42ae4e-f727-4809-8aaf-b44fc0679291',
+    MANAGE_ACCESS: 'b3275212-6c80-42de-8508-b7b71d5926fc',
+    ACCESS_SERVICE: 'cfa2f967-48ae-4057-b079-93daa4c22f2d',
+  };
+  for (const genericServiceCapability of genericServiceCapabilities) {
+    console.log('genericServiceCapability', genericServiceCapability);
+    console.log(
+      'myCapaId',
+      capabilityIdMapping[genericServiceCapability.service_capability_name]
+    );
+    await knex('UserService_Capability').insert({
+      id: knex.fn.uuid(),
+      user_service_id: genericServiceCapability.user_service_id,
+      generic_service_capability_id:
+        capabilityIdMapping[genericServiceCapability.service_capability_name],
+    });
+  }
 }
 
 /**
