@@ -241,10 +241,7 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     .select(
       'ServiceInstance.*',
       dbRaw(
-        `CASE
-             WHEN COUNT("Generic_Service_Capability".id) = 0 THEN ARRAY[]::text[]
-             ELSE array_agg("Generic_Service_Capability".name)::text[]
-          END AS capabilities`
+        `COALESCE(array_agg("Generic_Service_Capability".name)::text[], ARRAY[]::text[]) AS capabilities`
       )
     )
 
@@ -359,9 +356,7 @@ export const loadServiceWithSubscriptions = async (
       ),
       dbRaw(
         `COALESCE(
-        CASE 
-          WHEN COUNT("userService".id) = 0 THEN '[]'::json 
-          ELSE json_agg(
+          json_agg(
             json_build_object(
               'id', "userService".id,
               'subscription_id', "userService".subscription_id,
@@ -375,14 +370,13 @@ export const loadServiceWithSubscriptions = async (
                   'last_name', "user".last_name,
                   '__typename', 'User'
                 )
-                ELSE NULL 
+                ELSE NULL
               END,
               '__typename', 'User_Service'
             )
-          )::json 
-        END,
-        '[]'::json
-      ) AS user_service`
+          )::json,
+          '[]'::json
+        ) AS user_service`
       )
     )
     .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
