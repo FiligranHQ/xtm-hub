@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
+import { GENERIC_CAPABILITY } from '../tests_files/service-management.spec';
 
 export default class ServicePage {
   constructor(private page: Page) {}
@@ -40,7 +40,10 @@ export default class ServicePage {
       .nth(2)
       .click();
     await this.page.getByLabel('Capabilities').click();
-    await this.page.getByLabel('Suggestions').getByText('ACCESS').click();
+    await this.page
+      .getByLabel('Suggestions')
+      .getByText(GENERIC_CAPABILITY.access)
+      .click();
     await this.page
       .locator('div')
       .filter({ hasText: 'Invite user to the serviceSet' })
@@ -58,9 +61,12 @@ export default class ServicePage {
     await this.page.getByLabel('Capabilities').click();
     await this.page
       .getByLabel('Suggestions')
-      .getByText('MANAGE_ACCESS')
+      .getByText(GENERIC_CAPABILITY.manageAccess)
       .click();
-    await this.page.getByLabel('Suggestions').getByText('ACCESS').click();
+    await this.page
+      .getByLabel('Suggestions')
+      .getByText(GENERIC_CAPABILITY.access)
+      .click();
     await this.page.getByRole('option', { name: 'Close' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }

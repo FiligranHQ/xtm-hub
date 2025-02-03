@@ -10,7 +10,7 @@ const TEST_SUBSCRIPTION = {
   userInOrgaEmail: 'user@thales.com',
 };
 
-const GENERIC_CAPABILITY = {
+export const GENERIC_CAPABILITY = {
   access: /^ACCESS$/,
   manageAccess: 'MANAGE_ACCESS',
 };

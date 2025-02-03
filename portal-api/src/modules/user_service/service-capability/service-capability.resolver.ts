@@ -5,8 +5,8 @@ import {
   Resolvers,
   UserServiceCapability,
 } from '../../../__generated__/resolvers-types';
-import { GenericServiceCapabilityId } from '../../../model/kanel/public/GenericServiceCapability';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
+import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { UnknownError } from '../../../utils/error.util';
 import { loadUnsecureServiceCapabilitiesBy } from '../../services/instances/service-capabilities/service_capabilities.helper';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
@@ -24,13 +24,14 @@ const resolvers: Resolvers = {
           .transacting(trx);
 
         for (const capabilityName of input.capabilities) {
-          const capability = await loadUnsecureServiceCapabilitiesBy({
+          const [capability] = await loadUnsecureServiceCapabilitiesBy({
             name: capabilityName,
           });
           const user_service_capability = {
-            id: uuidv4() as GenericServiceCapabilityId,
+            id: uuidv4() as UserServiceCapabilityId,
             user_service_id: user_service_id as UserServiceId,
-            service_capability_id: capability.id,
+            generic_service_capability_id:
+              capability.generic_service_capability_id,
           };
           await db<UserServiceCapability>(
             context,
