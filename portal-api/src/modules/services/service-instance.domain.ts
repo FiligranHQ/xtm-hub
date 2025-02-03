@@ -279,10 +279,7 @@ export const loadServiceInstanceByIdWithCapabilities = async (
         })
       ),
       dbRaw(
-        `CASE
-             WHEN COUNT("Generic_Service_Capability".id) = 0 THEN ARRAY[]::text[]
-             ELSE array_agg("Generic_Service_Capability".name)::text[]
-          END AS capabilities`
+        `COALESCE(array_agg("Generic_Service_Capability".name)::text[], ARRAY[]::text[]) AS capabilities`
       ),
       dbRaw(`"User_Service".id IS NOT NULL AS user_joined`)
     )
