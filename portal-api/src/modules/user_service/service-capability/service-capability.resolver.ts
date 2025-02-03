@@ -9,7 +9,6 @@ import {
   Resolvers,
   UserServiceCapability,
 } from '../../../__generated__/resolvers-types';
-import { GenericServiceCapabilityId } from '../../../model/kanel/public/GenericServiceCapability';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { UnknownError } from '../../../utils/error.util';

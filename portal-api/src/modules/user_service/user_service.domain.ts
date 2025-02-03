@@ -61,7 +61,7 @@ export const loadUserServiceById = async (
         "(json_agg(json_build_object('id', \"sub\".id,'service_instance_id', \"sub\".service_instance_id, 'service_instance', json_build_object('id', \"service\".id,'name', \"service\".name,'__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription"
       ),
       dbRaw(
-        "(json_agg(json_build_object('id', \"userServiceCapa\".id, generic_service_capability, json_build_object('id', \"genericServCapa\".id, 'name', \"genericServCapa\".name, '__typename', 'Generic_Service_Capability'), '__typename', 'UserService_Capability))) as user_service_capability"
+        "(json_agg(json_build_object('id', \"userServiceCapa\".id, 'generic_service_capability', json_build_object('id', \"genericServCapa\".id, 'name', \"genericServCapa\".name, '__typename', 'Generic_Service_Capability'), '__typename', 'UserService_Capability'))) as user_service_capability"
       ),
     ])
     .groupBy(['User_Service.id'])
