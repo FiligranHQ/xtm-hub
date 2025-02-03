@@ -79,21 +79,23 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         header: t('Service.Management.Email'),
       },
       {
-        accessorKey: 'service_capability_names',
-        id: 'service_capability_names',
+        accessorKey: 'name',
+        id: 'name',
         header: t('Service.Capabilities.CapabilitiesTitle'),
         size: -1,
         enableSorting: false,
         cell: ({ row }) => {
           return (
             <div className="truncate">
-              {row.original?.generic_service_capability?.map((service_capa) => (
-                <Badge
-                  key={service_capa?.id}
-                  className="mb-2 mr-2 mt-2">
-                  {service_capa?.service_capability_name}
-                </Badge>
-              ))}
+              {row.original?.user_service_capability?.map(
+                (user_service_capa) => (
+                  <Badge
+                    key={user_service_capa?.generic_service_capability?.id}
+                    className="mb-2 mr-2 mt-2">
+                    {user_service_capa?.generic_service_capability?.name}
+                  </Badge>
+                )
+              )}
             </div>
           );
         },
@@ -108,9 +110,9 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
           }
           return (
             <div className="flex items-center justify-end">
-              {row.original.generic_service_capability?.some(
-                (generic_serv_capa) =>
-                  generic_serv_capa?.service_capability_name !==
+              {row.original.user_service_capability?.some(
+                (user_serv_capa) =>
+                  user_serv_capa?.generic_service_capability?.name !==
                   GenericCapabilityName.ManageAccess
               ) && (
                 <IconActions

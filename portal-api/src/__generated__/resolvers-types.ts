@@ -105,8 +105,7 @@ export type EditUserInput = {
 export type GenericServiceCapability = Node & {
   __typename?: 'GenericServiceCapability';
   id: Scalars['ID']['output'];
-  service_capability_name?: Maybe<Scalars['String']['output']>;
-  user_service_id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type MeUserSubscription = {
@@ -643,12 +642,12 @@ export enum UserOrdering {
 
 export type UserService = Node & {
   __typename?: 'UserService';
-  generic_service_capability?: Maybe<Array<Maybe<GenericServiceCapability>>>;
   id: Scalars['ID']['output'];
   subscription?: Maybe<Subscription>;
   subscription_id: Scalars['ID']['output'];
   user?: Maybe<User>;
   user_id: Scalars['ID']['output'];
+  user_service_capability?: Maybe<Array<Maybe<UserServiceCapability>>>;
 };
 
 export type UserServiceAddInput = {
@@ -656,6 +655,13 @@ export type UserServiceAddInput = {
   email: Scalars['String']['input'];
   organizationId: Scalars['String']['input'];
   serviceInstanceId: Scalars['String']['input'];
+};
+
+export type UserServiceCapability = Node & {
+  __typename?: 'UserServiceCapability';
+  generic_service_capability?: Maybe<GenericServiceCapability>;
+  id: Scalars['ID']['output'];
+  user_service_id: Scalars['ID']['output'];
 };
 
 export type UserServiceConnection = {
@@ -774,7 +780,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( Subscription ) | ( User ) | ( UserService ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( Subscription ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -836,6 +842,7 @@ export type ResolversTypes = ResolversObject<{
   UserOrdering: UserOrdering;
   UserService: ResolverTypeWrapper<UserService>;
   UserServiceAddInput: UserServiceAddInput;
+  UserServiceCapability: ResolverTypeWrapper<UserServiceCapability>;
   UserServiceConnection: ResolverTypeWrapper<UserServiceConnection>;
   UserServiceDeleteInput: UserServiceDeleteInput;
   UserServiceDeleted: ResolverTypeWrapper<UserServiceDeleted>;
@@ -894,6 +901,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserFilter: UserFilter;
   UserService: UserService;
   UserServiceAddInput: UserServiceAddInput;
+  UserServiceCapability: UserServiceCapability;
   UserServiceConnection: UserServiceConnection;
   UserServiceDeleteInput: UserServiceDeleteInput;
   UserServiceDeleted: UserServiceDeleted;
@@ -962,8 +970,7 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
 
 export type GenericServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['GenericServiceCapability'] = ResolversParentTypes['GenericServiceCapability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  service_capability_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  user_service_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1023,7 +1030,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'Subscription' | 'User' | 'UserService' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'Subscription' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -1209,12 +1216,19 @@ export type UserEdgeResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type UserServiceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserService'] = ResolversParentTypes['UserService']> = ResolversObject<{
-  generic_service_capability?: Resolver<Maybe<Array<Maybe<ResolversTypes['GenericServiceCapability']>>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType>;
   subscription_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  user_service_capability?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserServiceCapability']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UserServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserServiceCapability'] = ResolversParentTypes['UserServiceCapability']> = ResolversObject<{
+  generic_service_capability?: Resolver<Maybe<ResolversTypes['GenericServiceCapability']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  user_service_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1282,6 +1296,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;
   UserService?: UserServiceResolvers<ContextType>;
+  UserServiceCapability?: UserServiceCapabilityResolvers<ContextType>;
   UserServiceConnection?: UserServiceConnectionResolvers<ContextType>;
   UserServiceDeleted?: UserServiceDeletedResolvers<ContextType>;
   UserServiceEdge?: UserServiceEdgeResolvers<ContextType>;

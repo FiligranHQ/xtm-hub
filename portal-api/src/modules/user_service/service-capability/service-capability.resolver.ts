@@ -1,12 +1,14 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../../knexfile';
-import { Resolvers } from '../../../__generated__/resolvers-types';
-import GenericServiceCapability, {
-  GenericServiceCapabilityId,
-} from '../../../model/kanel/public/GenericServiceCapability';
+import {
+  Resolvers,
+  UserServiceCapability,
+} from '../../../__generated__/resolvers-types';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
+import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { UnknownError } from '../../../utils/error.util';
+import { loadUnsecureServiceCapabilitiesBy } from '../../services/instances/service-capabilities/service_capabilities.helper';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
 import { loadUserServiceById } from '../user_service.domain';
 
@@ -16,24 +18,25 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const user_service_id = fromGlobalId(input.user_service_id).id;
-        await db<GenericServiceCapability>(
-          context,
-          'Generic_Service_Capability'
-        )
+        await db<UserServiceCapability>(context, 'UserService_Capability')
           .where('user_service_id', '=', user_service_id)
           .delete('*')
           .transacting(trx);
 
-        for (const capability of input.capabilities) {
-          const service_capability = {
-            id: uuidv4() as GenericServiceCapabilityId,
+        for (const capabilityName of input.capabilities) {
+          const [capability] = await loadUnsecureServiceCapabilitiesBy({
+            name: capabilityName,
+          });
+          const user_service_capability = {
+            id: uuidv4() as UserServiceCapabilityId,
             user_service_id: user_service_id as UserServiceId,
-            service_capability_name: capability,
+            generic_service_capability_id:
+              capability.generic_service_capability_id,
           };
-          await db<GenericServiceCapability>(
+          await db<UserServiceCapability>(
             context,
-            'Generic_Service_Capability'
-          ).insert(service_capability);
+            'UserService_Capability'
+          ).insert(user_service_capability);
         }
 
         const userService = await loadUserServiceById(context, user_service_id);

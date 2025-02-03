@@ -2,6 +2,7 @@ import { serviceByIdWithSubscriptionsQuery$data } from '../../../../../__generat
 
 export enum GenericCapabilityName {
   ManageAccess = 'MANAGE_ACCESS',
+  Access = 'ACCESS',
 }
 
 export function hasGenericServiceCapa(
@@ -21,8 +22,12 @@ export function hasGenericServiceCapa(
       );
       if (!userService) return false;
 
-      return userService.generic_service_capability?.some(
-        (capability) => capability?.service_capability_name === capabilityName
+      return (
+        userService.user_service_capability?.some(
+          (user_service_capa) =>
+            user_service_capa?.generic_service_capability?.name ===
+            capabilityName
+        ) ?? false
       );
     }
   );

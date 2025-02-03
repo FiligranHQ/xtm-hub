@@ -73,8 +73,8 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   const { toast } = useToast();
   const t = useTranslations();
 
-  const currentCapabilities = userService?.generic_service_capability?.map(
-    (capability) => capability?.service_capability_name
+  const currentCapabilities = userService?.user_service_capability?.map(
+    (userServiceCapa) => userServiceCapa?.generic_service_capability?.name
   );
 
   const capabilitiesData = [
@@ -83,8 +83,8 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
       value: GenericCapabilityName.ManageAccess,
     },
     {
-      label: 'ACCESS_SERVICE',
-      value: 'ACCESS_SERVICE',
+      label: GenericCapabilityName.Access,
+      value: GenericCapabilityName.Access,
     },
   ];
 
