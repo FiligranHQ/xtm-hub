@@ -36,7 +36,7 @@ const SERVICES = {
   },
   octi_doc: {
     id: uuidv4(),
-    name: 'OpenCTI Cocumentation',
+    name: 'OpenCTI Documentation',
     description: 'Find all documents related to openCTI',
     provider: 'FILIGRAN',
     type: 'link',

@@ -2,14 +2,14 @@ import {
   organizationFetch,
   organizationsFragment,
 } from '@/components/organization/organization.graphql';
-import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-import { organizationList_organizations$key } from '../../../__generated__/organizationList_organizations.graphql';
+import { organizationList_organizations$key } from '@generated/organizationList_organizations.graphql';
 import {
   OrderingMode,
   OrganizationFilter,
   OrganizationOrdering,
   organizationSelectQuery,
-} from '../../../__generated__/organizationSelectQuery.graphql';
+} from '@generated/organizationSelectQuery.graphql';
+import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
 interface OrganizationParamsQuery {
   count: number;

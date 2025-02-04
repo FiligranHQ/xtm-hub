@@ -2,13 +2,13 @@ import { OrganizationForm } from '@/components/organization/organization-form';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { OrganizationEditMutation } from '@/components/organization/organization.graphql';
 import { IconActionContext } from '@/components/ui/icon-actions';
+import { organizationEditMutation } from '@generated/organizationEditMutation.graphql';
+import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { organizationEditMutation } from '../../../__generated__/organizationEditMutation.graphql';
-import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
 import { SheetWithPreventingDialog } from '../ui/sheet-with-preventing-dialog';
 
 interface EditOrganizationProps {

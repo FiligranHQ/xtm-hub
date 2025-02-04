@@ -2,12 +2,12 @@
 
 import { portalContext } from '@/components/me/portal-context';
 import { SERVICE_DEFINITION_IDENTIFIER } from '@/components/service/service.const';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { LinkIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
 import Link from 'next/link';
 import { Suspense, useContext } from 'react';
-import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
-import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
 import ServiceInstanceCard from '../service-instance-card';
 
 interface OwnedServicesProps {

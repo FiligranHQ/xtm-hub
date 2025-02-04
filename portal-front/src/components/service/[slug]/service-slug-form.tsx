@@ -11,6 +11,12 @@ import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
+import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
+import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
+import { userList_users$key } from '@generated/userList_users.graphql';
+import { UserFilter, userListQuery } from '@generated/userListQuery.graphql';
+import { userService_fragment$data } from '@generated/userService_fragment.graphql';
+import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -37,15 +43,6 @@ import {
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
-import { serviceCapabilityMutation } from '../../../../__generated__/serviceCapabilityMutation.graphql';
-import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
-import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
-import {
-  UserFilter,
-  userListQuery,
-} from '../../../../__generated__/userListQuery.graphql';
-import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
-import { userServiceCreateMutation } from '../../../../__generated__/userServiceCreateMutation.graphql';
 
 interface ServiceSlugFormSheetProps {
   connectionId: string;

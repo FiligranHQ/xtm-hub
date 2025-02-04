@@ -1,4 +1,11 @@
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
+import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
+import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { subscriptionCreateMutation } from '@generated/subscriptionCreateMutation.graphql';
+import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
+import { userServiceOwnedUser$key } from '@generated/userServiceOwnedUser.graphql';
+import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo } from 'react';
 import {
@@ -8,13 +15,6 @@ import {
   useRefetchableFragment,
   useSubscription,
 } from 'react-relay';
-import { publicServiceList_services$key } from '../../../../../__generated__/publicServiceList_services.graphql';
-import { publicServiceQuery } from '../../../../../__generated__/publicServiceQuery.graphql';
-import { serviceList_fragment$data } from '../../../../../__generated__/serviceList_fragment.graphql';
-import { subscriptionCreateMutation } from '../../../../../__generated__/subscriptionCreateMutation.graphql';
-import { userServiceOwnedQuery } from '../../../../../__generated__/userServiceOwnedQuery.graphql';
-import { userServiceOwnedUser$key } from '../../../../../__generated__/userServiceOwnedUser.graphql';
-import { userServicesOwned_fragment$data } from '../../../../../__generated__/userServicesOwned_fragment.graphql';
 import {
   publicServiceListFragment,
   publicServiceListQuery,

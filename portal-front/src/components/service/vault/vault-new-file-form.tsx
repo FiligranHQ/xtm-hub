@@ -4,6 +4,8 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { documentExistsQuery } from '@generated/documentExistsQuery.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import {
   Button,
   FileInput,
@@ -22,8 +24,6 @@ import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLazyLoadQuery } from 'react-relay';
 import { z } from 'zod';
-import { documentExistsQuery } from '../../../../__generated__/documentExistsQuery.graphql';
-import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
 
 export const newDocumentSchema = z.object({
   description: z.string().optional(),

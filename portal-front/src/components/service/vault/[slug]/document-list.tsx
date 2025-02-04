@@ -21,6 +21,15 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { documentsList$key } from '@generated/documentsList.graphql';
+import {
+  DocumentOrdering,
+  OrderingMode,
+  documentsQuery,
+  documentsQuery$variables,
+} from '@generated/documentsQuery.graphql';
+import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import {
@@ -43,15 +52,6 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { documentItem_fragment$data } from '../../../../../__generated__/documentItem_fragment.graphql';
-import { documentsList$key } from '../../../../../__generated__/documentsList.graphql';
-import {
-  DocumentOrdering,
-  OrderingMode,
-  documentsQuery,
-  documentsQuery$variables,
-} from '../../../../../__generated__/documentsQuery.graphql';
-import { serviceByIdQuery } from '../../../../../__generated__/serviceByIdQuery.graphql';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;

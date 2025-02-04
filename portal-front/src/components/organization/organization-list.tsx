@@ -12,18 +12,18 @@ import {
 import { IconActions } from '@/components/ui/icon-actions';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import {
+  OrderingMode,
+  OrganizationsPaginationQuery$variables,
+} from '@generated/OrganizationsPaginationQuery.graphql';
+import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
+import { OrganizationOrdering } from '@generated/organizationSelectQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, DataTable, DataTableHeadBarOptions, Input } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, Suspense, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
-import {
-  OrderingMode,
-  OrganizationsPaginationQuery$variables,
-} from '../../../__generated__/OrganizationsPaginationQuery.graphql';
-import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
-import { OrganizationOrdering } from '../../../__generated__/organizationSelectQuery.graphql';
 const OrganizationList: FunctionComponent = () => {
   const t = useTranslations();
   const columns: ColumnDef<organizationItem_fragment$data>[] = [

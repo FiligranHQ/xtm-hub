@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
+import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
 import { Badge } from 'filigran-ui';
 import { FunctionComponent } from 'react';
-import { ServiceDefinitionIdentifier } from '../../../__generated__/serviceList_fragment.graphql';
 
 type ServiceDefinitionIdentifierWithDefault =
   | ServiceDefinitionIdentifier

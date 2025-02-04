@@ -10,10 +10,10 @@ import { FunctionComponent, useContext, useState } from 'react';
 
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
-import { documentUpdateMutation } from '../../../../__generated__/documentUpdateMutation.graphql';
 
 interface EditDocumentProps {
   documentData: documentItem_fragment$data;

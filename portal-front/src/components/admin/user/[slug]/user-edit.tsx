@@ -5,14 +5,14 @@ import {
 } from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import { userSlugEditMutation } from '@generated/userSlugEditMutation.graphql';
+import { userSlug_fragment$data } from '@generated/userSlug_fragment.graphql';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { userList_fragment$data } from '../../../../../__generated__/userList_fragment.graphql';
-import { userSlugEditMutation } from '../../../../../__generated__/userSlugEditMutation.graphql';
-import { userSlug_fragment$data } from '../../../../../__generated__/userSlug_fragment.graphql';
 
 interface EditUserProps {
   user?: userSlug_fragment$data | userList_fragment$data;

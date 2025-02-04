@@ -3,12 +3,12 @@ import { organizationFormSchema } from '@/components/organization/organization-f
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
+import { organizationCreateMutation } from '@generated/organizationCreateMutation.graphql';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { organizationCreateMutation } from '../../../__generated__/organizationCreateMutation.graphql';
 
 interface CreateOrganizationProps {
   connectionId: string;

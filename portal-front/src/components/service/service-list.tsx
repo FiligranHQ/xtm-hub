@@ -1,11 +1,11 @@
 'use client';
 
+import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
+import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { PreloadedQuery } from 'react-relay';
-import { publicServiceQuery } from '../../../__generated__/publicServiceQuery.graphql';
-import { userServiceOwnedQuery } from '../../../__generated__/userServiceOwnedQuery.graphql';
 import AvailableServices from './home/available-services';
 import { useServiceQueries } from './home/hooks/useServiceQueries';
 import OwnedServices from './home/owned-services';

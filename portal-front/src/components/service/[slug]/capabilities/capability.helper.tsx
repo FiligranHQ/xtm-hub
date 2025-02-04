@@ -1,4 +1,4 @@
-import { serviceByIdWithSubscriptionsQuery$data } from '../../../../../__generated__/serviceByIdWithSubscriptionsQuery.graphql';
+import { serviceByIdWithSubscriptionsQuery$data } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 
 export enum GenericCapabilityName {
   ManageAccess = 'MANAGE_ACCESS',

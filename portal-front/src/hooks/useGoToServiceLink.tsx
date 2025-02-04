@@ -1,7 +1,7 @@
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useRouter } from 'next/navigation';
 import { useRelayEnvironment } from 'react-relay';
-import { serviceList_fragment$data } from '../../__generated__/serviceList_fragment.graphql';
 
 export const useGoToServiceLink = () => {
   const router = useRouter();

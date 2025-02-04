@@ -8,17 +8,23 @@ import {
 import { trackingSubscription } from '@/components/data-tracking/tracking.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { userSlugSubscription as generatedUserSlugSubscription } from '@generated/userSlugSubscription.graphql';
 import { DeleteIcon } from 'filigran-icon';
 import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useRelayEnvironment } from 'react-relay';
-import { userSlugSubscription as generatedUserSlugSubscription } from '../../../../../__generated__/userSlugSubscription.graphql';
 
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import TriggerButton from '@/components/ui/trigger-button';
 import { useConnectionId } from '@/hooks/useConnectionId';
+import { userDeletionMutation } from '@generated/userDeletionMutation.graphql';
+import { userSlugQuery } from '@generated/userSlugQuery.graphql';
+import {
+  userSlug_fragment$data,
+  userSlug_fragment$key,
+} from '@generated/userSlug_fragment.graphql';
 import {
   PreloadedQuery,
   useFragment,
@@ -26,12 +32,6 @@ import {
   usePreloadedQuery,
   useSubscription,
 } from 'react-relay';
-import { userDeletionMutation } from '../../../../../__generated__/userDeletionMutation.graphql';
-import { userSlugQuery } from '../../../../../__generated__/userSlugQuery.graphql';
-import {
-  userSlug_fragment$data,
-  userSlug_fragment$key,
-} from '../../../../../__generated__/userSlug_fragment.graphql';
 
 // Component interface
 interface UserSlugProps {

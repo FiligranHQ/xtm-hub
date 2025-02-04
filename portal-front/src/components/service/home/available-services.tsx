@@ -1,10 +1,10 @@
 'use client';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { Button, Separator } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
-import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
 import ServiceInstanceCard from '../service-instance-card';
 import { JOIN_TYPE } from '../service.const';
 
