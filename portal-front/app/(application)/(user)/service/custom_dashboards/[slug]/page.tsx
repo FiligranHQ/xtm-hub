@@ -2,6 +2,7 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import ServiceByIdQuery, {
   serviceByIdQuery,
+  serviceByIdQuery$data,
 } from '@generated/serviceByIdQuery.graphql';
 import PageLoader from './page-loader';
 
@@ -11,7 +12,8 @@ interface ServiceCustomDashboardsPageProps {
 
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   const { slug } = await params;
-  let service;
+  let service: serviceByIdQuery$data['serviceInstanceById'] | null | undefined =
+    null;
   try {
     const response = await serverFetchGraphQL<serviceByIdQuery>(
       ServiceByIdQuery,
@@ -36,6 +38,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
     },
     {
       label: service.name,
+      original: true,
     },
   ];
 
@@ -43,7 +46,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
     <>
       <BreadcrumbNav value={breadcrumbs} />
       <h1>{service.name}</h1>
-      <PageLoader />
+      <PageLoader service={service} />
     </>
   );
 };

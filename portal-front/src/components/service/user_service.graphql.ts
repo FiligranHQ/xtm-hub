@@ -62,19 +62,7 @@ export const userServicesOwnedFragment = graphql`
       id
       status
       service_instance {
-        name
-        id
-        description
-        links {
-          id
-          name
-          url
-        }
-        service_definition {
-          id
-          name
-          identifier
-        }
+        ...serviceList_fragment @relay(mask: false)
       }
     }
   }

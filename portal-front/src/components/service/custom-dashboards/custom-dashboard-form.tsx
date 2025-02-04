@@ -1,15 +1,16 @@
 'use client';
 import GuardCapacityComponent from '@/components/admin-guard';
+import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import TriggerButton from '@/components/ui/trigger-button';
+import useDecodedParams from '@/hooks/useDecodedParams';
 import { RESTRICTION } from '@/utils/constant';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
-import useDecodedParams from '@/hooks/useDecodedParams';
 interface CustomDashboardFormProps {
   connectionId: string;
 }
+
 export const CustomDashboardForm = ({
   connectionId,
 }: CustomDashboardFormProps) => {

@@ -1,4 +1,4 @@
-import { DocumentDeleteMutation } from '@/components/service/vault/document.graphql';
+import { DocumentDeleteMutation } from '@/components/service/document/document.graphql';
 import { IconActionContext } from '@/components/ui/icon-actions';
 import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';

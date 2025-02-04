@@ -1,6 +1,6 @@
 'use client';
 import GuardCapacityComponent from '@/components/admin-guard';
-import { DocumentAddMutation } from '@/components/service/vault/document.graphql';
+import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import {
   newDocumentSchema,
   VaultNewFileForm,

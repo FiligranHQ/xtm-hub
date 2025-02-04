@@ -1,4 +1,4 @@
-import { DocumentUpdateMutation } from '@/components/service/vault/document.graphql';
+import { DocumentUpdateMutation } from '@/components/service/document/document.graphql';
 import {
   newDocumentSchema,
   VaultNewFileForm,

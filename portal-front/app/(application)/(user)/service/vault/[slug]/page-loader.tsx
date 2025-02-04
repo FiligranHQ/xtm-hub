@@ -1,9 +1,9 @@
 'use client';
 
+import { DocumentsListQuery } from '@/components/service/document/document.graphql';
 import { ServiceById } from '@/components/service/service.graphql';
 import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
-import { DocumentsListQuery } from '@/components/service/vault/document.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';

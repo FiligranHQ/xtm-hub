@@ -1,12 +1,12 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import { ServiceById } from '@/components/service/service.graphql';
-import DeleteDocument from '@/components/service/vault/delete-document';
-import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import {
   DocumentsListQuery,
   documentsFragment,
-} from '@/components/service/vault/document.graphql';
+} from '@/components/service/document/document.graphql';
+import { ServiceById } from '@/components/service/service.graphql';
+import DeleteDocument from '@/components/service/vault/delete-document';
+import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import DownloadDocument from '@/components/service/vault/download-document';
 import EditDocument from '@/components/service/vault/edit-document';
 import { VaultForm } from '@/components/service/vault/vault-form';
@@ -244,6 +244,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     },
     {
       label: queryDataService.serviceInstanceById?.name,
+      original: true,
     },
   ];
 

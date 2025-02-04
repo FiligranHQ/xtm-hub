@@ -19,29 +19,36 @@ const AvailableServices = ({
 }: PublicServicesProps) => {
   const t = useTranslations();
   const getAction = (service: serviceList_fragment$data) => {
-    return service.subscribed ||
-      service.join_type !== JOIN_TYPE.JOIN_SELF ? null : (
-      <AlertDialogComponent
-        AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
-        actionButtonText={t('Utils.Continue')}
-        triggerElement={
-          <Button onClick={(e) => e.stopPropagation()}>
-            {t('Service.Subscribe')}
-          </Button>
-        }
-        onClickContinue={() => addSubscriptionInDb(service)}>
-        {t('Service.SureWantSubscriptionDirect')}
-      </AlertDialogComponent>
+    return (
+      !service.subscribed &&
+      service.join_type &&
+      [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
+        service.join_type
+      ) && (
+        <AlertDialogComponent
+          AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
+          actionButtonText={t('Utils.Continue')}
+          triggerElement={
+            <Button
+              onClick={(e) => e.stopPropagation()}
+              className="h-7 text-xs">
+              {t('Service.Subscribe')}
+            </Button>
+          }
+          onClickContinue={() => addSubscriptionInDb(service)}>
+          {t('Service.SureWantSubscriptionDirect')}
+        </AlertDialogComponent>
+      )
     );
   };
 
   if (services.length > 0)
     return (
       <Suspense>
-        <Separator className="my-4" />
+        <Separator className="my-12" />
         <ul
           className={
-            'grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'
+            'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-m'
           }>
           {services.map((service) => {
             return (

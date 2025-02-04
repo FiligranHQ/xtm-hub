@@ -1,4 +1,4 @@
-import { DocumentExistsQuery } from '@/components/service/vault/document.graphql';
+import { DocumentExistsQuery } from '@/components/service/document/document.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { zodResolver } from '@hookform/resolvers/zod';

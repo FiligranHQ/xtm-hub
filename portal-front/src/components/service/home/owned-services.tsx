@@ -1,13 +1,12 @@
 'use client';
 
-import { portalContext } from '@/components/me/portal-context';
 import { SERVICE_DEFINITION_IDENTIFIER } from '@/components/service/service.const';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { LinkIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
 import Link from 'next/link';
-import { Suspense, useContext } from 'react';
+import { Suspense } from 'react';
 import ServiceInstanceCard from '../service-instance-card';
 
 interface OwnedServicesProps {
@@ -16,8 +15,6 @@ interface OwnedServicesProps {
 }
 
 const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
-  const { isPersonalSpace } = useContext(portalContext);
-
   const getAction = (service: serviceList_fragment$data) => {
     if (
       service.service_definition?.identifier ===
@@ -78,22 +75,21 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
       <Suspense>
         <ul
           className={
-            'grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'
+            'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-m'
           }>
-          {!isPersonalSpace &&
-            services.map(({ subscription, id }) => {
-              return (
-                <ServiceInstanceCard
-                  key={id}
-                  serviceInstance={
-                    subscription!.service_instance as serviceList_fragment$data
-                  }
-                  bottomLeftAction={getAction(
-                    subscription!.service_instance as serviceList_fragment$data
-                  )}
-                />
-              );
-            })}
+          {services.map(({ subscription, id }) => {
+            return (
+              <ServiceInstanceCard
+                key={id}
+                serviceInstance={
+                  subscription!.service_instance as serviceList_fragment$data
+                }
+                bottomLeftAction={getAction(
+                  subscription!.service_instance as serviceList_fragment$data
+                )}
+              />
+            );
+          })}
           {publicServices.map((service) => (
             <ServiceInstanceCard
               key={service.id}

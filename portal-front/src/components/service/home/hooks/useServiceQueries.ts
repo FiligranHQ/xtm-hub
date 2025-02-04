@@ -90,7 +90,10 @@ const getPublicServices = (
         });
       };
 
-      if (service.join_type === JOIN_TYPE.JOIN_SELF) {
+      if (
+        service.join_type &&
+        [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(service.join_type)
+      ) {
         commitMutation('ACCEPTED', t('Service.SubscribeSuccessful'));
       } else {
         commitMutation('REQUESTED', t('Service.SubscriptionRequestSuccessful'));

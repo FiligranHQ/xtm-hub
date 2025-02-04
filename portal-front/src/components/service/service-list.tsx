@@ -1,6 +1,7 @@
 'use client';
 
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -9,6 +10,7 @@ import { PreloadedQuery } from 'react-relay';
 import AvailableServices from './home/available-services';
 import { useServiceQueries } from './home/hooks/useServiceQueries';
 import OwnedServices from './home/owned-services';
+import { SERVICE_DEFINITION_IDENTIFIER } from './service.const';
 
 interface ServiceProps {
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>;
@@ -46,17 +48,28 @@ const ServiceList = ({
       handleError
     );
 
-  // Public services are considered as owned services
-  const publicOwnedServices = useMemo(
-    () => publicServices.filter((service) => service.public),
-    [publicServices]
-  );
-
-  // Non-public available services are not owned and can be subscribed
-  const availableServices = useMemo(
-    () => publicServices.filter((service) => !service.public),
-    [publicServices]
-  );
+  const { owned: publicOwnedServices, notOwned: availableServices } =
+    useMemo(() => {
+      return publicServices.reduce(
+        (acc, service) => {
+          // A service is owned if it is subscribed or if it is a link service (link service are special ones)
+          if (
+            service.subscribed ||
+            service.service_definition?.identifier ===
+              SERVICE_DEFINITION_IDENTIFIER.LINK
+          ) {
+            acc.owned.push(service);
+          } else {
+            acc.notOwned.push(service);
+          }
+          return acc;
+        },
+        {
+          owned: [] as serviceList_fragment$data[],
+          notOwned: [] as serviceList_fragment$data[],
+        }
+      );
+    }, [publicServices]);
 
   return (
     <>
