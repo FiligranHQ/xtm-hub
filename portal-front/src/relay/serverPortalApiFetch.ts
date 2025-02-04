@@ -15,3 +15,18 @@ export default async function serverPortalApiFetch<
   const apiDestination = getGraphqlApi(true, 'api');
   return networkFetch(apiDestination, request.params, variables, portalCookie);
 }
+
+export async function serverFetchGraphQL<TQuery extends OperationType>(
+  request: ConcreteRequest,
+  variables: VariablesOf<TQuery>
+): Promise<{ data: TQuery['response'] }> {
+  const rawResponse = await serverPortalApiFetch<typeof request, TQuery>(
+    request,
+    variables
+  );
+  const response =
+    Array.isArray(rawResponse) && rawResponse.length > 0
+      ? rawResponse[0]
+      : rawResponse;
+  return response as unknown as { data: TQuery['response'] };
+}

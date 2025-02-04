@@ -250,7 +250,10 @@ export const loadServiceInstanceByIdWithCapabilities = async (
 
     .where({
       'ServiceInstance.id': service_instance_id,
-      'User_Service.user_id': context.user.id,
+    })
+    .andWhere((builder) => {
+      builder.where('ServiceInstance.public', true); // Public services are always accessible
+      builder.orWhere('User_Service.user_id', context.user.id); // Otherwise, user must have a subscription
     })
     .groupBy(['ServiceInstance.id', 'User_Service.id'])
     .first();
@@ -359,14 +362,14 @@ export const loadServiceWithSubscriptions = async (
       ),
       dbRaw(
         `COALESCE(
-        CASE 
+        CASE
           WHEN COUNT("userService".id) = 0 THEN '[]'::json ELSE json_agg(
             json_build_object(
               'id', "userService".id,
               'subscription_id', "userService".subscription_id,
               'user_id', "userService".user_id,
               'user_service_capability', "userService".user_service_capability,
-              'user', CASE 
+              'user', CASE
                 WHEN "user".id IS NOT NULL THEN json_build_object(
                   'id', "user".id,
                   'email', "user".email,
@@ -374,11 +377,11 @@ export const loadServiceWithSubscriptions = async (
                   'last_name', "user".last_name,
                   '__typename', 'User'
                 )
-                ELSE NULL 
+                ELSE NULL
               END,
               '__typename', 'User_Service'
             )
-          )::json 
+          )::json
         END,
         '[]'::json
       ) AS user_service`

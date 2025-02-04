@@ -1,31 +1,48 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
-import ServiceByIdQuery from '@generated/serviceByIdQuery.graphql';
+import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import ServiceByIdQuery, {
+  serviceByIdQuery,
+} from '@generated/serviceByIdQuery.graphql';
 import PageLoader from './page-loader';
 
 interface ServiceCustomDashboardsPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
-  // On lance la requête côté serveur avec Relay en passant le paramètre slug en tant que service_instance_id.
-  const _response = await serverPortalApiFetch(ServiceByIdQuery, {
-    service_instance_id: params.slug,
-  });
+  const { slug } = await params;
+  let service;
+  try {
+    const response = await serverFetchGraphQL<serviceByIdQuery>(
+      ServiceByIdQuery,
+      {
+        service_instance_id: decodeURIComponent(slug),
+      }
+    );
+
+    service = response.data?.serviceInstanceById;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Service not found');
+  }
+
+  if (!service) {
+    throw new Error('Service not found');
+  }
 
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
     },
     {
-      label: params.slug,
+      label: service.name,
     },
   ];
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <h1>{params.slug}</h1>
+      <h1>{slug}</h1>
       <PageLoader />
     </>
   );
