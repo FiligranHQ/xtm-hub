@@ -368,7 +368,6 @@ export const loadServiceWithSubscriptions = async (
             'name', "Generic_Service_Capability".name,
             '__typename', 'Generic_Service_Capability'
           ),
-
           '__typename', 'UserServiceCapability'
         )
         WHEN "Service_Capability".id IS NOT NULL THEN
