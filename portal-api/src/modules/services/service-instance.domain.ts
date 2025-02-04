@@ -71,6 +71,18 @@ export const loadPublicServiceInstances = async (
       'userServiceCapa.generic_service_capability_id'
     )
     .leftJoin(
+      'Subscription_Capability as subscriptionCapability',
+      'subscriptionCapability.id',
+      '=',
+      'userServiceCapa.subscription_capability_id'
+    )
+    .leftJoin(
+      'Service_Capability as serviceCapability',
+      'serviceCapability.id',
+      '=',
+      'subscriptionCapability.service_capability_id'
+    )
+    .leftJoin(
       'Service_Link as serviceLinks',
       'serviceLinks.service_instance_id',
       '=',
@@ -85,7 +97,13 @@ export const loadPublicServiceInstances = async (
         END AS subscribed
         `),
       dbRaw(
-        'COALESCE(json_agg("genericServiceCapability"."name") FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL), \'[]\'::json) AS capabilities'
+        `
+     COALESCE(
+        json_agg(DISTINCT COALESCE("genericServiceCapability"."name", "serviceCapability"."name")) 
+        FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL OR "serviceCapability"."name" IS NOT NULL),
+        '[]'::json
+      ) AS capabilities
+    `
       ),
       dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
 
@@ -293,10 +311,30 @@ export const loadServiceWithSubscriptions = async (
   service_instance_id
 ) => {
   const queryUserServiceCapabilities = db(context, 'UserService_Capability')
+    .leftJoin(
+      'Generic_Service_Capability',
+      'UserService_Capability.generic_service_capability_id',
+      '=',
+      'Generic_Service_Capability.id'
+    )
+    .leftJoin(
+      'Subscription_Capability',
+      'UserService_Capability.subscription_capability_id',
+      '=',
+      'Subscription_Capability.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'Subscription_Capability.service_capability_id',
+      '=',
+      'Service_Capability.id'
+    )
     .select(
       'UserService_Capability.user_service_id',
       dbRaw(
         `json_agg(
+        CASE 
+        WHEN "Generic_Service_Capability".id IS NOT NULL THEN
         json_build_object(
           'id', "UserService_Capability".id,
           'user_service_id', "UserService_Capability".user_service_id,
@@ -305,16 +343,28 @@ export const loadServiceWithSubscriptions = async (
             'name', "Generic_Service_Capability".name,
             '__typename', 'Generic_Service_Capability'
           ),
+          
           '__typename', 'UserServiceCapability'
-        )
-      ) as capabilities`
+        ) 
+        WHEN "Service_Capability".id IS NOT NULL THEN 
+        json_build_object(
+          'id', "UserService_Capability".id,
+          'user_service_id', "UserService_Capability".user_service_id,
+          'subscription_capability', json_build_object(
+            'id', "Subscription_Capability".id,
+            'service_capability', json_build_object(
+            'id', "Service_Capability".id, 
+            'name', "Service_Capability".name,
+            '__typename', 'Service_Capability'
+            ),
+            '__typename', 'Subscription_Capability'
+          ),
+          '__typename', 'UserServiceCapability'
+        ) 
+        ELSE NULL 
+        END
+      ) FILTER (WHERE "Generic_Service_Capability".id IS NOT NULL OR "Service_Capability".id IS NOT NULL) AS capabilities`
       )
-    )
-    .leftJoin(
-      'Generic_Service_Capability',
-      'UserService_Capability.generic_service_capability_id',
-      '=',
-      'Generic_Service_Capability.id'
     )
     .groupBy('UserService_Capability.user_service_id')
     .as('userServiceCapabilities');
@@ -360,6 +410,8 @@ export const loadServiceWithSubscriptions = async (
       dbRaw(
         `COALESCE(
           json_agg(
+          CASE
+          WHEN "userService".id IS NOT NULL THEN
             json_build_object(
               'id', "userService".id,
               'subscription_id', "userService".subscription_id,
@@ -377,7 +429,9 @@ export const loadServiceWithSubscriptions = async (
               END,
               '__typename', 'User_Service'
             )
-          )::json,
+            ELSE NULL
+            END
+          ) FILTER (WHERE "userService".id IS NOT NULL)::json,
           '[]'::json
         ) AS user_service`
       )

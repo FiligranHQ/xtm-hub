@@ -488,6 +488,14 @@ export type RolePortal = Node & {
   name: Scalars['String']['output'];
 };
 
+export type ServiceCapability = Node & {
+  __typename?: 'ServiceCapability';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  service_definition_id?: Maybe<Scalars['ID']['output']>;
+};
+
 export type ServiceConnection = {
   __typename?: 'ServiceConnection';
   edges: Array<ServiceInstanceEdge>;
@@ -580,6 +588,12 @@ export type Subscription = Node & {
   user_service: Array<Maybe<UserService>>;
 };
 
+export type SubscriptionCapability = Node & {
+  __typename?: 'SubscriptionCapability';
+  id: Scalars['ID']['output'];
+  service_capability?: Maybe<ServiceCapability>;
+};
+
 export type SubscriptionEdge = {
   __typename?: 'SubscriptionEdge';
   cursor: Scalars['String']['output'];
@@ -661,6 +675,7 @@ export type UserServiceCapability = Node & {
   __typename?: 'UserServiceCapability';
   generic_service_capability?: Maybe<GenericServiceCapability>;
   id: Scalars['ID']['output'];
+  subscription_capability?: Maybe<SubscriptionCapability>;
   user_service_id: Scalars['ID']['output'];
 };
 
@@ -780,7 +795,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( Subscription ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( Subscription ) | ( SubscriptionCapability ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -819,6 +834,7 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
+  ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
@@ -831,6 +847,7 @@ export type ResolversTypes = ResolversObject<{
   Settings: ResolverTypeWrapper<Settings>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
+  SubscriptionCapability: ResolverTypeWrapper<SubscriptionCapability>;
   SubscriptionEdge: ResolverTypeWrapper<SubscriptionEdge>;
   SubscriptionOrdering: SubscriptionOrdering;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
@@ -883,6 +900,7 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformProvider: PlatformProvider;
   Query: {};
   RolePortal: RolePortal;
+  ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
   ServiceDefinition: ServiceDefinition;
   ServiceInstance: ServiceInstance;
@@ -892,6 +910,7 @@ export type ResolversParentTypes = ResolversObject<{
   Settings: Settings;
   String: Scalars['String']['output'];
   Subscription: {};
+  SubscriptionCapability: SubscriptionCapability;
   SubscriptionEdge: SubscriptionEdge;
   TrackingSubscription: TrackingSubscription;
   Upload: Scalars['Upload']['output'];
@@ -1030,7 +1049,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'Subscription' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'Subscription' | 'SubscriptionCapability' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -1094,6 +1113,14 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
 export type RolePortalResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RolePortal'] = ResolversParentTypes['RolePortal']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceCapability'] = ResolversParentTypes['ServiceCapability']> = ResolversObject<{
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  service_definition_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1173,6 +1200,12 @@ export type SubscriptionResolvers<ContextType = PortalContext, ParentType extend
   user_service?: SubscriptionResolver<Array<Maybe<ResolversTypes['UserService']>>, "user_service", ParentType, ContextType>;
 }>;
 
+export type SubscriptionCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscriptionCapability'] = ResolversParentTypes['SubscriptionCapability']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  service_capability?: Resolver<Maybe<ResolversTypes['ServiceCapability']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type SubscriptionEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscriptionEdge'] = ResolversParentTypes['SubscriptionEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Subscription'], ParentType, ContextType>;
@@ -1228,6 +1261,7 @@ export type UserServiceResolvers<ContextType = PortalContext, ParentType extends
 export type UserServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserServiceCapability'] = ResolversParentTypes['UserServiceCapability']> = ResolversObject<{
   generic_service_capability?: Resolver<Maybe<ResolversTypes['GenericServiceCapability']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  subscription_capability?: Resolver<Maybe<ResolversTypes['SubscriptionCapability']>, ParentType, ContextType>;
   user_service_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1281,6 +1315,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
+  ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceDefinition?: ServiceDefinitionResolvers<ContextType>;
   ServiceInstance?: ServiceInstanceResolvers<ContextType>;
@@ -1289,6 +1324,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceLink?: ServiceLinkResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  SubscriptionCapability?: SubscriptionCapabilityResolvers<ContextType>;
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
   TrackingSubscription?: TrackingSubscriptionResolvers<ContextType>;
   Upload?: GraphQLScalarType;
