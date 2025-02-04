@@ -42,7 +42,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <h1>{slug}</h1>
+      <h1>{service.name}</h1>
       <PageLoader />
     </>
   );

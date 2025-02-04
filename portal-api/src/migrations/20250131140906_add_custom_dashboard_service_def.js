@@ -12,7 +12,7 @@ export async function up(knex) {
   await knex
     .delete()
     .from('ServiceInstance')
-    .where({ name: 'openCTI custom Dashboards Library' });
+    .where({ name: 'OpenCTI Custom Dashboards Library' });
 
   // Insert new service definition
   await knex('ServiceDefinition').insert([
@@ -75,7 +75,7 @@ export async function down(knex) {
   await knex('ServiceInstance').insert([
     {
       id: uuidv4(),
-      name: 'openCTI custom Dashboards Library',
+      name: 'OpenCTI Custom Dashboards Library',
       description: '',
       creation_status: 'PENDING',
       public: true,

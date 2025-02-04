@@ -78,12 +78,7 @@ export const loadPublicServiceInstances = async (
     )
     .select([
       'ServiceInstance.*',
-      dbRaw(`
-        CASE
-          WHEN "subscription"."id" IS NOT NULL THEN true
-          ELSE false
-        END AS subscribed
-        `),
+      dbRaw(`"subscription"."id" IS NOT NULL AS subscribed`),
       dbRaw(
         'COALESCE(json_agg("genericServiceCapability"."name") FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL), \'[]\'::json) AS capabilities'
       ),
@@ -250,10 +245,7 @@ export const loadServiceInstanceByIdWithCapabilities = async (
 
     .where({
       'ServiceInstance.id': service_instance_id,
-    })
-    .andWhere((builder) => {
-      builder.where('ServiceInstance.public', true); // Public services are always accessible
-      builder.orWhere('User_Service.user_id', context.user.id); // Otherwise, user must have a subscription
+      'User_Service.user_id': context.user.id,
     })
     .groupBy(['ServiceInstance.id', 'User_Service.id'])
     .first();
