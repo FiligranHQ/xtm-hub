@@ -30,6 +30,8 @@ export type DatabaseType =
   | 'Service_Link'
   | 'User_Service'
   | 'Generic_Service_Capability'
+  | 'Service_Capability'
+  | 'Subscription_Capability'
   | 'UserService_Capability'
   | 'MalwareAnalysis'
   | 'UserService'

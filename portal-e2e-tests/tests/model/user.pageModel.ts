@@ -38,7 +38,7 @@ export default class UserPage {
       .getByRole('row', { name: userEmail })
       .getByRole('button')
       .click();
-    await this.page.getByLabel('Details User').click();
+    await this.page.getByLabel('Details user').click();
     await expect(
       this.page.getByRole('heading', { name: userEmail })
     ).toBeVisible();

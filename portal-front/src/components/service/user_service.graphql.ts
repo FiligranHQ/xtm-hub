@@ -40,6 +40,12 @@ export const userServiceFragment = graphql`
         id
         name
       }
+      subscription_capability {
+        service_capability {
+          id
+          name
+        }
+      }
     }
     user {
       id
@@ -56,6 +62,12 @@ export const userServicesOwnedFragment = graphql`
     user_service_capability {
       generic_service_capability {
         name
+      }
+      subscription_capability {
+        service_capability {
+          id
+          name
+        }
       }
     }
     subscription {
