@@ -90,9 +90,15 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
               {row.original?.user_service_capability?.map(
                 (user_service_capa) => (
                   <Badge
-                    key={user_service_capa?.generic_service_capability?.id}
+                    key={
+                      user_service_capa?.generic_service_capability?.id ??
+                      user_service_capa?.subscription_capability
+                        ?.service_capability?.id
+                    }
                     className="mb-2 mr-2 mt-2">
-                    {user_service_capa?.generic_service_capability?.name}
+                    {user_service_capa?.generic_service_capability?.name ??
+                      user_service_capa?.subscription_capability
+                        ?.service_capability?.name}
                   </Badge>
                 )
               )}

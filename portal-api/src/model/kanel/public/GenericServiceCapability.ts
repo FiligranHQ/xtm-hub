@@ -17,7 +17,6 @@ export default interface GenericServiceCapability {
 export interface GenericServiceCapabilityInitializer {
   id: GenericServiceCapabilityId;
 
-  /** Default value: 'ACCESS_SERVICE'::text */
   name?: string | null;
 }
 
