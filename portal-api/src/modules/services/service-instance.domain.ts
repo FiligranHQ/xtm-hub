@@ -468,7 +468,27 @@ export const loadServiceWithSubscriptions = async (
   const [serviceInstance] = await db<ServiceInstance>(
     context,
     'ServiceInstance'
-  ).where('ServiceInstance.id', '=', service_instance_id);
+  )
+    .where('ServiceInstance.id', '=', service_instance_id)
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceInstance.service_definition_id',
+      '=',
+      'ServiceDefinition.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'ServiceDefinition.id',
+      '=',
+      'Service_Capability.service_definition_id'
+    )
+    .select([
+      'ServiceInstance.*',
+      dbRaw(
+        `json_build_object('id', "ServiceDefinition".id, 'service_capability', json_agg(json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, 'description', "Service_Capability".description, '__typename', 'Service_Capability')), '__typename', 'ServiceDefinition') as service_definition`
+      ),
+    ])
+    .groupBy(['ServiceInstance.id', 'ServiceDefinition.id']);
 
   if (!context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)) {
     querySubscriptions.where(
@@ -489,20 +509,20 @@ export const grantServiceAccessUsers = async (
   adminId: string,
   subscriptionId: string
 ): Promise<UserService[]> => {
-  const usersInOrga = (await loadUsersByOrganization(
+  const adminsOrga = (await loadUsersByOrganization(
     organizationId,
     adminId,
     ROLE_ADMIN_ORGA.id
   )) as User[];
 
-  return usersInOrga.length > 0
+  return adminsOrga.length > 0
     ? await grantServiceAccess(
         context,
         [
           GenericServiceCapabilityIds.AccessId,
           GenericServiceCapabilityIds.ManageAccessId,
         ],
-        usersInOrga.map(({ id }) => id),
+        adminsOrga.map(({ id }) => id),
         subscriptionId
       )
     : [];

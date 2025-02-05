@@ -6,6 +6,7 @@ import { subscriptionWithUserService_fragment$data } from '@generated/subscripti
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
+  Checkbox,
   Form,
   FormControl,
   FormField,
@@ -25,10 +26,14 @@ import { Dispatch, FunctionComponent, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
+import { serviceCapability_fragment$data } from '../../../../__generated__/serviceCapability_fragment.graphql';
+import { subscriptionInServiceCreateMutation } from '../../../../__generated__/subscriptionInServiceCreateMutation.graphql';
+import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
 
 interface ServiceSlugAddOrgaFormSheetProps {
   serviceId: string;
   subscriptions: subscriptionWithUserService_fragment$data[];
+  capabilities: serviceCapability_fragment$data[];
   setSelectedSubscription: Dispatch<
     SetStateAction<subscriptionWithUserService_fragment$data>
   >;
@@ -36,7 +41,7 @@ interface ServiceSlugAddOrgaFormSheetProps {
 
 export const ServiceSlugAddOrgaForm: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ serviceId, subscriptions, setSelectedSubscription }) => {
+> = ({ serviceId, subscriptions, capabilities, setSelectedSubscription }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const [organizations] = getOrganizations();
   const t = useTranslations();
@@ -62,10 +67,12 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
         organization_id: z.string().min(2, {
           message: 'You must choose an organization.',
         }),
+        capability_ids: z.array(z.string()),
       })
     ),
     defaultValues: {
       organization_id: '',
+      capability_ids: [],
     },
   });
   setIsDirty(form.formState.isDirty);
@@ -74,6 +81,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
       variables: {
         service_instance_id: serviceId,
         organization_id: inputValue.organization_id,
+        capability_ids: inputValue.capability_ids,
       },
       onCompleted: (response) => {
         const findOrganization =
@@ -141,6 +149,39 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
           )}
         />
 
+        <div className="bg-gray-150 dark:bg-gray-800 rounded-lg p-l">
+          <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
+          {capabilities.map(({ id, name, description }) => (
+            <FormField
+              className=""
+              key={id}
+              control={form.control}
+              name="capability_ids"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <Checkbox
+                    className="mt-xs"
+                    checked={field.value.includes(id)}
+                    onCheckedChange={(checked) => {
+                      const newValue = checked
+                        ? [...field.value, id]
+                        : field.value.filter((value) => value !== id);
+                      field.onChange(newValue);
+                    }}
+                    id={id}
+                  />
+
+                  <label
+                    htmlFor={id}
+                    className="txt-sub-content cursor-pointer">
+                    {name} access: {description}
+                  </label>
+                </FormItem>
+              )}
+            />
+          ))}
+        </div>
+
         <SheetFooter className="pt-2">
           <Button
             variant="outline"
@@ -149,7 +190,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
             {t('Utils.Cancel')}
           </Button>
           <Button
-            disabled={!form.formState.isDirty}
+            disabled={!form.formState.isValid}
             type="submit">
             {t('Utils.Validate')}
           </Button>

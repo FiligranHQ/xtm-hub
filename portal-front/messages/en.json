@@ -252,8 +252,8 @@
     "Organization": "Organization",
     "ConfirmDelete1": "Are you sure you want to delete this organization",
     "ConfirmDelete2": "from this service ? This action cannot be undone.",
-    "AddOrganization": "Subscribe organization",
-    "AddOrganizationDescription": "Subscribe an organization to the service"
+    "AddOrganization": "Subscribe organization to the",
+    "SelectCapa": "Select capabilities"
   },
   "InviteUserServiceForm": {
     "Title": "Invite user to the service",

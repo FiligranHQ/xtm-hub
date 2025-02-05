@@ -252,7 +252,8 @@
     "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
     "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
     "AddOrganization": "Abonnement de l'organisation au service",
-    "AddOrganizationDescription": "Inviter une organisation sur le service."
+    "SelectCapa": "Sélectionner les capabilités"
+
   },
   "InviteUserServiceForm": {
     "Title": "Inviter l'utilisateur au service",

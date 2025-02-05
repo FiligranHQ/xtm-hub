@@ -118,6 +118,11 @@ export const serviceWithSubscriptionsFragment = graphql`
     name
     id
     description
+    service_definition {
+      service_capability {
+        ...serviceCapability_fragment @relay(mask: false)
+      }
+    }
     subscriptions {
       ...subscriptionWithUserService_fragment @relay(mask: false)
     }

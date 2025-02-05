@@ -19,6 +19,7 @@ import {
   grantServiceAccessUsers,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
+import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,
@@ -98,7 +99,7 @@ const resolvers: Resolvers = {
     },
     addSubscriptionInService: async (
       _,
-      { service_instance_id, organization_id },
+      { service_instance_id, organization_id, capability_ids },
       context
     ) => {
       const trx = await dbTx();
@@ -140,6 +141,12 @@ const resolvers: Resolvers = {
             context.user.selected_organization_id) as OrganizationId,
           context.user.id,
           addedSubscription.id
+        );
+
+        await addCapabilitiesToSubscription(
+          context,
+          capability_ids,
+          addedSubscription.id as SubscriptionId
         );
 
         await trx.commit();

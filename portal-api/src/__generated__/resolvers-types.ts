@@ -201,6 +201,7 @@ export type MutationAddSubscriptionArgs = {
 
 
 export type MutationAddSubscriptionInServiceArgs = {
+  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   organization_id?: InputMaybe<Scalars['ID']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
 };
@@ -534,6 +535,7 @@ export type ServiceDefinition = Node & {
   identifier: ServiceDefinitionIdentifier;
   name: Scalars['String']['output'];
   public?: Maybe<Scalars['Boolean']['output']>;
+  service_capability?: Maybe<Array<Maybe<ServiceCapability>>>;
 };
 
 export enum ServiceDefinitionIdentifier {
@@ -1171,6 +1173,7 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
   identifier?: Resolver<ResolversTypes['ServiceDefinitionIdentifier'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  service_capability?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceCapability']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -194,14 +194,19 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 {t('Service.SubscribeOrganization')}
               </Button>
             }
-            title={t('OrganizationInServiceAction.AddOrganization')}
-            description={t(
-              'OrganizationInServiceAction.AddOrganizationDescription'
-            )}>
+            title={
+              t('OrganizationInServiceAction.AddOrganization') +
+              ' ' +
+              queryData?.serviceInstanceByIdWithSubscriptions?.name
+            }>
             <ServiceSlugAddOrgaForm
               subscriptions={
                 queryData?.serviceInstanceByIdWithSubscriptions
                   ?.subscriptions as subscriptionWithUserService_fragment$data[]
+              }
+              capabilities={
+                queryData?.serviceInstanceByIdWithSubscriptions
+                  ?.service_definition?.service_capability
               }
               setSelectedSubscription={setSelectedSubscription}
               serviceId={serviceId}

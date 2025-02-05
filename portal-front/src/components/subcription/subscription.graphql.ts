@@ -42,10 +42,12 @@ export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
     $service_instance_id: String!
     $organization_id: ID
+    $capability_ids: [ID]
   ) {
     addSubscriptionInService(
       service_instance_id: $service_instance_id
       organization_id: $organization_id
+      capability_ids: $capability_ids
     ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }

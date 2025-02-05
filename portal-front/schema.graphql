@@ -20,7 +20,7 @@ type Mutation {
   addServiceInstance(input: AddServiceInput): Subscription
   deleteServiceInstance(id: ID!): ServiceInstance
   addSubscription(service_instance_id: String): ServiceInstance
-  addSubscriptionInService(service_instance_id: String, organization_id: ID): ServiceInstance
+  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID]): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   editServiceCapability(input: EditServiceCapabilityInput): Subscription
   addUserService(input: UserServiceAddInput!): Subscription
@@ -106,6 +106,7 @@ type ServiceDefinition implements Node {
   description: String
   public: Boolean
   identifier: ServiceDefinitionIdentifier!
+  service_capability: [ServiceCapability]
 }
 
 enum DocumentOrdering {
