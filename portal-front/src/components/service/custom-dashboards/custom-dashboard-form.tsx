@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import { DeleteIcon } from 'filigran-icon';
+import { CloseIcon } from 'filigran-icon';
 import {
   Button,
   Checkbox,
@@ -215,11 +215,11 @@ export const CustomDashboardForm = ({
                   })}
                   {index < fields.length - 1 && (
                     <Button
-                      variant="destructive"
+                      variant="outline"
                       type="button"
                       onClick={() => remove(index)}
                       className="h-6 px-2">
-                      <DeleteIcon className="h-3 w-3" />
+                      <CloseIcon className="h-2 w-2" />
                     </Button>
                   )}
                 </FormLabel>
