@@ -59,14 +59,10 @@ export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
         `COALESCE("userServiceCapabilities".capabilities, '[]'::json) as user_service_capability`
       ),
       dbRaw(
-        `CASE 
-        WHEN "ServiceInstance".id IS NOT NULL THEN 
-          json_build_object(
-            'id', "ServiceInstance".id,
-            '__typename', 'ServiceInstance'
-          )
-        ELSE NULL 
-      END as service`
+        `json_build_object(
+          'id', "ServiceInstance".id,
+          '__typename', 'ServiceInstance'
+        ) AS service`
       )
     )
     .leftJoin(

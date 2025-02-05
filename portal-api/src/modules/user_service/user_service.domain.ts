@@ -137,6 +137,18 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
       '=',
       'genericservcapa.id'
     )
+    .leftJoin(
+      'Subscription_Capability',
+      'userServcapa.subscription_capability_id',
+      '=',
+      'Subscription_Capability.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'Subscription_Capability.service_capability_id',
+      '=',
+      'Service_Capability.id'
+    )
     .where('sub.status', 'ACCEPTED')
     .where('user.id', userId)
     .where('sub.organization_id', userSelectedOrganization)
@@ -149,7 +161,22 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
         `(json_agg(json_build_object('id', "sub".id, 'status', "sub".status, 'service_instance_id', "sub".service_instance_id, 'service_instance', json_build_object('id', "service".id, 'name', "service".name, 'description', "service".description, 'links', "service".services_link, 'service_definition', json_build_object('id', "service".service_definition_id, 'name', "service".service_definition_name, 'description', "service".service_definition_description, 'public', "service".service_definition_public, 'identifier', "service".service_definition_identifier, '__typename', 'ServiceDefinition'), '__typename', 'ServiceInstance'), '__typename', 'Subscription')) ->> 0)::json as subscription`
       ),
       dbRaw(
-        "(json_agg(json_build_object('id',\"userServcapa\".id ,'generic_service_capability', json_build_object('id', \"genericservcapa\".id, 'name', \"genericservcapa\".name, '__typename', 'Generic_Service_Capability'), '__typename', 'UserService_Capability'))) as user_service_capability"
+        `(json_agg(
+        json_build_object(
+          'id', "userServcapa".id,
+          'generic_service_capability',
+          CASE 
+            WHEN "genericservcapa".id IS NOT NULL THEN json_build_object('id', "genericservcapa".id, 'name', "genericservcapa".name, '__typename', 'Generic_Service_Capability')
+            ELSE null
+          END,
+          'subscription_capability',
+          CASE 
+            WHEN "Subscription_Capability".id IS NOT NULL THEN json_build_object('id', "Subscription_Capability".id, 'service_capability', json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, '__typename', 'Service_Capability'), '__typename', 'Subscription_Capability')
+            ELSE null
+          END,
+          '__typename', 'UserService_Capability'
+        )
+      )) as user_service_capability`
       ),
       dbRaw('(service."name") as service_name'),
       dbRaw('(service."description") as service_description'),

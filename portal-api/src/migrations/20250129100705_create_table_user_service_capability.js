@@ -14,7 +14,6 @@ export async function up(knex) {
       .uuid('generic_service_capability_id')
       .references('id')
       .inTable('Generic_Service_Capability')
-      .onDelete('CASCADE')
       .nullable();
   });
 
@@ -69,11 +68,7 @@ export async function up(knex) {
  */
 export async function down(knex) {
   await knex.schema.table('Generic_Service_Capability', function (table) {
-    table
-      .uuid('user_service_id')
-      .references('id')
-      .inTable('User_Service')
-      .onDelete('CASCADE');
+    table.uuid('user_service_id').references('id').inTable('User_Service');
     table.renameColumn('name', 'service_capability_name');
   });
 

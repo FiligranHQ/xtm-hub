@@ -1,34 +1,37 @@
 import { db, dbUnsecure } from '../../../../../knexfile';
+import {
+  ServiceCapability,
+  SubscriptionCapability,
+} from '../../../../__generated__/resolvers-types';
 import GenericServiceCapability, {
   GenericServiceCapabilityMutator,
 } from '../../../../model/kanel/public/GenericServiceCapability';
-import UserServiceCapability, {
-  UserServiceCapabilityMutator,
-} from '../../../../model/kanel/public/UserServiceCapability';
+import { ServiceCapabilityMutator } from '../../../../model/kanel/public/ServiceCapability';
+import { SubscriptionCapabilityMutator } from '../../../../model/kanel/public/SubscriptionCapability';
+import UserServiceCapability from '../../../../model/kanel/public/UserServiceCapability';
 import { PortalContext } from '../../../../model/portal-context';
 
-export const loadUnsecureServiceCapabilitiesBy = async (
+export const loadUnsecureGenericCapabilitiesBy = async (
   field: GenericServiceCapabilityMutator
 ) => {
-  return dbUnsecure<GenericServiceCapability>('Generic_Service_Capability')
-    .where(field)
-    .leftJoin(
-      'UserService_Capability',
-      'Generic_Service_Capability.id',
-      'UserService_Capability.generic_service_capability_id'
-    );
+  return dbUnsecure<GenericServiceCapability>(
+    'Generic_Service_Capability'
+  ).where(field);
 };
 
-export const loadUnsecureServiceCapabilitiesByUserService = async (
-  field: UserServiceCapabilityMutator
+export const loadUnsecureServiceCapabilitiesBy = async (
+  field: ServiceCapabilityMutator
 ) => {
-  return dbUnsecure<GenericServiceCapability>('Generic_Service_Capability')
-    .leftJoin(
-      'UserService_Capability',
-      'Generic_Service_Capability.id',
-      'UserService_Capability.generic_service_capability_id'
-    )
-    .where(field);
+  return dbUnsecure<ServiceCapability>('Service_Capability').where(field);
+};
+
+export const loadSubscriptionCapabilitiesBy = async (
+  context: PortalContext,
+  field: SubscriptionCapabilityMutator
+) => {
+  return db<SubscriptionCapability>(context, 'Subscription_Capability').where(
+    field
+  );
 };
 
 export const insertServiceCapability = async (
