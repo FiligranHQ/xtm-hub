@@ -162,7 +162,21 @@
       "UpdateDocument": "Update document"
     },
     "CustomDashboards": {
-      "AddDashboard": "Add new dashboard"
+      "AddDashboard": "Add new dashboard",
+      "Form": {
+        "JSONFile": "JSON file",
+        "SelectJSONFile": "Select JSON file",
+        "NoJSONFile": "No JSON file selected",
+        "NameLabel": "Name",
+        "NamePlaceholder": "Dashboard name",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a short paragraph to describe the dashboard.",
+        "ImageLabel": "Image {num}",
+        "SelectImage": "Select an image",
+        "NoImage": "No image selected",
+        "PublishedLabel": "Publish",
+        "PublishedPlaceholder": "Is the dashboard published?"
+      }
     }
   },
   "ServiceActions": {

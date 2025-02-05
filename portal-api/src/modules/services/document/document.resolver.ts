@@ -1,6 +1,9 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../../model/kanel/public/Document';
+import {
+  DocumentId,
+  DocumentMutator,
+} from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
@@ -16,22 +19,24 @@ import { checkDocumentExists, normalizeDocumentName } from './document.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
-    addDocument: async (_, opt, context) => {
+    addDocument: async (_, payload, context) => {
       try {
         const minioName = await sendFileToS3(
-          opt.document.file,
+          payload.document.file,
           context.user.id,
           context.serviceInstanceId as ServiceInstanceId
         );
-        const data: Document = {
+        const data: DocumentMutator = {
           uploader_id: context.user.id as UserId,
-          description: opt.description,
+          description: payload.description,
           minio_name: minioName,
-          file_name: normalizeDocumentName(opt.document.file.filename),
-          service_instance_id: context.serviceInstanceId,
+          file_name: normalizeDocumentName(payload.document.file.filename),
+          service_instance_id: context.serviceInstanceId as ServiceInstanceId,
           created_at: new Date(),
-          mime_type: opt.document.file.mimetype,
-        } as unknown as Document;
+          mime_type: payload.document.file.mimetype,
+          parent_document_id: payload.parentDocumentId as DocumentId,
+          active: payload.active ?? true,
+        };
         const [addedDocument] = await insertDocument(data);
         return addedDocument;
       } catch (error) {

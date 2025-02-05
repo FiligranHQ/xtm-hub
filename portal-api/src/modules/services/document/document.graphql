@@ -14,7 +14,10 @@ type Document implements Node {
   minio_name: String!
   active: Boolean!
   created_at: Date!
+  updated_at: Date
+  updater_id: String
   download_number: Int
+  children_documents: [Document!]
 }
 
 type Mutation {
@@ -22,6 +25,8 @@ type Mutation {
     document: Upload
     description: String
     serviceInstanceId: String
+    parentDocumentId: ID
+    active: Boolean
   ): Document! @auth(requires: [BYPASS])
   editDocument(
     documentId: ID
@@ -53,5 +58,6 @@ type Query {
     orderMode: OrderingMode!
     filter: String
     serviceInstanceId: String
+    parentDocumentId: ID
   ): DocumentConnection! @auth
 }

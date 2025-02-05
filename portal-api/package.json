@@ -18,7 +18,7 @@
     "migrate:up": "yarn knex:run migrate:up",
     "migrate:down": "yarn knex:run migrate:down",
     "seed:make": "yarn knex:run seed:make",
-    "generate-pg-to-ts": "npx kanel",
+    "generate-pg-to-ts": "NODE_OPTIONS='--import tsx' kanel",
     "build": "yarn copy && node builder/prod/prod.js",
     "start": "node dist/index.js",
     "dev:tsc": "tsc --watch --preserveWatchOutput",

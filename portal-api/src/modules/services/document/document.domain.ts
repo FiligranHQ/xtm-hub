@@ -48,7 +48,7 @@ export const passOldDocumentsIntoInactive = async (
 };
 
 export const insertDocument = async (
-  documentData: Document
+  documentData: DocumentMutator
 ): Promise<Document[]> => {
   const existingDocuments = await loadUnsecureDocumentsBy({
     file_name: documentData.file_name,

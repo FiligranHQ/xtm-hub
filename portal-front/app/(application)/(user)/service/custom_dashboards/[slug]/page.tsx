@@ -12,8 +12,10 @@ interface ServiceCustomDashboardsPageProps {
 
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   const { slug } = await params;
-  let service: serviceByIdQuery$data['serviceInstanceById'] | null | undefined =
-    null;
+  let serviceInstance:
+    | serviceByIdQuery$data['serviceInstanceById']
+    | null
+    | undefined = null;
   try {
     const response = await serverFetchGraphQL<serviceByIdQuery>(
       ServiceByIdQuery,
@@ -22,13 +24,13 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       }
     );
 
-    service = response.data?.serviceInstanceById;
+    serviceInstance = response.data?.serviceInstanceById;
   } catch (error) {
     console.error(error);
     throw new Error('Service not found');
   }
 
-  if (!service) {
+  if (!serviceInstance) {
     throw new Error('Service not found');
   }
 
@@ -37,7 +39,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       label: 'MenuLinks.Home',
     },
     {
-      label: service.name,
+      label: serviceInstance.name,
       original: true,
     },
   ];
@@ -45,8 +47,8 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <h1>{service.name}</h1>
-      <PageLoader service={service} />
+      <h1>{serviceInstance.name}</h1>
+      <PageLoader serviceInstance={serviceInstance} />
     </>
   );
 };

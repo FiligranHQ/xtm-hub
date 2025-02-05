@@ -1,18 +1,19 @@
 'use client';
 
-import CustomDashbordDocumentList from '@/components/service/custom-dashboards/[slug]/document-list';
+import CustomDashbordDocumentList from '@/components/service/custom-dashboards/[slug]/custom-dashboard-list';
 import { customDashboardListLocalStorage } from '@/components/service/custom-dashboards/custom-dashboard-list-localstorage';
 import { DocumentsListQuery } from '@/components/service/document/document.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 
 interface PageLoaderProps {
-  service: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 
-const PageLoader = ({ service }: PageLoaderProps) => {
+const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count } = customDashboardListLocalStorage();
@@ -23,21 +24,23 @@ const PageLoader = ({ service }: PageLoaderProps) => {
         count,
         orderBy: 'created_at',
         orderMode: 'desc',
-        serviceInstanceId: service.id,
+        serviceInstanceId: serviceInstance.id,
       },
       {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [loadQuery, count, service]);
+  }, [loadQuery, count, serviceInstance]);
 
   return (
     <>
-      {queryRef && (
+      {queryRef ? (
         <CustomDashbordDocumentList
-          service={service}
+          serviceInstance={serviceInstance}
           queryRef={queryRef}
         />
+      ) : (
+        <Skeleton className="w-full inset-1/2" />
       )}
     </>
   );
