@@ -26,10 +26,10 @@ const CustomDashbordDocumentList = ({
     queryRef
   );
 
-  const [data, refetch] = useRefetchableFragment<
-    documentsQuery,
-    documentsList$key
-  >(documentsFragment, queryData);
+  const [data] = useRefetchableFragment<documentsQuery, documentsList$key>(
+    documentsFragment,
+    queryData
+  );
 
   return (
     <CustomDashboardSheet
