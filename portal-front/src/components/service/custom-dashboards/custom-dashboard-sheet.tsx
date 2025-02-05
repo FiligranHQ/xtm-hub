@@ -2,13 +2,22 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
+import { omit } from '@/lib/omit';
+import { isNil } from '@/lib/utils';
+import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { RESTRICTION } from '@/utils/constant';
+import {
+  documentAddMutation,
+  documentAddMutation$data,
+} from '@generated/documentAddMutation.graphql';
+import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { z } from 'zod';
+import { useMutation } from 'react-relay';
+import { DocumentAddMutation } from '../document/document.graphql';
 import {
   CustomDashboardForm,
-  newDocumentSchema,
+  CustomDashboardFormValues,
 } from './custom-dashboard-form';
 
 interface CustomDashboardSheetProps {
@@ -22,32 +31,60 @@ export const CustomDashboardSheet = ({
 }: CustomDashboardSheetProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
+  const [addDocument] = useMutation<documentAddMutation>(DocumentAddMutation);
 
-  const handleSubmit = (values: z.infer<typeof newDocumentSchema>) => {
-    /*vaultDocumentMutation({
-      variables: {
-        ...values,
-        serviceInstanceId,
-        connections: [connectionId],
-      },
-      uploadables: values.document as unknown as UploadableMap,
-      onCompleted: (response) => {
-        setOpenSheet(false);
-        toast({
-          title: t('Utils.Success'),
-          description: t('VaultActions.DocumentAdded', {
-            file_name: response.addDocument.file_name,
-          }),
-        });
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-      });*/
+  const asyncAddDocument = async (
+    values: Partial<CustomDashboardFormValues>
+  ): Promise<documentAddMutation$data> =>
+    new Promise((resolve, reject) => {
+      if (isNil(values.document)) {
+        return reject(new Error('Document is required'));
+      }
+      addDocument({
+        variables: {
+          ...values,
+          serviceInstanceId,
+          connections: [connectionId],
+        },
+        uploadables: fileListToUploadableMap(values.document),
+        onCompleted: (response) => resolve(response),
+        onError: (error) => reject(error),
+      });
+    });
+
+  const handleSubmit = async (values: CustomDashboardFormValues) => {
+    const images = values.images;
+    const input = omit(values, ['images']);
+
+    try {
+      // Add parent document (the dashboard)
+      const parentDocResult = await asyncAddDocument(input);
+
+      // Add images
+      for (const image of images) {
+        if (!isNil(image.file)) {
+          await asyncAddDocument({
+            ...input,
+            document: image.file,
+            parentDocumentId: parentDocResult.addDocument.id,
+          });
+        }
+      }
+
+      setOpenSheet(false);
+      toast({
+        title: t('Utils.Success'),
+        description: t('Service.CustomDashboards.Actions.Added', {
+          name: parentDocResult.addDocument.name,
+        }),
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: t('Utils.Error'),
+        description: t(`Error.Server.${(error as Error).message}`),
+      });
+    }
   };
 
   return (

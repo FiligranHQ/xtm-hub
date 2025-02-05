@@ -176,6 +176,11 @@
         "NoImage": "No image selected",
         "PublishedLabel": "Publish",
         "PublishedPlaceholder": "Is the dashboard published?"
+      },
+      "Actions": {
+        "Deleted": "{name} has been deleted",
+        "Added": "{name} has been added",
+        "Updated": "{name} has been modified"
       }
     }
   },

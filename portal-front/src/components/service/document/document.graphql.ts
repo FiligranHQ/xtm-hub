@@ -3,6 +3,7 @@ import { graphql } from 'react-relay';
 export const DocumentAddMutation = graphql`
   mutation documentAddMutation(
     $document: Upload
+    $name: String
     $description: String
     $serviceInstanceId: String
     $active: Boolean
@@ -11,16 +12,13 @@ export const DocumentAddMutation = graphql`
   ) {
     addDocument(
       document: $document
+      name: $name
       description: $description
       serviceInstanceId: $serviceInstanceId
       active: $active
       parentDocumentId: $parentDocumentId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
-      id
-      description
-      created_at
-      file_name
-      download_number
+      ...documentItem_fragment @relay(mask: false)
     }
   }
 `;
@@ -75,8 +73,19 @@ export const documentItem = graphql`
     id
     file_name
     created_at
+    name
     description
     download_number
+    active
+    children_documents {
+      id
+      file_name
+      created_at
+      name
+      description
+      download_number
+      active
+    }
   }
 `;
 export const documentsFragment = graphql`
@@ -89,6 +98,7 @@ export const documentsFragment = graphql`
       orderMode: $orderMode
       filter: $filter
       serviceInstanceId: $serviceInstanceId
+      parentDocumentId: $parentDocumentId
     ) {
       __id
       totalCount
@@ -109,6 +119,7 @@ export const DocumentsListQuery = graphql`
     $orderMode: OrderingMode!
     $filter: String
     $serviceInstanceId: String
+    $parentDocumentId: ID
   ) {
     ...documentsList
   }

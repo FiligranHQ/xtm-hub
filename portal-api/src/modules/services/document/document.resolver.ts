@@ -8,6 +8,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
+import { extractId } from '../../../utils/utils';
 import {
   deleteDocument,
   getDocuments,
@@ -21,25 +22,33 @@ const resolvers: Resolvers = {
   Mutation: {
     addDocument: async (_, payload, context) => {
       try {
+        const file_name = normalizeDocumentName(payload.document.file.filename);
+        const parent_document_id = payload.parentDocumentId
+          ? (extractId(payload.parentDocumentId) as DocumentId)
+          : null;
         const minioName = await sendFileToS3(
           payload.document.file,
+          file_name,
           context.user.id,
           context.serviceInstanceId as ServiceInstanceId
         );
+
         const data: DocumentMutator = {
           uploader_id: context.user.id as UserId,
+          name: payload.name,
           description: payload.description,
           minio_name: minioName,
-          file_name: normalizeDocumentName(payload.document.file.filename),
+          file_name,
           service_instance_id: context.serviceInstanceId as ServiceInstanceId,
           created_at: new Date(),
           mime_type: payload.document.file.mimetype,
-          parent_document_id: payload.parentDocumentId as DocumentId,
+          parent_document_id,
           active: payload.active ?? true,
         };
         const [addedDocument] = await insertDocument(data);
         return addedDocument;
       } catch (error) {
+        console.error('Error while adding document:', error);
         throw UnknownError('INSERT_DOCUMENT_ERROR', { detail: error });
       }
     },

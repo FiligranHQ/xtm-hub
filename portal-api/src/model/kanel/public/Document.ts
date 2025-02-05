@@ -32,6 +32,8 @@ export default interface Document {
 
   parent_document_id: DocumentId | null;
 
+  name: string | null;
+
   updated_at: Date | null;
 
   updater_id: string | null;
@@ -67,6 +69,8 @@ export interface DocumentInitializer {
 
   parent_document_id?: DocumentId | null;
 
+  name?: string | null;
+
   updated_at?: Date | null;
 
   updater_id?: string | null;
@@ -97,6 +101,8 @@ export interface DocumentMutator {
   mime_type?: string | null;
 
   parent_document_id?: DocumentId | null;
+
+  name?: string | null;
 
   updated_at?: Date | null;
 

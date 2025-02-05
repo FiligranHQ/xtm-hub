@@ -23,19 +23,24 @@ import { useEffect } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
+const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
+
 export const newCustomDashboardSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
   documentId: z.string().optional(),
-  jsonfile: z.custom<FileList>(),
+  parentDocumentId: z.string().optional(),
+  document: z.custom<FileList>(fileListCheck),
   images: z
-    .array(z.object({ file: z.instanceof(File).optional() }))
+    .array(z.object({ file: z.custom<FileList>(fileListCheck).optional() }))
     .min(1)
     .max(5),
   active: z.boolean().optional(),
 });
 
-export type FormValues = z.infer<typeof newCustomDashboardSchema>;
+export type CustomDashboardFormValues = z.infer<
+  typeof newCustomDashboardSchema
+>;
 
 interface CustomDashboardFormProps {
   document?: documentItem_fragment$data;
@@ -48,28 +53,31 @@ interface CustomDashboardFormProps {
 export const CustomDashboardForm = ({
   document,
   handleSubmit,
-  serviceInstanceId,
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
-  const form = useForm<FormValues>({
+  const form = useForm<CustomDashboardFormValues>({
     resolver: zodResolver(newCustomDashboardSchema),
     defaultValues: {
+      name: document?.name ?? '',
       description: document?.description ?? '',
       documentId: document?.id ?? '',
-      jsonfile: undefined,
+      document: undefined,
       images: [{ file: undefined }],
       active: document?.active ?? false,
     },
   });
 
   setIsDirty(form.formState.isDirty);
-  if (form.getValues('jsonfile') || form.getValues('images')) {
+  if (form.getValues('document') || form.getValues('images')) {
     setIsDirty(true);
   }
 
-  const { fields, append, remove } = useFieldArray<FormValues, 'images'>({
+  const { fields, append, remove } = useFieldArray<
+    CustomDashboardFormValues,
+    'images'
+  >({
     control: form.control,
     name: 'images',
   });
@@ -167,7 +175,7 @@ export const CustomDashboardForm = ({
 
         <FormField
           control={form.control}
-          name="jsonfile"
+          name="document"
           render={({ field }) => {
             return (
               <FormItem>

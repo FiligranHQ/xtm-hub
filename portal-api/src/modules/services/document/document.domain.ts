@@ -16,12 +16,13 @@ import {
 
 export const sendFileToS3 = async (
   file: UploadedFile,
+  filename: string,
   userId: string,
   serviceInstanceId: ServiceInstanceId
 ) => {
   const fullMetadata = {
     mimetype: file.mimetype,
-    filename: file.filename,
+    filename,
     encoding: file.encoding,
     Uploadinguserid: userId,
     ServiceInstanceId: serviceInstanceId,

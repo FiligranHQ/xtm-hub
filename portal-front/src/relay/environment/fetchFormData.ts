@@ -1,11 +1,14 @@
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
-import { RequestParameters, Variables } from 'relay-runtime';
+import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
+
+export const fileListToUploadableMap = (files: FileList): UploadableMap =>
+  Array.from(files).reduce((acc, file) => ({ ...acc, [file.name]: file }), {});
 
 export const fetchFormData = async (
   apiUri: string,
   request: RequestParameters,
   variables: Variables,
-  uploadables: FileList,
+  uploadables: UploadableMap,
   portalCookie?: RequestCookie
 ) => {
   const headers: { [k: string]: string } = {
@@ -15,20 +18,17 @@ export const fetchFormData = async (
   if (!window.FormData) {
     throw new Error('Uploading files without `FormData` not supported.');
   }
-  if (!uploadables) {
-    throw new Error('`uploadables` is not defined.');
-  }
 
   const formData = new FormData();
   formData.append(
     'operations',
     JSON.stringify({ query: request.text, variables })
   );
-  const uploadablesArray = Array.from(uploadables);
+  const uploadablesArray = Object.values(uploadables);
   const map = uploadablesArray.reduce<{ [key: number]: string[] }>(
     (acc, _, index) => {
       acc[index] = [
-        `variables.document${uploadables.length > 1 ? '.' + index : ''}`,
+        `variables.document${uploadablesArray.length > 1 ? '.' + index : ''}`,
       ];
       return acc;
     },

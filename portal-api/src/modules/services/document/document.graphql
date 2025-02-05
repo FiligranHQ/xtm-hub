@@ -9,6 +9,7 @@ type Document implements Node {
   id: ID!
   uploader_id: String!
   service_instance_id: String!
+  name: String
   description: String
   file_name: String!
   minio_name: String!
@@ -23,6 +24,7 @@ type Document implements Node {
 type Mutation {
   addDocument(
     document: Upload
+    name: String
     description: String
     serviceInstanceId: String
     parentDocumentId: ID

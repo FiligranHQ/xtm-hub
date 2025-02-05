@@ -12,8 +12,12 @@ export function getValidChildren(children: ReactNode) {
   ) as ReactElement[];
 }
 
+export const isNil = (value: unknown): value is null | undefined => {
+  return value === null || value === undefined;
+};
+
 export const isEmpty = (value: unknown): boolean => {
-  if (value === null || value === undefined) {
+  if (isNil(value)) {
     return true;
   }
   if (

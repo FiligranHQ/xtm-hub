@@ -63,6 +63,7 @@ export type Document = Node & {
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   minio_name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   service_instance_id: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
@@ -168,6 +169,7 @@ export type MutationAddDocumentArgs = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   document?: InputMaybe<Scalars['Upload']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
   parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -958,6 +960,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

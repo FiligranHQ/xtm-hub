@@ -10,7 +10,7 @@ export async function up(knex) {
       .references('id')
       .inTable('Document')
       .onDelete('CASCADE');
-
+    table.string('name').nullable();
     table.timestamp('updated_at').nullable();
     table.uuid('updater_id').nullable();
   });
@@ -25,5 +25,6 @@ export async function down(knex) {
     table.dropColumn('updater_id');
     table.dropColumn('updated_at');
     table.dropColumn('parent_document_id');
+    table.dropColumn('name');
   });
 }
