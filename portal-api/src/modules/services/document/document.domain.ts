@@ -1,6 +1,9 @@
 import config from 'config';
-import { db, dbUnsecure, paginate } from '../../../../knexfile';
-import { DocumentConnection } from '../../../__generated__/resolvers-types';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../../knexfile';
+import {
+  DocumentConnection,
+  QueryDocumentsArgs,
+} from '../../../__generated__/resolvers-types';
 import Document, {
   DocumentId,
   DocumentMutator,
@@ -118,7 +121,7 @@ export const passDocumentToInactive = async (
 
 export const getDocuments = async (
   context: PortalContext,
-  opts,
+  opts: QueryDocumentsArgs,
   filter,
   serviceInstanceId: ServiceInstanceId
 ): Promise<DocumentConnection> => {
@@ -127,13 +130,30 @@ export const getDocuments = async (
 
 export const loadDocuments = async (
   context: PortalContext,
-  opts,
+  opts: QueryDocumentsArgs,
   filter,
   serviceInstanceId: ServiceInstanceId
 ): Promise<DocumentConnection> => {
   const query = paginate<Document>(context, 'Document', opts)
+    .select(['Document.*'])
     .where('Document.active', '=', true)
     .where('Document.service_instance_id', '=', serviceInstanceId);
+
+  if (opts.parentsOnly) {
+    query.whereNull('Document.parent_document_id');
+    // left join children_documents
+    query.leftJoin('Document as children_documents', function () {
+      this.on('Document.id', '=', 'children_documents.parent_document_id');
+    });
+    query.select(
+      dbRaw(
+        `CASE
+        WHEN COUNT("children_documents"."id") = 0 THEN NULL
+        ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
+      END AS children_documents`
+      )
+    );
+  }
   if (filter) {
     query.andWhere(function () {
       this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(
@@ -144,13 +164,18 @@ export const loadDocuments = async (
     });
   }
 
-  const documentConnection = await query
-    .select(['Document.*'])
-    .asConnection<DocumentConnection>();
+  query.groupBy('Document.id');
+
+  const documentConnection = await query.asConnection<DocumentConnection>();
 
   const queryCount = db<Document>(context, 'Document', opts)
     .where('Document.active', '=', true)
     .where('Document.service_instance_id', '=', serviceInstanceId);
+
+  if (opts.parentsOnly) {
+    queryCount.whereNull('Document.parent_document_id');
+  }
+
   if (filter) {
     queryCount.andWhere(function () {
       this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(

@@ -12,11 +12,14 @@ import { extractId } from '../../../utils/utils';
 import {
   deleteDocument,
   getDocuments,
-  insertDocument,
   sendFileToS3,
   updateDocumentDescription,
 } from './document.domain';
-import { checkDocumentExists, normalizeDocumentName } from './document.helper';
+import {
+  checkDocumentExists,
+  createDocument,
+  normalizeDocumentName,
+} from './document.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -45,7 +48,8 @@ const resolvers: Resolvers = {
           parent_document_id,
           active: payload.active ?? true,
         };
-        const [addedDocument] = await insertDocument(data);
+
+        const [addedDocument] = await createDocument(data);
         return addedDocument;
       } catch (error) {
         console.error('Error while adding document:', error);
@@ -91,13 +95,21 @@ const resolvers: Resolvers = {
     },
     documents: async (
       _,
-      { first, after, orderMode, orderBy, filter, serviceInstanceId },
+      {
+        first,
+        after,
+        orderMode,
+        orderBy,
+        filter,
+        serviceInstanceId,
+        parentsOnly,
+      },
       context
     ) => {
       try {
         return getDocuments(
           context,
-          { first, after, orderMode, orderBy },
+          { first, after, orderMode, orderBy, parentsOnly },
           normalizeDocumentName(filter ?? ''),
           fromGlobalId(serviceInstanceId).id as ServiceInstanceId
         );

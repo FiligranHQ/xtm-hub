@@ -19,7 +19,7 @@ import {
   Textarea,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -73,6 +73,14 @@ export const CustomDashboardForm = ({
   if (form.getValues('document') || form.getValues('images')) {
     setIsDirty(true);
   }
+
+  const [publishChecked, setPublishChecked] = useState<
+    boolean | 'indeterminate'
+  >(document?.active ?? false);
+  useEffect(
+    () => form.setValue('active', publishChecked === true),
+    [publishChecked]
+  );
 
   const { fields, append, remove } = useFieldArray<
     CustomDashboardFormValues,
@@ -161,7 +169,8 @@ export const CustomDashboardForm = ({
                 <FormControl>
                   <Checkbox
                     {...field}
-                    value="1"
+                    value="on"
+                    onCheckedChange={setPublishChecked}
                   />
                 </FormControl>
                 <FormLabel className="font-normal cursor-pointer">

@@ -394,7 +394,7 @@ export type QueryDocumentsArgs = {
   first: Scalars['Int']['input'];
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
-  parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
+  parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 

@@ -60,6 +60,6 @@ type Query {
     orderMode: OrderingMode!
     filter: String
     serviceInstanceId: String
-    parentDocumentId: ID
+    parentsOnly: Boolean
   ): DocumentConnection! @auth
 }

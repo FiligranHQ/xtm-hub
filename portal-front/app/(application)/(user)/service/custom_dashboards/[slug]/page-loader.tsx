@@ -25,6 +25,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderBy: 'created_at',
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
+        parentsOnly: true,
       },
       {
         fetchPolicy: 'store-and-network',

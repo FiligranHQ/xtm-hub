@@ -29,9 +29,7 @@ const AvailableServices = ({
           AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
           actionButtonText={t('Utils.Continue')}
           triggerElement={
-            <Button
-              onClick={(e) => e.stopPropagation()}
-              className="h-7 text-xs">
+            <Button onClick={(e) => e.stopPropagation()}>
               {t('Service.Subscribe')}
             </Button>
           }

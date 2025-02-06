@@ -98,7 +98,7 @@ export const documentsFragment = graphql`
       orderMode: $orderMode
       filter: $filter
       serviceInstanceId: $serviceInstanceId
-      parentDocumentId: $parentDocumentId
+      parentsOnly: $parentsOnly
     ) {
       __id
       totalCount
@@ -119,7 +119,7 @@ export const DocumentsListQuery = graphql`
     $orderMode: OrderingMode!
     $filter: String
     $serviceInstanceId: String
-    $parentDocumentId: ID
+    $parentsOnly: Boolean
   ) {
     ...documentsList
   }

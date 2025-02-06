@@ -9,6 +9,7 @@ import { RESTRICTION } from '@/utils/constant';
 import {
   documentAddMutation,
   documentAddMutation$data,
+  documentAddMutation$variables,
 } from '@generated/documentAddMutation.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -34,18 +35,21 @@ export const CustomDashboardSheet = ({
   const [addDocument] = useMutation<documentAddMutation>(DocumentAddMutation);
 
   const asyncAddDocument = async (
-    values: Partial<CustomDashboardFormValues>
+    values: Partial<CustomDashboardFormValues>,
+    isParent: boolean
   ): Promise<documentAddMutation$data> =>
     new Promise((resolve, reject) => {
       if (isNil(values.document)) {
         return reject(new Error('Document is required'));
       }
+      const variables: documentAddMutation$variables = {
+        ...values,
+        serviceInstanceId,
+        connections: isParent ? [connectionId] : [], // Don't pass the connectionId to bypass update the list of documents with hidden documents
+      };
+
       addDocument({
-        variables: {
-          ...values,
-          serviceInstanceId,
-          connections: [connectionId],
-        },
+        variables,
         uploadables: fileListToUploadableMap(values.document),
         onCompleted: (response) => resolve(response),
         onError: (error) => reject(error),
@@ -58,18 +62,21 @@ export const CustomDashboardSheet = ({
 
     try {
       // Add parent document (the dashboard)
-      const parentDocResult = await asyncAddDocument(input);
+      const parentDocResult = await asyncAddDocument(input, true);
 
       // Add images
       for (const image of images) {
         if (isNil(image.file)) {
           continue;
         }
-        await asyncAddDocument({
-          ...input,
-          document: image.file,
-          parentDocumentId: parentDocResult.addDocument.id,
-        });
+        await asyncAddDocument(
+          {
+            ...input,
+            document: image.file,
+            parentDocumentId: parentDocResult.addDocument.id,
+          },
+          false
+        );
       }
 
       setOpenSheet(false);
