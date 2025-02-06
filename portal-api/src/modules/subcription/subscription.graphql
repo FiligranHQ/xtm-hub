@@ -36,4 +36,6 @@ type Mutation {
   deleteSubscription(subscription_id: ID!): ServiceInstance
     @auth(requires: [BCK_MANAGE_SERVICES])
     @service_capa(requires: [MANAGE_ACCESS])
+  selfSubscribe(service_instance_id: String): ServiceInstance
+    @auth(requires: [FRT_SERVICE_SELF_SUBSCRIBER])
 }

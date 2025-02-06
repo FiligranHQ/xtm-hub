@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   ServiceConnection,
+  ServiceDefinitionIdentifier,
   ServiceInstance,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -512,15 +513,22 @@ export const grantServiceAccess = async (
       'ServiceInstance.id',
       subscription.service_instance_id
     );
-    await sendMail({
-      to: user.email,
-      template: 'partnerVault',
-      params: {
-        name: user.email,
-        partnerVaultLink: `${config.get('base_url_front')}/service/${serviceInstance.service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
-        partnerVault: serviceInstance.name,
-      },
-    });
+
+    // Send mail only for vault services
+    // @TODO: better implementation based on service definition
+    if (
+      serviceInstance.service_definition.identifier ===
+      ServiceDefinitionIdentifier.Vault
+    )
+      await sendMail({
+        to: user.email,
+        template: 'partnerVault',
+        params: {
+          name: user.email,
+          partnerVaultLink: `${config.get('base_url_front')}/service/${serviceInstance.service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
+          partnerVault: serviceInstance.name,
+        },
+      });
   }
 
   for (const capabilityId of capabilitiesIds) {

@@ -162,6 +162,7 @@ export type Mutation = {
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
   removeUserFromOrganization?: Maybe<User>;
+  selfSubscribe?: Maybe<ServiceInstance>;
 };
 
 
@@ -299,6 +300,11 @@ export type MutationMergeTestArgs = {
 export type MutationRemoveUserFromOrganizationArgs = {
   organization_id: Scalars['ID']['input'];
   user_id: Scalars['ID']['input'];
+};
+
+
+export type MutationSelfSubscribeArgs = {
+  service_instance_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Node = {
@@ -487,6 +493,7 @@ export enum Restriction {
   FrtAccessServices = 'FRT_ACCESS_SERVICES',
   FrtManageSettings = 'FRT_MANAGE_SETTINGS',
   FrtManageUser = 'FRT_MANAGE_USER',
+  FrtServiceSelfSubscriber = 'FRT_SERVICE_SELF_SUBSCRIBER',
   FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER'
 }
 
@@ -1060,6 +1067,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
+  selfSubscribe?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationSelfSubscribeArgs>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

@@ -38,6 +38,10 @@ export const CAPABILITY_FRT_ACCESS_SERVICES = {
   id: 'fe5ad46d-8851-4d8f-901b-4dfb5e738df5',
   name: Restriction.FrtAccessServices,
 };
+export const CAPABILITY_FRT_SERVICE_SELF_SUBSCRIBER: CapabilityPortal = {
+  id: '0b23ea67-e944-43f5-a397-9022f4f0cc76' as CapabilityPortalId,
+  name: Restriction.FrtServiceSelfSubscriber,
+};
 export const ROLE_ADMIN: RolePortal = {
   id: '6b632cf2-9105-46ec-a463-ad59ab58c770' as RolePortalId,
   name: 'ADMIN',

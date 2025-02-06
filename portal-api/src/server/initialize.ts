@@ -11,6 +11,7 @@ import {
   CAPABILITY_FRT_ACCESS_SERVICES,
   CAPABILITY_FRT_MANAGE_SETTINGS,
   CAPABILITY_FRT_MANAGE_USER,
+  CAPABILITY_FRT_SERVICE_SELF_SUBSCRIBER,
   CAPABILITY_FRT_SERVICE_SUBSCRIBER,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
@@ -87,6 +88,7 @@ const initCapabilityAndRole = async () => {
     await ensureCapabilityExists(CAPABILITY_FRT_ACCESS_BILLING, trx);
     await ensureCapabilityExists(CAPABILITY_FRT_MANAGE_USER, trx);
     await ensureCapabilityExists(CAPABILITY_FRT_ACCESS_SERVICES, trx);
+    await ensureCapabilityExists(CAPABILITY_FRT_SERVICE_SELF_SUBSCRIBER, trx);
 
     // Ensure ROLE_ADMIN and ROLE_USER exist in RolePortal
     await ensureRoleExists(ROLE_ADMIN, trx);
@@ -126,8 +128,18 @@ const initCapabilityAndRole = async () => {
       trx
     );
     await ensureRoleHasCapability(
+      ROLE_ADMIN_ORGA,
+      CAPABILITY_FRT_SERVICE_SELF_SUBSCRIBER,
+      trx
+    );
+    await ensureRoleHasCapability(
       ROLE_USER,
       CAPABILITY_FRT_ACCESS_SERVICES,
+      trx
+    );
+    await ensureRoleHasCapability(
+      ROLE_USER,
+      CAPABILITY_FRT_SERVICE_SELF_SUBSCRIBER,
       trx
     );
 

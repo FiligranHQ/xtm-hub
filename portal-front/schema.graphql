@@ -22,6 +22,7 @@ type Mutation {
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
+  selfSubscribe(service_instance_id: String): ServiceInstance
   editServiceCapability(input: EditServiceCapabilityInput): Subscription
   addUserService(input: UserServiceAddInput!): Subscription
   deleteUserService(input: UserServiceDeleteInput!): Subscription
@@ -420,6 +421,7 @@ enum Restriction {
   FRT_ACCESS_BILLING
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
+  FRT_SERVICE_SELF_SUBSCRIBER
 }
 
 enum ServiceRestriction {

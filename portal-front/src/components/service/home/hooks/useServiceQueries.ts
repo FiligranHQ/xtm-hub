@@ -1,8 +1,12 @@
-import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
+import {
+  AddSubscriptionMutation,
+  SelfSubscribeMutation,
+} from '@/components/subcription/subscription.graphql';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { subscriptionCreateMutation } from '@generated/subscriptionCreateMutation.graphql';
+import { subscriptionSelfSubscribeMutation } from '@generated/subscriptionSelfSubscribeMutation.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 import { userServiceOwnedUser$key } from '@generated/userServiceOwnedUser.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -71,13 +75,20 @@ const getPublicServices = (
   );
   useSubscription(config);
 
-  const [commitSubscriptionCreateMutation] =
-    useMutation<subscriptionCreateMutation>(AddSubscriptionMutation);
+  const [subscriptionCreate] = useMutation<subscriptionCreateMutation>(
+    AddSubscriptionMutation
+  );
+  const [selfSubscribe] = useMutation<subscriptionSelfSubscribeMutation>(
+    SelfSubscribeMutation
+  );
 
-  const addSubscriptionInDb = useCallback(
+  const subcribe = useCallback(
     (service: serviceList_fragment$data) => {
-      const commitMutation = (status: string, successMessage: string) => {
-        commitSubscriptionCreateMutation({
+      const commitCreateSubscription = (
+        status: string,
+        successMessage: string
+      ) => {
+        subscriptionCreate({
           variables: {
             service_instance_id: service.id,
             connections: [connectionID],
@@ -90,13 +101,40 @@ const getPublicServices = (
         });
       };
 
+      const commitSelfSubscribe = () => {
+        selfSubscribe({
+          variables: {
+            service_instance_id: service.id,
+            connections: [connectionID],
+          },
+          onCompleted: () => {
+            handleSuccess(t('Service.SubscribeSuccessful'));
+            onUpdate();
+          },
+          onError: (error: Error) => handleError(error),
+        });
+      };
+
       if (
         service.join_type &&
         [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(service.join_type)
       ) {
-        commitMutation('ACCEPTED', t('Service.SubscribeSuccessful'));
+        // If the subscription already exists for the current organization
+        if (service.organization_subscribed) {
+          // Try to self subscribe to the service
+          commitSelfSubscribe();
+        } else {
+          // If the subscription does not exist, create a subscription
+          commitCreateSubscription(
+            'ACCEPTED',
+            t('Service.SubscribeSuccessful')
+          );
+        }
       } else {
-        commitMutation('REQUESTED', t('Service.SubscriptionRequestSuccessful'));
+        commitCreateSubscription(
+          'REQUESTED',
+          t('Service.SubscriptionRequestSuccessful')
+        );
       }
     },
     [connectionID]
@@ -109,7 +147,7 @@ const getPublicServices = (
 
   return {
     publicServices,
-    addSubscriptionInDb,
+    subcribe,
   };
 };
 
@@ -120,7 +158,7 @@ export const useServiceQueries = (
   handleSuccess: (message: string) => void,
   handleError: (error: Error) => void
 ) => {
-  const { publicServices, addSubscriptionInDb } = getPublicServices(
+  const { publicServices, subcribe } = getPublicServices(
     queryRefPublicService,
     onUpdate,
     handleSuccess,
@@ -130,6 +168,6 @@ export const useServiceQueries = (
   return {
     ownedServices: getOwnedServices(queryRefUserServiceOwned),
     publicServices,
-    addSubscriptionInDb,
+    subcribe,
   };
 };

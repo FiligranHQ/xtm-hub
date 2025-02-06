@@ -63,3 +63,15 @@ export const AddSubscriptionMutation = graphql`
     }
   }
 `;
+
+export const SelfSubscribeMutation = graphql`
+  mutation subscriptionSelfSubscribeMutation(
+    $service_instance_id: String!
+    $connections: [ID!]!
+  ) {
+    selfSubscribe(service_instance_id: $service_instance_id)
+      @prependNode(connections: $connections, edgeTypeName: "Subscription") {
+      ...serviceList_fragment
+    }
+  }
+`;

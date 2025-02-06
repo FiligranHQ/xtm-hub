@@ -11,6 +11,7 @@ enum Restriction {
   FRT_ACCESS_BILLING
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
+  FRT_SERVICE_SELF_SUBSCRIBER
 }
 
 directive @service_capa(

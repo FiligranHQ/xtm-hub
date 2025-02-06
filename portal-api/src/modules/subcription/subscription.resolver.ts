@@ -16,9 +16,11 @@ import {
 } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import {
+  grantServiceAccess,
   grantServiceAccessUsers,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
+import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,
@@ -183,6 +185,40 @@ const resolvers: Resolvers = {
           throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
         }
         throw UnknownError('DELETE_SUBSCRIPTION_ERROR', { detail: error });
+      }
+    },
+    selfSubscribe: async (_, { service_instance_id }, context) => {
+      const trx = await dbTx();
+
+      try {
+        const serviceInstanceId = fromGlobalId(service_instance_id).id;
+
+        // Check if subscription exists
+        const subscription = await checkSubscriptionExists(
+          context,
+          context.user.selected_organization_id,
+          serviceInstanceId
+        );
+        if (!subscription) {
+          throw ForbiddenAccess('NOT_SUBSCRIBED_ORGANIZATION_ERROR');
+        }
+
+        await grantServiceAccess(
+          context,
+          [GenericServiceCapabilityIds.AccessId],
+          [context.user.id],
+          subscription.id
+        );
+
+        await trx.commit();
+        return loadServiceWithSubscriptions(context, serviceInstanceId);
+      } catch (error) {
+        console.error(error);
+        await trx.rollback();
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          throw error;
+        }
+        throw UnknownError('SERVICE_SUBSCRIPTION_ERROR', { detail: error });
       }
     },
   },

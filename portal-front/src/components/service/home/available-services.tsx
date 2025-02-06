@@ -10,13 +10,10 @@ import { JOIN_TYPE } from '../service.const';
 
 interface PublicServicesProps {
   services: serviceList_fragment$data[];
-  addSubscriptionInDb: (service: serviceList_fragment$data) => void;
+  subcribe: (service: serviceList_fragment$data) => void;
 }
 
-const AvailableServices = ({
-  addSubscriptionInDb,
-  services,
-}: PublicServicesProps) => {
+const AvailableServices = ({ subcribe, services }: PublicServicesProps) => {
   const t = useTranslations();
   const getAction = (service: serviceList_fragment$data) => {
     return (
@@ -35,7 +32,7 @@ const AvailableServices = ({
               {t('Service.Subscribe')}
             </Button>
           }
-          onClickContinue={() => addSubscriptionInDb(service)}>
+          onClickContinue={() => subcribe(service)}>
           {t('Service.SureWantSubscriptionDirect')}
         </AlertDialogComponent>
       )

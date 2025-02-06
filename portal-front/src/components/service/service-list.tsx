@@ -39,14 +39,13 @@ const ServiceList = ({
     });
   };
 
-  const { ownedServices, publicServices, addSubscriptionInDb } =
-    useServiceQueries(
-      queryRefUserServiceOwned,
-      queryRefServiceList,
-      onUpdate,
-      handleSuccess,
-      handleError
-    );
+  const { ownedServices, publicServices, subcribe } = useServiceQueries(
+    queryRefUserServiceOwned,
+    queryRefServiceList,
+    onUpdate,
+    handleSuccess,
+    handleError
+  );
 
   const { owned: publicOwnedServices, notOwned: availableServices } =
     useMemo(() => {
@@ -79,7 +78,7 @@ const ServiceList = ({
       />
       <AvailableServices
         services={availableServices}
-        addSubscriptionInDb={addSubscriptionInDb}
+        subcribe={subcribe}
       />
     </>
   );
