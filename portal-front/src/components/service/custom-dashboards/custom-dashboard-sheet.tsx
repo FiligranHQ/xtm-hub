@@ -63,14 +63,13 @@ export const CustomDashboardSheet = ({
       // Add images
       for (const image of images) {
         if (isNil(image.file)) {
-        continue;
+          continue;
         }
         await asyncAddDocument({
-         ...input,
-         document: image.file,
-         parentDocumentId: parentDocResult.addDocument.id,
-       });
-        
+          ...input,
+          document: image.file,
+          parentDocumentId: parentDocResult.addDocument.id,
+        });
       }
 
       setOpenSheet(false);
@@ -92,8 +91,7 @@ export const CustomDashboardSheet = ({
   return (
     <>
       <GuardCapacityComponent
-        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
-        displayError={false}>
+        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
