@@ -63,14 +63,6 @@ const getSchemaTransformer = (
             }
             // Get the required authorization role for the requested field
             if (authDirective && !hasCapabilityFn(user, capabilitiesRequired)) {
-              console.error(
-                'User',
-                user.id,
-                "doesn't have the required capability",
-                capabilitiesRequired,
-                'User capabilities :',
-                user.capabilities.map((c) => c.name)
-              );
               throw new Error(
                 `Not authorized. The provided role does not meet schema requirements`
               );
