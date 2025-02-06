@@ -54,7 +54,7 @@ const ServiceList = ({
         (acc, service) => {
           // A service is owned if it is subscribed or if it is a link service (link service are special ones)
           if (
-            service.subscribed ||
+            (service.organization_subscribed && service.user_subscribed) ||
             service.service_definition?.identifier ===
               SERVICE_DEFINITION_IDENTIFIER.LINK
           ) {

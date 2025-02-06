@@ -29,7 +29,8 @@ export const serviceListFragment = graphql`
     name
     description
     creation_status
-    subscribed
+    organization_subscribed
+    user_subscribed
     capabilities
     public
     join_type

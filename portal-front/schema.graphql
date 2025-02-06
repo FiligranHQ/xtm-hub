@@ -158,7 +158,8 @@ type ServiceInstance implements Node {
   name: String!
   description: String
   creation_status: String
-  subscribed: Boolean
+  organization_subscribed: Boolean
+  user_subscribed: Boolean
   links: [ServiceLink]
   organization: [Organization]
   subscriptions: [Subscription]

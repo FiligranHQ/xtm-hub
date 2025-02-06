@@ -536,11 +536,12 @@ export type ServiceInstance = Node & {
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   name: Scalars['String']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
+  organization_subscribed?: Maybe<Scalars['Boolean']['output']>;
   public?: Maybe<Scalars['Boolean']['output']>;
   service_definition?: Maybe<ServiceDefinition>;
-  subscribed?: Maybe<Scalars['Boolean']['output']>;
   subscriptions?: Maybe<Array<Maybe<Subscription>>>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  user_subscribed?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type ServiceInstanceEdge = {
@@ -1162,11 +1163,12 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organization']>>>, ParentType, ContextType>;
+  organization_subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   service_definition?: Resolver<Maybe<ResolversTypes['ServiceDefinition']>, ParentType, ContextType>;
-  subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   subscriptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  user_subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

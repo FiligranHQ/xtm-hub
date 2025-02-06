@@ -20,7 +20,7 @@ const AvailableServices = ({
   const t = useTranslations();
   const getAction = (service: serviceList_fragment$data) => {
     return (
-      !service.subscribed &&
+      !service.user_subscribed &&
       service.join_type &&
       [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
         service.join_type
@@ -52,7 +52,7 @@ const AvailableServices = ({
           }>
           {services.map((service) => {
             return (
-              !service.subscribed && (
+              !service.user_subscribed && (
                 <ServiceInstanceCard
                   key={service.id}
                   bottomLeftAction={getAction(service)}

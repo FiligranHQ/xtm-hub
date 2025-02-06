@@ -27,7 +27,7 @@ export const isEmpty = (value: unknown): boolean => {
   ) {
     return value.length === 0;
   }
-  if (typeof value === 'object') {
+  if (typeof value === 'object' && value !== null) {
     return Object.keys(value).length === 0;
   }
   return false;
