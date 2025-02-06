@@ -62,13 +62,15 @@ export const CustomDashboardSheet = ({
 
       // Add images
       for (const image of images) {
-        if (!isNil(image.file)) {
-          await asyncAddDocument({
-            ...input,
-            document: image.file,
-            parentDocumentId: parentDocResult.addDocument.id,
-          });
+        if (isNil(image.file)) {
+        continue;
         }
+        await asyncAddDocument({
+         ...input,
+         document: image.file,
+         parentDocumentId: parentDocResult.addDocument.id,
+       });
+        
       }
 
       setOpenSheet(false);
