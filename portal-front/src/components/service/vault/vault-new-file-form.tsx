@@ -155,7 +155,11 @@ export const VaultNewFileForm: FunctionComponent<
                 {t('Service.Vault.FileForm.FileExistsDialog')}
               </AlertDialogComponent>
             ) : (
-              <Button type="submit">{t('Utils.Validate')}</Button>
+              <Button
+                type="submit"
+                disabled={!form.formState.isValid}>
+                {t('Utils.Validate')}
+              </Button>
             )}
           </SheetFooter>
         </form>

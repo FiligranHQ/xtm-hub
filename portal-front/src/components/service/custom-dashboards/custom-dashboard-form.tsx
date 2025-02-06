@@ -255,7 +255,11 @@ export const CustomDashboardForm = ({
             {t('Utils.Cancel')}
           </Button>
 
-          <Button type="submit">{t('Utils.Validate')}</Button>
+          <Button
+            disabled={!form.formState.isValid}
+            type="submit">
+            {t('Utils.Validate')}
+          </Button>
         </SheetFooter>
       </form>
     </Form>
