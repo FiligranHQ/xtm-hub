@@ -3,11 +3,7 @@ import { fetchQuery, VariablesOf } from 'react-relay';
 import { GraphQLTaggedNode, OperationType } from 'relay-runtime';
 
 export const useServerLoader = () => {
-  const relayEnvironment = createServerSideRelayEnvironment({
-    next(_response) {
-      //console.log('Relay SSR response:', _response);
-    },
-  });
+  const relayEnvironment = createServerSideRelayEnvironment({});
 
   const loadQuery = <T extends OperationType>(
     query: GraphQLTaggedNode,
