@@ -96,7 +96,6 @@ export const CustomDashboardForm = ({
   useEffect(() => {
     if (watchedImages.length) {
       const lastImage = watchedImages[watchedImages.length - 1];
-      // Ici, on suppose que la présence d'un fichier dans lastImage indique qu'il faut ajouter un nouvel input.
       if (lastImage?.file !== undefined && watchedImages.length < 5) {
         append({ file: undefined });
       }
