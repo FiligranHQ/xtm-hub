@@ -89,7 +89,13 @@ export const loadUserBy = async (
 
   const userQuery = dbUnsecure<UserLoadUserBy>('User')
     .where(field)
-    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
+    .leftJoin('User_Organization', function () {
+      this.on('User.id', '=', 'User_Organization.user_id'); /*.andOn(
+        'User.selected_organization_id',
+        '=',
+        'User_Organization.organization_id'
+      ); */
+    })
     .leftJoin(
       'Organization as org',
       'User_Organization.organization_id',
