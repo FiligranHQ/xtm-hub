@@ -221,13 +221,8 @@ const resolvers: Resolvers = {
         context.user.id,
         fromGlobalId(organization_id).id
       );
-
-      context.req.session.user = {
-        ...context.user,
-        ...updatedUser,
-      };
-
-      await dispatch('User', 'edit', updatedUser);
+      context.req.session.user.selected_organization_id =
+        updatedUser.selected_organization_id;
 
       return mapUserToGraphqlUser(updatedUser);
     },
