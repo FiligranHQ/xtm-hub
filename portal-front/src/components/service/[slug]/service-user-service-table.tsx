@@ -4,6 +4,9 @@ import { UserServiceDeleteMutation } from '@/components/service/user_service.gra
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import { i18nKey } from '@/utils/datatable';
+import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
+import { userService_fragment$data } from '@generated/userService_fragment.graphql';
+import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, Button, DataTable } from 'filigran-ui';
@@ -16,9 +19,6 @@ import {
   useState,
 } from 'react';
 import { useMutation } from 'react-relay';
-import { serviceWithSubscriptions_fragment$data } from '../../../../__generated__/serviceWithSubscriptions_fragment.graphql';
-import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
-import { userServiceDeleteMutation } from '../../../../__generated__/userServiceDeleteMutation.graphql';
 
 interface ServiceUserServiceProps {
   subscriptionId?: string;

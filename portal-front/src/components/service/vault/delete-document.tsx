@@ -1,4 +1,4 @@
-import { DocumentDeleteMutation } from '@/components/service/vault/document.graphql';
+import { DocumentDeleteMutation } from '@/components/service/document/document.graphql';
 import { IconActionContext } from '@/components/ui/icon-actions';
 import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -7,8 +7,8 @@ import { useMutation } from 'react-relay';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
-import { documentDeleteMutation } from '../../../../__generated__/documentDeleteMutation.graphql';
-import { documentItem_fragment$data } from '../../../../__generated__/documentItem_fragment.graphql';
+import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 interface DeleteDocumentProps {
   documentData: documentItem_fragment$data;
   connectionId: string;

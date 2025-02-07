@@ -9,11 +9,11 @@ import { GraphQLSubscriptionConfig } from 'relay-runtime';
 
 import { userMeSubscription } from '@/components/admin/user/user.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { useMutation, useSubscription } from 'react-relay';
 import {
   userMeSubscription$data,
   userMeSubscription as userMeSubscriptionType,
-} from '../../../__generated__/userMeSubscription.graphql';
+} from '@generated/userMeSubscription.graphql';
+import { useMutation, useSubscription } from 'react-relay';
 
 // Component
 const UserEventSubscription: React.FunctionComponent = () => {

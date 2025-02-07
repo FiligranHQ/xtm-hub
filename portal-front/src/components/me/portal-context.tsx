@@ -1,10 +1,10 @@
 import { RESTRICTION } from '@/utils/constant';
-import * as React from 'react';
-import { createContext, FunctionComponent } from 'react';
 import {
   meContext_fragment$data,
   Restriction,
-} from '../../../__generated__/meContext_fragment.graphql';
+} from '@generated/meContext_fragment.graphql';
+import * as React from 'react';
+import { createContext, FunctionComponent } from 'react';
 
 export interface Portal {
   me?: meContext_fragment$data | null;

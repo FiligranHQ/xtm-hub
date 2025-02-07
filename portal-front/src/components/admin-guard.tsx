@@ -2,10 +2,10 @@
 
 import { Portal, portalContext } from '@/components/me/portal-context';
 import useGranted from '@/hooks/useGranted';
+import { Restriction } from '@generated/meContext_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
-import { Restriction } from '../../__generated__/meContext_fragment.graphql';
 
 // Component interface
 interface GuardComponentProps {

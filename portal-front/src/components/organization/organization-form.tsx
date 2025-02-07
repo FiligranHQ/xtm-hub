@@ -1,5 +1,6 @@
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -18,7 +19,6 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
 
 interface OrganizationFormSheetProps {
   organization?: organizationItem_fragment$data;

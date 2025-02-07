@@ -1,13 +1,13 @@
 import { Portal, portalContext } from '@/components/me/portal-context';
 import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
+import { organizationSwitcherMutation } from '@generated/organizationSwitcherMutation.graphql';
 import { CityIcon, UnfoldMoreIcon } from 'filigran-icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FunctionComponent, useContext, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
-import { organizationSwitcherMutation } from '../../../__generated__/organizationSwitcherMutation.graphql';
 
 interface TeamSwitcherProps {
   open: boolean;

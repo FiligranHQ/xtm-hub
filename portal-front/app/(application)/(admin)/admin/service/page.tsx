@@ -7,15 +7,15 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import useGoToServiceLink from '@/hooks/useGoToServiceLink';
 import { i18nKey } from '@/utils/datatable';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { serviceQuery } from '@generated/serviceQuery.graphql';
+import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-import { serviceList_fragment$data } from '../../../../../__generated__/serviceList_fragment.graphql';
-import { serviceQuery } from '../../../../../__generated__/serviceQuery.graphql';
-import { servicesList_services$key } from '../../../../../__generated__/servicesList_services.graphql';
 
 const breadcrumbValue = [
   {

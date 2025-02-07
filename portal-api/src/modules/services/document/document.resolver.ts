@@ -1,40 +1,58 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../../model/kanel/public/Document';
+import {
+  DocumentId,
+  DocumentMutator,
+} from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
+import { extractId } from '../../../utils/utils';
 import {
   deleteDocument,
   getDocuments,
-  insertDocument,
   sendFileToS3,
   updateDocumentDescription,
 } from './document.domain';
-import { checkDocumentExists, normalizeDocumentName } from './document.helper';
+import {
+  checkDocumentExists,
+  createDocument,
+  normalizeDocumentName,
+} from './document.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
-    addDocument: async (_, opt, context) => {
+    addDocument: async (_, payload, context) => {
       try {
+        const file_name = normalizeDocumentName(payload.document.file.filename);
+        const parent_document_id = payload.parentDocumentId
+          ? (extractId(payload.parentDocumentId) as DocumentId)
+          : null;
         const minioName = await sendFileToS3(
-          opt.document.file,
+          payload.document.file,
+          file_name,
           context.user.id,
           context.serviceInstanceId as ServiceInstanceId
         );
-        const data: Document = {
+
+        const data: DocumentMutator = {
           uploader_id: context.user.id as UserId,
-          description: opt.description,
+          name: payload.name,
+          description: payload.description,
           minio_name: minioName,
-          file_name: normalizeDocumentName(opt.document.file.filename),
-          service_instance_id: context.serviceInstanceId,
+          file_name,
+          service_instance_id: context.serviceInstanceId as ServiceInstanceId,
           created_at: new Date(),
-          mime_type: opt.document.file.mimetype,
-        } as unknown as Document;
-        const [addedDocument] = await insertDocument(data);
+          mime_type: payload.document.file.mimetype,
+          parent_document_id,
+          active: payload.active ?? true,
+        };
+
+        const [addedDocument] = await createDocument(data);
         return addedDocument;
       } catch (error) {
+        console.error('Error while adding document:', error);
         throw UnknownError('INSERT_DOCUMENT_ERROR', { detail: error });
       }
     },
@@ -77,13 +95,21 @@ const resolvers: Resolvers = {
     },
     documents: async (
       _,
-      { first, after, orderMode, orderBy, filter, serviceInstanceId },
+      {
+        first,
+        after,
+        orderMode,
+        orderBy,
+        filter,
+        serviceInstanceId,
+        parentsOnly,
+      },
       context
     ) => {
       try {
         return getDocuments(
           context,
-          { first, after, orderMode, orderBy },
+          { first, after, orderMode, orderBy, parentsOnly },
           normalizeDocumentName(filter ?? ''),
           fromGlobalId(serviceInstanceId).id as ServiceInstanceId
         );

@@ -34,7 +34,12 @@ describe('should call S3 to send file', () => {
       createReadStream: () => Readable.from(['file content']),
     };
 
-    await sendFileToS3(fileMock, 'ba091095-418f-4b4f-b150-6c9295e232c3');
+    await sendFileToS3(
+      fileMock,
+      'name',
+      'ba091095-418f-4b4f-b150-6c9295e232c3',
+      'ba091095-418f-4b4f-b150-6c9295e232c3' as ServiceInstanceId
+    );
 
     const expectedResult = {
       Bucket: 'xtmhubbucket',

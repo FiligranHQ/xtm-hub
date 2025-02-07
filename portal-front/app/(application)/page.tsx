@@ -14,8 +14,8 @@ import {
   OrderingMode,
   publicServiceQuery,
   ServiceInstanceOrdering,
-} from '../../__generated__/publicServiceQuery.graphql';
-import { userServiceOwnedQuery } from '../../__generated__/userServiceOwnedQuery.graphql';
+} from '@generated/publicServiceQuery.graphql';
+import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 
 export const dynamic = 'force-dynamic';
 

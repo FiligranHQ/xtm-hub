@@ -4,11 +4,11 @@ import {
   IconActionContext,
   IconActionsButton,
 } from '@/components/ui/icon-actions';
+import { userDeletionMutation } from '@generated/userDeletionMutation.graphql';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useContext } from 'react';
 import { useMutation } from 'react-relay';
-import { userDeletionMutation } from '../../../../__generated__/userDeletionMutation.graphql';
 
 interface DeleteUserActionsProps {
   user: {

@@ -1,4 +1,5 @@
 import { PortalContext } from '@/components/me/portal-context';
+import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
@@ -6,7 +7,6 @@ import { FunctionComponent, ReactNode } from 'react';
 import { RelayEnvironmentProvider } from 'react-relay/hooks';
 import { EnvironmentConfig } from 'relay-runtime';
 import { createMockEnvironment } from 'relay-test-utils';
-import { meContext_fragment$data } from '../../../__generated__/meContext_fragment.graphql';
 
 export interface ProvidersWrapperProps {
   children: ReactNode;

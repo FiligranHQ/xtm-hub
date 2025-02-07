@@ -1,13 +1,12 @@
 'use client';
 
-import { portalContext } from '@/components/me/portal-context';
 import { SERVICE_DEFINITION_IDENTIFIER } from '@/components/service/service.const';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { LinkIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
 import Link from 'next/link';
-import { Suspense, useContext } from 'react';
-import { serviceList_fragment$data } from '../../../../__generated__/serviceList_fragment.graphql';
-import { userServicesOwned_fragment$data } from '../../../../__generated__/userServicesOwned_fragment.graphql';
+import { Suspense } from 'react';
 import ServiceInstanceCard from '../service-instance-card';
 
 interface OwnedServicesProps {
@@ -16,8 +15,6 @@ interface OwnedServicesProps {
 }
 
 const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
-  const { isPersonalSpace } = useContext(portalContext);
-
   const getAction = (service: serviceList_fragment$data) => {
     if (
       service.service_definition?.identifier ===
@@ -46,6 +43,31 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
           </Button>
         );
     }
+
+    return (
+      <ul className="flex space-x-s">
+        {service.links?.map((link) => (
+          <li key={link?.name}>
+            <Button
+              className={
+                'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:absolute after:inset-0'
+              }
+              asChild
+              variant={'ghost'}>
+              <Link
+                href={`/service/${service.service_definition?.identifier}/${service.id}`}>
+                <LinkIcon
+                  aria-hidden={true}
+                  focusable={false}
+                  className="mr-3 h-3 w-3"
+                />
+                {link?.name}
+              </Link>
+            </Button>
+          </li>
+        ))}
+      </ul>
+    );
   };
 
   if (services.length > 0 || publicServices.length > 0)
@@ -53,43 +75,21 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
       <Suspense>
         <ul
           className={
-            'grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-m'
+            'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-m'
           }>
-          {!isPersonalSpace &&
-            services.map(({ subscription, id }) => {
-              return (
-                <ServiceInstanceCard
-                  key={id}
-                  serviceInstance={
-                    subscription!.service_instance as serviceList_fragment$data
-                  }
-                  bottomLeftAction={
-                    <ul className="flex space-x-s">
-                      {subscription?.service_instance?.links?.map((link) => (
-                        <li key={link?.name}>
-                          <Button
-                            className={
-                              'h-6 bg-gray-100 p-s txt-sub-content dark:bg-gray-800 after:absolute after:inset-0'
-                            }
-                            asChild
-                            variant={'ghost'}>
-                            <Link
-                              href={`/service/${subscription?.service_instance?.service_definition?.identifier}/${subscription?.service_instance?.id}`}>
-                              <LinkIcon
-                                aria-hidden={true}
-                                focusable={false}
-                                className="mr-3 h-3 w-3"
-                              />
-                              {link?.name}
-                            </Link>
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  }
-                />
-              );
-            })}
+          {services.map(({ subscription, id }) => {
+            return (
+              <ServiceInstanceCard
+                key={id}
+                serviceInstance={
+                  subscription!.service_instance as serviceList_fragment$data
+                }
+                bottomLeftAction={getAction(
+                  subscription!.service_instance as serviceList_fragment$data
+                )}
+              />
+            );
+          })}
           {publicServices.map((service) => (
             <ServiceInstanceCard
               key={service.id}

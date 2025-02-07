@@ -8,6 +8,9 @@ import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { isDevelopment, isEmpty } from '@/lib/utils';
+import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
+import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import { userSlug_fragment$data } from '@generated/userSlug_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -25,9 +28,6 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { z, ZodSchema } from 'zod';
-import { meContext_fragment$data } from '../../../../__generated__/meContext_fragment.graphql';
-import { userList_fragment$data } from '../../../../__generated__/userList_fragment.graphql';
-import { userSlug_fragment$data } from '../../../../__generated__/userSlug_fragment.graphql';
 
 const initializeOrganizations = (
   user:

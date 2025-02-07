@@ -1,11 +1,11 @@
 import { organizationDeletion } from '@/components/organization/organization.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { organizationDeletionMutation } from '@generated/organizationDeletionMutation.graphql';
+import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
-import { organizationDeletionMutation } from '../../../__generated__/organizationDeletionMutation.graphql';
-import { organizationItem_fragment$data } from '../../../__generated__/organizationItem_fragment.graphql';
 
 interface DeleteOrganizationProps {
   organization: organizationItem_fragment$data;

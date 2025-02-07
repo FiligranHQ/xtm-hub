@@ -1,6 +1,8 @@
 import { getOrganizations } from '@/components/organization/organization.service';
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
+import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -23,8 +25,6 @@ import { Dispatch, FunctionComponent, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
-import { subscriptionInServiceCreateMutation } from '../../../../__generated__/subscriptionInServiceCreateMutation.graphql';
-import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
 
 interface ServiceSlugAddOrgaFormSheetProps {
   serviceId: string;

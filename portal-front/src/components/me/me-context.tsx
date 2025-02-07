@@ -4,10 +4,10 @@ import MeFilling from '@/components/me/me-filling';
 import { MeContextFragment, MeQuery } from '@/components/me/me.graphql';
 import { PortalContext } from '@/components/me/portal-context';
 import UserEventSubscription from '@/components/me/user-event-subscription';
+import { meContext_fragment$key } from '@generated/meContext_fragment.graphql';
+import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import * as React from 'react';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
-import { meContext_fragment$key } from '../../../__generated__/meContext_fragment.graphql';
-import { meLoaderQuery } from '../../../__generated__/meLoaderQuery.graphql';
 
 // Component interface
 interface ContextProps {

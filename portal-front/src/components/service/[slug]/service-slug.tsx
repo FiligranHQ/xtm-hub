@@ -18,6 +18,11 @@ import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing
 import TriggerButton from '@/components/ui/trigger-button';
 import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
+import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
+import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
+import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
+import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
+import { userService_fragment$data } from '@generated/userService_fragment.graphql';
 import { DeleteIcon } from 'filigran-icon';
 import {
   Button,
@@ -28,11 +33,6 @@ import {
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
-import { serviceByIdWithSubscriptionsQuery } from '../../../../__generated__/serviceByIdWithSubscriptionsQuery.graphql';
-import { serviceWithSubscriptions_fragment$data } from '../../../../__generated__/serviceWithSubscriptions_fragment.graphql';
-import { subscriptionDeleteMutation } from '../../../../__generated__/subscriptionDeleteMutation.graphql';
-import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
-import { userService_fragment$data } from '../../../../__generated__/userService_fragment.graphql';
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
   serviceId: string;

@@ -29,6 +29,14 @@ export default interface Document {
   remover_id: string | null;
 
   mime_type: string | null;
+
+  parent_document_id: DocumentId | null;
+
+  name: string | null;
+
+  updated_at: Date | null;
+
+  updater_id: string | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -58,6 +66,14 @@ export interface DocumentInitializer {
   remover_id?: string | null;
 
   mime_type?: string | null;
+
+  parent_document_id?: DocumentId | null;
+
+  name?: string | null;
+
+  updated_at?: Date | null;
+
+  updater_id?: string | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -83,4 +99,12 @@ export interface DocumentMutator {
   remover_id?: string | null;
 
   mime_type?: string | null;
+
+  parent_document_id?: DocumentId | null;
+
+  name?: string | null;
+
+  updated_at?: Date | null;
+
+  updater_id?: string | null;
 }

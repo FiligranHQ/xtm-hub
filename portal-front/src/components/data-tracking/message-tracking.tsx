@@ -1,6 +1,10 @@
 import { messageTrackingFragment } from '@/components/data-tracking/tracking.graphql';
 import { FormatDate } from '@/utils/date';
 import {
+  trackingMessage_fragment$data,
+  trackingMessage_fragment$key,
+} from '@generated/trackingMessage_fragment.graphql';
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -8,10 +12,6 @@ import {
 } from 'filigran-ui';
 import { FunctionComponent } from 'react';
 import { useFragment } from 'react-relay';
-import {
-  trackingMessage_fragment$data,
-  trackingMessage_fragment$key,
-} from '../../../__generated__/trackingMessage_fragment.graphql';
 
 interface MessageTrackingProps {
   data: trackingMessage_fragment$key;

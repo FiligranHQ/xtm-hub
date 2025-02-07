@@ -1,6 +1,6 @@
 'use client';
 import GuardCapacityComponent from '@/components/admin-guard';
-import { DocumentAddMutation } from '@/components/service/vault/document.graphql';
+import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import {
   newDocumentSchema,
   VaultNewFileForm,
@@ -14,10 +14,10 @@ import { useState } from 'react';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { useMutation } from 'react-relay';
 import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
-import { documentAddMutation } from '../../../../__generated__/documentAddMutation.graphql';
 interface VaultFormProps {
   connectionId: string;
 }

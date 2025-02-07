@@ -3,11 +3,11 @@ import {
   IconActionContext,
   IconActionsButton,
 } from '@/components/ui/icon-actions';
+import { removeUserFromOrgaMutation } from '@generated/removeUserFromOrgaMutation.graphql';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useContext } from 'react';
 import { graphql, useMutation } from 'react-relay';
-import { removeUserFromOrgaMutation } from '../../../../__generated__/removeUserFromOrgaMutation.graphql';
 
 interface RemoveUserFromOrgaProps {
   user: {

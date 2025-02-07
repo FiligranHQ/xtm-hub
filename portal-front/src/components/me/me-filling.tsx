@@ -3,6 +3,7 @@
 import { UserMeEditMutation } from '@/components/admin/user/user.graphql';
 import { MeUserForm, staticMeFormSchema } from '@/components/me/me-form';
 import { Portal, portalContext } from '@/components/me/portal-context';
+import { userMeEditMutation } from '@generated/userMeEditMutation.graphql';
 import {
   Sheet,
   SheetContent,
@@ -16,7 +17,6 @@ import * as React from 'react';
 import { useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { userMeEditMutation } from '../../../__generated__/userMeEditMutation.graphql';
 
 const MeFilling: React.FunctionComponent = ({}) => {
   const [commitUserMutation] =

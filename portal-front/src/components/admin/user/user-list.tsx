@@ -14,6 +14,15 @@ import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import useGranted from '@/hooks/useGranted';
 import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import { userList_users$key } from '@generated/userList_users.graphql';
+import {
+  OrderingMode,
+  UserFilter,
+  UserOrdering,
+  userListQuery,
+  userListQuery$variables,
+} from '@generated/userListQuery.graphql';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, DataTable, DataTableHeadBarOptions, Input } from 'filigran-ui';
@@ -22,15 +31,6 @@ import { useRouter } from 'next/navigation';
 import { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { graphql, useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { userList_fragment$data } from '../../../../__generated__/userList_fragment.graphql';
-import { userList_users$key } from '../../../../__generated__/userList_users.graphql';
-import {
-  OrderingMode,
-  UserFilter,
-  UserOrdering,
-  userListQuery,
-  userListQuery$variables,
-} from '../../../../__generated__/userListQuery.graphql';
 
 // Configuration or Preloader Query
 export const UserListQuery = graphql`

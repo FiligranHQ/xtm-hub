@@ -159,6 +159,28 @@
       "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault",
       "UpdateDocument": "Mise à jour du document"
+    },
+    "CustomDashboards": {
+      "AddDashboard": "Nouveau tableau de bord",
+      "Form": {
+        "JSONFile": "Fichier JSON",
+        "SelectJSONFile": "Selectionnez un fichier JSON",
+        "NoJSONFile": "Pas de fichier JSON sélectionné",
+        "NameLabel": "Nom",
+        "NamePlaceholder": "Nom du tableau de bord",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Description du tableau de bord",
+        "ImageLabel": "Image {num}",
+        "SelectImage": "Selectionnez une image",
+        "NoImage": "Pas d'image sélectionnée",
+        "PublishedLabel": "Publier",
+        "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?"
+      },
+      "Actions": {
+        "Deleted": "{name} has been deleted",
+        "Added": "{name} has been added",
+        "Updated": "{name} has been modified"
+      }
     }
   },
   "ServiceActions": {

@@ -16,7 +16,7 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[&\\#,+()$~%'":*?!<>{}]/g, '-');
+    .replace(/[&\\#,+()$~%'":*?!<>{}\s]/g, '-');
 };
 
 export const checkDocumentExists = async (
@@ -34,15 +34,13 @@ export const checkDocumentExists = async (
 export const loadUnsecureDocumentsBy = async (
   field: DocumentMutator
 ): Promise<Document[]> => {
-  return dbUnsecure<Document>('Document')
-    .where(field)
-    .select('*') as unknown as Document[];
+  return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const createDocument = async (documentData): Promise<Document[]> => {
-  return dbUnsecure<Document>('Document')
-    .insert(documentData)
-    .returning('*') as unknown as Document[];
+export const createDocument = async (
+  documentData: DocumentMutator
+): Promise<Document[]> => {
+  return dbUnsecure<Document>('Document').insert(documentData).returning('*');
 };
 
 export const deleteDocuments = async () => {

@@ -76,7 +76,8 @@
       "service": {
         "id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
         "name": "Partner Vault",
-        "description": "This service allows you to gather information from Filigran."
+        "description": "This service allows you to gather information from Filigran.",
+        "service_definition_id": "62fcd712-96dc-4714-820a-527be51e2a65"
       },
       "link": {
         "id": "5abcf40a-3d33-45d0-a6fd-fae350cdf8ec",

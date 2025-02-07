@@ -21,7 +21,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@generated/*": ["./__generated__/*"]
     },
     "types": ["vitest/globals"]
   },
