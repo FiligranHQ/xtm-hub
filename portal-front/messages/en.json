@@ -29,11 +29,14 @@
       "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
       "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exists",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
-      "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities"
+      "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
+      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service"
     },
 
     "YouAreNotAuthorized": "You are not authorized to get this page.",
-    "Disconnected": "Your session have expired"
+    "Disconnected": "Your session have expired",
+    "SomethingWentWrong": "Something went wrong",
+    "AnErrorOccured": "An error occurred"
   },
   "HomePage": {
     "Homepage": "Homepage",

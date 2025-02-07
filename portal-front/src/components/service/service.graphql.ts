@@ -30,7 +30,7 @@ export const serviceListFragment = graphql`
     description
     creation_status
     organization_subscribed
-    user_subscribed
+    user_joined
     capabilities
     public
     join_type
@@ -117,6 +117,17 @@ export const serviceWithSubscriptionsFragment = graphql`
     description
     subscriptions {
       ...subscriptionWithUserService_fragment @relay(mask: false)
+    }
+  }
+`;
+
+export const ServiceSelfJoinMutation = graphql`
+  mutation serviceSelfJoinMutation($service_instance_id: ID!) {
+    selfJoinServiceInstance(service_instance_id: $service_instance_id) {
+      id
+      name
+      description
+      capabilities
     }
   }
 `;

@@ -30,3 +30,18 @@ export async function serverFetchGraphQL<TQuery extends OperationType>(
       : rawResponse;
   return response as unknown as { data: TQuery['response'] };
 }
+
+export async function serverMutateGraphQL<TMutation extends OperationType>(
+  request: ConcreteRequest,
+  variables: VariablesOf<TMutation>
+): Promise<{ data: TMutation['response'] }> {
+  const rawResponse = await serverPortalApiFetch<typeof request, TMutation>(
+    request,
+    variables
+  );
+  const response =
+    Array.isArray(rawResponse) && rawResponse.length > 0
+      ? rawResponse[0]
+      : rawResponse;
+  return response as unknown as { data: TMutation['response'] };
+}

@@ -1,9 +1,15 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import {
+  serverFetchGraphQL,
+  serverMutateGraphQL,
+} from '@/relay/serverPortalApiFetch';
 import ServiceByIdQuery, {
   serviceByIdQuery,
   serviceByIdQuery$data,
 } from '@generated/serviceByIdQuery.graphql';
+import ServiceSelfJoinMutation, {
+  serviceSelfJoinMutation,
+} from '@generated/serviceSelfJoinMutation.graphql';
 import PageLoader from './page-loader';
 
 interface ServiceCustomDashboardsPageProps {
@@ -12,6 +18,7 @@ interface ServiceCustomDashboardsPageProps {
 
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   const { slug } = await params;
+  const service_instance_id = decodeURIComponent(slug);
   let serviceInstance:
     | serviceByIdQuery$data['serviceInstanceById']
     | null
@@ -20,18 +27,27 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
     const response = await serverFetchGraphQL<serviceByIdQuery>(
       ServiceByIdQuery,
       {
-        service_instance_id: decodeURIComponent(slug),
+        service_instance_id,
       }
     );
 
     serviceInstance = response.data?.serviceInstanceById;
   } catch (error) {
-    console.error(error);
-    throw new Error('Service not found');
-  }
+    // The user must self join the service before accessing it
+    if (
+      (error as Error).message ===
+      'ERROR_SERVICE_INSTANCE_USER_MUST_JOIN_SERVICE'
+    ) {
+      const response = await serverMutateGraphQL<serviceSelfJoinMutation>(
+        ServiceSelfJoinMutation,
+        {
+          service_instance_id,
+        }
+      );
 
-  if (!serviceInstance) {
-    throw new Error('Service not found');
+      serviceInstance = response.data
+        ?.selfJoinServiceInstance as serviceByIdQuery$data['serviceInstanceById'];
+    }
   }
 
   const breadcrumbs = [
@@ -39,16 +55,22 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       label: 'MenuLinks.Home',
     },
     {
-      label: serviceInstance.name,
+      label: serviceInstance?.name,
       original: true,
     },
   ];
 
   return (
     <>
-      <BreadcrumbNav value={breadcrumbs} />
-      <h1>{serviceInstance.name}</h1>
-      <PageLoader serviceInstance={serviceInstance} />
+      {serviceInstance ? (
+        <>
+          <BreadcrumbNav value={breadcrumbs} />
+          <h1>{serviceInstance.name}</h1>
+          <PageLoader serviceInstance={serviceInstance} />
+        </>
+      ) : (
+        <h1>Service not found</h1>
+      )}
     </>
   );
 };

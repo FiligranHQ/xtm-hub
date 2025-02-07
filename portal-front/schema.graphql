@@ -25,6 +25,7 @@ type Mutation {
   editServiceCapability(input: EditServiceCapabilityInput): Subscription
   addUserService(input: UserServiceAddInput!): Subscription
   deleteUserService(input: UserServiceDeleteInput!): Subscription
+  selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User!
@@ -159,7 +160,7 @@ type ServiceInstance implements Node {
   description: String
   creation_status: String
   organization_subscribed: Boolean
-  user_subscribed: Boolean
+  user_joined: Boolean
   links: [ServiceLink]
   organization: [Organization]
   subscriptions: [Subscription]
