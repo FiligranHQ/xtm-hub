@@ -160,7 +160,6 @@ const resolvers: Resolvers = {
         await trx.commit();
         return loadServiceWithSubscriptions(context, serviceInstanceId);
       } catch (error) {
-        console.error(error);
         await trx.rollback();
         if (error.name.includes(FORBIDDEN_ACCESS)) {
           throw error;
