@@ -3,10 +3,10 @@ import {
   SERVICE_DEFINITION_IDENTIFIER,
 } from '@/components/service/service.const';
 import { ServiceTypeBadge } from '@/components/ui/service-type-badge';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { ReactNode } from 'react';
-import { serviceList_fragment$data } from '../../../__generated__/serviceList_fragment.graphql';
 
 interface ServiceInstanceCardProps {
   serviceInstance: serviceList_fragment$data;
@@ -35,8 +35,8 @@ const ServiceInstanceCard: React.FunctionComponent<
         />
       );
 
-    // If not a link service, show the regular badge
-    if (!isLinkService)
+    // If there are no tags, show the service type badge
+    if (!serviceInstance.tags || serviceInstance.tags.length === 0)
       return (
         <ServiceTypeBadge
           type={serviceInstance?.service_definition?.identifier}

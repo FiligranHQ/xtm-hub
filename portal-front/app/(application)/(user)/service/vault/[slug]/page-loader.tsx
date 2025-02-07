@@ -1,9 +1,9 @@
 'use client';
 
+import { DocumentsListQuery } from '@/components/service/document/document.graphql';
 import { ServiceById } from '@/components/service/service.graphql';
 import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
-import { DocumentsListQuery } from '@/components/service/vault/document.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
@@ -14,10 +14,10 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { documentsQuery } from '@generated/documentsQuery.graphql';
+import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
 import { useQueryLoader } from 'react-relay';
-import { documentItem_fragment$data } from '../../../../../../__generated__/documentItem_fragment.graphql';
-import { documentsQuery } from '../../../../../../__generated__/documentsQuery.graphql';
-import { serviceByIdQuery } from '../../../../../../__generated__/serviceByIdQuery.graphql';
 
 const PageLoader: React.FunctionComponent = ({}) => {
   const t = useTranslations();

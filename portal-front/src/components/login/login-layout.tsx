@@ -4,12 +4,12 @@ import LoginTitleForm from '@/components/login/login-title';
 import { PlatformProviderButton } from '@/components/login/platform-provider-button';
 import { SettingsQuery } from '@/components/login/settings.graphql';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
+import { settingsQuery } from '@generated/settingsQuery.graphql';
 import { useToast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { FunctionComponent, useEffect } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
-import { settingsQuery } from '../../../__generated__/settingsQuery.graphql';
 interface LoginLayoutProps {
   queryRef: PreloadedQuery<settingsQuery>;
 }

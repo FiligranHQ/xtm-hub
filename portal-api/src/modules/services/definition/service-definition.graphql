@@ -1,6 +1,7 @@
 enum ServiceDefinitionIdentifier {
   vault
   link
+  custom_dashboards
 }
 type ServiceDefinition implements Node {
   id: ID!

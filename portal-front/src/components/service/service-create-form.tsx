@@ -1,4 +1,5 @@
 import { ServiceListCreateMutation } from '@/components/service/service.graphql';
+import { serviceListMutation } from '@generated/serviceListMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -15,7 +16,6 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { serviceListMutation } from '../../../__generated__/serviceListMutation.graphql';
 interface ServiceCreateFormProps {
   connectionID: string;
 }

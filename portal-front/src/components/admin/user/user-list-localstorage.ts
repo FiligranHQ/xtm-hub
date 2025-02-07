@@ -1,8 +1,5 @@
+import { OrderingMode, UserOrdering } from '@generated/userListQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
-import {
-  OrderingMode,
-  UserOrdering,
-} from '../../../../__generated__/userListQuery.graphql';
 
 export const useUserListLocalstorage = () => {
   const [count, setCount, removeCount] = useLocalStorage('countUserList', 50);

@@ -1,9 +1,9 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { useLocalStorage } from 'usehooks-ts';
 import {
   OrderingMode,
   OrganizationOrdering,
-} from '../../../__generated__/organizationSelectQuery.graphql';
+} from '@generated/organizationSelectQuery.graphql';
+import { ColumnDef } from '@tanstack/react-table';
+import { useLocalStorage } from 'usehooks-ts';
 
 export const useOrganizationListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
   const [count, setCount, removeCount] = useLocalStorage(

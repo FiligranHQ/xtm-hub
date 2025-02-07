@@ -160,6 +160,28 @@
       "Vault": "Partner Vault",
       "VaultTitle": "Vault Administration",
       "UpdateDocument": "Update document"
+    },
+    "CustomDashboards": {
+      "AddDashboard": "Add new dashboard",
+      "Form": {
+        "JSONFile": "JSON file",
+        "SelectJSONFile": "Select JSON file",
+        "NoJSONFile": "No JSON file selected",
+        "NameLabel": "Name",
+        "NamePlaceholder": "Dashboard name",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a short paragraph to describe the dashboard.",
+        "ImageLabel": "Image {num}",
+        "SelectImage": "Select an image",
+        "NoImage": "No image selected",
+        "PublishedLabel": "Publish",
+        "PublishedPlaceholder": "Is the dashboard published?"
+      },
+      "Actions": {
+        "Deleted": "{name} has been deleted",
+        "Added": "{name} has been added",
+        "Updated": "{name} has been modified"
+      }
     }
   },
   "ServiceActions": {

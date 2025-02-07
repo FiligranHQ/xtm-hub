@@ -1,6 +1,6 @@
 import { Portal, portalContext } from '@/components/me/portal-context';
+import { Restriction } from '@generated/meContext_fragment.graphql';
 import { useContext } from 'react';
-import { Restriction } from '../../__generated__/meContext_fragment.graphql';
 
 // Mock the useContext hook
 

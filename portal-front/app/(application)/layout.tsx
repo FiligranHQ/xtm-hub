@@ -12,13 +12,13 @@ import HeaderComponent from '@/components/header';
 import Login from '@/components/login/login';
 import Menu from '@/components/menu/menu';
 import I18nContext from '@/i18n/i18n-context';
-import { Metadata } from 'next';
-import { headers } from 'next/headers';
-import { meContext_fragment$data } from '../../__generated__/meContext_fragment.graphql';
+import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
-} from '../../__generated__/meLoaderQuery.graphql';
+} from '@generated/meLoaderQuery.graphql';
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import PageLoader from './page-loader';
 
 export async function generateMetadata(): Promise<Metadata> {

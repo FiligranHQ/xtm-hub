@@ -4,9 +4,9 @@ import UserSlug from '@/components/admin/user/[slug]/user-slug';
 import { UserSlugQuery } from '@/components/admin/user/user.graphql';
 import Loader from '@/components/loader';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { userSlugQuery } from '@generated/userSlugQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
-import { userSlugQuery } from '../../../../../../__generated__/userSlugQuery.graphql';
 
 // Component interface
 interface PreloaderProps {

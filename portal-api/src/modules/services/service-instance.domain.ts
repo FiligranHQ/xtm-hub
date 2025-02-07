@@ -31,15 +31,19 @@ export const loadPublicServiceInstances = async (
   opts
 ) => {
   const { first, after, orderMode, orderBy } = opts;
-  const query = paginate<ServiceInstance>(context, 'ServiceInstance', {
-    first,
-    after,
-    orderMode,
-    orderBy,
-  }).where('ServiceInstance.public', '=', true);
   const organizationId = context.user.selected_organization_id;
   const userId = context.user.id;
-  const servicesConnection = await query
+
+  const servicesConnection = await paginate<ServiceInstance>(
+    context,
+    'ServiceInstance',
+    {
+      first,
+      after,
+      orderMode,
+      orderBy,
+    }
+  )
     .leftJoin('Subscription as subscription', function () {
       this.on('subscription.service_instance_id', '=', 'ServiceInstance.id')
 
@@ -90,23 +94,14 @@ export const loadPublicServiceInstances = async (
     )
     .select([
       'ServiceInstance.*',
-      dbRaw(`
-        CASE
-          WHEN "subscription"."id" IS NOT NULL THEN true
-          ELSE false
-        END AS subscribed
-        `),
-      dbRaw(
-        `
-     COALESCE(
-        json_agg(DISTINCT COALESCE("genericServiceCapability"."name", "serviceCapability"."name")) 
+      dbRaw(`"subscription"."id" IS NOT NULL AS organization_subscribed`),
+      dbRaw(`"userService"."id" IS NOT NULL AS user_subscribed`),
+      dbRaw(`COALESCE(
+        json_agg(DISTINCT COALESCE("genericServiceCapability"."name", "serviceCapability"."name"))
         FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL OR "serviceCapability"."name" IS NOT NULL),
         '[]'::json
-      ) AS capabilities
-    `
-      ),
+      ) AS capabilities`),
       dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
-
       dbRaw(
         formatRawObject({
           columnName: 'service_def',
@@ -115,8 +110,14 @@ export const loadPublicServiceInstances = async (
         })
       ),
     ])
-    .whereRaw(`"subscription"."id" IS NULL`)
-    .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.id'])
+    .where('ServiceInstance.public', '=', true)
+    .andWhereRaw(`("subscription"."id" IS NULL OR "userService"."id" IS NULL)`)
+    .groupBy([
+      'ServiceInstance.id',
+      'subscription.id',
+      'userService.id',
+      'service_def.id',
+    ])
     .asConnection<ServiceConnection>();
 
   const { totalCount } = await db<ServiceInstance>(
@@ -333,7 +334,7 @@ export const loadServiceWithSubscriptions = async (
       'UserService_Capability.user_service_id',
       dbRaw(
         `json_agg(
-        CASE 
+        CASE
         WHEN "Generic_Service_Capability".id IS NOT NULL THEN
         json_build_object(
           'id', "UserService_Capability".id,
@@ -343,25 +344,25 @@ export const loadServiceWithSubscriptions = async (
             'name', "Generic_Service_Capability".name,
             '__typename', 'Generic_Service_Capability'
           ),
-          
+
           '__typename', 'UserServiceCapability'
-        ) 
-        WHEN "Service_Capability".id IS NOT NULL THEN 
+        )
+        WHEN "Service_Capability".id IS NOT NULL THEN
         json_build_object(
           'id', "UserService_Capability".id,
           'user_service_id', "UserService_Capability".user_service_id,
           'subscription_capability', json_build_object(
             'id', "Subscription_Capability".id,
             'service_capability', json_build_object(
-            'id', "Service_Capability".id, 
+            'id', "Service_Capability".id,
             'name', "Service_Capability".name,
             '__typename', 'Service_Capability'
             ),
             '__typename', 'Subscription_Capability'
           ),
           '__typename', 'UserServiceCapability'
-        ) 
-        ELSE NULL 
+        )
+        ELSE NULL
         END
       ) FILTER (WHERE "Generic_Service_Capability".id IS NOT NULL OR "Service_Capability".id IS NOT NULL) AS capabilities`
       )
@@ -417,7 +418,7 @@ export const loadServiceWithSubscriptions = async (
               'subscription_id', "userService".subscription_id,
               'user_id', "userService".user_id,
               'user_service_capability', "userService".user_service_capability,
-              'user', CASE 
+              'user', CASE
                 WHEN "user".id IS NOT NULL THEN json_build_object(
                   'id', "user".id,
                   'email', "user".email,

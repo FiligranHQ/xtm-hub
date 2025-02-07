@@ -56,13 +56,17 @@ export type Capability = Node & {
 export type Document = Node & {
   __typename?: 'Document';
   active: Scalars['Boolean']['output'];
+  children_documents?: Maybe<Array<Document>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   minio_name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   service_instance_id: Scalars['String']['output'];
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
   uploader_id: Scalars['String']['output'];
 };
 
@@ -162,8 +166,11 @@ export type Mutation = {
 
 
 export type MutationAddDocumentArgs = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   document?: InputMaybe<Scalars['Upload']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -387,6 +394,7 @@ export type QueryDocumentsArgs = {
   first: Scalars['Int']['input'];
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
+  parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -513,6 +521,7 @@ export type ServiceDefinition = Node & {
 };
 
 export enum ServiceDefinitionIdentifier {
+  CustomDashboards = 'custom_dashboards',
   Link = 'link',
   Vault = 'vault'
 }
@@ -527,11 +536,12 @@ export type ServiceInstance = Node & {
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   name: Scalars['String']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
+  organization_subscribed?: Maybe<Scalars['Boolean']['output']>;
   public?: Maybe<Scalars['Boolean']['output']>;
   service_definition?: Maybe<ServiceDefinition>;
-  subscribed?: Maybe<Scalars['Boolean']['output']>;
   subscriptions?: Maybe<Array<Maybe<Subscription>>>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  user_subscribed?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type ServiceInstanceEdge = {
@@ -963,13 +973,17 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type DocumentResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Document'] = ResolversParentTypes['Document']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['Document']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1149,11 +1163,12 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organization']>>>, ParentType, ContextType>;
+  organization_subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   service_definition?: Resolver<Maybe<ResolversTypes['ServiceDefinition']>, ParentType, ContextType>;
-  subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   subscriptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  user_subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -3,9 +3,9 @@
 import Context from '@/components/me/me-context';
 import { MeQuery } from '@/components/me/me.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
-import { meLoaderQuery } from '../../__generated__/meLoaderQuery.graphql';
 
 // Component interface
 interface LayoutPreloaderProps {

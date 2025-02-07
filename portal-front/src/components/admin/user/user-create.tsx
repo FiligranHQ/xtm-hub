@@ -6,12 +6,12 @@ import {
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
+import { userListCreateMutation } from '@generated/userListCreateMutation.graphql';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { userListCreateMutation } from '../../../../__generated__/userListCreateMutation.graphql';
 
 interface CreateUserProps {
   connectionId: string;

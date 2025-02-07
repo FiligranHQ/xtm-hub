@@ -1,4 +1,4 @@
-import { isEmpty } from '@/lib/utils';
+import { isEmpty, isNil } from '@/lib/utils';
 import { fetchOrSubscribe } from '@/relay/environment/fetchFn';
 import { fetchFormData } from '@/relay/environment/fetchFormData';
 import {
@@ -54,13 +54,8 @@ export function createClientSideRelayEnvironment() {
       }
     }
 
-    if (!isEmpty(uploadables)) {
-      return fetchFormData(
-        '/graphql-api',
-        request,
-        variables,
-        uploadables as unknown as FileList
-      );
+    if (!isNil(uploadables) && !isEmpty(uploadables)) {
+      return fetchFormData('/graphql-api', request, variables, uploadables);
     }
     // If we don't have hydration responses, execute the request as usual.
     return networkFetch('/graphql-api', request, variables);
