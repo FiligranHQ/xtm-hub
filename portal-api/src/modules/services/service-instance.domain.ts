@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   ServiceConnection,
+  ServiceDefinitionIdentifier,
   ServiceInstance,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -95,7 +96,7 @@ export const loadPublicServiceInstances = async (
     .select([
       'ServiceInstance.*',
       dbRaw(`"subscription"."id" IS NOT NULL AS organization_subscribed`),
-      dbRaw(`"userService"."id" IS NOT NULL AS user_subscribed`),
+      dbRaw(`"userService"."id" IS NOT NULL AS user_joined`),
       dbRaw(`COALESCE(
         json_agg(DISTINCT COALESCE("genericServiceCapability"."name", "serviceCapability"."name"))
         FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL OR "serviceCapability"."name" IS NOT NULL),
@@ -244,7 +245,11 @@ export const loadServiceInstanceByIdWithCapabilities = async (
       'ServiceInstance.id',
       'Subscription.service_instance_id'
     )
-    .leftJoin('User_Service', 'Subscription.id', 'User_Service.subscription_id')
+    .leftJoin('User_Service', function () {
+      this.on('Subscription.id', 'User_Service.subscription_id').andOn(
+        dbRaw(`"User_Service"."user_id" = '${context.user.id}'`)
+      );
+    })
     .leftJoin(
       'UserService_Capability',
       'User_Service.id',
@@ -259,19 +264,20 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     )
     .select(
       'ServiceInstance.*',
+      'Subscription.id AS subscription_id',
       dbRaw(
         `CASE
              WHEN COUNT("Generic_Service_Capability".id) = 0 THEN ARRAY[]::text[]
              ELSE array_agg("Generic_Service_Capability".name)::text[]
           END AS capabilities`
-      )
+      ),
+      dbRaw(`"User_Service".id IS NOT NULL AS user_joined`)
     )
 
     .where({
       'ServiceInstance.id': service_instance_id,
-      'User_Service.user_id': context.user.id,
     })
-    .groupBy(['ServiceInstance.id', 'User_Service.id'])
+    .groupBy(['ServiceInstance.id', 'User_Service.id', 'Subscription.id'])
     .first();
 };
 
@@ -512,15 +518,21 @@ export const grantServiceAccess = async (
       'ServiceInstance.id',
       subscription.service_instance_id
     );
-    await sendMail({
-      to: user.email,
-      template: 'partnerVault',
-      params: {
-        name: user.email,
-        partnerVaultLink: `${config.get('base_url_front')}/service/${serviceInstance.service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
-        partnerVault: serviceInstance.name,
-      },
-    });
+
+    if (
+      serviceInstance.service_definition.identifier ===
+      ServiceDefinitionIdentifier.Vault
+    ) {
+      await sendMail({
+        to: user.email,
+        template: 'partnerVault',
+        params: {
+          name: user.email,
+          partnerVaultLink: `${config.get('base_url_front')}/service/${serviceInstance.service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
+          partnerVault: serviceInstance.name,
+        },
+      });
+    }
   }
 
   for (const capabilityId of capabilitiesIds) {

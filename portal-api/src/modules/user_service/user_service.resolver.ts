@@ -1,3 +1,4 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
 import Subscription, {
@@ -9,18 +10,28 @@ import UserService from '../../model/kanel/public/UserService';
 import {
   ALREADY_EXISTS,
   AlreadyExistsError,
+  FORBIDDEN_ACCESS,
+  ForbiddenAccess,
   NOT_FOUND,
   NotFoundError,
   UnknownError,
 } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
-import { fillSubscriptionWithOrgaServiceAndUserService } from '../subcription/subscription.domain';
+import {
+  grantServiceAccess,
+  loadServiceWithSubscriptions,
+} from '../services/service-instance.domain';
+import {
+  checkSubscriptionExists,
+  fillSubscriptionWithOrgaServiceAndUserService,
+} from '../subcription/subscription.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
 import {
   getOrCreateUser,
   insertUserIntoOrganization,
 } from '../users/users.helper';
+import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
 import {
   createUserServiceAccess,
   isUserServiceExist,
@@ -122,6 +133,39 @@ const resolvers: Resolvers = {
       );
 
       return subscription;
+    },
+    selfJoinServiceInstance: async (_, { service_instance_id }, context) => {
+      const trx = await dbTx();
+
+      try {
+        const serviceInstanceId = fromGlobalId(service_instance_id).id;
+
+        // Check if subscription exists
+        const subscription = await checkSubscriptionExists(
+          context,
+          context.user.selected_organization_id,
+          serviceInstanceId
+        );
+        if (!subscription) {
+          throw ForbiddenAccess('NOT_SUBSCRIBED_ORGANIZATION_ERROR');
+        }
+
+        await grantServiceAccess(
+          context,
+          [GenericServiceCapabilityIds.AccessId],
+          [context.user.id],
+          subscription.id
+        );
+
+        await trx.commit();
+        return loadServiceWithSubscriptions(context, serviceInstanceId);
+      } catch (error) {
+        await trx.rollback();
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          throw error;
+        }
+        throw UnknownError('SERVICE_SUBSCRIPTION_ERROR', { detail: error });
+      }
     },
   },
 };

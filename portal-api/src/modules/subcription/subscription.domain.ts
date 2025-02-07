@@ -34,7 +34,7 @@ export const checkSubscriptionExists = async (
   context: PortalContext,
   organization_id: string,
   service_instance_id: string
-): Promise<Subscription | boolean> => {
+): Promise<Subscription | false> => {
   const subscriptionQuery = db<Subscription>(context, 'Subscription')
     .where({ organization_id, service_instance_id })
     .select('*')

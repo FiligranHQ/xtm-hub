@@ -9,7 +9,7 @@ type ServiceInstance implements Node {
   description: String
   creation_status: String
   organization_subscribed: Boolean
-  user_subscribed: Boolean
+  user_joined: Boolean
   links: [ServiceLink]
   organization: [Organization]
   subscriptions: [Subscription]

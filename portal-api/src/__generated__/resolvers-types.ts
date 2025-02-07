@@ -162,6 +162,7 @@ export type Mutation = {
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
   removeUserFromOrganization?: Maybe<User>;
+  selfJoinServiceInstance?: Maybe<ServiceInstance>;
 };
 
 
@@ -299,6 +300,11 @@ export type MutationMergeTestArgs = {
 export type MutationRemoveUserFromOrganizationArgs = {
   organization_id: Scalars['ID']['input'];
   user_id: Scalars['ID']['input'];
+};
+
+
+export type MutationSelfJoinServiceInstanceArgs = {
+  service_instance_id: Scalars['ID']['input'];
 };
 
 export type Node = {
@@ -541,7 +547,7 @@ export type ServiceInstance = Node & {
   service_definition?: Maybe<ServiceDefinition>;
   subscriptions?: Maybe<Array<Maybe<Subscription>>>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  user_subscribed?: Maybe<Scalars['Boolean']['output']>;
+  user_joined?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type ServiceInstanceEdge = {
@@ -1060,6 +1066,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
+  selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
@@ -1168,7 +1175,7 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   service_definition?: Resolver<Maybe<ResolversTypes['ServiceDefinition']>, ParentType, ContextType>;
   subscriptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Subscription']>>>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  user_subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  user_joined?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
