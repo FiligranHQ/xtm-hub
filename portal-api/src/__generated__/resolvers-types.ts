@@ -67,7 +67,7 @@ export type Document = Node & {
   service_instance_id: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
-  uploader_id: Scalars['String']['output'];
+  uploader?: Maybe<User>;
 };
 
 export type DocumentConnection = {
@@ -214,6 +214,7 @@ export type MutationChangeSelectedOrganizationArgs = {
 
 export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
+  forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -990,7 +991,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  uploader_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

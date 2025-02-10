@@ -166,6 +166,7 @@
     },
     "CustomDashboards": {
       "AddDashboard": "Add new dashboard",
+      "UpdateDashboard": "Update dashboard",
       "Form": {
         "JSONFile": "JSON file",
         "SelectJSONFile": "Select JSON file",
@@ -174,7 +175,7 @@
         "NamePlaceholder": "Dashboard name",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a short paragraph to describe the dashboard.",
-        "ImageLabel": "Image {num}",
+        "ImageLabel": "Image",
         "SelectImage": "Select an image",
         "NoImage": "No image selected",
         "PublishedLabel": "Publish",
@@ -346,5 +347,8 @@
   },
   "Parameters": {
     "Version": "Version"
+  },
+  "ServiceName": {
+    "custom_dashboards": "Custom Dashboard"
   }
 }

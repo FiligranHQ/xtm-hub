@@ -262,9 +262,22 @@ export const loadServiceInstanceByIdWithCapabilities = async (
       '=',
       'Generic_Service_Capability.id'
     )
+    .leftJoin(
+      'ServiceDefinition as service_def',
+      'service_def.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
     .select(
       'ServiceInstance.*',
       'Subscription.id AS subscription_id',
+      dbRaw(
+        formatRawObject({
+          columnName: 'service_def',
+          typename: 'ServiceDefinition',
+          as: 'service_definition',
+        })
+      ),
       dbRaw(
         `CASE
              WHEN COUNT("Generic_Service_Capability".id) = 0 THEN ARRAY[]::text[]
@@ -277,7 +290,12 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     .where({
       'ServiceInstance.id': service_instance_id,
     })
-    .groupBy(['ServiceInstance.id', 'User_Service.id', 'Subscription.id'])
+    .groupBy([
+      'ServiceInstance.id',
+      'User_Service.id',
+      'Subscription.id',
+      'service_def.id',
+    ])
     .first();
 };
 

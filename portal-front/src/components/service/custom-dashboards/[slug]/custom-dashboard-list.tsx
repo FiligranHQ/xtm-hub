@@ -1,5 +1,7 @@
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { documentsList$key } from '@generated/documentsList.graphql';
+import {
+  documentsList$data,
+  documentsList$key,
+} from '@generated/documentsList.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { useMemo } from 'react';
@@ -12,7 +14,7 @@ import {
   documentsFragment,
   DocumentsListQuery,
 } from '../../document/document.graphql';
-import CustomDashbordCard from '../custom-dashboard-card';
+import CustomDashboardCard from '../custom-dashboard-card';
 import { CustomDashboardSheet } from '../custom-dashboard-sheet';
 
 interface CustomDashbordDocumentListProps {
@@ -35,36 +37,44 @@ const CustomDashbordDocumentList = ({
   );
 
   const [active, _nonActive] = useMemo(() => {
-    return data?.documents.edges.reduce(
+    return data?.documents.edges.reduce<
+      [
+        documentsList$data['documents']['edges'][0]['node'][],
+        documentsList$data['documents']['edges'][0]['node'][],
+      ]
+    >(
       (acc, { node }) => {
         if (node.active) {
-          acc[0].push(node as documentItem_fragment$data);
+          acc[0].push(node);
         } else {
-          acc[1].push(node as documentItem_fragment$data);
+          acc[1].push(node);
         }
         return acc;
       },
-      [[], []] as [documentItem_fragment$data[], documentItem_fragment$data[]]
+      [[], []]
     );
   }, [data]);
 
   return (
     <div className="flex flex-col gap-l">
-      <div className="flex items-center justify-end">
+      <div className="flex justify-between">
+        <h1>{serviceInstance.name}</h1>
         <CustomDashboardSheet
           serviceInstanceId={serviceInstance.id}
-          connectionId={data?.documents.__id}
+          connectionId={data!.documents!.__id}
         />
       </div>
       {/* TODO: add tabs to show non active dashboards for UPLOAD or BYPASS capas */}
       <ul
         className={
-          'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-m'
+          'grid grid-cols-1 s:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-m'
         }>
-        {active.map((node) => (
-          <CustomDashbordCard
+        {[...active, ..._nonActive].map((node) => (
+          <CustomDashboardCard
+            serviceInstance={serviceInstance}
+            connectionId={data!.documents!.__id}
             key={node.id}
-            customDashboard={node as documentItem_fragment$data}
+            data={node}
           />
         ))}
       </ul>

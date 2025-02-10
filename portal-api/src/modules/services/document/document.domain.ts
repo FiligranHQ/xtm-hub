@@ -100,13 +100,20 @@ export const incrementDocumentsDownloads = async (
 export const deleteDocument = async (
   context: PortalContext,
   documentId: DocumentId,
-  serviceInstanceId: ServiceInstanceId
+  serviceInstanceId: ServiceInstanceId,
+  forceDelete: boolean
 ): Promise<Document> => {
   const [documentFromDb] = await loadDocumentBy(context, {
     id: documentId,
     service_instance_id: serviceInstanceId,
   });
-  await passDocumentToInactive(context, documentFromDb);
+  if (forceDelete) {
+    await db<Document>(context, 'Document')
+      .where('Document.id', '=', documentFromDb.id)
+      .delete();
+  } else {
+    await passDocumentToInactive(context, documentFromDb);
+  }
   return documentFromDb;
 };
 
@@ -136,8 +143,15 @@ export const loadDocuments = async (
 ): Promise<DocumentConnection> => {
   const query = paginate<Document>(context, 'Document', opts)
     .select(['Document.*'])
-    .where('Document.active', '=', true)
     .where('Document.service_instance_id', '=', serviceInstanceId);
+  query.leftJoin('User as uploader', function () {
+    this.on('Document.uploader_id', '=', 'uploader.id');
+  });
+  query.select(
+    dbRaw(
+      `json_build_object('id', "uploader"."id", 'first_name', "uploader"."first_name", 'last_name', "uploader"."last_name", '__typename', 'User') AS uploader`
+    )
+  );
 
   if (opts.parentsOnly) {
     query.whereNull('Document.parent_document_id');
@@ -164,9 +178,14 @@ export const loadDocuments = async (
     });
   }
 
-  query.groupBy('Document.id');
+  query.groupBy(['Document.id', 'uploader.id']);
 
   const documentConnection = await query.asConnection<DocumentConnection>();
+  console.log(
+    'Coucou ?',
+    documentConnection.edges.map(({ node }) => node),
+    query.toSQL().toNative()
+  );
 
   const queryCount = db<Document>(context, 'Document', opts)
     .where('Document.active', '=', true)

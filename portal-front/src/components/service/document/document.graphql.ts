@@ -18,7 +18,12 @@ export const DocumentAddMutation = graphql`
       active: $active
       parentDocumentId: $parentDocumentId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
-      ...documentItem_fragment @relay(mask: false)
+      __id
+      id
+      name
+      file_name
+      ...documentItem_fragment
+      ...customDashboardSheet_update_childs
     }
   }
 `;
@@ -48,10 +53,12 @@ export const DocumentDeleteMutation = graphql`
     $documentId: ID
     $connections: [ID!]!
     $serviceInstanceId: String
+    $forceDelete: Boolean
   ) {
     deleteDocument(
       documentId: $documentId
       serviceInstanceId: $serviceInstanceId
+      forceDelete: $forceDelete
     ) {
       id @deleteEdge(connections: $connections)
       file_name
@@ -69,7 +76,7 @@ export const DocumentExistsQuery = graphql`
 `;
 
 export const documentItem = graphql`
-  fragment documentItem_fragment on Document {
+  fragment documentItem_fragment on Document @inline {
     id
     file_name
     created_at
@@ -77,6 +84,10 @@ export const documentItem = graphql`
     description
     download_number
     active
+    uploader {
+      first_name
+      last_name
+    }
     children_documents {
       id
       file_name
@@ -104,7 +115,10 @@ export const documentsFragment = graphql`
       totalCount
       edges {
         node {
-          ...documentItem_fragment @relay(mask: false)
+          id
+          active
+          ...documentItem_fragment
+          ...customDashboardCard_update_childs
         }
       }
     }

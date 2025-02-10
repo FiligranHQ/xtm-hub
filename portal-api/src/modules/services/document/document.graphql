@@ -7,7 +7,7 @@ enum DocumentOrdering {
 
 type Document implements Node {
   id: ID!
-  uploader_id: String!
+  uploader: User
   service_instance_id: String!
   name: String
   description: String
@@ -35,8 +35,11 @@ type Mutation {
     newDescription: String
     serviceInstanceId: String
   ): Document! @auth(requires: [BYPASS])
-  deleteDocument(documentId: ID, serviceInstanceId: String): Document!
-    @auth(requires: [BYPASS])
+  deleteDocument(
+    documentId: ID
+    serviceInstanceId: String
+    forceDelete: Boolean
+  ): Document! @auth(requires: [BYPASS])
 }
 
 type DocumentEdge {

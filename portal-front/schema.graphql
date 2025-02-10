@@ -15,7 +15,7 @@ type Mutation {
   deleteOrganization(id: ID!): Organization
   addDocument(document: Upload, name: String, description: String, serviceInstanceId: String, parentDocumentId: ID, active: Boolean): Document!
   editDocument(documentId: ID, newDescription: String, serviceInstanceId: String): Document!
-  deleteDocument(documentId: ID, serviceInstanceId: String): Document!
+  deleteDocument(documentId: ID, serviceInstanceId: String, forceDelete: Boolean): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): Subscription
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -117,7 +117,7 @@ enum DocumentOrdering {
 
 type Document implements Node {
   id: ID!
-  uploader_id: String!
+  uploader: User
   service_instance_id: String!
   name: String
   description: String

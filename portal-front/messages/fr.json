@@ -173,7 +173,7 @@
         "NamePlaceholder": "Nom du tableau de bord",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Description du tableau de bord",
-        "ImageLabel": "Image {num}",
+        "ImageLabel": "Image",
         "SelectImage": "Selectionnez une image",
         "NoImage": "Pas d'image sélectionnée",
         "PublishedLabel": "Publier",

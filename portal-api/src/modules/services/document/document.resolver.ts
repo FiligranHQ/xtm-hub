@@ -29,6 +29,7 @@ const resolvers: Resolvers = {
         const parent_document_id = payload.parentDocumentId
           ? (extractId(payload.parentDocumentId) as DocumentId)
           : null;
+        console.log('parent ?', payload.parentDocumentId, parent_document_id);
         const minioName = await sendFileToS3(
           payload.document.file,
           file_name,
@@ -69,12 +70,13 @@ const resolvers: Resolvers = {
         throw UnknownError('UPDATE_DOCUMENT_ERROR', { detail: error });
       }
     },
-    deleteDocument: async (_, { documentId }, context) => {
+    deleteDocument: async (_, { documentId, forceDelete }, context) => {
       try {
         return deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
-          context.serviceInstanceId as ServiceInstanceId
+          context.serviceInstanceId as ServiceInstanceId,
+          forceDelete
         );
       } catch (error) {
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
