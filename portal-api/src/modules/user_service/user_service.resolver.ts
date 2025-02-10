@@ -77,18 +77,20 @@ const resolvers: Resolvers = {
             'The User access to service is already exist'
           );
         }
-        await createUserServiceAccess(context, {
+        await createUserServiceAccess(context, trx, {
           subscription_id: subscription.id,
           user_id: user.id as UserId,
           capabilities: input.capabilities,
         });
+
+        await trx.commit();
 
         const returningSubscription =
           await fillSubscriptionWithOrgaServiceAndUserService(
             context,
             subscription.id as SubscriptionId
           );
-        await trx.commit();
+
         return returningSubscription;
       } catch (error) {
         await trx.rollback();

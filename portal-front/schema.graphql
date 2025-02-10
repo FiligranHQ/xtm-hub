@@ -217,6 +217,7 @@ type Subscription implements Node {
   organization: Organization!
   service_url: String!
   service_instance: ServiceInstance
+  subscription_capability: [SubscriptionCapability]
   user_service: [UserService]!
   ActionTracking: TrackingSubscription
   User: UserSubscription

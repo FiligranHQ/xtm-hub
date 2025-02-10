@@ -1,6 +1,7 @@
 import { getOrganizations } from '@/components/organization/organization.service';
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,9 +27,6 @@ import { Dispatch, FunctionComponent, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
-import { serviceCapability_fragment$data } from '../../../../__generated__/serviceCapability_fragment.graphql';
-import { subscriptionInServiceCreateMutation } from '../../../../__generated__/subscriptionInServiceCreateMutation.graphql';
-import { subscriptionWithUserService_fragment$data } from '../../../../__generated__/subscriptionWithUserService_fragment.graphql';
 
 interface ServiceSlugAddOrgaFormSheetProps {
   serviceId: string;
@@ -153,7 +151,6 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
           <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
           {capabilities.map(({ id, name, description }) => (
             <FormField
-              className=""
               key={id}
               control={form.control}
               name="capability_ids"
@@ -165,7 +162,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
                     onCheckedChange={(checked) => {
                       const newValue = checked
                         ? [...field.value, id]
-                        : field.value.filter((value) => value !== id);
+                        : field.value.filter((value: string) => value !== id);
                       field.onChange(newValue);
                     }}
                     id={id}

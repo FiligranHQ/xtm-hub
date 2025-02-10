@@ -121,7 +121,7 @@
       "InviteUser": {
         "TitleInviteUser": "Inviter un utilisateur",
         "InviteUser": "Ajouter un utilisateur au service",
-        "InviteUserSubtitle": "Éditer les droits d'accès ici. Cliquer sur valider quand c'est terminé.",
+        "InviteUserSubtitle": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée dans l'encadré.",
         "Organization": "Organisation"
       }
     },
@@ -257,11 +257,14 @@
   },
   "InviteUserServiceForm": {
     "Title": "Inviter l'utilisateur au service",
-    "Description": "Définissez ici les droits d'accès. Cliquez sur Valider lorsque vous avez terminé.",
+    "Description": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée dans l'encadré.",
     "Email": "Email",
     "Organization": "Organisation",
     "Capabilities": "Capacités",
-    "CapabilitiesPlaceholder": "Sélectionner les capacités"
+    "CapabilitiesPlaceholder": "Sélectionner les capacités",
+    "DisabledCapability": "Si vous voulez donner cette capacité à vos utilisateurs sur ce service, vous devez d'abord l'activer au niveau de l'organisation",
+    "GrantCapability": "Donner cette capacité"
+
   },
   "UserActions": {
     "DeleteUser": "Supprimer l'utilisateur",

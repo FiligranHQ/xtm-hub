@@ -64,8 +64,11 @@ export const getCapabilityUser = (
   user: UserLoadUserBy,
   args: ServiceCapabilityArgs
 ) =>
-  args.service_id
-    ? loadCapabilitiesByServiceId(user, fromGlobalId(args.service_id).id)
+  args.service_instance_id
+    ? loadCapabilitiesByServiceId(
+        user,
+        fromGlobalId(args.service_instance_id).id
+      )
     : loadSubscriptionBy({
         id: extractId(args.subscription_id),
       } as SubscriptionMutator).then(([subscription]) =>

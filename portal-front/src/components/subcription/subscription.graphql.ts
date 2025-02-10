@@ -7,6 +7,14 @@ export const subscriptionWithUserServiceFragment = graphql`
       id
       name
     }
+    subscription_capability {
+      id
+      service_capability {
+        id
+        description
+        name
+      }
+    }
     user_service {
       ...userService_fragment @relay(mask: false)
     }

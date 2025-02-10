@@ -3,6 +3,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import { UserServiceCapability } from '../../__generated__/resolvers-types';
+import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService, {
@@ -19,9 +20,10 @@ import { loadUserOrganization } from '../common/user-organization.helper';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
-import { loadGenericServiceCapabilityBy } from './service-capability/generic_service_capability.helper';
+import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
+import { insertCapabilities } from './user-service-capability/user-service-capability.helper';
 
-export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
+export const loadUnsecureUserServiceBy = async (field: UserServiceMutator) => {
   const queryUserServiceCapabilities = dbUnsecure<UserServiceCapability>(
     'UserService_Capability'
   )
@@ -31,10 +33,24 @@ export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
       '=',
       'Generic_Service_Capability.id'
     )
+    .leftJoin(
+      'Subscription_Capability',
+      'UserService_Capability.subscription_capability_id',
+      '=',
+      'Subscription_Capability.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'Subscription_Capability.service_capability_id',
+      '=',
+      'Service_Capability.id'
+    )
     .select(
       'UserService_Capability.user_service_id',
       dbRaw(
         `json_agg(
+        CASE
+        WHEN "Generic_Service_Capability".id IS NOT NULL THEN
         json_build_object(
           'id', "UserService_Capability".id,
           'user_service_id', "UserService_Capability".user_service_id,
@@ -45,7 +61,24 @@ export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
           ),
           '__typename', 'UserServiceCapability'
         )
-      ) FILTER (WHERE "UserService_Capability".id IS NOT NULL) as capabilities`
+        WHEN "Service_Capability".id IS NOT NULL THEN
+        json_build_object(
+          'id', "UserService_Capability".id,
+          'user_service_id', "UserService_Capability".user_service_id,
+          'subscription_capability', json_build_object(
+            'id', "Subscription_Capability".id,
+            'service_capability', json_build_object(
+            'id', "Service_Capability".id,
+            'name', "Service_Capability".name,
+            '__typename', 'Service_Capability'
+            ),
+            '__typename', 'Subscription_Capability'
+          ),
+          '__typename', 'UserServiceCapability'
+        )
+        ELSE NULL
+        END
+      ) FILTER (WHERE "Generic_Service_Capability".id IS NOT NULL OR "Service_Capability".id IS NOT NULL) AS capabilities`
       )
     )
 
@@ -87,6 +120,7 @@ export const loadUnsecureUserServiceBy = (field: UserServiceMutator) => {
   if (field) {
     query.where(field);
   }
+
   return query;
 };
 
@@ -103,6 +137,7 @@ export const isUserServiceExist = async (
 
 export const createUserServiceAccess = async (
   context,
+  trx,
   {
     subscription_id,
     user_id,
@@ -136,21 +171,17 @@ export const createUserServiceAccess = async (
     .insert(user_service)
     .returning('*');
 
-  for (const capabilityName of capabilities) {
-    // TODO #261 Chunk 6 : get capabilty from front with ID directly
-    const [capability] = await loadGenericServiceCapabilityBy({
-      name: capabilityName,
-    });
+  await insertCapabilities(context, trx, capabilities, addedUserService);
+  const user_service_capa: UserServiceCapabilityInitializer = {
+    id: uuidv4() as UserServiceCapabilityId,
+    user_service_id: addedUserService.id,
+    generic_service_capability_id:
+      GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
+  };
+  await db<UserServiceCapability>(context, 'UserService_Capability')
+    .insert(user_service_capa)
+    .returning('*');
 
-    const user_service_capa: UserServiceCapabilityInitializer = {
-      id: uuidv4() as UserServiceCapabilityId,
-      user_service_id: addedUserService.id,
-      generic_service_capability_id: capability.id,
-    };
-    await db<UserServiceCapability>(context, 'UserService_Capability')
-      .insert(user_service_capa)
-      .returning('*');
-  }
   const user = await loadUserBy({ 'User.id': user_id });
   const service = await loadServiceInstanceBy(
     context,

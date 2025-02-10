@@ -613,6 +613,7 @@ export type Subscription = Node & {
   service_url: Scalars['String']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   status?: Maybe<Scalars['String']['output']>;
+  subscription_capability?: Maybe<Array<Maybe<SubscriptionCapability>>>;
   user_service: Array<Maybe<UserService>>;
 };
 
@@ -1235,6 +1236,7 @@ export type SubscriptionResolvers<ContextType = PortalContext, ParentType extend
   service_url?: SubscriptionResolver<ResolversTypes['String'], "service_url", ParentType, ContextType>;
   start_date?: SubscriptionResolver<Maybe<ResolversTypes['Date']>, "start_date", ParentType, ContextType>;
   status?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "status", ParentType, ContextType>;
+  subscription_capability?: SubscriptionResolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionCapability']>>>, "subscription_capability", ParentType, ContextType>;
   user_service?: SubscriptionResolver<Array<Maybe<ResolversTypes['UserService']>>, "user_service", ParentType, ContextType>;
 }>;
 
