@@ -4,6 +4,7 @@ export const DocumentAddMutation = graphql`
   mutation documentAddMutation(
     $document: Upload
     $name: String
+    $shortDescription: String
     $description: String
     $serviceInstanceId: String
     $active: Boolean
@@ -13,6 +14,7 @@ export const DocumentAddMutation = graphql`
     addDocument(
       document: $document
       name: $name
+      short_description: $shortDescription
       description: $description
       serviceInstanceId: $serviceInstanceId
       active: $active
@@ -31,19 +33,18 @@ export const DocumentAddMutation = graphql`
 export const DocumentUpdateMutation = graphql`
   mutation documentUpdateMutation(
     $documentId: ID
-    $newDescription: String
+    $input: EditDocumentInput!
     $serviceInstanceId: String
   ) {
     editDocument(
       documentId: $documentId
-      newDescription: $newDescription
+      input: $input
       serviceInstanceId: $serviceInstanceId
     ) {
       id
+      name
       file_name
-      created_at
-      description
-      download_number
+      ...documentItem_fragment
     }
   }
 `;
@@ -81,9 +82,11 @@ export const documentItem = graphql`
     file_name
     created_at
     name
+    short_description
     description
     download_number
     active
+    updated_at
     uploader {
       first_name
       last_name

@@ -10,6 +10,7 @@ type Document implements Node {
   uploader: User
   service_instance_id: String!
   name: String
+  short_description: String
   description: String
   file_name: String!
   minio_name: String!
@@ -21,10 +22,18 @@ type Document implements Node {
   children_documents: [Document!]
 }
 
+input EditDocumentInput {
+  short_description: String
+  description: String
+  name: String
+  active: Boolean
+}
+
 type Mutation {
   addDocument(
     document: Upload
     name: String
+    short_description: String
     description: String
     serviceInstanceId: String
     parentDocumentId: ID
@@ -32,7 +41,7 @@ type Mutation {
   ): Document! @auth(requires: [BYPASS])
   editDocument(
     documentId: ID
-    newDescription: String
+    input: EditDocumentInput!
     serviceInstanceId: String
   ): Document! @auth(requires: [BYPASS])
   deleteDocument(

@@ -1,38 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DeleteIcon } from 'filigran-icon';
-import {
-  Button,
-  Checkbox,
-  FileInput,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  SheetFooter,
-  Textarea,
-} from 'filigran-ui';
+import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, SheetFooter, Textarea, } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
-const updateCustomDashboardSchema = z.object({
-  name: z.string().nonempty(),
-  description: z.string().optional(),
-  active: z.boolean().optional(),
-  images: z.custom<FileList>(fileListCheck).optional(),
-});
-
 export const newCustomDashboardSchema = z.object({
   name: z.string().nonempty(),
+  shortDescription: z.string().max(255).optional(),
   description: z.string().optional(),
   documentId: z.string().optional(),
   parentDocumentId: z.string().optional(),
@@ -46,46 +25,36 @@ export type CustomDashboardFormValues = z.infer<
 >;
 
 interface CustomDashboardFormProps {
-  customDashboard?: documentItem_fragment$data;
   handleSubmit: (
     values: z.infer<typeof newCustomDashboardSchema>,
     callback: () => void
   ) => void;
-  onDelete?: (id?: string) => void;
 }
 
 export const CustomDashboardForm = ({
-  customDashboard,
   handleSubmit,
-  onDelete,
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const form = useForm<CustomDashboardFormValues>({
-    resolver: customDashboard
-      ? zodResolver(updateCustomDashboardSchema)
-      : zodResolver(newCustomDashboardSchema),
+    resolver: zodResolver(newCustomDashboardSchema),
+    criteriaMode: "all",
     defaultValues: {
-      name: customDashboard?.name ?? '',
-      description: customDashboard?.description ?? '',
-      documentId: customDashboard?.id ?? '',
-      active: customDashboard?.active ?? false,
+      name: '',
+      shortDescription: '',
+      description: '',
+      documentId: '',
+      active: false,
       document: undefined,
       images: undefined,
     },
   });
 
   useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
+  form.watch(["images", "document"]);
 
   const onSubmit = (values: z.infer<typeof newCustomDashboardSchema>) => {
-    if (values.images?.length > 3) {
-      form.setError('images', {
-        type: 'manual',
-        message: 'Too much images uploaded, max 3.',
-      });
-      return;
-    }
     handleSubmit(
       {
         ...values,
@@ -93,10 +62,6 @@ export const CustomDashboardForm = ({
       () => form.reset()
     );
   };
-
-  const [currentDashboard, setCurrentDashboard] = useState<
-    documentItem_fragment$data | undefined
-  >(customDashboard);
 
   return (
     <>
@@ -116,6 +81,27 @@ export const CustomDashboardForm = ({
                   <Input
                     placeholder={t(
                       'Service.CustomDashboards.Form.NamePlaceholder'
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="shortDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.ShortDescriptionLabel')}
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.ShortDescriptionPlaceholder'
                     )}
                     {...field}
                   />
@@ -177,7 +163,6 @@ export const CustomDashboardForm = ({
           <FormField
             control={form.control}
             name="document"
-            disabled={!!customDashboard}
             render={({ field }) => {
               return (
                 <FormItem>
@@ -231,46 +216,8 @@ export const CustomDashboardForm = ({
               </FormItem>
             )}
           />
-          {currentDashboard?.children_documents && (
-            <div className="flex gap-xl">
-              {currentDashboard.children_documents.map(({ id }) => (
-                <div
-                  key={id}
-                  style={{
-                    backgroundImage: `url(/document/visualize/${customDashboard!.id}/${id})`,
-                    backgroundSize: 'cover',
-                  }}
-                  className="h-[10rem] w-[10rem] border rounded relative">
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute right-2 top-2 rounded-[100%]"
-                    onClick={() => {
-                      onDelete!(id);
-                      const newDashboard = { ...currentDashboard };
-                      newDashboard.children_documents =
-                        currentDashboard!.children_documents!.filter(
-                          (c) => c.id !== id
-                        );
-                      setCurrentDashboard(newDashboard);
-                    }}>
-                    <DeleteIcon className="w-3" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
 
-          <SheetFooter className="pt-2 sm:justify-between">
-            <Button
-              variant="destructive"
-              type="button"
-              onClick={(e) => {
-                onDelete?.();
-                handleCloseSheet(e);
-              }}>
-              {t('Utils.Delete')}
-            </Button>
+          <SheetFooter className="pt-2">
             <div className="flex gap-s">
               <Button
                 variant="outline"
@@ -280,7 +227,7 @@ export const CustomDashboardForm = ({
               </Button>
 
               <Button
-                disabled={!form.formState.isValid}
+                disabled={!form.formState.isDirty}
                 type="submit">
                 {t('Utils.Validate')}
               </Button>

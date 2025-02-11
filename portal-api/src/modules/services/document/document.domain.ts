@@ -9,6 +9,7 @@ import Document, {
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import User from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
@@ -144,14 +145,6 @@ export const loadDocuments = async (
   const query = paginate<Document>(context, 'Document', opts)
     .select(['Document.*'])
     .where('Document.service_instance_id', '=', serviceInstanceId);
-  query.leftJoin('User as uploader', function () {
-    this.on('Document.uploader_id', '=', 'uploader.id');
-  });
-  query.select(
-    dbRaw(
-      `json_build_object('id', "uploader"."id", 'first_name', "uploader"."first_name", 'last_name', "uploader"."last_name", '__typename', 'User') AS uploader`
-    )
-  );
 
   if (opts.parentsOnly) {
     query.whereNull('Document.parent_document_id');
@@ -178,14 +171,9 @@ export const loadDocuments = async (
     });
   }
 
-  query.groupBy(['Document.id', 'uploader.id']);
+  query.groupBy(['Document.id']);
 
   const documentConnection = await query.asConnection<DocumentConnection>();
-  console.log(
-    'Coucou ?',
-    documentConnection.edges.map(({ node }) => node),
-    query.toSQL().toNative()
-  );
 
   const queryCount = db<Document>(context, 'Document', opts)
     .where('Document.active', '=', true)
@@ -218,4 +206,24 @@ export const loadDocumentBy = async (
   field: DocumentMutator
 ) => {
   return db<Document>(context, 'Document').where(field);
+};
+
+export const getChildrenDocuments = async (
+  context,
+  documentId
+): Promise<Document[]> => {
+  return db<Document>(context, 'Document')
+    .where('parent_document_id', '=', documentId)
+    .orderBy('created_at', 'asc')
+    .returning('*');
+};
+
+export const getUploader = async (context, documentId): Promise<User> => {
+  return (
+    await db<User>(context, 'User')
+      .leftJoin('Document', 'Document.uploader_id', 'User.id')
+      .where('Document.id', '=', documentId)
+      .limit(1)
+      .returning('User.*')
+  )[0];
 };

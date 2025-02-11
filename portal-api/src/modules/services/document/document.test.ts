@@ -131,7 +131,7 @@ describe('Should modify document', () => {
           'ServiceInstance',
           'c6343882-f609-4a3f-abe0-a34f8cb11302'
         ),
-        newDescription: 'NEW',
+        input: { description: 'NEW' },
       },
       contextAdminUser
     );

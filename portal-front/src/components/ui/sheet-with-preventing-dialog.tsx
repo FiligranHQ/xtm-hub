@@ -93,13 +93,13 @@ export const SheetWithPreventingDialog: FunctionComponent<
         </SheetContent>
       </Sheet>
       <AlertDialogComponent
-        AlertTitle={t('DialogActions.ContinueTitle')}
+        AlertTitle={t('DialogActions.PreventSheetTitle')}
         actionButtonText={t('MenuActions.Continue')}
         variantName={'destructive'}
         isOpen={openDialog}
         onOpenChange={setOpenDialog}
         onClickContinue={() => setOpen(false)}>
-        {t('DialogActions.ContinueSentence')}
+        {t('DialogActions.PreventSheetSentence')}
       </AlertDialogComponent>
     </>
   );

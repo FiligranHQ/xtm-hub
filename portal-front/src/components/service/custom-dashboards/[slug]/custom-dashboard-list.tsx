@@ -56,7 +56,7 @@ const CustomDashbordDocumentList = ({
   }, [data]);
 
   return (
-    <div className="flex flex-col gap-l">
+    <div className="flex flex-col gap-xl">
       <div className="flex justify-between">
         <h1>{serviceInstance.name}</h1>
         <CustomDashboardSheet
@@ -67,7 +67,7 @@ const CustomDashbordDocumentList = ({
       {/* TODO: add tabs to show non active dashboards for UPLOAD or BYPASS capas */}
       <ul
         className={
-          'grid grid-cols-1 s:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-m'
+          'grid grid-cols-1 s:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-xl'
         }>
         {[...active, ..._nonActive].map((node) => (
           <CustomDashboardCard

@@ -1,4 +1,4 @@
-import { PageInfo } from 'graphql-relay/connection/connection';
+import { type PageInfo } from 'graphql-relay/connection/connection';
 import pkg, { type Knex } from 'knex';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
