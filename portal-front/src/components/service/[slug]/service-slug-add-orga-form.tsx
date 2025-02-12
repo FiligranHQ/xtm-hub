@@ -151,6 +151,9 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
 
         <div className="bg-gray-150 dark:bg-gray-800 rounded-lg p-l">
           <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
+          <p className="txt-sub-content italic">
+            {t('OrganizationInServiceAction.SelectCapaDescription')}
+          </p>
           {capabilities.map(({ id, name, description }) => (
             <FormField
               key={id}
