@@ -55,22 +55,7 @@
     }
   ],
   "init_service_definitions": [],
-  "init_services": [
-    {
-      "service": {
-        "id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
-        "name": "Partner Vault",
-        "description": "This service allows you to gather information from Filigran.",
-        "service_definition_id": "918033d7-62fa-4734-842b-a9c4e6c50396"
-      },
-      "link": {
-        "id": "5abcf40a-3d33-45d0-a6fd-fae350cdf8ec",
-        "service_instance_id": "e88e8f80-ba9e-480b-ab27-8613a1565eff",
-        "url": "",
-        "name": "Vault"
-      }
-    }
-  ],
+  "init_services": [],
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,

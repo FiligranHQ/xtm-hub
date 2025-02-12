@@ -34,7 +34,6 @@ import {
 import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
 import {
   createUserServiceAccess,
-  isUserServiceExist,
   loadUnsecureUserServiceBy,
 } from './user-service.helper';
 import { loadUserServiceByUser } from './user_service.domain';
@@ -59,30 +58,26 @@ const resolvers: Resolvers = {
     addUserService: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        const user = await getOrCreateUser({
-          email: input.email,
-        });
-
         const [subscription] = await loadSubscriptionBy({
           service_instance_id: extractId(input.serviceInstanceId),
           organization_id: extractId(input.organizationId),
         } as SubscriptionMutator);
-
-        await insertUserIntoOrganization(context, user, subscription.id);
         if (!subscription) {
           throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
         }
-        if (await isUserServiceExist(user.id as UserId, subscription.id)) {
-          throw AlreadyExistsError(
-            'The User access to service is already exist'
-          );
-        }
-        await createUserServiceAccess(context, trx, {
-          subscription_id: subscription.id,
-          user_id: user.id as UserId,
-          capabilities: input.capabilities,
-        });
+        for (const email of input.email) {
+          const user = await getOrCreateUser({
+            email: email,
+          });
 
+          await insertUserIntoOrganization(context, user, subscription.id);
+
+          await createUserServiceAccess(context, trx, {
+            subscription_id: subscription.id,
+            user_id: user.id as UserId,
+            capabilities: input.capabilities,
+          });
+        }
         await trx.commit();
 
         const returningSubscription =

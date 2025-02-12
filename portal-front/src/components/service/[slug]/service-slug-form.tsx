@@ -164,7 +164,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
       variables: {
         connections: [connectionId],
         input: {
-          email: values.email[0]!.text,
+          email: values.email.map((item) => item.text),
           capabilities: values.capabilities,
           serviceInstanceId: slug ?? '',
           organizationId: values.organizationId,
@@ -273,9 +273,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
                       setActiveTagIndex={setActiveTagIndex}
                       enableAutocomplete={true}
                       autocompleteOptions={tagsAutocomplete}
-                      maxTags={1}
                       validateTag={(tag: string) => !!tag.match(emailRegex)}
-                      placeholderWhenFull={t('Service.Management.OneUserMax')}
                       setTags={(newTags) => {
                         setTags(newTags);
                         setValue('email', newTags as Tag[]);
