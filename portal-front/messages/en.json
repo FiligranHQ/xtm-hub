@@ -193,7 +193,7 @@
   },
   "ServiceActions": {
     "OrganizationDeleted": "Organization {name} has been deleted",
-    "OrganizationAdded": "Organization has been added",
+    "OrganizationAdded": "Organization {name} has been added",
     "UserCapabilitiesModified": "{email}'s capabilities have been modified"
   },
   "VaultActions": {
@@ -257,7 +257,7 @@
   },
   "InviteUserServiceForm": {
     "Title": "Invite user to the service",
-    "Description": "Additional capability: By default, your user invited to a service will have access the service. If you want to grant additional capability, select what capability you want to grant to your user  in the dropdown.",
+    "Description": "Additional capability: By default, your user invited to a service will have access the service. If you want to grant additional capability, select what capability you want to grant to your user.",
     "Email": "Email",
     "Organization": "Organization",
     "Capabilities": "Capabilities",

@@ -93,7 +93,9 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
         }
         toast({
           title: t('Utils.Success'),
-          description: t('ServiceActions.OrganizationAdded'),
+          description: t('ServiceActions.OrganizationAdded', {
+            name: findOrganization.organization.name,
+          }),
         });
         setOpenSheet(false);
       },

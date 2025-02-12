@@ -234,8 +234,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 label={t('Service.Management.InviteUser.TitleInviteUser')}
               />
             }
-            title={t('InviteUserServiceForm.Title')}
-            description={t('InviteUserServiceForm.Description')}>
+            title={t('InviteUserServiceForm.Title')}>
             <ServiceSlugForm
               userService={currentUser}
               connectionId={

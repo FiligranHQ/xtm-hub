@@ -97,7 +97,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
                         user_service_capa?.subscription_capability
                           ?.service_capability?.id
                       }
-                      className="mb-2 mr-2 mt-2">
+                      className="mb-2 mr-2 mt-2 uppercase">
                       {user_service_capa?.generic_service_capability?.name ??
                         user_service_capa?.subscription_capability
                           ?.service_capability?.name}
@@ -120,6 +120,8 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
           }
           return (
             <div className="flex items-center justify-end">
+              {/*TODO : Change later un the last #261 Chunk : adapt behaviour*/}
+              {/*with capabilities*/}
               {row.original.user_service_capability?.some(
                 (user_serv_capa) =>
                   user_serv_capa?.generic_service_capability?.name !==
