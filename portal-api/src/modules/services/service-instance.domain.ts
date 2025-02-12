@@ -290,6 +290,7 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     .where({
       'ServiceInstance.id': service_instance_id,
     })
+    .whereNotNull('UserService_Capability.generic_service_capability_id')
     .groupBy([
       'ServiceInstance.id',
       'User_Service.id',
