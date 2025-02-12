@@ -13,9 +13,9 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addDocument(document: Upload, name: String, description: String, serviceInstanceId: String, parentDocumentId: ID, active: Boolean): Document!
-  editDocument(documentId: ID, newDescription: String, serviceInstanceId: String): Document!
-  deleteDocument(documentId: ID, serviceInstanceId: String): Document!
+  addDocument(document: Upload, name: String, short_description: String, description: String, serviceInstanceId: String, parentDocumentId: ID, active: Boolean): Document!
+  editDocument(documentId: ID, input: EditDocumentInput!, serviceInstanceId: String): Document!
+  deleteDocument(documentId: ID, serviceInstanceId: String, forceDelete: Boolean): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): Subscription
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -117,9 +117,10 @@ enum DocumentOrdering {
 
 type Document implements Node {
   id: ID!
-  uploader_id: String!
+  uploader: User
   service_instance_id: String!
   name: String
+  short_description: String
   description: String
   file_name: String!
   minio_name: String!
@@ -129,6 +130,13 @@ type Document implements Node {
   updater_id: String
   download_number: Int
   children_documents: [Document!]
+}
+
+input EditDocumentInput {
+  short_description: String
+  description: String
+  name: String
+  active: Boolean
 }
 
 type DocumentEdge {

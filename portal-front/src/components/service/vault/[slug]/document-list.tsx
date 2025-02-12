@@ -2,6 +2,7 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import {
   DocumentsListQuery,
+  documentItem,
   documentsFragment,
 } from '@/components/service/document/document.graphql';
 import { ServiceById } from '@/components/service/service.graphql';
@@ -21,7 +22,10 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import {
+  documentItem_fragment$data,
+  documentItem_fragment$key,
+} from '@generated/documentItem_fragment.graphql';
 import { documentsList$key } from '@generated/documentsList.graphql';
 import {
   DocumentOrdering,
@@ -48,6 +52,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import {
   PreloadedQuery,
+  readInlineData,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
@@ -84,10 +89,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     );
 
   const documentData: documentItem_fragment$data[] = data.documents.edges.map(
-    ({ node }) =>
-      ({
-        ...node,
-      }) as documentItem_fragment$data
+    ({ node }) => readInlineData<documentItem_fragment$key>(documentItem, node)
   );
 
   const columns: ColumnDef<documentItem_fragment$data>[] = [

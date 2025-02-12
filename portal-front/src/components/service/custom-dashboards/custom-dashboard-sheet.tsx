@@ -6,6 +6,7 @@ import { omit } from '@/lib/omit';
 import { isNil } from '@/lib/utils';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { RESTRICTION } from '@/utils/constant';
+import { customDashboardSheet_update_childs$key } from '@generated/customDashboardSheet_update_childs.graphql';
 import {
   documentAddMutation,
   documentAddMutation$data,
@@ -14,7 +15,7 @@ import {
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useMutation } from 'react-relay';
+import { graphql, useMutation } from 'react-relay';
 import { DocumentAddMutation } from '../document/document.graphql';
 import {
   CustomDashboardForm,
@@ -36,16 +37,16 @@ export const CustomDashboardSheet = ({
 
   const asyncAddDocument = async (
     values: Partial<CustomDashboardFormValues>,
-    isParent: boolean
+    parent?: documentAddMutation$data['addDocument']
   ): Promise<documentAddMutation$data> =>
     new Promise((resolve, reject) => {
       if (isNil(values.document)) {
         return reject(new Error('Document is required'));
       }
       const variables: documentAddMutation$variables = {
-        ...values,
+        ...(values as Partial<documentAddMutation$variables>),
         serviceInstanceId,
-        connections: isParent ? [connectionId] : [], // Don't pass the connectionId to bypass update the list of documents with hidden documents
+        connections: !parent ? [connectionId] : [], // Don't pass the connectionId to bypass update the list of documents with hidden documents
       };
 
       addDocument({
@@ -53,33 +54,60 @@ export const CustomDashboardSheet = ({
         uploadables: fileListToUploadableMap(values.document),
         onCompleted: (response) => resolve(response),
         onError: (error) => reject(error),
+        updater: (store, response) => {
+          if (parent) {
+            const { updatableData } =
+              store.readUpdatableFragment<customDashboardSheet_update_childs$key>(
+                graphql`
+                  fragment customDashboardSheet_update_childs on Document
+                  @updatable {
+                    children_documents {
+                      __id
+                      id
+                    }
+                  }
+                `,
+                parent
+              );
+            const newItems = [
+              ...(updatableData.children_documents ?? []),
+              { id: response?.addDocument.id, __id: response?.addDocument.id },
+            ];
+            updatableData.children_documents = newItems as [];
+          }
+        },
       });
     });
 
-  const handleSubmit = async (values: CustomDashboardFormValues) => {
+  const handleSubmit = async (
+    values: CustomDashboardFormValues,
+    callback: () => void
+  ) => {
     const images = values.images;
     const input = omit(values, ['images']);
 
     try {
       // Add parent document (the dashboard)
-      const parentDocResult = await asyncAddDocument(input, true);
+      const parentDocResult = await asyncAddDocument(input);
 
       // Add images
-      for (const image of images) {
-        if (isNil(image.file)) {
+      for (let i = 0; i < images.length; i++) {
+        const image = images.item(i);
+        if (isNil(image)) {
           continue;
         }
         await asyncAddDocument(
           {
             ...input,
-            document: image.file,
+            document: [image] as unknown as FileList,
             parentDocumentId: parentDocResult.addDocument.id,
           },
-          false
+          parentDocResult.addDocument
         );
       }
 
       setOpenSheet(false);
+      callback();
       toast({
         title: t('Utils.Success'),
         description: t('Service.CustomDashboards.Actions.Added', {
@@ -106,10 +134,7 @@ export const CustomDashboardSheet = ({
             <TriggerButton label={t('Service.CustomDashboards.AddDashboard')} />
           }
           title={t('Service.CustomDashboards.AddDashboard')}>
-          <CustomDashboardForm
-            serviceInstanceId={serviceInstanceId}
-            handleSubmit={handleSubmit}
-          />
+          <CustomDashboardForm handleSubmit={handleSubmit} />
         </SheetWithPreventingDialog>
       </GuardCapacityComponent>
     </>
