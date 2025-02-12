@@ -172,9 +172,10 @@ const resolvers: Resolvers = {
           id: extractId(subscription_id),
         } as SubscriptionMutator);
 
-        if (subscription.billing !== 0) {
-          throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
-        }
+        // TODO: to be rethought when billing is used in XTM
+        // if (subscription.billing !== 0) {
+        //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
+        // }
         await db<SubscriptionCapability>(context, 'Subscription_Capability')
           .where({ subscription_id: fromGlobalId(subscription_id).id })
           .delete('*');

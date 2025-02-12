@@ -8,6 +8,11 @@ import Subscription, {
 import { UserId } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import {
+  CAPABILITY_BCK_MANAGE_SERVICES,
+  CAPABILITY_BYPASS,
+  CAPABILITY_FRT_SERVICE_SUBSCRIBER,
+} from '../../portal.const';
+import {
   ALREADY_EXISTS,
   AlreadyExistsError,
   FORBIDDEN_ACCESS,
@@ -34,6 +39,7 @@ import {
 import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
 import {
   createUserServiceAccess,
+  isUserServiceExist,
   loadUnsecureUserServiceBy,
 } from './user-service.helper';
 import { loadUserServiceByUser } from './user_service.domain';
@@ -58,35 +64,77 @@ const resolvers: Resolvers = {
     addUserService: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        const [subscription] = await loadSubscriptionBy({
-          service_instance_id: extractId(input.serviceInstanceId),
-          organization_id: extractId(input.organizationId),
-        } as SubscriptionMutator);
-        if (!subscription) {
-          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
-        }
-        for (const email of input.email) {
-          const user = await getOrCreateUser({
-            email: email,
-          });
+        const { user: currentUser } = context;
 
-          await insertUserIntoOrganization(context, user, subscription.id);
+        // CURRENT USER HAS NO MANAGE ACCCESS, HE CAN ONLY CREATE IT'S OWN USER_SERVICE
+        if (
+          !currentUser.capabilities.some(({ id }) =>
+            [
+              CAPABILITY_BYPASS.id,
+              CAPABILITY_BCK_MANAGE_SERVICES.id,
+              CAPABILITY_FRT_SERVICE_SUBSCRIBER.id,
+            ].includes(id)
+          )
+        ) {
+          const [subscription] = await loadSubscriptionBy({
+            service_instance_id: extractId(input.serviceInstanceId),
+            organization_id: extractId(input.organizationId),
+          } as SubscriptionMutator);
 
+          if (
+            await isUserServiceExist(currentUser.id as UserId, subscription.id)
+          ) {
+            throw AlreadyExistsError(
+              'The User access to service is already exist'
+            );
+          }
           await createUserServiceAccess(context, trx, {
             subscription_id: subscription.id,
-            user_id: user.id as UserId,
-            capabilities: input.capabilities,
+            user_id: currentUser.id as UserId,
+            capabilities: [],
           });
+
+          await trx.commit();
+          return;
+        } else {
+          const [subscription] = await loadSubscriptionBy({
+            service_instance_id: extractId(input.serviceInstanceId),
+            organization_id: extractId(input.organizationId),
+          } as SubscriptionMutator);
+
+          if (!subscription) {
+            throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
+          }
+          for (const email of input.email) {
+            const user = await getOrCreateUser({
+              email: email,
+            });
+
+            await insertUserIntoOrganization(context, user, subscription.id);
+            const userServiceAlreadyExist = await isUserServiceExist(
+              user.id as UserId,
+              subscription.id
+            );
+
+            if (!userServiceAlreadyExist) {
+              await createUserServiceAccess(context, trx, {
+                subscription_id: subscription.id,
+                user_id: user.id as UserId,
+                capabilities: input.capabilities,
+              });
+            }
+          }
+
+          await trx.commit();
+
+          const returningSubscription =
+            await fillSubscriptionWithOrgaServiceAndUserService(
+              context,
+              subscription.id as SubscriptionId
+            );
+
+          return returningSubscription;
         }
-        await trx.commit();
-
-        const returningSubscription =
-          await fillSubscriptionWithOrgaServiceAndUserService(
-            context,
-            subscription.id as SubscriptionId
-          );
-
-        return returningSubscription;
       } catch (error) {
         await trx.rollback();
         if (error.name.includes(ALREADY_EXISTS)) {
