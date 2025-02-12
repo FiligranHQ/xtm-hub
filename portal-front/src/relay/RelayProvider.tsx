@@ -53,7 +53,6 @@ export function RelayProvider({ children }: RelayProviderProps) {
   });
 
   return (
-    // @ts-expect-error
     <RelayEnvironmentProvider environment={relayEnvironment}>
       <>{children}</>
     </RelayEnvironmentProvider>

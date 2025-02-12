@@ -65,7 +65,6 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       {serviceInstance ? (
         <>
           <BreadcrumbNav value={breadcrumbs} />
-          <h1>{serviceInstance.name}</h1>
           <PageLoader serviceInstance={serviceInstance} />
         </>
       ) : (

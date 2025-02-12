@@ -1,40 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import { CloseIcon } from 'filigran-icon';
-import {
-  Button,
-  Checkbox,
-  FileInput,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  SheetFooter,
-  Textarea,
-} from 'filigran-ui';
+import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, SheetFooter, Textarea, } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
-import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 export const newCustomDashboardSchema = z.object({
   name: z.string().nonempty(),
+  shortDescription: z.string().max(255).optional(),
   description: z.string().optional(),
   documentId: z.string().optional(),
   parentDocumentId: z.string().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z
-    .array(z.object({ file: z.custom<FileList>(fileListCheck).optional() }))
-    .min(1)
-    .max(5),
+  images: z.custom<FileList>(fileListCheck),
   active: z.boolean().optional(),
 });
 
@@ -43,15 +25,13 @@ export type CustomDashboardFormValues = z.infer<
 >;
 
 interface CustomDashboardFormProps {
-  document?: documentItem_fragment$data;
-  handleSubmit: (values: z.infer<typeof newCustomDashboardSchema>) => void;
-  serviceInstanceId: NonNullable<
-    serviceByIdQuery$data['serviceInstanceById']
-  >['id'];
+  handleSubmit: (
+    values: z.infer<typeof newCustomDashboardSchema>,
+    callback: () => void
+  ) => void;
 }
 
 export const CustomDashboardForm = ({
-  document,
   handleSubmit,
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
@@ -59,189 +39,172 @@ export const CustomDashboardForm = ({
 
   const form = useForm<CustomDashboardFormValues>({
     resolver: zodResolver(newCustomDashboardSchema),
+    criteriaMode: "all",
     defaultValues: {
-      name: document?.name ?? '',
-      description: document?.description ?? '',
-      documentId: document?.id ?? '',
+      name: '',
+      shortDescription: '',
+      description: '',
+      documentId: '',
+      active: false,
       document: undefined,
-      images: [{ file: undefined }],
-      active: document?.active ?? false,
+      images: undefined,
     },
   });
 
-  setIsDirty(form.formState.isDirty);
-  if (form.getValues('document') || form.getValues('images')) {
-    setIsDirty(true);
-  }
-
-  const [publishChecked, setPublishChecked] = useState<
-    boolean | 'indeterminate'
-  >(document?.active ?? false);
-  useEffect(
-    () => form.setValue('active', publishChecked === true),
-    [publishChecked]
-  );
-
-  const { fields, append, remove } = useFieldArray<
-    CustomDashboardFormValues,
-    'images'
-  >({
-    control: form.control,
-    name: 'images',
-  });
-  const watchedImages = useWatch({
-    control: form.control,
-    name: 'images',
-  });
-  useEffect(() => {
-    if (watchedImages.length) {
-      const lastImage = watchedImages[watchedImages.length - 1];
-      if (lastImage?.file !== undefined && watchedImages.length < 5) {
-        append({ file: undefined });
-      }
-    }
-  }, [watchedImages, append]);
+  useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
+  form.watch(["images", "document"]);
 
   const onSubmit = (values: z.infer<typeof newCustomDashboardSchema>) => {
-    handleSubmit({
-      ...values,
-    });
-    form.reset();
+    handleSubmit(
+      {
+        ...values,
+      },
+      () => form.reset()
+    );
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-xl">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t('Service.CustomDashboards.Form.NameLabel')}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t(
-                    'Service.CustomDashboards.Form.NamePlaceholder'
-                  )}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t('Service.CustomDashboards.Form.DescriptionLabel')}
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder={t(
-                    'Service.CustomDashboards.Form.DescriptionPlaceholder'
-                  )}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="active"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t('Service.CustomDashboards.Form.PublishedLabel')}
-              </FormLabel>
-              <div className="flex items-center gap-2">
-                <FormControl>
-                  <Checkbox
-                    {...field}
-                    value="on"
-                    onCheckedChange={setPublishChecked}
-                  />
-                </FormControl>
-                <FormLabel className="font-normal cursor-pointer">
-                  {t('Service.CustomDashboards.Form.PublishedPlaceholder')}
-                </FormLabel>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="document"
-          render={({ field }) => {
-            return (
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-xl">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.CustomDashboards.Form.JSONFile')}
+                  {t('Service.CustomDashboards.Form.NameLabel')}
                 </FormLabel>
                 <FormControl>
-                  <FileInput
+                  <Input
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.NamePlaceholder'
+                    )}
                     {...field}
-                    texts={{
-                      selectFile: t(
-                        'Service.CustomDashboards.Form.SelectJSONFile'
-                      ),
-                      noFile: t('Service.CustomDashboards.Form.NoJSONFile'),
-                      dropFiles: t('Service.Vault.FileForm.DropDocuments'),
-                    }}
-                    allowedTypes={'application/json'}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            );
-          }}
-        />
+            )}
+          />
 
-        {fields.map((fieldItem, index) => (
           <FormField
-            key={fieldItem.id}
             control={form.control}
-            // Le nom devient "images.0.file", "images.1.file", etc.
-            name={`images.${index}.file` as const}
+            name="shortDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.ShortDescriptionLabel')}
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.ShortDescriptionPlaceholder'
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.DescriptionLabel')}
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.DescriptionPlaceholder'
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="active"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.PublishedLabel')}
+                </FormLabel>
+                <div className="flex items-center gap-2">
+                  <FormControl>
+                    <Checkbox
+                      {...field}
+                      checked={field.value}
+                      value="on"
+                      onCheckedChange={() =>
+                        form.setValue('active', !field.value)
+                      }
+                    />
+                  </FormControl>
+                  <FormLabel className="font-normal cursor-pointer">
+                    {t('Service.CustomDashboards.Form.PublishedPlaceholder')}
+                  </FormLabel>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="document"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>
+                    {t('Service.CustomDashboards.Form.JSONFile')}
+                  </FormLabel>
+                  <FormControl>
+                    <FileInput
+                      {...field}
+                      texts={{
+                        selectFile: t(
+                          'Service.CustomDashboards.Form.SelectJSONFile'
+                        ),
+                        noFile: t('Service.CustomDashboards.Form.NoJSONFile'),
+                        dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                      }}
+                      allowedTypes={'application/json'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+
+          <FormField
+            control={form.control}
+            name={'images'}
             render={({ field: { value, ref } }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2 h-6">
-                  {t('Service.CustomDashboards.Form.ImageLabel', {
-                    num: index + 1,
-                  })}
-                  {index < fields.length - 1 && (
-                    <Button
-                      variant="outline"
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="h-6 px-2">
-                      <CloseIcon className="h-2 w-2" />
-                    </Button>
-                  )}
+                  {t('Service.CustomDashboards.Form.ImageLabel')}
                 </FormLabel>
                 <FormControl>
                   <FileInput
-                    name={`images.${index}.file` as const}
+                    multiple
+                    name={'images'}
                     texts={{
                       selectFile: t(
-                        'Service.CustomDashboards.Form.SelectImage',
-                        { num: index + 1 }
+                        'Service.CustomDashboards.Form.SelectImage'
                       ),
-                      noFile: t('Service.CustomDashboards.Form.NoImage', {
-                        num: index + 1,
-                      }),
+                      noFile: t('Service.CustomDashboards.Form.NoImage'),
                       dropFiles: t('Service.Vault.FileForm.DropDocuments'),
                     }}
                     allowedTypes={'image/jpeg, image/png'}
@@ -253,23 +216,25 @@ export const CustomDashboardForm = ({
               </FormItem>
             )}
           />
-        ))}
 
-        <SheetFooter className="pt-2">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={(e) => handleCloseSheet(e)}>
-            {t('Utils.Cancel')}
-          </Button>
+          <SheetFooter className="pt-2">
+            <div className="flex gap-s">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={(e) => handleCloseSheet(e)}>
+                {t('Utils.Cancel')}
+              </Button>
 
-          <Button
-            disabled={!form.formState.isValid}
-            type="submit">
-            {t('Utils.Validate')}
-          </Button>
-        </SheetFooter>
-      </form>
-    </Form>
+              <Button
+                disabled={!form.formState.isDirty}
+                type="submit">
+                {t('Utils.Validate')}
+              </Button>
+            </div>
+          </SheetFooter>
+        </form>
+      </Form>
+    </>
   );
 };

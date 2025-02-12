@@ -65,9 +65,10 @@ export type Document = Node & {
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   service_instance_id: Scalars['String']['output'];
+  short_description?: Maybe<Scalars['String']['output']>;
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
-  uploader_id: Scalars['String']['output'];
+  uploader?: Maybe<User>;
 };
 
 export type DocumentConnection = {
@@ -89,6 +90,13 @@ export enum DocumentOrdering {
   DownloadNumber = 'download_number',
   FileName = 'file_name'
 }
+
+export type EditDocumentInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  short_description?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type EditMeUserInput = {
   first_name: Scalars['String']['input'];
@@ -173,6 +181,7 @@ export type MutationAddDocumentArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
   parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  short_description?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -214,6 +223,7 @@ export type MutationChangeSelectedOrganizationArgs = {
 
 export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
+  forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -245,7 +255,7 @@ export type MutationDeleteUserServiceArgs = {
 
 export type MutationEditDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
-  newDescription?: InputMaybe<Scalars['String']['input']>;
+  input: EditDocumentInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -826,6 +836,7 @@ export type ResolversTypes = ResolversObject<{
   DocumentConnection: ResolverTypeWrapper<DocumentConnection>;
   DocumentEdge: ResolverTypeWrapper<DocumentEdge>;
   DocumentOrdering: DocumentOrdering;
+  EditDocumentInput: EditDocumentInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
@@ -895,6 +906,7 @@ export type ResolversParentTypes = ResolversObject<{
   Document: Document;
   DocumentConnection: DocumentConnection;
   DocumentEdge: DocumentEdge;
+  EditDocumentInput: EditDocumentInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
@@ -988,9 +1000,10 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  uploader_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1055,7 +1068,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
-  editDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationEditDocumentArgs>>;
+  editDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationEditDocumentArgs, 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;

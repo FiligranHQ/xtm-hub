@@ -166,19 +166,23 @@
     },
     "CustomDashboards": {
       "AddDashboard": "Add new dashboard",
+      "UpdateDashboard": "Update dashboard",
       "Form": {
         "JSONFile": "JSON file",
         "SelectJSONFile": "Select JSON file",
         "NoJSONFile": "No JSON file selected",
         "NameLabel": "Name",
         "NamePlaceholder": "Dashboard name",
+        "ShortDescriptionLabel": "Short Description",
         "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "This is a short paragraph to describe the dashboard.",
-        "ImageLabel": "Image {num}",
-        "SelectImage": "Select an image",
+        "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
+        "DescriptionPlaceholder": "This is a paragraph to describe the document.",
+        "ImageLabel": "Images",
+        "SelectImage": "Select image(s)",
         "NoImage": "No image selected",
         "PublishedLabel": "Publish",
-        "PublishedPlaceholder": "Is the dashboard published?"
+        "PublishedPlaceholder": "Is the dashboard published?",
+        "UploadImage": "Upload new image(s)"
       },
       "Actions": {
         "Deleted": "{name} has been deleted",
@@ -321,11 +325,14 @@
     "Update": "Update",
     "Details": "Details",
     "Remove": "Remove",
+    "Download": "Download",
     "Continue": "Continue"
   },
   "DialogActions": {
-    "ContinueTitle": "Unsaved progress",
-    "ContinueSentence": "You have started filling out the form. Closing it now will discard any unsaved progress. Do you want to proceed?"
+    "PreventSheetTitle": "Unsaved progress",
+    "ContinueTitle": "Do you want to continue?",
+    "PreventSheetSentence": "You have started filling out the form. Closing it now will discard any unsaved progress. Do you want to proceed?",
+    "DeleteSentence": "This element will be permanently deleted. Do you want to proceed?"
   },
   "RedirectPage": {
     "YourFutureHub": "Your future Filigran community hub is taking shape !",
@@ -346,5 +353,12 @@
   },
   "Parameters": {
     "Version": "Version"
+  },
+  "ServiceName": {
+    "custom_dashboards": "Custom Dashboard"
+  },
+  "Badge": {
+    "Published": "Published",
+    "Draft": "Draft"
   }
 }

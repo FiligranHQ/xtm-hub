@@ -11,7 +11,9 @@ import { UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import {
   deleteDocument,
+  getChildrenDocuments,
   getDocuments,
+  getUploader,
   sendFileToS3,
   updateDocumentDescription,
 } from './document.domain';
@@ -40,6 +42,7 @@ const resolvers: Resolvers = {
           uploader_id: context.user.id as UserId,
           name: payload.name,
           description: payload.description,
+          short_description: payload.short_description,
           minio_name: minioName,
           file_name,
           service_instance_id: context.serviceInstanceId as ServiceInstanceId,
@@ -56,11 +59,11 @@ const resolvers: Resolvers = {
         throw UnknownError('INSERT_DOCUMENT_ERROR', { detail: error });
       }
     },
-    editDocument: async (_, { documentId, newDescription }, context) => {
+    editDocument: async (_, { documentId, input }, context) => {
       try {
         const [document] = await updateDocumentDescription(
           context,
-          { description: newDescription },
+          input,
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId
         );
@@ -69,17 +72,23 @@ const resolvers: Resolvers = {
         throw UnknownError('UPDATE_DOCUMENT_ERROR', { detail: error });
       }
     },
-    deleteDocument: async (_, { documentId }, context) => {
+    deleteDocument: async (_, { documentId, forceDelete }, context) => {
       try {
         return deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
-          context.serviceInstanceId as ServiceInstanceId
+          context.serviceInstanceId as ServiceInstanceId,
+          forceDelete
         );
       } catch (error) {
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }
     },
+  },
+  Document: {
+    children_documents: ({ id }, _, context) =>
+      getChildrenDocuments(context, id),
+    uploader: ({ id }, _, context) => getUploader(context, id),
   },
   Query: {
     documentExists: async (_, input) => {

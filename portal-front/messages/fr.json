@@ -165,19 +165,23 @@
     },
     "CustomDashboards": {
       "AddDashboard": "Nouveau tableau de bord",
+      "UpdateDashboard": "Tableau de bord des mises à jour",
       "Form": {
         "JSONFile": "Fichier JSON",
         "SelectJSONFile": "Selectionnez un fichier JSON",
         "NoJSONFile": "Pas de fichier JSON sélectionné",
         "NameLabel": "Nom",
         "NamePlaceholder": "Nom du tableau de bord",
+        "ShortDescriptionLabel": "Brève description",
         "DescriptionLabel": "Description",
+        "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "DescriptionPlaceholder": "Description du tableau de bord",
-        "ImageLabel": "Image {num}",
-        "SelectImage": "Selectionnez une image",
+        "ImageLabel": "Images",
+        "SelectImage": "Selectionnez une/des image(s)",
         "NoImage": "Pas d'image sélectionnée",
         "PublishedLabel": "Publier",
-        "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?"
+        "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
+        "UploadImage": "Télécharger une (des) nouvelle(s) image(s)"
       },
       "Actions": {
         "Deleted": "{name} has been deleted",
@@ -320,11 +324,14 @@
     "Update": "Modifier",
     "Details": "Détails",
     "Remove": "Retirer",
+    "Download": "Télécharger",
     "Continue": "Continuer"
   },
   "DialogActions": {
+    "PreventSheetTitle": "Progrès non sauvegardé",
     "ContinueTitle": "Progrès non sauvegardé",
-    "ContinueSentence": "Vous avez commencé à remplir le formulaire. Le fait de le fermer maintenant annulera toute progression non enregistrée. Voulez-vous continuer ?"
+    "PreventSheetSentence": "Vous avez commencé à remplir le formulaire. Le fait de le fermer maintenant annulera toute progression non enregistrée. Voulez-vous continuer ?",
+    "DeleteSentence": "Cet élément sera définitivement supprimé. Voulez-vous continuer ?"
   },
   "RedirectPage": {
     "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !",
@@ -345,5 +352,12 @@
   },
   "Parameters": {
     "Version": "Version"
+  },
+  "ServiceName": {
+    "custom_dashboards": "Tableau de bord personnalisé"
+  },
+  "Badge": {
+    "Published": "Publié",
+    "Draft": "Brouillon"
   }
 }

@@ -15,6 +15,18 @@ services:
     ports:
       - "5432:5432"
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: portal@filigran.io
+      PGADMIN_DEFAULT_PASSWORD: portal-password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
   portal-minio:
     image: 'minio/minio:RELEASE.2024-08-03T04-33-23Z'
     environment:
@@ -35,6 +47,8 @@ services:
 
 volumes:
   pgdata:
+    driver: local
+  pgadmin-data:
     driver: local
   minio:
     driver: local

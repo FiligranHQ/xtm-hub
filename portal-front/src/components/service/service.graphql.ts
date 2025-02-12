@@ -19,6 +19,9 @@ export const ServiceById = graphql`
       name
       description
       capabilities @required(action: THROW)
+      service_definition {
+        identifier
+      }
     }
   }
 `;

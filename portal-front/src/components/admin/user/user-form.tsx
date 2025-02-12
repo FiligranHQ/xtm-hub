@@ -70,9 +70,6 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
 
   const t = useTranslations();
   const { me } = useContext<Portal>(portalContext);
-  const currentRolesPortal = user?.roles_portal.map(
-    (rolePortalData) => rolePortalData.id
-  );
   // TODO Rework not a good implementation yet, should be easier when we will have a clear separation between user, role and org
   const personalSpace = (user?.organizations ?? [])?.find(
     (organizationData) => organizationData.personal_space
@@ -87,6 +84,10 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
       value: id,
     }))
     .filter(({ label }) => !(!isAdminPath && ['ADMIN'].includes(label)));
+
+  const currentRolesPortal = user?.roles_portal
+    .map((rolePortalData) => rolePortalData.id)
+    .filter((id) => rolePortalData.some((r) => r.value === id));
 
   const [organizationData] = getOrganizations();
 

@@ -39,7 +39,9 @@ const EditDocument: FunctionComponent<EditDocumentProps> = ({
       variables: {
         documentId: values.documentId,
         serviceInstanceId: slug,
-        newDescription: values.description,
+        input: {
+          description: values.description,
+        },
       },
       onCompleted: (response) => {
         setOpenSheet(false);
