@@ -247,6 +247,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                   ?.service_definition
                   ?.service_capability as unknown as serviceCapability_fragment$data[]
               }
+              serviceName={queryData.serviceInstanceByIdWithSubscriptions?.name}
               dataOrganizationsTab={dataOrganizationsTab}
               subscription={selectedSubscription}
             />
