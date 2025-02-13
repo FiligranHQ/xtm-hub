@@ -1,6 +1,5 @@
 'use client';
 
-import MeFilling from '@/components/me/me-filling';
 import { MeContextFragment, MeQuery } from '@/components/me/me.graphql';
 import { PortalContext } from '@/components/me/portal-context';
 import UserEventSubscription from '@/components/me/user-event-subscription';
@@ -26,7 +25,6 @@ const MeContext: React.FunctionComponent<ContextProps> = ({
   return (
     <PortalContext me={me}>
       <UserEventSubscription />
-      <MeFilling />
 
       {children}
     </PortalContext>

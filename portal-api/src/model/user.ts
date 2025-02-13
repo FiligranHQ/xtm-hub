@@ -8,6 +8,7 @@ export interface UserInfo {
   first_name: string;
   last_name: string;
   roles: string[];
+  picture?: string;
 }
 
 export interface UserWithOrganizations extends User {

@@ -35,7 +35,8 @@ import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from './users.domain';
 
 export const addNewUserWithRoles = async (
-  data: Pick<UserInitializer, 'email' | 'first_name' | 'last_name'> & {
+  data: Pick<UserInitializer,
+    'email' | 'first_name' | 'last_name' | 'picture'> & {
     password?: string;
     selected_organization_id?: OrganizationId;
   },
@@ -57,6 +58,9 @@ export const addNewUserWithRoles = async (
         data.selected_organization_id ?? addOrganization.id,
       salt,
       email: data.email,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      picture: data.picture,
       password: hash,
     })
     .returning('*');
@@ -106,27 +110,39 @@ export const createNewUserFromInvitation = async ({
   email,
   first_name,
   last_name,
-}: Pick<UserInitializer, 'email' | 'first_name' | 'last_name'>) => {
+  picture,
+}: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>) => {
   const [organization] = await loadOrganizationsFromEmail(email);
 
   const userWithRoles: User = !organization
     ? await createOrganisationWithAdminUser(email)
     : await addNewUserWithRoles(
-        {
-          email,
-          last_name,
-          first_name,
-        },
-        [ROLE_USER.name]
-      );
+      {
+        email,
+        last_name,
+        first_name,
+        picture,
+      },
+      [ROLE_USER.name]
+    );
 
   return loadUserBy({ 'User.id': userWithRoles.id });
 };
 
 export const getOrCreateUser = async (
-  userInfo: Pick<UserInitializer, 'email' | 'first_name' | 'last_name'>
+  userInfo: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
+  upsert = false,
 ) => {
   const user = await loadUserBy({ email: userInfo.email });
+  if (user && upsert) {
+    await dbUnsecure<User>('User')
+      .where({ id: user.id })
+      .update({
+          first_name: user.first_name ?? userInfo.first_name,
+          last_name: user.last_name ?? userInfo.last_name,
+          picture: user.picture ?? userInfo.picture,
+      });
+  }
   return user ? user : await createNewUserFromInvitation(userInfo);
 };
 
