@@ -48,6 +48,9 @@ export default class UserPage {
   }
 
   async disableUser(userEmail) {
+    await this.page
+      .getByRole('cell', { name: userEmail })
+      .click();
     await this.page.getByLabel('Disable').click();
     await this.page.getByRole('button', { name: 'Cancel' }).click();
     await expect(
