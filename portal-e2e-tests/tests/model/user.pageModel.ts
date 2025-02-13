@@ -51,12 +51,12 @@ export default class UserPage {
     await this.page
       .getByRole('cell', { name: userEmail })
       .click();
-    await this.page.getByLabel('Disable').click();
+    await this.page.getByRole('button', { name: 'Disable' }).click();
     await this.page.getByRole('button', { name: 'Cancel' }).click();
     await expect(
       this.page.getByRole('heading', { name: userEmail })
     ).toBeVisible();
-    await this.page.getByLabel('Disable').click();
+    await this.page.getByRole('button', { name: 'Disable' }).click();
     await this.page.getByRole('button', { name: 'Disable' }).click();
   }
 }
