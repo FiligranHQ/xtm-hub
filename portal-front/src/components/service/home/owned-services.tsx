@@ -84,7 +84,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
                 serviceInstance={
                   subscription!.service_instance as serviceList_fragment$data
                 }
-                bottomLeftAction={getAction(
+                rightLeftAction={getAction(
                   subscription!.service_instance as serviceList_fragment$data
                 )}
               />
@@ -93,7 +93,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
           {publicServices.map((service) => (
             <ServiceInstanceCard
               key={service.id}
-              bottomLeftAction={getAction(service)}
+              rightLeftAction={getAction(service)}
               serviceInstance={service}
             />
           ))}

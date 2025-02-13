@@ -19,6 +19,7 @@ import TriggerButton from '@/components/ui/trigger-button';
 import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
 import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
@@ -194,14 +195,20 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 {t('Service.SubscribeOrganization')}
               </Button>
             }
-            title={t('OrganizationInServiceAction.AddOrganization')}
-            description={t(
-              'OrganizationInServiceAction.AddOrganizationDescription'
-            )}>
+            title={
+              t('OrganizationInServiceAction.AddOrganization') +
+              ' ' +
+              queryData?.serviceInstanceByIdWithSubscriptions?.name
+            }>
             <ServiceSlugAddOrgaForm
               subscriptions={
                 queryData?.serviceInstanceByIdWithSubscriptions
                   ?.subscriptions as subscriptionWithUserService_fragment$data[]
+              }
+              capabilities={
+                queryData?.serviceInstanceByIdWithSubscriptions
+                  ?.service_definition
+                  ?.service_capability as unknown as serviceCapability_fragment$data[]
               }
               setSelectedSubscription={setSelectedSubscription}
               serviceId={serviceId}
@@ -229,12 +236,16 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 label={t('Service.Management.InviteUser.TitleInviteUser')}
               />
             }
-            title={t('InviteUserServiceForm.Title')}
-            description={t('InviteUserServiceForm.Description')}>
+            title={t('InviteUserServiceForm.Title')}>
             <ServiceSlugForm
               userService={currentUser}
               connectionId={
                 queryData.serviceInstanceByIdWithSubscriptions?.__id ?? ''
+              }
+              serviceCapabilities={
+                queryData?.serviceInstanceByIdWithSubscriptions
+                  ?.service_definition
+                  ?.service_capability as unknown as serviceCapability_fragment$data[]
               }
               dataOrganizationsTab={dataOrganizationsTab}
               subscription={selectedSubscription}

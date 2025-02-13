@@ -18,6 +18,7 @@ type Subscription implements Node {
   organization: Organization!
   service_url: String!
   service_instance: ServiceInstance
+  subscription_capability: [SubscriptionCapability]
   user_service: [UserService]!
 }
 
@@ -32,6 +33,7 @@ type Mutation {
   addSubscriptionInService(
     service_instance_id: String
     organization_id: ID
+    capability_ids: [ID]
   ): ServiceInstance @auth(requires: [BYPASS])
   deleteSubscription(subscription_id: ID!): ServiceInstance
     @auth(requires: [BCK_MANAGE_SERVICES])

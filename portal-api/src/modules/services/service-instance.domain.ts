@@ -290,6 +290,7 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     .where({
       'ServiceInstance.id': service_instance_id,
     })
+    .whereNotNull('UserService_Capability.generic_service_capability_id')
     .groupBy([
       'ServiceInstance.id',
       'User_Service.id',
@@ -368,10 +369,9 @@ export const loadServiceWithSubscriptions = async (
             'name', "Generic_Service_Capability".name,
             '__typename', 'Generic_Service_Capability'
           ),
-
           '__typename', 'UserServiceCapability'
         )
-        WHEN "Service_Capability".id IS NOT NULL THEN
+        WHEN "Subscription_Capability".id IS NOT NULL THEN
         json_build_object(
           'id', "UserService_Capability".id,
           'user_service_id', "UserService_Capability".user_service_id,
@@ -416,6 +416,18 @@ export const loadServiceWithSubscriptions = async (
       '=',
       'Subscription.id'
     )
+    .leftJoin(
+      'Subscription_Capability',
+      'Subscription_Capability.subscription_id',
+      '=',
+      'Subscription.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'Subscription_Capability.service_capability_id',
+      '=',
+      'Service_Capability.id'
+    )
     .leftJoin('User as user', 'user.id', '=', 'userService.user_id')
     .leftJoin(
       'Organization as org',
@@ -441,7 +453,12 @@ export const loadServiceWithSubscriptions = async (
               'id', "userService".id,
               'subscription_id', "userService".subscription_id,
               'user_id', "userService".user_id,
-              'user_service_capability', "userService".user_service_capability,
+              'user_service_capability', COALESCE(
+                  CASE 
+                    WHEN "userService".user_service_capability IS NOT NULL THEN "userService".user_service_capability
+                    ELSE '[]'::json
+                  END
+                ),
               'user', CASE
                 WHEN "user".id IS NOT NULL THEN json_build_object(
                   'id', "user".id,
@@ -459,6 +476,9 @@ export const loadServiceWithSubscriptions = async (
           ) FILTER (WHERE "userService".id IS NOT NULL)::json,
           '[]'::json
         ) AS user_service`
+      ),
+      dbRaw(
+        `COALESCE(json_agg(json_build_object('id', "Subscription_Capability".id, 'service_capability', json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, 'description', "Service_Capability".description, '__typename', 'Service_Capability'), '__typename', 'Subscription_Capability')) FILTER (WHERE "Subscription_Capability".id IS NOT NULL), '[]'::json) as subscription_capability`
       )
     )
     .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
@@ -469,7 +489,27 @@ export const loadServiceWithSubscriptions = async (
   const [serviceInstance] = await db<ServiceInstance>(
     context,
     'ServiceInstance'
-  ).where('ServiceInstance.id', '=', service_instance_id);
+  )
+    .where('ServiceInstance.id', '=', service_instance_id)
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceInstance.service_definition_id',
+      '=',
+      'ServiceDefinition.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'ServiceDefinition.id',
+      '=',
+      'Service_Capability.service_definition_id'
+    )
+    .select([
+      'ServiceInstance.*',
+      dbRaw(
+        `json_build_object('id', "ServiceDefinition".id, 'service_capability', COALESCE(json_agg(json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, 'description', "Service_Capability".description, '__typename', 'Service_Capability')) FILTER (WHERE "Service_Capability".id IS NOT NULL), '[]'), '__typename', 'ServiceDefinition') as service_definition`
+      ),
+    ])
+    .groupBy(['ServiceInstance.id', 'ServiceDefinition.id']);
 
   if (!context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)) {
     querySubscriptions.where(
@@ -490,20 +530,20 @@ export const grantServiceAccessUsers = async (
   adminId: string,
   subscriptionId: string
 ): Promise<UserService[]> => {
-  const usersInOrga = (await loadUsersByOrganization(
+  const adminsOrga = (await loadUsersByOrganization(
     organizationId,
     adminId,
     ROLE_ADMIN_ORGA.id
   )) as User[];
 
-  return usersInOrga.length > 0
+  return adminsOrga.length > 0
     ? await grantServiceAccess(
         context,
         [
           GenericServiceCapabilityIds.AccessId,
           GenericServiceCapabilityIds.ManageAccessId,
         ],
-        usersInOrga.map(({ id }) => id),
+        adminsOrga.map(({ id }) => id),
         subscriptionId
       )
     : [];

@@ -10,7 +10,7 @@ enum UserServiceOrdering {
 }
 
 input UserServiceAddInput {
-  email: String!
+  email: [String!]!
   capabilities: [String]
   serviceInstanceId: String!
   organizationId: String!
@@ -24,7 +24,6 @@ input UserServiceDeleteInput {
 
 type Mutation {
   addUserService(input: UserServiceAddInput!): Subscription
-    @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_SERVICES])
   deleteUserService(input: UserServiceDeleteInput!): Subscription
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_SERVICES])
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance @auth

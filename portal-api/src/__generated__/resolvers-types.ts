@@ -201,6 +201,7 @@ export type MutationAddSubscriptionArgs = {
 
 
 export type MutationAddSubscriptionInServiceArgs = {
+  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   organization_id?: InputMaybe<Scalars['ID']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
 };
@@ -534,6 +535,7 @@ export type ServiceDefinition = Node & {
   identifier: ServiceDefinitionIdentifier;
   name: Scalars['String']['output'];
   public?: Maybe<Scalars['Boolean']['output']>;
+  service_capability?: Maybe<Array<Maybe<ServiceCapability>>>;
 };
 
 export enum ServiceDefinitionIdentifier {
@@ -611,6 +613,7 @@ export type Subscription = Node & {
   service_url: Scalars['String']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   status?: Maybe<Scalars['String']['output']>;
+  subscription_capability?: Maybe<Array<Maybe<SubscriptionCapability>>>;
   user_service: Array<Maybe<UserService>>;
 };
 
@@ -693,7 +696,7 @@ export type UserService = Node & {
 
 export type UserServiceAddInput = {
   capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  email: Scalars['String']['input'];
+  email: Array<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
   serviceInstanceId: Scalars['String']['input'];
 };
@@ -1172,6 +1175,7 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
   identifier?: Resolver<ResolversTypes['ServiceDefinitionIdentifier'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  service_capability?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceCapability']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1233,6 +1237,7 @@ export type SubscriptionResolvers<ContextType = PortalContext, ParentType extend
   service_url?: SubscriptionResolver<ResolversTypes['String'], "service_url", ParentType, ContextType>;
   start_date?: SubscriptionResolver<Maybe<ResolversTypes['Date']>, "start_date", ParentType, ContextType>;
   status?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "status", ParentType, ContextType>;
+  subscription_capability?: SubscriptionResolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionCapability']>>>, "subscription_capability", ParentType, ContextType>;
   user_service?: SubscriptionResolver<Array<Maybe<ResolversTypes['UserService']>>, "user_service", ParentType, ContextType>;
 }>;
 

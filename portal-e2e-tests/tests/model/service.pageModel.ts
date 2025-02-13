@@ -7,9 +7,11 @@ export default class ServicePage {
   async navigateToServiceListAdmin() {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Services' }).click();
+    await this.page.getByRole('button', { name: 'Name' }).click();
+    await this.page.getByRole('menuitem', { name: 'Desc' }).click();
 
     await this.page
-      .getByRole('row', { name: 'Partner Vault This service' })
+      .getByRole('row', { name: 'Vault' })
       .getByRole('button')
       .click();
     await this.page.getByLabel('Admin').click();
@@ -34,21 +36,8 @@ export default class ServicePage {
     await this.page.getByPlaceholder('EMAIL').fill('use');
     await this.page.getByText(userEmail).click();
     await this.page.getByRole('dialog').nth(1).press('Enter');
-    await this.page
-      .locator('div')
-      .filter({ hasText: 'Access service' })
-      .nth(2)
-      .click();
-    await this.page.getByLabel('Capabilities').click();
-    await this.page
-      .getByLabel('Suggestions')
-      .getByText(GENERIC_CAPABILITY.access)
-      .click();
-    await this.page
-      .locator('div')
-      .filter({ hasText: 'Invite user to the serviceSet' })
-      .nth(1)
-      .click();
+    await this.page.getByLabel('Manage access').click();
+
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
@@ -58,16 +47,7 @@ export default class ServicePage {
       .getByRole('button')
       .click();
     await this.page.getByLabel('Edit user rights').click();
-    await this.page.getByLabel('Capabilities').click();
-    await this.page
-      .getByLabel('Suggestions')
-      .getByText(GENERIC_CAPABILITY.manageAccess)
-      .click();
-    await this.page
-      .getByLabel('Suggestions')
-      .getByText(GENERIC_CAPABILITY.access)
-      .click();
-    await this.page.getByRole('option', { name: 'Close' }).click();
+    await this.page.getByLabel('Manage access').click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 

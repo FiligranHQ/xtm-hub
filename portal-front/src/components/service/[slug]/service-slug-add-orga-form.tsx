@@ -1,11 +1,13 @@
 import { getOrganizations } from '@/components/organization/organization.service';
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
+  Checkbox,
   Form,
   FormControl,
   FormField,
@@ -29,6 +31,7 @@ import { z, ZodSchema } from 'zod';
 interface ServiceSlugAddOrgaFormSheetProps {
   serviceId: string;
   subscriptions: subscriptionWithUserService_fragment$data[];
+  capabilities: serviceCapability_fragment$data[];
   setSelectedSubscription: Dispatch<
     SetStateAction<subscriptionWithUserService_fragment$data>
   >;
@@ -36,7 +39,7 @@ interface ServiceSlugAddOrgaFormSheetProps {
 
 export const ServiceSlugAddOrgaForm: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ serviceId, subscriptions, setSelectedSubscription }) => {
+> = ({ serviceId, subscriptions, capabilities, setSelectedSubscription }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const [organizations] = getOrganizations();
   const t = useTranslations();
@@ -62,10 +65,12 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
         organization_id: z.string().min(2, {
           message: 'You must choose an organization.',
         }),
+        capability_ids: z.array(z.string()),
       })
     ),
     defaultValues: {
       organization_id: '',
+      capability_ids: [],
     },
   });
   setIsDirty(form.formState.isDirty);
@@ -74,6 +79,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
       variables: {
         service_instance_id: serviceId,
         organization_id: inputValue.organization_id,
+        capability_ids: inputValue.capability_ids,
       },
       onCompleted: (response) => {
         const findOrganization =
@@ -87,7 +93,9 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
         }
         toast({
           title: t('Utils.Success'),
-          description: t('ServiceActions.OrganizationAdded'),
+          description: t('ServiceActions.OrganizationAdded', {
+            name: findOrganization?.organization?.name,
+          }),
         });
         setOpenSheet(false);
       },
@@ -141,6 +149,41 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
           )}
         />
 
+        <div className="border border-primary rounded-lg p-l">
+          <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
+          <p className="txt-sub-content italic">
+            {t('OrganizationInServiceAction.SelectCapaDescription')}
+          </p>
+          {capabilities.map(({ id, name, description }) => (
+            <FormField
+              key={id}
+              control={form.control}
+              name="capability_ids"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <Checkbox
+                    className="mt-xs"
+                    checked={field.value.includes(id)}
+                    onCheckedChange={(checked) => {
+                      const newValue = checked
+                        ? [...field.value, id]
+                        : field.value.filter((value: string) => value !== id);
+                      field.onChange(newValue);
+                    }}
+                    id={id}
+                  />
+
+                  <label
+                    htmlFor={id}
+                    className="txt-sub-content cursor-pointer">
+                    {name} access: {description}
+                  </label>
+                </FormItem>
+              )}
+            />
+          ))}
+        </div>
+
         <SheetFooter className="pt-2">
           <Button
             variant="outline"
@@ -149,7 +192,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
             {t('Utils.Cancel')}
           </Button>
           <Button
-            disabled={!form.formState.isDirty}
+            disabled={!form.formState.isValid}
             type="submit">
             {t('Utils.Validate')}
           </Button>

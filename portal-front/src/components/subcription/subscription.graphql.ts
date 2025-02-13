@@ -7,6 +7,14 @@ export const subscriptionWithUserServiceFragment = graphql`
       id
       name
     }
+    subscription_capability {
+      id
+      service_capability {
+        id
+        description
+        name
+      }
+    }
     user_service {
       ...userService_fragment @relay(mask: false)
     }
@@ -42,10 +50,12 @@ export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
     $service_instance_id: String!
     $organization_id: ID
+    $capability_ids: [ID]
   ) {
     addSubscriptionInService(
       service_instance_id: $service_instance_id
       organization_id: $organization_id
+      capability_ids: $capability_ids
     ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }

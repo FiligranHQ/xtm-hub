@@ -18,3 +18,11 @@ export const ServiceCapabilityCreateMutation = graphql`
     }
   }
 `;
+
+export const serviceCapabilityFragment = graphql`
+  fragment serviceCapability_fragment on ServiceCapability {
+    id
+    description
+    name
+  }
+`;

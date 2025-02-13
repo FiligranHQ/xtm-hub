@@ -7,6 +7,7 @@ import {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
+import SubscriptionCapability from '../../model/kanel/public/SubscriptionCapability';
 import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
 import {
@@ -19,6 +20,7 @@ import {
   grantServiceAccessUsers,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
+import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,
@@ -98,7 +100,7 @@ const resolvers: Resolvers = {
     },
     addSubscriptionInService: async (
       _,
-      { service_instance_id, organization_id },
+      { service_instance_id, organization_id, capability_ids },
       context
     ) => {
       const trx = await dbTx();
@@ -142,6 +144,12 @@ const resolvers: Resolvers = {
           addedSubscription.id
         );
 
+        await addCapabilitiesToSubscription(
+          context,
+          capability_ids,
+          addedSubscription.id as SubscriptionId
+        );
+
         await trx.commit();
         return loadServiceWithSubscriptions(
           context,
@@ -164,9 +172,13 @@ const resolvers: Resolvers = {
           id: extractId(subscription_id),
         } as SubscriptionMutator);
 
-        if (subscription.billing !== 0) {
-          throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
-        }
+        // TODO: to be rethought when billing is used in XTM
+        // if (subscription.billing !== 0) {
+        //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
+        // }
+        await db<SubscriptionCapability>(context, 'Subscription_Capability')
+          .where({ subscription_id: fromGlobalId(subscription_id).id })
+          .delete('*');
         await db<Subscription>(context, 'Subscription')
           .where({ id: fromGlobalId(subscription_id).id })
           .delete('*');
