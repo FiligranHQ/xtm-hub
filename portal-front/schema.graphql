@@ -30,7 +30,6 @@ type Mutation {
   addUser(input: AddUserInput!): User
   editUser(id: ID!, input: EditUserInput!): User!
   editMeUser(input: EditMeUserInput!): User!
-  deleteUser(id: ID!): User
   changeSelectedOrganization(organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   login(email: String!, password: String): User
@@ -371,6 +370,7 @@ type User implements Node {
   first_name: String
   last_name: String
   picture: String
+  disabled: Boolean
   selected_organization_id: String
   organizations: [Organization!]
   capabilities: [Capability!]
@@ -394,9 +394,12 @@ input UserFilter {
 }
 
 input EditUserInput {
-  email: String!
-  organizations: [String]!
-  roles_id: [String]!
+  disabled: Boolean
+  first_name: String
+  last_name: String
+  email: String
+  organizations: [String]
+  roles_id: [String]
 }
 
 input EditMeUserInput {
@@ -406,6 +409,8 @@ input EditMeUserInput {
 
 input AddUserInput {
   email: String!
+  first_name: String
+  last_name: String
   password: String
   organizations: [String]!
   roles_id: [String]!

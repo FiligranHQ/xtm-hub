@@ -5,7 +5,7 @@ import { MergeEvent, Resolvers } from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { RolePortalId } from '../../model/kanel/public/RolePortal';
-import User, { UserId } from '../../model/kanel/public/User';
+import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
@@ -35,11 +35,7 @@ import {
   updateUser,
   userHasOrganizationWithSubscription,
 } from './users.domain';
-import {
-  addNewUserWithRoles,
-  mapUserToGraphqlUser,
-  removeUser,
-} from './users.helper';
+import { addNewUserWithRoles, mapUserToGraphqlUser } from './users.helper';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   const hash = crypto
@@ -105,6 +101,8 @@ const resolvers: Resolvers = {
               {
                 email: input.email,
                 password: input.password,
+                first_name: input.first_name,
+                last_name: input.last_name,
                 selected_organization_id: chosenOrganization,
               },
               []
@@ -203,19 +201,6 @@ const resolvers: Resolvers = {
         });
       }
     },
-    deleteUser: async (_, { id }, context) => {
-      try {
-        const deletedUser = await removeUser(context, { id: id as UserId });
-
-        await dispatch('User', 'delete', deletedUser);
-        await dispatch('MeUser', 'delete', deletedUser, 'User');
-        return deletedUser as User;
-      } catch (error) {
-        throw UnknownError('DELETE_USER_ERROR', {
-          detail: error,
-        });
-      }
-    },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateSelectedOrganization(
         context.user.id,
@@ -254,12 +239,19 @@ const resolvers: Resolvers = {
     },
     login: async (_, { email, password }, context) => {
       const { req } = context;
-      const logged = await loadUserBy({ email });
-      if (logged && validPassword(logged, password)) {
-        req.session.user = await selectOrganizationAtLogin(logged);
-        return mapUserToGraphqlUser(logged);
+      try {
+        const logged = await loadUserBy({ email });
+        if (logged && validPassword(logged, password)) {
+          req.session.user = await selectOrganizationAtLogin(logged);
+          return mapUserToGraphqlUser(logged);
+        }
+        return undefined;
+      } catch (error) {
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          logApp.warn('You can not login');
+          throw ForbiddenAccess('You can not login');
+        }
       }
-      return undefined;
     },
     logout: async (_, __, { user, req, res }) => {
       return new Promise((resolve) => {

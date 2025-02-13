@@ -1,6 +1,4 @@
-import GuardCapacityComponent from '@/components/admin-guard';
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
-import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
 import { AddUser } from '@/components/admin/user/user-create';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { Portal, portalContext } from '@/components/me/portal-context';
@@ -8,26 +6,22 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
 import useAdminPath from '@/hooks/useAdminPath';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
-import useGranted from '@/hooks/useGranted';
-import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import {
   OrderingMode,
   UserFilter,
-  UserOrdering,
   userListQuery,
   userListQuery$variables,
+  UserOrdering,
 } from '@generated/userListQuery.graphql';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
-import { MoreVertIcon } from 'filigran-icon';
 import { Badge, DataTable, DataTableHeadBarOptions, Input } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { graphql, useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
@@ -72,6 +66,7 @@ export const UserFragment = graphql`
     email
     last_name
     first_name
+    disabled
     roles_portal @required(action: THROW) {
       id
       name
@@ -106,7 +101,6 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   } = useUserListLocalstorage();
 
   const isAdminPath = useAdminPath();
-  const router = useRouter();
   const { me } = useContext<Portal>(portalContext);
   const [userEdit, setUserEdit] = useState<userList_fragment$data | undefined>(
     undefined
@@ -144,6 +138,22 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
       },
     },
     {
+      accessorKey: 'first_name',
+      id: 'first_name',
+      header: t('UserListPage.FirstName'),
+      cell: ({ row }) => {
+        return <span className="truncate">{row.original.first_name}</span>;
+      },
+    },
+    {
+      accessorKey: 'last_name',
+      id: 'last_name',
+      header: t('UserListPage.LastName'),
+      cell: ({ row }) => {
+        return <span className="truncate">{row.original.last_name}</span>;
+      },
+    },
+    {
       accessorKey: 'roles_portal',
       id: 'roles_portal',
       header: t('UserListPage.Roles'),
@@ -174,67 +184,28 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
               );
             },
           },
+          {
+            accessorKey: 'disabled',
+            id: 'disabled',
+            header: t('UserListPage.Status'),
+            cell: ({
+              row: {
+                original: { disabled },
+              },
+            }: {
+              row: { original: userList_fragment$data };
+            }) => {
+              return (
+                <div className="flex gap-xs">
+                  <Badge variant={disabled ? 'destructive' : 'secondary'}>
+                    {t(disabled ? 'Badge.Disabled' : 'Badge.Enabled')}
+                  </Badge>
+                </div>
+              );
+            },
+          },
         ]
       : []),
-    {
-      id: 'actions',
-      size: 100,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => {
-        const userIsAdmin = row.original.roles_portal.some(
-          ({ name }) => name === 'ADMIN'
-        );
-        // An admin orga should not able to modify an Admin PLTFM
-        if (userIsAdmin && !useGranted(RESTRICTION.CAPABILITY_BYPASS)) {
-          return null;
-        }
-
-        // The user should not be able to modify itself
-        if (row.original.id === me?.id) {
-          return null;
-        }
-
-        return (
-          <div className="flex items-center justify-end">
-            <IconActions
-              icon={
-                <>
-                  <MoreVertIcon className="h-4 w-4 text-primary" />
-                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                </>
-              }>
-              <IconActionsButton
-                className="normal-case"
-                onClick={() => setUserEdit(row.original)}
-                aria-label={t('UserActions.UpdateUser')}>
-                {t('MenuActions.Update')}
-              </IconActionsButton>
-              {organization && (
-                <RemoveUserFromOrga
-                  organization_id={organization}
-                  user={row.original}
-                  connectionID={data?.users?.__id}
-                />
-              )}
-              <GuardCapacityComponent
-                capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-                <IconActionsButton
-                  className="normal-case"
-                  aria-label={t('UserActions.DetailsUser')}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    router.push(`/admin/user/${row.original.id}`);
-                  }}>
-                  {t('MenuActions.Details')}
-                </IconActionsButton>
-              </GuardCapacityComponent>
-            </IconActions>
-          </div>
-        );
-      },
-    },
   ];
 
   useEffect(() => {
@@ -316,6 +287,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           manualSorting: true,
           manualPagination: true,
           rowCount: data.users.totalCount,
+          enableRowSelection: (row) => row.original.id !== me!.id,
         }}
         onClickRow={(row) => setUserEdit(row.original)}
         toolbar={
@@ -336,17 +308,18 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           pagination,
           columnOrder,
           columnVisibility,
-          columnPinning: { right: ['actions'] },
         }}
       />
-      <EditUser
-        user={userEdit}
-        key={userEdit?.id}
-        defaultStateOpen={!!userEdit}
-        onCloseSheet={() =>
-          useExecuteAfterAnimation(() => setUserEdit(undefined))
-        }
-      />
+      {userEdit && (
+        <EditUser
+          user={userEdit}
+          key={userEdit?.id}
+          defaultStateOpen={!!userEdit}
+          onCloseSheet={() =>
+            useExecuteAfterAnimation(() => setUserEdit(undefined))
+          }
+        />
+      )}
     </>
   );
 };

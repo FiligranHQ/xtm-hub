@@ -22,6 +22,9 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   }
 
   const user = await getOrCreateUser(userInfo, true);
+  if (user.disabled) {
+    throw ForbiddenAccess('You are not allowed to log in');
+  }
   // Check if the user has the admin role, so in creation we create user then add admin role
   if (userInfo.roles.includes(ROLE_ADMIN.name)) {
     await ensureUserRoleExist(user.id, ROLE_ADMIN.id);
@@ -34,6 +37,9 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
 
 export const authenticateUser = async (req: Request, user: UserInfo) => {
   const logged = await loadUserBy({ email: user.email });
+  if (!logged || logged.disabled) {
+    return;
+  }
   req.session.user = await selectOrganizationAtLogin(logged);
   req.session.save();
   return logged;

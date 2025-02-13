@@ -5,6 +5,8 @@ export const userFormSchema = z.object({
     .string()
     .min(2, { message: 'Email must be at least 2 characters.' })
     .email('This is not a valid email.'),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
   password: z.string().optional(),
   organizations: z.array(z.string()).default([]),
   roles_id: z
@@ -13,11 +15,8 @@ export const userFormSchema = z.object({
 });
 
 export const userEditFormSchema = z.object({
-  email: z
-    .string()
-    .min(2, { message: 'Email must be at least 2 characters.' })
-    .email('This is not a valid email.'),
-  password: z.string().optional(),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
   organizations: z.array(z.string()).default([]),
   roles_id: z
     .array(z.string())

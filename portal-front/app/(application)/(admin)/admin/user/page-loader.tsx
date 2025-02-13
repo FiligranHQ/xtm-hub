@@ -10,7 +10,7 @@ const breadcrumbValue = [
     label: 'MenuLinks.Settings',
   },
   {
-    label: 'MenuLinks.Users',
+    label: 'MenuLinks.Security',
   },
 ];
 // Component
@@ -20,7 +20,7 @@ const PageLoader: React.FunctionComponent = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{t('MenuLinks.Users')}</h1>
+      <h1 className="pb-s">{t('MenuLinks.Security')}</h1>
       <UserList />
     </>
   );

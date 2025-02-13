@@ -30,6 +30,8 @@ import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
 } from '../../portal.const';
+import { dispatch } from '../../pub';
+import { ForbiddenAccess } from '../../utils/error.util';
 import { hashPassword } from '../../utils/hash-password.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
@@ -85,6 +87,10 @@ export const loadUserBy = async (
   const [foundUser] = await dbUnsecure<UserLoadUserBy>('User').where(field);
   if (!foundUser) {
     return;
+  }
+
+  if (foundUser.disabled) {
+    throw ForbiddenAccess('You can not login');
   }
 
   const userQuery = dbUnsecure<UserLoadUserBy>('User')
@@ -287,6 +293,7 @@ export const createUser = async (
     first_name,
     last_name,
     picture: null,
+    disabled: false,
   };
   // Use insert with returning to get the newly created user
   await addNewUserWithRoles(data, roles);
@@ -322,11 +329,9 @@ export const updateUser = async (
   input: EditUserInput
 ) => {
   const { organizations, roles_id, ...user } = input;
-  const rolePortalIds = roles_id?.map(extractId<RolePortalId>);
-  const organizationsIds = organizations.map(extractId<OrganizationId>);
 
   if (!isEmpty(user)) {
-    await dbUnsecure<User>('User')
+    const updatedUser = await dbUnsecure<User>('User')
       .where({ id })
       .update(user)
       .whereIn('id', function () {
@@ -343,16 +348,24 @@ export const updateUser = async (
           );
       })
       .returning('*');
+    if (input.disabled) {
+      await dispatch('User', 'delete', updatedUser);
+      await dispatch('MeUser', 'delete', updatedUser, 'User');
+    }
   }
 
-  await updateUserOrg(context, id, organizationsIds);
-  await updateUserRolePortal(context, id, rolePortalIds);
+  if (roles_id) {
+    const rolePortalIds = roles_id?.map(extractId<RolePortalId>);
+    await updateUserRolePortal(context, id, rolePortalIds);
+  }
+
+  if (organizations) {
+    const organizationsIds = organizations.map(extractId<OrganizationId>);
+    await updateUserOrg(context, id, organizationsIds);
+  }
 };
 export const deleteUserById = async (userId: UserId) => {
-  return dbUnsecure<User>('User')
-    .where('id', userId)
-    .delete('*')
-    .returning('*');
+  return dbUnsecure<User>('User').where('id', userId).delete().returning('*');
 };
 export const loadUserRoles = async (userId: UserId) => {
   return dbUnsecure('User')
