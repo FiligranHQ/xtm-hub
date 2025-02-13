@@ -8,8 +8,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
-import { IndividualIcon } from 'filigran-icon';
-import { Skeleton } from 'filigran-ui';
+import { Avatar, Skeleton } from 'filigran-ui';
 import {
   Sheet,
   SheetContent,
@@ -64,11 +63,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         <IconActions
           icon={
             <>
-              <IndividualIcon
-                aria-hidden={true}
-                focusable={false}
-                className="h-6 w-6"
-              />
+              <Avatar src={me?.picture ?? ''} />
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
             </>
           }>
