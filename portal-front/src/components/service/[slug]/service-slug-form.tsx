@@ -79,20 +79,13 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
 
   const genericCapabilities = [
     {
-      id: GenericCapabilityName.ManageAccess,
-      name: GenericCapabilityName.ManageAccess,
-      description: GenericCapabilityName.ManageAccess,
+      id: GenericCapabilityName.ManageAccess as string,
+      name: GenericCapabilityName.ManageAccess as string,
+      description: GenericCapabilityName.ManageAccess as string,
     },
   ];
 
-  const temp = serviceCapabilities.map((serviceCapa) => {
-    return {
-      id: serviceCapa.id,
-      name: serviceCapa.name,
-      description: serviceCapa.description,
-    };
-  });
-  const capabilitiesData = temp.concat(genericCapabilities);
+  const capabilitiesData = [...serviceCapabilities, ...genericCapabilities];
 
   const capabilitiesFormSchema = z.object({
     capabilities: z.array(z.string()),
@@ -164,7 +157,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
       variables: {
         connections: [connectionId],
         input: {
-          email: values.email.map((item) => item.text),
+          email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,
           serviceInstanceId: slug ?? '',
           organizationId: values.organizationId,
@@ -333,7 +326,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
                       <Checkbox
                         disabled={isCapabilityDisabled(id)}
                         className="mt-xs"
-                        checked={field.value.includes(id)}
+                        checked={(field.value as string[]).includes(id)}
                         onCheckedChange={(checked) => {
                           const newValue = checked
                             ? Array.from(new Set([...(field.value || []), id]))

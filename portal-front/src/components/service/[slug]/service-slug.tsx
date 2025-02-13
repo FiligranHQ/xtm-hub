@@ -19,6 +19,7 @@ import TriggerButton from '@/components/ui/trigger-button';
 import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
 import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
@@ -206,7 +207,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               }
               capabilities={
                 queryData?.serviceInstanceByIdWithSubscriptions
-                  ?.service_definition?.service_capability
+                  ?.service_definition
+                  ?.service_capability as unknown as serviceCapability_fragment$data[]
               }
               setSelectedSubscription={setSelectedSubscription}
               serviceId={serviceId}
@@ -242,7 +244,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               }
               serviceCapabilities={
                 queryData?.serviceInstanceByIdWithSubscriptions
-                  ?.service_definition?.service_capability
+                  ?.service_definition
+                  ?.service_capability as unknown as serviceCapability_fragment$data[]
               }
               dataOrganizationsTab={dataOrganizationsTab}
               subscription={selectedSubscription}

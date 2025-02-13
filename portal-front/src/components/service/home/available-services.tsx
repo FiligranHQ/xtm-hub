@@ -29,9 +29,11 @@ const AvailableServices = ({
 
   const getAction = (service: serviceList_fragment$data) => {
     if (
-      !service.user_subscribed &&
+      !service.user_joined &&
       service.organization_subscribed &&
-      [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(service.join_type)
+      [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
+        service.join_type ?? ''
+      )
     ) {
       return (
         <Button
@@ -39,9 +41,9 @@ const AvailableServices = ({
             userServiceJoin({
               variables: {
                 input: {
-                  email: me.email,
+                  email: me?.email,
                   serviceInstanceId: service.id,
-                  organizationId: me.selected_organization_id,
+                  organizationId: me?.selected_organization_id,
                 },
               },
             });

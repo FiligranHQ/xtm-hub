@@ -19,15 +19,15 @@ export const insertCapabilities = async (
   userService: UserService
 ) => {
   for (const insertingCapability of capabilities) {
-    const [GenericCapability] = await loadGenericServiceCapabilityBy({
+    const [genericCapability] = await loadGenericServiceCapabilityBy({
       name: insertingCapability,
     });
 
-    if (GenericCapability) {
+    if (genericCapability) {
       await insertUserServiceCapability(context, {
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: userService.id,
-        generic_service_capability_id: GenericCapability.id,
+        generic_service_capability_id: genericCapability.id,
       });
     } else {
       const [serviceCapability] = await loadServiceCapabilityBy({

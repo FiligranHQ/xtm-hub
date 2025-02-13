@@ -11,7 +11,6 @@ const TEST_SUBSCRIPTION = {
 };
 
 export const GENERIC_CAPABILITY = {
-  access: /^ACCESS$/,
   manageAccess: 'MANAGE_ACCESS',
 };
 test.describe('Service Management', () => {
@@ -37,7 +36,6 @@ test.describe('Service Management', () => {
       await expect(
         page.getByRole('cell', { name: TEST_SUBSCRIPTION.adminOrgaEmail })
       ).toBeVisible();
-      await expect(page.getByText(GENERIC_CAPABILITY.access)).toBeVisible();
       await expect(
         page.getByText(GENERIC_CAPABILITY.manageAccess)
       ).toBeVisible();
@@ -50,11 +48,8 @@ test.describe('Service Management', () => {
         page.getByRole('cell', { name: TEST_SUBSCRIPTION.userInOrgaEmail })
       ).toBeVisible();
       await expect(
-        page.getByText(GENERIC_CAPABILITY.access).nth(1)
-      ).toBeVisible();
-      await expect(
         page.getByText(GENERIC_CAPABILITY.manageAccess).nth(1)
-      ).not.toBeVisible();
+      ).toBeVisible();
     });
 
     await test.step("Edit user's rights for service", async () => {
@@ -63,9 +58,6 @@ test.describe('Service Management', () => {
       );
       await expect(
         page.getByText(GENERIC_CAPABILITY.manageAccess).first()
-      ).toBeVisible();
-      await expect(
-        page.getByText(GENERIC_CAPABILITY.access).first()
       ).toBeVisible();
     });
 

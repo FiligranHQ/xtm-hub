@@ -10,7 +10,7 @@ enum UserServiceOrdering {
 }
 
 input UserServiceAddInput {
-  email: [String]!
+  email: [String!]!
   capabilities: [String]
   serviceInstanceId: String!
   organizationId: String!

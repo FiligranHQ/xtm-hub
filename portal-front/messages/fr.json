@@ -253,7 +253,7 @@
     "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
     "AddOrganization": "Abonnement de l'organisation au service",
     "SelectCapa": "Sélectionner les capabilités",
-    "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra donner aux utilisateurs."
+    "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs."
 
 
   },

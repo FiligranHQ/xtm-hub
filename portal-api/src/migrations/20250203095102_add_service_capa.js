@@ -39,15 +39,13 @@ export async function up(knex) {
       await knex('Service_Capability').insert({
         id: knex.fn.uuid(),
         name: 'Upload',
-        description:
-          'people from this organization can upload documents in this service.',
+        description: 'The user can upload documents in this service.',
         service_definition_id: serviceDefinition.id,
       });
       await knex('Service_Capability').insert({
         id: knex.fn.uuid(),
         name: 'Delete',
-        description:
-          'people from this organization can delete documents in this service.',
+        description: 'The user can delete documents in this service.',
         service_definition_id: serviceDefinition.id,
       });
     }

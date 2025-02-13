@@ -695,7 +695,7 @@ export type UserService = Node & {
 
 export type UserServiceAddInput = {
   capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  email: Array<InputMaybe<Scalars['String']['input']>>;
+  email: Array<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
   serviceInstanceId: Scalars['String']['input'];
 };
