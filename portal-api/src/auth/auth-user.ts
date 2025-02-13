@@ -21,7 +21,7 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
     throw ForbiddenAccess('User email not provided');
   }
 
-  const user = await getOrCreateUser(userInfo);
+  const user = await getOrCreateUser(userInfo, true);
   // Check if the user has the admin role, so in creation we create user then add admin role
   if (userInfo.roles.includes(ROLE_ADMIN.name)) {
     await ensureUserRoleExist(user.id, ROLE_ADMIN.id);

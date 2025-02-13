@@ -44,9 +44,21 @@ export const addOIDCStrategy = (passport) => {
             userinfo['https://xtm-hub-development/roles']
           );
 
-          const { email, nickname: first_name } = userinfo;
+          const {
+            email,
+            nickname: first_name,
+            family_name,
+            given_name,
+            picture,
+          } = userinfo;
           await providerLoginHandler(
-            { email, first_name, last_name: '', roles },
+            {
+              email,
+              first_name: given_name ?? first_name,
+              last_name: family_name,
+              roles,
+              picture,
+            },
             done
           );
           logApp.info('[OPENID] Successfully logged', { userinfo });

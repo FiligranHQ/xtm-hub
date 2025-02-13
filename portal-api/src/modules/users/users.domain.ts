@@ -286,6 +286,7 @@ export const createUser = async (
     email,
     first_name,
     last_name,
+    picture: null,
   };
   // Use insert with returning to get the newly created user
   await addNewUserWithRoles(data, roles);

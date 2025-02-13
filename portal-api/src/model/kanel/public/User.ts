@@ -21,6 +21,8 @@ export default interface User {
   last_name: string | null;
 
   selected_organization_id: OrganizationId;
+
+  picture: string | null;
 }
 
 /** Represents the initializer for the table public.User */
@@ -38,6 +40,8 @@ export interface UserInitializer {
   last_name?: string | null;
 
   selected_organization_id: OrganizationId;
+
+  picture?: string | null;
 }
 
 /** Represents the mutator for the table public.User */
@@ -55,4 +59,6 @@ export interface UserMutator {
   last_name?: string | null;
 
   selected_organization_id?: OrganizationId;
+
+  picture?: string | null;
 }

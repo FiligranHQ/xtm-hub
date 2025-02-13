@@ -1,6 +1,7 @@
+import { FormatDate } from '@/utils/date';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
-import { FormatDate } from '@/utils/date';
+import { Avatar } from 'filigran-ui';
 
 const CustomDashboardBento = ({
   customDashboard,
@@ -11,11 +12,12 @@ const CustomDashboardBento = ({
     <div className="flex h-[15rem] p-2 gap-xs">
       <div className="flex flex-col flex-1 gap-xs text-xs">
         <div
-          className="flex flex-1 items-center justify-center rounded border gap-2 text-white"
+          className="flex flex-1 items-center justify-center rounded border gap-2 text-white items-center"
           style={{
             background:
               'radial-gradient(80.02% 39.33% at 51.52% 88.18%, rgba(15, 188, 255, 0.1) 0%, rgba(15, 188, 255, 0) 100%), linear-gradient(320.64deg, #021525 10.12%, rgba(40, 52, 79, 0) 98.26%), #00020C',
           }}>
+          <Avatar src={customDashboard.uploader?.picture ?? ''} />
           {`${customDashboard.uploader?.first_name} ${customDashboard.uploader?.last_name}`}
         </div>
         <div
@@ -33,7 +35,10 @@ const CustomDashboardBento = ({
               background:
                 'radial-gradient(80.02% 39.33% at 51.52% 88.18%, rgba(15, 188, 255, 0.1) 0%, rgba(15, 188, 255, 0) 100%), linear-gradient(320.64deg, #021525 10.12%, rgba(40, 52, 79, 0) 98.26%), #00020C',
             }}>
-            {FormatDate(customDashboard.updated_at ?? customDashboard.created_at, false)}
+            {FormatDate(
+              customDashboard.updated_at ?? customDashboard.created_at,
+              false
+            )}
           </div>
           <div
             className="flex flex-1 items-center justify-center rounded border text-white"

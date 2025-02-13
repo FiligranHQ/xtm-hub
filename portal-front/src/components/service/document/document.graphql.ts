@@ -90,6 +90,7 @@ export const documentItem = graphql`
     uploader {
       first_name
       last_name
+      picture
     }
     children_documents {
       id

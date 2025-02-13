@@ -6,6 +6,7 @@ export const MeContextFragment = graphql`
     email
     first_name
     last_name
+    picture
     selected_organization_id @required(action: THROW)
     capabilities @required(action: THROW) {
       name
