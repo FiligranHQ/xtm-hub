@@ -10,7 +10,7 @@ export default class DocumentPage {
       .first()
       .click({ force: true });
     await expect(
-      this.page.getByRole('heading', { name: 'Partner Vault' })
+      this.page.getByRole('heading', { name: 'Vault' })
     ).toBeVisible();
   }
 

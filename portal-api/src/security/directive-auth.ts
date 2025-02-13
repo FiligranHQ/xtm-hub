@@ -9,7 +9,7 @@ export const AUTH_DIRECTIVE_NAME = 'auth';
 export const SERVICE_DIRECTIVE_NAME = 'service_capa';
 
 export type ServiceCapabilityArgs = {
-  service_id?: string;
+  service_instance_id?: string;
   subscription_id?: string;
 };
 
@@ -115,7 +115,7 @@ const hasServiceCapability = async (
     return true;
   }
 
-  if (!args.service_id && !args.subscription_id) {
+  if (!args.service_instance_id && !args.subscription_id) {
     throw new Error(
       `Service_id or subscription_id is undefined, please provide one of them to use this directive`
     );

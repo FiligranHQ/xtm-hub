@@ -9,4 +9,5 @@ type ServiceDefinition implements Node {
   description: String
   public: Boolean
   identifier: ServiceDefinitionIdentifier!
+  service_capability: [ServiceCapability]
 }

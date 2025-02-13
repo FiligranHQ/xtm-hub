@@ -12,15 +12,13 @@ export async function up(knex) {
       {
         id: knex.fn.uuid(),
         name: 'UPLOAD',
-        description:
-          'People from this organization can upload custom dashboards in this service.',
+        description: 'The user can upload custom dashboards in this service.',
         service_definition_id: serviceDefinition.id,
       },
       {
         id: knex.fn.uuid(),
         name: 'DELETE',
-        description:
-          'People from this organization can delete custom dashboards in this service.',
+        description: 'The user can delete custom dashboards in this service.',
         service_definition_id: serviceDefinition.id,
       },
     ]);

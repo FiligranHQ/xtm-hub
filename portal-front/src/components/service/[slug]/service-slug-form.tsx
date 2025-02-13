@@ -5,9 +5,9 @@ import {
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
-import { ServiceDescribeCapabilitiesSheet } from '@/components/service/[slug]/service-describe-capabilities';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import useAdminPath from '@/hooks/useAdminPath';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
@@ -20,6 +20,7 @@ import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
+  Checkbox,
   Combobox,
   Form,
   FormControl,
@@ -27,10 +28,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  MultiSelectFormField,
   SheetFooter,
   Tag,
   TagInput,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
   useToast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -43,11 +47,13 @@ import {
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
+import { serviceCapability_fragment$data } from '../../../../__generated__/serviceCapability_fragment.graphql';
 
 interface ServiceSlugFormSheetProps {
   connectionId: string;
   userService: userService_fragment$data;
   subscription: subscriptionWithUserService_fragment$data;
+  serviceCapabilities: serviceCapability_fragment$data[];
   dataOrganizationsTab: {
     value: string;
     label: string;
@@ -58,6 +64,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   connectionId,
   userService,
   subscription,
+  serviceCapabilities,
   dataOrganizationsTab,
 }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
@@ -70,20 +77,15 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   const { toast } = useToast();
   const t = useTranslations();
 
-  const currentCapabilities = userService?.user_service_capability?.map(
-    (userServiceCapa) => userServiceCapa?.generic_service_capability?.name
-  );
-
-  const capabilitiesData = [
+  const genericCapabilities = [
     {
-      label: GenericCapabilityName.ManageAccess,
-      value: GenericCapabilityName.ManageAccess,
-    },
-    {
-      label: GenericCapabilityName.Access,
-      value: GenericCapabilityName.Access,
+      id: GenericCapabilityName.ManageAccess as string,
+      name: GenericCapabilityName.ManageAccess as string,
+      description: GenericCapabilityName.ManageAccess as string,
     },
   ];
+
+  const capabilitiesData = [...serviceCapabilities, ...genericCapabilities];
 
   const capabilitiesFormSchema = z.object({
     capabilities: z.array(z.string()),
@@ -107,7 +109,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     ),
     defaultValues: {
       email: [{ id: '', text: '' }],
-      capabilities: currentCapabilities,
+      capabilities: [],
       organizationId: subscription?.organization?.id,
     },
   });
@@ -116,7 +118,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   useEffect(() => {
     form.reset({
       email: [{ id: '', text: '' }],
-      capabilities: currentCapabilities,
+      capabilities: [],
       organizationId: subscription?.organization?.id,
     });
   }, [subscription]);
@@ -155,7 +157,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
       variables: {
         connections: [connectionId],
         input: {
-          email: values.email[0]!.text,
+          email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,
           serviceInstanceId: slug ?? '',
           organizationId: values.organizationId,
@@ -220,6 +222,15 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     userListFragment,
     queryData
   );
+  const isAdminPath = useAdminPath();
+  const isCapabilityDisabled = (id: string) => {
+    if (id === GenericCapabilityName.ManageAccess) {
+      return false;
+    }
+    return !subscription.subscription_capability?.some(
+      (subscriptionCapa) => id === subscriptionCapa?.service_capability?.id
+    );
+  };
 
   const tagsAutocomplete = data?.users?.edges?.map((edge) => ({
     id: edge.node.id,
@@ -234,8 +245,10 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     <Form {...form}>
       <form
         className="space-y-xl"
-        // @ts-expect-error TODO: improve typing
-        onSubmit={form.handleSubmit(onSubmit)}>
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit(onSubmit)(e);
+        }}>
         {!userService.id && (
           <>
             <FormField
@@ -253,9 +266,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
                       setActiveTagIndex={setActiveTagIndex}
                       enableAutocomplete={true}
                       autocompleteOptions={tagsAutocomplete}
-                      maxTags={1}
                       validateTag={(tag: string) => !!tag.match(emailRegex)}
-                      placeholderWhenFull={t('Service.Management.OneUserMax')}
                       setTags={(newTags) => {
                         setTags(newTags);
                         setValue('email', newTags as Tag[]);
@@ -297,28 +308,67 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
             />
           </>
         )}
-        <FormField
-          control={form.control}
-          name="capabilities"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('InviteUserServiceForm.Capabilities')}</FormLabel>
-              <FormControl>
-                <MultiSelectFormField
-                  noResultString={t('Utils.NotFound')}
-                  options={capabilitiesData}
-                  value={field.value as string[]}
-                  onValueChange={field.onChange}
-                  placeholder={t(
-                    'InviteUserServiceForm.CapabilitiesPlaceholder'
+
+        <div className="border border-primary rounded-lg p-l">
+          <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
+          <p className="txt-sub-content italic">
+            {t('InviteUserServiceForm.Description')}
+          </p>
+          {capabilitiesData.map(({ id, name, description }) => (
+            <FormField
+              key={id}
+              control={form.control}
+              name="capabilities"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  {(isAdminPath || !isCapabilityDisabled(id)) && (
+                    <FormControl>
+                      <Checkbox
+                        disabled={isCapabilityDisabled(id)}
+                        className="mt-xs"
+                        checked={(field.value as string[]).includes(id)}
+                        onCheckedChange={(checked) => {
+                          const newValue = checked
+                            ? Array.from(new Set([...(field.value || []), id]))
+                            : (field.value || []).filter(
+                                (value) => value !== id
+                              );
+                          field.onChange(newValue);
+                        }}
+                        id={id}
+                      />
+                    </FormControl>
                   )}
-                  variant="inverted"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+                  {(isAdminPath || !isCapabilityDisabled(id)) && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <label
+                            htmlFor={id}
+                            className={`txt-sub-content ${!isCapabilityDisabled(id) ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+                            {name === GenericCapabilityName.ManageAccess
+                              ? 'Manage access'
+                              : `${name} access: ${description}`}
+                            {isCapabilityDisabled(id)}
+                          </label>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            {isCapabilityDisabled(id)
+                              ? t('InviteUserServiceForm.DisabledCapability')
+                              : t('InviteUserServiceForm.GrantCapability')}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </FormItem>
+              )}
+            />
+          ))}
+        </div>
+
         <SheetFooter className="pt-2">
           <Button
             variant="outline"
@@ -332,7 +382,6 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
             {t('Utils.Validate')}
           </Button>
         </SheetFooter>
-        <ServiceDescribeCapabilitiesSheet />
       </form>
     </Form>
   );

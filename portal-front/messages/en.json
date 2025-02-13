@@ -103,6 +103,7 @@
     "GoToLabel": "Go to",
     "GoToManagement": "Go to service management",
     "GoToAdminLabel": "Admin",
+    "Join": "Join",
     "Capabilities": {
       "CapabilitiesTitle": "Capabilities",
       "SelectCapabilities": "Select capabilities",
@@ -122,7 +123,7 @@
       "InviteUser": {
         "TitleInviteUser": "Invite user",
         "InviteUser": "Invite user to the service",
-        "InviteUserSubtitle": "Set the access rights here. Click Validate when you are done.",
+        "InviteUserSubtitle": "Additional capability: By default, your user invited to a service will have access the service .If you want to grant additional capability, select what capability you want to grant to your user  in the dropdown.",
         "Organization": "Organization"
       }
     },
@@ -193,7 +194,7 @@
   },
   "ServiceActions": {
     "OrganizationDeleted": "Organization {name} has been deleted",
-    "OrganizationAdded": "Organization has been added",
+    "OrganizationAdded": "Organization {name} has been added",
     "UserCapabilitiesModified": "{email}'s capabilities have been modified"
   },
   "VaultActions": {
@@ -252,16 +253,19 @@
     "Organization": "Organization",
     "ConfirmDelete1": "Are you sure you want to delete this organization",
     "ConfirmDelete2": "from this service ? This action cannot be undone.",
-    "AddOrganization": "Subscribe organization",
-    "AddOrganizationDescription": "Subscribe an organization to the service"
+    "AddOrganization": "Subscribe organization to the",
+    "SelectCapa": "Select capabilities",
+    "SelectCapaDescription": "If you select these capabilities, the administrator will be able to assign these capabilities to the users later."
   },
   "InviteUserServiceForm": {
     "Title": "Invite user to the service",
-    "Description": "Set the access rights here. Click Validate when you are done.",
+    "Description": "Additional capability: By default, your user invited to a service will have access the service. If you want to grant additional capability, select what capability you want to grant to your user.",
     "Email": "Email",
     "Organization": "Organization",
     "Capabilities": "Capabilities",
-    "CapabilitiesPlaceholder": "Select capabilities"
+    "CapabilitiesPlaceholder": "Select capabilities",
+    "DisabledCapability": "if you want to give capabilities to your users on this service, first grant the activation on the organization level",
+    "GrantCapability": "Grant capability"
   },
   "UserActions": {
     "DeleteUser": "Delete user",

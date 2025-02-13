@@ -10,11 +10,11 @@ import { ReactNode } from 'react';
 
 interface ServiceInstanceCardProps {
   serviceInstance: serviceList_fragment$data;
-  bottomLeftAction: ReactNode;
+  rightLeftAction: ReactNode;
 }
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
-> = ({ serviceInstance, bottomLeftAction }) => {
+> = ({ serviceInstance, rightLeftAction }) => {
   const t = useTranslations();
 
   const isLinkService =
@@ -65,7 +65,7 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div>
           <Badge />
         </div>
-        {bottomLeftAction}
+        {rightLeftAction}
       </div>
     </li>
   );
