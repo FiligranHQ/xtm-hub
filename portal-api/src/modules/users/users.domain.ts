@@ -331,22 +331,9 @@ export const updateUser = async (
   const { organizations, roles_id, ...user } = input;
 
   if (!isEmpty(user)) {
-    const updatedUser = await dbUnsecure<User>('User')
+    const updatedUser = await db<User>(context, 'User')
       .where({ id })
       .update(user)
-      .whereIn('id', function () {
-        this.select('User.id')
-          .from('User')
-          .innerJoin(
-            'User_Organization as securityUserOrg',
-            'User.id',
-            'securityUserOrg.user_id'
-          )
-          .where(
-            'securityUserOrg.organization_id',
-            context.user.selected_organization_id
-          );
-      })
       .returning('*');
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
