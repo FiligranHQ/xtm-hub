@@ -9,6 +9,7 @@ export interface UserInfo {
   last_name: string;
   roles: string[];
   picture?: string;
+  disabled?: boolean;
 }
 
 export interface UserWithOrganizations extends User {

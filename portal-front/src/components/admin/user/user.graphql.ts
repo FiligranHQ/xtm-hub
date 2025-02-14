@@ -4,7 +4,7 @@ export const UserListCreateMutation = graphql`
   mutation userListCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
     addUser(input: $input)
       @prependNode(connections: $connections, edgeTypeName: "UserEdge") {
-      ...userSlug_fragment
+      ...userList_fragment
     }
   }
 `;
@@ -12,7 +12,7 @@ export const UserListCreateMutation = graphql`
 export const UserSlugEditMutation = graphql`
   mutation userSlugEditMutation($id: ID!, $input: EditUserInput!) {
     editUser(id: $id, input: $input) {
-      ...userSlug_fragment
+      ...userList_fragment
     }
   }
 `;
@@ -20,16 +20,7 @@ export const UserSlugEditMutation = graphql`
 export const UserMeEditMutation = graphql`
   mutation userMeEditMutation($input: EditMeUserInput!) {
     editMeUser(input: $input) {
-      ...userSlug_fragment
-    }
-  }
-`;
-
-export const userDeletion = graphql`
-  mutation userDeletionMutation($connections: [ID!]!, $id: ID!) {
-    deleteUser(id: $id) {
-      id @deleteEdge(connections: $connections)
-      email
+      ...userList_fragment
     }
   }
 `;
@@ -40,6 +31,7 @@ export const userSlugFragment = graphql`
     email
     last_name
     first_name
+    disabled
     organizations @required(action: THROW) {
       id
       name
@@ -56,7 +48,7 @@ export const userSlugSubscription = graphql`
   subscription userSlugSubscription {
     User {
       edit {
-        ...userSlug_fragment
+        ...userList_fragment
       }
       delete {
         id @deleteRecord
@@ -81,7 +73,7 @@ export const userMeSubscription = graphql`
 export const UserSlugQuery = graphql`
   query userSlugQuery($id: ID!) {
     user(id: $id) {
-      ...userSlug_fragment
+      ...userList_fragment
     }
   }
 `;

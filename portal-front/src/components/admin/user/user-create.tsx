@@ -1,8 +1,5 @@
 import { UserForm } from '@/components/admin/user/user-form';
-import {
-  userEditFormSchema,
-  userFormSchema,
-} from '@/components/admin/user/user-form.schema';
+import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
@@ -28,9 +25,7 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
     UserListCreateMutation
   );
 
-  const handleSubmit = (
-    values: z.infer<typeof userFormSchema> | z.infer<typeof userEditFormSchema>
-  ) => {
+  const handleSubmit = (values: z.infer<typeof userFormSchema>) => {
     commitUserMutation({
       variables: {
         input: { ...(values as z.infer<typeof userFormSchema>) },
@@ -61,7 +56,6 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
       trigger={<TriggerButton label={t('UserActions.AddUser')} />}>
       <UserForm
         handleSubmit={handleSubmit}
-        user={undefined}
         validationSchema={userFormSchema}
       />
     </SheetWithPreventingDialog>

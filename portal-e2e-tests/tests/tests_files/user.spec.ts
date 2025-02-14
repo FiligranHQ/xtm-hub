@@ -44,11 +44,11 @@ test.describe('User Management', () => {
       ).toBeVisible();
     });
 
-    await test.step('Delete user', async () => {
-      await userPage.deleteUser(TEST_USER.userEmail);
+    await test.step('Disable user', async () => {
+      await userPage.disableUser(TEST_USER.userEmail);
       await expect(
-        page.getByRole('cell', { name: TEST_USER.userEmail })
-      ).not.toBeVisible();
+        page.getByRole('cell', { name: "Disabled" })
+      ).toBeVisible();
     });
   });
 
