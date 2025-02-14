@@ -42,6 +42,8 @@ export type AddServiceInput = {
 
 export type AddUserInput = {
   email: Scalars['String']['input'];
+  first_name?: InputMaybe<Scalars['String']['input']>;
+  last_name?: InputMaybe<Scalars['String']['input']>;
   organizations: Array<InputMaybe<Scalars['String']['input']>>;
   password?: InputMaybe<Scalars['String']['input']>;
   roles_id: Array<InputMaybe<Scalars['String']['input']>>;
@@ -109,9 +111,12 @@ export type EditServiceCapabilityInput = {
 };
 
 export type EditUserInput = {
-  email: Scalars['String']['input'];
-  organizations: Array<InputMaybe<Scalars['String']['input']>>;
-  roles_id: Array<InputMaybe<Scalars['String']['input']>>;
+  disabled?: InputMaybe<Scalars['Boolean']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  first_name?: InputMaybe<Scalars['String']['input']>;
+  last_name?: InputMaybe<Scalars['String']['input']>;
+  organizations?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  roles_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type GenericServiceCapability = Node & {
@@ -157,7 +162,6 @@ export type Mutation = {
   deleteOrganization?: Maybe<Organization>;
   deleteServiceInstance?: Maybe<ServiceInstance>;
   deleteSubscription?: Maybe<ServiceInstance>;
-  deleteUser?: Maybe<User>;
   deleteUserService?: Maybe<Subscription>;
   editDocument: Document;
   editMeUser: User;
@@ -241,11 +245,6 @@ export type MutationDeleteServiceInstanceArgs = {
 
 export type MutationDeleteSubscriptionArgs = {
   subscription_id: Scalars['ID']['input'];
-};
-
-
-export type MutationDeleteUserArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -650,6 +649,7 @@ export type TrackingSubscription = {
 export type User = Node & {
   __typename?: 'User';
   capabilities?: Maybe<Array<Capability>>;
+  disabled?: Maybe<Scalars['Boolean']['output']>;
   email: Scalars['String']['output'];
   first_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -1070,7 +1070,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
-  deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
   editDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationEditDocumentArgs, 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
@@ -1266,6 +1265,7 @@ export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type UserResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   capabilities?: Resolver<Maybe<Array<ResolversTypes['Capability']>>, ParentType, ContextType>;
+  disabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

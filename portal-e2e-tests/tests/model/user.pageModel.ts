@@ -9,7 +9,7 @@ export default class UserPage {
     await this.page.getByRole('link', { name: 'Users' }).nth(1).click();
 
     await expect(this.page.getByRole('heading', { level: 1 })).toContainText(
-      'Users'
+      'Security'
     );
   }
 
@@ -18,7 +18,7 @@ export default class UserPage {
     await this.page.getByRole('link', { name: 'Users' }).first().click();
 
     await expect(this.page.getByRole('heading', { level: 1 })).toContainText(
-      'Users'
+      'Security'
     );
   }
 
@@ -35,10 +35,8 @@ export default class UserPage {
 
   async editUser(userEmail) {
     await this.page
-      .getByRole('row', { name: userEmail })
-      .getByRole('button')
+      .getByRole('cell', { name: userEmail })
       .click();
-    await this.page.getByLabel('Details user').click();
     await expect(
       this.page.getByRole('heading', { name: userEmail })
     ).toBeVisible();
@@ -49,13 +47,16 @@ export default class UserPage {
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
-  async deleteUser(userEmail) {
-    await this.page.getByLabel('Delete User').click();
+  async disableUser(userEmail) {
+    await this.page
+      .getByRole('cell', { name: userEmail })
+      .click();
+    await this.page.getByRole('button', { name: 'Disable' }).click();
     await this.page.getByRole('button', { name: 'Cancel' }).click();
     await expect(
       this.page.getByRole('heading', { name: userEmail })
     ).toBeVisible();
-    await this.page.getByLabel('Delete User').click();
-    await this.page.getByRole('button', { name: 'Delete' }).click();
+    await this.page.getByRole('button', { name: 'Disable' }).click();
+    await this.page.getByRole('button', { name: 'Disable' }).click();
   }
 }

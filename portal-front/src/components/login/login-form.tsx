@@ -10,6 +10,7 @@ import {
   FormItem,
   FormLabel,
   Input,
+  toast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -37,6 +38,13 @@ const LoginForm = () => {
   const onSubmit = (variables: z.infer<typeof formSchema>) => {
     commitLoginFormMutation({
       variables,
+      onError() {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Login.LoginError`),
+        });
+      },
       onCompleted() {
         // If login succeed, refresh the page
         router.refresh();

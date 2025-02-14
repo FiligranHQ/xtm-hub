@@ -1,6 +1,6 @@
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
 import {
-  userDeletion,
+  UserSlugEditMutation,
   userSlugFragment,
   UserSlugQuery,
   userSlugSubscription,
@@ -9,29 +9,24 @@ import { trackingSubscription } from '@/components/data-tracking/tracking.graphq
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { userSlugSubscription as generatedUserSlugSubscription } from '@generated/userSlugSubscription.graphql';
-import { DeleteIcon } from 'filigran-icon';
 import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useRelayEnvironment } from 'react-relay';
-
-import { logFrontendError } from '@/components/error-frontend-log.graphql';
-import TriggerButton from '@/components/ui/trigger-button';
-import { useConnectionId } from '@/hooks/useConnectionId';
-import { userDeletionMutation } from '@generated/userDeletionMutation.graphql';
-import { userSlugQuery } from '@generated/userSlugQuery.graphql';
-import {
-  userSlug_fragment$data,
-  userSlug_fragment$key,
-} from '@generated/userSlug_fragment.graphql';
 import {
   PreloadedQuery,
   useFragment,
   useMutation,
   usePreloadedQuery,
+  useRelayEnvironment,
   useSubscription,
 } from 'react-relay';
+
+import { logFrontendError } from '@/components/error-frontend-log.graphql';
+import TriggerButton from '@/components/ui/trigger-button';
+import { useConnectionId } from '@/hooks/useConnectionId';
+import { userList_fragment$key } from '@generated/userList_fragment.graphql';
+import { userSlugQuery } from '@generated/userSlugQuery.graphql';
 
 // Component interface
 interface UserSlugProps {
@@ -44,8 +39,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
   const data = usePreloadedQuery<userSlugQuery>(UserSlugQuery, queryRef);
 
   const t = useTranslations();
-  const [deleteUserMutation] = useMutation<userDeletionMutation>(userDeletion);
-  const user = useFragment<userSlug_fragment$key>(userSlugFragment, data.user);
+  const user = useFragment<userList_fragment$key>(userSlugFragment, data.user);
 
   const { toast } = useToast();
   const connections: string[] = [];
@@ -60,17 +54,14 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
     );
   }
 
-  const onDeleteUser = (user: userSlug_fragment$data): void => {
-    deleteUserMutation({
-      variables: { id: user.id, connections },
-      onCompleted: (data) => {
-        router.replace('/admin/user');
-        toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserDeleted', {
-            email: data?.deleteUser?.email,
-          }),
-        });
+  const [updateUserMutation] = useMutation(UserSlugEditMutation);
+  const updateUser = (disabled: boolean) => {
+    updateUserMutation({
+      variables: {
+        input: {
+          disabled,
+        },
+        id: user!.id,
       },
       onError: (error) => {
         toast({
@@ -117,31 +108,32 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             {user.first_name} {user.last_name} - {user.email}
           </h2>
           <div className="space-x-2 flex items-center">
+            {user.disabled ? (
+              <Button
+                variant="outline-primary"
+                onClick={() => updateUser(false)}>
+                {t('UserActions.Enable')}
+              </Button>
+            ) : (
+              <AlertDialogComponent
+                AlertTitle={t('UserActions.Disable')}
+                actionButtonText={t('MenuActions.Disable')}
+                variantName={'destructive'}
+                triggerElement={
+                  <Button variant="outline-destructive">
+                    {t('UserActions.Disable')}
+                  </Button>
+                }
+                onClickContinue={() => updateUser(true)}>
+                {t('DisableUserDialog.TextDisableThisUser', {
+                  email: user.email,
+                })}
+              </AlertDialogComponent>
+            )}
             <EditUser
-              user={user}
+              user={user!}
               trigger={<TriggerButton label={t('Utils.Update')} />}
             />
-            <AlertDialogComponent
-              AlertTitle={t('UserActions.DeleteUser')}
-              actionButtonText={t('MenuActions.Delete')}
-              variantName={'destructive'}
-              triggerElement={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t('UserActions.DeleteUser')}>
-                  <DeleteIcon
-                    aria-hidden={true}
-                    focusable={false}
-                    className="h-4 w-4"
-                  />
-                </Button>
-              }
-              onClickContinue={() => onDeleteUser(user)}>
-              {t('DeleteUserDialog.TextDeleteThisUser', {
-                email: user.email,
-              })}
-            </AlertDialogComponent>
           </div>
         </div>
       </>

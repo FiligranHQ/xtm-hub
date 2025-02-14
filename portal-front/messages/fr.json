@@ -32,6 +32,9 @@
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service"
     },
+    "Login": {
+      "LoginError": "Vous n'êtes pas autorisé à vous connecter"
+    },
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page.",
     "Disconnected": "Votre session a expiré",
     "SomethingWentWrong": "Quelque chose s'est mal passé",
@@ -85,7 +88,8 @@
     "Services": "Services",
     "Users": "Utilisateurs",
     "SettingsLabel": "Menu des paramètres",
-    "Settings": "Réglages"
+    "Settings": "Réglages",
+    "Security": "Sécurité"
   },
   "Service": {
     "CreationStatus": "Statut de la création",
@@ -102,6 +106,7 @@
     "GoToLabel": "Consulter",
     "GoToManagement": "Aller à la gestion des services",
     "GoToAdminLabel": "Administrer",
+    "Join": "Rejoindre",
     "Capabilities": {
       "CapabilitiesTitle": "Capacités",
       "SelectCapabilities": "Sélectionner les capacités",
@@ -225,10 +230,8 @@
     "ValidateForm": "Valider le formulaire",
     "NotFound": "Non trouvé"
   },
-  "DeleteUserDialog": {
-    "TextDeleteThisUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur {email} ? ?",
-    "TextDeletedUser": "Votre compte a été supprimé par un administrateur. Vous avez été déconnecté.",
-    "TextDeletedUserTitle": "Compte supprimé !"
+  "DisableUserDialog": {
+    "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
   "UpdateUserDialog": {
     "TextUpdatedUser": "Votre compte a été modifié par un administrateur. Le comportement de l'application peut donc évoluer.",
@@ -254,8 +257,6 @@
     "AddOrganization": "Abonnement de l'organisation au service",
     "SelectCapa": "Sélectionner les capabilités",
     "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs."
-
-
   },
   "InviteUserServiceForm": {
     "Title": "Inviter l'utilisateur au service",
@@ -266,10 +267,8 @@
     "CapabilitiesPlaceholder": "Sélectionner les capacités",
     "DisabledCapability": "Si vous voulez donner cette capacité à vos utilisateurs sur ce service, vous devez d'abord l'activer au niveau de l'organisation",
     "GrantCapability": "Donner cette capacité"
-
   },
   "UserActions": {
-    "DeleteUser": "Supprimer l'utilisateur",
     "UpdateUser": "Mettre à jour l'utilisateur",
     "DetailsUser": "Détails de l'utilisateur",
     "CreateUser": "Créer un nouvel utilisateur",
@@ -278,7 +277,9 @@
     "UserCreated": "L'utilisateur {email} a été créé",
     "UserUpdated": "L'utilisateur {email} a été modifié",
     "UserDeleted": "L'utilisateur {email} a été supprimé",
-    "SearchUserWithEmail": "Rechercher l'utilisateur par email..."
+    "SearchUserWithEmail": "Rechercher l'utilisateur par email...",
+    "Enable": "Activer",
+    "Disable": "Désactiver"
   },
   "UserForm": {
     "Organizations": "Organisations",
@@ -318,6 +319,7 @@
     "LastName": "Nom de famille",
     "Roles": "Rôles",
     "Organizations": "Organisations",
+    "Status": "Statut",
     "UserForm": {
       "SelectRoles": "Sélectionner rôles",
       "SelectOrganization": "Sélectionner une organisation",
@@ -327,6 +329,7 @@
   },
   "MenuActions": {
     "Delete": "Supprimer",
+    "Disable": "Désactiver",
     "Update": "Modifier",
     "Details": "Détails",
     "Remove": "Retirer",
@@ -364,6 +367,8 @@
   },
   "Badge": {
     "Published": "Publié",
-    "Draft": "Brouillon"
+    "Draft": "Brouillon",
+    "Disabled": "Désactivé",
+    "Enabled": "Activé"
   }
 }
