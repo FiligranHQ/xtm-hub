@@ -1,10 +1,25 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, SheetFooter, Textarea, } from 'filigran-ui';
+import MDEditor from '@uiw/react-md-editor';
+import {
+  Button,
+  Checkbox,
+  FileInput,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  SheetFooter,
+  Textarea,
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import rehypeSanitize from 'rehype-sanitize';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
@@ -39,7 +54,7 @@ export const CustomDashboardForm = ({
 
   const form = useForm<CustomDashboardFormValues>({
     resolver: zodResolver(newCustomDashboardSchema),
-    criteriaMode: "all",
+    criteriaMode: 'all',
     defaultValues: {
       name: '',
       shortDescription: '',
@@ -52,7 +67,7 @@ export const CustomDashboardForm = ({
   });
 
   useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
-  form.watch(["images", "document"]);
+  form.watch(['images', 'document']);
 
   const onSubmit = (values: z.infer<typeof newCustomDashboardSchema>) => {
     handleSubmit(
@@ -120,11 +135,17 @@ export const CustomDashboardForm = ({
                   {t('Service.CustomDashboards.Form.DescriptionLabel')}
                 </FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder={t(
-                      'Service.CustomDashboards.Form.DescriptionPlaceholder'
-                    )}
-                    {...field}
+                  <MDEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                    previewOptions={{
+                      rehypePlugins: [[rehypeSanitize]],
+                    }}
+                    textareaProps={{
+                      placeholder: t(
+                        'Service.CustomDashboards.Form.DescriptionPlaceholder'
+                      ),
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
