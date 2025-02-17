@@ -21,20 +21,20 @@ const MarkdownInput = ({
         value={value}
         onChange={onChange}
         style={{
-          background: 'hsl(var(--background-page))',
+          background: 'transparent',
           color: 'hsl(var(--text-foreground))',
         }}
         previewOptions={{
           rehypePlugins: [[rehypeSanitize]],
           style: {
-            background: 'hsl(var(--background-page))',
+            background: 'transparent',
             color: 'hsl(var(--text-foreground))',
           },
         }}
         textareaProps={{
           placeholder: t(placeholder),
           style: {
-            background: 'hsl(var(--background-page))',
+            background: 'transparent',
             color: 'hsl(var(--text-foreground))',
           },
         }}

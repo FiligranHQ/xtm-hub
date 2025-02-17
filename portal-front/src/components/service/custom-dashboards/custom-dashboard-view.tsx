@@ -1,4 +1,6 @@
+import MDEditor from '@uiw/react-md-editor';
 import { LogoFiligranIcon } from 'filigran-icon';
+import { useTheme } from 'next-themes';
 import * as React from 'react';
 
 import {
@@ -31,6 +33,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
   serviceInstance,
 }) => {
   const t = useTranslations();
+  const { theme } = useTheme();
 
   const data = usePreloadedQuery<documentQuery>(DocumentQuery, queryRef);
   const documentData = readInlineData<documentItem_fragment$key>(
@@ -98,8 +101,17 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
             {documentData?.name}
           </div>
           <h2 className="p-l">{documentData?.short_description}</h2>
-          <div className="flex justify-center p-l">
-            {documentData?.description}
+
+          <div
+            data-color-mode={theme}
+            className="flex">
+            <MDEditor.Markdown
+              className="p-l"
+              source={documentData?.description ?? ''}
+              style={{
+                background: 'transparent',
+              }}
+            />
           </div>
         </div>
         {documentData && (
