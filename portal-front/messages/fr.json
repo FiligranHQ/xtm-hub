@@ -89,7 +89,27 @@
     "Users": "Utilisateurs",
     "SettingsLabel": "Menu des paramètres",
     "Settings": "Réglages",
+    "Labels": "Étiquettes",
     "Security": "Sécurité"
+  },
+  "LabelListPage": {
+    "Name": "Nom",
+    "Color": "Couleur"
+  },
+  "LabelForm": {
+    "Name": "Nom",
+    "Color": "Couleur"
+  },
+  "GenericActions": {
+    "Search": "Recherche...",
+    "FilterLabels": "Filtrer par étiquettes..."
+  },
+  "LabelActions": {
+    "SearchLabel": "Rechercher",
+    "AddLabel": "Ajouter une étiquette"
+  },
+  "DeleteLabelDialog": {
+    "TextDeleteLabel": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
   },
   "Service": {
     "CreationStatus": "Statut de la création",
@@ -186,7 +206,9 @@
         "NoImage": "Pas d'image sélectionnée",
         "PublishedLabel": "Publier",
         "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
-        "UploadImage": "Télécharger une (des) nouvelle(s) image(s)"
+        "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes"
       },
       "Actions": {
         "Deleted": "{name} has been deleted",

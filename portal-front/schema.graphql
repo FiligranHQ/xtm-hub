@@ -8,17 +8,29 @@ scalar Date
 
 scalar Upload
 
+enum FilterKey {
+  label
+}
+
+input Filter {
+  key: FilterKey
+  value: [String!]!
+}
+
 type Mutation {
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addDocument(document: Upload, name: String, short_description: String, description: String, serviceInstanceId: String, parentDocumentId: ID, active: Boolean): Document!
+  addDocument(document: Upload, name: String, short_description: String, description: String, serviceInstanceId: String, parentDocumentId: ID, labels: [String!], active: Boolean): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, serviceInstanceId: String): Document!
   deleteDocument(documentId: ID, serviceInstanceId: String, forceDelete: Boolean): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): Subscription
   deleteServiceInstance(id: ID!): ServiceInstance
+  addLabel(input: AddLabelInput!): Label!
+  editLabel(id: ID!, input: EditLabelInput!): Label!
+  deleteLabel(id: ID!): Label!
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID]): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
@@ -68,11 +80,13 @@ type Query {
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   documentExists(documentName: String, serviceInstanceId: String): Boolean
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
+  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!): LabelConnection
+  label(id: ID!): Label
   settings: Settings!
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
@@ -130,10 +144,12 @@ type Document implements Node {
   updater_id: String
   download_number: Int
   children_documents: [Document!]
+  labels: [Label!]!
 }
 
 input EditDocumentInput {
   short_description: String
+  labels: [String!]
   description: String
   name: String
   active: Boolean
@@ -221,6 +237,37 @@ type Subscription implements Node {
   ActionTracking: TrackingSubscription
   User: UserSubscription
   MeUser: MeUserSubscription
+}
+
+type Label implements Node {
+  id: ID!
+  name: String!
+  color: String!
+}
+
+enum LabelOrdering {
+  name
+}
+
+type LabelEdge {
+  cursor: String!
+  node: Label!
+}
+
+type LabelConnection {
+  totalCount: Int!
+  edges: [LabelEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddLabelInput {
+  name: String!
+  color: String!
+}
+
+input EditLabelInput {
+  name: String
+  color: String
 }
 
 type PlatformProvider {
