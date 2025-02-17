@@ -5,30 +5,14 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import MDEditor from '@uiw/react-md-editor';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
-import {
-  Button,
-  Checkbox,
-  FileInput,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Separator,
-  SheetFooter,
-  Textarea,
-  toast,
-} from 'filigran-ui';
+import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Separator, SheetFooter, Textarea, toast, } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
-import rehypeSanitize from 'rehype-sanitize';
 import { z } from 'zod';
+import MarkdownInput from '@/components/ui/MarkdownInput';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
@@ -185,17 +169,10 @@ export const CustomDashboardUpdateForm = ({
                   {t('Service.CustomDashboards.Form.DescriptionLabel')}
                 </FormLabel>
                 <FormControl>
-                  <MDEditor
+                  <MarkdownInput
                     value={field.value}
                     onChange={field.onChange}
-                    previewOptions={{
-                      rehypePlugins: [[rehypeSanitize]],
-                    }}
-                    textareaProps={{
-                      placeholder: t(
-                        'Service.CustomDashboards.Form.DescriptionPlaceholder'
-                      ),
-                    }}
+                    placeholder={'Service.CustomDashboards.Form.DescriptionPlaceholder'}
                   />
                 </FormControl>
                 <FormMessage />
@@ -351,12 +328,7 @@ export const CustomDashboardUpdateForm = ({
               setCurrentDashboard(newDashboard);
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              form.setValue(
-                'images',
-                form
-                  .getValues('images')
-                  ?.filter(({ id }) => id !== openDelete) ?? []
-              );
+              form.setValue('images', form.getValues('images')?.filter(({ id }) => id !== openDelete) ?? []);
               setOpenDelete('');
             }}>
             {t('DialogActions.DeleteSentence')}
