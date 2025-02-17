@@ -6,27 +6,13 @@ import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
-import {
-  Button,
-  Checkbox,
-  FileInput,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Separator,
-  SheetFooter,
-  Textarea,
-  toast,
-} from 'filigran-ui';
+import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Separator, SheetFooter, Textarea, toast, } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
+import MarkdownInput from '@/components/ui/MarkdownInput';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
@@ -183,11 +169,10 @@ export const CustomDashboardUpdateForm = ({
                   {t('Service.CustomDashboards.Form.DescriptionLabel')}
                 </FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder={t(
-                      'Service.CustomDashboards.Form.DescriptionPlaceholder'
-                    )}
-                    {...field}
+                  <MarkdownInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder={'Service.CustomDashboards.Form.DescriptionPlaceholder'}
                   />
                 </FormControl>
                 <FormMessage />
