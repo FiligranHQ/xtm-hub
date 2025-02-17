@@ -12,9 +12,10 @@ import { extractId } from '../../../utils/utils';
 import {
   deleteDocument,
   getChildrenDocuments,
-  getDocuments,
   getLabels,
   getUploader,
+  loadDocumentBy,
+  loadDocuments,
   sendFileToS3,
   updateDocumentDescription,
 } from './document.domain';
@@ -120,16 +121,24 @@ const resolvers: Resolvers = {
       context
     ) => {
       try {
-        return getDocuments(
+        return loadDocuments(
           context,
           { first, after, orderMode, orderBy, parentsOnly, filters },
           normalizeDocumentName(filter ?? ''),
-          fromGlobalId(serviceInstanceId).id as ServiceInstanceId
+          {
+            'Document.service_instance_id': fromGlobalId(serviceInstanceId).id,
+          } as DocumentMutator
         );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);
         throw error;
       }
+    },
+    document: async (_, { documentId }, context) => {
+      const [parentDocument] = await loadDocumentBy(context, {
+        id: fromGlobalId(documentId).id,
+      });
+      return parentDocument;
     },
   },
 };

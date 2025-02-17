@@ -151,24 +151,15 @@ export const passDocumentToInactive = async (
     .update({ active: false, remover_id: context.user.id });
 };
 
-export const getDocuments = async (
-  context: PortalContext,
-  opts: QueryDocumentsArgs,
-  filter,
-  serviceInstanceId: ServiceInstanceId
-): Promise<DocumentConnection> => {
-  return loadDocuments(context, opts, filter, serviceInstanceId);
-};
-
 export const loadDocuments = async (
   context: PortalContext,
   opts: QueryDocumentsArgs,
   filter,
-  serviceInstanceId: ServiceInstanceId
+  field: DocumentMutator
 ): Promise<DocumentConnection> => {
   const query = paginate<Document>(context, 'Document', opts)
     .select(['Document.*'])
-    .where('Document.service_instance_id', '=', serviceInstanceId);
+    .where(field);
 
   if (opts.parentsOnly) {
     query.whereNull('Document.parent_document_id');
@@ -200,7 +191,7 @@ export const loadDocuments = async (
 
   const queryCount = db<Document>(context, 'Document', opts)
     .where('Document.active', '=', true)
-    .where('Document.service_instance_id', '=', serviceInstanceId);
+    .where(field);
 
   if (opts.parentsOnly) {
     queryCount.whereNull('Document.parent_document_id');
@@ -224,6 +215,7 @@ export const loadDocuments = async (
     ...documentConnection,
   };
 };
+
 export const loadDocumentBy = async (
   context: PortalContext,
   field: DocumentMutator

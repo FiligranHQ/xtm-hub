@@ -11,6 +11,7 @@ import useAdminPath from '@/hooks/useAdminPath';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
@@ -47,7 +48,6 @@ import {
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
-import { serviceCapability_fragment$data } from '../../../../__generated__/serviceCapability_fragment.graphql';
 
 interface ServiceSlugFormSheetProps {
   connectionId: string;
