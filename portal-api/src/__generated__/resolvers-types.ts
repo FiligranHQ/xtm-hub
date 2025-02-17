@@ -31,6 +31,11 @@ export type ActionTracking = Node & {
   type: Scalars['String']['output'];
 };
 
+export type AddLabelInput = {
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type AddServiceInput = {
   fee_type?: InputMaybe<Scalars['String']['input']>;
   organization_id?: InputMaybe<Scalars['String']['input']>;
@@ -64,6 +69,7 @@ export type Document = Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  labels: Array<Label>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   service_instance_id: Scalars['String']['output'];
@@ -96,8 +102,14 @@ export enum DocumentOrdering {
 export type EditDocumentInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type EditLabelInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditMeUserInput = {
@@ -119,11 +131,44 @@ export type EditUserInput = {
   roles_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+export type Filter = {
+  key?: InputMaybe<FilterKey>;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum FilterKey {
+  Label = 'label'
+}
+
 export type GenericServiceCapability = Node & {
   __typename?: 'GenericServiceCapability';
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
 };
+
+export type Label = Node & {
+  __typename?: 'Label';
+  color: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type LabelConnection = {
+  __typename?: 'LabelConnection';
+  edges: Array<LabelEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type LabelEdge = {
+  __typename?: 'LabelEdge';
+  cursor: Scalars['String']['output'];
+  node: Label;
+};
+
+export enum LabelOrdering {
+  Name = 'name'
+}
 
 export type MeUserSubscription = {
   __typename?: 'MeUserSubscription';
@@ -151,6 +196,7 @@ export type MessageTracking = Node & {
 export type Mutation = {
   __typename?: 'Mutation';
   addDocument: Document;
+  addLabel: Label;
   addOrganization?: Maybe<Organization>;
   addServiceInstance?: Maybe<Subscription>;
   addSubscription?: Maybe<ServiceInstance>;
@@ -159,11 +205,13 @@ export type Mutation = {
   addUserService?: Maybe<Subscription>;
   changeSelectedOrganization?: Maybe<User>;
   deleteDocument: Document;
+  deleteLabel: Label;
   deleteOrganization?: Maybe<Organization>;
   deleteServiceInstance?: Maybe<ServiceInstance>;
   deleteSubscription?: Maybe<ServiceInstance>;
   deleteUserService?: Maybe<Subscription>;
   editDocument: Document;
+  editLabel: Label;
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
   editServiceCapability?: Maybe<Subscription>;
@@ -182,10 +230,16 @@ export type MutationAddDocumentArgs = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   document?: InputMaybe<Scalars['Upload']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
   parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationAddLabelArgs = {
+  input: AddLabelInput;
 };
 
 
@@ -233,6 +287,11 @@ export type MutationDeleteDocumentArgs = {
 };
 
 
+export type MutationDeleteLabelArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteOrganizationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -257,6 +316,12 @@ export type MutationEditDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   input: EditDocumentInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationEditLabelArgs = {
+  id: Scalars['ID']['input'];
+  input: EditLabelInput;
 };
 
 
@@ -379,6 +444,8 @@ export type Query = {
   __typename?: 'Query';
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
+  label?: Maybe<Label>;
+  labels?: Maybe<LabelConnection>;
   me?: Maybe<User>;
   node?: Maybe<Node>;
   organization?: Maybe<Organization>;
@@ -407,11 +474,25 @@ export type QueryDocumentExistsArgs = {
 export type QueryDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filter?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryLabelArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryLabelsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: LabelOrdering;
+  orderMode: OrderingMode;
 };
 
 
@@ -825,12 +906,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( Subscription ) | ( SubscriptionCapability ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( Subscription ) | ( SubscriptionCapability ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   ActionTracking: ResolverTypeWrapper<ActionTracking>;
+  AddLabelInput: AddLabelInput;
   AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -841,13 +923,20 @@ export type ResolversTypes = ResolversObject<{
   DocumentEdge: ResolverTypeWrapper<DocumentEdge>;
   DocumentOrdering: DocumentOrdering;
   EditDocumentInput: EditDocumentInput;
+  EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
+  Filter: Filter;
+  FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
+  Label: ResolverTypeWrapper<Label>;
+  LabelConnection: ResolverTypeWrapper<LabelConnection>;
+  LabelEdge: ResolverTypeWrapper<LabelEdge>;
+  LabelOrdering: LabelOrdering;
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
@@ -902,6 +991,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   ActionTracking: ActionTracking;
+  AddLabelInput: AddLabelInput;
   AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
   Boolean: Scalars['Boolean']['output'];
@@ -911,13 +1001,18 @@ export type ResolversParentTypes = ResolversObject<{
   DocumentConnection: DocumentConnection;
   DocumentEdge: DocumentEdge;
   EditDocumentInput: EditDocumentInput;
+  EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
+  Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
+  Label: Label;
+  LabelConnection: LabelConnection;
+  LabelEdge: LabelEdge;
   MeUserSubscription: MeUserSubscription;
   MergeEvent: MergeEvent;
   MessageTracking: MessageTracking;
@@ -1001,6 +1096,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1034,6 +1130,26 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'JSON';
 }
 
+export type LabelResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Label'] = ResolversParentTypes['Label']> = ResolversObject<{
+  color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type LabelConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['LabelConnection'] = ResolversParentTypes['LabelConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['LabelEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type LabelEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['LabelEdge'] = ResolversParentTypes['LabelEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Label'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MeUserSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['MeUserSubscription'] = ResolversParentTypes['MeUserSubscription']> = ResolversObject<{
   delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   edit?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -1059,6 +1175,7 @@ export type MessageTrackingResolvers<ContextType = PortalContext, ParentType ext
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationAddDocumentArgs>>;
+  addLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationAddLabelArgs, 'input'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServiceInstance?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationAddServiceInstanceArgs>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
@@ -1067,11 +1184,13 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addUserService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
+  deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
   editDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationEditDocumentArgs, 'input'>>;
+  editLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationEditLabelArgs, 'id' | 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
@@ -1086,7 +1205,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'Subscription' | 'SubscriptionCapability' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'Subscription' | 'SubscriptionCapability' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -1129,6 +1248,8 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  label?: Resolver<Maybe<ResolversTypes['Label']>, ParentType, ContextType, RequireFields<QueryLabelArgs, 'id'>>;
+  labels?: Resolver<Maybe<ResolversTypes['LabelConnection']>, ParentType, ContextType, RequireFields<QueryLabelsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
@@ -1345,6 +1466,9 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   JSON?: GraphQLScalarType;
+  Label?: LabelResolvers<ContextType>;
+  LabelConnection?: LabelConnectionResolvers<ContextType>;
+  LabelEdge?: LabelEdgeResolvers<ContextType>;
   MeUserSubscription?: MeUserSubscriptionResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
   MessageTracking?: MessageTrackingResolvers<ContextType>;

@@ -209,7 +209,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
             </Button>
           ) : (
             <AlertDialogComponent
-              AlertTitle={t('UserActions.Disable')}
+              AlertTitle={t('MenuActions.Disable')}
               actionButtonText={t('MenuActions.Disable')}
               variantName={'destructive'}
               triggerElement={

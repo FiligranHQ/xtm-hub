@@ -177,7 +177,7 @@ const resolvers: Resolvers = {
         //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
         // }
         await db<SubscriptionCapability>(context, 'Subscription_Capability')
-          .where({ subscription_id: fromGlobalId(subscription_id).id })
+          .where('subscription_id', '=', fromGlobalId(subscription_id).id)
           .delete('*');
         await db<Subscription>(context, 'Subscription')
           .where({ id: fromGlobalId(subscription_id).id })

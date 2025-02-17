@@ -1,11 +1,12 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../knexfile';
-import { UserServiceCapability } from '../../../__generated__/resolvers-types';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionCapabilityId } from '../../../model/kanel/public/SubscriptionCapability';
 import UserService from '../../../model/kanel/public/UserService';
-import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
+import UserServiceCapability, {
+  UserServiceCapabilityId,
+} from '../../../model/kanel/public/UserServiceCapability';
 import { UnknownError } from '../../../utils/error.util';
 import { loadSubscriptionCapabilitiesBy } from '../../services/instances/service-capabilities/service_capabilities.helper';
 import { loadGenericServiceCapabilityBy } from '../service-capability/generic_service_capability.helper';

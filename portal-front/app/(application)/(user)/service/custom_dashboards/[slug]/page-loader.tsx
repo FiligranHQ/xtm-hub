@@ -16,7 +16,13 @@ interface PageLoaderProps {
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
-  const { count } = customDashboardListLocalStorage();
+  const {
+    count,
+    search,
+    setSearch,
+    labels,
+    setLabels,
+  } = customDashboardListLocalStorage();
 
   useEffect(() => {
     loadQuery(
@@ -26,12 +32,14 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
         parentsOnly: true,
+        filter: search,
+        filters: [{ key: 'label', value: labels }]
       },
       {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [loadQuery, count, serviceInstance]);
+  }, [loadQuery, count, serviceInstance, search, labels]);
 
   return (
     <>
@@ -39,6 +47,9 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         <CustomDashbordDocumentList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
+          onSearchChange={setSearch}
+          onLabelFilterChange={setLabels}
+          labels={labels}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

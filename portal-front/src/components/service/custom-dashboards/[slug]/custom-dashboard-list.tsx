@@ -16,16 +16,27 @@ import {
 } from '../../document/document.graphql';
 import CustomDashboardCard from '../custom-dashboard-card';
 import { CustomDashboardSheet } from '../custom-dashboard-sheet';
+import { Input, MultiSelectFormField } from 'filigran-ui';
+import { debounceHandleInput } from '@/utils/debounce';
+import { useTranslations } from 'next-intl';
+import { getLabels } from '@/components/admin/label/label.utils';
 
 interface CustomDashbordDocumentListProps {
-  queryRef: PreloadedQuery<documentsQuery>;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  queryRef: PreloadedQuery<documentsQuery>
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>
+  labels?: string[]
+  onSearchChange: (v: string) => void
+  onLabelFilterChange: (v: string[]) => void
 }
 
 const CustomDashbordDocumentList = ({
   queryRef,
   serviceInstance,
+  onSearchChange,
+  onLabelFilterChange,
+  labels,
 }: CustomDashbordDocumentListProps) => {
+  const t = useTranslations();
   const queryData = usePreloadedQuery<documentsQuery>(
     DocumentsListQuery,
     queryRef
@@ -37,12 +48,10 @@ const CustomDashbordDocumentList = ({
   );
 
   const [active, _nonActive] = useMemo(() => {
-    return data?.documents.edges.reduce<
-      [
-        documentsList$data['documents']['edges'][0]['node'][],
-        documentsList$data['documents']['edges'][0]['node'][],
-      ]
-    >(
+    return data?.documents.edges.reduce<[
+      documentsList$data['documents']['edges'][0]['node'][],
+      documentsList$data['documents']['edges'][0]['node'][],
+    ]>(
       (acc, { node }) => {
         if (node.active) {
           acc[0].push(node);
@@ -55,6 +64,8 @@ const CustomDashbordDocumentList = ({
     );
   }, [data]);
 
+  const labelOptions = getLabels().map(({ name, id }) => ({ label: name, value: id }));
+
   return (
     <div className="flex flex-col gap-xl">
       <div className="flex justify-between">
@@ -65,6 +76,25 @@ const CustomDashbordDocumentList = ({
         />
       </div>
       {/* TODO: add tabs to show non active dashboards for UPLOAD or BYPASS capas */}
+      <div className="flex gap-l">
+        <Input
+          className="w-[20rem]"
+          placeholder={t('GenericActions.Search')}
+          onChange={debounceHandleInput(onSearchChange)}
+        />
+        <div
+          className="w-[20rem]"
+        >
+          <MultiSelectFormField
+            options={labelOptions}
+            defaultValue={labels}
+            placeholder={t('GenericActions.FilterLabels')}
+            noResultString={t('Utils.NotFound')}
+            onValueChange={onLabelFilterChange}
+            variant="inverted"
+          />
+        </div>
+      </div>
       <ul
         className={
           'grid grid-cols-1 s:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-xl'

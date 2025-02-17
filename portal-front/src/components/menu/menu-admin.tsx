@@ -115,6 +115,10 @@ const adminLinksData = (t: UseTranslationsProps) => [
     restriction: [RESTRICTION.CAPABILITY_FRT_MANAGE_USER],
   },
   {
+    href: '/admin/label',
+    label: t('MenuLinks.Labels'),
+  },
+  {
     href: '/admin/organizations',
     label: t('MenuLinks.Organizations'),
   },

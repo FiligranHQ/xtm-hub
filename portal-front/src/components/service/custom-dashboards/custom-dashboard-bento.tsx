@@ -17,7 +17,9 @@ const CustomDashboardBento = ({
             background:
               'radial-gradient(80.02% 39.33% at 51.52% 88.18%, rgba(15, 188, 255, 0.1) 0%, rgba(15, 188, 255, 0) 100%), linear-gradient(320.64deg, #021525 10.12%, rgba(40, 52, 79, 0) 98.26%), #00020C',
           }}>
-          <Avatar src={customDashboard.uploader?.picture ?? ''} />
+          <div className="size-6">
+            <Avatar src={customDashboard.uploader?.picture ?? ''} />
+          </div>
           {`${customDashboard.uploader?.first_name} ${customDashboard.uploader?.last_name}`}
         </div>
         <div

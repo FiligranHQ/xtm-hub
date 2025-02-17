@@ -1,8 +1,10 @@
 import { type PageInfo } from 'graphql-relay/connection/connection';
 import pkg, { type Knex } from 'knex';
+import { Filter, FilterKey } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
 import { applyDbSecurity } from './src/security/access';
+import { extractId } from './src/utils/utils';
 
 declare module 'knex' {
   // TODO: Knex specificity, could be complicated modify the model directly
@@ -37,6 +39,8 @@ export type DatabaseType =
   | 'UserService'
   | 'Document'
   | 'User_Organization'
+  | 'Label'
+  | 'Object_Label'
   | 'UserOrganization_Capability';
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
@@ -45,6 +49,7 @@ interface Pagination {
   after?: string;
   orderMode?: string;
   orderBy?: string;
+  filters?: Filter[];
 }
 
 const knex = pkg;
@@ -140,13 +145,25 @@ export const paginate = <T>(
   opts: Partial<QueryOpts> = {},
   queryContext = db<T>(context, type, opts)
 ) => {
-  const { first, after, orderMode, orderBy } = pagination;
+  const { first, after, orderMode, orderBy, filters } = pagination;
   const currentOffset = after ? Number(atob(after)) : 0;
   queryContext.queryContext({
     ...queryContext.queryContext(),
     ...pagination,
     connection: true,
   });
+  if (filters) {
+    filters.forEach(({ key, value }) => {
+      if (key === FilterKey.Label && value.length > 0) {
+        queryContext
+          .leftJoin('Object_Label as ol', 'ol.object_id', '=', `${type}.id`)
+          .whereIn(
+            'ol.label_id',
+            value.map((id) => extractId(id))
+          );
+      }
+    });
+  }
   queryContext
     .orderBy([{ column: orderBy, order: orderMode }])
     .offset(currentOffset)

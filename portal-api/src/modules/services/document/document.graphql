@@ -20,10 +20,12 @@ type Document implements Node {
   updater_id: String
   download_number: Int
   children_documents: [Document!]
+  labels: [Label!]!
 }
 
 input EditDocumentInput {
   short_description: String
+  labels: [String!]
   description: String
   name: String
   active: Boolean
@@ -37,6 +39,7 @@ type Mutation {
     description: String
     serviceInstanceId: String
     parentDocumentId: ID
+    labels: [String!]
     active: Boolean
   ): Document! @auth(requires: [BYPASS])
   editDocument(
@@ -71,6 +74,7 @@ type Query {
     orderBy: DocumentOrdering!
     orderMode: OrderingMode!
     filter: String
+    filters: [Filter!]
     serviceInstanceId: String
     parentsOnly: Boolean
   ): DocumentConnection! @auth

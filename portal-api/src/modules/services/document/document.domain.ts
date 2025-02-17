@@ -4,16 +4,20 @@ import {
   DocumentConnection,
   QueryDocumentsArgs,
 } from '../../../__generated__/resolvers-types';
-import Document, {
+import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
+import DocumentLabel from '../../../model/kanel/public/DocumentLabel';
+import Label from '../../../model/kanel/public/Label';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
+import { extractId } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
   createDocument,
+  Document,
   getDocumentName,
   loadUnsecureDocumentsBy,
 } from './document.helper';
@@ -79,9 +83,26 @@ export const updateDocumentDescription = async (
 
 export const updateDocument = async (
   context: PortalContext,
-  updateData: DocumentMutator,
+  { labels, ...updateData }: DocumentMutator & { labels?: string[] },
   field: DocumentMutator
 ): Promise<Document[]> => {
+  // IF label is null => that mean we want to update the field to empty
+  if (labels !== undefined) {
+    const { id: object_id } = field as { id: string };
+    const existing = await db<DocumentLabel>(context, 'Object_Label')
+      .where('object_id', '=', object_id)
+      .select('*');
+    if (existing) {
+      await db<DocumentLabel>(context, 'Object_Label')
+        .where('object_id', '=', object_id)
+        .delete('*');
+    }
+    if (labels) {
+      await db<DocumentLabel>(context, 'Object_Label').insert(
+        labels.map((id) => ({ object_id, label_id: extractId(id) }))
+      );
+    }
+  }
   return db<Document>(context, 'Document')
     .where(field)
     .update(updateData)
@@ -108,6 +129,9 @@ export const deleteDocument = async (
     id: documentId,
     service_instance_id: serviceInstanceId,
   });
+  await db<DocumentLabel>(context, 'Object_Label')
+    .where('object_id', '=', documentId)
+    .delete('*');
   if (forceDelete) {
     await db<Document>(context, 'Document')
       .where('Document.id', '=', documentFromDb.id)
@@ -163,11 +187,10 @@ export const loadDocuments = async (
   }
   if (filter) {
     query.andWhere(function () {
-      this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(
-        'Document.description',
-        'ILIKE',
-        `%${filter}%`
-      );
+      this.where('Document.file_name', 'ILIKE', `%${filter}%`)
+        .orWhere('Document.description', 'ILIKE', `%${filter}%`)
+        .orWhere('Document.name', 'ILIKE', `%${filter}%`)
+        .orWhere('Document.short_description', 'ILIKE', `%${filter}%`);
     });
   }
 
@@ -227,3 +250,9 @@ export const getUploader = async (context, documentId): Promise<User> => {
       .returning('User.*')
   )[0];
 };
+
+export const getLabels = (context, documentId): Promise<Label[]> =>
+  db<Label>(context, 'Label')
+    .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
+    .where('ol.object_id', '=', documentId)
+    .returning('Label.*');

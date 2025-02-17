@@ -89,7 +89,27 @@
     "Users": "Users",
     "SettingsLabel": "Settings menu",
     "Settings": "Settings",
+    "Labels": "Labels",
     "Security": "Security"
+  },
+  "LabelListPage": {
+    "Name": "Name",
+    "Color": "Color"
+  },
+  "LabelForm": {
+    "Name": "Name",
+    "Color": "Color"
+  },
+  "GenericActions": {
+    "Search": "Search...",
+    "FilterLabels": "Filter by labels..."
+  },
+  "LabelActions": {
+    "SearchLabel": "Search",
+    "AddLabel": "Add label"
+  },
+  "DeleteLabelDialog": {
+    "TextDeleteLabel": "Do you really want to delete this label {name} ?"
   },
   "Service": {
     "CreationStatus": "Creation status",
@@ -186,7 +206,9 @@
         "NoImage": "No image selected",
         "PublishedLabel": "Publish",
         "PublishedPlaceholder": "Is the dashboard published?",
-        "UploadImage": "Upload new image(s)"
+        "UploadImage": "Upload new image(s)",
+        "LabelsLabel": "Labels",
+        "LabelsPlaceholder": "Add labels"
       },
       "Actions": {
         "Deleted": "{name} has been deleted",

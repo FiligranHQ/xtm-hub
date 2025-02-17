@@ -27,6 +27,7 @@ import { useContext, useEffect, useState } from 'react';
 interface HeaderComponentProps {
   displayLogo?: boolean;
 }
+
 const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   displayLogo,
 }) => {
@@ -63,7 +64,9 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         <IconActions
           icon={
             <>
-              <Avatar src={me?.picture ?? ''} />
+              <div className="size-10">
+                <Avatar src={me?.picture ?? ''} />
+              </div>
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
             </>
           }>
