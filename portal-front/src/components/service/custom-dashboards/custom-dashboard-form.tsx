@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, SheetFooter, Textarea, } from 'filigran-ui';
+import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, MultiSelectFormField, SheetFooter, Textarea, } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import MarkdownInput from '@/components/ui/MarkdownInput';
+import { getLabels } from '@/components/admin/label/label.utils';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
@@ -19,6 +20,7 @@ export const newCustomDashboardSchema = z.object({
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck),
   active: z.boolean().optional(),
+  labels: z.array(z.string()).optional(),
 });
 
 export type CustomDashboardFormValues = z.infer<
@@ -49,6 +51,7 @@ export const CustomDashboardForm = ({
       active: false,
       document: undefined,
       images: undefined,
+      labels: [],
     },
   });
 
@@ -127,6 +130,28 @@ export const CustomDashboardForm = ({
                     placeholder={'Service.CustomDashboards.Form.DescriptionPlaceholder'}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="labels"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('Service.CustomDashboards.Form.LabelsLabel')}</FormLabel>
+                <FormControl>
+                  <MultiSelectFormField
+                    noResultString={t('Utils.NotFound')}
+                    options={getLabels().map(({ name, id }) => ({ label: name, value: id }))}
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                    placeholder={t('Service.CustomDashboards.Form.LabelsPlaceholder')}
+                    variant="inverted"
+                  />
+                </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}

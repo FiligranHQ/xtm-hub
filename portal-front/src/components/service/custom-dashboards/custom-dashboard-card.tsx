@@ -58,6 +58,7 @@ const CustomDashboardCard = ({
           short_description: values.shortDescription,
           description: values.description,
           name: values.name,
+          labels: values.labels,
           active: values.active,
         },
       },
@@ -100,8 +101,14 @@ const CustomDashboardCard = ({
         <div className="flex items-center px-l justify-between">
           {/*TODO : will be filled when design is finalized*/}
           <div className="flex gap-s items-center">
-            <Badge>Tags</Badge>
-            <Badge variant="warning">Placeholder</Badge>
+            {customDashboard?.labels?.map(({ id, name, color }) => (
+              <Badge
+                key={id}
+                color={color}
+              >
+                {name}
+              </Badge>
+            ))}
           </div>
           <GuardCapacityComponent
             capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>

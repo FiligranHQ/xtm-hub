@@ -6,13 +6,14 @@ import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
-import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Separator, SheetFooter, Textarea, toast, } from 'filigran-ui';
+import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, MultiSelectFormField, Separator, SheetFooter, Textarea, toast, } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import MarkdownInput from '@/components/ui/MarkdownInput';
+import { getLabels } from '@/components/admin/label/label.utils';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
@@ -20,6 +21,7 @@ export const updateCustomDashboardSchema = z.object({
   name: z.string().nonempty(),
   shortDescription: z.string().max(255).optional(),
   description: z.string().optional(),
+  labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   images: z.custom<FileList>(fileListCheck).optional(),
 });
@@ -34,9 +36,7 @@ interface CustomDashboardFormProps {
   onDelete?: (id?: string) => void;
 }
 
-type CustomDashboardUpdateFormValues = z.infer<
-  typeof updateCustomDashboardSchema
->;
+type CustomDashboardUpdateFormValues = z.infer<typeof updateCustomDashboardSchema>;
 
 export const CustomDashboardUpdateForm = ({
   customDashboard,
@@ -54,6 +54,7 @@ export const CustomDashboardUpdateForm = ({
       shortDescription: customDashboard.short_description ?? '',
       description: customDashboard.description ?? '',
       active: customDashboard.active ?? false,
+      labels: customDashboard.labels.map(({ id }) => id) ?? [],
       images:
         (customDashboard.children_documents?.map((n) => ({
           ...n,
@@ -68,9 +69,7 @@ export const CustomDashboardUpdateForm = ({
     handleSubmit(values, () => form.reset());
   };
 
-  const [currentDashboard, setCurrentDashboard] = useState<
-    Partial<documentItem_fragment$data> | undefined
-  >(customDashboard);
+  const [currentDashboard, setCurrentDashboard] = useState<Partial<documentItem_fragment$data> | undefined>(customDashboard);
 
   const [openDelete, setOpenDelete] = useState<string>('');
   const [addDocument] = useMutation<documentAddMutation>(DocumentAddMutation);
@@ -175,6 +174,28 @@ export const CustomDashboardUpdateForm = ({
                     placeholder={'Service.CustomDashboards.Form.DescriptionPlaceholder'}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="labels"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('Service.CustomDashboards.Form.LabelsLabel')}</FormLabel>
+                <FormControl>
+                  <MultiSelectFormField
+                    noResultString={t('Utils.NotFound')}
+                    options={getLabels().map(({ name, id }) => ({ label: name, value: id }))}
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                    placeholder={t('Service.CustomDashboards.Form.LabelsPlaceholder')}
+                    variant="inverted"
+                  />
+                </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}

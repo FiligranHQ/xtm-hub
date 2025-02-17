@@ -1,0 +1,46 @@
+type Label implements Node {
+  id: ID!
+  name: String!
+  color: String!
+}
+
+enum LabelOrdering {
+  name
+}
+
+type LabelEdge {
+  cursor: String!
+  node: Label!
+}
+
+type LabelConnection {
+  totalCount: Int!
+  edges: [LabelEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddLabelInput {
+  name: String!
+  color: String!
+}
+
+input EditLabelInput {
+  name: String
+  color: String
+}
+
+type Query {
+  labels(
+    first: Int!
+    after: ID
+    orderBy: LabelOrdering!
+    orderMode: OrderingMode!
+  ): LabelConnection @auth
+  label(id: ID!): Label @auth
+}
+
+type Mutation {
+  addLabel(input: AddLabelInput!): Label! @auth(requires: [BYPASS])
+  editLabel(id: ID!, input: EditLabelInput!): Label! @auth(requires: [BYPASS])
+  deleteLabel(id: ID!): Label! @auth(requires: [BYPASS])
+}

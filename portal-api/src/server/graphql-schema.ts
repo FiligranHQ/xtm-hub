@@ -7,6 +7,7 @@ import organizationsResolver from '../modules/organizations/organizations.resolv
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
 import servicesResolver from '../modules/services/services.resolver';
+import labelsResolver from '../modules/settings/labels/labels.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
 import trackingResolver from '../modules/tracking/tracking.resolver';
@@ -37,6 +38,7 @@ const resolvers = mergeResolvers([
   userServiceResolver,
   serviceCapabilityResolver,
   logResolver,
+  labelsResolver,
 ]);
 
 const createSchema = () => {

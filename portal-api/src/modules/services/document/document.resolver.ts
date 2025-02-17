@@ -13,6 +13,7 @@ import {
   deleteDocument,
   getChildrenDocuments,
   getDocuments,
+  getLabels,
   getUploader,
   sendFileToS3,
   updateDocumentDescription,
@@ -38,7 +39,7 @@ const resolvers: Resolvers = {
           context.serviceInstanceId as ServiceInstanceId
         );
 
-        const data: DocumentMutator = {
+        const data: DocumentMutator & { labels?: string[] } = {
           uploader_id: context.user.id as UserId,
           name: payload.name,
           description: payload.description,
@@ -50,6 +51,7 @@ const resolvers: Resolvers = {
           mime_type: payload.document.file.mimetype,
           parent_document_id,
           active: payload.active ?? true,
+          labels: payload.labels,
         };
 
         const [addedDocument] = await createDocument(data);
@@ -89,6 +91,7 @@ const resolvers: Resolvers = {
     children_documents: ({ id }, _, context) =>
       getChildrenDocuments(context, id),
     uploader: ({ id }, _, context) => getUploader(context, id),
+    labels: ({ id }, context) => getLabels(context, id),
   },
   Query: {
     documentExists: async (_, input) => {
@@ -110,6 +113,7 @@ const resolvers: Resolvers = {
         orderMode,
         orderBy,
         filter,
+        filters,
         serviceInstanceId,
         parentsOnly,
       },
@@ -118,7 +122,7 @@ const resolvers: Resolvers = {
       try {
         return getDocuments(
           context,
-          { first, after, orderMode, orderBy, parentsOnly },
+          { first, after, orderMode, orderBy, parentsOnly, filters },
           normalizeDocumentName(filter ?? ''),
           fromGlobalId(serviceInstanceId).id as ServiceInstanceId
         );

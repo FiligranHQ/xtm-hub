@@ -5,6 +5,16 @@ export const customDashboardListLocalStorage = () => {
     'countDocumentList',
     50
   );
+  const [search, setSearch, removeSearch] = useLocalStorage(
+    'search',
+    ''
+  );
+
+  const [labels, setLabels, removeLabels] = useLocalStorage(
+    'label',
+    ['TGFiZWw6MTk5MTU0ZjktZDEwZi00NTljLThmNWMtMDFlZTYzMWIxNzE5', "TGFiZWw6YjJlYTJkNTItMzc4Ni00NjU5LWE5NWItYmFkZDVhNjA3OWM1"]
+  );
+
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countCustomDashboardList',
     50
@@ -21,5 +31,11 @@ export const customDashboardListLocalStorage = () => {
     pageSize,
     setPageSize,
     resetAll,
+    search,
+    setSearch,
+    removeSearch,
+    labels,
+    setLabels,
+    removeLabels,
   };
 };
