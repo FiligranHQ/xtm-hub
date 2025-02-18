@@ -97,7 +97,7 @@ export const updateDocument = async (
         .where('object_id', '=', object_id)
         .delete('*');
     }
-    if (labels.length > 0) {
+    if ((labels.length ?? 0) > 0) {
       await db<DocumentLabel>(context, 'Object_Label').insert(
         labels.map((id) => ({ object_id, label_id: extractId(id) }))
       );

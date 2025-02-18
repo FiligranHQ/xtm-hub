@@ -50,7 +50,7 @@ export const createDocument = async ({
   const [document] = await dbUnsecure<Document>('Document')
     .insert(documentData)
     .returning('*');
-  if (labels.length > 0) {
+  if ((labels?.length ?? 0) > 0) {
     await dbUnsecure<DocumentLabel>('Object_Label').insert(
       labels.map((id) => ({ object_id: document.id, label_id: extractId(id) }))
     );

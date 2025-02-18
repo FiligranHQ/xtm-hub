@@ -32,7 +32,7 @@ interface DashboardUpdateProps {
   data: documentItem_fragment$key;
   serviceInstanceId: string;
   connectionId: string;
-  variant: 'menu' | 'button';
+  variant?: 'menu' | 'button';
 }
 
 // Component
