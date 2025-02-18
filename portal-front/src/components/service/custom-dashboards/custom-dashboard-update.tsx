@@ -6,6 +6,10 @@ import {
   DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
+import {
+  IconActionContext,
+  IconActionsButton,
+} from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { customDashboardUpdate_update_childs$key } from '@generated/customDashboardUpdate_update_childs.graphql';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
@@ -18,7 +22,7 @@ import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
 
@@ -28,6 +32,7 @@ interface DashboardUpdateProps {
   data: documentItem_fragment$key;
   serviceInstanceId: string;
   connectionId: string;
+  variant: 'menu' | 'button';
 }
 
 // Component
@@ -36,11 +41,13 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   data,
   serviceInstanceId,
   connectionId,
+  variant = 'button',
 }) => {
   const t = useTranslations();
   const router = useRouter();
 
   const [openSheet, setOpenSheet] = useState(false);
+  const { setMenuOpen } = useContext(IconActionContext);
 
   const [deleteDocument] = useMutation<documentDeleteMutation>(
     DocumentDeleteMutation
@@ -52,7 +59,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   const updateDocument = (
     values: z.infer<typeof updateCustomDashboardSchema>
   ) => {
-    setOpenSheet(false);
+    setMenuOpen(false);
     updateDocumentMutation({
       variables: {
         documentId: customDashboard.id,
@@ -67,7 +74,6 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
       },
       onCompleted: (response) => {
         setOpenSheet(false);
-
         toast({
           title: t('Utils.Success'),
           description: t('VaultActions.DocumentUpdated', {
@@ -90,13 +96,24 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
       onClick={(event) => {
         event.stopPropagation();
       }}>
-      <Button
-        variant="outline"
-        onClick={() => {
-          setOpenSheet(true);
-        }}>
-        {t('MenuActions.Update')}
-      </Button>
+      {variant === 'button' ? (
+        <Button
+          variant="outline"
+          onClick={() => {
+            setOpenSheet(true);
+          }}>
+          {t('MenuActions.Update')}
+        </Button>
+      ) : (
+        <IconActionsButton
+          className="normal-case"
+          onClick={() => {
+            setOpenSheet(true);
+          }}
+          aria-label={t('MenuActions.Update')}>
+          {t('MenuActions.Update')}
+        </IconActionsButton>
+      )}
 
       <SheetWithPreventingDialog
         open={openSheet}

@@ -64,8 +64,7 @@ const CustomDashboardCard = ({
               {customDashboard?.labels?.map(({ id, name, color }) => (
                 <Badge
                   key={id}
-                  color={color}
-                >
+                  color={color}>
                   {name}
                 </Badge>
               ))}
@@ -86,6 +85,7 @@ const CustomDashboardCard = ({
                   customDashboard={customDashboard}
                   data={data as unknown as documentItem_fragment$key}
                   connectionId={connectionId}
+                  variant="menu"
                 />
               </IconActions>
             </GuardCapacityComponent>
