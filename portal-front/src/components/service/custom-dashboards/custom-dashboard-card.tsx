@@ -2,7 +2,15 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
-import { documentItem } from '@/components/service/document/document.graphql';
+import {
+  CustomDashboardUpdateForm,
+  updateCustomDashboardSchema,
+} from '@/components/service/custom-dashboards/custom-dashboard-update-form';
+import {
+  DocumentDeleteMutation,
+  documentItem,
+  DocumentUpdateMutation,
+} from '@/components/service/document/document.graphql';
 import DownloadDocument from '@/components/service/vault/download-document';
 import { IconActions } from '@/components/ui/icon-actions';
 import { RESTRICTION } from '@/utils/constant';
@@ -38,7 +46,7 @@ const CustomDashboardCard = ({
 
   return (
     <>
-      <li className="border-light flex flex-col relative rounded border bg-page-background gap-l aria-disabled:opacity-60">
+      <li className="border-light flex flex-col relative rounded border bg-page-background gap-xxl aria-disabled:opacity-60">
         <Carousel
           placeholder={
             <CustomDashboardBento customDashboard={customDashboard} />

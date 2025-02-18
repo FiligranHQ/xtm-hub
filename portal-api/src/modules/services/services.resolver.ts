@@ -1,4 +1,4 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import {
@@ -26,6 +26,12 @@ import {
 } from './service-instance.domain';
 
 const resolvers: Resolvers = {
+  ServiceInstance: {
+    logo_document_id: ({ logo_document_id }) =>
+      toGlobalId('ServiceInstance', logo_document_id),
+    illustration_document_id: ({ illustration_document_id }) =>
+      toGlobalId('ServiceInstance', illustration_document_id),
+  },
   Query: {
     serviceInstances: async (_, opt, context) => {
       return loadServiceInstances(context, opt);

@@ -64,7 +64,9 @@ const AvailableServices = ({
             AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
             actionButtonText={t('Utils.Continue')}
             triggerElement={
-              <Button onClick={(e) => e.stopPropagation()}>
+              <Button
+                size="sm"
+                onClick={(e) => e.stopPropagation()}>
                 {t('Service.Subscribe')}
               </Button>
             }
@@ -82,14 +84,14 @@ const AvailableServices = ({
         <Separator className="my-12" />
         <ul
           className={
-            'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-m'
+            'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-xxl'
           }>
           {services.map((service) => {
             return (
               !service.user_joined && (
                 <ServiceInstanceCard
                   key={service.id}
-                  rightLeftAction={getAction(service)}
+                  rightAction={getAction(service)}
                   serviceInstance={service}
                 />
               )
