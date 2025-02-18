@@ -39,6 +39,7 @@ postgres:
     limits:
       memory: 8Gi
   pgadmin:
+    whitelistSourceRange: "149.88.28.168/32,10.0.0.0/8"
     version: "8.14"
     username: xthmhub@filigran.io
     password: "CHANGEME--q5Y6NbtbeIu3qyjk0iPthl2hCUkAmB--CHANGEME"
