@@ -21,6 +21,7 @@ import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashb
 import { RESTRICTION } from '@/utils/constant';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
+
 // Component interface
 interface DashboardSlugProps {
   queryRef: PreloadedQuery<documentQuery>;
@@ -67,26 +68,26 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
     <>
       <BreadcrumbNav value={breadcrumbValue} />
 
-      <div className="flex items-center gap-2">
+      <div className="flex">
         <h1 className="sr-only">{documentData?.name}</h1>
-
-        <Button
-          className="ml-auto"
-          onClick={() => {
-            addDownloadNumber();
-            window.location.href = `/document/get/${serviceInstance?.serviceInstanceById?.id}/${documentData?.id}`;
-          }}>
-          {t('Utils.Download')}
-        </Button>
-        <GuardCapacityComponent
-          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-          <DashboardUpdate
-            serviceInstanceId={serviceInstance.serviceInstanceById?.id ?? ''}
-            customDashboard={documentData!}
-            data={data as unknown as documentItem_fragment$key}
-            connectionId={''}
-          />
-        </GuardCapacityComponent>
+        <div className="flex items-center gap-2 ml-auto">
+          <GuardCapacityComponent
+            capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+            <DashboardUpdate
+              serviceInstanceId={serviceInstance.serviceInstanceById?.id ?? ''}
+              customDashboard={documentData!}
+              data={data as unknown as documentItem_fragment$key}
+              connectionId={''}
+            />
+          </GuardCapacityComponent>
+          <Button
+            onClick={() => {
+              addDownloadNumber();
+              window.location.href = `/document/get/${serviceInstance?.serviceInstanceById?.id}/${documentData?.id}`;
+            }}>
+            {t('Utils.Download')}
+          </Button>
+        </div>
       </div>
 
       <div className="flex w-full mt-l">

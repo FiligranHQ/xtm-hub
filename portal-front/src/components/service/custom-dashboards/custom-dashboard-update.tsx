@@ -6,27 +6,21 @@ import {
   DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
-import { z } from 'zod';
-
-import {
-  IconActionContext,
-  IconActionsButton,
-} from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { customDashboardUpdate_update_childs$key } from '@generated/customDashboardUpdate_update_childs.graphql';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
 } from '@generated/documentItem_fragment.graphql';
-import { useRouter } from 'next/navigation';
-
-import { customDashboardUpdate_update_childs$key } from '@generated/customDashboardUpdate_update_childs.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
-import { toast } from 'filigran-ui';
+import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
+import { z } from 'zod';
 
 // Component interface
 interface DashboardUpdateProps {
@@ -47,7 +41,6 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   const router = useRouter();
 
   const [openSheet, setOpenSheet] = useState(false);
-  const { setMenuOpen } = useContext(IconActionContext);
 
   const [deleteDocument] = useMutation<documentDeleteMutation>(
     DocumentDeleteMutation
@@ -59,7 +52,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   const updateDocument = (
     values: z.infer<typeof updateCustomDashboardSchema>
   ) => {
-    setMenuOpen(false);
+    setOpenSheet(false);
     updateDocumentMutation({
       variables: {
         documentId: customDashboard.id,
@@ -97,14 +90,13 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
       onClick={(event) => {
         event.stopPropagation();
       }}>
-      <IconActionsButton
-        className="normal-case"
+      <Button
+        variant="outline"
         onClick={() => {
           setOpenSheet(true);
-        }}
-        aria-label={t('MenuActions.Update')}>
+        }}>
         {t('MenuActions.Update')}
-      </IconActionsButton>
+      </Button>
 
       <SheetWithPreventingDialog
         open={openSheet}
