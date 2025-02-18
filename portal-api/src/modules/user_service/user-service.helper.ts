@@ -17,7 +17,10 @@ import {
 } from '../../model/kanel/public/UserServiceCapability';
 import { sendMail } from '../../server/mail-service';
 import { loadUserOrganization } from '../common/user-organization.helper';
-import { loadServiceInstanceBy } from '../services/service-instance.domain';
+import {
+  getServiceDefinition,
+  loadServiceInstanceBy,
+} from '../services/service-instance.domain';
 import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
 import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
@@ -188,12 +191,13 @@ export const createUserServiceAccess = async (
     'ServiceInstance.id',
     subscription.service_instance_id
   );
+  const service_definition = await getServiceDefinition(context, service.id);
   await sendMail({
     to: user.email,
     template: 'partnerVault',
     params: {
       name: user.email,
-      partnerVaultLink: `${config.get('base_url_front')}/service/${service.service_definition.identifier}/${toGlobalId('ServiceInstance', service.id)}`,
+      partnerVaultLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', service.id)}`,
       partnerVault: service.name,
     },
   });

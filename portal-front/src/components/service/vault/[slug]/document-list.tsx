@@ -245,7 +245,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
 
   const handleInputChange = (inputValue: string) => {
     refetch({
-      filter: inputValue,
+      searchTerm: inputValue,
     });
   };
 

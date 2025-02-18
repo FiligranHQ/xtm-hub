@@ -77,7 +77,7 @@ type Query {
     after: ID
     orderBy: DocumentOrdering!
     orderMode: OrderingMode!
-    filter: String
+    searchTerm: String
     filters: [Filter!]
     serviceInstanceId: String
     parentsOnly: Boolean

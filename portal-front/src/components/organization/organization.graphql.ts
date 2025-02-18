@@ -8,7 +8,7 @@ export const organizationsFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
-      filter: $filter
+      searchTerm: $searchTerm
     ) {
       __id
       totalCount
@@ -35,7 +35,7 @@ export const organizationFetch = graphql`
     $cursor: ID
     $orderBy: OrganizationOrdering!
     $orderMode: OrderingMode!
-    $filter: OrganizationFilter
+    $searchTerm: String
   ) {
     ...organizationList_organizations
   }

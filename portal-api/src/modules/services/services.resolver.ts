@@ -20,8 +20,14 @@ import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { uploadNewFile } from './document/document.helper';
 import {
+  getCapabilities,
+  getIsSubscribed,
+  getLinks,
+  getServiceDefinition,
+  getServiceDefinitionCapabilities,
+  getUserJoined,
   loadPublicServiceInstances,
-  loadServiceInstanceByIdWithCapabilities,
+  loadServiceInstanceBy,
   loadServiceInstances,
   loadServiceWithSubscriptions,
 } from './service-instance.domain';
@@ -38,6 +44,17 @@ const resolvers: Resolvers = {
         return toGlobalId('ServiceInstance', illustration_document_id);
       }
     },
+    links: ({ id }, _, context) => getLinks(context, id),
+    service_definition: ({ id }, _, context) =>
+      getServiceDefinition(context, id),
+    organization_subscribed: ({ id }, _, context) =>
+      getIsSubscribed(context, id),
+    capabilities: ({ id }, _, context) => getCapabilities(context, id),
+    user_joined: ({ id }, _, context) => getUserJoined(context, id),
+  },
+  ServiceDefinition: {
+    service_capability: ({ id }, _, context) =>
+      getServiceDefinitionCapabilities(context, id),
   },
   Query: {
     serviceInstances: async (_, opt, context) => {
@@ -47,14 +64,23 @@ const resolvers: Resolvers = {
       return loadPublicServiceInstances(context, opt);
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
-      const serviceInstance = await loadServiceInstanceByIdWithCapabilities(
+      const serviceInstance = await loadServiceInstanceBy(
         context,
+        'id',
         fromGlobalId(service_instance_id).id
       );
 
       // Not found
       if (!serviceInstance) {
         return null;
+      }
+      const userJoined = await getUserJoined(context, serviceInstance.id);
+      // Found but the user has not joinded the service yet
+      if (
+        ['JOIN_AUTO', 'JOIN_SELF'].includes(serviceInstance.join_type) &&
+        !userJoined
+      ) {
+        throw new Error('ERROR_SERVICE_INSTANCE_USER_MUST_JOIN_SERVICE');
       }
 
       return serviceInstance;

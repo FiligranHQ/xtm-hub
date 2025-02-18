@@ -3,22 +3,9 @@ import { LabelConnection } from '../../../__generated__/resolvers-types';
 import Label, { LabelMutator } from '../../../model/kanel/public/Label';
 import ObjectLabel from '../../../model/kanel/public/ObjectLabel';
 
-export const loadLabels = async (context, opts) => {
-  const labelConnection = await paginate<Label>(
-    context,
-    'Label',
-    opts
-  ).asConnection<LabelConnection>();
+export const loadLabels = async (context, opts) =>
+  paginate<Label, LabelConnection>(context, 'Label', opts);
 
-  const { totalCount } = await db<Label>(context, 'Label')
-    .countDistinct('Label.id as totalCount')
-    .first();
-
-  return {
-    totalCount,
-    ...labelConnection,
-  };
-};
 export const loadLabel = (context, id) =>
   db<Label>(context, 'Label').where({ id }).first();
 

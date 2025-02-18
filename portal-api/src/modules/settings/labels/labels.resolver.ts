@@ -1,5 +1,5 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { LabelId } from '../../../model/kanel/public/Label';
+import { type LabelMutator } from '../../../model/kanel/public/Label';
 import {
   addLabel,
   deleteLabelBy,
@@ -10,15 +10,14 @@ import {
 
 const resolvers: Resolvers = {
   Query: {
-    labels: (_, { first, after, orderMode, orderBy }, context) =>
-      loadLabels(context, { first, after, orderMode, orderBy }),
+    labels: (_, opts, context) => loadLabels(context, opts),
     label: (_, { id }, context) => loadLabel(context, id),
   },
   Mutation: {
     addLabel: (_, { input }, context) => addLabel(context, input),
     editLabel: (_, { id, input }, context) => editLabel(context, { id, input }),
     deleteLabel: (_, { id }, context) =>
-      deleteLabelBy(context, { id: id as LabelId }),
+      deleteLabelBy(context, { id } as LabelMutator),
   },
 };
 

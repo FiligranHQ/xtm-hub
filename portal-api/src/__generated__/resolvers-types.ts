@@ -139,7 +139,9 @@ export type Filter = {
 };
 
 export enum FilterKey {
-  Label = 'label'
+  Label = 'label',
+  OrganizationId = 'organization_id',
+  PersonalSpace = 'personal_space'
 }
 
 export type GenericServiceCapability = Node & {
@@ -169,6 +171,7 @@ export type LabelEdge = {
 };
 
 export enum LabelOrdering {
+  Color = 'color',
   Name = 'name'
 }
 
@@ -423,10 +426,6 @@ export type OrganizationEdge = {
   node: Organization;
 };
 
-export type OrganizationFilter = {
-  search?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type OrganizationInput = {
   domains?: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
@@ -491,12 +490,12 @@ export type QueryDocumentExistsArgs = {
 
 export type QueryDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filter?: InputMaybe<Scalars['String']['input']>;
   filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -511,6 +510,7 @@ export type QueryLabelsArgs = {
   first: Scalars['Int']['input'];
   orderBy: LabelOrdering;
   orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -526,10 +526,10 @@ export type QueryOrganizationArgs = {
 
 export type QueryOrganizationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filter?: InputMaybe<OrganizationFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: OrganizationOrdering;
   orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -588,10 +588,11 @@ export type QueryUserServiceOwnedArgs = {
 
 export type QueryUsersArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filter?: InputMaybe<UserFilter>;
+  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   orderBy: UserOrdering;
   orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum Restriction {
@@ -774,11 +775,6 @@ export type UserEdge = {
   __typename?: 'UserEdge';
   cursor: Scalars['String']['output'];
   node: User;
-};
-
-export type UserFilter = {
-  organization?: InputMaybe<Scalars['String']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum UserOrdering {
@@ -969,7 +965,6 @@ export type ResolversTypes = ResolversObject<{
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationConnection: ResolverTypeWrapper<OrganizationConnection>;
   OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
-  OrganizationFilter: OrganizationFilter;
   OrganizationInput: OrganizationInput;
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
@@ -998,7 +993,6 @@ export type ResolversTypes = ResolversObject<{
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
-  UserFilter: UserFilter;
   UserOrdering: UserOrdering;
   UserService: ResolverTypeWrapper<UserService>;
   UserServiceAddInput: UserServiceAddInput;
@@ -1044,7 +1038,6 @@ export type ResolversParentTypes = ResolversObject<{
   Organization: Organization;
   OrganizationConnection: OrganizationConnection;
   OrganizationEdge: OrganizationEdge;
-  OrganizationFilter: OrganizationFilter;
   OrganizationInput: OrganizationInput;
   PageInfo: PageInfo;
   PlatformProvider: PlatformProvider;
@@ -1067,7 +1060,6 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
-  UserFilter: UserFilter;
   UserService: UserService;
   UserServiceAddInput: UserServiceAddInput;
   UserServiceCapability: UserServiceCapability;
