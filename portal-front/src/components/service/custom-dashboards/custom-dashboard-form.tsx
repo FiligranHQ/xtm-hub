@@ -1,19 +1,33 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { getLabels } from '@/components/admin/label/label.utils';
+import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, MultiSelectFormField, SheetFooter, Textarea, } from 'filigran-ui';
+import {
+  Button,
+  Checkbox,
+  FileInput,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  MultiSelectFormField,
+  SheetFooter,
+  Textarea,
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import MarkdownInput from '@/components/ui/MarkdownInput';
-import { getLabels } from '@/components/admin/label/label.utils';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 export const newCustomDashboardSchema = z.object({
   name: z.string().nonempty(),
-  shortDescription: z.string().max(255).optional(),
+  shortDescription: z.string().max(255),
   description: z.string().optional(),
   documentId: z.string().optional(),
   parentDocumentId: z.string().optional(),
@@ -45,7 +59,7 @@ export const CustomDashboardForm = ({
     criteriaMode: 'all',
     defaultValues: {
       name: '',
-      shortDescription: '',
+      shortDescription: undefined,
       description: '',
       documentId: '',
       active: false,
@@ -127,7 +141,9 @@ export const CustomDashboardForm = ({
                   <MarkdownInput
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder={'Service.CustomDashboards.Form.DescriptionPlaceholder'}
+                    placeholder={
+                      'Service.CustomDashboards.Form.DescriptionPlaceholder'
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -140,14 +156,21 @@ export const CustomDashboardForm = ({
             name="labels"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Service.CustomDashboards.Form.LabelsLabel')}</FormLabel>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.LabelsLabel')}
+                </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels().map(({ name, id }) => ({ label: name, value: id }))}
+                    options={getLabels().map(({ name, id }) => ({
+                      label: name,
+                      value: id,
+                    }))}
                     defaultValue={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t('Service.CustomDashboards.Form.LabelsPlaceholder')}
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.LabelsPlaceholder'
+                    )}
                     variant="inverted"
                   />
                 </FormControl>

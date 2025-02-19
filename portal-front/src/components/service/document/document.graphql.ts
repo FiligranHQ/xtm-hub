@@ -130,7 +130,7 @@ export const documentsFragment = graphql`
           id
           active
           ...documentItem_fragment
-          ...customDashboardCard_update_childs
+          ...customDashboardUpdate_update_childs
         }
       }
     }
@@ -149,5 +149,13 @@ export const DocumentsListQuery = graphql`
     $parentsOnly: Boolean
   ) {
     ...documentsList
+  }
+`;
+
+export const DocumentQuery = graphql`
+  query documentQuery($documentId: ID) {
+    document(documentId: $documentId) {
+      ...documentItem_fragment
+    }
   }
 `;

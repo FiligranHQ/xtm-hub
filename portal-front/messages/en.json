@@ -220,7 +220,8 @@
   "ServiceActions": {
     "OrganizationDeleted": "Organization {name} has been deleted",
     "OrganizationAdded": "Organization {name} has been added",
-    "UserCapabilitiesModified": "{email}'s capabilities have been modified"
+    "UserCapabilitiesModified": "{email}'s capabilities have been modified",
+    "UserServiceAdded": "{email} has been invited to the {serviceName}"
   },
   "VaultActions": {
     "DocumentDeleted": "{file_name} has been deleted",

@@ -11,6 +11,7 @@ import useAdminPath from '@/hooks/useAdminPath';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
@@ -47,12 +48,12 @@ import {
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
-import { serviceCapability_fragment$data } from '../../../../__generated__/serviceCapability_fragment.graphql';
 
 interface ServiceSlugFormSheetProps {
   connectionId: string;
   userService: userService_fragment$data;
   subscription: subscriptionWithUserService_fragment$data;
+  serviceName: string;
   serviceCapabilities: serviceCapability_fragment$data[];
   dataOrganizationsTab: {
     value: string;
@@ -64,6 +65,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   connectionId,
   userService,
   subscription,
+  serviceName,
   serviceCapabilities,
   dataOrganizationsTab,
 }) => {
@@ -166,7 +168,10 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
       onCompleted() {
         toast({
           title: t('Utils.Success'),
-          description: `${values.email[0]!.text} ${t('Utils.Modified')}`,
+          description: t('ServiceActions.UserServiceAdded', {
+            email: values.email.map((item) => item.text).join(', '),
+            serviceName: serviceName,
+          }),
         });
         setOpenSheet(false);
       },
@@ -348,7 +353,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
                             htmlFor={id}
                             className={`txt-sub-content ${!isCapabilityDisabled(id) ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
                             {name === GenericCapabilityName.ManageAccess
-                              ? 'Manage access'
+                              ? 'Manage access: The user can invite other users from his/her organization to this service'
                               : `${name} access: ${description}`}
                             {isCapabilityDisabled(id)}
                           </label>
