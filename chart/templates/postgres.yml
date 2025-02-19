@@ -11,6 +11,8 @@ spec:
   {{- toYaml .Values.postgres.resources | nindent 4 }}
   monitoring:
     enablePodMonitor: true
+  imageName: "ghcr.io/cloudnative-pg/postgresql:{{ .Values.postgres.version }}"
+  imagePullPolicy: "IfNotPresent"
   bootstrap:
     initdb:
       database: xtmhub
