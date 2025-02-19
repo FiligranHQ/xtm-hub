@@ -136,7 +136,7 @@ const resolvers: Resolvers = {
     },
     document: async (_, { documentId }, context) => {
       const [parentDocument] = await loadDocumentBy(context, {
-        id: fromGlobalId(documentId).id,
+        id: fromGlobalId(documentId).id as DocumentId,
       });
       return parentDocument;
     },

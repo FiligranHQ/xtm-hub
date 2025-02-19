@@ -38,7 +38,7 @@ const CustomDashboardCard = ({
 
   return (
     <>
-      <li className="border-light flex flex-col relative rounded border bg-page-background gap-l aria-disabled:opacity-60">
+      <li className="border-light flex flex-col relative rounded border bg-page-background gap-xxl aria-disabled:opacity-60">
         <Carousel
           placeholder={
             <CustomDashboardBento customDashboard={customDashboard} />
