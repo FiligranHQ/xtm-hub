@@ -336,6 +336,13 @@
       "DuplicateName": "Une organisation portant ce nom existe déjà"
     }
   },
+  "ServiceForm": {
+    "EditService": "Editer les illustrations d'un service",
+    "UpdatePictures": "Illustrations",
+    "PictureUpdated": "Illustrations mises à jour pour le service : {serviceName}",
+    "Illustration": "Illustration du service",
+    "Logo": "Logo du service"
+  },
   "UserListPage": {
     "Title": "Liste des utilisateurs",
     "Email": "Email",

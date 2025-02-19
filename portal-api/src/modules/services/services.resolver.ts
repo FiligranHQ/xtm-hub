@@ -18,6 +18,7 @@ import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
+import { uploadNewFile } from './document/document.helper';
 import {
   loadPublicServiceInstances,
   loadServiceInstanceByIdWithCapabilities,
@@ -90,6 +91,29 @@ const resolvers: Resolvers = {
         .delete('*');
       await dispatch('ServiceInstance', 'delete', deletedServiceInstance);
       return deletedServiceInstance;
+    },
+    addServicePicture: async (_, payload, context) => {
+      const document = await uploadNewFile(
+        context,
+        payload.document,
+        fromGlobalId(payload.serviceId).id as ServiceInstanceId
+      );
+      const update = payload.isLogo
+        ? {
+            logo_document_id: document.id,
+          }
+        : {
+            illustration_document_id: document.id,
+          };
+      const [updatedServiceInstance] = await db<ServiceInstance>(
+        context,
+        'ServiceInstance'
+      )
+        .where({ id: fromGlobalId(payload.serviceId).id })
+        .update(update)
+        .returning('*');
+      await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+      return updatedServiceInstance;
     },
     editServiceInstance: async (_, { id, name }, context) => {
       const { id: databaseId } = fromGlobalId(id) as {

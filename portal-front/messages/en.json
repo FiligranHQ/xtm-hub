@@ -335,6 +335,13 @@
       "DuplicateName": "An organization with this name already exists"
     }
   },
+  "ServiceForm": {
+    "EditService": "Edit service's pictures",
+    "UpdatePictures": "Pictures",
+    "PictureUpdated": "Pictures updated for service: {serviceName}",
+    "Illustration": "Service's illustration",
+    "Logo": "Service's logo"
+  },
   "UserListPage": {
     "Title": "Users list",
     "Email": "Email",

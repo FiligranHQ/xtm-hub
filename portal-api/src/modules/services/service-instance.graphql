@@ -49,6 +49,11 @@ type Mutation {
     @auth(requires: [BCK_MANAGE_SERVICES])
   deleteServiceInstance(id: ID!): ServiceInstance
     @auth(requires: [BCK_MANAGE_SERVICES])
+  addServicePicture(
+    serviceId: ID
+    document: Upload
+    isLogo: Boolean
+  ): ServiceInstance @auth(requires: [BCK_MANAGE_SERVICES])
 }
 
 type Query {
