@@ -1,10 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Namespace}}-{{ .Release.Name }}-ingress
+  name: {{ .Release.Namespace}}-{{ .Release.Name }}-ingress-pgadmin
   annotations:
     cert-manager.io/cluster-issuer: {{ .Values.tls_issuer }}
-    external-dns.alpha.kubernetes.io/hostname: {{ tpl .Values.xtmhub.host . }}
+    external-dns.alpha.kubernetes.io/hostname: pgadmin.{{ .Values.xtmhub.host }}
     external-dns.alpha.kubernetes.io/ttl: "120"
     prometheus.io/probe: "true"
     {{- if eq .Values.ingressClass "nginx" }}
@@ -17,21 +17,22 @@ metadata:
         expires 1M;
         add_header Cache-Control "public";
       }
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ .Values.postgres.pgadmin.whitelistSourceRange }}
     {{- end }}
 spec:
   ingressClassName: {{ .Values.ingressClass }} 
   rules:
-  - host: {{ .Values.xtmhub.host }}
+  - host: pgadmin.{{ .Values.xtmhub.host }}
     http:
       paths:
-      - backend:
-          service:
-            name: xtmhub-front
-            port:
-              number: 3000
-        path: /
-        pathType: Prefix
+        - backend:
+            service:
+              name: {{ .Release.Name }}-pgadmin
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
   tls:
   - hosts:
-    - {{ .Values.xtmhub.host }}
-    secretName: xtmhub-cert
+    - pgadmin.{{ .Values.xtmhub.host }}
+    secretName: xtmhub-cert-pgadmin
