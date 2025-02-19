@@ -17,24 +17,25 @@ const ServiceInstanceCard: React.FunctionComponent<
   const isLinkService =
     serviceInstance?.service_definition?.identifier ===
     SERVICE_DEFINITION_IDENTIFIER.LINK;
-  const isPending =
-    serviceInstance?.creation_status === SERVICE_CREATION_STATUS.PENDING;
+  const isDisabled =
+    serviceInstance?.creation_status === SERVICE_CREATION_STATUS.PENDING ||
+    rightAction !== undefined;
+
+  let serviceHref: string | undefined;
+  let serviceTarget: string | undefined;
+  if (!isDisabled) {
+    serviceHref =
+      isLinkService && serviceInstance.links?.[0]?.url
+        ? serviceInstance.links?.[0]?.url
+        : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`;
+    serviceTarget = serviceInstance.links?.[0]?.url?.startsWith('http')
+      ? '_blank'
+      : '_self';
+  }
 
   return (
     <li className="relative">
-      <a
-        href={
-          isLinkService && serviceInstance.links?.[0]?.url
-            ? serviceInstance.links?.[0]?.url
-            : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`
-        }
-        target={
-          serviceInstance.links?.[0]?.url?.startsWith('http')
-            ? '_blank'
-            : '_self'
-        }
-        className="flex justify-center items-center flex-col gap-l bg-blue-900 h-48 w-full box-border pl-s cursor-pointer aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
-        aria-disabled={isPending}>
+      <div className="flex justify-center items-center flex-col gap-l bg-blue-900 h-48 w-full box-border pl-s">
         <LogoFiligranIcon className="absolute inset-0 text-white opacity-10 z-0 size-64 rotate-45 blur" />
         <div className="mt-s flex items-center h-12 w-full">
           <div
@@ -44,7 +45,15 @@ const ServiceInstanceCard: React.FunctionComponent<
               backgroundSize: 'cover',
             }}
           />
-          <h3 className="m-l text-white">{serviceInstance.name}</h3>
+          <h3 className="m-l text-white position-relative z-10">
+            <a
+              href={serviceHref}
+              target={serviceTarget}
+              className="after:content-[''] after:absolute after:inset-0 aria-disabled:opacity-60 aria-disabled:after:hidden"
+              aria-disabled={isDisabled}>
+              {serviceInstance.name}
+            </a>
+          </h3>
         </div>
 
         <div
@@ -56,18 +65,8 @@ const ServiceInstanceCard: React.FunctionComponent<
             paddingLeft: '20px',
           }}
         />
-      </a>
-      <div
-        className="h-40 border-light flex flex-col relative border bg-page-background p-l gap-xs cursor-pointer aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
-        onClick={() => {
-          const url = isLinkService
-            ? serviceInstance.links?.[0]?.url
-            : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`;
-          if (url) {
-            window.open(url, url.startsWith('http') ? '_blank' : '_self');
-          }
-        }}
-        aria-disabled={isPending}>
+      </div>
+      <div className="h-40 border-light flex flex-col relative border bg-page-background p-l gap-xs">
         <div className="mt-s flex items-center h-12 w-full">
           <h3 className="">{serviceInstance.name}</h3>
           <div
