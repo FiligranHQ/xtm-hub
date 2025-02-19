@@ -95,14 +95,14 @@ const CustomDashboardCard = ({
               ? customDashboard.short_description
               : 'No description'}
           </h2>
-          <p className="txt-mini p-l items-center flex">
+          <div className="txt-mini p-l items-center flex">
             <Badge
               size="sm"
               className="ml-auto"
               style={{ color: '#7a7c85' }}>
               {t(customDashboard.active ? 'Badge.Published' : 'Badge.Draft')}
             </Badge>
-          </p>
+          </div>
         </div>
       </li>
     </>

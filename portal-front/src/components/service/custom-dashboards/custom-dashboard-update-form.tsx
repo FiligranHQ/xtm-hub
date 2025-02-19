@@ -259,34 +259,6 @@ export const CustomDashboardUpdateForm = ({
             )}
           />
 
-          <SheetFooter className="sm:justify-between pb-0">
-            <Button
-              variant="outline-destructive"
-              type="button"
-              onClick={(e) => {
-                onDelete?.();
-                handleCloseSheet(e);
-              }}>
-              {t('Utils.Delete')}
-            </Button>
-            <div className="flex gap-s">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={(e) => handleCloseSheet(e)}>
-                {t('Utils.Cancel')}
-              </Button>
-
-              <Button
-                disabled={!form.formState.isValid}
-                type="submit">
-                {t('Utils.Validate')}
-              </Button>
-            </div>
-          </SheetFooter>
-
-          <Separator />
-
           <FormField
             control={form.control}
             name={'images'}
@@ -353,6 +325,7 @@ export const CustomDashboardUpdateForm = ({
                     variant="outline-destructive"
                     size="icon"
                     className="absolute right-2 top-2"
+                    type="button"
                     onClick={(e) => {
                       e.preventDefault();
                       setOpenDelete(id);
@@ -377,18 +350,45 @@ export const CustomDashboardUpdateForm = ({
                   (c) => c.id !== openDelete
                 );
               setCurrentDashboard(newDashboard);
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               form.setValue(
                 'images',
-                form
-                  .getValues('images')
-                  ?.filter(({ id }) => id !== openDelete) ?? []
+                [].filter.call(
+                  form.getValues('images'),
+                  ({ id }) => id !== openDelete
+                ) as unknown as FileList
               );
               setOpenDelete('');
             }}>
             {t('DialogActions.DeleteSentence')}
           </AlertDialogComponent>
+
+          <Separator />
+
+          <SheetFooter className="sm:justify-between pb-0">
+            <Button
+              variant="outline-destructive"
+              type="button"
+              onClick={(e) => {
+                onDelete?.();
+                handleCloseSheet(e);
+              }}>
+              {t('Utils.Delete')}
+            </Button>
+            <div className="flex gap-s">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={(e) => handleCloseSheet(e)}>
+                {t('Utils.Cancel')}
+              </Button>
+
+              <Button
+                disabled={!form.formState.isValid}
+                type="submit">
+                {t('Utils.Validate')}
+              </Button>
+            </div>
+          </SheetFooter>
         </form>
       </Form>
     </>
