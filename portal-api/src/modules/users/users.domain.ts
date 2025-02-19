@@ -331,7 +331,7 @@ export const updateUser = async (
   const { organizations, roles_id, ...user } = input;
 
   if (!isEmpty(user)) {
-    const updatedUser = await db<User>(context, 'User')
+    const [updatedUser] = await db<User>(context, 'User')
       .where({ id })
       .update(user)
       .returning('*');

@@ -27,10 +27,16 @@ import {
 
 const resolvers: Resolvers = {
   ServiceInstance: {
-    logo_document_id: ({ logo_document_id }) =>
-      toGlobalId('ServiceInstance', logo_document_id),
-    illustration_document_id: ({ illustration_document_id }) =>
-      toGlobalId('ServiceInstance', illustration_document_id),
+    logo_document_id: ({ logo_document_id }) => {
+      if (logo_document_id) {
+        return toGlobalId('ServiceInstance', logo_document_id);
+      }
+    },
+    illustration_document_id: ({ illustration_document_id }) => {
+      if (illustration_document_id) {
+        return toGlobalId('ServiceInstance', illustration_document_id);
+      }
+    },
   },
   Query: {
     serviceInstances: async (_, opt, context) => {

@@ -3,8 +3,10 @@ import {
   DocumentMutator,
   default as DocumentType,
 } from '../../../model/kanel/public/Document';
-import DocumentLabel from '../../../model/kanel/public/DocumentLabel';
-import Label from '../../../model/kanel/public/Label';
+import Label, { LabelId } from '../../../model/kanel/public/Label';
+import ObjectLabel, {
+  ObjectLabelObjectId,
+} from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { extractId } from '../../../utils/utils';
 
@@ -51,8 +53,11 @@ export const createDocument = async ({
     .insert(documentData)
     .returning('*');
   if ((labels?.length ?? 0) > 0) {
-    await dbUnsecure<DocumentLabel>('Object_Label').insert(
-      labels.map((id) => ({ object_id: document.id, label_id: extractId(id) }))
+    await dbUnsecure<ObjectLabel>('Object_Label').insert(
+      labels.map((id) => ({
+        object_id: document.id as unknown as ObjectLabelObjectId,
+        label_id: extractId(id) as LabelId,
+      }))
     );
   }
   return [document];

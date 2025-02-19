@@ -2,15 +2,7 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
-import {
-  CustomDashboardUpdateForm,
-  updateCustomDashboardSchema,
-} from '@/components/service/custom-dashboards/custom-dashboard-update-form';
-import {
-  DocumentDeleteMutation,
-  documentItem,
-  DocumentUpdateMutation,
-} from '@/components/service/document/document.graphql';
+import { documentItem } from '@/components/service/document/document.graphql';
 import DownloadDocument from '@/components/service/vault/download-document';
 import { IconActions } from '@/components/ui/icon-actions';
 import { RESTRICTION } from '@/utils/constant';
