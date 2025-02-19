@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**Overral Description**
+**Overall Description**
 A clear and concise description of what the feature is about. The scope should be clearly defined.
 
 **Use case**

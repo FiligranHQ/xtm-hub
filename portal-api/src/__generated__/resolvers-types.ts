@@ -636,8 +636,10 @@ export type ServiceInstance = Node & {
   creation_status?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  illustration_document_id?: Maybe<Scalars['ID']['output']>;
   join_type?: Maybe<Scalars['String']['output']>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
+  logo_document_id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
   organization_subscribed?: Maybe<Scalars['Boolean']['output']>;
@@ -1311,8 +1313,10 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   creation_status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  illustration_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   join_type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
+  logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organization']>>>, ParentType, ContextType>;
   organization_subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;

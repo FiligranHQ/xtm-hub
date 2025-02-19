@@ -8,8 +8,10 @@ import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
-import DocumentLabel from '../../../model/kanel/public/DocumentLabel';
-import Label from '../../../model/kanel/public/Label';
+import Label, { LabelId } from '../../../model/kanel/public/Label';
+import ObjectLabel, {
+  ObjectLabelObjectId,
+} from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
@@ -89,17 +91,20 @@ export const updateDocument = async (
   // IF label is null => that mean we want to update the field to empty
   if (labels !== undefined) {
     const { id: object_id } = field as { id: string };
-    const existing = await db<DocumentLabel>(context, 'Object_Label')
+    const existing = await db<ObjectLabel>(context, 'Object_Label')
       .where('object_id', '=', object_id)
       .select('*');
     if (existing) {
-      await db<DocumentLabel>(context, 'Object_Label')
+      await db<ObjectLabel>(context, 'Object_Label')
         .where('object_id', '=', object_id)
         .delete('*');
     }
     if ((labels.length ?? 0) > 0) {
-      await db<DocumentLabel>(context, 'Object_Label').insert(
-        labels.map((id) => ({ object_id, label_id: extractId(id) }))
+      await db<ObjectLabel>(context, 'Object_Label').insert(
+        labels.map((id) => ({
+          object_id: object_id as unknown as ObjectLabelObjectId,
+          label_id: extractId(id) as LabelId,
+        }))
       );
     }
   }
@@ -129,7 +134,7 @@ export const deleteDocument = async (
     id: documentId,
     service_instance_id: serviceInstanceId,
   });
-  await db<DocumentLabel>(context, 'Object_Label')
+  await db<ObjectLabel>(context, 'Object_Label')
     .where('object_id', '=', documentId)
     .delete('*');
   if (forceDelete) {

@@ -194,6 +194,8 @@ type ServiceInstance implements Node {
   join_type: String
   tags: [String]
   service_definition: ServiceDefinition
+  logo_document_id: ID
+  illustration_document_id: ID
 }
 
 type ServiceInstanceEdge {

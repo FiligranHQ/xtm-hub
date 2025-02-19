@@ -47,6 +47,8 @@ export const serviceListFragment = graphql`
       name
       identifier
     }
+    logo_document_id
+    illustration_document_id
   }
 `;
 
