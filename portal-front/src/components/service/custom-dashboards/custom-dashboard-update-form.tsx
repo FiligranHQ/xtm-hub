@@ -1,19 +1,35 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { getLabels } from '@/components/admin/label/label.utils';
 import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
-import { Button, Checkbox, FileInput, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, MultiSelectFormField, Separator, SheetFooter, Textarea, toast, } from 'filigran-ui';
+import {
+  Button,
+  Checkbox,
+  FileInput,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  MultiSelectFormField,
+  Separator,
+  SheetFooter,
+  Textarea,
+  toast,
+} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import MarkdownInput from '@/components/ui/MarkdownInput';
-import { getLabels } from '@/components/admin/label/label.utils';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
@@ -36,7 +52,9 @@ interface CustomDashboardFormProps {
   onDelete?: (id?: string) => void;
 }
 
-type CustomDashboardUpdateFormValues = z.infer<typeof updateCustomDashboardSchema>;
+type CustomDashboardUpdateFormValues = z.infer<
+  typeof updateCustomDashboardSchema
+>;
 
 export const CustomDashboardUpdateForm = ({
   customDashboard,
@@ -69,7 +87,9 @@ export const CustomDashboardUpdateForm = ({
     handleSubmit(values, () => form.reset());
   };
 
-  const [currentDashboard, setCurrentDashboard] = useState<Partial<documentItem_fragment$data> | undefined>(customDashboard);
+  const [currentDashboard, setCurrentDashboard] = useState<
+    Partial<documentItem_fragment$data> | undefined
+  >(customDashboard);
 
   const [openDelete, setOpenDelete] = useState<string>('');
   const [addDocument] = useMutation<documentAddMutation>(DocumentAddMutation);
@@ -151,6 +171,7 @@ export const CustomDashboardUpdateForm = ({
                     placeholder={t(
                       'Service.CustomDashboards.Form.ShortDescriptionPlaceholder'
                     )}
+                    maxLength={250}
                     {...field}
                   />
                 </FormControl>
@@ -171,7 +192,9 @@ export const CustomDashboardUpdateForm = ({
                   <MarkdownInput
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder={'Service.CustomDashboards.Form.DescriptionPlaceholder'}
+                    placeholder={
+                      'Service.CustomDashboards.Form.DescriptionPlaceholder'
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -184,14 +207,21 @@ export const CustomDashboardUpdateForm = ({
             name="labels"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Service.CustomDashboards.Form.LabelsLabel')}</FormLabel>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.LabelsLabel')}
+                </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels().map(({ name, id }) => ({ label: name, value: id }))}
+                    options={getLabels().map(({ name, id }) => ({
+                      label: name,
+                      value: id,
+                    }))}
                     defaultValue={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t('Service.CustomDashboards.Form.LabelsPlaceholder')}
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.LabelsPlaceholder'
+                    )}
                     variant="inverted"
                   />
                 </FormControl>
@@ -349,7 +379,12 @@ export const CustomDashboardUpdateForm = ({
               setCurrentDashboard(newDashboard);
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              form.setValue('images', form.getValues('images')?.filter(({ id }) => id !== openDelete) ?? []);
+              form.setValue(
+                'images',
+                form
+                  .getValues('images')
+                  ?.filter(({ id }) => id !== openDelete) ?? []
+              );
               setOpenDelete('');
             }}>
             {t('DialogActions.DeleteSentence')}
