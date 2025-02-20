@@ -49,7 +49,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   const [openSheet, setOpenSheet] = useState(false);
   const { setMenuOpen } = useContext(IconActionContext);
 
-  const [deleteDocument] = useMutation<documentDeleteMutation>(
+  const [deleteDocumentMutation] = useMutation<documentDeleteMutation>(
     DocumentDeleteMutation
   );
   const [updateDocumentMutation] = useMutation<documentUpdateMutation>(
@@ -91,6 +91,40 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
     });
   };
 
+  const deleteDocument = (id?: string) => {
+    if (!id) {
+      setMenuOpen(false);
+    }
+    deleteDocumentMutation({
+      variables: {
+        documentId: id ?? customDashboard.id,
+        serviceInstanceId: serviceInstanceId,
+        connections: id ? [] : [connectionId],
+        forceDelete: true,
+      },
+      updater: (store) => {
+        if (id) {
+          const { updatableData } =
+            store.readUpdatableFragment<customDashboardUpdate_update_childs$key>(
+              graphql`
+                fragment customDashboardUpdate_update_childs on Document
+                @updatable {
+                  children_documents {
+                    __id
+                    id
+                  }
+                }
+              `,
+              data as unknown as customDashboardUpdate_update_childs$key
+            );
+          updatableData.children_documents =
+            updatableData.children_documents!.filter((c) => c.id !== id) as [];
+        }
+      },
+    });
+    router.push(`/service/custom_dashboards/${serviceInstanceId}`);
+  };
+
   return (
     <div
       onClick={(event) => {
@@ -123,39 +157,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           customDashboard={customDashboard}
           serviceInstanceId={serviceInstanceId}
           handleSubmit={updateDocument}
-          onDelete={(id) => {
-            setMenuOpen(false);
-            deleteDocument({
-              variables: {
-                documentId: id ?? customDashboard.id,
-                serviceInstanceId: serviceInstanceId,
-                connections: id ? [] : [connectionId],
-                forceDelete: true,
-              },
-              updater: (store) => {
-                if (id) {
-                  const { updatableData } =
-                    store.readUpdatableFragment<customDashboardUpdate_update_childs$key>(
-                      graphql`
-                        fragment customDashboardUpdate_update_childs on Document
-                        @updatable {
-                          children_documents {
-                            __id
-                            id
-                          }
-                        }
-                      `,
-                      data as unknown as customDashboardUpdate_update_childs$key
-                    );
-                  updatableData.children_documents =
-                    updatableData.children_documents!.filter(
-                      (c) => c.id !== id
-                    ) as [];
-                }
-              },
-            });
-            router.push(`/service/custom_dashboards/${serviceInstanceId}`);
-          }}
+          onDelete={deleteDocument}
         />
       </SheetWithPreventingDialog>
     </div>
