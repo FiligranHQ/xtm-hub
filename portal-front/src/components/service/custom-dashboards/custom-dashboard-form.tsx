@@ -121,6 +121,7 @@ export const CustomDashboardForm = ({
                     placeholder={t(
                       'Service.CustomDashboards.Form.ShortDescriptionPlaceholder'
                     )}
+                    maxLength={250}
                     {...field}
                   />
                 </FormControl>
