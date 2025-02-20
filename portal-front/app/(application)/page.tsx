@@ -28,17 +28,6 @@ const Page: React.FunctionComponent = () => {
     useQueryLoader<userServiceOwnedQuery>(UserServiceOwnedQuery);
   useMountingLoader(loadQueryUserServiceOwned, { count, orderBy, orderMode });
 
-  const handleUpdate = useCallback(() => {
-    loadQueryUserServiceOwned(
-      {
-        count,
-        orderBy: 'service_name',
-        orderMode: 'asc',
-      },
-      { fetchPolicy: 'network-only' }
-    );
-  }, []);
-
   // Public services
   const [countServiceList] = useLocalStorage('countServiceList', 50);
   const [orderModeServiceList] = useLocalStorage<OrderingMode>(
@@ -58,6 +47,25 @@ const Page: React.FunctionComponent = () => {
     orderBy: orderByServiceList,
     orderMode: orderModeServiceList,
   });
+
+  const handleUpdate = useCallback(() => {
+    loadQueryUserServiceOwned(
+      {
+        count,
+        orderBy: 'service_name',
+        orderMode: 'asc',
+      },
+      { fetchPolicy: 'network-only' }
+    );
+    loadQueryPublicServiceList(
+      {
+        count,
+        orderBy: 'name',
+        orderMode: 'asc',
+      },
+      { fetchPolicy: 'network-only' }
+    );
+  }, []);
 
   if (!queryRefUserServiceOwned || !queryRefPublicServiceList)
     return <Loader />;
