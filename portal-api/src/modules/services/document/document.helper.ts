@@ -8,7 +8,10 @@ import ObjectLabel, {
   ObjectLabelObjectId,
 } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
+import { PortalContext } from '../../../model/portal-context';
 import { extractId } from '../../../utils/utils';
+import { sendFileToS3 } from './document.domain';
 
 export type Document = DocumentType & { labels: Label[] };
 
@@ -61,6 +64,35 @@ export const createDocument = async ({
     );
   }
   return [document];
+};
+
+export const uploadNewFile = async (
+  context: PortalContext,
+  document,
+  serviceInstanceId: ServiceInstanceId
+) => {
+  if (!document || !document.file) {
+    return;
+  }
+  const minioName = await sendFileToS3(
+    document.file,
+    document.file.name,
+    context.user.id,
+    serviceInstanceId
+  );
+
+  const data: DocumentMutator & { labels?: string[] } = {
+    uploader_id: context.user.id as UserId,
+    name: 'picture for service' + serviceInstanceId,
+    minio_name: minioName,
+    file_name: document.file.name,
+    service_instance_id: serviceInstanceId as ServiceInstanceId,
+    created_at: new Date(),
+    mime_type: document.file.mimetype,
+  };
+
+  const [addedDocument] = await createDocument(data);
+  return addedDocument;
 };
 
 export const deleteDocuments = async () => {

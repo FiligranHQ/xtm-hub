@@ -12,6 +12,23 @@ export const ServiceListCreateMutation = graphql`
   }
 `;
 
+export const ServiceAddPicture = graphql`
+  mutation serviceAddPictureMutation(
+    $serviceId: ID
+    $document: Upload
+    $isLogo: Boolean
+  ) {
+    addServicePicture(
+      serviceId: $serviceId
+      document: $document
+      isLogo: $isLogo
+    ) {
+      id
+      name
+    }
+  }
+`;
+
 export const ServiceById = graphql`
   query serviceByIdQuery($service_instance_id: ID) {
     serviceInstanceById(service_instance_id: $service_instance_id) {

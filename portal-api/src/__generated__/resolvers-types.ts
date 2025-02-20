@@ -199,6 +199,7 @@ export type Mutation = {
   addLabel: Label;
   addOrganization?: Maybe<Organization>;
   addServiceInstance?: Maybe<Subscription>;
+  addServicePicture?: Maybe<ServiceInstance>;
   addSubscription?: Maybe<ServiceInstance>;
   addSubscriptionInService?: Maybe<ServiceInstance>;
   addUser?: Maybe<User>;
@@ -250,6 +251,13 @@ export type MutationAddOrganizationArgs = {
 
 export type MutationAddServiceInstanceArgs = {
   input?: InputMaybe<AddServiceInput>;
+};
+
+
+export type MutationAddServicePictureArgs = {
+  document?: InputMaybe<Scalars['Upload']['input']>;
+  isLogo?: InputMaybe<Scalars['Boolean']['input']>;
+  serviceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1186,6 +1194,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationAddLabelArgs, 'input'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServiceInstance?: Resolver<Maybe<ResolversTypes['Subscription']>, ParentType, ContextType, Partial<MutationAddServiceInstanceArgs>>;
+  addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddServicePictureArgs>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
   addSubscriptionInService?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionInServiceArgs>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
