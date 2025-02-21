@@ -99,7 +99,7 @@ const resolvers: Resolvers = {
       try {
         return checkDocumentExists(
           input.documentName ?? '',
-          fromGlobalId(input.serviceInstanceId).id as ServiceInstanceId
+          fromGlobalId(input.service_instance_id).id as ServiceInstanceId
         );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);

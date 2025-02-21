@@ -22,8 +22,8 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addDocument(document: Upload, name: String, short_description: String, description: String, serviceInstanceId: String, parentDocumentId: ID, labels: [String!], active: Boolean): Document!
-  editDocument(documentId: ID, input: EditDocumentInput!, serviceInstanceId: String): Document!
+  addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean): Document!
+  editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, serviceInstanceId: String, forceDelete: Boolean): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): Subscription
@@ -80,7 +80,7 @@ type Query {
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, filter: OrganizationFilter): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  documentExists(documentName: String, serviceInstanceId: String): Boolean
+  documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID): Document
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
@@ -190,7 +190,7 @@ type ServiceInstance implements Node {
   links: [ServiceLink]
   organization: [Organization]
   subscriptions: [Subscription]
-  capabilities: [String!]
+  capabilities: [String]
   public: Boolean
   join_type: String
   tags: [String]
@@ -493,6 +493,8 @@ enum Restriction {
 enum ServiceRestriction {
   ACCESS_USER
   MANAGE_ACCESS
+  Upload
+  Delete
 }
 
 interface Node {

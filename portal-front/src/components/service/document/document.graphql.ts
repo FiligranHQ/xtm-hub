@@ -18,7 +18,7 @@ export const DocumentAddMutation = graphql`
       labels: $labels
       short_description: $shortDescription
       description: $description
-      serviceInstanceId: $serviceInstanceId
+      service_instance_id: $serviceInstanceId
       active: $active
       parentDocumentId: $parentDocumentId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
@@ -41,7 +41,7 @@ export const DocumentUpdateMutation = graphql`
     editDocument(
       documentId: $documentId
       input: $input
-      serviceInstanceId: $serviceInstanceId
+      service_instance_id: $serviceInstanceId
     ) {
       id
       name
@@ -73,7 +73,7 @@ export const DocumentExistsQuery = graphql`
   query documentExistsQuery($documentName: String, $serviceInstanceId: String) {
     documentExists(
       documentName: $documentName
-      serviceInstanceId: $serviceInstanceId
+      service_instance_id: $serviceInstanceId
     )
   }
 `;

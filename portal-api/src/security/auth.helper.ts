@@ -41,15 +41,35 @@ export const loadCapabilitiesByServiceId = async (
       'userService.id'
     )
     .leftJoin(
-      'Generic_Service_Capability as genericServiceCapability',
-      'genericServiceCapability.id',
+      'Subscription_Capability',
+      'userServiceCapa.subscription_capability_id',
+      '=',
+      'Subscription_Capability.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'Subscription_Capability.service_capability_id',
+      '=',
+      'Service_Capability.id'
+    )
+    .leftJoin(
+      'Generic_Service_Capability',
+      'Generic_Service_Capability.id',
       '=',
       'userServiceCapa.generic_service_capability_id'
     )
     .select([
-      dbRaw(`
-      COALESCE(json_agg("genericServiceCapability"."name") FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL), '[]'::json) AS capabilities
-    `),
+      dbRaw(
+        `json_agg(
+    CASE
+      WHEN "Generic_Service_Capability".id IS NOT NULL THEN
+        "Generic_Service_Capability".name
+      WHEN "Service_Capability".id IS NOT NULL THEN
+        "Service_Capability".name
+      ELSE NULL
+    END
+  ) FILTER (WHERE "Generic_Service_Capability".id IS NOT NULL OR "Service_Capability".id IS NOT NULL) AS capabilities`
+      ),
     ])
     .where('ServiceInstance.id', '=', dbRaw('?', [serviceId]))
     .groupBy(['ServiceInstance.id', 'subscription.id'])

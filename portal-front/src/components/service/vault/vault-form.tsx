@@ -20,9 +20,11 @@ import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
 interface VaultFormProps {
   connectionId: string;
+  usersServiceCapabilities: string[];
 }
 export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
   connectionId,
+  usersServiceCapabilities,
 }) => {
   const { toast } = useToast();
   const t = useTranslations();
@@ -63,6 +65,19 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
       <GuardCapacityComponent
         capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
         displayError={false}>
+        {
+          <SheetWithPreventingDialog
+            open={openSheet}
+            setOpen={setOpenSheet}
+            trigger={
+              <TriggerButton label={t('Service.Vault.FileForm.AddFile')} />
+            }
+            title={t('Service.Vault.FileForm.AddFile')}>
+            <VaultNewFileForm handleSubmit={sendDocument} />
+          </SheetWithPreventingDialog>
+        }
+      </GuardCapacityComponent>
+      {usersServiceCapabilities.some((capa) => capa === 'Upload') && (
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
@@ -72,7 +87,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
           title={t('Service.Vault.FileForm.AddFile')}>
           <VaultNewFileForm handleSubmit={sendDocument} />
         </SheetWithPreventingDialog>
-      </GuardCapacityComponent>
+      )}
     </>
   );
 };

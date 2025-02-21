@@ -154,6 +154,9 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               displayError={false}>
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
+            {queryDataService.serviceInstanceById?.capabilities.some(
+              (capa) => capa === 'Upload'
+            ) && <EditDocument documentData={row.original} />}
             <DownloadDocument documentData={row.original} />
             <VisualizeDocument documentData={row.original} />
             <GuardCapacityComponent
@@ -164,6 +167,14 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                 connectionId={data.documents.__id}
               />
             </GuardCapacityComponent>
+            {queryDataService.serviceInstanceById?.capabilities.some(
+              (capa) => capa === 'Delete'
+            ) && (
+              <DeleteDocument
+                documentData={row.original}
+                connectionId={data.documents.__id}
+              />
+            )}
           </IconActions>
         </div>
       ),
@@ -292,7 +303,12 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                   </Link>
                 </Button>
               )}
-              <VaultForm connectionId={data?.documents?.__id} />
+              <VaultForm
+                usersServiceCapabilities={
+                  queryDataService.serviceInstanceById?.capabilities
+                }
+                connectionId={data?.documents?.__id}
+              />
             </div>
           </div>
         }

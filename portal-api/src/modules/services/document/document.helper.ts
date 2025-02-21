@@ -86,7 +86,7 @@ export const uploadNewFile = async (
     name: 'picture for service' + serviceInstanceId,
     minio_name: minioName,
     file_name: document.file.name,
-    service_instance_id: serviceInstanceId as ServiceInstanceId,
+    service_instance_id: null,
     created_at: new Date(),
     mime_type: document.file.mimetype,
   };
