@@ -12,6 +12,7 @@ import {
   documentAddMutation$data,
   documentAddMutation$variables,
 } from '@generated/documentAddMutation.graphql';
+import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -25,11 +26,14 @@ import {
 interface CustomDashboardSheetProps {
   connectionId: string;
   serviceInstanceId: string;
+
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 
 export const CustomDashboardSheet = ({
   connectionId,
   serviceInstanceId,
+  serviceInstance,
 }: CustomDashboardSheetProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
@@ -137,6 +141,19 @@ export const CustomDashboardSheet = ({
           <CustomDashboardForm handleSubmit={handleSubmit} />
         </SheetWithPreventingDialog>
       </GuardCapacityComponent>
+      {serviceInstance?.capabilities.some(
+        (capa) => capa?.toUpperCase() === 'UPLOAD'
+      ) && (
+        <SheetWithPreventingDialog
+          open={openSheet}
+          setOpen={setOpenSheet}
+          trigger={
+            <TriggerButton label={t('Service.CustomDashboards.AddDashboard')} />
+          }
+          title={t('Service.CustomDashboards.AddDashboard')}>
+          <CustomDashboardForm handleSubmit={handleSubmit} />
+        </SheetWithPreventingDialog>
+      )}
     </>
   );
 };

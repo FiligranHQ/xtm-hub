@@ -1,9 +1,13 @@
+import { getLabels } from '@/components/admin/label/label.utils';
+import { debounceHandleInput } from '@/utils/debounce';
 import {
   documentsList$data,
   documentsList$key,
 } from '@generated/documentsList.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { Input, MultiSelectFormField } from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import {
   PreloadedQuery,
@@ -16,17 +20,13 @@ import {
 } from '../../document/document.graphql';
 import CustomDashboardCard from '../custom-dashboard-card';
 import { CustomDashboardSheet } from '../custom-dashboard-sheet';
-import { Input, MultiSelectFormField } from 'filigran-ui';
-import { debounceHandleInput } from '@/utils/debounce';
-import { useTranslations } from 'next-intl';
-import { getLabels } from '@/components/admin/label/label.utils';
 
 interface CustomDashbordDocumentListProps {
-  queryRef: PreloadedQuery<documentsQuery>
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>
-  labels?: string[]
-  onSearchChange: (v: string) => void
-  onLabelFilterChange: (v: string[]) => void
+  queryRef: PreloadedQuery<documentsQuery>;
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  labels?: string[];
+  onSearchChange: (v: string) => void;
+  onLabelFilterChange: (v: string[]) => void;
 }
 
 const CustomDashbordDocumentList = ({
@@ -48,10 +48,12 @@ const CustomDashbordDocumentList = ({
   );
 
   const [active, _nonActive] = useMemo(() => {
-    return data?.documents.edges.reduce<[
-      documentsList$data['documents']['edges'][0]['node'][],
-      documentsList$data['documents']['edges'][0]['node'][],
-    ]>(
+    return data?.documents.edges.reduce<
+      [
+        documentsList$data['documents']['edges'][0]['node'][],
+        documentsList$data['documents']['edges'][0]['node'][],
+      ]
+    >(
       (acc, { node }) => {
         if (node.active) {
           acc[0].push(node);
@@ -64,13 +66,17 @@ const CustomDashbordDocumentList = ({
     );
   }, [data]);
 
-  const labelOptions = getLabels().map(({ name, id }) => ({ label: name, value: id }));
+  const labelOptions = getLabels().map(({ name, id }) => ({
+    label: name,
+    value: id,
+  }));
 
   return (
     <div className="flex flex-col gap-xl">
       <div className="flex justify-between">
         <h1>{serviceInstance.name}</h1>
         <CustomDashboardSheet
+          serviceInstance={serviceInstance}
           serviceInstanceId={serviceInstance.id}
           connectionId={data!.documents!.__id}
         />
@@ -82,9 +88,7 @@ const CustomDashbordDocumentList = ({
           placeholder={t('GenericActions.Search')}
           onChange={debounceHandleInput(onSearchChange)}
         />
-        <div
-          className="w-[20rem]"
-        >
+        <div className="w-[20rem]">
           <MultiSelectFormField
             options={labelOptions}
             defaultValue={labels}

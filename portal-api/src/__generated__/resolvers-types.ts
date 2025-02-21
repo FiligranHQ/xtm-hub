@@ -686,9 +686,9 @@ export type ServiceLink = Node & {
 
 export enum ServiceRestriction {
   AccessUser = 'ACCESS_USER',
-  Delete = 'Delete',
+  Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
-  Upload = 'Upload'
+  Upload = 'UPLOAD'
 }
 
 export type Settings = {

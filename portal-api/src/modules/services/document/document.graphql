@@ -41,12 +41,12 @@ type Mutation {
     parentDocumentId: ID
     labels: [String!]
     active: Boolean
-  ): Document! @auth @service_capa(requires: [Upload])
+  ): Document! @auth @service_capa(requires: [UPLOAD])
   editDocument(
     documentId: ID
     input: EditDocumentInput!
     service_instance_id: String
-  ): Document! @auth @service_capa(requires: [Upload])
+  ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
     documentId: ID
     serviceInstanceId: String
@@ -67,7 +67,8 @@ type DocumentConnection {
 
 type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
-    @auth @service_capa(requires: [Upload])
+    @auth
+    @service_capa(requires: [UPLOAD])
   documents(
     first: Int!
     after: ID

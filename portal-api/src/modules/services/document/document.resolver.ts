@@ -55,7 +55,7 @@ const resolvers: Resolvers = {
           labels: payload.labels,
         };
 
-        const [addedDocument] = await createDocument(data);
+        const [addedDocument] = await createDocument(context, data);
         return addedDocument;
       } catch (error) {
         console.error('Error while adding document:', error);

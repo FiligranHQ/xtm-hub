@@ -20,8 +20,8 @@ directive @service_capa(
 enum ServiceRestriction {
   ACCESS_USER
   MANAGE_ACCESS
-  Upload
-  Delete
+  UPLOAD
+  DELETE
 }
 
 interface Node {

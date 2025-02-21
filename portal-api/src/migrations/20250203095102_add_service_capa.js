@@ -38,13 +38,13 @@ export async function up(knex) {
     if (serviceDefinition.identifier === 'vault') {
       await knex('Service_Capability').insert({
         id: knex.fn.uuid(),
-        name: 'Upload',
+        name: 'UPLOAD',
         description: 'The user can upload documents in this service.',
         service_definition_id: serviceDefinition.id,
       });
       await knex('Service_Capability').insert({
         id: knex.fn.uuid(),
-        name: 'Delete',
+        name: 'DELETE',
         description: 'The user can delete documents in this service.',
         service_definition_id: serviceDefinition.id,
       });

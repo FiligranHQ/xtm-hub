@@ -77,7 +77,9 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
           </SheetWithPreventingDialog>
         }
       </GuardCapacityComponent>
-      {usersServiceCapabilities.some((capa) => capa === 'Upload') && (
+      {usersServiceCapabilities.some(
+        (capa) => capa.toUpperCase() === 'UPLOAD'
+      ) && (
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
