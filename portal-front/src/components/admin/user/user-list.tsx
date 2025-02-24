@@ -10,7 +10,10 @@ import useAdminPath from '@/hooks/useAdminPath';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
-import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import {
+  userList_fragment$data,
+  userList_fragment$key,
+} from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import {
   OrderingMode,
@@ -22,8 +25,13 @@ import {
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { Badge, DataTable, DataTableHeadBarOptions, Input } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useEffect, useState } from 'react';
-import { graphql, useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import { FunctionComponent, useContext, useState } from 'react';
+import {
+  graphql,
+  readInlineData,
+  useLazyLoadQuery,
+  useRefetchableFragment,
+} from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
 // Configuration or Preloader Query
@@ -53,7 +61,7 @@ export const userListFragment = graphql`
       totalCount
       edges {
         node {
-          ...userList_fragment @relay(mask: false)
+          ...userList_fragment
         }
       }
     }
@@ -61,17 +69,17 @@ export const userListFragment = graphql`
 `;
 
 export const UserFragment = graphql`
-  fragment userList_fragment on User {
+  fragment userList_fragment on User @inline {
     id
     email
     last_name
     first_name
     disabled
-    roles_portal @required(action: THROW) {
+    roles_portal {
       id
       name
     }
-    organizations @required(action: THROW) {
+    organizations {
       id
       name
       personal_space
@@ -208,16 +216,14 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
       : []),
   ];
 
-  useEffect(() => {
-    if (columnOrder.length === 0) {
-      const defaultColumnOrder = columns.map((c) => c.id!);
-      setColumnOrder(defaultColumnOrder);
-    }
-  }, []);
+  if (columnOrder.length === 0) {
+    const defaultColumnOrder = columns.map((c) => c.id!);
+    setColumnOrder(defaultColumnOrder);
+  }
 
-  const userData = data.users.edges.map(({ node }) => ({
-    ...node,
-  })) as userList_fragment$data[];
+  const userData = data.users.edges.map(({ node }) =>
+    readInlineData<userList_fragment$key>(UserFragment, node)
+  );
 
   const handleRefetchData = (args?: Partial<userListQuery$variables>) => {
     const sorting = mapToSortingTableValue(orderBy, orderMode);
