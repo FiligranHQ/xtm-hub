@@ -10,6 +10,7 @@ export interface Portal {
   me?: meContext_fragment$data | null;
   isPersonalSpace?: boolean;
   hasCapability?: (capability: Restriction) => boolean;
+  hasOrganizationCapability?: (capability: string) => boolean;
 }
 
 export interface PortalProps extends Portal {
@@ -33,6 +34,9 @@ export const generatePortalContext = (
         userCapabilities.includes(RESTRICTION.CAPABILITY_BYPASS) ||
         userCapabilities.includes(capability)
       );
+    },
+    hasOrganizationCapability: (capability: string) => {
+      return (me?.selected_org_capabilities ?? []).includes(capability);
     },
   };
 };

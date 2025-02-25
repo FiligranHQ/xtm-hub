@@ -43,6 +43,8 @@ type Mutation {
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
+  adminAddUser(input: AdminAddUserInput!): User
+  adminEditUser(id: ID!, input: AdminEditUserInput!): User!
   editUser(id: ID!, input: EditUserInput!): User!
   editMeUser(input: EditMeUserInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
@@ -60,6 +62,7 @@ type Organization implements Node {
   name: String!
   domains: [String!]
   personal_space: Boolean!
+  capabilityUser: [Capability]
 }
 
 type OrganizationEdge {
@@ -428,6 +431,12 @@ type Capability implements Node {
   name: Restriction!
 }
 
+type OrganizationCapabilities implements Node {
+  id: ID!
+  organization: Organization!
+  capabilities: [String!]
+}
+
 type User implements Node {
   id: ID!
   email: String!
@@ -437,8 +446,10 @@ type User implements Node {
   disabled: Boolean
   selected_organization_id: String
   organizations: [Organization!]
+  organization_capabilities: [OrganizationCapabilities!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
+  selected_org_capabilities: [String!]
 }
 
 type UserEdge {
@@ -452,13 +463,20 @@ type UserConnection {
   pageInfo: PageInfo!
 }
 
+input AdminEditUserInput {
+  disabled: Boolean
+  first_name: String
+  last_name: String
+  email: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
 input EditUserInput {
   disabled: Boolean
   first_name: String
   last_name: String
   email: String
-  organizations: [String]
-  roles_id: [String]
+  capabilities: [String!]
 }
 
 input EditMeUserInput {
@@ -466,13 +484,25 @@ input EditMeUserInput {
   last_name: String!
 }
 
+input OrganizationCapabilitiesInput {
+  organization_id: ID!
+  capabilities: [String!]
+}
+
 input AddUserInput {
   email: String!
   first_name: String
   last_name: String
   password: String
-  organizations: [String]!
-  roles_id: [String]!
+  capabilities: [String!]
+}
+
+input AdminAddUserInput {
+  email: String!
+  first_name: String
+  last_name: String
+  password: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
 }
 
 type UserSubscription {
@@ -489,6 +519,8 @@ type MeUserSubscription {
 
 enum Restriction {
   BYPASS
+  MANAGE_ACCESS
+  MANAGE_SUBSCRIPTION
   BCK_MANAGE_SERVICES
   BCK_MANAGE_COMMUNITIES
   FRT_SERVICE_SUBSCRIBER

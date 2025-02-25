@@ -1,12 +1,8 @@
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
-import { getOrganizations } from '@/components/organization/organization.service';
-import { getRolesPortal } from '@/components/role-portal/role-portal.service';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { isDevelopment, isEmpty } from '@/lib/utils';
-import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
-import { userList_fragment$data } from '@generated/userList_fragment.graphql';
-import { userSlug_fragment$data } from '@generated/userSlug_fragment.graphql';
+import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -25,27 +21,6 @@ import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { z, ZodSchema } from 'zod';
 
-export const initializeOrganizations = (
-  user:
-    | meContext_fragment$data
-    | userSlug_fragment$data
-    | userList_fragment$data
-    | null
-    | undefined,
-  me: meContext_fragment$data | null | undefined,
-  isAdmin: boolean | undefined
-) => {
-  if (user) {
-    // If updating a user, filter and map organizations
-    return (user?.organizations ?? [])
-      .filter((organizationData) => !organizationData.personal_space)
-      .map((organizationData) => organizationData.id);
-  } else {
-    // If creating a user, include the selected organization unless the user is an admin
-    return isAdmin ? [] : [me?.selected_organization_id];
-  }
-};
-
 interface UserFormProps {
   handleSubmit: (values: z.infer<typeof userFormSchema>) => void;
   validationSchema: ZodSchema;
@@ -57,22 +32,14 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const t = useTranslations();
-  // TODO Rework not a good implementation yet, should be easier when we will have a clear separation between user, role and org
-  const rolePortal = getRolesPortal();
   const isAdminPath = useAdminPath();
 
-  const rolePortalData = rolePortal?.rolesPortal
-    ?.map(({ name, id }) => ({
-      label: name,
-      value: id,
-    }))
-    .filter(({ label }) => !(!isAdminPath && ['ADMIN'].includes(label)));
-
-  const [organizationData] = getOrganizations();
-
-  const orgData = organizationData.organizations.edges.map(({ node }) => ({
-    label: node.name,
-    value: node.id,
+  const organizationCapabilitiesData = [
+    ORGANIZATION_CAPACITY.MANAGE_ACCESS,
+    ORGANIZATION_CAPACITY.MANAGE_SUBSCRIPTION,
+  ].map((capabilities) => ({
+    label: capabilities,
+    value: capabilities,
   }));
 
   const form = useForm<z.infer<typeof validationSchema>>({
@@ -166,48 +133,26 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
         )}
         <FormField
           control={form.control}
-          name="roles_id"
+          name="capabilities"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.Roles')}</FormLabel>
+              <FormLabel>{t('UserForm.OrganizationCapabilities')}</FormLabel>
               <FormControl>
                 <MultiSelectFormField
                   noResultString={t('Utils.NotFound')}
-                  options={rolePortalData}
+                  options={organizationCapabilitiesData}
                   defaultValue={field.value}
                   onValueChange={field.onChange}
-                  placeholder={t('UserForm.RolesPlaceholder')}
+                  placeholder={t(
+                    'UserForm.OrganizationsCapabilitiesPlaceholder'
+                  )}
                   variant="inverted"
                 />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {isAdminPath && (
-          <FormField
-            control={form.control}
-            name="organizations"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('UserForm.Organizations')}</FormLabel>
-                <FormControl>
-                  <MultiSelectFormField
-                    noResultString={t('Utils.NotFound')}
-                    options={orgData}
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    placeholder={t('UserForm.OrganizationsPlaceholder')}
-                    variant="inverted"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
 
         <SheetFooter className="pt-2">
           <Button

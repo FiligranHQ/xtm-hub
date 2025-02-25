@@ -1,12 +1,12 @@
+import useAdminByPass from '@/hooks/useAdminByPass';
 import useAdminPath from '@/hooks/useAdminPath';
-import useGranted from '@/hooks/useGranted';
 import { RESTRICTION } from '@/utils/constant';
 import { renderHook } from '@testing-library/react';
 import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 
 // Mocking dependencies
-vi.mock('@/hooks/useGranted');
+vi.mock('@/hooks/useAdminByPass');
 vi.mock('next/navigation');
 describe('useAdminPath', () => {
   it.each`
@@ -18,7 +18,7 @@ describe('useAdminPath', () => {
   `(
     'Should return $expected if user has $userCapa and path includes $path',
     async ({ expected, userCapa, path }) => {
-      useGranted.mockReturnValue(userCapa === RESTRICTION.CAPABILITY_BYPASS);
+      useAdminByPass.mockReturnValue(userCapa === 'BYPASS');
       usePathname.mockReturnValue(`/${path}/dashboard`);
 
       const { result } = renderHook(() => useAdminPath());

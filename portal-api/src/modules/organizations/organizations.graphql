@@ -6,6 +6,7 @@ type Organization implements Node {
   name: String!
   domains: [String!]
   personal_space: Boolean!
+  capabilityUser: [Capability]
 }
 
 type OrganizationEdge {

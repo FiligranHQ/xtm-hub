@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
 import {
   AddUserInput,
@@ -13,33 +12,21 @@ import {
   User as UserGenerated,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import User, {
   UserId,
   UserInitializer,
   UserMutator,
 } from '../../model/kanel/public/User';
+import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
-import {
-  UserInfo,
-  UserLoadUserBy,
-  UserWithOrganizations,
-  UserWithOrganizationsAndRole,
-} from '../../model/user';
-import {
-  ADMIN_UUID,
-  CAPABILITY_BYPASS,
-  PLATFORM_ORGANIZATION_UUID,
-} from '../../portal.const';
+import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
+import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { hashPassword } from '../../utils/hash-password.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
-import { extractId, isEmpty } from '../../utils/utils';
-import { updateUserOrg } from '../common/user-organization.helper';
-import { updateUserRolePortal } from '../common/user-role-portal.helper';
-import { addNewUserWithRoles } from './users.helper';
+import { isEmpty } from '../../utils/utils';
 
 export const loadUsersByOrganization = async (
   organizationId: string,
@@ -153,9 +140,110 @@ export const loadUserBy = async (
     throw ForbiddenAccess('You can not login');
   }
 
+  const userOrganizationCapabilityQuery = dbUnsecure<UserService>(
+    'User_Organization'
+  )
+    .leftJoin(
+      'UserOrganization_Capability',
+      'User_Organization.id',
+      'UserOrganization_Capability.user_organization_id'
+    )
+    .select(
+      dbRaw(
+        `COALESCE(
+                    json_agg(DISTINCT "UserOrganization_Capability".name)
+                    FILTER (WHERE "UserOrganization_Capability".name IS NOT NULL),
+                    '[]'::json
+    ) AS capabilities`
+      )
+    )
+    .whereRaw(
+      `"UserOrganization_Capability"."user_organization_id" = "UserOrg"."id"`
+    );
+
   const userQuery = dbUnsecure<UserLoadUserBy>('User')
     .where(field)
-    .select('User.*')
+    .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
+    .leftJoin('User_Organization as selected_user_orga', function () {
+      this.on(
+        'User.selected_organization_id',
+        '=',
+        'selected_user_orga.organization_id'
+      ).andOn('User.id', '=', 'selected_user_orga.user_id');
+    })
+    .leftJoin(
+      'UserOrganization_Capability',
+      'selected_user_orga.id',
+      'UserOrganization_Capability.user_organization_id'
+    )
+    .leftJoin('Organization as org', 'UserOrg.organization_id', '=', 'org.id')
+    .leftJoin(
+      'User_RolePortal as user_RolePortal',
+      'User.id',
+      '=',
+      'user_RolePortal.user_id'
+    )
+    .leftJoin(
+      'RolePortal_CapabilityPortal as rolePortal_CapabilityPortal',
+      'user_RolePortal.role_portal_id',
+      '=',
+      'rolePortal_CapabilityPortal.role_portal_id'
+    )
+    .leftJoin(
+      'CapabilityPortal as capability',
+      'capability.id',
+      '=',
+      'rolePortal_CapabilityPortal.capability_portal_id'
+    )
+    .leftJoin(
+      'RolePortal as rolePortal',
+      'user_RolePortal.role_portal_id',
+      '=',
+      'rolePortal.id'
+    )
+    // Inspiration from https://github.com/knex/knex/issues/882
+    .select([
+      'User.*',
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'org',
+          typename: 'Organization',
+          as: 'Organizations',
+        })
+      ),
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'rolePortal',
+          typename: 'RolePortal',
+          as: 'roles_portal',
+        })
+      ),
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'capability',
+          typename: 'CapabilityPortal',
+          as: 'capabilities',
+        })
+      ),
+      dbRaw(
+        `COALESCE(
+    json_agg(DISTINCT "UserOrganization_Capability".name) 
+    FILTER (WHERE "UserOrganization_Capability".name IS NOT NULL), 
+    '[]'
+  )::json AS selected_org_capabilities`
+      ),
+      dbRaw(
+        `COALESCE( 
+          json_agg( DISTINCT jsonb_build_object( 
+              '__typename', 'User_Organization',
+              'id', "UserOrg".id,
+              'organization', to_jsonb("org") || jsonb_build_object('__typename', 'Organization'),
+              'capabilities', (${userOrganizationCapabilityQuery})
+          ) ) 
+            FILTER (WHERE "org".id IS NOT NULL), '[]' 
+        )::json AS organization_capabilities`
+      ),
+    ])
     .groupBy(['User.id'])
     .first();
 
@@ -166,14 +254,52 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
   const { filters } = opts;
   const loadUserQuery = db<UserGenerated>(context, 'User', opts);
 
+  const userOrganizationCapabilityQuery = db<UserService>(
+    context,
+    'User_Organization'
+  )
+    .leftJoin(
+      'UserOrganization_Capability',
+      'User_Organization.id',
+      'UserOrganization_Capability.user_organization_id'
+    )
+    .select(
+      dbRaw(
+        `COALESCE(
+                    json_agg(DISTINCT "UserOrganization_Capability".name)
+                    FILTER (WHERE "UserOrganization_Capability".name IS NOT NULL),
+                    '[]'::json
+    ) AS capabilities`
+      )
+    )
+    .whereRaw(
+      `"UserOrganization_Capability"."user_organization_id" = "UserOrg"."id"`
+    );
+
   loadUserQuery
-    .select('User.*')
-    .groupBy(['User.id'])
+    .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
     .leftJoin(
       'User_Organization as UserOrgFilter',
       'User.id',
       'UserOrgFilter.user_id'
-    );
+    )
+    .leftJoin('Organization as org', 'UserOrg.organization_id', '=', 'org.id')
+    // Inspiration from https://github.com/knex/knex/issues/882
+    .select([
+      'User.*',
+      dbRaw(
+        `COALESCE( 
+          json_agg( DISTINCT jsonb_build_object( 
+              '__typename', 'User_Organization',
+              'id', "UserOrg".id,
+              'organization', to_jsonb("org") || jsonb_build_object('__typename', 'Organization'),
+              'capabilities', (${userOrganizationCapabilityQuery})
+          ) ) 
+            FILTER (WHERE "org".id IS NOT NULL), '[]' 
+        )::json AS organization_capabilities`
+      ),
+    ])
+    .groupBy(['User.id']);
 
   return paginate<UserGenerated, UserConnection>(
     context,
@@ -193,29 +319,6 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
     undefined,
     loadUserQuery
   );
-};
-
-export const createUser = async (
-  userInfo: UserInfo,
-  organization_id: OrganizationId = PLATFORM_ORGANIZATION_UUID as OrganizationId
-) => {
-  const { email, first_name, last_name, roles } = userInfo;
-  const { salt, hash } = hashPassword('');
-  const uuid = uuidv4();
-  const data: User = {
-    id: uuid as UserId,
-    salt,
-    password: hash,
-    selected_organization_id: organization_id,
-    email,
-    first_name,
-    last_name,
-    picture: null,
-    disabled: false,
-  };
-  // Use insert with returning to get the newly created user
-  await addNewUserWithRoles(data, roles);
-  return await loadUserBy({ email });
 };
 
 export const loadUnsecureUserBy = async (field: UserMutator) => {
@@ -244,44 +347,38 @@ export const updateMeUser = async (userId: UserId, input: EditMeUserInput) => {
 export const updateUser = async (
   context: PortalContext,
   id: UserId,
-  input: EditUserInput
+  input: Omit<EditUserInput, 'organization_capabilities'>
 ) => {
-  const { organizations, roles_id, ...user } = input;
-
-  if (!isEmpty(user)) {
-    const [updatedUser] = await db<User>(context, 'User')
+  if (!isEmpty(input)) {
+    const [updatedUser] = await db<User>(context, 'User', {
+      queryType: 'update',
+    })
       .where({ id })
-      .update(user)
+      .update(input)
       .returning('*');
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }
   }
-
-  if (roles_id) {
-    const rolePortalIds = roles_id?.map(extractId<RolePortalId>);
-    await updateUserRolePortal(context, id, rolePortalIds);
-  }
-
-  if (organizations) {
-    const organizationsIds = organizations.map(extractId<OrganizationId>);
-    await updateUserOrg(context, id, organizationsIds);
-  }
 };
 export const deleteUserById = async (userId: UserId) => {
   return dbUnsecure<User>('User').where('id', userId).delete().returning('*');
 };
-export const loadUserRoles = async (userId: UserId) => {
-  return dbUnsecure('User')
-    .leftJoin('User_RolePortal', 'User.id', 'User_RolePortal.user_id')
-    .leftJoin('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
-    .where('User.id', userId)
+export const loadUserCapacityByOrganization = async (
+  user_id: UserId,
+  organization_id: OrganizationId
+) => {
+  return dbUnsecure('User_Organization')
+    .leftJoin(
+      'UserOrganization_Capability',
+      'User_Organization.id',
+      'UserOrganization_Capability.user_organization_id'
+    )
+    .where({ user_id, organization_id })
     .select([
-      'User.*',
-      dbRaw('json_agg("RolePortal".name) as roles'), // Aggregate role names into an array
+      dbRaw('json_agg("UserOrganization_Capability".name) as capabilities'),
     ])
-    .groupBy('User.id') // Group by User.id to ensure proper aggregation
     .first();
 };
 
@@ -314,61 +411,42 @@ export const addNewUser = async (
 export const loadUserDetails = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<UserWithOrganizationsAndRole> => {
+  const userOrganizationCapabilityQuery = dbUnsecure<UserService>(
+    'User_Organization'
+  )
+    .leftJoin(
+      'UserOrganization_Capability',
+      'User_Organization.id',
+      'UserOrganization_Capability.user_organization_id'
+    )
+    .select(
+      dbRaw(
+        `COALESCE(
+                    json_agg(DISTINCT "UserOrganization_Capability".name)
+                    FILTER (WHERE "UserOrganization_Capability".name IS NOT NULL),
+                    '[]'::json
+    ) AS capabilities`
+      )
+    )
+    .whereRaw(
+      `"UserOrganization_Capability"."user_organization_id" = "UserOrg"."id"`
+    );
   return dbUnsecure<UserWithOrganizationsAndRole>('User')
     .where(field)
-    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
-    .leftJoin(
-      'Organization as org',
-      'User_Organization.organization_id',
-      '=',
-      'org.id'
-    )
-    .leftJoin(
-      'User_RolePortal as user_RolePortal',
-      'User.id',
-      '=',
-      'user_RolePortal.user_id'
-    )
-    .leftJoin(
-      'RolePortal as rolePortal',
-      'user_RolePortal.role_portal_id',
-      '=',
-      'rolePortal.id'
-    )
-    .leftJoin(
-      'RolePortal_CapabilityPortal as roleCapaPortal',
-      'rolePortal.id',
-      '=',
-      'roleCapaPortal.role_portal_id'
-    )
-    .leftJoin(
-      'CapabilityPortal as capabilityPortal',
-      'roleCapaPortal.capability_portal_id',
-      '=',
-      'capabilityPortal.id'
-    )
+    .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
+    .leftJoin('Organization as org', 'UserOrg.organization_id', '=', 'org.id')
     .select([
       'User.*',
       dbRaw(
-        formatRawAggObject({
-          columnName: 'org',
-          typename: 'Organization',
-          as: 'Organizations',
-        })
-      ),
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'rolePortal',
-          typename: 'RolePortal',
-          as: 'roles_portal',
-        })
-      ),
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'capabilityPortal',
-          typename: 'CapabilityPortal',
-          as: 'capabilities',
-        })
+        `COALESCE( 
+          json_agg( DISTINCT jsonb_build_object( 
+              '__typename', 'User_Organization',
+              'id', "UserOrg".id,
+              'organization', to_jsonb("org") || jsonb_build_object('__typename', 'Organization'),
+              'capabilities', (${userOrganizationCapabilityQuery})
+          ) ) 
+            FILTER (WHERE "org".id IS NOT NULL), '[]' 
+        )::json AS organization_capabilities`
       ),
     ])
     .groupBy(['User.id'])
@@ -387,26 +465,4 @@ export const userHasOrganizationWithSubscription = async (
     'Subscription'
   ).whereIn('organization_id', organizationIds);
   return subscriptions.length !== 0;
-};
-
-/**
- * #185: If the user has only ONE organization, land him on it rather than its personal space
- */
-export const selectOrganizationAtLogin = async <
-  T extends UserWithOrganizations,
->(
-  user: T
-): Promise<T> => {
-  const organizations = user.organizations.filter((o) => !o.personal_space);
-  if (organizations.length === 1) {
-    const updatedUser = await updateSelectedOrganization(
-      user.id,
-      organizations[0].id
-    );
-    return {
-      ...user,
-      selected_organization_id: updatedUser.selected_organization_id,
-    };
-  }
-  return user;
 };

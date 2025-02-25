@@ -12,7 +12,10 @@ import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabili
 import ServiceLink from '../model/kanel/public/ServiceLink';
 import ServicePrice from '../model/kanel/public/ServicePrice';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
-import UserOrganization from '../model/kanel/public/UserOrganization';
+import UserOrganization, {
+  UserOrganizationId,
+} from '../model/kanel/public/UserOrganization';
+import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 
 export const ensureServiceDefinitionExists = async (service) => {
@@ -178,6 +181,70 @@ export const ensureUserOrganizationExist = async (
       await query.transacting(trx);
     } else {
       await query;
+    }
+  }
+};
+
+export const ensurePersonalSpaceExist = async (
+  user_id: UserId,
+  mail: string
+) => {
+  const orgId = user_id as unknown as OrganizationId;
+
+  await ensureOrganizationExists(orgId, mail);
+  const userOrg = await ensureUserOrganizationExists(user_id, orgId);
+  await ensureCapabilitiesExist(userOrg.id, ['MANAGE_SUBSCRIPTION']);
+};
+
+const ensureOrganizationExists = async (
+  orgId: OrganizationId,
+  mail: string
+) => {
+  const personalSpace = await dbUnsecure<Organization>('Organization')
+    .where({ id: orgId })
+    .first();
+
+  if (!personalSpace) {
+    await dbUnsecure('Organization').insert({
+      id: orgId,
+      name: mail,
+      personal_space: true,
+    });
+  }
+};
+
+const ensureUserOrganizationExists = async (
+  user_id: UserId,
+  orgId: OrganizationId
+) => {
+  const userOrg = await dbUnsecure<UserOrganization>('User_Organization')
+    .where({ user_id, organization_id: orgId })
+    .first();
+
+  if (!userOrg) {
+    const [insertedId] = await dbUnsecure<UserOrganization>('User_Organization')
+      .insert({ user_id, organization_id: orgId })
+      .returning('id');
+    return { id: insertedId };
+  }
+  return userOrg;
+};
+
+const ensureCapabilitiesExist = async (
+  userOrgId: UserOrganizationId,
+  capabilities: string[]
+) => {
+  for (const capability of capabilities) {
+    const existingCapability = await dbUnsecure<UserOrganizationCapability>(
+      'UserOrganization_Capability'
+    )
+      .where({ user_organization_id: userOrgId, name: capability })
+      .first();
+
+    if (!existingCapability) {
+      await dbUnsecure<UserOrganizationCapability>(
+        'UserOrganization_Capability'
+      ).insert({ user_organization_id: userOrgId, name: capability });
     }
   }
 };

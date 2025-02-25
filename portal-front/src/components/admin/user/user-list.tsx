@@ -1,5 +1,6 @@
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
-import { AddUser } from '@/components/admin/user/user-create';
+import { AddUser } from '@/components/admin/user/add-user';
+import { AdminAddUser } from '@/components/admin/user/admin-add-user';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { Portal, portalContext } from '@/components/me/portal-context';
 import {
@@ -68,14 +69,14 @@ export const UserFragment = graphql`
     last_name
     first_name
     disabled
-    roles_portal @required(action: THROW) {
+    organization_capabilities @required(action: THROW) {
       id
-      name
-    }
-    organizations @required(action: THROW) {
-      id
-      name
-      personal_space
+      organization {
+        id
+        name
+        personal_space
+      }
+      capabilities
     }
   }
 `;
@@ -160,20 +161,20 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
         return <span className="truncate">{row.original.last_name}</span>;
       },
     },
-    {
-      accessorKey: 'roles_portal',
-      id: 'roles_portal',
-      header: t('UserListPage.Roles'),
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-xs">
-            {row.original.roles_portal?.map(({ id, name }) => (
-              <Badge key={id}>{name}</Badge>
-            ))}
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: 'roles_portal',
+    //   id: 'roles_portal',
+    //   header: t('UserListPage.Roles'),
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div className="flex gap-xs">
+    //         {row.original.roles_portal?.map(({ id, name }) => (
+    //           <Badge key={id}>{name}</Badge>
+    //         ))}
+    //       </div>
+    //     );
+    //   },
+    // },
     ...(isAdminPath
       ? [
           {
@@ -183,8 +184,8 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             cell: ({ row }: { row: Row<userList_fragment$data> }) => {
               return (
                 <div className="flex gap-xs">
-                  {row.original.organizations.map(
-                    ({ id, name, personal_space }) =>
+                  {row.original.organization_capabilities.map(
+                    ({ id, organization: { name, personal_space } }) =>
                       !personal_space ? <Badge key={id}>{name}</Badge> : null
                   )}
                 </div>
@@ -306,7 +307,11 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">
               <DataTableHeadBarOptions />
-              <AddUser connectionId={data?.users?.__id} />
+              {isAdminPath ? (
+                <AdminAddUser connectionId={data?.users?.__id} />
+              ) : (
+                <AddUser connectionId={data?.users?.__id} />
+              )}
             </div>
           </div>
         }

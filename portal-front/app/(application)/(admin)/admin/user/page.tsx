@@ -1,5 +1,5 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import { RESTRICTION } from '@/utils/constant';
+import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import * as React from 'react';
 import PageLoader from './page-loader';
 
@@ -10,7 +10,7 @@ const Page: React.FunctionComponent = async () => {
   return (
     <GuardCapacityComponent
       displayError
-      capacityRestriction={[RESTRICTION.CAPABILITY_FRT_MANAGE_USER]}>
+      capacityRestriction={[ORGANIZATION_CAPACITY.MANAGE_ACCESS]}>
       <PageLoader />
     </GuardCapacityComponent>
   );

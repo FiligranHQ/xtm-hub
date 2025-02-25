@@ -1,17 +1,27 @@
-import { Button, ColorPicker, Form, FormControl, FormField, FormItem, FormLabel, Input, SheetFooter } from 'filigran-ui';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { label_fragment$data } from '@generated/label_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Button,
+  ColorPicker,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
+  SheetFooter,
+} from 'filigran-ui';
+import { useTranslations } from 'next-intl';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 export const labelFormSchema = z.object({
   name: z.string().min(2, { message: 'OrganizationForm.Error.Name' }),
-  color: z.string()
-    .refine((value) => /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(value ?? ''))
+  color: z
+    .string()
+    .refine((value) => /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(value ?? '')),
 });
-
 
 const LabelForm = ({
   label,
@@ -19,10 +29,10 @@ const LabelForm = ({
   handleDelete,
   onClose,
 }: {
-  label?: label_fragment$data,
-  handleDelete?: () => void
-  handleSubmit: (values: z.infer<typeof labelFormSchema>) => void
-  onClose: () => void
+  label?: label_fragment$data;
+  handleDelete?: () => void;
+  handleSubmit: (values: z.infer<typeof labelFormSchema>) => void;
+  onClose: () => void;
 }) => {
   const t = useTranslations();
 
@@ -75,9 +85,7 @@ const LabelForm = ({
               actionButtonText={t('MenuActions.Delete')}
               variantName={'destructive'}
               triggerElement={
-                <Button
-                  variant="outline-destructive"
-                >
+                <Button variant="outline-destructive">
                   {t('MenuActions.Delete')}
                 </Button>
               }

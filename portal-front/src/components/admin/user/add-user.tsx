@@ -28,7 +28,9 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
   const handleSubmit = (values: z.infer<typeof userFormSchema>) => {
     commitUserMutation({
       variables: {
-        input: { ...(values as z.infer<typeof userFormSchema>) },
+        input: {
+          ...values,
+        },
         connections: [connectionId],
       },
       onCompleted: () => {

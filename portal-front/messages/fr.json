@@ -311,8 +311,8 @@
   "UserForm": {
     "Organizations": "Organisations",
     "OrganizationsPlaceholder": "Sélectionner une organisation",
-    "Roles": "Rôles",
-    "RolesPlaceholder": "Sélectionner les rôles",
+    "OrganizationCapabilities": "Capacités",
+    "OrganizationsCapabilitiesPlaceholder": "Capacités supplémentaires",
     "Password": "Mot de passe",
     "Email": "Courriel",
     "FirstName": "Prénom",

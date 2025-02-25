@@ -46,12 +46,27 @@ export type AddServiceInput = {
 };
 
 export type AddUserInput = {
+  capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
   email: Scalars['String']['input'];
   first_name?: InputMaybe<Scalars['String']['input']>;
   last_name?: InputMaybe<Scalars['String']['input']>;
-  organizations: Array<InputMaybe<Scalars['String']['input']>>;
   password?: InputMaybe<Scalars['String']['input']>;
-  roles_id: Array<InputMaybe<Scalars['String']['input']>>;
+};
+
+export type AdminAddUserInput = {
+  email: Scalars['String']['input'];
+  first_name?: InputMaybe<Scalars['String']['input']>;
+  last_name?: InputMaybe<Scalars['String']['input']>;
+  organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AdminEditUserInput = {
+  disabled?: InputMaybe<Scalars['Boolean']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  first_name?: InputMaybe<Scalars['String']['input']>;
+  last_name?: InputMaybe<Scalars['String']['input']>;
+  organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
 export type Capability = Node & {
@@ -125,12 +140,11 @@ export type EditServiceCapabilityInput = {
 };
 
 export type EditUserInput = {
+  capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
   disabled?: InputMaybe<Scalars['Boolean']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   first_name?: InputMaybe<Scalars['String']['input']>;
   last_name?: InputMaybe<Scalars['String']['input']>;
-  organizations?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  roles_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type Filter = {
@@ -209,6 +223,8 @@ export type Mutation = {
   addSubscriptionInService?: Maybe<ServiceInstance>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<SubscriptionModel>;
+  adminAddUser?: Maybe<User>;
+  adminEditUser: User;
   changeSelectedOrganization?: Maybe<User>;
   deleteDocument: Document;
   deleteLabel: Label;
@@ -286,6 +302,17 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
+};
+
+
+export type MutationAdminAddUserArgs = {
+  input: AdminAddUserInput;
+};
+
+
+export type MutationAdminEditUserArgs = {
+  id: Scalars['ID']['input'];
+  input: AdminEditUserInput;
 };
 
 
@@ -407,10 +434,23 @@ export enum OrderingMode {
 
 export type Organization = Node & {
   __typename?: 'Organization';
+  capabilityUser?: Maybe<Array<Maybe<Capability>>>;
   domains?: Maybe<Array<Scalars['String']['output']>>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   personal_space: Scalars['Boolean']['output'];
+};
+
+export type OrganizationCapabilities = Node & {
+  __typename?: 'OrganizationCapabilities';
+  capabilities?: Maybe<Array<Scalars['String']['output']>>;
+  id: Scalars['ID']['output'];
+  organization: Organization;
+};
+
+export type OrganizationCapabilitiesInput = {
+  capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
+  organization_id: Scalars['ID']['input'];
 };
 
 export type OrganizationConnection = {
@@ -609,7 +649,9 @@ export enum Restriction {
   FrtAccessServices = 'FRT_ACCESS_SERVICES',
   FrtManageSettings = 'FRT_MANAGE_SETTINGS',
   FrtManageUser = 'FRT_MANAGE_USER',
-  FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER'
+  FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER',
+  ManageAccess = 'MANAGE_ACCESS',
+  ManageSubscription = 'MANAGE_SUBSCRIPTION'
 }
 
 export type RolePortal = Node & {
@@ -776,9 +818,11 @@ export type User = Node & {
   first_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   last_name?: Maybe<Scalars['String']['output']>;
+  organization_capabilities?: Maybe<Array<OrganizationCapabilities>>;
   organizations?: Maybe<Array<Organization>>;
   picture?: Maybe<Scalars['String']['output']>;
   roles_portal?: Maybe<Array<RolePortal>>;
+  selected_org_capabilities?: Maybe<Array<Scalars['String']['output']>>;
   selected_organization_id?: Maybe<Scalars['String']['output']>;
 };
 
@@ -943,7 +987,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( RolePortal ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -952,6 +996,8 @@ export type ResolversTypes = ResolversObject<{
   AddLabelInput: AddLabelInput;
   AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
+  AdminAddUserInput: AdminAddUserInput;
+  AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Capability: ResolverTypeWrapper<Capability>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
@@ -981,6 +1027,8 @@ export type ResolversTypes = ResolversObject<{
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OrderingMode: OrderingMode;
   Organization: ResolverTypeWrapper<Organization>;
+  OrganizationCapabilities: ResolverTypeWrapper<OrganizationCapabilities>;
+  OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
   OrganizationConnection: ResolverTypeWrapper<OrganizationConnection>;
   OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
   OrganizationInput: OrganizationInput;
@@ -1031,6 +1079,8 @@ export type ResolversParentTypes = ResolversObject<{
   AddLabelInput: AddLabelInput;
   AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
+  AdminAddUserInput: AdminAddUserInput;
+  AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
   Capability: Capability;
   Date: Scalars['Date']['output'];
@@ -1056,6 +1106,8 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   Organization: Organization;
+  OrganizationCapabilities: OrganizationCapabilities;
+  OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
   OrganizationConnection: OrganizationConnection;
   OrganizationEdge: OrganizationEdge;
   OrganizationInput: OrganizationInput;
@@ -1221,6 +1273,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addSubscriptionInService?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionInServiceArgs>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
+  adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
+  adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
@@ -1244,15 +1298,23 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'RolePortal' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
 export type OrganizationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = ResolversObject<{
+  capabilityUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['Capability']>>>, ParentType, ContextType>;
   domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   personal_space?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type OrganizationCapabilitiesResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationCapabilities'] = ResolversParentTypes['OrganizationCapabilities']> = ResolversObject<{
+  capabilities?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1446,9 +1508,11 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organization_capabilities?: Resolver<Maybe<Array<ResolversTypes['OrganizationCapabilities']>>, ParentType, ContextType>;
   organizations?: Resolver<Maybe<Array<ResolversTypes['Organization']>>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   roles_portal?: Resolver<Maybe<Array<ResolversTypes['RolePortal']>>, ParentType, ContextType>;
+  selected_org_capabilities?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   selected_organization_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1530,6 +1594,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
+  OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;

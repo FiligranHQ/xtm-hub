@@ -1,9 +1,9 @@
 import { Knex } from 'knex';
-import { ActionType } from '../../knexfile';
+import { ActionType, dbUnsecure, QueryOpts } from '../../knexfile';
 import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
-import { CAPABILITY_BYPASS, CAPABILITY_FRT_MANAGE_USER } from '../portal.const';
 import { TypedNode } from '../pub';
+import { ForbiddenAccess } from '../utils/error.util';
 import { isUserGranted } from './access';
 
 // Used to check access in SSE
@@ -23,10 +23,7 @@ export const meUserSSESecurity = (opt: {
 // Used to check access in SSE
 
 export const userSSESecurity = (opt: { user: UserLoadUserBy }) => {
-  if (isUserGranted(opt.user, CAPABILITY_BYPASS)) {
-    return true;
-  }
-  return isUserGranted(opt.user, CAPABILITY_FRT_MANAGE_USER);
+  return isUserGranted(opt.user, 'MANAGE_ACCESS');
 };
 
 export const setQueryForUser = <T>(
@@ -45,5 +42,30 @@ export const setQueryForUser = <T>(
       '=',
       context.user.selected_organization_id
     );
+  return queryContext;
+};
+
+export const setUpdateSecurityForUser = <T>(
+  context: PortalContext,
+  queryContext: Knex.QueryBuilder<T>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  opts: QueryOpts
+): Knex.QueryBuilder<T> => {
+  // TODO Apply Db security for Updating
+  const getUserCapability = dbUnsecure('User')
+    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
+    .leftJoin(
+      'UserOrganization_Capability',
+      'User_Organization.id',
+      'UserOrganization_Capability.user_organization_id'
+    )
+    .where({
+      id: context.user.id,
+      'UserOrganization_Capability.name': 'MANAGE_ACCESS',
+    })
+    .first();
+  if (!getUserCapability) {
+    throw ForbiddenAccess('Insufficient right');
+  }
   return queryContext;
 };
