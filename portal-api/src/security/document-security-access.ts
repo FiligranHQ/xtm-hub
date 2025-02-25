@@ -5,14 +5,26 @@ export const setQueryForDocument = <T>(
   queryContext: Knex.QueryBuilder<T>
 ): Knex.QueryBuilder<T> => {
   queryContext
-    .innerJoin('Subscription as securitySubscription', function () {
-      this.onVal(
-        'securitySubscription.service_instance_id',
+    .leftJoin('ServiceInstance as securityServiceInstance', function () {
+      this.on(
+        'securityServiceInstance.id',
         '=',
-        context.serviceInstanceId
+        'Document.service_instance_id'
       );
     })
-    .innerJoin('User_Service as securityUserService', function () {
+    // .where('securityServiceInstance.id', '=', context.serviceInstanceId)
+    .leftJoin('Subscription as securitySubscription', function () {
+      this.on(
+        'securitySubscription.service_instance_id',
+        '=',
+        'securityServiceInstance.id'
+      ).andOnVal(
+        'securitySubscription.organization_id',
+        '=',
+        context?.user?.selected_organization_id
+      );
+    })
+    .leftJoin('User_Service as securityUserService', function () {
       this.on(
         'securityUserService.subscription_id',
         '=',

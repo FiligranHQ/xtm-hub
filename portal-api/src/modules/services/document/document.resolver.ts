@@ -55,7 +55,7 @@ const resolvers: Resolvers = {
           labels: payload.labels,
         };
 
-        const [addedDocument] = await createDocument(context, data);
+        const [addedDocument] = await createDocument(data);
         return addedDocument;
       } catch (error) {
         console.error('Error while adding document:', error);
@@ -136,8 +136,8 @@ const resolvers: Resolvers = {
     },
     document: async (_, { documentId }, context) => {
       const [parentDocument] = await loadDocumentBy(context, {
-        id: fromGlobalId(documentId).id as DocumentId,
-      });
+        'Document.id': fromGlobalId(documentId).id as DocumentId,
+      } as DocumentMutator);
       return parentDocument;
     },
   },

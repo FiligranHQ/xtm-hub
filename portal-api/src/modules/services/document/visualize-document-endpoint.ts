@@ -27,19 +27,16 @@ export const documentVisualizeEndpoint = (app) => {
           res,
         };
 
-        console.log(
-          'fromGlobalId(req.params.filename).id',
-          fromGlobalId(req.params.filename).id
-        );
         const [document] = await loadDocumentBy(context, {
           'Document.id': fromGlobalId(req.params.filename).id,
         } as DocumentMutator);
         if (!document) {
           logApp.error(
-            'Error while retrieving document: document not found. Required documentId: ',
+            'VISUALIZE Error while retrieving document: document not found. Required documentId: ',
             fromGlobalId(req.params.filename).id
           );
           res.status(404).json({ message: 'Document not found' });
+          return;
         }
         const stream = (await downloadFile(document.minio_name)) as Readable;
 
@@ -51,7 +48,7 @@ export const documentVisualizeEndpoint = (app) => {
 
         stream.pipe(res);
       } catch (error) {
-        logApp.error('Error while retrieving document: ', error);
+        logApp.error('Error while retrieving document VISUALIZE: ', error);
         res.status(404).json({ message: 'Document not found' });
         return;
       }

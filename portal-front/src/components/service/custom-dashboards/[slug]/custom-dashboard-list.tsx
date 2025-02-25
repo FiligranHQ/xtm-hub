@@ -1,4 +1,5 @@
 import { getLabels } from '@/components/admin/label/label.utils';
+import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { debounceHandleInput } from '@/utils/debounce';
 import {
   documentsList$data,
@@ -6,8 +7,9 @@ import {
 } from '@generated/documentsList.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import { Input, MultiSelectFormField } from 'filigran-ui';
+import { Button, Input, MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useMemo } from 'react';
 import {
   PreloadedQuery,
@@ -47,6 +49,10 @@ const CustomDashbordDocumentList = ({
     queryData
   );
 
+  const canManageService = serviceInstance.capabilities.includes(
+    GenericCapabilityName.ManageAccess
+  );
+
   const [active, _nonActive] = useMemo(() => {
     return data?.documents.edges.reduce<
       [
@@ -75,6 +81,16 @@ const CustomDashbordDocumentList = ({
     <div className="flex flex-col gap-xl">
       <div className="flex justify-between">
         <h1>{serviceInstance.name}</h1>
+        {canManageService && (
+          <Button
+            className="ml-auto mr-s"
+            asChild
+            variant="outline">
+            <Link href={`/manage/service/${serviceInstance.id}`}>
+              {t('Service.Capabilities.ManageAccessName')}
+            </Link>
+          </Button>
+        )}
         <CustomDashboardSheet
           serviceInstance={serviceInstance}
           serviceInstanceId={serviceInstance.id}

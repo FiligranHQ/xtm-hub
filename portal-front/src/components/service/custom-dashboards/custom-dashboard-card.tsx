@@ -41,12 +41,15 @@ const CustomDashboardCard = ({
       <li className="border-light flex flex-col relative rounded border bg-page-background gap-xxl aria-disabled:opacity-60">
         <Carousel
           placeholder={
-            <CustomDashboardBento customDashboard={customDashboard} />
+            <CustomDashboardBento
+              customDashboard={customDashboard}
+              serviceInstance={serviceInstance}
+            />
           }
           slides={
             fileNames.length > 0
               ? fileNames.map(
-                  (fn) => `/document/visualize/${customDashboard.id}/${fn}`
+                  (fn) => `/document/visualize/${serviceInstance.id}/${fn}`
                 )
               : undefined
           }

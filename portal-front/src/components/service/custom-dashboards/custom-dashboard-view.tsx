@@ -18,6 +18,7 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import DashboardCarousel from '@/components/service/custom-dashboards/[details]/custom-dashboard-carousel-view';
 import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
+import useDecodedParams from '@/hooks/useDecodedParams';
 import { RESTRICTION } from '@/utils/constant';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
@@ -35,6 +36,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
 }) => {
   const t = useTranslations();
   const { theme } = useTheme();
+  const { slug } = useDecodedParams();
 
   const data = usePreloadedQuery<documentQuery>(DocumentQuery, queryRef);
   const documentData = readInlineData<documentItem_fragment$key>(
@@ -52,8 +54,8 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
       href: '/',
     },
     {
-      label: serviceInstance?.serviceInstanceById?.name,
-      href: `/service/custom_dashboards/${serviceInstance?.serviceInstanceById?.id}`,
+      label: serviceInstance?.name,
+      href: `/service/custom_dashboards/${serviceInstance?.id}`,
     },
     {
       label: documentData?.name,
@@ -74,7 +76,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
           <GuardCapacityComponent
             capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
             <DashboardUpdate
-              serviceInstanceId={serviceInstance.serviceInstanceById?.id ?? ''}
+              serviceInstanceId={serviceInstance.id ?? ''}
               customDashboard={documentData!}
               data={data as unknown as documentItem_fragment$key}
               connectionId={''}
@@ -83,7 +85,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
           <Button
             onClick={() => {
               addDownloadNumber();
-              window.location.href = `/document/get/${serviceInstance?.serviceInstanceById?.id}/${documentData?.id}`;
+              window.location.href = `/document/get/${slug}/${documentData?.id}`;
             }}>
             {t('Utils.Download')}
           </Button>

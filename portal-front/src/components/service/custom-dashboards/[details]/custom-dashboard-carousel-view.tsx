@@ -27,7 +27,7 @@ const DashboardCarousel: React.FunctionComponent<DashboardCarouselProps> = ({
         slides={
           fileNames.length > 0
             ? fileNames.map(
-                (fn) => `/document/visualize/${documentData.id}/${fn}`
+                (fn) => `/document/visualize/${serviceInstance.id}/${fn}`
               )
             : undefined
         }
@@ -36,7 +36,7 @@ const DashboardCarousel: React.FunctionComponent<DashboardCarouselProps> = ({
         <div
           className="mr-xl w-32 h-32"
           style={{
-            backgroundImage: `url(/document/visualize/${serviceInstance.serviceInstanceById?.id}/${documentData.children_documents?.[selectedIndexCarousel - 1]?.id})`,
+            backgroundImage: `url(/document/visualize/${serviceInstance?.id}/${documentData.children_documents?.[selectedIndexCarousel - 1]?.id})`,
             backgroundSize: 'cover',
           }}
         />
@@ -44,14 +44,14 @@ const DashboardCarousel: React.FunctionComponent<DashboardCarouselProps> = ({
         <div
           className="mr-xl w-32 h-32"
           style={{
-            backgroundImage: `url(/document/visualize/${serviceInstance.serviceInstanceById?.id}/${documentData.children_documents?.[selectedIndexCarousel]?.id})`,
+            backgroundImage: `url(/document/visualize/${serviceInstance.id}/${documentData.children_documents?.[selectedIndexCarousel]?.id})`,
             backgroundSize: 'cover',
           }}
         />
         <div
           className="ml-xl w-32 h-32"
           style={{
-            backgroundImage: `url(/document/visualize/${serviceInstance.serviceInstanceById?.id}/${documentData.children_documents?.[selectedIndexCarousel + 1]?.id})`,
+            backgroundImage: `url(/document/visualize/${serviceInstance.id}/${documentData.children_documents?.[selectedIndexCarousel + 1]?.id})`,
             backgroundSize: 'cover',
           }}
         />

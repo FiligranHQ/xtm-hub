@@ -49,6 +49,19 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
     (subscription) => subscription?.id === subscriptionId
   );
 
+  const canManageService = () => {
+    return data.subscriptions[0].user_service.some((userService) => {
+      return (
+        userService.user.id === me.id &&
+        userService.user_service_capability.some(
+          (user_service_capa) =>
+            user_service_capa.generic_service_capability?.name ===
+            'MANAGE_ACCESS'
+        )
+      );
+    });
+  };
+
   const deleteCurrentUser = (email: string) => {
     commitUserServiceDeletingMutation({
       variables: {
@@ -85,28 +98,29 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         size: -1,
         enableSorting: false,
         cell: ({ row }) => {
-          return (
-            <div className="truncate">
-              {row.original?.user_service_capability?.map(
-                (user_service_capa) =>
-                  user_service_capa?.generic_service_capability?.name !==
-                  GenericCapabilityName.Access ? (
-                    <Badge
-                      key={
-                        user_service_capa?.generic_service_capability?.id ??
-                        user_service_capa?.subscription_capability
-                          ?.service_capability?.id
-                      }
-                      className="mb-2 mr-2 mt-2 uppercase">
-                      {user_service_capa?.generic_service_capability?.name ??
-                        user_service_capa?.subscription_capability
-                          ?.service_capability?.name}
-                    </Badge>
-                  ) : (
-                    <></>
-                  )
-              )}
-            </div>
+          return row.original?.user_service_capability?.length === 0 ? (
+            <Badge className="mb-2 mr-2 mt-2">
+              {GenericCapabilityName.Access}
+            </Badge>
+          ) : (
+            row.original?.user_service_capability?.map((user_service_capa) =>
+              user_service_capa?.generic_service_capability?.name !==
+              GenericCapabilityName.Access ? (
+                <Badge
+                  key={
+                    user_service_capa?.generic_service_capability?.id ??
+                    user_service_capa?.subscription_capability
+                      ?.service_capability?.id
+                  }
+                  className="mb-2 mr-2 mt-2 uppercase">
+                  {user_service_capa?.generic_service_capability?.name ??
+                    user_service_capa?.subscription_capability
+                      ?.service_capability?.name}
+                </Badge>
+              ) : (
+                <></>
+              )
+            )
           );
         },
       },
@@ -114,19 +128,10 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         id: 'actions',
         size: 40,
         cell: ({ row }) => {
-          // The user should not be able to modify himself
-          if (row.original.user?.id === me?.id) {
-            return null;
-          }
           return (
             <div className="flex items-center justify-end">
-              {/*TODO : Change later un the last #261 Chunk : adapt behaviour*/}
-              {/*with capabilities*/}
-              {row.original.user_service_capability?.some(
-                (user_serv_capa) =>
-                  user_serv_capa?.generic_service_capability?.name !==
-                  GenericCapabilityName.ManageAccess
-              ) && (
+              {(me.capabilities.some((capa) => capa.name === 'BYPASS') ||
+                canManageService()) && (
                 <IconActions
                   icon={
                     <>

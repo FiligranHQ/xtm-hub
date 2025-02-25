@@ -153,8 +153,8 @@ export const DocumentsListQuery = graphql`
 `;
 
 export const DocumentQuery = graphql`
-  query documentQuery($documentId: ID) {
-    document(documentId: $documentId) {
+  query documentQuery($documentId: ID, $serviceInstanceId: ID) {
+    document(documentId: $documentId, serviceInstanceId: $serviceInstanceId) {
       ...documentItem_fragment
     }
   }

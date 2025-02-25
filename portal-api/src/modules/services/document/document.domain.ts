@@ -225,7 +225,7 @@ export const loadDocumentBy = async (
   context: PortalContext,
   field: DocumentMutator
 ) => {
-  return db<Document>(context, 'Document').where(field);
+  return db<Document>(context, 'Document').where(field).select('Document.*');
 };
 
 export const getChildrenDocuments = async (
@@ -233,9 +233,9 @@ export const getChildrenDocuments = async (
   documentId
 ): Promise<Document[]> => {
   return db<Document>(context, 'Document')
-    .where('parent_document_id', '=', documentId)
+    .where('Document.parent_document_id', '=', documentId)
     .orderBy('created_at', 'asc')
-    .returning('*');
+    .select('Document.*');
 };
 
 export const getUploader = async (context, documentId): Promise<User> => {

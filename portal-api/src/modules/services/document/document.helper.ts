@@ -1,4 +1,4 @@
-import { db, dbUnsecure } from '../../../../knexfile';
+import { dbUnsecure } from '../../../../knexfile';
 import {
   DocumentMutator,
   default as DocumentType,
@@ -48,15 +48,15 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const createDocument = async (
-  context: PortalContext,
-  { labels, ...documentData }: DocumentMutator & { labels?: string[] }
-): Promise<Document[]> => {
-  const [document] = await db<Document>(context, 'Document')
+export const createDocument = async ({
+  labels,
+  ...documentData
+}: DocumentMutator & { labels?: string[] }): Promise<Document[]> => {
+  const [document] = await dbUnsecure<Document>('Document')
     .insert(documentData)
     .returning('*');
   if ((labels?.length ?? 0) > 0) {
-    await db<ObjectLabel>(context, 'Object_Label').insert(
+    await dbUnsecure<ObjectLabel>('Object_Label').insert(
       labels.map((id) => ({
         object_id: document.id as unknown as ObjectLabelObjectId,
         label_id: extractId(id) as LabelId,

@@ -36,6 +36,7 @@ export const documentDownloadEndpoint = (app) => {
         if (!document) {
           logApp.error('Error while retrieving document: document not found.');
           res.status(404).json({ message: 'Document not found' });
+          return;
         }
 
         const stream = (await downloadFile(document.minio_name)) as Readable;

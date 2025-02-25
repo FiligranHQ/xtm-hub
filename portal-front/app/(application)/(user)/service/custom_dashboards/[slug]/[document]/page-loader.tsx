@@ -21,7 +21,10 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   service,
 }) => {
   const [queryRef, loadQuery] = useQueryLoader<documentQuery>(DocumentQuery);
-  useMountingLoader(loadQuery, { documentId });
+  useMountingLoader(loadQuery, {
+    documentId,
+    serviceInstanceId: service.id,
+  });
 
   return queryRef && service ? (
     <DashboardSlug

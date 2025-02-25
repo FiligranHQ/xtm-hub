@@ -476,6 +476,7 @@ export type Query = {
 
 export type QueryDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -778,6 +779,7 @@ export type UserFilter = {
 };
 
 export enum UserOrdering {
+  Disabled = 'disabled',
   Email = 'email',
   FirstName = 'first_name',
   LastName = 'last_name'
