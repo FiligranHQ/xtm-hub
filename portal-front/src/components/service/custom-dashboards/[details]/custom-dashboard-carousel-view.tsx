@@ -8,7 +8,7 @@ import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 // Component interface
 interface DashboardCarouselProps {
   documentData: documentItem_fragment$data;
-  serviceInstance: serviceByIdQuery$data;
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 
 const DashboardCarousel: React.FunctionComponent<DashboardCarouselProps> = ({

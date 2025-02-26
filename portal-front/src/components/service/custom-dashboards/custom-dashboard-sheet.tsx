@@ -1,5 +1,6 @@
 'use client';
 import GuardCapacityComponent from '@/components/admin-guard';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import { omit } from '@/lib/omit';
@@ -142,7 +143,7 @@ export const CustomDashboardSheet = ({
         </SheetWithPreventingDialog>
       </GuardCapacityComponent>
       {serviceInstance?.capabilities.some(
-        (capa) => capa?.toUpperCase() === 'UPLOAD'
+        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
       ) && (
         <SheetWithPreventingDialog
           open={openSheet}

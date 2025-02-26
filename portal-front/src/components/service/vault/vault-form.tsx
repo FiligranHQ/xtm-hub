@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
 
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
@@ -78,7 +79,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         }
       </GuardCapacityComponent>
       {usersServiceCapabilities.some(
-        (capa) => capa.toUpperCase() === 'UPLOAD'
+        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
       ) && (
         <SheetWithPreventingDialog
           open={openSheet}

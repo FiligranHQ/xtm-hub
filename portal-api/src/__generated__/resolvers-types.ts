@@ -291,7 +291,7 @@ export type MutationChangeSelectedOrganizationArgs = {
 export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  service_instance_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 

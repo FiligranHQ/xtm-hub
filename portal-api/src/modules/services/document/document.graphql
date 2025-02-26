@@ -49,9 +49,9 @@ type Mutation {
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
     documentId: ID
-    serviceInstanceId: String
+    service_instance_id: String
     forceDelete: Boolean
-  ): Document! @auth(requires: [BYPASS])
+  ): Document! @auth @service_capa(requires: [UPLOAD, DELETE])
 }
 
 type DocumentEdge {

@@ -60,7 +60,7 @@ export const DocumentDeleteMutation = graphql`
   ) {
     deleteDocument(
       documentId: $documentId
-      serviceInstanceId: $serviceInstanceId
+      service_instance_id: $serviceInstanceId
       forceDelete: $forceDelete
     ) {
       id @deleteEdge(connections: $connections)

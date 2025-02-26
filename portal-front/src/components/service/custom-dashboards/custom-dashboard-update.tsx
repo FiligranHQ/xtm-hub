@@ -33,6 +33,8 @@ interface DashboardUpdateProps {
   serviceInstanceId: string;
   connectionId: string;
   variant?: 'menu' | 'button';
+  userCanUpdate: boolean;
+  userCanDelete: boolean;
 }
 
 // Component
@@ -42,6 +44,8 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   serviceInstanceId,
   connectionId,
   variant = 'button',
+  userCanUpdate,
+  userCanDelete,
 }) => {
   const t = useTranslations();
   const router = useRouter();
@@ -158,6 +162,8 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           serviceInstanceId={serviceInstanceId}
           handleSubmit={updateDocument}
           onDelete={deleteDocument}
+          userCanDelete={userCanDelete}
+          userCanUpdate={userCanUpdate}
         />
       </SheetWithPreventingDialog>
     </div>

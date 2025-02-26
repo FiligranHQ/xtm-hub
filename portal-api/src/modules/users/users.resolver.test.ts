@@ -296,28 +296,5 @@ describe('User mutation resolver', () => {
         );
       });
     });
-
-    it('user should not be able to edit himself', async () => {
-      try {
-        // @ts-ignore
-        await usersResolver.Mutation.editUser(
-          undefined,
-          {
-            id: ADMIN_UUID,
-            input: {
-              organizations: [
-                toGlobalId('Organization', ADMIN_UUID),
-                toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
-                toGlobalId('Organization', THALES_ORGA_ID),
-              ],
-            } as EditUserInput,
-          },
-          contextAdminUser
-        );
-      } catch (error) {
-        expect(error).toBeTruthy();
-        expect(error.message).toEqual('CANT_EDIT_YOURSELF_ERROR');
-      }
-    });
   });
 });

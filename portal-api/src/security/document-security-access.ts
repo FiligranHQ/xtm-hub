@@ -12,7 +12,6 @@ export const setQueryForDocument = <T>(
         'Document.service_instance_id'
       );
     })
-    // .where('securityServiceInstance.id', '=', context.serviceInstanceId)
     .leftJoin('Subscription as securitySubscription', function () {
       this.on(
         'securitySubscription.service_instance_id',

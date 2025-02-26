@@ -1,5 +1,8 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import {
+  GenericCapabilityName,
+  ServiceCapabilityName,
+} from '@/components/service/[slug]/capabilities/capability.helper';
 import {
   DocumentsListQuery,
   documentItem,
@@ -155,7 +158,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
             {queryDataService.serviceInstanceById?.capabilities.some(
-              (capa) => capa === 'Upload'
+              (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
             ) && <EditDocument documentData={row.original} />}
             <DownloadDocument documentData={row.original} />
             <VisualizeDocument documentData={row.original} />
@@ -168,7 +171,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               />
             </GuardCapacityComponent>
             {queryDataService.serviceInstanceById?.capabilities.some(
-              (capa) => capa === 'Delete'
+              (capa) => capa?.toUpperCase() === ServiceCapabilityName.Delete
             ) && (
               <DeleteDocument
                 documentData={row.original}
@@ -305,7 +308,8 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               )}
               <VaultForm
                 usersServiceCapabilities={
-                  queryDataService.serviceInstanceById?.capabilities
+                  (queryDataService.serviceInstanceById?.capabilities ??
+                    []) as string[]
                 }
                 connectionId={data?.documents?.__id}
               />

@@ -18,6 +18,7 @@ import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing
 import TriggerButton from '@/components/ui/trigger-button';
 import useAdminPath from '@/hooks/useAdminPath';
 import useGranted from '@/hooks/useGranted';
+import { RESTRICTION } from '@/utils/constant';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
@@ -109,7 +110,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     me?.id
   );
 
-  const isAllowedInviteUser = canManageAccess || useGranted('BYPASS');
+  const isAllowedInviteUser =
+    canManageAccess || useGranted(RESTRICTION.CAPABILITY_BYPASS);
 
   const removeOrganization = (
     subscription: subscriptionWithUserService_fragment$data

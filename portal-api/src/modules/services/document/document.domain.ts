@@ -131,9 +131,9 @@ export const deleteDocument = async (
   forceDelete: boolean
 ): Promise<Document> => {
   const [documentFromDb] = await loadDocumentBy(context, {
-    id: documentId,
-    service_instance_id: serviceInstanceId,
-  });
+    'Document.id': documentId,
+    'Document.service_instance_id': serviceInstanceId,
+  } as DocumentMutator);
   await db<ObjectLabel>(context, 'Object_Label')
     .where('object_id', '=', documentId)
     .delete('*');

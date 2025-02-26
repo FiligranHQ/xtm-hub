@@ -15,18 +15,21 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import GuardCapacityComponent from '@/components/admin-guard';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import DashboardCarousel from '@/components/service/custom-dashboards/[details]/custom-dashboard-carousel-view';
 import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import useGranted from '@/hooks/useGranted';
 import { RESTRICTION } from '@/utils/constant';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { useMemo } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
 interface DashboardSlugProps {
   queryRef: PreloadedQuery<documentQuery>;
-  serviceInstance: serviceByIdQuery$data;
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 
 // Component
@@ -66,6 +69,23 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
   const addDownloadNumber = () => {
     setDocumentDownloadNumber(documentDownloadNumber + 1);
   };
+  const canBypass = useGranted(RESTRICTION.CAPABILITY_BYPASS);
+
+  const userCanDelete = useMemo(() => {
+    return (
+      serviceInstance?.capabilities.some(
+        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Delete
+      ) || canBypass
+    );
+  }, []);
+  const userCanUpdate = useMemo(() => {
+    return (
+      serviceInstance?.capabilities.some(
+        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
+      ) || canBypass
+    );
+  }, []);
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -76,12 +96,26 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
           <GuardCapacityComponent
             capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
             <DashboardUpdate
+              userCanDelete={true}
+              userCanUpdate={true}
               serviceInstanceId={serviceInstance.id ?? ''}
               customDashboard={documentData!}
               data={data as unknown as documentItem_fragment$key}
               connectionId={''}
             />
           </GuardCapacityComponent>
+          {serviceInstance?.capabilities.some(
+            (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
+          ) && (
+            <DashboardUpdate
+              userCanDelete={userCanDelete ?? false}
+              userCanUpdate={userCanUpdate ?? false}
+              serviceInstanceId={serviceInstance.id ?? ''}
+              customDashboard={documentData!}
+              data={data as unknown as documentItem_fragment$key}
+              connectionId={''}
+            />
+          )}
           <Button
             onClick={() => {
               addDownloadNumber();

@@ -142,9 +142,6 @@ const resolvers: Resolvers = {
     editUser: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        if (id === context.user.id) {
-          throw ForbiddenAccess('CANT_EDIT_YOURSELF_ERROR');
-        }
         await updateUser(context, id as UserId, input);
         const user = await loadUserDetails({
           'User.id': id as UserId,
@@ -168,9 +165,6 @@ const resolvers: Resolvers = {
         return user;
       } catch (error) {
         await trx.rollback();
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
-          throw ForbiddenAccess('CANT_EDIT_YOURSELF_ERROR');
-        }
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
         });

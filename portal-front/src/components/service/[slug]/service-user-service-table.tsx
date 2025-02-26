@@ -3,6 +3,7 @@ import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import { RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
 import { userService_fragment$data } from '@generated/userService_fragment.graphql';
@@ -50,13 +51,13 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
   );
 
   const canManageService = () => {
-    return data.subscriptions[0].user_service.some((userService) => {
+    return data.subscriptions?.[0]?.user_service?.some((userService) => {
       return (
-        userService.user.id === me.id &&
-        userService.user_service_capability.some(
+        userService?.user?.id === me?.id &&
+        userService?.user_service_capability?.some(
           (user_service_capa) =>
-            user_service_capa.generic_service_capability?.name ===
-            'MANAGE_ACCESS'
+            user_service_capa?.generic_service_capability?.name ===
+            GenericCapabilityName.ManageAccess
         )
       );
     });
@@ -130,7 +131,9 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
         cell: ({ row }) => {
           return (
             <div className="flex items-center justify-end">
-              {(me.capabilities.some((capa) => capa.name === 'BYPASS') ||
+              {(me?.capabilities?.some(
+                (capa) => capa?.name === RESTRICTION.CAPABILITY_BYPASS
+              ) ||
                 canManageService()) && (
                 <IconActions
                   icon={

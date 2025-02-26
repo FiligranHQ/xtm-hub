@@ -24,7 +24,7 @@ type Mutation {
   deleteOrganization(id: ID!): Organization
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
-  deleteDocument(documentId: ID, serviceInstanceId: String, forceDelete: Boolean): Document!
+  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): Subscription
   deleteServiceInstance(id: ID!): ServiceInstance
