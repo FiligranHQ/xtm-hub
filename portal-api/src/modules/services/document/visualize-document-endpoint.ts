@@ -5,6 +5,7 @@ import { DocumentMutator } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
+import { NotFoundError } from '../../../utils/error.util';
 import { downloadFile } from './document-storage';
 import { loadDocumentBy } from './document.domain';
 
@@ -31,8 +32,12 @@ export const documentVisualizeEndpoint = (app) => {
           'Document.id': fromGlobalId(req.params.filename).id,
         } as DocumentMutator);
         if (!document) {
-          logApp.error('Error while retrieving document: document not found.');
+          logApp.error(
+            'VISUALIZE Error while retrieving document: document not found. Required documentId: ',
+            fromGlobalId(req.params.filename).id
+          );
           res.status(404).json({ message: 'Document not found' });
+          throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
         }
         const stream = (await downloadFile(document.minio_name)) as Readable;
 
@@ -44,9 +49,8 @@ export const documentVisualizeEndpoint = (app) => {
 
         stream.pipe(res);
       } catch (error) {
-        logApp.error('Error while retrieving document: ', error);
+        logApp.error('Error while retrieving document VISUALIZE: ', error);
         res.status(404).json({ message: 'Document not found' });
-        return;
       }
     }
   );

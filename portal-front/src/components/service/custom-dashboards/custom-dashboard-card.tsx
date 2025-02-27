@@ -1,11 +1,10 @@
 'use client';
-import GuardCapacityComponent from '@/components/admin-guard';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
 import { documentItem } from '@/components/service/document/document.graphql';
-import DownloadDocument from '@/components/service/vault/download-document';
 import { IconActions } from '@/components/ui/icon-actions';
-import { RESTRICTION } from '@/utils/constant';
+import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MoreVertIcon } from 'filigran-icon';
@@ -35,18 +34,29 @@ const CustomDashboardCard = ({
   const fileNames = (customDashboard.children_documents ?? [])?.map(
     ({ id }) => id
   );
+  const userCanDelete = useServiceCapability(
+    ServiceCapabilityName.Delete,
+    serviceInstance
+  );
+  const userCanUpdate = useServiceCapability(
+    ServiceCapabilityName.Upload,
+    serviceInstance
+  );
 
   return (
     <>
       <li className="border-light flex flex-col relative rounded border bg-page-background gap-xxl aria-disabled:opacity-60">
         <Carousel
           placeholder={
-            <CustomDashboardBento customDashboard={customDashboard} />
+            <CustomDashboardBento
+              customDashboard={customDashboard}
+              serviceInstance={serviceInstance}
+            />
           }
           slides={
             fileNames.length > 0
               ? fileNames.map(
-                  (fn) => `/document/visualize/${customDashboard.id}/${fn}`
+                  (name) => `/document/visualize/${serviceInstance.id}/${name}`
                 )
               : undefined
           }
@@ -69,8 +79,8 @@ const CustomDashboardCard = ({
                 </Badge>
               ))}
             </div>
-            <GuardCapacityComponent
-              capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+
+            {(userCanUpdate || userCanDelete) && (
               <IconActions
                 icon={
                   <>
@@ -78,9 +88,9 @@ const CustomDashboardCard = ({
                     <span className="sr-only">{t('Utils.OpenMenu')}</span>
                   </>
                 }>
-                <DownloadDocument documentData={customDashboard} />
-
                 <DashboardUpdate
+                  userCanUpdate={userCanUpdate}
+                  userCanDelete={userCanDelete}
                   serviceInstanceId={serviceInstance?.id}
                   customDashboard={customDashboard}
                   data={data as unknown as documentItem_fragment$key}
@@ -88,7 +98,7 @@ const CustomDashboardCard = ({
                   variant="menu"
                 />
               </IconActions>
-            </GuardCapacityComponent>
+            )}
           </div>
           <h2 className="truncate flex-1 px-l mt-l max-h-[10rem] overflow-hidden">
             {(customDashboard?.short_description?.length ?? 0 > 0)

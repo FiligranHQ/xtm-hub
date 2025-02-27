@@ -381,11 +381,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
             onClick={(e) => handleCloseSheet(e)}>
             {t('Utils.Cancel')}
           </Button>
-          <Button
-            disabled={!form.formState.isDirty}
-            type="submit">
-            {t('Utils.Validate')}
-          </Button>
+          <Button type="submit">{t('Utils.Validate')}</Button>
         </SheetFooter>
       </form>
     </Form>

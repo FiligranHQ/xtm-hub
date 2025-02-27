@@ -12,7 +12,7 @@ import { useQueryLoader } from 'react-relay';
 // Component interface
 interface PreloaderProps {
   documentId: string;
-  service: serviceByIdQuery$data;
+  service: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 
 // Component
@@ -21,7 +21,10 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   service,
 }) => {
   const [queryRef, loadQuery] = useQueryLoader<documentQuery>(DocumentQuery);
-  useMountingLoader(loadQuery, { documentId });
+  useMountingLoader(loadQuery, {
+    documentId,
+    serviceInstanceId: service?.id,
+  });
 
   return queryRef && service ? (
     <DashboardSlug

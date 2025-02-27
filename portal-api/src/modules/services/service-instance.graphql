@@ -13,7 +13,7 @@ type ServiceInstance implements Node {
   links: [ServiceLink]
   organization: [Organization]
   subscriptions: [Subscription]
-  capabilities: [String!]
+  capabilities: [String]
   public: Boolean
   join_type: String
   tags: [String]

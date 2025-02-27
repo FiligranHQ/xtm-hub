@@ -1,4 +1,5 @@
 import useGranted from '@/hooks/useGranted';
+import { RESTRICTION } from '@/utils/constant';
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
 import { renderHook } from '@testing-library/react';
 
@@ -8,9 +9,12 @@ describe('useGranted', () => {
     const wrapper = ({ children }: ProvidersWrapperProps) => {
       return <TestWrapper>{children}</TestWrapper>;
     };
-    const { result: resultBypass } = renderHook(() => useGranted('BYPASS'), {
-      wrapper,
-    });
+    const { result: resultBypass } = renderHook(
+      () => useGranted(RESTRICTION.CAPABILITY_BYPASS),
+      {
+        wrapper,
+      }
+    );
     expect(resultBypass.current).toBe(true);
     const { result: resultAdmin } = renderHook(
       () => useGranted('FRT_SERVICE_SUBSCRIBER'),
@@ -35,9 +39,12 @@ describe('useGranted', () => {
         </TestWrapper>
       );
     };
-    const { result: resultBypass } = renderHook(() => useGranted('BYPASS'), {
-      wrapper,
-    });
+    const { result: resultBypass } = renderHook(
+      () => useGranted(RESTRICTION.CAPABILITY_BYPASS),
+      {
+        wrapper,
+      }
+    );
     expect(resultBypass.current).toBe(false);
     const { result: resultAdmin } = renderHook(
       () => useGranted('FRT_SERVICE_SUBSCRIBER'),

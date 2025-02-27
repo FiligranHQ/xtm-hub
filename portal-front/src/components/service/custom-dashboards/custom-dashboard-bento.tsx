@@ -1,12 +1,15 @@
 import { FormatDate } from '@/utils/date';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui';
 
 const CustomDashboardBento = ({
   customDashboard,
+  serviceInstance,
 }: {
   customDashboard: documentItem_fragment$data;
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }) => {
   return (
     <div className="flex h-[15rem] p-2 gap-xs">
@@ -37,7 +40,7 @@ const CustomDashboardBento = ({
           <div
             className="flex-1"
             style={{
-              backgroundImage: `url(/document/visualize/${customDashboard.id}/${customDashboard.children_documents?.[0]?.id})`,
+              backgroundImage: `url(/document/visualize/${serviceInstance.id}/${customDashboard.children_documents?.[0]?.id})`,
               backgroundSize: 'cover',
             }}
           />

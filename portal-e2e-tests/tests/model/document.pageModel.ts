@@ -26,6 +26,20 @@ export default class DocumentPage {
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
+  async editDocument(newDescription: string) {
+    await this.page.getByRole('cell', { name: 'Open menu' }).click();
+    await expect(this.page.getByLabel('Delete document')).not.toBeVisible();
+    await this.page.getByLabel('Update document').click();
+    await this.page.getByPlaceholder('This is a short paragraph to').click();
+    await this.page
+      .getByPlaceholder('This is a short paragraph to')
+      .fill(newDescription);
+    await this.page.getByRole('button', { name: 'Validate' }).click();
+    await expect(
+      this.page.getByRole('cell', { name: newDescription })
+    ).toBeVisible();
+  }
+
   async searchDocument(searchLabel: string) {
     await this.page.getByPlaceholder('Search with document name...').click();
     await this.page

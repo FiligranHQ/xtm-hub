@@ -29,6 +29,16 @@ export default class ServicePage {
       .getByText(organizationName, { exact: true })
       .click();
   }
+  async addOrganizationIntoServiceWithCapabilities(organizationName: string) {
+    await this.page
+      .getByRole('button', { name: 'Subscribe organization' })
+      .click();
+    await this.page.getByLabel('Organization', { exact: true }).click();
+    await this.page.getByLabel(organizationName).click();
+    await this.page.getByText('DELETE access:').click();
+    await this.page.getByLabel('UPLOAD access:').click();
+    await this.page.getByRole('button', { name: 'Validate' }).click();
+  }
 
   async addUserIntoService(userEmail: string) {
     await this.page.getByLabel('Invite user').click();
@@ -41,13 +51,31 @@ export default class ServicePage {
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
-  async editUsersRightsForService(userEmail: string) {
+  async addUserIntoServiceWithCapability(
+    userEmail: string,
+    capability: string
+  ) {
+    await this.page.getByLabel('Invite user').click();
+    await this.page.getByPlaceholder('EMAIL').click();
+    await this.page.getByPlaceholder('EMAIL').fill('use');
+    await this.page.getByText(userEmail).click();
+    await this.page.getByRole('dialog').nth(1).press('Enter');
+    await this.page.getByLabel(capability).click();
+
+    await this.page.getByRole('button', { name: 'Validate' }).click();
+  }
+
+  async editUsersRightsForService(
+    userEmail: string,
+    newCapability: string = 'Manage access'
+  ) {
     await this.page
       .getByRole('row', { name: userEmail })
       .getByRole('button')
+      .first()
       .click();
     await this.page.getByLabel('Edit user rights').click();
-    await this.page.getByLabel('Manage access').click();
+    await this.page.getByLabel(newCapability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 

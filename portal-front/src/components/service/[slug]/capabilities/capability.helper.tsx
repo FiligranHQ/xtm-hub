@@ -5,6 +5,11 @@ export enum GenericCapabilityName {
   Access = 'ACCESS',
 }
 
+export enum ServiceCapabilityName {
+  Upload = 'UPLOAD',
+  Delete = 'DELETE',
+}
+
 export function hasGenericServiceCapa(
   capabilityName: string,
   queryData: serviceByIdWithSubscriptionsQuery$data,
