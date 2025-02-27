@@ -61,14 +61,14 @@ export const loadCapabilitiesByServiceId = async (
     .select([
       dbRaw(
         `json_agg(
-    CASE
-      WHEN "Generic_Service_Capability".id IS NOT NULL THEN
-        "Generic_Service_Capability".name
-      WHEN "Service_Capability".id IS NOT NULL THEN
-        "Service_Capability".name
-      ELSE NULL
-    END
-  ) FILTER (WHERE "Generic_Service_Capability".id IS NOT NULL OR "Service_Capability".id IS NOT NULL) AS capabilities`
+          CASE
+            WHEN "Generic_Service_Capability".id IS NOT NULL THEN
+              "Generic_Service_Capability".name
+            WHEN "Service_Capability".id IS NOT NULL THEN
+              "Service_Capability".name
+            ELSE NULL
+          END
+        ) FILTER (WHERE "Generic_Service_Capability".id IS NOT NULL OR "Service_Capability".id IS NOT NULL) AS capabilities`
       ),
     ])
     .where('ServiceInstance.id', '=', dbRaw('?', [serviceId]))

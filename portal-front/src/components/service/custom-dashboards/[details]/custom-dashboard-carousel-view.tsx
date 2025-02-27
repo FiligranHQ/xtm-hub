@@ -27,7 +27,7 @@ const DashboardCarousel: React.FunctionComponent<DashboardCarouselProps> = ({
         slides={
           fileNames.length > 0
             ? fileNames.map(
-                (fn) => `/document/visualize/${serviceInstance.id}/${fn}`
+                (name) => `/document/visualize/${serviceInstance.id}/${name}`
               )
             : undefined
         }

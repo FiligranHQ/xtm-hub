@@ -8,6 +8,7 @@ import {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
+import { NotFoundError } from '../../../utils/error.util';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
 
@@ -36,7 +37,7 @@ export const documentDownloadEndpoint = (app) => {
         if (!document) {
           logApp.error('Error while retrieving document: document not found.');
           res.status(404).json({ message: 'Document not found' });
-          return;
+          throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
         }
 
         const stream = (await downloadFile(document.minio_name)) as Readable;

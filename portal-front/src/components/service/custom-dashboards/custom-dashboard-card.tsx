@@ -1,20 +1,16 @@
 'use client';
-import GuardCapacityComponent from '@/components/admin-guard';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
 import { documentItem } from '@/components/service/document/document.graphql';
-import DownloadDocument from '@/components/service/vault/download-document';
 import { IconActions } from '@/components/ui/icon-actions';
-import useGranted from '@/hooks/useGranted';
-import { RESTRICTION } from '@/utils/constant';
+import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, Carousel } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
 import { readInlineData } from 'react-relay';
 
 interface CustomDashboardCardProps {
@@ -38,21 +34,14 @@ const CustomDashboardCard = ({
   const fileNames = (customDashboard.children_documents ?? [])?.map(
     ({ id }) => id
   );
-  const canBypass = useGranted(RESTRICTION.CAPABILITY_BYPASS);
-  const userCanDelete = useMemo(() => {
-    return (
-      serviceInstance?.capabilities.some(
-        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Delete
-      ) || canBypass
-    );
-  }, []);
-  const userCanUpdate = useMemo(() => {
-    return (
-      serviceInstance?.capabilities.some(
-        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
-      ) || canBypass
-    );
-  }, []);
+  const userCanDelete = useServiceCapability(
+    ServiceCapabilityName.Delete,
+    serviceInstance
+  );
+  const userCanUpdate = useServiceCapability(
+    ServiceCapabilityName.Upload,
+    serviceInstance
+  );
 
   return (
     <>
@@ -67,7 +56,7 @@ const CustomDashboardCard = ({
           slides={
             fileNames.length > 0
               ? fileNames.map(
-                  (fn) => `/document/visualize/${serviceInstance.id}/${fn}`
+                  (name) => `/document/visualize/${serviceInstance.id}/${name}`
                 )
               : undefined
           }
@@ -90,31 +79,8 @@ const CustomDashboardCard = ({
                 </Badge>
               ))}
             </div>
-            <GuardCapacityComponent
-              capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-              <IconActions
-                icon={
-                  <>
-                    <MoreVertIcon className="h-4 w-4 text-primary" />
-                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                  </>
-                }>
-                <DownloadDocument documentData={customDashboard} />
 
-                <DashboardUpdate
-                  userCanUpdate={userCanUpdate ?? false}
-                  userCanDelete={userCanDelete ?? false}
-                  serviceInstanceId={serviceInstance?.id}
-                  customDashboard={customDashboard}
-                  data={data as unknown as documentItem_fragment$key}
-                  connectionId={connectionId}
-                  variant="menu"
-                />
-              </IconActions>
-            </GuardCapacityComponent>
-            {serviceInstance?.capabilities.some(
-              (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
-            ) && (
+            {(userCanUpdate || userCanDelete) && (
               <IconActions
                 icon={
                   <>
@@ -123,8 +89,8 @@ const CustomDashboardCard = ({
                   </>
                 }>
                 <DashboardUpdate
-                  userCanUpdate={userCanUpdate ?? false}
-                  userCanDelete={userCanDelete ?? false}
+                  userCanUpdate={userCanUpdate}
+                  userCanDelete={userCanDelete}
                   serviceInstanceId={serviceInstance?.id}
                   customDashboard={customDashboard}
                   data={data as unknown as documentItem_fragment$key}
