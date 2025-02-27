@@ -14,18 +14,19 @@ import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import GuardCapacityComponent from '@/components/admin-guard';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import DashboardCarousel from '@/components/service/custom-dashboards/[details]/custom-dashboard-carousel-view';
 import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
-import { RESTRICTION } from '@/utils/constant';
+import useDecodedParams from '@/hooks/useDecodedParams';
+import useServiceCapability from '@/hooks/useServiceCapability';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
 interface DashboardSlugProps {
   queryRef: PreloadedQuery<documentQuery>;
-  serviceInstance: serviceByIdQuery$data;
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 
 // Component
@@ -35,6 +36,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
 }) => {
   const t = useTranslations();
   const { theme } = useTheme();
+  const { slug } = useDecodedParams();
 
   const data = usePreloadedQuery<documentQuery>(DocumentQuery, queryRef);
   const documentData = readInlineData<documentItem_fragment$key>(
@@ -52,8 +54,8 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
       href: '/',
     },
     {
-      label: serviceInstance?.serviceInstanceById?.name,
-      href: `/service/custom_dashboards/${serviceInstance?.serviceInstanceById?.id}`,
+      label: serviceInstance?.name,
+      href: `/service/custom_dashboards/${serviceInstance?.id}`,
     },
     {
       label: documentData?.name,
@@ -64,6 +66,16 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
   const addDownloadNumber = () => {
     setDocumentDownloadNumber(documentDownloadNumber + 1);
   };
+
+  const userCanDelete = useServiceCapability(
+    ServiceCapabilityName.Delete,
+    serviceInstance
+  );
+  const userCanUpdate = useServiceCapability(
+    ServiceCapabilityName.Upload,
+    serviceInstance
+  );
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -71,19 +83,20 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
       <div className="flex">
         <h1 className="sr-only">{documentData?.name}</h1>
         <div className="flex items-center gap-2 ml-auto">
-          <GuardCapacityComponent
-            capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+          {(userCanDelete || userCanUpdate) && (
             <DashboardUpdate
-              serviceInstanceId={serviceInstance.serviceInstanceById?.id ?? ''}
+              userCanDelete={userCanDelete}
+              userCanUpdate={userCanUpdate}
+              serviceInstanceId={serviceInstance.id ?? ''}
               customDashboard={documentData!}
               data={data as unknown as documentItem_fragment$key}
               connectionId={''}
             />
-          </GuardCapacityComponent>
+          )}
           <Button
             onClick={() => {
               addDownloadNumber();
-              window.location.href = `/document/get/${serviceInstance?.serviceInstanceById?.id}/${documentData?.id}`;
+              window.location.href = `/document/get/${slug}/${documentData?.id}`;
             }}>
             {t('Utils.Download')}
           </Button>

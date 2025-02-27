@@ -1,5 +1,8 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import {
+  GenericCapabilityName,
+  ServiceCapabilityName,
+} from '@/components/service/[slug]/capabilities/capability.helper';
 import {
   DocumentsListQuery,
   documentItem,
@@ -154,6 +157,9 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               displayError={false}>
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
+            {queryDataService.serviceInstanceById?.capabilities.some(
+              (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
+            ) && <EditDocument documentData={row.original} />}
             <DownloadDocument documentData={row.original} />
             <VisualizeDocument documentData={row.original} />
             <GuardCapacityComponent
@@ -164,6 +170,14 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                 connectionId={data.documents.__id}
               />
             </GuardCapacityComponent>
+            {queryDataService.serviceInstanceById?.capabilities.some(
+              (capa) => capa?.toUpperCase() === ServiceCapabilityName.Delete
+            ) && (
+              <DeleteDocument
+                documentData={row.original}
+                connectionId={data.documents.__id}
+              />
+            )}
           </IconActions>
         </div>
       ),
@@ -292,7 +306,13 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                   </Link>
                 </Button>
               )}
-              <VaultForm connectionId={data?.documents?.__id} />
+              <VaultForm
+                usersServiceCapabilities={
+                  (queryDataService.serviceInstanceById?.capabilities ??
+                    []) as string[]
+                }
+                connectionId={data?.documents?.__id}
+              />
             </div>
           </div>
         }

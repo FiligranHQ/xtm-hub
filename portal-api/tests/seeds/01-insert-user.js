@@ -4,9 +4,9 @@ export async function seed(knex) {
       {
         id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
         email: 'user15@test.fr',
-        salt: '222915edfa545035f37ca58efc453e38',
+        salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
         password:
-          '6fdbb0fc38930cf8fa9d3b88ff23ec20bd4f048189263d6d77e962cd2528aae3cd03b265b3114912ec74fc6783341f802f5f04a749393ccda786798bcdb010f8',
+          'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
         first_name: 'test',
         last_name: 'hello',
         selected_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',

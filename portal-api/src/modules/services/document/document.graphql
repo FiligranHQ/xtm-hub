@@ -37,21 +37,21 @@ type Mutation {
     name: String
     short_description: String
     description: String
-    serviceInstanceId: String
+    service_instance_id: String
     parentDocumentId: ID
     labels: [String!]
     active: Boolean
-  ): Document! @auth(requires: [BYPASS])
+  ): Document! @auth @service_capa(requires: [UPLOAD])
   editDocument(
     documentId: ID
     input: EditDocumentInput!
-    serviceInstanceId: String
-  ): Document! @auth(requires: [BYPASS])
+    service_instance_id: String
+  ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
     documentId: ID
-    serviceInstanceId: String
+    service_instance_id: String
     forceDelete: Boolean
-  ): Document! @auth(requires: [BYPASS])
+  ): Document! @auth @service_capa(requires: [UPLOAD, DELETE])
 }
 
 type DocumentEdge {
@@ -66,8 +66,9 @@ type DocumentConnection {
 }
 
 type Query {
-  documentExists(documentName: String, serviceInstanceId: String): Boolean
-    @auth(requires: [BYPASS])
+  documentExists(documentName: String, service_instance_id: String): Boolean
+    @auth
+    @service_capa(requires: [UPLOAD])
   documents(
     first: Int!
     after: ID
@@ -78,5 +79,5 @@ type Query {
     serviceInstanceId: String
     parentsOnly: Boolean
   ): DocumentConnection! @auth
-  document(documentId: ID): Document
+  document(documentId: ID, serviceInstanceId: ID): Document
 }

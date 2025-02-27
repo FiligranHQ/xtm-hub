@@ -257,6 +257,18 @@ export const loadServiceInstanceByIdWithCapabilities = async (
       'UserService_Capability.user_service_id'
     )
     .leftJoin(
+      'Subscription_Capability',
+      'UserService_Capability.subscription_capability_id',
+      '=',
+      'Subscription_Capability.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'Subscription_Capability.service_capability_id',
+      '=',
+      'Service_Capability.id'
+    )
+    .leftJoin(
       'Generic_Service_Capability',
       'UserService_Capability.generic_service_capability_id',
       '=',
@@ -279,24 +291,22 @@ export const loadServiceInstanceByIdWithCapabilities = async (
         })
       ),
       dbRaw(
-        `CASE
-             WHEN COUNT("Generic_Service_Capability".id) = 0 THEN ARRAY[]::text[]
-             ELSE array_agg("Generic_Service_Capability".name)::text[]
-          END AS capabilities`
-      ),
-      dbRaw(`"User_Service".id IS NOT NULL AS user_joined`)
+        `json_agg(
+    CASE
+      WHEN "Generic_Service_Capability".id IS NOT NULL THEN
+        "Generic_Service_Capability".name
+      WHEN "Service_Capability".id IS NOT NULL THEN
+        "Service_Capability".name
+      ELSE NULL
+    END
+  ) AS capabilities`
+      )
     )
 
     .where({
       'ServiceInstance.id': service_instance_id,
     })
-    .whereNotNull('UserService_Capability.generic_service_capability_id')
-    .groupBy([
-      'ServiceInstance.id',
-      'User_Service.id',
-      'Subscription.id',
-      'service_def.id',
-    ])
+    .groupBy(['ServiceInstance.id', 'Subscription.id', 'service_def.id'])
     .first();
 };
 

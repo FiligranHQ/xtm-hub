@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
 
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
@@ -20,9 +21,11 @@ import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
 interface VaultFormProps {
   connectionId: string;
+  usersServiceCapabilities: string[];
 }
 export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
   connectionId,
+  usersServiceCapabilities,
 }) => {
   const { toast } = useToast();
   const t = useTranslations();
@@ -63,6 +66,21 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
       <GuardCapacityComponent
         capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
         displayError={false}>
+        {
+          <SheetWithPreventingDialog
+            open={openSheet}
+            setOpen={setOpenSheet}
+            trigger={
+              <TriggerButton label={t('Service.Vault.FileForm.AddFile')} />
+            }
+            title={t('Service.Vault.FileForm.AddFile')}>
+            <VaultNewFileForm handleSubmit={sendDocument} />
+          </SheetWithPreventingDialog>
+        }
+      </GuardCapacityComponent>
+      {usersServiceCapabilities.some(
+        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
+      ) && (
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
@@ -72,7 +90,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
           title={t('Service.Vault.FileForm.AddFile')}>
           <VaultNewFileForm handleSubmit={sendDocument} />
         </SheetWithPreventingDialog>
-      </GuardCapacityComponent>
+      )}
     </>
   );
 };

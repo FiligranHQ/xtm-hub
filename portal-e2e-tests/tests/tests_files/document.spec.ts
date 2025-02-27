@@ -3,7 +3,7 @@ import LoginPage from '../model/login.pageModel';
 import { removeDocument } from '../db-utils/document.helper';
 import DocumentPage from '../model/document.pageModel';
 
-const TEST_FILE = {
+export const TEST_FILE = {
   path: './tests/tests_files/assets/teste2e.pdf',
   name: 'teste2e.pdf',
   description: 'Test document description',

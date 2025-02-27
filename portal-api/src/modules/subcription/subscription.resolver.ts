@@ -7,7 +7,6 @@ import {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import SubscriptionCapability from '../../model/kanel/public/SubscriptionCapability';
 import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
 import {
@@ -176,9 +175,7 @@ const resolvers: Resolvers = {
         // if (subscription.billing !== 0) {
         //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
         // }
-        await db<SubscriptionCapability>(context, 'Subscription_Capability')
-          .where('subscription_id', '=', fromGlobalId(subscription_id).id)
-          .delete('*');
+
         await db<Subscription>(context, 'Subscription')
           .where({ id: fromGlobalId(subscription_id).id })
           .delete('*');
