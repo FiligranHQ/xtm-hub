@@ -33,8 +33,7 @@ export const documentVisualizeEndpoint = (app) => {
         } as DocumentMutator);
         if (!document) {
           logApp.error(
-            'VISUALIZE Error while retrieving document: document not found. Required documentId: ',
-            fromGlobalId(req.params.filename).id
+            `VISUALIZE Error while retrieving document: document not found. Required documentId: ${fromGlobalId(req.params.filename).id}`
           );
           res.status(404).json({ message: 'Document not found' });
           throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
