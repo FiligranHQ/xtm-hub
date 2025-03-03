@@ -23,6 +23,7 @@ import { sendMail } from '../../server/mail-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
+import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
 import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
@@ -426,18 +427,6 @@ export const loadServiceWithSubscriptions = async (
       '=',
       'Subscription.id'
     )
-    .leftJoin(
-      'Subscription_Capability',
-      'Subscription_Capability.subscription_id',
-      '=',
-      'Subscription.id'
-    )
-    .leftJoin(
-      'Service_Capability',
-      'Subscription_Capability.service_capability_id',
-      '=',
-      'Service_Capability.id'
-    )
     .leftJoin('User as user', 'user.id', '=', 'userService.user_id')
     .leftJoin(
       'Organization as org',
@@ -486,9 +475,6 @@ export const loadServiceWithSubscriptions = async (
           ) FILTER (WHERE "userService".id IS NOT NULL)::json,
           '[]'::json
         ) AS user_service`
-      ),
-      dbRaw(
-        `COALESCE(json_agg(json_build_object('id', "Subscription_Capability".id, 'service_capability', json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, 'description', "Service_Capability".description, '__typename', 'Service_Capability'), '__typename', 'Subscription_Capability')) FILTER (WHERE "Subscription_Capability".id IS NOT NULL), '[]'::json) as subscription_capability`
       )
     )
     .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
@@ -529,7 +515,15 @@ export const loadServiceWithSubscriptions = async (
     );
   }
 
-  const subscriptions = await querySubscriptions;
+  const arraySubcriptions = await querySubscriptions;
+
+  const subscriptions = arraySubcriptions.map((subscription) => ({
+    ...subscription,
+    subscription_capability: loadSubscriptionCapabilities(
+      context,
+      subscription.id
+    ),
+  }));
 
   return { ...serviceInstance, subscriptions };
 };
