@@ -22,7 +22,7 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean): Document!
+  addDocument(document: Upload, name: String, short_description: String, product_version: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
@@ -145,12 +145,14 @@ type Document implements Node {
   updated_at: Date
   updater_id: String
   download_number: Int
+  product_version: String
   children_documents: [Document!]
   labels: [Label!]!
 }
 
 input EditDocumentInput {
   short_description: String
+  product_version: String
   labels: [String!]
   description: String
   name: String

@@ -29,6 +29,9 @@ export const newCustomDashboardSchema = z.object({
   name: z.string().nonempty(),
   shortDescription: z.string().max(255),
   description: z.string().optional(),
+  productVersion: z.string().regex(/^\d+\.\d+\.\d+$/, {
+    message: 'Product version must be X.Y.Z',
+  }),
   documentId: z.string().optional(),
   parentDocumentId: z.string().optional(),
   document: z.custom<FileList>(fileListCheck),
@@ -61,6 +64,7 @@ export const CustomDashboardForm = ({
       name: '',
       shortDescription: undefined,
       description: '',
+      productVersion: '',
       documentId: '',
       active: false,
       document: undefined,
@@ -122,6 +126,27 @@ export const CustomDashboardForm = ({
                       'Service.CustomDashboards.Form.ShortDescriptionPlaceholder'
                     )}
                     maxLength={250}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="productVersion"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.productVersion')}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.productVersionPlaceholder'
+                    )}
                     {...field}
                   />
                 </FormControl>

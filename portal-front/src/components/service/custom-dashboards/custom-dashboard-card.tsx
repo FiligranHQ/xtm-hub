@@ -106,6 +106,12 @@ const CustomDashboardCard = ({
               : 'No description'}
           </h2>
           <div className="txt-mini p-l items-center flex">
+            {customDashboard.product_version && (
+              <div>
+                {t('Service.CustomDashboards.FromOCTIVersion')} :{' '}
+                {customDashboard.product_version}
+              </div>
+            )}
             <Badge
               size="sm"
               className="ml-auto"
