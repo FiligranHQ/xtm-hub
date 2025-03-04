@@ -64,7 +64,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         <IconActions
           icon={
             <>
-              <div className="size-10">
+              <div className="mt-s size-10">
                 <Avatar src={me?.picture ?? ''} />
               </div>
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
