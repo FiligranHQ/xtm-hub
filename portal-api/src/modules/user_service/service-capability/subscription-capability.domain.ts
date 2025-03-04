@@ -1,5 +1,5 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../../knexfile';
+import { db, dbRaw } from '../../../../knexfile';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import SubscriptionCapability from '../../../model/kanel/public/SubscriptionCapability';
@@ -19,4 +19,24 @@ export const addCapabilitiesToSubscription = async (
       .insert(data)
       .returning('*');
   }
+};
+
+export const loadSubscriptionCapabilities = async (
+  context: PortalContext,
+  subscriptionId: SubscriptionId
+) => {
+  return db<SubscriptionCapability>(context, 'Subscription_Capability')
+    .where('Subscription_Capability.subscription_id', '=', subscriptionId)
+    .leftJoin(
+      'Service_Capability',
+      'Service_Capability.id',
+      '=',
+      'Subscription_Capability.service_capability_id'
+    )
+    .select(
+      'Subscription_Capability.*',
+      dbRaw(
+        `json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, 'description', "Service_Capability".description, '__typename', 'Service_Capability') as service_capability`
+      )
+    );
 };
