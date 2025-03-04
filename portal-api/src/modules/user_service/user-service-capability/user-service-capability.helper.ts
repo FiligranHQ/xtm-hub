@@ -1,6 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../../knexfile';
+import { db, dbRaw } from '../../../../knexfile';
+import { Subscription } from '../../../__generated__/resolvers-types';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionCapabilityId } from '../../../model/kanel/public/SubscriptionCapability';
 import UserService from '../../../model/kanel/public/UserService';
@@ -76,4 +77,55 @@ export const insertUserServiceCapability = async (context, data) => {
   await db<UserServiceCapability>(context, 'UserService_Capability')
     .insert(data)
     .returning('*');
+};
+
+export const loadCapabilities = async (
+  context,
+  serviceInstanceId,
+  userId,
+  orgaId
+) => {
+  const [subscriptionWithCapabilities] = await db<Subscription>(
+    context,
+    'Subscription'
+  )
+    .where('Subscription.service_instance_id', '=', serviceInstanceId)
+    .where('Subscription.organization_id', '=', orgaId)
+    .leftJoin('User_Service', function () {
+      this.on('User_Service.subscription_id', '=', 'Subscription.id')
+
+        .andOnVal('User_Service.user_id', '=', userId);
+    })
+    .leftJoin(
+      'UserService_Capability',
+      'UserService_Capability.user_service_id',
+      '=',
+      'User_Service.id'
+    )
+    .leftJoin(
+      'Subscription_Capability',
+      'UserService_Capability.subscription_capability_id',
+      '=',
+      'Subscription_Capability.id'
+    )
+    .leftJoin(
+      'Service_Capability',
+      'Subscription_Capability.service_capability_id',
+      '=',
+      'Service_Capability.id'
+    )
+    .leftJoin(
+      'Generic_Service_Capability',
+      'UserService_Capability.generic_service_capability_id',
+      '=',
+      'Generic_Service_Capability.id'
+    )
+    .select(
+      dbRaw(
+        `json_agg(
+    COALESCE("Generic_Service_Capability".name, "Service_Capability".name)
+  ) AS capabilities`
+      )
+    );
+  return subscriptionWithCapabilities.capabilities;
 };
