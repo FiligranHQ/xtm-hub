@@ -112,6 +112,7 @@
     "TextDeleteLabel": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
   },
   "Service": {
+    "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
     "CreationStatus": "Statut de la création",
     "ComingSoon": "Bientôt disponible",
     "Description": "Description",
@@ -222,7 +223,6 @@
     "OrganizationAdded": "L'organisation {name} a été ajoutée",
     "UserCapabilitiesModified": "Les capacités de {email}'s ont été modifiées",
     "UserServiceAdded": "{email} a été invité au service {serviceName}"
-
   },
   "VaultActions": {
     "DocumentDeleted": "{file_name} a été supprimé",

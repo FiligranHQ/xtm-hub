@@ -112,6 +112,7 @@
     "TextDeleteLabel": "Do you really want to delete this label {name} ?"
   },
   "Service": {
+    "HighlightedServices": "To use this feature, please subscribe to one of the highlighted services first",
     "CreationStatus": "Creation status",
     "ComingSoon": "Coming soon",
     "Description": "Description",

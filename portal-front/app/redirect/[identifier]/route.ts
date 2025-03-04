@@ -1,3 +1,4 @@
+import { getServiceInstanceUrl } from '@/lib/utils';
 import serverPortalApiFetch, {
   serverMutateGraphQL,
 } from '@/relay/serverPortalApiFetch';
@@ -166,12 +167,6 @@ export async function GET(
         fromGlobalId(organizationGlobalId).id
     );
 
-    const getServiceInstanceUrl = (service_instance_id: string) =>
-      new URL(
-        `/service/${identifier}/${toGlobalId('ServiceInstance', service_instance_id)}`,
-        request.url
-      );
-
     // 6. We have only one service, redirect to the service
     if (
       organizationServiceInstances.length === 1 &&
@@ -179,7 +174,12 @@ export async function GET(
     ) {
       return NextResponse.redirect(
         getServiceInstanceUrl(
-          organizationServiceInstances[0].service_instance_id
+          identifier,
+          toGlobalId(
+            'ServiceInstance',
+            organizationServiceInstances[0].service_instance_id
+          ),
+          request.url
         )
       );
     }

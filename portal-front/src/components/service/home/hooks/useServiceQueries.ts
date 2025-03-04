@@ -1,4 +1,5 @@
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
+import { getServiceInstanceUrl } from '@/lib/utils';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
@@ -7,6 +8,7 @@ import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql'
 import { userServiceOwnedUser$key } from '@generated/userServiceOwnedUser.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 import {
   PreloadedQuery,
@@ -51,6 +53,7 @@ const getPublicServices = (
   handleError: (error: Error) => void
 ) => {
   const t = useTranslations();
+  const router = useRouter();
 
   const queryData = usePreloadedQuery<publicServiceQuery>(
     publicServiceListQuery,
@@ -76,13 +79,20 @@ const getPublicServices = (
 
   const addSubscriptionInDb = useCallback(
     (service: serviceList_fragment$data) => {
-      const commitMutation = (status: string, successMessage: string) => {
+      const commitMutation = (_status: string, successMessage: string) => {
         commitSubscriptionCreateMutation({
           variables: {
             service_instance_id: service.id,
             connections: [connectionID],
           },
           onCompleted: () => {
+            router.push(
+              getServiceInstanceUrl(
+                service.service_definition!.identifier,
+                service.id,
+                window.location.href
+              ).toString()
+            );
             handleSuccess(successMessage);
             onUpdate();
           },
