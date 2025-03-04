@@ -70,6 +70,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         serviceInstanceId: serviceInstanceId,
         input: {
           short_description: values.shortDescription,
+          product_version: values.productVersion,
           description: values.description,
           name: values.name,
           labels: values.labels,

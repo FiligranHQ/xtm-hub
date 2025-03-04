@@ -191,10 +191,13 @@
     "CustomDashboards": {
       "AddDashboard": "Add new dashboard",
       "UpdateDashboard": "Update dashboard",
+      "FromOCTIVersion": "From OpenCTI",
       "Form": {
         "JSONFile": "JSON file",
         "SelectJSONFile": "Select JSON file",
         "NoJSONFile": "No JSON file selected",
+        "productVersion": "OpenCTI version",
+        "productVersionPlaceholder": "1.0.0",
         "NameLabel": "Name",
         "NamePlaceholder": "Dashboard name",
         "ShortDescriptionLabel": "Short Description",

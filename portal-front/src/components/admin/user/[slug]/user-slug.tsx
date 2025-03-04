@@ -92,7 +92,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
       },
       {
         href: '/admin/user',
-        label: 'MenuLinks.Users',
+        label: 'MenuLinks.Security',
       },
       {
         label: user.email,

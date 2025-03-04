@@ -45,6 +45,7 @@ const resolvers: Resolvers = {
           name: payload.name,
           description: payload.description,
           short_description: payload.short_description,
+          product_version: payload.product_version,
           minio_name: minioName,
           file_name,
           service_instance_id: context.serviceInstanceId as ServiceInstanceId,
