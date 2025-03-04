@@ -2,6 +2,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
+
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import {
   SubscriptionId,
@@ -32,7 +33,7 @@ import {
 import { loadSubscriptionBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
-  Subscription: {
+  SubscriptionModel: {
     subscription_capability: ({ id }, _, context) =>
       getSubscriptionCapability(context, id),
     service_instance: ({ service_instance_id }, _, context) =>

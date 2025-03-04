@@ -2,6 +2,7 @@ import { db } from '../../../knexfile';
 import {
   ServiceCapability,
   Subscription,
+  SubscriptionModel,
   UserService,
 } from '../../__generated__/resolvers-types';
 import {
@@ -18,8 +19,8 @@ import { loadSubscriptionBy } from './subscription.helper';
 
 export const fillSubscription = async (
   context: PortalContext,
-  updatedSubscription: Subscription
-): Promise<Subscription> => {
+  updatedSubscription: SubscriptionModel
+): Promise<SubscriptionModel> => {
   updatedSubscription.organization = await loadOrganizationBy(
     context,
     'id',
@@ -34,7 +35,7 @@ export const fillSubscription = async (
   return updatedSubscription;
 };
 
-export const getSubscriptionCapability = (context, id) => {
+export const getSubscriptionCapability = async (context, id) => {
   return db<UserService>(context, 'Subscription_Capability')
     .where('Subscription_Capability.subscription_id', '=', id)
     .select('Subscription_Capability.*');
@@ -63,7 +64,7 @@ export const checkSubscriptionExists = async (
   context: PortalContext,
   organization_id: string,
   service_instance_id: string
-): Promise<Subscription | false> => {
+): Promise<SubscriptionModel | false> => {
   const subscriptionQuery = db<Subscription>(context, 'Subscription')
     .where({ organization_id, service_instance_id })
     .select('*')

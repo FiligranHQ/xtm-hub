@@ -8,7 +8,7 @@ enum SubscriptionOrdering {
   service_type
   service_description
 }
-type Subscription implements Node {
+type SubscriptionModel implements Node {
   id: ID!
   organization_id: ID!
   service_instance_id: ID!
@@ -24,7 +24,7 @@ type Subscription implements Node {
 
 type SubscriptionEdge {
   cursor: String!
-  node: Subscription!
+  node: SubscriptionModel!
 }
 
 type Mutation {

@@ -28,7 +28,7 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
-  addServiceInstance(input: AddServiceInput): Subscription
+  addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
   addServicePicture(serviceId: ID, document: Upload, isLogo: Boolean): ServiceInstance
   addLabel(input: AddLabelInput!): Label!
@@ -37,9 +37,9 @@ type Mutation {
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID]): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
-  editServiceCapability(input: EditServiceCapabilityInput): Subscription
-  addUserService(input: UserServiceAddInput!): Subscription
-  deleteUserService(input: UserServiceDeleteInput!): Subscription
+  editServiceCapability(input: EditServiceCapabilityInput): SubscriptionModel
+  addUserService(input: UserServiceAddInput!): SubscriptionModel
+  deleteUserService(input: UserServiceDeleteInput!): SubscriptionModel
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
@@ -189,7 +189,7 @@ type ServiceInstance implements Node {
   user_joined: Boolean
   links: [ServiceLink]
   organization: [Organization]
-  subscriptions: [Subscription]
+  subscriptions: [SubscriptionModel]
   capabilities: [String]
   public: Boolean
   join_type: String
@@ -225,19 +225,8 @@ type ServiceInstanceSubscription {
   delete: ServiceInstance
 }
 
-type Subscription implements Node {
+type Subscription {
   ServiceInstance: ServiceInstanceSubscription
-  id: ID!
-  organization_id: ID!
-  service_instance_id: ID!
-  start_date: Date
-  end_date: Date
-  status: String
-  organization: Organization!
-  service_url: String!
-  service_instance: ServiceInstance
-  subscription_capability: [SubscriptionCapability]
-  user_service: [UserService]!
   ActionTracking: TrackingSubscription
   User: UserSubscription
   MeUser: MeUserSubscription
@@ -296,9 +285,23 @@ enum SubscriptionOrdering {
   service_description
 }
 
+type SubscriptionModel implements Node {
+  id: ID!
+  organization_id: ID!
+  service_instance_id: ID!
+  start_date: Date
+  end_date: Date
+  status: String
+  organization: Organization!
+  service_url: String!
+  service_instance: ServiceInstance
+  subscription_capability: [SubscriptionCapability]
+  user_service: [UserService]!
+}
+
 type SubscriptionEdge {
   cursor: String!
-  node: Subscription!
+  node: SubscriptionModel!
 }
 
 type ActionTracking implements Node {
@@ -395,7 +398,7 @@ type UserService implements Node {
   subscription_id: ID!
   user_id: ID!
   user: User
-  subscription: Subscription
+  subscription: SubscriptionModel
   user_service_capability: [UserServiceCapability]
 }
 

@@ -18,16 +18,16 @@ import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
+import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { uploadNewFile } from './document/document.helper';
 import {
-  getCapabilities,
   getIsSubscribed,
   getLinks,
   getServiceDefinition,
   getServiceDefinitionCapabilities,
   getUserJoined,
   loadPublicServiceInstances,
-  loadServiceInstanceBy,
+  loadServiceInstanceByIdWithCapabilities,
   loadServiceInstances,
   loadServiceWithSubscriptions,
 } from './service-instance.domain';
@@ -49,7 +49,13 @@ const resolvers: Resolvers = {
       getServiceDefinition(context, id),
     organization_subscribed: ({ id }, _, context) =>
       getIsSubscribed(context, id),
-    capabilities: ({ id }, _, context) => getCapabilities(context, id),
+    capabilities: ({ id }, _, context) =>
+      loadCapabilities(
+        context,
+        id,
+        context.user.id,
+        context.user.selected_organization_id
+      ),
     user_joined: ({ id }, _, context) => getUserJoined(context, id),
   },
   ServiceDefinition: {
@@ -64,9 +70,8 @@ const resolvers: Resolvers = {
       return loadPublicServiceInstances(context, opt);
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
-      const serviceInstance = await loadServiceInstanceBy(
+      const serviceInstance = await loadServiceInstanceByIdWithCapabilities(
         context,
-        'id',
         fromGlobalId(service_instance_id).id
       );
 

@@ -104,50 +104,12 @@ export const getServiceDefinitionCapabilities = (context, id) => {
     .where('ServiceDefinition.id', '=', id)
     .select('Service_Capability.*');
 };
-
-export const getCapabilities = async (context, id) => {
-  const userId = context.user.id;
-  const organizationId = context.user.selected_organization_id;
-  const { capabilities } = await db<ServiceInstance['capabilities']>(
+export const loadServiceInstances = async (context: PortalContext, opts) =>
+  paginate<ServiceInstance, ServiceConnection>(
     context,
-    'ServiceInstance'
-  )
-    .where('ServiceInstance.id', '=', id)
-    .leftJoin('Subscription as subscription', function () {
-      this.on(
-        'subscription.service_instance_id',
-        '=',
-        'ServiceInstance.id'
-      ).andOnVal('subscription.organization_id', '=', organizationId);
-    })
-    .leftJoin('User_Service as userService', function () {
-      this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
-        'userService.user_id',
-        '=',
-        userId
-      );
-    })
-    .leftJoin(
-      'UserService_Capability as userServiceCapa',
-      'userServiceCapa.user_service_id',
-      '=',
-      'userService.id'
-    )
-    .leftJoin(
-      'Generic_Service_Capability as genericServiceCapability',
-      'genericServiceCapability.id',
-      '=',
-      'userServiceCapa.generic_service_capability_id'
-    )
-    .select(
-      dbRaw(`
-      COALESCE(json_agg("genericServiceCapability"."name") FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL), '[]'::json) AS capabilities
-    `)
-    )
-    .first();
-
-  return capabilities;
-};
+    'ServiceInstance',
+    opts
+  );
 
 export const getUserJoined = async (context, id) => {
   const { user_joined } = await db<{ user_joined: boolean }>(
@@ -226,10 +188,10 @@ export const loadServiceInstanceBy = async (
   field: string,
   value: string
 ) => {
-  return (await db<ServiceInstance>(context, 'ServiceInstance')
+  return db<ServiceInstance>(context, 'ServiceInstance')
     .where({ [field]: value })
     .select('ServiceInstance.*')
-    .first()) as ServiceInstance;
+    .first();
 };
 
 export const loadUnsecureServiceInstanceBy = async (
