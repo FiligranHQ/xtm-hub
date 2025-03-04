@@ -1,6 +1,9 @@
 import type { Request } from 'express';
-import { UserInfo } from '../model/user';
+import { UserInfo, UserLoadUserBy } from '../model/user';
 import {
+  getCapabilities,
+  getOrganizations,
+  getRolesPortal,
   loadUserBy,
   selectOrganizationAtLogin,
 } from '../modules/users/users.domain';
@@ -40,7 +43,21 @@ export const authenticateUser = async (req: Request, user: UserInfo) => {
   if (!logged || logged.disabled) {
     return;
   }
-  req.session.user = await selectOrganizationAtLogin(logged);
+  const roles_portal = await getRolesPortal(undefined, logged.id, {
+    unsecured: true,
+  });
+  const capabilities = await getCapabilities(undefined, logged.id, {
+    unsecured: true,
+  });
+  const organizations = await getOrganizations(undefined, logged.id, {
+    unsecured: true,
+  });
+  req.session.user = await selectOrganizationAtLogin({
+    ...logged,
+    capabilities,
+    roles_portal,
+    organizations,
+  } as UserLoadUserBy);
   req.session.save();
   return logged;
 };

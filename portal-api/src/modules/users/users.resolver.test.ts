@@ -141,13 +141,18 @@ describe('User mutation resolver', () => {
       );
       expect(response).toBeTruthy();
       const user = await loadUserBy({ 'User.id': response.id });
-
+      const organizations = await usersResolver.User.organizations(
+        user,
+        undefined,
+        contextAdminUser,
+        undefined
+      );
       it('should have only one organization Personal space', async () => {
-        expect(user.organizations.length).toEqual(1);
+        expect(organizations.length).toEqual(1);
       });
 
       it('should User.Id is equal to Organization.Id', async () => {
-        expect(user.id).toEqual(user.organizations[0].id);
+        expect(user.id).toEqual(organizations[0].id);
       });
     });
 
@@ -170,20 +175,22 @@ describe('User mutation resolver', () => {
       );
       expect(response).toBeTruthy();
       const user = await loadUserBy({ 'User.id': response.id });
+      const organizations = await usersResolver.User.organizations(
+        user,
+        undefined,
+        contextAdminUser,
+        undefined
+      );
       it('should have Personal space and Internal as organization', async () => {
         expect(
-          user.organizations.some(
-            (org) => org.id === PLATFORM_ORGANIZATION_UUID
-          )
+          organizations.some((org) => org.id === PLATFORM_ORGANIZATION_UUID)
         ).toBeTruthy();
         expect(
-          user.organizations.some(
-            (org) => org.id.toString() === user.id.toString()
-          )
+          organizations.some((org) => org.id.toString() === user.id.toString())
         ).toBeTruthy();
       });
 
-      expect(user.organizations.length).toEqual(2);
+      expect(organizations.length).toEqual(2);
 
       afterAll(async () => {
         await deleteUserById(response.id as UserId);
@@ -230,19 +237,23 @@ describe('User mutation resolver', () => {
       contextAdminOrgaThales
     );
     const user = await loadUserBy({ 'User.id': response.id });
+    const organizations = await usersResolver.User.organizations(
+      user,
+      undefined,
+      contextAdminUser,
+      undefined
+    );
     it('should have Personal space and Thales as organization', async () => {
       expect(response).toBeTruthy();
       expect(
-        user.organizations.some((org) => org.id === THALES_ORGA_ID)
+        organizations.some((org) => org.id === THALES_ORGA_ID)
       ).toBeTruthy();
       expect(
-        user.organizations.some(
-          (org) => org.id.toString() === user.id.toString()
-        )
+        organizations.some((org) => org.id.toString() === user.id.toString())
       ).toBeTruthy();
     });
 
-    expect(user.organizations.length).toEqual(2);
+    expect(organizations.length).toEqual(2);
 
     afterAll(async () => {
       await deleteUserById(response.id as UserId);
@@ -269,13 +280,23 @@ describe('User mutation resolver', () => {
       );
 
       expect(response).toBeTruthy();
+      const organizations = await usersResolver.User.organizations(
+        response,
+        undefined,
+        contextAdminUser,
+        undefined
+      );
+      const roles_portal = await usersResolver.User.roles_portal(
+        response,
+        undefined,
+        contextAdminUser,
+        undefined
+      );
       it('should have update organisations, first_name and last_name', async () => {
-        expect(response.organizations.length).toEqual(3);
+        expect(organizations.length).toEqual(3);
       });
       it('should not have update other fields', async () => {
-        expect(fallbackUser.roles_portal.length).toEqual(
-          response.roles_portal.length
-        );
+        expect(roles_portal.length).toEqual(response.roles_portal.length);
         expect(fallbackUser.email).toEqual(response.email);
       });
 

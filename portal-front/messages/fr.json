@@ -225,7 +225,6 @@
     "OrganizationAdded": "L'organisation {name} a été ajoutée",
     "UserCapabilitiesModified": "Les capacités de {email}'s ont été modifiées",
     "UserServiceAdded": "{email} a été invité au service {serviceName}"
-
   },
   "VaultActions": {
     "DocumentDeleted": "{file_name} a été supprimé",
@@ -399,6 +398,11 @@
   "ServiceName": {
     "custom_dashboards": "Tableau de bord personnalisé"
   },
+  "Reset table": "Remise à zéro de la table",
+  "entitie(s)": "entité(s)",
+  "Rows per page": "Lignes par page",
+  "Sort Asc": "Tri Asc",
+  "Sort Desc": "Sort Desc",
   "Badge": {
     "Published": "Publié",
     "Draft": "Brouillon",

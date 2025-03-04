@@ -10,6 +10,9 @@ import {
 import {
   createUser,
   deleteUserById,
+  getCapabilities,
+  getOrganizations,
+  getRolesPortal,
   loadUserBy,
   loadUserRoles,
 } from './users.domain';
@@ -22,10 +25,12 @@ describe('User helpers - createNewUserFromInvitation', async () => {
       email: testMail,
     });
     const newUser = await loadUserBy({ email: testMail });
+    const roles_portal = await getRolesPortal(contextAdminUser, newUser.id);
+    const organizations = await getOrganizations(contextAdminUser, newUser.id);
     expect(newUser).toBeTruthy();
-    expect(newUser.roles_portal[0].id).toBe(ROLE_USER.id);
-    expect(newUser.organizations.length).toBe(1);
-    expect(newUser.organizations[0].personal_space).toBe(true);
+    expect(roles_portal[0].id).toBe(ROLE_USER.id);
+    expect(organizations.length).toBe(1);
+    expect(organizations[0].personal_space).toBe(true);
 
     // Delete corresponding in order to avoid issue with other tests
     await removeUser(contextAdminUser, { email: newUser.email });
@@ -64,14 +69,14 @@ describe('User should be log with all the capacity', () => {
       last_name: 'test',
     });
 
+    const roles_portal = await getRolesPortal(contextAdminUser, newUser.id);
+    const capabilities = await getCapabilities(contextAdminUser, newUser.id);
     expect(newUser).toBeTruthy();
-    expect(newUser.capabilities.length).toBe(7);
-    expect(newUser.roles_portal.length).toBe(2);
+    expect(capabilities.length).toBe(7);
+    expect(roles_portal.length).toBe(2);
+    expect(roles_portal.some(({ id }) => id === ROLE_USER.id)).toBeTruthy();
     expect(
-      newUser.roles_portal.some(({ id }) => id === ROLE_USER.id)
-    ).toBeTruthy();
-    expect(
-      newUser.roles_portal.some(({ id }) => id === ROLE_ADMIN_ORGA.id)
+      roles_portal.some(({ id }) => id === ROLE_ADMIN_ORGA.id)
     ).toBeTruthy();
   });
 

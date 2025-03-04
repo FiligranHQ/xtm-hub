@@ -25,6 +25,9 @@ import {
 import { updateUserRolePortal } from '../common/user-role-portal.helper';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
+  getCapabilities,
+  getOrganizations,
+  getRolesPortal,
   loadUnsecureUser,
   loadUserBy,
   loadUserDetails,
@@ -45,6 +48,11 @@ const validPassword = (user: UserLoadUserBy, password: string): boolean => {
 };
 
 const resolvers: Resolvers = {
+  User: {
+    organizations: ({ id }, _, context) => getOrganizations(context, id),
+    capabilities: ({ id }, _, context) => getCapabilities(context, id),
+    roles_portal: ({ id }, _, context) => getRolesPortal(context, id),
+  },
   Query: {
     me: async (_, __, context) => {
       // User is not logged in
@@ -58,8 +66,19 @@ const resolvers: Resolvers = {
         'User.id': id as UserId,
       });
     },
-    users: async (_, { first, after, orderMode, orderBy, filter }, context) => {
-      return loadUsers(context, { first, after, orderMode, orderBy }, filter);
+    users: async (
+      _,
+      { first, after, orderMode, orderBy, searchTerm, filters },
+      context
+    ) => {
+      return loadUsers(context, {
+        first,
+        after,
+        orderMode,
+        orderBy,
+        filters,
+        searchTerm,
+      });
     },
     userHasOrganizationWithSubscription: async (_, __, context) => {
       return userHasOrganizationWithSubscription(context);
@@ -236,7 +255,11 @@ const resolvers: Resolvers = {
       try {
         const logged = await loadUserBy({ email });
         if (logged && validPassword(logged, password)) {
-          req.session.user = await selectOrganizationAtLogin(logged);
+          const organizations = await getOrganizations(context, logged.id);
+          req.session.user = await selectOrganizationAtLogin({
+            ...logged,
+            organizations,
+          });
           return mapUserToGraphqlUser(logged);
         }
         return undefined;

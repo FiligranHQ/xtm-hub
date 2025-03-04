@@ -1,14 +1,15 @@
-import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
 import {
   AddUserInput,
   EditMeUserInput,
   EditUserInput,
+  Filter,
+  FilterKey,
+  Organization,
   QueryUsersArgs,
   Subscription,
   UserConnection,
-  UserFilter,
   User as UserGenerated,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -39,16 +40,6 @@ import { extractId, isEmpty } from '../../utils/utils';
 import { updateUserOrg } from '../common/user-organization.helper';
 import { updateUserRolePortal } from '../common/user-role-portal.helper';
 import { addNewUserWithRoles } from './users.helper';
-
-const completeUserCapability = (user: UserLoadUserBy): UserLoadUserBy => {
-  if (user && user.id === ADMIN_UUID) {
-    const capabilityIds = user.capabilities.map((c) => c.id);
-    if (!capabilityIds.includes(CAPABILITY_BYPASS.id)) {
-      user.capabilities.push(CAPABILITY_BYPASS);
-    }
-  }
-  return user;
-};
 
 export const loadUsersByOrganization = async (
   organizationId: string,
@@ -81,6 +72,75 @@ export const loadUnsecureUser = async (
   return dbUnsecure<User>('User').where(field);
 };
 
+export const getOrganizations = (
+  context: PortalContext,
+  id: string,
+  opts?: Partial<QueryOpts>
+) => {
+  return db<Organization>(context, 'Organization', opts)
+    .leftJoin(
+      'User_Organization',
+      'Organization.id',
+      'User_Organization.organization_id'
+    )
+    .leftJoin('User', 'User.id', 'User_Organization.user_id')
+    .where('User.id', '=', id)
+    .groupBy('Organization.id')
+    .select('Organization.*');
+};
+
+export const getCapabilities = async (
+  context: PortalContext,
+  id: string,
+  opts?: Partial<QueryOpts>
+) => {
+  const capabilities = await db<UserLoadUserBy['capabilities']>(
+    context,
+    'CapabilityPortal',
+    opts
+  )
+    .leftJoin(
+      'RolePortal_CapabilityPortal as rolePortal_CapabilityPortal',
+      'CapabilityPortal.id',
+      '=',
+      'rolePortal_CapabilityPortal.capability_portal_id'
+    )
+    .leftJoin(
+      'User_RolePortal as user_RolePortal',
+      'rolePortal_CapabilityPortal.role_portal_id',
+      '=',
+      'user_RolePortal.role_portal_id'
+    )
+    .leftJoin('User', 'User.id', '=', 'user_RolePortal.user_id')
+    .where('User.id', '=', id)
+    .groupBy('CapabilityPortal.id')
+    .select('CapabilityPortal.*');
+  if (id === ADMIN_UUID) {
+    const capabilityIds = capabilities.map((c) => c.id);
+    if (!capabilityIds.includes(CAPABILITY_BYPASS.id)) {
+      capabilities.push(CAPABILITY_BYPASS);
+    }
+  }
+  return capabilities;
+};
+
+export const getRolesPortal = (
+  context: PortalContext,
+  id: string,
+  opts?: Partial<QueryOpts>
+) => {
+  return db<UserLoadUserBy['capabilities']>(context, 'RolePortal', opts)
+    .leftJoin(
+      'User_RolePortal as user_RolePortal',
+      'RolePortal.id',
+      '=',
+      'user_RolePortal.role_portal_id'
+    )
+    .leftJoin('User', 'User.id', '=', 'user_RolePortal.user_id')
+    .where('User.id', '=', id)
+    .select('RolePortal.*');
+};
+
 export const loadUserBy = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<UserLoadUserBy> => {
@@ -95,186 +155,44 @@ export const loadUserBy = async (
 
   const userQuery = dbUnsecure<UserLoadUserBy>('User')
     .where(field)
-    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
-    .leftJoin(
-      'Organization as org',
-      'User_Organization.organization_id',
-      '=',
-      'org.id'
-    )
-    .leftJoin(
-      'User_RolePortal as user_RolePortal',
-      'User.id',
-      '=',
-      'user_RolePortal.user_id'
-    )
-    .leftJoin(
-      'RolePortal_CapabilityPortal as rolePortal_CapabilityPortal',
-      'user_RolePortal.role_portal_id',
-      '=',
-      'rolePortal_CapabilityPortal.role_portal_id'
-    )
-    .leftJoin(
-      'CapabilityPortal as capability',
-      'capability.id',
-      '=',
-      'rolePortal_CapabilityPortal.capability_portal_id'
-    )
-    .leftJoin(
-      'RolePortal as rolePortal',
-      'user_RolePortal.role_portal_id',
-      '=',
-      'rolePortal.id'
-    )
-    // Inspiration from https://github.com/knex/knex/issues/882
-    .select([
-      'User.*',
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'org',
-          typename: 'Organization',
-          as: 'Organizations',
-        })
-      ),
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'rolePortal',
-          typename: 'RolePortal',
-          as: 'roles_portal',
-        })
-      ),
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'capability',
-          typename: 'CapabilityPortal',
-          as: 'capabilities',
-        })
-      ),
-    ])
+    .select('User.*')
     .groupBy(['User.id'])
     .first();
 
-  const user = await userQuery;
-
-  // Complete admin user with bypass if needed
-  return completeUserCapability(user);
+  return userQuery;
 };
 
-export const loadUsers = async (
-  context: PortalContext,
-  opts: QueryUsersArgs,
-  filter: UserFilter
-): Promise<UserConnection> => {
-  const query = paginate<UserGenerated>(context, 'User', opts);
+export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
+  const { filters } = opts;
+  const loadUserQuery = db<UserGenerated>(context, 'User', opts);
 
-  const addWhereClauses = (query: Knex.QueryInterface) => {
-    if (filter.search) {
-      query.where((builder) =>
-        builder
-          .where('email', 'ILIKE', `%${filter.search}%`)
-          .orWhere('first_name', 'ILIKE', `%${filter.search}%`)
-          .orWhere('last_name', 'ILIKE', `%${filter.search}%`)
-      );
-    }
-    if (filter.organization) {
-      const organizationId = extractId(filter.organization);
-      query.andWhere('UserOrgFilter.organization_id', '=', organizationId);
-    }
-  };
-
-  const loadUsersQuery = query
-    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
+  loadUserQuery
+    .select('User.*')
+    .groupBy(['User.id'])
     .leftJoin(
       'User_Organization as UserOrgFilter',
       'User.id',
       'UserOrgFilter.user_id'
-    )
-    .leftJoin(
-      'Organization as org',
-      'User_Organization.organization_id',
-      '=',
-      'org.id'
-    )
-    .leftJoin(
-      'User_RolePortal as user_RolePortal',
-      'User.id',
-      '=',
-      'user_RolePortal.user_id'
-    )
-    .leftJoin(
-      'RolePortal_CapabilityPortal as rolePortal_CapabilityPortal',
-      'user_RolePortal.role_portal_id',
-      '=',
-      'rolePortal_CapabilityPortal.role_portal_id'
-    )
-    .leftJoin(
-      'CapabilityPortal as capability',
-      'capability.id',
-      '=',
-      'rolePortal_CapabilityPortal.capability_portal_id'
-    )
-    .leftJoin(
-      'RolePortal as rolePortal',
-      'user_RolePortal.role_portal_id',
-      '=',
-      'rolePortal.id'
-    )
-    // Inspiration from https://github.com/knex/knex/issues/882
-    .select([
-      'User.*',
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'org',
-          typename: 'Organization',
-          as: 'Organizations',
-        })
-      ),
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'capability',
-          typename: 'CapabilityPortal',
-          as: 'capabilities',
-        })
-      ),
-      dbRaw(
-        formatRawAggObject({
-          columnName: 'rolePortal',
-          typename: 'RolePortal',
-          as: 'roles_portal',
-        })
-      ),
-    ])
-    .groupBy(['User.id']);
+    );
 
-  addWhereClauses(loadUsersQuery);
-
-  const userConnection = await loadUsersQuery.asConnection<UserConnection>();
-
-  userConnection.edges = userConnection.edges.map((edge) => {
-    const edgeUser = edge.node as unknown as UserLoadUserBy;
-    return {
-      cursor: edge.cursor,
-      node: completeUserCapability(edgeUser) as unknown as UserGenerated,
-    };
-  });
-
-  const queryTotalCount = db<User>(context, 'User')
-    .leftJoin(
-      'User_Organization as UserOrgFilter',
-      'User.id',
-      'UserOrgFilter.user_id'
-    )
-    .countDistinct('User.id as totalCount')
-    .first();
-
-  addWhereClauses(queryTotalCount);
-
-  const { totalCount } = await queryTotalCount;
-
-  return {
-    totalCount,
-    ...userConnection,
-  };
+  return paginate<UserGenerated, UserConnection>(
+    context,
+    'User',
+    {
+      ...opts,
+      filters: filters?.map(({ key, value }) => {
+        if (key === FilterKey.OrganizationId) {
+          return {
+            key: 'UserOrgFilter.organization_id',
+            value,
+          } as unknown as Filter;
+        }
+        return { key, value };
+      }),
+    },
+    undefined,
+    loadUserQuery
+  );
 };
 
 export const createUser = async (

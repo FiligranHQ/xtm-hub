@@ -14,7 +14,6 @@ import { userList_fragment$data } from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import {
   OrderingMode,
-  UserFilter,
   userListQuery,
   userListQuery$variables,
   UserOrdering,
@@ -33,7 +32,8 @@ export const UserListQuery = graphql`
     $cursor: ID
     $orderBy: UserOrdering!
     $orderMode: OrderingMode!
-    $filter: UserFilter
+    $filters: [Filter!]
+    $searchTerm: String
   ) {
     ...userList_users
   }
@@ -47,7 +47,8 @@ export const userListFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
-      filter: $filter
+      searchTerm: $searchTerm
+      filters: $filters
     ) {
       __id
       totalCount
@@ -106,7 +107,10 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     undefined
   );
 
-  const [filter, setFilter] = useState<UserFilter>({
+  const [filter, setFilter] = useState<{
+    search?: string;
+    organization?: string;
+  }>({
     search: undefined,
     organization,
   });
@@ -115,7 +119,10 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     count: pageSize,
     orderMode: orderMode,
     orderBy: orderBy,
-    filter,
+    searchTerm: filter.search,
+    filters: filter.organization
+      ? [{ key: 'organization_id', value: [filter.organization] }]
+      : undefined,
   });
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -262,7 +269,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
         ...prevFilter,
         search: inputValue,
       };
-      refetch({ filter: updatedFilter }); // Use the updated filter
+      refetch({ searchTerm: updatedFilter.search }); // Use the updated filter
       return updatedFilter;
     });
   };

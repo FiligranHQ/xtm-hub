@@ -12,7 +12,7 @@ type ServiceInstance implements Node {
   user_joined: Boolean
   links: [ServiceLink]
   organization: [Organization]
-  subscriptions: [Subscription]
+  subscriptions: [SubscriptionModel]
   capabilities: [String]
   public: Boolean
   join_type: String
@@ -45,7 +45,7 @@ input AddServiceInput {
 type Mutation {
   editServiceInstance(id: ID!, name: String!): ServiceInstance
     @auth(requires: [BCK_MANAGE_SERVICES])
-  addServiceInstance(input: AddServiceInput): Subscription
+  addServiceInstance(input: AddServiceInput): SubscriptionModel
     @auth(requires: [BCK_MANAGE_SERVICES])
   deleteServiceInstance(id: ID!): ServiceInstance
     @auth(requires: [BCK_MANAGE_SERVICES])

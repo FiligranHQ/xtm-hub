@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
 export const subscriptionWithUserServiceFragment = graphql`
-  fragment subscriptionWithUserService_fragment on Subscription {
+  fragment subscriptionWithUserService_fragment on SubscriptionModel {
     id
     organization {
       id
@@ -21,7 +21,7 @@ export const subscriptionWithUserServiceFragment = graphql`
   }
 `;
 export const subscriptionFragment = graphql`
-  fragment subscription_fragment on Subscription {
+  fragment subscription_fragment on SubscriptionModel {
     id
     organization_id
     organization {

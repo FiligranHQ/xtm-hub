@@ -1,10 +1,10 @@
 'use client';
 import GuardCapacityComponent from '@/components/admin-guard';
+import Labels from '@/components/admin/label/labels';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { RESTRICTION } from '@/utils/constant';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
-import Labels from '@/components/admin/label/labels';
 
 export const dynamic = 'force-dynamic';
 

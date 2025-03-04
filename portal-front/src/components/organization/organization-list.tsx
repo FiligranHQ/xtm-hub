@@ -116,7 +116,7 @@ const OrganizationList: FunctionComponent = () => {
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
       orderBy,
       orderMode,
-      filter: undefined,
+      searchTerm: undefined,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
@@ -151,7 +151,7 @@ const OrganizationList: FunctionComponent = () => {
   };
 
   const handleInputChange = (inputValue: string) => {
-    handleRefetchData({ filter: { search: inputValue } });
+    handleRefetchData({ searchTerm: inputValue });
   };
 
   const debounceHandleInput = useDebounceCallback(

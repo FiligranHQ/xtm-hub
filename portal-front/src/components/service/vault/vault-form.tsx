@@ -1,17 +1,14 @@
 'use client';
-import GuardCapacityComponent from '@/components/admin-guard';
 import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import {
   newDocumentSchema,
   VaultNewFileForm,
 } from '@/components/service/vault/vault-new-file-form';
-import { RESTRICTION } from '@/utils/constant';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
 
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
@@ -21,11 +18,11 @@ import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
 interface VaultFormProps {
   connectionId: string;
-  usersServiceCapabilities: string[];
+  userCanUpdate: boolean;
 }
 export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
   connectionId,
-  usersServiceCapabilities,
+  userCanUpdate,
 }) => {
   const { toast } = useToast();
   const t = useTranslations();
@@ -63,24 +60,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
 
   return (
     <>
-      <GuardCapacityComponent
-        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
-        displayError={false}>
-        {
-          <SheetWithPreventingDialog
-            open={openSheet}
-            setOpen={setOpenSheet}
-            trigger={
-              <TriggerButton label={t('Service.Vault.FileForm.AddFile')} />
-            }
-            title={t('Service.Vault.FileForm.AddFile')}>
-            <VaultNewFileForm handleSubmit={sendDocument} />
-          </SheetWithPreventingDialog>
-        }
-      </GuardCapacityComponent>
-      {usersServiceCapabilities.some(
-        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
-      ) && (
+      {userCanUpdate && (
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}

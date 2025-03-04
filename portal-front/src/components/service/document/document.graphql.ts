@@ -121,7 +121,7 @@ export const documentsFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
-      filter: $filter
+      searchTerm: $searchTerm
       filters: $filters
       serviceInstanceId: $serviceInstanceId
       parentsOnly: $parentsOnly
@@ -147,7 +147,7 @@ export const DocumentsListQuery = graphql`
     $orderBy: DocumentOrdering!
     $orderMode: OrderingMode!
     $filters: [Filter!]
-    $filter: String
+    $searchTerm: String
     $serviceInstanceId: String
     $parentsOnly: Boolean
   ) {

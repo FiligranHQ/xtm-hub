@@ -23,8 +23,8 @@ input UserServiceDeleteInput {
 }
 
 type Mutation {
-  addUserService(input: UserServiceAddInput!): Subscription
-  deleteUserService(input: UserServiceDeleteInput!): Subscription
+  addUserService(input: UserServiceAddInput!): SubscriptionModel
+  deleteUserService(input: UserServiceDeleteInput!): SubscriptionModel
     @auth(requires: [FRT_MANAGE_USER, BCK_MANAGE_SERVICES])
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance @auth
 }
@@ -59,7 +59,7 @@ type UserService implements Node {
   subscription_id: ID!
   user_id: ID!
   user: User
-  subscription: Subscription
+  subscription: SubscriptionModel
   user_service_capability: [UserServiceCapability]
 }
 

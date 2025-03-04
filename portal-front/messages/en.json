@@ -398,6 +398,11 @@
   "ServiceName": {
     "custom_dashboards": "Custom Dashboard"
   },
+  "Reset table": "Reset table",
+  "entitie(s)": "entitie(s)",
+  "Rows per page": "Rows per page",
+  "Sort Asc": "Sort Asc",
+  "Sort Desc": "Sort Desc",
   "Badge": {
     "Published": "Published",
     "Draft": "Draft",

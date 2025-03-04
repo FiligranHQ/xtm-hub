@@ -18,8 +18,14 @@ import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
+import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { uploadNewFile } from './document/document.helper';
 import {
+  getIsSubscribed,
+  getLinks,
+  getServiceDefinition,
+  getServiceDefinitionCapabilities,
+  getUserJoined,
   loadPublicServiceInstances,
   loadServiceInstanceByIdWithCapabilities,
   loadServiceInstances,
@@ -38,6 +44,23 @@ const resolvers: Resolvers = {
         return toGlobalId('ServiceInstance', illustration_document_id);
       }
     },
+    links: ({ id }, _, context) => getLinks(context, id),
+    service_definition: ({ id }, _, context) =>
+      getServiceDefinition(context, id),
+    organization_subscribed: ({ id }, _, context) =>
+      getIsSubscribed(context, id),
+    capabilities: ({ id }, _, context) =>
+      loadCapabilities(
+        context,
+        id,
+        context.user.id,
+        context.user.selected_organization_id
+      ),
+    user_joined: ({ id }, _, context) => getUserJoined(context, id),
+  },
+  ServiceDefinition: {
+    service_capability: ({ id }, _, context) =>
+      getServiceDefinitionCapabilities(context, id),
   },
   Query: {
     serviceInstances: async (_, opt, context) => {
@@ -55,6 +78,14 @@ const resolvers: Resolvers = {
       // Not found
       if (!serviceInstance) {
         return null;
+      }
+      const userJoined = await getUserJoined(context, serviceInstance.id);
+      // Found but the user has not joinded the service yet
+      if (
+        ['JOIN_AUTO', 'JOIN_SELF'].includes(serviceInstance.join_type) &&
+        !userJoined
+      ) {
+        throw new Error('ERROR_SERVICE_INSTANCE_USER_MUST_JOIN_SERVICE');
       }
 
       return serviceInstance;
