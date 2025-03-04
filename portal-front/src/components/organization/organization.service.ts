@@ -5,7 +5,6 @@ import {
 import { organizationList_organizations$key } from '@generated/organizationList_organizations.graphql';
 import {
   OrderingMode,
-  OrganizationFilter,
   OrganizationOrdering,
   organizationSelectQuery,
 } from '@generated/organizationSelectQuery.graphql';
@@ -15,13 +14,12 @@ interface OrganizationParamsQuery {
   count: number;
   orderBy: OrganizationOrdering;
   orderMode: OrderingMode;
-  filter?: OrganizationFilter;
+  searchTerm?: string;
 }
 export const getOrganizations = ({
   count = 50,
   orderBy = 'name',
   orderMode = 'asc',
-  filter,
 }: Partial<OrganizationParamsQuery> = {}) => {
   const organizationData = useLazyLoadQuery<organizationSelectQuery>(
     organizationFetch,
@@ -29,7 +27,6 @@ export const getOrganizations = ({
       count,
       orderBy,
       orderMode,
-      filter,
     }
   );
   return useRefetchableFragment<

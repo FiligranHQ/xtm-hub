@@ -1,16 +1,27 @@
-import { readInlineData, useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-import { labelFragment, labelListFragment, LabelListQuery } from '@/components/admin/label/label.graphql';
+import AddLabel from '@/components/admin/label/add-label';
+import EditLabel from '@/components/admin/label/edit-label';
+import {
+  labelFragment,
+  labelListFragment,
+  LabelListQuery,
+} from '@/components/admin/label/label.graphql';
+import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
+import { i18nKey } from '@/utils/datatable';
 import { labelListQuery } from '@generated/labelListQuery.graphql';
 import { labelList_labels$key } from '@generated/labelList_labels.graphql';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
-import { i18nKey } from '@/utils/datatable';
 import { Badge, DataTable } from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
-import AddLabel from '@/components/admin/label/add-label';
-import EditLabel from '@/components/admin/label/edit-label';
-import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
-import { label_fragment$data, label_fragment$key } from '../../../../__generated__/label_fragment.graphql';
+import {
+  readInlineData,
+  useLazyLoadQuery,
+  useRefetchableFragment,
+} from 'react-relay';
+import {
+  label_fragment$data,
+  label_fragment$key,
+} from '../../../../__generated__/label_fragment.graphql';
 
 const Labels = () => {
   const t = useTranslations();
@@ -20,8 +31,13 @@ const Labels = () => {
     orderBy: 'name',
   });
 
-  const [data] = useRefetchableFragment<labelListQuery, labelList_labels$key>(labelListFragment, queryData);
-  const [labelEdit, setLabelEdit] = useState<label_fragment$data | undefined>(undefined);
+  const [data] = useRefetchableFragment<labelListQuery, labelList_labels$key>(
+    labelListFragment,
+    queryData
+  );
+  const [labelEdit, setLabelEdit] = useState<label_fragment$data | undefined>(
+    undefined
+  );
 
   const columns: ColumnDef<label_fragment$data>[] = [
     {
@@ -29,7 +45,13 @@ const Labels = () => {
       id: 'name',
       header: t('LabelListPage.Name'),
       cell: ({ row }) => {
-        return <Badge variant="outline" color={row.original.color}>{row.original.name}</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            color={row.original.color}>
+            {row.original.name}
+          </Badge>
+        );
       },
     },
     {
@@ -43,8 +65,12 @@ const Labels = () => {
   ];
 
   const labelsData = useMemo<label_fragment$data[]>(
-    () => data.labels?.edges?.map?.(({ node }) => readInlineData<label_fragment$key>(labelFragment, node)) as label_fragment$data[]
-    , [data]);
+    () =>
+      data.labels?.edges?.map?.(({ node }) =>
+        readInlineData<label_fragment$key>(labelFragment, node)
+      ) as label_fragment$data[],
+    [data]
+  );
 
   return (
     <>
@@ -58,7 +84,9 @@ const Labels = () => {
           enableColumnPinning: false,
           enableHiding: false,
         }}
-        onClickRow={({ original }) => setLabelEdit(original as label_fragment$data)}
+        onClickRow={({ original }) =>
+          setLabelEdit(original as label_fragment$data)
+        }
         toolbar={
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
             <div />
@@ -79,7 +107,7 @@ const Labels = () => {
         />
       )}
     </>
-  )
+  );
 };
 
 export default Labels;

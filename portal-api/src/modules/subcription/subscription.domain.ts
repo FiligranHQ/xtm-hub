@@ -1,5 +1,10 @@
 import { db } from '../../../knexfile';
-import { Subscription, UserService } from '../../__generated__/resolvers-types';
+import {
+  ServiceCapability,
+  Subscription,
+  SubscriptionModel,
+  UserService,
+} from '../../__generated__/resolvers-types';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -14,8 +19,8 @@ import { loadSubscriptionBy } from './subscription.helper';
 
 export const fillSubscription = async (
   context: PortalContext,
-  updatedSubscription: Subscription
-): Promise<Subscription> => {
+  updatedSubscription: SubscriptionModel
+): Promise<SubscriptionModel> => {
   updatedSubscription.organization = await loadOrganizationBy(
     context,
     'id',
@@ -30,11 +35,36 @@ export const fillSubscription = async (
   return updatedSubscription;
 };
 
+export const getSubscriptionCapability = async (context, id) => {
+  return db<UserService>(context, 'Subscription_Capability')
+    .where('Subscription_Capability.subscription_id', '=', id)
+    .select('Subscription_Capability.*');
+};
+
+export const getUserService = (context, id) => {
+  return db<UserService>(context, 'User_Service')
+    .where('User_Service.subscription_id', '=', id)
+    .select('User_Service.*');
+};
+
+export const getServiceCapability = async (context, id) => {
+  return db<ServiceCapability>(context, 'Service_Capability')
+    .leftJoin(
+      'Subscription_Capability',
+      'Subscription_Capability.service_capability_id',
+      '=',
+      'Service_Capability.id'
+    )
+    .where('Subscription_Capability.id', '=', id)
+    .select('Service_Capability.*')
+    .first();
+};
+
 export const checkSubscriptionExists = async (
   context: PortalContext,
   organization_id: string,
   service_instance_id: string
-): Promise<Subscription | false> => {
+): Promise<SubscriptionModel | false> => {
   const subscriptionQuery = db<Subscription>(context, 'Subscription')
     .where({ organization_id, service_instance_id })
     .select('*')

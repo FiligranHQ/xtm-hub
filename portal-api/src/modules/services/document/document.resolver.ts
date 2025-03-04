@@ -93,7 +93,7 @@ const resolvers: Resolvers = {
     children_documents: ({ id }, _, context) =>
       getChildrenDocuments(context, id),
     uploader: ({ id }, _, context) => getUploader(context, id),
-    labels: ({ id }, context) => getLabels(context, id),
+    labels: ({ id }, _, context) => getLabels(context, id),
   },
   Query: {
     documentExists: async (_, input) => {
@@ -114,7 +114,7 @@ const resolvers: Resolvers = {
         after,
         orderMode,
         orderBy,
-        filter,
+        searchTerm,
         filters,
         serviceInstanceId,
         parentsOnly,
@@ -124,8 +124,15 @@ const resolvers: Resolvers = {
       try {
         return loadDocuments(
           context,
-          { first, after, orderMode, orderBy, parentsOnly, filters },
-          normalizeDocumentName(filter ?? ''),
+          {
+            first,
+            after,
+            orderMode,
+            orderBy,
+            parentsOnly,
+            filters,
+            searchTerm: normalizeDocumentName(searchTerm ?? ''),
+          },
           {
             'Document.service_instance_id': fromGlobalId(serviceInstanceId).id,
           } as DocumentMutator

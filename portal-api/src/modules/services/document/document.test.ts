@@ -227,7 +227,7 @@ describe('Documents loading', () => {
       {},
       {
         first: 50,
-        filter: '',
+        searchTerm: '',
         orderBy: 'file_name',
         orderMode: 'asc',
         serviceInstanceId: toGlobalId(
@@ -247,7 +247,7 @@ describe('Documents loading', () => {
       {},
       {
         count: 50,
-        filter: '',
+        searchTerm: '',
         orderBy: 'file_name',
         orderMode: 'desc',
         serviceInstanceId: toGlobalId(
@@ -268,7 +268,7 @@ describe('Documents loading', () => {
       {
         first: 50,
         after: 0,
-        filter: 'xfi',
+        searchTerm: 'xfi',
         orderBy: 'file_name',
         orderMode: 'asc',
         serviceInstanceId: toGlobalId(

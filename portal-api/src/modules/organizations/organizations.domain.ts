@@ -1,6 +1,7 @@
-import { Knex } from 'knex';
 import { db, paginate } from '../../../knexfile';
 import {
+  Filter,
+  FilterKey,
   Organization,
   OrganizationConnection,
   QueryOrganizationsArgs,
@@ -18,45 +19,23 @@ export const loadOrganizationBy = async (
     .first();
 };
 
-export const loadOrganizations = async (
+export const loadOrganizations = (
   context: PortalContext,
   opts: QueryOrganizationsArgs
 ) => {
-  const { first, after, orderMode, orderBy, filter } = opts;
-  const query = paginate<Organization>(context, 'Organization', {
-    first,
-    after,
-    orderMode,
-    orderBy,
-  });
-
-  const addWhereClauses = (query: Knex.QueryInterface) => {
-    if (filter?.search) {
-      query.where((builder) =>
-        builder.where('name', 'ILIKE', `%${filter.search}%`)
-      );
+  const { first, after, orderMode, orderBy, searchTerm } = opts;
+  return paginate<Organization, OrganizationConnection>(
+    context,
+    'Organization',
+    {
+      first,
+      after,
+      orderMode,
+      orderBy,
+      searchTerm,
+      filters: [
+        { key: FilterKey.PersonalSpace, value: [false] } as unknown as Filter,
+      ],
     }
-  };
-  addWhereClauses(query);
-  const organizationConnection = await query
-    .select('*')
-    .where('personal_space', false)
-    .asConnection<OrganizationConnection>();
-
-  const queryTotalCount = db<Organization>(context, 'Organization', {
-    first,
-    after,
-    orderMode,
-    orderBy,
-  })
-    .where('personal_space', false)
-    .countDistinct('id as totalCount')
-    .first();
-  addWhereClauses(queryTotalCount);
-  const { totalCount } = await queryTotalCount;
-
-  return {
-    totalCount,
-    ...organizationConnection,
-  };
+  );
 };

@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions } from '@/components/ui/icon-actions';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import useServiceCapability from '@/hooks/useServiceCapability';
 import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
@@ -36,7 +37,10 @@ import {
   documentsQuery,
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
-import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
+import {
+  serviceByIdQuery,
+  serviceByIdQuery$data,
+} from '@generated/serviceByIdQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import {
@@ -245,7 +249,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
 
   const handleInputChange = (inputValue: string) => {
     refetch({
-      filter: inputValue,
+      searchTerm: inputValue,
     });
   };
 
@@ -263,7 +267,12 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       original: true,
     },
   ];
-
+  const userCanUpdate = useServiceCapability(
+    ServiceCapabilityName.Upload,
+    queryDataService.serviceInstanceById as NonNullable<
+      serviceByIdQuery$data['serviceInstanceById']
+    >
+  );
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
@@ -307,11 +316,8 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                 </Button>
               )}
               <VaultForm
-                usersServiceCapabilities={
-                  (queryDataService.serviceInstanceById?.capabilities ??
-                    []) as string[]
-                }
                 connectionId={data?.documents?.__id}
+                userCanUpdate={userCanUpdate}
               />
             </div>
           </div>

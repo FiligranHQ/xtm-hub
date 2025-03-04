@@ -10,6 +10,8 @@ scalar Upload
 
 enum FilterKey {
   label
+  organization_id
+  personal_space
 }
 
 input Filter {
@@ -26,7 +28,7 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
-  addServiceInstance(input: AddServiceInput): Subscription
+  addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
   addServicePicture(serviceId: ID, document: Upload, isLogo: Boolean): ServiceInstance
   addLabel(input: AddLabelInput!): Label!
@@ -35,9 +37,9 @@ type Mutation {
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID]): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
-  editServiceCapability(input: EditServiceCapabilityInput): Subscription
-  addUserService(input: UserServiceAddInput!): Subscription
-  deleteUserService(input: UserServiceDeleteInput!): Subscription
+  editServiceCapability(input: EditServiceCapabilityInput): SubscriptionModel
+  addUserService(input: UserServiceAddInput!): SubscriptionModel
+  deleteUserService(input: UserServiceDeleteInput!): SubscriptionModel
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
@@ -71,30 +73,26 @@ type OrganizationConnection {
   pageInfo: PageInfo!
 }
 
-input OrganizationFilter {
-  search: String
-}
-
 type Query {
   organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, filter: OrganizationFilter): OrganizationConnection!
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   documentExists(documentName: String, service_instance_id: String): Boolean
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, filter: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
-  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!): LabelConnection
+  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
   label(id: ID!): Label
   settings: Settings!
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   me: User
   user(id: ID!): User
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, filter: UserFilter): UserConnection!
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
   node(id: ID!): Node
 }
@@ -191,7 +189,7 @@ type ServiceInstance implements Node {
   user_joined: Boolean
   links: [ServiceLink]
   organization: [Organization]
-  subscriptions: [Subscription]
+  subscriptions: [SubscriptionModel]
   capabilities: [String]
   public: Boolean
   join_type: String
@@ -227,19 +225,8 @@ type ServiceInstanceSubscription {
   delete: ServiceInstance
 }
 
-type Subscription implements Node {
+type Subscription {
   ServiceInstance: ServiceInstanceSubscription
-  id: ID!
-  organization_id: ID!
-  service_instance_id: ID!
-  start_date: Date
-  end_date: Date
-  status: String
-  organization: Organization!
-  service_url: String!
-  service_instance: ServiceInstance
-  subscription_capability: [SubscriptionCapability]
-  user_service: [UserService]!
   ActionTracking: TrackingSubscription
   User: UserSubscription
   MeUser: MeUserSubscription
@@ -253,6 +240,7 @@ type Label implements Node {
 
 enum LabelOrdering {
   name
+  color
 }
 
 type LabelEdge {
@@ -297,9 +285,23 @@ enum SubscriptionOrdering {
   service_description
 }
 
+type SubscriptionModel implements Node {
+  id: ID!
+  organization_id: ID!
+  service_instance_id: ID!
+  start_date: Date
+  end_date: Date
+  status: String
+  organization: Organization!
+  service_url: String!
+  service_instance: ServiceInstance
+  subscription_capability: [SubscriptionCapability]
+  user_service: [UserService]!
+}
+
 type SubscriptionEdge {
   cursor: String!
-  node: Subscription!
+  node: SubscriptionModel!
 }
 
 type ActionTracking implements Node {
@@ -396,7 +398,7 @@ type UserService implements Node {
   subscription_id: ID!
   user_id: ID!
   user: User
-  subscription: Subscription
+  subscription: SubscriptionModel
   user_service_capability: [UserServiceCapability]
 }
 
@@ -440,11 +442,6 @@ type UserConnection {
   totalCount: Int!
   edges: [UserEdge!]!
   pageInfo: PageInfo!
-}
-
-input UserFilter {
-  search: String
-  organization: String
 }
 
 input EditUserInput {

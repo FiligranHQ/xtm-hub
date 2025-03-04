@@ -16,13 +16,8 @@ interface PageLoaderProps {
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
-  const {
-    count,
-    search,
-    setSearch,
-    labels,
-    setLabels,
-  } = customDashboardListLocalStorage();
+  const { count, search, setSearch, labels, setLabels } =
+    customDashboardListLocalStorage();
 
   useEffect(() => {
     loadQuery(
@@ -32,8 +27,8 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
         parentsOnly: true,
-        filter: search,
-        filters: [{ key: 'label', value: labels }]
+        searchTerm: search,
+        filters: [{ key: 'label', value: labels }],
       },
       {
         fetchPolicy: 'store-and-network',

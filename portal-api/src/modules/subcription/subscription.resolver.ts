@@ -2,6 +2,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
+
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import {
   SubscriptionId,
@@ -17,6 +18,7 @@ import {
 import { extractId } from '../../utils/utils';
 import {
   grantServiceAccessUsers,
+  loadServiceInstanceBy,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
 import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
@@ -24,10 +26,24 @@ import { addAdminAccess } from '../user_service/user_service.domain';
 import {
   checkSubscriptionExists,
   fillSubscription,
+  getServiceCapability,
+  getSubscriptionCapability,
+  getUserService,
 } from './subscription.domain';
 import { loadSubscriptionBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
+  SubscriptionModel: {
+    subscription_capability: ({ id }, _, context) =>
+      getSubscriptionCapability(context, id),
+    service_instance: ({ service_instance_id }, _, context) =>
+      loadServiceInstanceBy(context, 'id', service_instance_id),
+    user_service: ({ id }, _, context) => getUserService(context, id),
+  },
+  SubscriptionCapability: {
+    service_capability: ({ id }, _, context) =>
+      getServiceCapability(context, id),
+  },
   Mutation: {
     addSubscription: async (_, { service_instance_id }, context) => {
       const trx = await dbTx();

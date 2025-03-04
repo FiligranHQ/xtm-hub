@@ -15,7 +15,7 @@ import { serviceCapability_fragment$data } from '@generated/serviceCapability_fr
 import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
-import { UserFilter, userListQuery } from '@generated/userListQuery.graphql';
+import { userListQuery } from '@generated/userListQuery.graphql';
 import { userService_fragment$data } from '@generated/userService_fragment.graphql';
 import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -192,7 +192,10 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
 
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
 
-  const [filter, setFilter] = useState<UserFilter>({
+  const [filter, setFilter] = useState<{
+    search?: string;
+    organization?: string;
+  }>({
     search: undefined,
     organization: subscription?.organization?.id,
   });
@@ -220,7 +223,10 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     count: pageSize,
     orderMode,
     orderBy,
-    filter,
+    searchTerm: filter.search,
+    filters: filter.organization
+      ? [{ key: 'organization_id', value: [filter.organization] }]
+      : undefined,
   });
 
   const [data] = useRefetchableFragment<userListQuery, userList_users$key>(

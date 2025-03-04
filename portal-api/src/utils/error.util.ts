@@ -24,6 +24,7 @@ const errorUtil = (
   }
 ) => {
   const Exception = createError(name, { data, message });
+  console.trace(name, data, message);
   return new Exception();
 };
 export const FORBIDDEN_ACCESS = 'FORBIDDEN_ACCESS';

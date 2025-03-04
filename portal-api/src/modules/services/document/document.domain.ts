@@ -156,23 +156,22 @@ export const passDocumentToInactive = async (
     .update({ active: false, remover_id: context.user.id });
 };
 
-export const loadDocuments = async (
+export const loadDocuments = (
   context: PortalContext,
   opts: QueryDocumentsArgs,
-  filter,
   field: DocumentMutator
 ): Promise<DocumentConnection> => {
-  const query = paginate<Document>(context, 'Document', opts)
+  const loadDocumentQuery = db<Document>(context, 'Document', opts)
     .select(['Document.*'])
     .where(field);
 
   if (opts.parentsOnly) {
-    query.whereNull('Document.parent_document_id');
+    loadDocumentQuery.whereNull('Document.parent_document_id');
     // left join children_documents
-    query.leftJoin('Document as children_documents', function () {
+    loadDocumentQuery.leftJoin('Document as children_documents', function () {
       this.on('Document.id', '=', 'children_documents.parent_document_id');
     });
-    query.select(
+    loadDocumentQuery.select(
       dbRaw(
         `CASE
         WHEN COUNT("children_documents"."id") = 0 THEN NULL
@@ -180,45 +179,16 @@ export const loadDocuments = async (
       END AS children_documents`
       )
     );
-  }
-  if (filter) {
-    query.andWhere(function () {
-      this.where('Document.file_name', 'ILIKE', `%${filter}%`)
-        .orWhere('Document.description', 'ILIKE', `%${filter}%`)
-        .orWhere('Document.name', 'ILIKE', `%${filter}%`)
-        .orWhere('Document.short_description', 'ILIKE', `%${filter}%`);
-    });
+    loadDocumentQuery.groupBy(['Document.id']);
   }
 
-  query.groupBy(['Document.id']);
-
-  const documentConnection = await query.asConnection<DocumentConnection>();
-
-  const queryCount = db<Document>(context, 'Document', opts)
-    .where('Document.active', '=', true)
-    .where(field);
-
-  if (opts.parentsOnly) {
-    queryCount.whereNull('Document.parent_document_id');
-  }
-
-  if (filter) {
-    queryCount.andWhere(function () {
-      this.where('Document.file_name', 'ILIKE', `%${filter}%`).orWhere(
-        'Document.description',
-        'ILIKE',
-        `%${filter}%`
-      );
-    });
-  }
-  const { totalCount } = await queryCount
-    .countDistinct('Document.id as totalCount')
-    .first();
-
-  return {
-    totalCount,
-    ...documentConnection,
-  };
+  return paginate<Document, DocumentConnection>(
+    context,
+    'Document',
+    opts,
+    undefined,
+    loadDocumentQuery
+  );
 };
 
 export const loadDocumentBy = async (
