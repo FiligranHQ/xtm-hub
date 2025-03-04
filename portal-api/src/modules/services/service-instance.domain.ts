@@ -27,6 +27,52 @@ import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 
+export const loadSubscribedServiceInstancesByIdentifier = async (
+  context: PortalContext,
+  identifier: string
+) => {
+  return await db<UserService>(context, 'ServiceInstance')
+    .leftJoin(
+      'Service_Link',
+      'Service_Link.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceDefinition.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
+    .leftJoin(
+      'Subscription',
+      'Subscription.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .leftJoin(
+      'Organization',
+      'Organization.id',
+      '=',
+      'Subscription.organization_id'
+    )
+    .leftJoin(
+      'User_Organization',
+      'User_Organization.organization_id',
+      '=',
+      'Organization.id'
+    )
+    .where('User_Organization.user_id', context.user.id)
+    .where('ServiceDefinition.identifier', identifier)
+    .groupBy(['ServiceInstance.id', 'Organization.id'])
+    .select([
+      'ServiceInstance.id AS service_instance_id',
+      'Organization.id AS organization_id',
+      'Organization.personal_space AS is_personal_space',
+      dbRaw('COALESCE(json_agg("Service_Link"), \'[]\'::json) AS links'),
+    ]);
+};
+
 export const loadPublicServiceInstances = async (
   context: PortalContext,
   opts
@@ -464,7 +510,7 @@ export const loadServiceWithSubscriptions = async (
               'subscription_id', "userService".subscription_id,
               'user_id', "userService".user_id,
               'user_service_capability', COALESCE(
-                  CASE 
+                  CASE
                     WHEN "userService".user_service_capability IS NOT NULL THEN "userService".user_service_capability
                     ELSE '[]'::json
                   END

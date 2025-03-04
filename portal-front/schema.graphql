@@ -87,6 +87,7 @@ type Query {
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
+  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!): LabelConnection
   label(id: ID!): Label
   settings: Settings!
@@ -217,6 +218,13 @@ input AddServiceInput {
   price: Int
   organization_id: String
   url: String
+}
+
+type SubscribedServiceInstance {
+  service_instance_id: ID!
+  organization_id: ID!
+  is_personal_space: Boolean!
+  links: [ServiceLink]
 }
 
 type ServiceInstanceSubscription {

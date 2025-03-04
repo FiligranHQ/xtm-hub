@@ -24,6 +24,7 @@ import {
   loadServiceInstanceByIdWithCapabilities,
   loadServiceInstances,
   loadServiceWithSubscriptions,
+  loadSubscribedServiceInstancesByIdentifier,
 } from './service-instance.domain';
 
 const resolvers: Resolvers = {
@@ -68,6 +69,13 @@ const resolvers: Resolvers = {
         context,
         extractId(service_instance_id)
       );
+    },
+    subscribedServiceInstancesByIdentifier: async (
+      _,
+      { identifier },
+      context
+    ) => {
+      return loadSubscribedServiceInstancesByIdentifier(context, identifier);
     },
   },
   Mutation: {

@@ -165,12 +165,12 @@ export const loadUserServiceByUser = async (context: PortalContext, opts) => {
         json_build_object(
           'id', "userServcapa".id,
           'generic_service_capability',
-          CASE 
+          CASE
             WHEN "genericservcapa".id IS NOT NULL THEN json_build_object('id', "genericservcapa".id, 'name', "genericservcapa".name, '__typename', 'Generic_Service_Capability')
             ELSE null
           END,
           'subscription_capability',
-          CASE 
+          CASE
             WHEN "Subscription_Capability".id IS NOT NULL THEN json_build_object('id', "Subscription_Capability".id, 'service_capability', json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, '__typename', 'Service_Capability'), '__typename', 'Subscription_Capability')
             ELSE null
           END,

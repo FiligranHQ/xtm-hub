@@ -30,7 +30,8 @@ export async function networkFetch(
   apiUri: string,
   request: RequestParameters,
   variables: Variables,
-  portalCookie?: RequestCookie
+  portalCookie?: RequestCookie,
+  redirectOnAuthFailure = true
 ): Promise<GraphQLResponse> {
   const headers: { [k: string]: string } = {
     Accept: 'application/json',
@@ -56,10 +57,12 @@ export async function networkFetch(
       (e: { message: string }) => e.message === 'Not authenticated.'
     );
     if (containsAuthenticationFailure) {
-      // redirect to login page
-      const location = window.location.pathname;
-      window.location.href = `/?redirect=${btoa(location)}`;
-      throw new Error('UNAUTHENTICATED');
+      // redirect to login page if needed
+      if (redirectOnAuthFailure) {
+        window.location.href = `/?redirect=${btoa(window.location.pathname)}`;
+      } else {
+        throw new Error('UNAUTHENTICATED');
+      }
     }
     throw new Error(json.errors[0].message);
   }

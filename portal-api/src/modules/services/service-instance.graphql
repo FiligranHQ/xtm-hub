@@ -74,6 +74,16 @@ type Query {
   serviceInstanceByIdWithSubscriptions(
     service_instance_id: ID
   ): ServiceInstance @auth @service_capa(requires: [MANAGE_ACCESS])
+  subscribedServiceInstancesByIdentifier(
+    identifier: ServiceDefinitionIdentifier!
+  ): [SubscribedServiceInstance!]! @auth
+}
+
+type SubscribedServiceInstance {
+  service_instance_id: ID!
+  organization_id: ID!
+  is_personal_space: Boolean!
+  links: [ServiceLink]
 }
 
 type ServiceInstanceSubscription {
