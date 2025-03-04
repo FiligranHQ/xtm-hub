@@ -7,7 +7,7 @@ import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { settingsQuery } from '@generated/settingsQuery.graphql';
 import { useToast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { FunctionComponent, useEffect } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 interface LoginLayoutProps {
@@ -18,15 +18,12 @@ export const LoginLayout: FunctionComponent<LoginLayoutProps> = ({
   queryRef,
 }) => {
   const data = usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
-  const router = useRouter();
   const { redirect, error } = useDecodedQuery();
   const currentPath = usePathname();
   const { toast } = useToast();
   const t = useTranslations();
   useEffect(() => {
     if (redirect) {
-      router.push(atob(redirect));
-
       toast({
         variant: 'destructive',
         title: t('Utils.Error'),

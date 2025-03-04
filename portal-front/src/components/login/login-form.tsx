@@ -1,6 +1,7 @@
 'use client';
 
 import { LoginFormMutation } from '@/components/login/login.graphql';
+import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -27,6 +28,7 @@ const formSchema = z.object({
 const LoginForm = () => {
   const router = useRouter();
   const t = useTranslations();
+  const { redirect } = useDecodedQuery();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,6 +48,10 @@ const LoginForm = () => {
         });
       },
       onCompleted() {
+        if (redirect) {
+          const decoded = atob(redirect);
+          router.push(decoded);
+        }
         // If login succeed, refresh the page
         router.refresh();
       },
