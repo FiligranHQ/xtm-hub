@@ -72,6 +72,7 @@ export type Document = Node & {
   labels: Array<Label>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  product_version?: Maybe<Scalars['String']['output']>;
   service_instance_id: Scalars['String']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
   updated_at?: Maybe<Scalars['Date']['output']>;
@@ -104,6 +105,7 @@ export type EditDocumentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
+  product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -234,6 +236,7 @@ export type MutationAddDocumentArgs = {
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
   parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
+  product_version?: InputMaybe<Scalars['String']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1119,6 +1122,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;

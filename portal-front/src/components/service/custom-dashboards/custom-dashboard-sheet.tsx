@@ -1,12 +1,11 @@
 'use client';
-import GuardCapacityComponent from '@/components/admin-guard';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
+import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
 import { isNil } from '@/lib/utils';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
-import { RESTRICTION } from '@/utils/constant';
 import { customDashboardSheet_update_childs$key } from '@generated/customDashboardSheet_update_childs.graphql';
 import {
   documentAddMutation,
@@ -128,23 +127,14 @@ export const CustomDashboardSheet = ({
     }
   };
 
+  const userCanUpdate = useServiceCapability(
+    ServiceCapabilityName.Upload,
+    serviceInstance
+  );
+
   return (
     <>
-      <GuardCapacityComponent
-        capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
-        <SheetWithPreventingDialog
-          open={openSheet}
-          setOpen={setOpenSheet}
-          trigger={
-            <TriggerButton label={t('Service.CustomDashboards.AddDashboard')} />
-          }
-          title={t('Service.CustomDashboards.AddDashboard')}>
-          <CustomDashboardForm handleSubmit={handleSubmit} />
-        </SheetWithPreventingDialog>
-      </GuardCapacityComponent>
-      {serviceInstance?.capabilities.some(
-        (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
-      ) && (
+      {userCanUpdate && (
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
