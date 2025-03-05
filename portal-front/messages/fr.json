@@ -112,6 +112,7 @@
     "TextDeleteLabel": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
   },
   "Service": {
+    "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
     "CreationStatus": "Statut de la création",
     "ComingSoon": "Bientôt disponible",
     "Description": "Description",

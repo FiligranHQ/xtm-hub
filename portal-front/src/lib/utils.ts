@@ -46,3 +46,9 @@ export const isProduction = () => getEnv() === 'production';
 export const isDevelopment = () =>
   // @ts-expect-error we have staging
   getEnv() !== 'staging' && getEnv() !== 'production';
+
+export const getServiceInstanceUrl = (
+  identifier: string,
+  global_service_instance_id: string,
+  base_url: string
+) => new URL(`/service/${identifier}/${global_service_instance_id}`, base_url);

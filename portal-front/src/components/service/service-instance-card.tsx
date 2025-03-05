@@ -2,6 +2,8 @@ import {
   SERVICE_CREATION_STATUS,
   SERVICE_DEFINITION_IDENTIFIER,
 } from '@/components/service/service.const';
+import useDecodedQuery from '@/hooks/useDecodedQuery';
+import { cn } from '@/lib/utils';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
 import * as React from 'react';
@@ -14,6 +16,7 @@ interface ServiceInstanceCardProps {
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction }) => {
+  const { h } = useDecodedQuery();
   const isLinkService =
     serviceInstance?.service_definition?.identifier ===
     SERVICE_DEFINITION_IDENTIFIER.LINK;
@@ -34,8 +37,14 @@ const ServiceInstanceCard: React.FunctionComponent<
   }
 
   return (
-    <li className="relative">
-      <div className="flex justify-center items-center flex-col gap-l bg-blue-900 h-48 w-full box-border pl-s">
+    <li
+      className={cn(
+        'relative',
+        h === serviceInstance?.service_definition?.identifier
+          ? "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
+          : ''
+      )}>
+      <div className="relative flex justify-center items-center flex-col gap-l bg-blue-900 h-48 w-full box-border pl-s">
         <LogoFiligranIcon className="absolute inset-0 text-white opacity-10 z-0 size-64 rotate-45 blur" />
         <div className="mt-s flex items-center h-12 w-full">
           <div

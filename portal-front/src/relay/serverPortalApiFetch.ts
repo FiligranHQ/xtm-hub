@@ -9,16 +9,25 @@ import { getGraphqlApi, networkFetch } from './environment/fetchFn';
 export default async function serverPortalApiFetch<
   TRequest extends ConcreteRequest,
   TQuery extends OperationType,
->(request: TRequest, variables: VariablesOf<TQuery>): Promise<GraphQLResponse> {
+>(
+  request: TRequest,
+  variables: VariablesOf<TQuery> = {}
+): Promise<GraphQLResponse> {
   const c = await cookies();
   const portalCookie = c.get('cloud-portal');
   const apiDestination = getGraphqlApi(true, 'api');
-  return networkFetch(apiDestination, request.params, variables, portalCookie);
+  return networkFetch(
+    apiDestination,
+    request.params,
+    variables,
+    portalCookie,
+    false
+  );
 }
 
 export async function serverFetchGraphQL<TQuery extends OperationType>(
   request: ConcreteRequest,
-  variables: VariablesOf<TQuery>
+  variables: VariablesOf<TQuery> = {}
 ): Promise<{ data: TQuery['response'] }> {
   const rawResponse = await serverPortalApiFetch<typeof request, TQuery>(
     request,
