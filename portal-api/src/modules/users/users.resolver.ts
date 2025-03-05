@@ -32,6 +32,7 @@ import {
   loadUserBy,
   loadUserDetails,
   loadUsers,
+  selectOrganizationAtLogin,
   updateMeUser,
   updateSelectedOrganization,
   updateUser,
@@ -338,7 +339,7 @@ const resolvers: Resolvers = {
       try {
         const logged = await loadUserBy({ email });
         if (logged && validPassword(logged, password)) {
-          req.session.user = logged;
+          req.session.user = await selectOrganizationAtLogin(logged);
           return mapUserToGraphqlUser(logged);
         }
         return undefined;

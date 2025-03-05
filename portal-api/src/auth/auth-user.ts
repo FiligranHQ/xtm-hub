@@ -1,6 +1,9 @@
 import type { Request } from 'express';
 import { UserInfo } from '../model/user';
-import { loadUserBy } from '../modules/users/users.domain';
+import {
+  loadUserBy,
+  selectOrganizationAtLogin,
+} from '../modules/users/users.domain';
 import { getOrCreateUser } from '../modules/users/users.helper';
 import { PLATFORM_ORGANIZATION_UUID, ROLE_ADMIN } from '../portal.const';
 import {
@@ -37,7 +40,7 @@ export const authenticateUser = async (req: Request, user: UserInfo) => {
   if (!logged || logged.disabled) {
     return;
   }
-  req.session.user = logged;
+  req.session.user = await selectOrganizationAtLogin(logged);
   req.session.save();
   return logged;
 };

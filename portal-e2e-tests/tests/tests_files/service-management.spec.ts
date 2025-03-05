@@ -28,9 +28,10 @@ test.describe('Service Management', () => {
   });
 
   test('should be able to admin service', async ({ page }) => {
-    await test.step("Add orga's sub + admin_orga's access", async () => {
+    await test.step("Add orga's sub + admin with manage access", async () => {
       await servicePage.addOrganizationIntoService(
-        TEST_SUBSCRIPTION.organizationName
+        TEST_SUBSCRIPTION.organizationName,
+        TEST_SUBSCRIPTION.adminOrgaEmail
       );
 
       await expect(
