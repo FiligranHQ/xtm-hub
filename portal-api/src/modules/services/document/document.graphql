@@ -19,12 +19,14 @@ type Document implements Node {
   updated_at: Date
   updater_id: String
   download_number: Int
+  product_version: String
   children_documents: [Document!]
   labels: [Label!]!
 }
 
 input EditDocumentInput {
   short_description: String
+  product_version: String
   labels: [String!]
   description: String
   name: String
@@ -36,6 +38,7 @@ type Mutation {
     document: Upload
     name: String
     short_description: String
+    product_version: String
     description: String
     service_instance_id: String
     parentDocumentId: ID
@@ -74,7 +77,7 @@ type Query {
     after: ID
     orderBy: DocumentOrdering!
     orderMode: OrderingMode!
-    filter: String
+    searchTerm: String
     filters: [Filter!]
     serviceInstanceId: String
     parentsOnly: Boolean

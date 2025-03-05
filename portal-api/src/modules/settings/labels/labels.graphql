@@ -6,6 +6,7 @@ type Label implements Node {
 
 enum LabelOrdering {
   name
+  color
 }
 
 type LabelEdge {
@@ -35,6 +36,7 @@ type Query {
     after: ID
     orderBy: LabelOrdering!
     orderMode: OrderingMode!
+    searchTerm: String
   ): LabelConnection @auth
   label(id: ID!): Label @auth
 }

@@ -3,9 +3,12 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
+  ServiceCapability,
   ServiceConnection,
+  ServiceDefinition,
   ServiceDefinitionIdentifier,
   ServiceInstance,
+  ServiceLink,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceMutator } from '../../model/kanel/public/ServiceInstance';
@@ -23,6 +26,8 @@ import { sendMail } from '../../server/mail-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
+import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
+import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
@@ -73,15 +78,29 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
     ]);
 };
 
-export const loadPublicServiceInstances = async (
-  context: PortalContext,
-  opts
-) => {
+export const loadPublicServiceInstances = (context: PortalContext, opts) => {
   const { first, after, orderMode, orderBy } = opts;
   const organizationId = context.user.selected_organization_id;
   const userId = context.user.id;
 
-  const servicesConnection = await paginate<ServiceInstance>(
+  const publicServiceQuery = db<ServiceInstance>(context, 'ServiceInstance')
+    .leftJoin('Subscription as subscription', function () {
+      this.on('subscription.service_instance_id', '=', 'ServiceInstance.id')
+
+        .andOnVal('subscription.organization_id', '=', organizationId);
+    })
+    .leftJoin('User_Service as userService', function () {
+      this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
+        'userService.user_id',
+        '=',
+        userId
+      );
+    })
+    .select('ServiceInstance.*')
+    .where('ServiceInstance.public', '=', true)
+    .andWhereRaw(`("subscription"."id" IS NULL OR "userService"."id" IS NULL)`);
+
+  return paginate<ServiceInstance, ServiceConnection>(
     context,
     'ServiceInstance',
     {
@@ -89,123 +108,18 @@ export const loadPublicServiceInstances = async (
       after,
       orderMode,
       orderBy,
-    }
-  )
-    .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_instance_id', '=', 'ServiceInstance.id')
-
-        .andOnVal('subscription.organization_id', '=', organizationId);
-    })
-    .leftJoin(
-      'ServiceDefinition as service_def',
-      'service_def.id',
-      '=',
-      'ServiceInstance.service_definition_id'
-    )
-    .leftJoin('User_Service as userService', function () {
-      this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
-        'userService.user_id',
-        '=',
-        userId
-      );
-    })
-    .leftJoin(
-      'UserService_Capability as userServiceCapa',
-      'userServiceCapa.user_service_id',
-      '=',
-      'userService.id'
-    )
-    .leftJoin(
-      'Generic_Service_Capability as genericServiceCapability',
-      'genericServiceCapability.id',
-      '=',
-      'userServiceCapa.generic_service_capability_id'
-    )
-    .leftJoin(
-      'Subscription_Capability as subscriptionCapability',
-      'subscriptionCapability.id',
-      '=',
-      'userServiceCapa.subscription_capability_id'
-    )
-    .leftJoin(
-      'Service_Capability as serviceCapability',
-      'serviceCapability.id',
-      '=',
-      'subscriptionCapability.service_capability_id'
-    )
-    .leftJoin(
-      'Service_Link as serviceLinks',
-      'serviceLinks.service_instance_id',
-      '=',
-      'ServiceInstance.id'
-    )
-    .select([
-      'ServiceInstance.*',
-      dbRaw(`"subscription"."id" IS NOT NULL AS organization_subscribed`),
-      dbRaw(`"userService"."id" IS NOT NULL AS user_joined`),
-      dbRaw(`COALESCE(
-        json_agg(DISTINCT COALESCE("genericServiceCapability"."name", "serviceCapability"."name"))
-        FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL OR "serviceCapability"."name" IS NOT NULL),
-        '[]'::json
-      ) AS capabilities`),
-      dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
-      dbRaw(
-        formatRawObject({
-          columnName: 'service_def',
-          typename: 'ServiceDefinition',
-          as: 'service_definition',
-        })
-      ),
-    ])
-    .where('ServiceInstance.public', '=', true)
-    .andWhereRaw(`("subscription"."id" IS NULL OR "userService"."id" IS NULL)`)
-    .groupBy([
-      'ServiceInstance.id',
-      'subscription.id',
-      'userService.id',
-      'service_def.id',
-    ])
-    .asConnection<ServiceConnection>();
-
-  const { totalCount } = await db<ServiceInstance>(
-    context,
-    'ServiceInstance',
-    opts
-  )
-    .leftJoin('Subscription as subscription', function () {
-      this.on(
-        'subscription.service_instance_id',
-        '=',
-        'ServiceInstance.id'
-      ).andOnVal('subscription.organization_id', '=', organizationId);
-    })
-    .whereRaw(`"subscription"."id" IS NULL`)
-    .countDistinct('ServiceInstance.id as totalCount')
-    .first();
-
-  return {
-    totalCount,
-    ...servicesConnection,
-  };
+    },
+    undefined,
+    publicServiceQuery
+  );
 };
 
-export const loadServiceInstances = async (context: PortalContext, opts) => {
-  const { first, after, orderMode, orderBy } = opts;
-  const query = paginate<ServiceInstance>(context, 'ServiceInstance', {
-    first,
-    after,
-    orderMode,
-    orderBy,
-  });
+export const getIsSubscribed = async (context, id) => {
   const organizationId = context.user.selected_organization_id;
-  const userId = context.user.id;
-  const servicesConnection = await query
-    .leftJoin(
-      'ServiceDefinition as service_def',
-      'service_def.id',
-      '=',
-      'ServiceInstance.service_definition_id'
-    )
+  const { organization_subscribed } = await db<{
+    organization_subscribed: boolean;
+  }>(context, 'ServiceInstance')
+    .where('ServiceInstance.id', '=', id)
     .leftJoin('Subscription as subscription', function () {
       this.on(
         'subscription.service_instance_id',
@@ -213,79 +127,42 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
         'ServiceInstance.id'
       ).andOnVal('subscription.organization_id', '=', organizationId);
     })
-    .leftJoin('User_Service as userService', function () {
-      this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
-        'userService.user_id',
-        '=',
-        userId
-      );
-    })
-    .leftJoin(
-      'UserService_Capability as userServiceCapa',
-      'userServiceCapa.user_service_id',
-      '=',
-      'userService.id'
-    )
-    .leftJoin(
-      'Generic_Service_Capability as genericServiceCapability',
-      'genericServiceCapability.id',
-      '=',
-      'userServiceCapa.generic_service_capability_id'
-    )
-    .leftJoin(
-      'Service_Link as serviceLinks',
-      'serviceLinks.service_instance_id',
-      '=',
-      'ServiceInstance.id'
-    )
-    .select([
-      'ServiceInstance.*',
-      dbRaw(
-        formatRawObject({
-          columnName: 'service_def',
-          typename: 'ServiceDefinition',
-          as: 'service_definition',
-        })
-      ),
+    .select(
       dbRaw(`
         CASE
           WHEN "subscription"."id" IS NOT NULL THEN true
           ELSE false
-        END AS subscribed
-        `),
-      dbRaw(`
-      COALESCE(json_agg("genericServiceCapability"."name") FILTER (WHERE "genericServiceCapability"."name" IS NOT NULL), '[]'::json) AS capabilities
-    `),
-      dbRaw('COALESCE(json_agg("serviceLinks"), \'[]\'::json) AS links'),
-    ])
-    .groupBy(['ServiceInstance.id', 'subscription.id', 'service_def.id'])
-    .asConnection<ServiceConnection>();
+        END AS organization_subscribed
+        `)
+    )
+    .first();
+  return organization_subscribed;
+};
 
-  const { totalCount } = await db<ServiceInstance>(
+export const getServiceDefinitionCapabilities = (context, id) => {
+  return db<ServiceCapability>(context, 'Service_Capability')
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceDefinition.id',
+      '=',
+      'Service_Capability.service_definition_id'
+    )
+    .where('ServiceDefinition.id', '=', id)
+    .select('Service_Capability.*');
+};
+export const loadServiceInstances = async (context: PortalContext, opts) =>
+  paginate<ServiceInstance, ServiceConnection>(
     context,
     'ServiceInstance',
     opts
-  )
-    .leftJoin('Subscription as subscription', function () {
-      this.on(
-        'subscription.service_instance_id',
-        '=',
-        'ServiceInstance.id'
-      ).andOnVal('subscription.organization_id', '=', organizationId);
-    })
-    .countDistinct('ServiceInstance.id as totalCount')
-    .first();
+  );
 
-  return {
-    totalCount,
-    ...servicesConnection,
-  };
-};
-export const loadServiceInstanceByIdWithCapabilities = async (
-  context: PortalContext,
-  service_instance_id: string
-): Promise<ServiceInstance> => {
-  return db<ServiceInstance>(context, 'ServiceInstance')
+export const getUserJoined = async (context, id) => {
+  const { user_joined } = await db<{ user_joined: boolean }>(
+    context,
+    'ServiceInstance'
+  )
+    .where('ServiceInstance.id', '=', id)
     .leftJoin(
       'Subscription',
       'ServiceInstance.id',
@@ -296,30 +173,30 @@ export const loadServiceInstanceByIdWithCapabilities = async (
         dbRaw(`"User_Service"."user_id" = '${context.user.id}'`)
       );
     })
+    .select(dbRaw(`"User_Service".id IS NOT NULL AS user_joined`))
+    .first();
+  return user_joined;
+};
+
+export const loadServiceInstanceByIdWithCapabilities = async (
+  context: PortalContext,
+  service_instance_id: string
+): Promise<ServiceInstance> => {
+  const serviceInstanceQuery = await db<ServiceInstance>(
+    context,
+    'ServiceInstance'
+  )
     .leftJoin(
-      'UserService_Capability',
-      'User_Service.id',
-      '=',
-      'UserService_Capability.user_service_id'
+      'Subscription',
+      'ServiceInstance.id',
+      'Subscription.service_instance_id'
     )
-    .leftJoin(
-      'Subscription_Capability',
-      'UserService_Capability.subscription_capability_id',
-      '=',
-      'Subscription_Capability.id'
-    )
-    .leftJoin(
-      'Service_Capability',
-      'Subscription_Capability.service_capability_id',
-      '=',
-      'Service_Capability.id'
-    )
-    .leftJoin(
-      'Generic_Service_Capability',
-      'UserService_Capability.generic_service_capability_id',
-      '=',
-      'Generic_Service_Capability.id'
-    )
+    .leftJoin('User_Service', function () {
+      this.on('Subscription.id', 'User_Service.subscription_id').andOn(
+        dbRaw(`"User_Service"."user_id" = '${context.user.id}'`)
+      );
+    })
+
     .leftJoin(
       'ServiceDefinition as service_def',
       'service_def.id',
@@ -335,50 +212,31 @@ export const loadServiceInstanceByIdWithCapabilities = async (
           typename: 'ServiceDefinition',
           as: 'service_definition',
         })
-      ),
-      dbRaw(
-        `json_agg(
-    CASE
-      WHEN "Generic_Service_Capability".id IS NOT NULL THEN
-        "Generic_Service_Capability".name
-      WHEN "Service_Capability".id IS NOT NULL THEN
-        "Service_Capability".name
-      ELSE NULL
-    END
-  ) AS capabilities`
       )
     )
-
     .where({
       'ServiceInstance.id': service_instance_id,
     })
     .groupBy(['ServiceInstance.id', 'Subscription.id', 'service_def.id'])
     .first();
+
+  const capabilities = await loadCapabilities(
+    context,
+    service_instance_id,
+    context.user.id,
+    context.user.selected_organization_id
+  );
+  return { ...serviceInstanceQuery, capabilities };
 };
 
 export const loadServiceInstanceBy = async (
   context: PortalContext,
   field: string,
   value: string
-): Promise<ServiceInstance> => {
+) => {
   return db<ServiceInstance>(context, 'ServiceInstance')
-    .leftJoin(
-      'ServiceDefinition',
-      'ServiceInstance.service_definition_id',
-      '=',
-      'ServiceDefinition.id'
-    )
     .where({ [field]: value })
-    .select(
-      'ServiceInstance.*',
-      dbRaw(
-        formatRawObject({
-          columnName: 'ServiceDefinition',
-          typename: 'ServiceDefinition',
-          as: 'service_definition',
-        })
-      )
-    )
+    .select('ServiceInstance.*')
     .first();
 };
 
@@ -472,18 +330,6 @@ export const loadServiceWithSubscriptions = async (
       '=',
       'Subscription.id'
     )
-    .leftJoin(
-      'Subscription_Capability',
-      'Subscription_Capability.subscription_id',
-      '=',
-      'Subscription.id'
-    )
-    .leftJoin(
-      'Service_Capability',
-      'Subscription_Capability.service_capability_id',
-      '=',
-      'Service_Capability.id'
-    )
     .leftJoin('User as user', 'user.id', '=', 'userService.user_id')
     .leftJoin(
       'Organization as org',
@@ -532,9 +378,6 @@ export const loadServiceWithSubscriptions = async (
           ) FILTER (WHERE "userService".id IS NOT NULL)::json,
           '[]'::json
         ) AS user_service`
-      ),
-      dbRaw(
-        `COALESCE(json_agg(json_build_object('id', "Subscription_Capability".id, 'service_capability', json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, 'description', "Service_Capability".description, '__typename', 'Service_Capability'), '__typename', 'Subscription_Capability')) FILTER (WHERE "Subscription_Capability".id IS NOT NULL), '[]'::json) as subscription_capability`
       )
     )
     .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
@@ -575,7 +418,15 @@ export const loadServiceWithSubscriptions = async (
     );
   }
 
-  const subscriptions = await querySubscriptions;
+  const arraySubcriptions = await querySubscriptions;
+
+  const subscriptions = arraySubcriptions.map((subscription) => ({
+    ...subscription,
+    subscription_capability: loadSubscriptionCapabilities(
+      context,
+      subscription.id
+    ),
+  }));
 
   return { ...serviceInstance, subscriptions };
 };
@@ -633,16 +484,17 @@ export const grantServiceAccess = async (
       subscription.service_instance_id
     );
 
-    if (
-      serviceInstance.service_definition.identifier ===
-      ServiceDefinitionIdentifier.Vault
-    ) {
+    const service_definition = await getServiceDefinition(
+      context,
+      serviceInstance.id
+    );
+    if (service_definition.identifier === ServiceDefinitionIdentifier.Vault) {
       await sendMail({
         to: user.email,
         template: 'partnerVault',
         params: {
           name: user.email,
-          partnerVaultLink: `${config.get('base_url_front')}/service/${serviceInstance.service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
+          partnerVaultLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
           partnerVault: serviceInstance.name,
         },
       });
@@ -661,3 +513,27 @@ export const grantServiceAccess = async (
   }
   return insertedUserServices;
 };
+
+export const getLinks = (context, id) =>
+  db<ServiceLink>(context, 'ServiceInstance')
+    .where('ServiceInstance.id', '=', id)
+    .leftJoin(
+      'Service_Link as serviceLinks',
+      'serviceLinks.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .select('serviceLinks.*')
+    .returning('*');
+
+export const getServiceDefinition = (context, id) =>
+  db<ServiceDefinition>(context, 'ServiceInstance')
+    .where('ServiceInstance.id', '=', id)
+    .leftJoin(
+      'ServiceDefinition as service_def',
+      'service_def.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
+    .select('service_def.*')
+    .first();

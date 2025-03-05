@@ -4,6 +4,7 @@ import { PortalContext } from '../model/portal-context';
 import { getCapabilityUser, userHasBypassCapability } from './auth.helper';
 
 import { UserLoadUserBy } from '../model/user';
+import { getCapabilities } from '../modules/users/users.domain';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
 export const SERVICE_DIRECTIVE_NAME = 'service_capa';
@@ -55,6 +56,12 @@ const getSchemaTransformer = (
             info
           ) {
             const { user } = context;
+            if (user && !user.capabilities) {
+              const capabilities = await getCapabilities(undefined, user.id, {
+                unsecured: true,
+              });
+              user.capabilities = capabilities;
+            }
             const capabilitiesRequired = authDirective?.requires;
             const serviceCapabilitiesRequired = serviceCapaDirective?.requires;
             // Check if the field requires authentication

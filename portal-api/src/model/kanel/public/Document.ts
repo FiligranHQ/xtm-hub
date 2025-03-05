@@ -39,6 +39,8 @@ export default interface Document {
   updater_id: string | null;
 
   short_description: string | null;
+
+  product_version: string | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -78,6 +80,8 @@ export interface DocumentInitializer {
   updater_id?: string | null;
 
   short_description?: string | null;
+
+  product_version?: string | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -113,4 +117,6 @@ export interface DocumentMutator {
   updater_id?: string | null;
 
   short_description?: string | null;
+
+  product_version?: string | null;
 }

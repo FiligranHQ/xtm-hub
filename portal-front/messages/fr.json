@@ -192,10 +192,13 @@
     "CustomDashboards": {
       "AddDashboard": "Nouveau tableau de bord",
       "UpdateDashboard": "Tableau de bord des mises à jour",
+      "FromOCTIVersion": "A partir d'OpenCTI",
       "Form": {
         "JSONFile": "Fichier JSON",
         "SelectJSONFile": "Selectionnez un fichier JSON",
         "NoJSONFile": "Pas de fichier JSON sélectionné",
+        "productVersion": "OpenCTI version",
+        "productVersionPlaceholder": "1.0.0",
         "NameLabel": "Nom",
         "NamePlaceholder": "Nom du tableau de bord",
         "ShortDescriptionLabel": "Brève description",
@@ -396,6 +399,11 @@
   "ServiceName": {
     "custom_dashboards": "Tableau de bord personnalisé"
   },
+  "Reset table": "Remise à zéro de la table",
+  "entitie(s)": "entité(s)",
+  "Rows per page": "Lignes par page",
+  "Sort Asc": "Tri Asc",
+  "Sort Desc": "Sort Desc",
   "Badge": {
     "Published": "Publié",
     "Draft": "Brouillon",

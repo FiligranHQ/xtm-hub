@@ -50,6 +50,7 @@ interface Pagination {
   orderMode?: string;
   orderBy?: string;
   filters?: Filter[];
+  searchTerm?: string;
 }
 
 const knex = pkg;
@@ -85,7 +86,7 @@ const config: Knex.Config = {
   },
 };
 
-const database = knex(config);
+export const database = knex(config);
 
 export interface QueryOpts {
   unsecured?: boolean;
@@ -93,6 +94,9 @@ export interface QueryOpts {
   after?: string;
   orderMode?: string;
   orderBy?: string;
+  searchTerm?: string;
+  filters?: Filter[];
+  columns?: string[];
 }
 
 export const dbRaw = (
@@ -119,7 +123,8 @@ export const dbUnsecure = <T>(type: DatabaseType) => {
 export const dbConnections = <T>(
   nodes: T[],
   offset: string | undefined,
-  limit: number
+  limit: number,
+  totalCount
 ) => {
   const currentOffset = offset ? Number(atob(offset)) : 0;
   const edges: { cursor: string; node: T }[] = nodes.map((n, index) => {
@@ -135,17 +140,28 @@ export const dbConnections = <T>(
     hasNextPage: nodes.length >= limit,
     hasPreviousPage: !offset && nodes.length > 0,
   };
-  return { edges, pageInfo };
+  return { edges, pageInfo, totalCount };
 };
 
-export const paginate = <T>(
+const searchAttributes = [
+  'name',
+  'file_name',
+  'description',
+  'short_description',
+  'email',
+  'first_name',
+  'last_name',
+];
+
+export const paginate = async <T, U>(
   context: PortalContext,
   type: DatabaseType,
   pagination: Pagination,
   opts: Partial<QueryOpts> = {},
   queryContext = db<T>(context, type, opts)
 ) => {
-  const { first, after, orderMode, orderBy, filters } = pagination;
+  const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
+  const columns = Object.keys(await database(type).columnInfo());
   const currentOffset = after ? Number(atob(after)) : 0;
   queryContext.queryContext({
     ...queryContext.queryContext(),
@@ -154,25 +170,60 @@ export const paginate = <T>(
   });
   if (filters) {
     filters.forEach(({ key, value }) => {
-      if (key === FilterKey.Label && value.length > 0) {
-        queryContext
-          .leftJoin('Object_Label as ol', 'ol.object_id', '=', `${type}.id`)
-          .whereIn(
-            'ol.label_id',
-            value.map((id) => extractId(id))
-          );
+      if (key === FilterKey.Label) {
+        if (value.length > 0) {
+          queryContext
+            .leftJoin('Object_Label as ol', 'ol.object_id', '=', `${type}.id`)
+            .whereIn(
+              'ol.label_id',
+              value.map((id) => extractId(id))
+            );
+        }
+      } else if (key.includes('id')) {
+        queryContext.whereIn(
+          key,
+          value.map((id) => extractId(id))
+        );
+      } else {
+        queryContext.whereIn(key, value);
       }
     });
   }
+
+  const search = [];
+  if (searchTerm) {
+    searchAttributes.forEach((s) => {
+      if (columns.includes(s)) {
+        search.push(s);
+      }
+    });
+  }
+
+  if (search.length > 0) {
+    const [first, ...others] = search;
+    queryContext.andWhere((qb) => {
+      qb.orWhereILike(`${type}.${first}`, `%${searchTerm}%`);
+      others.forEach((i) => qb.orWhereILike(`${type}.${i}`, `%${searchTerm}%`));
+    });
+  }
+
+  const totalCountQuery = queryContext
+    .clone()
+    .clearOrder()
+    .clearSelect()
+    .clearGroup()
+    .countDistinct(`${type}.id as totalCount`);
+
   queryContext
     .orderBy([{ column: orderBy, order: orderMode }])
     .offset(currentOffset)
     .limit(first);
-  queryContext.asConnection = <U>() =>
-    queryContext.then((rows) => {
-      return dbConnections(rows, after, first);
-    }) as U;
-  return queryContext;
+
+  const [query, { totalCount }] = await Promise.all([
+    queryContext,
+    totalCountQuery.first(),
+  ]);
+  return dbConnections(query, after, first, totalCount ?? 0) as U;
 };
 
 export const dbMigration = {

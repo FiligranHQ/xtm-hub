@@ -16,6 +16,7 @@ export const labelListFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
+      searchTerm: $searchTerm
     ) {
       __id
       totalCount
@@ -34,39 +35,31 @@ export const LabelListQuery = graphql`
     $cursor: ID
     $orderBy: LabelOrdering!
     $orderMode: OrderingMode!
+    $searchTerm: String
   ) {
     ...labelList_labels
   }
 `;
 
 export const AddLabelMutation = graphql`
-  mutation labelAddMutation(
-    $input: AddLabelInput!
-    $connections: [ID!]!
-  ) {
+  mutation labelAddMutation($input: AddLabelInput!, $connections: [ID!]!) {
     addLabel(input: $input)
-    @prependNode(connections: $connections, edgeTypeName: "LabelEdge"){
+      @prependNode(connections: $connections, edgeTypeName: "LabelEdge") {
       ...label_fragment
     }
   }
 `;
 
 export const EditLabelMutation = graphql`
-  mutation labelEditMutation(
-    $id: ID!
-    $input: EditLabelInput!
-  ) {
-    editLabel(id: $id, input: $input){
+  mutation labelEditMutation($id: ID!, $input: EditLabelInput!) {
+    editLabel(id: $id, input: $input) {
       ...label_fragment
     }
   }
 `;
 
 export const DeleteLabelMutation = graphql`
-  mutation labelDeleteMutation(
-    $id: ID!
-    $connections: [ID!]!
-  ) {
+  mutation labelDeleteMutation($id: ID!, $connections: [ID!]!) {
     deleteLabel(id: $id) {
       id @deleteEdge(connections: $connections)
     }

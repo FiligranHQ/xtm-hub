@@ -4,6 +4,8 @@ scalar Upload
 
 enum FilterKey {
   label
+  organization_id
+  personal_space
 }
 
 input Filter {

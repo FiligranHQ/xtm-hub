@@ -5,6 +5,7 @@ export const DocumentAddMutation = graphql`
     $document: Upload
     $name: String
     $shortDescription: String
+    $productVersion: String
     $description: String
     $serviceInstanceId: String
     $active: Boolean
@@ -17,6 +18,7 @@ export const DocumentAddMutation = graphql`
       name: $name
       labels: $labels
       short_description: $shortDescription
+      product_version: $productVersion
       description: $description
       service_instance_id: $serviceInstanceId
       active: $active
@@ -86,6 +88,7 @@ export const documentItem = graphql`
     name
     short_description
     description
+    product_version
     download_number
     active
     updated_at
@@ -118,7 +121,7 @@ export const documentsFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
-      filter: $filter
+      searchTerm: $searchTerm
       filters: $filters
       serviceInstanceId: $serviceInstanceId
       parentsOnly: $parentsOnly
@@ -144,7 +147,7 @@ export const DocumentsListQuery = graphql`
     $orderBy: DocumentOrdering!
     $orderMode: OrderingMode!
     $filters: [Filter!]
-    $filter: String
+    $searchTerm: String
     $serviceInstanceId: String
     $parentsOnly: Boolean
   ) {

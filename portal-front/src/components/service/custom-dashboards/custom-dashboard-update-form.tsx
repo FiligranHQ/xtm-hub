@@ -36,6 +36,9 @@ const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 export const updateCustomDashboardSchema = z.object({
   name: z.string().nonempty(),
   shortDescription: z.string().max(255).optional(),
+  productVersion: z.string().regex(/^\d+\.\d+\.\d+$/, {
+    message: 'Product version must be X.Y.Z',
+  }),
   description: z.string().optional(),
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
@@ -74,6 +77,7 @@ export const CustomDashboardUpdateForm = ({
     defaultValues: {
       name: customDashboard.name ?? '',
       shortDescription: customDashboard.short_description ?? '',
+      productVersion: customDashboard.product_version ?? '',
       description: customDashboard.description ?? '',
       active: customDashboard.active ?? false,
       labels: customDashboard.labels.map(({ id }) => id) ?? [],
@@ -177,6 +181,26 @@ export const CustomDashboardUpdateForm = ({
                           'Service.CustomDashboards.Form.ShortDescriptionPlaceholder'
                         )}
                         maxLength={250}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="productVersion"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t('Service.CustomDashboards.Form.productVersion')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t(
+                          'Service.CustomDashboards.Form.productVersionPlaceholder'
+                        )}
                         {...field}
                       />
                     </FormControl>

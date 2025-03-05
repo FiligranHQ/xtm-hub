@@ -31,7 +31,7 @@ import {
   fillSubscriptionWithOrgaServiceAndUserService,
 } from '../subcription/subscription.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
-import { loadUserBy } from '../users/users.domain';
+import { loadUserBy, loadUserDetails } from '../users/users.domain';
 import {
   getOrCreateUser,
   insertUserIntoOrganization,
@@ -42,15 +42,21 @@ import {
   isUserServiceExist,
   loadUnsecureUserServiceBy,
 } from './user-service.helper';
-import { loadUserServiceByUser } from './user_service.domain';
+import {
+  getSubscription,
+  getUserServiceCapabilities,
+  loadUserServiceByUser,
+} from './user_service.domain';
 
 const resolvers: Resolvers = {
+  UserService: {
+    user: ({ user_id }) => loadUserDetails({ 'User.id': user_id as UserId }),
+    subscription: ({ id }, _, context) => getSubscription(context, id),
+    user_service_capability: ({ id }, _, context) =>
+      getUserServiceCapabilities(context, id),
+  },
   Query: {
-    userServiceOwned: async (
-      _,
-      { first, after, orderMode, orderBy },
-      context
-    ) => {
+    userServiceOwned: (_, { first, after, orderMode, orderBy }, context) => {
       return loadUserServiceByUser(context, {
         first,
         after,
