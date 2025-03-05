@@ -7,12 +7,15 @@ import OrganizationSwitcherMutation, {
   organizationSwitcherMutation,
 } from '@generated/organizationSwitcherMutation.graphql';
 import ServiceInstancesSubscribedByIdentifierQuery, {
-  ServiceDefinitionIdentifier,
   serviceInstancesSubscribedByIdentifierQuery,
   serviceInstancesSubscribedByIdentifierQuery$data,
 } from '@generated/serviceInstancesSubscribedByIdentifierQuery.graphql';
-import { GraphQLID } from 'graphql';
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  fromGlobalId,
+  isValidServiceDefinitionIdentifier,
+  toGlobalId,
+} from './helpers';
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{
@@ -45,31 +48,6 @@ interface MeResponse {
   };
 }
 
-// Type guard for ServiceDefinitionIdentifier
-function isValidServiceDefinitionIdentifier(
-  value: unknown
-): value is ServiceDefinitionIdentifier {
-  return (
-    typeof value === 'string' &&
-    ['custom_dashboards', 'link', 'vault'].includes(value)
-  );
-}
-
-// @see https://github.com/graphql/graphql-relay-js/blob/main/src/node/node.ts#L91
-function toGlobalId(type: string, id: string | number): string {
-  return btoa([type, GraphQLID.serialize(id)].join(':'));
-}
-
-// @see https://github.com/graphql/graphql-relay-js/blob/main/src/node/node.ts#L99
-function fromGlobalId(globalId: string): { type: string; id: string } {
-  const unbasedGlobalId = atob(globalId);
-  const delimiterPos = unbasedGlobalId.indexOf(':');
-  return {
-    type: unbasedGlobalId.substring(0, delimiterPos),
-    id: unbasedGlobalId.substring(delimiterPos + 1),
-  };
-}
-
 async function switchOrganization(organization_id: string) {
   await serverMutateGraphQL<organizationSwitcherMutation>(
     OrganizationSwitcherMutation,
@@ -92,6 +70,7 @@ export async function GET(
     return new Response('Invalid identifier', { status: 400 });
   }
 
+  // The URL to highlight the service in the homepage
   const highlightUrl = new URL(`/?h=${identifier}`, request.url);
 
   try {
@@ -112,6 +91,7 @@ export async function GET(
       return NextResponse.redirect(loginURL);
     }
 
+    // Find the personal space organization
     const personalSpaceGlobalId = user.organizations.find(
       (o) => o.personal_space
     )!.id;
@@ -130,18 +110,23 @@ export async function GET(
       response.data.subscribedServiceInstancesByIdentifier
     );
 
-    // No subscribed services, redirect to the personal space homepage
+    // No subscribed services for any organization of the user,
+    // redirect to the personal space homepage with highlighting the services
     if (servicesInstances.length === 0) {
       await switchOrganization(personalSpaceGlobalId);
       return NextResponse.redirect(highlightUrl);
     }
 
-    // 3. From the the OpenCTI instance id, try to find the right organization to switch to
+    // 3. Try to find the right organization to switch to
+    // --------------------------------------------------
+
+    // First, we check if the the OpenCTI instance is associated with any user's organization thanks to the services links
     let organizationGlobalId: string | undefined;
     for (const instance of servicesInstances) {
       if (instance.links) {
         for (const link of instance.links) {
           if (link && link.url === octi_instance_id) {
+            // We found the organization associated with the OpenCTI instance
             organizationGlobalId = toGlobalId(
               'Organization',
               instance.organization_id
@@ -152,12 +137,12 @@ export async function GET(
       }
     }
 
-    // No organization found, prefer the personal space
+    // No organization found, fallback to the personal space
     if (!organizationGlobalId) {
       organizationGlobalId = personalSpaceGlobalId;
     }
 
-    // 4. Switch to the organization
+    // 4. Switch to the found organization
     await switchOrganization(organizationGlobalId);
 
     // 5. Get the organization service instances
@@ -167,7 +152,11 @@ export async function GET(
         fromGlobalId(organizationGlobalId).id
     );
 
-    // 6. We have only one service, redirect to the service
+    // 6. Redirect the user
+    // --------------------
+
+    // If we have only one service corresponding to the request,
+    // we can directly redirect to the service
     if (
       organizationServiceInstances.length === 1 &&
       organizationServiceInstances[0]
@@ -184,14 +173,14 @@ export async function GET(
       );
     }
 
-    // In the case where there are multiple services, we redirect to the homepage with highlighting the services
+    // Otherwise, in the case where there are no or multiple services,
+    // we redirect to the homepage with highlighting the services
     return NextResponse.redirect(highlightUrl);
   } catch (error) {
-    const errorMessage = (error as Error).message;
     const loginURL = new URL('/', request.url);
 
     // The user must be authenticated to access the service
-    if (errorMessage === 'UNAUTHENTICATED') {
+    if ((error as Error).message === 'UNAUTHENTICATED') {
       loginURL.searchParams.set('redirect', btoa(request.url));
       return NextResponse.redirect(loginURL);
     }
