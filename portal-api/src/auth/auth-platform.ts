@@ -9,8 +9,9 @@ export const initAuthPlatform = async (app) => {
   app.get(`/auth/:provider`, (req, res, next) => {
     try {
       const { provider } = req.params;
-      // const strategy = passport._strategy(provider);
-      req.session.referer = req.get('Referrer');
+      req.session.referer = req.query.redirect
+        ? atob(req.query.redirect)
+        : req.get('Referrer');
       passport.authenticate(provider, {}, (err) => {
         setCookieError(res, err?.message);
         next(err);

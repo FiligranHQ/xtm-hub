@@ -1,0 +1,190 @@
+import { getServiceInstanceUrl } from '@/lib/utils';
+import serverPortalApiFetch, {
+  serverMutateGraphQL,
+} from '@/relay/serverPortalApiFetch';
+import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
+import OrganizationSwitcherMutation, {
+  organizationSwitcherMutation,
+} from '@generated/organizationSwitcherMutation.graphql';
+import ServiceInstancesSubscribedByIdentifierQuery, {
+  serviceInstancesSubscribedByIdentifierQuery,
+  serviceInstancesSubscribedByIdentifierQuery$data,
+} from '@generated/serviceInstancesSubscribedByIdentifierQuery.graphql';
+import { NextRequest, NextResponse } from 'next/server';
+import {
+  fromGlobalId,
+  isValidServiceDefinitionIdentifier,
+  toGlobalId,
+} from './helpers';
+
+interface RedirectIdentifierGetRouteProps {
+  params: Promise<{
+    /**
+     The service definition identifier
+    */
+    identifier: string;
+    /**
+     * The OpenCTI instance id from where the service is accessed
+     */
+    octi_instance_id?: string;
+  }>;
+}
+
+interface UserServiceOwnedResponse {
+  data: serviceInstancesSubscribedByIdentifierQuery$data;
+}
+
+interface MeResponse {
+  data: {
+    me: {
+      id: string;
+      selected_organization_id: string;
+      organizations: {
+        id: string;
+        name: string;
+        personal_space: boolean;
+      }[];
+    };
+  };
+}
+
+async function switchOrganization(organization_id: string) {
+  await serverMutateGraphQL<organizationSwitcherMutation>(
+    OrganizationSwitcherMutation,
+    {
+      organization_id,
+    }
+  );
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: RedirectIdentifierGetRouteProps
+) {
+  const awaitedParams = await params;
+  const identifier = awaitedParams.identifier;
+  const octi_instance_id = awaitedParams.octi_instance_id;
+
+  if (!isValidServiceDefinitionIdentifier(identifier)) {
+    // Raise a bad request error
+    return new Response('Invalid identifier', { status: 400 });
+  }
+
+  // The URL to highlight the service in the homepage
+  const highlightUrl = new URL(`/?h=${identifier}`, request.url);
+
+  try {
+    // 1. Load the user
+    // ----------------
+
+    const meResponse = (await serverPortalApiFetch<
+      typeof MeLoaderQuery,
+      meLoaderQuery
+    >(MeLoaderQuery)) as MeResponse;
+
+    const user = meResponse.data.me;
+
+    // The user must be authenticated to access the service
+    if (!user) {
+      const loginURL = new URL('/', request.url);
+      loginURL.searchParams.set('redirect', btoa(request.url));
+      return NextResponse.redirect(loginURL);
+    }
+
+    // Find the personal space organization
+    const personalSpaceGlobalId = user.organizations.find(
+      (o) => o.personal_space
+    )!.id;
+
+    // 2. Load the services instances subscribed by the user's organizations
+    // ----------------------------------------------------------------------
+
+    const response = (await serverPortalApiFetch<
+      typeof ServiceInstancesSubscribedByIdentifierQuery,
+      serviceInstancesSubscribedByIdentifierQuery
+    >(ServiceInstancesSubscribedByIdentifierQuery, {
+      identifier,
+    })) as UserServiceOwnedResponse;
+
+    const servicesInstances = Array.from(
+      response.data.subscribedServiceInstancesByIdentifier
+    );
+
+    // No subscribed services for any organization of the user,
+    // redirect to the personal space homepage with highlighting the services
+    if (servicesInstances.length === 0) {
+      await switchOrganization(personalSpaceGlobalId);
+      return NextResponse.redirect(highlightUrl);
+    }
+
+    // 3. Try to find the right organization to switch to
+    // --------------------------------------------------
+
+    // First, we check if the the OpenCTI instance is associated with any user's organization thanks to the services links
+    let organizationGlobalId: string | undefined;
+    for (const instance of servicesInstances) {
+      if (instance.links) {
+        for (const link of instance.links) {
+          if (link && link.url === octi_instance_id) {
+            // We found the organization associated with the OpenCTI instance
+            organizationGlobalId = toGlobalId(
+              'Organization',
+              instance.organization_id
+            );
+            break;
+          }
+        }
+      }
+    }
+
+    // No organization found, fallback to the personal space
+    if (!organizationGlobalId) {
+      organizationGlobalId = personalSpaceGlobalId;
+    }
+
+    // 4. Switch to the found organization
+    await switchOrganization(organizationGlobalId);
+
+    // 5. Get the organization service instances
+    const organizationServiceInstances = servicesInstances.filter(
+      (serviceInstance) =>
+        serviceInstance.organization_id ===
+        fromGlobalId(organizationGlobalId).id
+    );
+
+    // 6. Redirect the user
+    // --------------------
+
+    // If we have only one service corresponding to the request,
+    // we can directly redirect to the service
+    if (
+      organizationServiceInstances.length === 1 &&
+      organizationServiceInstances[0]
+    ) {
+      return NextResponse.redirect(
+        getServiceInstanceUrl(
+          identifier,
+          toGlobalId(
+            'ServiceInstance',
+            organizationServiceInstances[0].service_instance_id
+          ),
+          request.url
+        )
+      );
+    }
+
+    // Otherwise, in the case where there are no or multiple services,
+    // we redirect to the homepage with highlighting the services
+    return NextResponse.redirect(highlightUrl);
+  } catch (error) {
+    const loginURL = new URL('/', request.url);
+
+    // The user must be authenticated to access the service
+    if ((error as Error).message === 'UNAUTHENTICATED') {
+      loginURL.searchParams.set('redirect', btoa(request.url));
+      return NextResponse.redirect(loginURL);
+    }
+
+    return NextResponse.redirect(loginURL);
+  }
+}

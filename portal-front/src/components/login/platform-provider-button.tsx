@@ -1,3 +1,4 @@
+import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { VpnKeyIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
 import Link from 'next/link';
@@ -14,6 +15,7 @@ interface LoginButtonProviderProps {
 export const PlatformProviderButton: FunctionComponent<
   LoginButtonProviderProps
 > = ({ platformProvider }) => {
+  const { redirect } = useDecodedQuery();
   return (
     <Button
       key={platformProvider.provider}
@@ -22,7 +24,7 @@ export const PlatformProviderButton: FunctionComponent<
       <VpnKeyIcon className="w-5 h-5 mr-2" />
       <Link
         type="submit"
-        href={`/auth/${platformProvider.provider}`}>
+        href={`/auth/${platformProvider.provider}${redirect ? `?redirect=${redirect}` : ''}`}>
         {platformProvider.name}
       </Link>
     </Button>

@@ -469,6 +469,7 @@ export type Query = {
   serviceInstances: ServiceConnection;
   serviceUsers?: Maybe<UserServiceConnection>;
   settings: Settings;
+  subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   user?: Maybe<User>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userServiceOwned?: Maybe<UserServiceConnection>;
@@ -570,6 +571,11 @@ export type QueryServiceUsersArgs = {
   id: Scalars['ID']['input'];
   orderBy: UserServiceOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QuerySubscribedServiceInstancesByIdentifierArgs = {
+  identifier: ServiceDefinitionIdentifier;
 };
 
 
@@ -699,6 +705,14 @@ export enum ServiceRestriction {
 export type Settings = {
   __typename?: 'Settings';
   platform_providers: Array<PlatformProvider>;
+};
+
+export type SubscribedServiceInstance = {
+  __typename?: 'SubscribedServiceInstance';
+  is_personal_space: Scalars['Boolean']['output'];
+  links?: Maybe<Array<Maybe<ServiceLink>>>;
+  organization_id: Scalars['ID']['output'];
+  service_instance_id: Scalars['ID']['output'];
 };
 
 export type Subscription = {
@@ -988,6 +1002,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceRestriction: ServiceRestriction;
   Settings: ResolverTypeWrapper<Settings>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  SubscribedServiceInstance: ResolverTypeWrapper<SubscribedServiceInstance>;
   Subscription: ResolverTypeWrapper<{}>;
   SubscriptionCapability: ResolverTypeWrapper<SubscriptionCapability>;
   SubscriptionEdge: ResolverTypeWrapper<SubscriptionEdge>;
@@ -1057,6 +1072,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceLink: ServiceLink;
   Settings: Settings;
   String: Scalars['String']['output'];
+  SubscribedServiceInstance: SubscribedServiceInstance;
   Subscription: {};
   SubscriptionCapability: SubscriptionCapability;
   SubscriptionEdge: SubscriptionEdge;
@@ -1286,6 +1302,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   serviceUsers?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryServiceUsersArgs, 'first' | 'id' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
+  subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userServiceOwned?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -1366,6 +1383,14 @@ export type ServiceLinkResolvers<ContextType = PortalContext, ParentType extends
 
 export type SettingsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Settings'] = ResolversParentTypes['Settings']> = ResolversObject<{
   platform_providers?: Resolver<Array<ResolversTypes['PlatformProvider']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SubscribedServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscribedServiceInstance'] = ResolversParentTypes['SubscribedServiceInstance']> = ResolversObject<{
+  is_personal_space?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
+  organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1519,6 +1544,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceInstanceSubscription?: ServiceInstanceSubscriptionResolvers<ContextType>;
   ServiceLink?: ServiceLinkResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
+  SubscribedServiceInstance?: SubscribedServiceInstanceResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SubscriptionCapability?: SubscriptionCapabilityResolvers<ContextType>;
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
