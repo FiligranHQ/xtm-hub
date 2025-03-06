@@ -1,8 +1,8 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import useGranted from '@/hooks/useGranted';
+import useAdminByPass from '@/hooks/useAdminByPass';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
-import { RESTRICTION } from '@/utils/constant';
+import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import { SettingsIcon } from 'filigran-icon';
 import {
   Accordion,
@@ -112,7 +112,7 @@ const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: '/admin/user',
     label: t('MenuLinks.Security'),
-    restriction: [RESTRICTION.CAPABILITY_FRT_MANAGE_USER],
+    restriction: [ORGANIZATION_CAPACITY.MANAGE_ACCESS],
   },
   {
     href: '/admin/label',
@@ -135,7 +135,7 @@ const AdminLinks = ({ className }: { className?: string }) => {
       {adminLinksData(t).map(({ href, label, restriction = [] }) => (
         <GuardCapacityComponent
           key={href}
-          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS, ...restriction]}>
+          capacityRestriction={[...restriction]}>
           <li>
             <AdminButton
               className={className}
@@ -178,7 +178,7 @@ const AdminButton = ({
   );
 };
 const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
-  const useGrantedBYPASS = useGranted(RESTRICTION.CAPABILITY_BYPASS);
+  const useGrantedBYPASS = useAdminByPass();
   if (useGrantedBYPASS) {
     return (
       <>

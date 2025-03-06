@@ -17,11 +17,11 @@ import User, {
 } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
-import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
+import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
 import {
   createUserOrganizationRelationUnsecure,
   loadUserOrganization,
@@ -34,15 +34,14 @@ import {
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from './users.domain';
 
-export const addNewUserWithRoles = async (
+export const createUserWithPersonalSpace = async (
   data: Pick<
     UserInitializer,
     'email' | 'first_name' | 'last_name' | 'picture'
   > & {
     password?: string;
     selected_organization_id?: OrganizationId;
-  },
-  roles: string[]
+  }
 ): Promise<User> => {
   const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
@@ -68,12 +67,15 @@ export const addNewUserWithRoles = async (
     .returning('*');
 
   // Insert relation UserOrganization
-  await createUserOrganizationRelationUnsecure({
+  const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
     user_id: addedUser.id,
     organizations_id: [addOrganization.id],
   });
 
-  await addRolesToUser(addedUser.id, roles);
+  await createUserOrganizationCapability({
+    user_organization_id: userOrgRelation.id,
+    capabilities_name: ['MANAGE_SUBSCRIPTION'],
+  });
 
   await sendMail({
     to: addedUser.email,
@@ -92,17 +94,19 @@ async function createOrganisationWithAdminUser(email: string) {
     name: extractedDomain.split('.')[0],
     domains: [extractedDomain],
   });
-  const addedUser = await addNewUserWithRoles(
-    {
-      email,
-    },
-    [ROLE_ADMIN_ORGA.name, ROLE_USER.name]
-  );
+  const addedUser = await createUserWithPersonalSpace({
+    email,
+  });
 
   // Insert relation UserOrganization
-  await createUserOrganizationRelationUnsecure({
+  const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
     user_id: addedUser.id,
     organizations_id: [newOrganization.id],
+  });
+
+  await createUserOrganizationCapability({
+    user_organization_id: userOrgRelation.id,
+    capabilities_name: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
   });
 
   return addedUser;
@@ -118,15 +122,12 @@ export const createNewUserFromInvitation = async ({
 
   const userWithRoles: User = !organization
     ? await createOrganisationWithAdminUser(email)
-    : await addNewUserWithRoles(
-        {
-          email,
-          last_name,
-          first_name,
-          picture,
-        },
-        [ROLE_USER.name]
-      );
+    : await createUserWithPersonalSpace({
+        email,
+        last_name,
+        first_name,
+        picture,
+      });
 
   return loadUserBy({ 'User.id': userWithRoles.id });
 };

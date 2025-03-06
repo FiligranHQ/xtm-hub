@@ -3,7 +3,7 @@ import { Portal, portalContext } from '@/components/me/portal-context';
 import { LinkMenu } from '@/components/menu/menu';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { OrganizationSwitcher } from '@/components/menu/organization-switcher';
-import { RESTRICTION } from '@/utils/constant';
+import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import { HomeIcon } from 'filigran-icon';
 import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -16,11 +16,11 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   open,
 }) => {
   const t = useTranslations();
-  const { hasCapability, isPersonalSpace } = useContext<Portal>(portalContext);
+  const { hasOrganizationCapability } = useContext<Portal>(portalContext);
   const canManageUser =
-    hasCapability &&
-    hasCapability(RESTRICTION.CAPABILITY_FRT_MANAGE_USER) &&
-    !isPersonalSpace;
+    hasOrganizationCapability &&
+    hasOrganizationCapability(ORGANIZATION_CAPACITY.MANAGE_ACCESS);
+
   return (
     <nav className="flex-1 flex-shrink-0 pt-s">
       <OrganizationSwitcher open={open} />
@@ -45,8 +45,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
           </li>
         )}
 
-        <GuardCapacityComponent
-          capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}>
+        <GuardCapacityComponent>
           <MenuAdmin open={open} />
         </GuardCapacityComponent>
       </ul>

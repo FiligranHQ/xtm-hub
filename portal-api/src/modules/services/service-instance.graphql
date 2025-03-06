@@ -44,16 +44,16 @@ input AddServiceInput {
 
 type Mutation {
   editServiceInstance(id: ID!, name: String!): ServiceInstance
-    @auth(requires: [BCK_MANAGE_SERVICES])
+    @auth(requires: [MANAGE_SUBSCRIPTION])
   addServiceInstance(input: AddServiceInput): SubscriptionModel
-    @auth(requires: [BCK_MANAGE_SERVICES])
+    @auth(requires: [MANAGE_SUBSCRIPTION])
   deleteServiceInstance(id: ID!): ServiceInstance
-    @auth(requires: [BCK_MANAGE_SERVICES])
+    @auth(requires: [MANAGE_SUBSCRIPTION])
   addServicePicture(
     serviceId: ID
     document: Upload
     isLogo: Boolean
-  ): ServiceInstance @auth(requires: [BCK_MANAGE_SERVICES])
+  ): ServiceInstance @auth(requires: [MANAGE_SUBSCRIPTION])
 }
 
 type Query {
@@ -62,8 +62,7 @@ type Query {
     after: ID
     orderBy: ServiceInstanceOrdering!
     orderMode: OrderingMode!
-  ): ServiceConnection!
-    @auth(requires: [FRT_ACCESS_SERVICES, BCK_MANAGE_SERVICES])
+  ): ServiceConnection! @auth
   serviceInstances(
     first: Int!
     after: ID

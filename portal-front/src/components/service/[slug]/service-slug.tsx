@@ -16,9 +16,8 @@ import {
 } from '@/components/ui/breadcrumb-nav';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
+import useAdminByPass from '@/hooks/useAdminByPass';
 import useAdminPath from '@/hooks/useAdminPath';
-import useGranted from '@/hooks/useGranted';
-import { RESTRICTION } from '@/utils/constant';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
@@ -110,8 +109,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     me?.id
   );
 
-  const isAllowedInviteUser =
-    canManageAccess || useGranted(RESTRICTION.CAPABILITY_BYPASS);
+  const isAllowedInviteUser = canManageAccess || useAdminByPass();
 
   const removeOrganization = (
     subscription: subscriptionWithUserService_fragment$data

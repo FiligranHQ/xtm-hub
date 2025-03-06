@@ -37,23 +37,34 @@ export async function seed(knex) {
     .onConflict('id')
     .ignore();
 
-  await knex('User_Organization').insert([
-    {
-      user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
-    },
-    {
-      user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-    },
-  ]);
+  const userOrganizations = await knex('User_Organization')
+    .insert([
+      {
+        user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      },
+      {
+        user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      },
+    ])
+    .returning('id');
+
+  for (const userOrg of userOrganizations) {
+    await knex('UserOrganization_Capability').insert([
+      {
+        user_organization_id: userOrg.id,
+        name: 'MANAGE_ACCESS',
+      },
+      {
+        user_organization_id: userOrg.id,
+        name: 'MANAGE_SUBSCRIPTION',
+      },
+    ]);
+  }
 
   await knex('RolePortal')
-    .insert([
-      { id: '6b632cf2-9105-46ec-a463-ad59ab58c770', name: 'ADMIN' },
-      { id: '40cfe630-c272-42f9-8fcf-f219e2f4277b', name: 'USER' },
-      { id: '40cfe630-c272-42f9-8fcf-f219e2f4278c', name: 'ADMIN_ORGA' },
-    ])
+    .insert([{ id: '6b632cf2-9105-46ec-a463-ad59ab58c770', name: 'ADMIN' }])
     .onConflict('id')
     .ignore();
 
@@ -65,34 +76,7 @@ export async function seed(knex) {
   ]);
 
   await knex('CapabilityPortal')
-    .insert([
-      { id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09', name: 'BYPASS' },
-      {
-        id: '6ff7515e-5d86-49e8-84b6-f301d12e6038',
-        name: 'BCK_MANAGE_SERVICES',
-      },
-      {
-        id: '6fd9bdea-6bf5-4621-8216-50bd7a6584c7',
-        name: 'BCK_MANAGE_COMMUNITIES',
-      },
-      {
-        id: '993b2b86-2310-47e9-90f2-b56ad9b15405',
-        name: 'FRT_SERVICE_SUBSCRIBER',
-      },
-      {
-        id: 'cabbc09c-275a-473b-b490-626b9ebf6939',
-        name: 'FRT_MANAGE_SETTINGS',
-      },
-      {
-        id: 'd583993e-2cb7-4fe9-ba47-2100ca7ae54f',
-        name: 'FRT_ACCESS_BILLING',
-      },
-      { id: '350d67fe-5a9b-4b51-8d63-ad504d8a4999', name: 'FRT_MANAGE_USER' },
-      {
-        id: 'fe5ad46d-8851-4d8f-901b-4dfb5e738df5',
-        name: 'FRT_ACCESS_SERVICES',
-      },
-    ])
+    .insert([{ id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09', name: 'BYPASS' }])
     .onConflict('id')
     .ignore();
 
@@ -100,38 +84,6 @@ export async function seed(knex) {
     {
       capability_portal_id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09',
       role_portal_id: '6b632cf2-9105-46ec-a463-ad59ab58c770',
-    },
-    {
-      capability_portal_id: '6ff7515e-5d86-49e8-84b6-f301d12e6038',
-      role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-    },
-    {
-      capability_portal_id: '6fd9bdea-6bf5-4621-8216-50bd7a6584c7',
-      role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-    },
-    {
-      capability_portal_id: '993b2b86-2310-47e9-90f2-b56ad9b15405',
-      role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-    },
-    {
-      capability_portal_id: 'cabbc09c-275a-473b-b490-626b9ebf6939',
-      role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-    },
-    {
-      capability_portal_id: 'd583993e-2cb7-4fe9-ba47-2100ca7ae54f',
-      role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-    },
-    {
-      capability_portal_id: '350d67fe-5a9b-4b51-8d63-ad504d8a4999',
-      role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-    },
-    {
-      capability_portal_id: 'fe5ad46d-8851-4d8f-901b-4dfb5e738df5',
-      role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-    },
-    {
-      capability_portal_id: 'fe5ad46d-8851-4d8f-901b-4dfb5e738df5',
-      role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4277b',
     },
   ]);
 

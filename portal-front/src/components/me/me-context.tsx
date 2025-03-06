@@ -25,7 +25,6 @@ const MeContext: React.FunctionComponent<ContextProps> = ({
   return (
     <PortalContext me={me}>
       <UserEventSubscription />
-
       {children}
     </PortalContext>
   );

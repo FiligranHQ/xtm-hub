@@ -54,11 +54,13 @@ export const sendMail = async <T extends keyof MailTemplates>({
     html,
   };
 
-  transporter?.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      logApp.error('Email error: ' + error);
-    } else {
-      logApp.info('Email sent: ' + info.response);
-    }
-  });
+  if (!(process.env.VITEST_MODE || process.env.NODE_ENV === 'test')) {
+    transporter?.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        logApp.error('Email error: ' + error);
+      } else {
+        logApp.info('Email sent: ' + info.response);
+      }
+    });
+  }
 };

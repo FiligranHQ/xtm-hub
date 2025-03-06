@@ -23,7 +23,7 @@ import {
 import { IconActions } from '@/components/ui/icon-actions';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { DEBOUNCE_TIME, RESTRICTION } from '@/utils/constant';
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { FormatDate } from '@/utils/date';
 import {
@@ -156,9 +156,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                 <span className="sr-only">{t('Utils.OpenMenu')}</span>
               </>
             }>
-            <GuardCapacityComponent
-              capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
-              displayError={false}>
+            <GuardCapacityComponent displayError={false}>
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
             {queryDataService.serviceInstanceById?.capabilities.some(
@@ -166,9 +164,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
             ) && <EditDocument documentData={row.original} />}
             <DownloadDocument documentData={row.original} />
             <VisualizeDocument documentData={row.original} />
-            <GuardCapacityComponent
-              capacityRestriction={[RESTRICTION.CAPABILITY_BYPASS]}
-              displayError={false}>
+            <GuardCapacityComponent displayError={false}>
               <DeleteDocument
                 documentData={row.original}
                 connectionId={data.documents.__id}

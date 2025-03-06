@@ -15,11 +15,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import {
-  ADMIN_UUID,
-  PLATFORM_ORGANIZATION_UUID,
-  ROLE_USER,
-} from '../../portal.const';
+import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
@@ -55,6 +51,7 @@ describe('User query resolver', () => {
           },
         };
         const response =
+          // @ts-ignore
           await usersResolver.Query.userHasOrganizationWithSubscription(
             undefined,
             {},
@@ -101,17 +98,16 @@ describe('User mutation resolver', () => {
     expect(response).toBeTruthy();
   });
 
-  describe('AddUser Mutation', () => {
+  describe('AdminAddUser Mutation', () => {
     it('should not create an existing user', async () => {
       try {
         // @ts-ignore
-        await usersResolver.Mutation.addUser(
+        await usersResolver.Mutation.adminAddUser(
           undefined,
           {
             input: {
               email: DEFAULT_ADMIN_EMAIL,
               password: 'admin',
-              roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
             } as AddUserInput,
           },
           contextAdminUser
@@ -123,18 +119,15 @@ describe('User mutation resolver', () => {
         expect(error).toBeTruthy();
       }
     });
-
     describe('should create user with personal space', async () => {
       const testMail = `testAddUser${uuidv4()}@test.fr`;
       // @ts-ignore
-      const response = await usersResolver.Mutation.addUser(
+      const response = await usersResolver.Mutation.adminAddUser(
         undefined,
         {
           input: {
             email: testMail,
             password: 'admin',
-            roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
-            organizations: [],
           } as AddUserInput,
         },
         contextAdminUser
@@ -155,19 +148,23 @@ describe('User mutation resolver', () => {
         expect(user.id).toEqual(organizations[0].id);
       });
     });
-
     describe('as Admin - should create user with personal space and add to internal organization', async () => {
       const testMail = `testAddUser${uuidv4()}@test.fr`;
       // @ts-ignore
-      const response = await usersResolver.Mutation.addUser(
+      const response = await usersResolver.Mutation.adminAddUser(
         undefined,
         {
           input: {
             email: testMail,
             password: 'admin',
-            roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
-            organizations: [
-              toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
+            organization_capabilities: [
+              {
+                organization_id: toGlobalId(
+                  'Organization',
+                  PLATFORM_ORGANIZATION_UUID
+                ),
+                capabilities: [],
+              },
             ],
           } as AddUserInput,
         },
@@ -196,19 +193,22 @@ describe('User mutation resolver', () => {
         await deleteUserById(response.id as UserId);
       });
     });
-
     it('as Admin Organization - should not able to create user with different email domain', async () => {
       const testMail = `testAddUser${uuidv4()}@test.fr`;
       try {
         // @ts-ignore
-        await usersResolver.Mutation.addUser(
+        await usersResolver.Mutation.adminAddUser(
           undefined,
           {
             input: {
               email: testMail,
               password: 'admin',
-              roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
-              organizations: [toGlobalId('Organization', THALES_ORGA_ID)],
+              organization_capabilities: [
+                {
+                  organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                  capabilities: [],
+                },
+              ],
             } as AddUserInput,
           },
           contextAdminOrgaThales
@@ -224,14 +224,18 @@ describe('User mutation resolver', () => {
   describe('as Admin orga - should create user with personal space and add to Thales organization', async () => {
     const testMail = `testAddUser${uuidv4()}@thales.com`;
     // @ts-ignore
-    const response = await usersResolver.Mutation.addUser(
+    const response = await usersResolver.Mutation.adminAddUser(
       undefined,
       {
         input: {
           email: testMail,
           password: 'admin',
-          roles_id: [toGlobalId('RolePortal', ROLE_USER.id)],
-          organizations: [toGlobalId('Organization', THALES_ORGA_ID)],
+          organization_capabilities: [
+            {
+              organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+              capabilities: [],
+            },
+          ],
         } as AddUserInput,
       },
       contextAdminOrgaThales
@@ -264,15 +268,30 @@ describe('User mutation resolver', () => {
     describe('should edit an existing user', async () => {
       const fallbackUser = await loadUserBy({ email: 'user15@test.fr' });
       // @ts-ignore
-      const response = await usersResolver.Mutation.editUser(
+      const response = await usersResolver.Mutation.adminEditUser(
         undefined,
         {
           id: SIMPLE_USER_FILIGRAN_ID,
           input: {
-            organizations: [
-              toGlobalId('Organization', SIMPLE_USER_FILIGRAN_ID),
-              toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
-              toGlobalId('Organization', THALES_ORGA_ID),
+            organization_capabilities: [
+              {
+                organization_id: toGlobalId(
+                  'Organization',
+                  SIMPLE_USER_FILIGRAN_ID
+                ),
+                capabilities: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+              },
+              {
+                organization_id: toGlobalId(
+                  'Organization',
+                  PLATFORM_ORGANIZATION_UUID
+                ),
+                capabilities: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+              },
+              {
+                organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                capabilities: [],
+              },
             ],
           } as EditUserInput,
         },
@@ -280,36 +299,36 @@ describe('User mutation resolver', () => {
       );
 
       expect(response).toBeTruthy();
-      const organizations = await usersResolver.User.organizations(
-        response,
-        undefined,
-        contextAdminUser,
-        undefined
-      );
-      const roles_portal = await usersResolver.User.roles_portal(
-        response,
-        undefined,
-        contextAdminUser,
-        undefined
-      );
       it('should have update organisations, first_name and last_name', async () => {
-        expect(organizations.length).toEqual(3);
+        expect(response.organization_capabilities.length).toEqual(3);
       });
       it('should not have update other fields', async () => {
-        expect(roles_portal.length).toEqual(response.roles_portal.length);
+        expect(fallbackUser.first_name).toEqual(response.first_name);
         expect(fallbackUser.email).toEqual(response.email);
       });
 
       afterAll(async () => {
         // @ts-ignore
-        await usersResolver.Mutation.editUser(
+        await usersResolver.Mutation.adminEditUser(
           undefined,
           {
             id: SIMPLE_USER_FILIGRAN_ID,
             input: {
-              organizations: [
-                toGlobalId('Organization', SIMPLE_USER_FILIGRAN_ID),
-                toGlobalId('Organization', PLATFORM_ORGANIZATION_UUID),
+              organization_capabilities: [
+                {
+                  organization_id: toGlobalId(
+                    'Organization',
+                    SIMPLE_USER_FILIGRAN_ID
+                  ),
+                  capabilities: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+                },
+                {
+                  organization_id: toGlobalId(
+                    'Organization',
+                    PLATFORM_ORGANIZATION_UUID
+                  ),
+                  capabilities: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+                },
               ],
             } as EditUserInput,
           },

@@ -4,8 +4,8 @@ import { removeDocument } from '../db-utils/document.helper';
 import DocumentPage from '../model/document.pageModel';
 
 export const TEST_FILE = {
-  path: './tests/tests_files/assets/teste2e.pdf',
-  name: 'teste2e.pdf',
+  path: './tests/tests_files/assets/teste2e-document.pdf',
+  name: 'teste2e-document.pdf',
   description: 'Test document description',
 };
 

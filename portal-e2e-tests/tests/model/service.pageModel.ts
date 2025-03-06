@@ -17,19 +17,29 @@ export default class ServicePage {
     await this.page.getByLabel('Admin').click();
   }
 
-  async addOrganizationIntoService(organizationName: string) {
+  async addOrganizationIntoService(
+    organizationName: string,
+    userEmail: string
+  ) {
     await this.page
       .getByRole('button', { name: 'Subscribe organization' })
       .click();
     await this.page.getByLabel('Organization', { exact: true }).click();
     await this.page.getByLabel(organizationName).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await this.page.getByLabel('Invite user').click();
+    await this.page.getByText(userEmail).click();
+    await this.page.getByLabel('Manage access: The user can').click();
+    await this.page.getByRole('button', { name: 'Validate' }).click();
     await this.page
       .getByRole('main')
       .getByText(organizationName, { exact: true })
       .click();
   }
-  async addOrganizationIntoServiceWithCapabilities(organizationName: string) {
+  async addOrganizationIntoServiceWithCapabilities(
+    organizationName: string,
+    userEmail: string
+  ) {
     await this.page
       .getByRole('button', { name: 'Subscribe organization' })
       .click();
@@ -37,6 +47,10 @@ export default class ServicePage {
     await this.page.getByLabel(organizationName).click();
     await this.page.getByText('DELETE access:').click();
     await this.page.getByLabel('UPLOAD access:').click();
+    await this.page.getByRole('button', { name: 'Validate' }).click();
+    await this.page.getByLabel('Invite user').click();
+    await this.page.getByText(userEmail).click();
+    await this.page.getByLabel('Manage access: The user can').click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 

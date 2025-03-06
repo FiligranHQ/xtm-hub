@@ -5,21 +5,14 @@ import { OrganizationId } from '../model/kanel/public/Organization';
 import { isStorageAlive } from '../modules/services/document/document-storage';
 import {
   ADMIN_UUID,
-  CAPABILITY_BCK_MANAGE_SERVICES,
   CAPABILITY_BYPASS,
-  CAPABILITY_FRT_ACCESS_BILLING,
-  CAPABILITY_FRT_ACCESS_SERVICES,
-  CAPABILITY_FRT_MANAGE_SETTINGS,
-  CAPABILITY_FRT_MANAGE_USER,
-  CAPABILITY_FRT_SERVICE_SUBSCRIBER,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
-  ROLE_ADMIN_ORGA,
-  ROLE_USER,
 } from '../portal.const';
 import { hashPassword } from '../utils/hash-password.util';
 import {
   ensureCapabilityExists,
+  ensurePersonalSpaceExist,
   ensureRoleExists,
   ensureRoleHasCapability,
   ensureServiceDefinitionExists,
@@ -47,6 +40,7 @@ const initAdminUser = async () => {
     await completeUserInitialization(email, data);
   }
   ensureUserRoleExist(ADMIN_UUID, ROLE_ADMIN.id);
+  ensurePersonalSpaceExist(ADMIN_UUID, email);
 };
 
 const completeUserInitialization = async (email, data) => {
@@ -81,55 +75,9 @@ const initCapabilityAndRole = async () => {
   const trx = await dbTx();
   try {
     await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
-    await ensureCapabilityExists(CAPABILITY_BCK_MANAGE_SERVICES, trx);
-    await ensureCapabilityExists(CAPABILITY_FRT_SERVICE_SUBSCRIBER, trx);
-    await ensureCapabilityExists(CAPABILITY_FRT_MANAGE_SETTINGS, trx);
-    await ensureCapabilityExists(CAPABILITY_FRT_ACCESS_BILLING, trx);
-    await ensureCapabilityExists(CAPABILITY_FRT_MANAGE_USER, trx);
-    await ensureCapabilityExists(CAPABILITY_FRT_ACCESS_SERVICES, trx);
-
-    // Ensure ROLE_ADMIN and ROLE_USER exist in RolePortal
     await ensureRoleExists(ROLE_ADMIN, trx);
-    await ensureRoleExists(ROLE_USER, trx);
-    await ensureRoleExists(ROLE_ADMIN_ORGA, trx);
-
     // Ensure ROLE_ADMIN has CAPABILITY_BYPASS
     await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS, trx);
-    await ensureRoleHasCapability(
-      ROLE_ADMIN_ORGA,
-      CAPABILITY_BCK_MANAGE_SERVICES,
-      trx
-    );
-    await ensureRoleHasCapability(
-      ROLE_ADMIN_ORGA,
-      CAPABILITY_FRT_SERVICE_SUBSCRIBER,
-      trx
-    );
-    await ensureRoleHasCapability(
-      ROLE_ADMIN_ORGA,
-      CAPABILITY_FRT_MANAGE_SETTINGS,
-      trx
-    );
-    await ensureRoleHasCapability(
-      ROLE_ADMIN_ORGA,
-      CAPABILITY_FRT_ACCESS_BILLING,
-      trx
-    );
-    await ensureRoleHasCapability(
-      ROLE_ADMIN_ORGA,
-      CAPABILITY_FRT_MANAGE_USER,
-      trx
-    );
-    await ensureRoleHasCapability(
-      ROLE_ADMIN_ORGA,
-      CAPABILITY_FRT_ACCESS_SERVICES,
-      trx
-    );
-    await ensureRoleHasCapability(
-      ROLE_USER,
-      CAPABILITY_FRT_ACCESS_SERVICES,
-      trx
-    );
 
     await trx.commit();
   } catch (error) {

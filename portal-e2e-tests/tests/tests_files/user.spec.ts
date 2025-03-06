@@ -46,16 +46,14 @@ test.describe('User Management', () => {
 
     await test.step('Disable user', async () => {
       await userPage.disableUser(TEST_USER.userEmail);
-      await expect(
-        page.getByRole('cell', { name: "Disabled" })
-      ).toBeVisible();
+      await expect(page.getByRole('cell', { name: 'Disabled' })).toBeVisible();
     });
   });
 
   test('Should only see authorized users', async ({ page }) => {
     await userPage.navigateToUserListAdmin();
     await expect(page.getByText(TEST_USER.otherThalesUserEmail)).toBeVisible();
-    await userPage.navigateToUserOrgaAdmin();
+    await userPage.navigateToUserManageAccess();
     await expect(
       page.getByText(TEST_USER.otherThalesUserEmail)
     ).not.toBeVisible();

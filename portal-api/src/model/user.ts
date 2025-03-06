@@ -14,6 +14,7 @@ export interface UserInfo {
 
 export interface UserWithOrganizations extends User {
   organizations: Organization[];
+  selected_org_capabilities: string[];
 }
 
 export interface UserWithOrganizationsAndRole extends UserWithOrganizations {
@@ -22,4 +23,9 @@ export interface UserWithOrganizationsAndRole extends UserWithOrganizations {
 
 export interface UserLoadUserBy extends UserWithOrganizationsAndRole {
   capabilities: CapabilityPortal[];
+  organization_capabilities?: {
+    id: string;
+    organization: Organization;
+    capabilities: string[];
+  }[];
 }

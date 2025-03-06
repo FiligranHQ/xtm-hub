@@ -1,8 +1,9 @@
 'use client';
 
 import { Portal, portalContext } from '@/components/me/portal-context';
+import useAdminByPass from '@/hooks/useAdminByPass';
 import useGranted from '@/hooks/useGranted';
-import { Restriction } from '@generated/meContext_fragment.graphql';
+import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -10,20 +11,22 @@ import { useContext } from 'react';
 // Component interface
 interface GuardComponentProps {
   children: React.ReactNode;
-  capacityRestriction: Restriction[];
+  capacityRestriction?: ORGANIZATION_CAPACITY[];
   displayError?: boolean;
 }
 
 const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   children,
-  capacityRestriction,
+  capacityRestriction = [],
   displayError = false,
 }) => {
   const { me } = useContext<Portal>(portalContext);
   if (!me) {
     return null;
   }
-  const authorized = capacityRestriction.some(useGranted);
+  const isAdmin = useAdminByPass();
+  const authorized = capacityRestriction.some(useGranted) || isAdmin;
+
   if (!authorized && displayError) {
     const t = useTranslations();
     return (

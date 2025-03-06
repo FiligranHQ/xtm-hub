@@ -34,19 +34,7 @@ export async function seed(knex) {
     ])
     .onConflict('id')
     .ignore();
-  await knex('User_RolePortal')
-    .insert([
-      {
-        user_id: '015c0488-848d-4c89-95e3-8a243971f594',
-        role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4278c',
-      },
-      {
-        user_id: '154006e2-f24b-42da-b39c-e0fb17bead00',
-        role_portal_id: '40cfe630-c272-42f9-8fcf-f219e2f4277b',
-      },
-    ])
-    .onConflict('id')
-    .ignore();
+
   await knex('Organization')
     .insert([
       {
@@ -67,10 +55,6 @@ export async function seed(knex) {
     .insert([
       {
         user_id: '015c0488-848d-4c89-95e3-8a243971f594',
-        organization_id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
-      },
-      {
-        user_id: '015c0488-848d-4c89-95e3-8a243971f594',
         organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       },
       {
@@ -84,4 +68,28 @@ export async function seed(knex) {
     ])
     .onConflict('id')
     .ignore();
+
+  const userOrganizations = await knex('User_Organization')
+    .insert([
+      {
+        user_id: '015c0488-848d-4c89-95e3-8a243971f594',
+        organization_id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
+      },
+    ])
+    .returning('id')
+    .onConflict('id')
+    .ignore();
+
+  for (const userOrg of userOrganizations) {
+    await knex('UserOrganization_Capability').insert([
+      {
+        user_organization_id: userOrg.id,
+        name: 'MANAGE_ACCESS',
+      },
+      {
+        user_organization_id: userOrg.id,
+        name: 'MANAGE_SUBSCRIPTION',
+      },
+    ]);
+  }
 }

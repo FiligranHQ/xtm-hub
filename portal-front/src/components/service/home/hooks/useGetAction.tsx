@@ -2,7 +2,7 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import { Portal, portalContext } from '@/components/me/portal-context';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { RESTRICTION } from '@/utils/constant';
+import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -50,7 +50,7 @@ export default function useGetAction(
         service.join_type
       ) && (
         <GuardCapacityComponent
-          capacityRestriction={[RESTRICTION.CAPABILITY_FRT_SERVICE_SUBSCRIBER]}>
+          capacityRestriction={[ORGANIZATION_CAPACITY.MANAGE_SUBSCRIPTION]}>
           <AlertDialogComponent
             AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
             actionButtonText={t('Utils.Continue')}

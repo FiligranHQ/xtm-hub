@@ -1,4 +1,5 @@
 import { db, dbUnsecure } from '../../../knexfile';
+import { OrganizationCapabilitiesInput } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import UserOrganization, {
@@ -6,7 +7,11 @@ import UserOrganization, {
   UserOrganizationMutator,
 } from '../../model/kanel/public/UserOrganization';
 import { PortalContext } from '../../model/portal-context';
-import { isEmpty } from '../../utils/utils';
+import { extractId, isEmpty } from '../../utils/utils';
+import {
+  createUserOrganizationCapability,
+  updateUserOrganizationCapability,
+} from './user-organization-capability.domain';
 
 export const insertNewUserOrganization = (
   context: PortalContext,
@@ -47,39 +52,90 @@ export const createUserOrganizationRelationUnsecure = async ({
 }: {
   user_id: UserId;
   organizations_id: OrganizationId[];
-}) => {
+}): Promise<UserOrganization[]> => {
   const usersOrganization: UserOrganizationInitializer[] = organizations_id.map(
     (organization_id) => ({
       user_id,
       organization_id,
     })
   );
-  await dbUnsecure('User_Organization')
+  return dbUnsecure<UserOrganization>('User_Organization')
     .insert(usersOrganization)
     .returning('*');
 };
 
-export const updateUserOrg = async (
+export const updateMultipleUserOrgWithCapabilities = async (
   context: PortalContext,
   userId: UserId,
-  organizationsId: OrganizationId[]
+  orgCapabilities: OrganizationCapabilitiesInput[]
 ) => {
-  if (isEmpty(organizationsId)) {
-    return;
-  }
   await db<UserOrganization>(context, 'User_Organization')
     .where('user_id', '=', userId)
-    .delete('*');
+    .whereNot('organization_id', userId) // Should not touch personal space
+    .del();
+  if (isEmpty(orgCapabilities)) {
+    return;
+  }
+  for (const orgCapa of orgCapabilities) {
+    const organization_id = extractId<OrganizationId>(orgCapa.organization_id);
+    if (organization_id !== userId.toString()) {
+      const [newUserOrganization] = await insertNewUserOrganization(context, {
+        user_id: userId,
+        organization_id,
+      });
+      await createUserOrganizationCapability({
+        user_organization_id: newUserOrganization.id,
+        capabilities_name: orgCapa.capabilities,
+      });
+    }
+  }
+  return true;
+};
 
-  const userOrgsToInsert: UserOrganizationInitializer[] = organizationsId.map(
-    (orgId) => ({
-      user_id: userId,
-      organization_id: orgId,
-    })
-  );
-  return db<UserOrganization>(context, 'User_Organization')
-    .insert(userOrgsToInsert)
-    .returning('*');
+export const updateUserOrgCapabilities = async (
+  context: PortalContext,
+  {
+    user_id,
+    organization_id,
+    orgCapabilities,
+  }: {
+    user_id: UserId;
+    organization_id: OrganizationId;
+    orgCapabilities: string[];
+  }
+) => {
+  const [userOrganization] = await loadUserOrganization(context, {
+    user_id,
+    organization_id,
+  });
+  await updateUserOrganizationCapability(context, {
+    user_organization_id: userOrganization.id,
+    capabilities_name: orgCapabilities,
+  });
+  return true;
+};
+
+export const createUserOrgCapabilities = async (
+  context: PortalContext,
+  {
+    user_id,
+    organization_id,
+    orgCapabilities,
+  }: {
+    user_id: UserId;
+    organization_id: OrganizationId;
+    orgCapabilities: string[];
+  }
+) => {
+  const [userOrganization] = await insertNewUserOrganization(context, {
+    user_id,
+    organization_id,
+  });
+  await updateUserOrganizationCapability(context, {
+    user_organization_id: userOrganization.id,
+    capabilities_name: orgCapabilities,
+  });
+  return true;
 };
 
 export const removeUserFromOrganization = async (
