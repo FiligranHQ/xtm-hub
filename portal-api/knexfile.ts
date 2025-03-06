@@ -94,6 +94,8 @@ export interface QueryOpts {
   after?: string;
   orderMode?: string;
   orderBy?: string;
+  queryType?: 'select' | 'insert' | 'update' | 'delete';
+  capabilities?: string[];
   searchTerm?: string;
   filters?: Filter[];
   columns?: string[];

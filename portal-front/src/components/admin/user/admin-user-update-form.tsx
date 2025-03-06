@@ -1,0 +1,307 @@
+import { userEditAdminFormSchema } from '@/components/admin/user/user-form.schema';
+import { getOrganizations } from '@/components/organization/organization.service';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { cn, isEmpty } from '@/lib/utils';
+import { ORGANIZATION_CAPACITY } from '@/utils/constant';
+import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DeleteIcon } from 'filigran-icon';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  MultiSelectFormField,
+  SelectValue,
+  SheetFooter,
+  toast,
+} from 'filigran-ui';
+import {
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from 'filigran-ui/clients';
+import { useTranslations } from 'next-intl';
+import { FunctionComponent } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { graphql, useMutation } from 'react-relay';
+import { z } from 'zod';
+
+interface AdminUserUpdateFormProps {
+  user: userList_fragment$data;
+  callback: () => void;
+}
+
+export const AdminUserUpdateFormMutation = graphql`
+  mutation adminUserUpdateFormMutation($id: ID!, $input: AdminEditUserInput!) {
+    adminEditUser(id: $id, input: $input) {
+      ...userList_fragment
+    }
+  }
+`;
+
+export const AdminUserUpdateForm: FunctionComponent<
+  AdminUserUpdateFormProps
+> = ({ user, callback }) => {
+  const { handleCloseSheet, setIsDirty } = useDialogContext();
+
+  const t = useTranslations();
+  const [organizationsData] = getOrganizations();
+  const organizations = organizationsData.organizations.edges;
+
+  const organizationCapabilitiesData = [
+    ORGANIZATION_CAPACITY.MANAGE_ACCESS,
+    ORGANIZATION_CAPACITY.MANAGE_SUBSCRIPTION,
+  ].map((capabilities) => ({
+    label: capabilities,
+    value: capabilities,
+  }));
+
+  const form = useForm<z.infer<typeof userEditAdminFormSchema>>({
+    resolver: zodResolver(userEditAdminFormSchema),
+    defaultValues: {
+      first_name: user.first_name ?? '',
+      last_name: user.last_name ?? '',
+      organization_capabilities: (user.organization_capabilities ?? [])
+        .filter((org) => !org.organization.personal_space)
+        .map((o) => ({
+          organization_id: o.organization.id ?? '',
+          capabilities: [...(o.capabilities ?? [])],
+        })),
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    name: 'organization_capabilities',
+    control: form.control,
+  });
+
+  const isOrganizationAlreadySelected = (id: string) => {
+    const orgCapabilities = form.getValues('organization_capabilities');
+
+    return orgCapabilities.find(
+      ({ organization_id }) => organization_id === id
+    );
+  };
+  // Some issue with addUser, the formState isDirty without any modification, so for now we check if dirtyFields get any key
+  setIsDirty(!isEmpty(form.formState.dirtyFields));
+
+  const [updateUserMutation] = useMutation(AdminUserUpdateFormMutation);
+
+  const updateUser = (values: z.infer<typeof userEditAdminFormSchema>) => {
+    updateUserMutation({
+      variables: {
+        input: {
+          ...values,
+        },
+        id: user.id,
+      },
+      onCompleted: () => {
+        toast({
+          title: t('Utils.Success'),
+          description: t('UserActions.UserUpdated', { email: user.email }),
+        });
+        callback();
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+    });
+  };
+
+  const disableUser = (values: { disabled: boolean }) => {
+    const input = values;
+    updateUserMutation({
+      variables: {
+        input,
+        id: user.id,
+      },
+      onCompleted: () => {
+        toast({
+          title: t('Utils.Success'),
+          description: t('UserActions.UserUpdated', { email: user.email }),
+        });
+        callback();
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+    });
+  };
+
+  const onSubmit = (values: z.infer<typeof userEditAdminFormSchema>) => {
+    updateUser(values);
+  };
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full space-y-xl">
+        <FormField
+          control={form.control}
+          name="first_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('UserForm.FirstName')}</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t('UserForm.FirstName')}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="last_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('UserForm.LastName')}</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t('UserForm.LastName')}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="flex items-center gap-m">
+          <Label>{t('UserForm.Organizations')}</Label>
+          <Select
+            onValueChange={(value) => {
+              append({
+                organization_id: value,
+                capabilities: [],
+              });
+            }}
+            value={''}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Add organization" />
+            </SelectTrigger>
+            <SelectContent>
+              {organizations.map(
+                (organization) =>
+                  !isOrganizationAlreadySelected(organization.node.id) && (
+                    <SelectItem
+                      key={organization.node.id}
+                      value={organization.node.id}>
+                      {organization.node.name}
+                    </SelectItem>
+                  )
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div
+          className={cn(
+            '!mt-s px-l py-s',
+            fields.length > 0 && 'bg-primary/10'
+          )}>
+          {fields.map((field, index) => {
+            return (
+              <FormField
+                control={form.control}
+                key={`organization_capabilities.${index}.capabilities`}
+                name={`organization_capabilities.${index}.capabilities`}
+                render={({ field: formField }) => {
+                  return (
+                    <FormItem>
+                      <div className="grid gap-m items-center grid-cols-[1fr_4fr_3rem] pt-s">
+                        <Label>
+                          {
+                            organizations.find(
+                              (organization) =>
+                                organization.node.id === field.organization_id
+                            )?.node.name
+                          }
+                        </Label>
+                        <FormControl>
+                          <MultiSelectFormField
+                            noResultString={t('Utils.NotFound')}
+                            options={organizationCapabilitiesData}
+                            defaultValue={formField.value}
+                            onValueChange={formField.onChange}
+                            placeholder={t(
+                              'UserForm.OrganizationsCapabilitiesPlaceholder'
+                            )}
+                            variant="inverted"
+                          />
+                        </FormControl>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => remove(index)}>
+                          <DeleteIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            );
+          })}
+        </div>
+
+        <SheetFooter className="justify-between sm:justify-between pb-0">
+          {user.disabled ? (
+            <Button
+              variant="outline-primary"
+              onClick={() => disableUser({ disabled: false })}>
+              {t('UserActions.Enable')}
+            </Button>
+          ) : (
+            <AlertDialogComponent
+              AlertTitle={t('MenuActions.Disable')}
+              actionButtonText={t('MenuActions.Disable')}
+              variantName={'destructive'}
+              triggerElement={
+                <Button variant="outline-destructive">
+                  {t('UserActions.Disable')}
+                </Button>
+              }
+              onClickContinue={() => disableUser({ disabled: true })}>
+              {t('DisableUserDialog.TextDisableThisUser', {
+                email: user.email,
+              })}
+            </AlertDialogComponent>
+          )}
+          <div className="flex gap-s">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={(e) => handleCloseSheet(e)}>
+              {t('Utils.Cancel')}
+            </Button>
+            <Button
+              disabled={!form.formState.isValid}
+              type="submit">
+              {t('Utils.Validate')}
+            </Button>
+          </div>
+        </SheetFooter>
+      </form>
+    </Form>
+  );
+};

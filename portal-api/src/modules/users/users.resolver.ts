@@ -4,7 +4,6 @@ import { dbTx } from '../../../knexfile';
 import { MergeEvent, Resolvers } from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { RolePortalId } from '../../model/kanel/public/RolePortal';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
@@ -19,10 +18,11 @@ import {
 } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import {
+  createUserOrgCapabilities,
   removeUserFromOrganization,
-  updateUserOrg,
+  updateMultipleUserOrgWithCapabilities,
+  updateUserOrgCapabilities,
 } from '../common/user-organization.helper';
-import { updateUserRolePortal } from '../common/user-role-portal.helper';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
   getCapabilities,
@@ -38,7 +38,10 @@ import {
   updateUser,
   userHasOrganizationWithSubscription,
 } from './users.domain';
-import { addNewUserWithRoles, mapUserToGraphqlUser } from './users.helper';
+import {
+  createUserWithPersonalSpace,
+  mapUserToGraphqlUser,
+} from './users.helper';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   const hash = crypto
@@ -98,10 +101,70 @@ const resolvers: Resolvers = {
         const [organizationFromEmail] = await loadOrganizationsFromEmail(
           input.email
         );
+        //
+        const chosenOrganization: OrganizationId =
+          context.user.selected_organization_id;
+
+        // The admin orga should only allow to add users in the same organization and with the same domain.
+        // Only the admin PLTFM can by pass this check
+        if (
+          chosenOrganization !== organizationFromEmail?.id &&
+          !context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)
+        ) {
+          throw ForbiddenAccess('EMAIL_OUTSIDE_ORGANIZATION_ERROR');
+        }
+
+        const [existingUser] = await loadUnsecureUser({ email: input.email });
+
+        const user = existingUser
+          ? existingUser
+          : await createUserWithPersonalSpace({
+              email: input.email,
+              password: input.password,
+              first_name: input.first_name,
+              last_name: input.last_name,
+              selected_organization_id: chosenOrganization,
+            });
+
+        await createUserOrgCapabilities(context, {
+          user_id: user.id,
+          organization_id: chosenOrganization,
+          orgCapabilities: input.capabilities ?? [],
+        });
+
+        const loadUserFinalUser = await loadUserBy({
+          'User.id': user.id,
+        });
+
+        await dispatch('User', 'add', loadUserFinalUser);
+        await trx.commit();
+
+        return mapUserToGraphqlUser(loadUserFinalUser);
+      } catch (error) {
+        await trx.rollback();
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          logApp.warn(
+            'You cannot add a user whose email domain is outside your organization'
+          );
+          throw ForbiddenAccess('EMAIL_OUTSIDE_ORGANIZATION_ERROR');
+        }
+        throw UnknownError('ADDING_USER_ERROR', {
+          detail: error,
+        });
+      }
+    },
+    adminAddUser: async (_, { input }, context) => {
+      const trx = await dbTx();
+      try {
+        const [organizationFromEmail] = await loadOrganizationsFromEmail(
+          input.email
+        );
         // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
         const chosenOrganization: OrganizationId | undefined = input
-          .organizations?.[0]
-          ? (extractId(input.organizations?.[0]) as OrganizationId)
+          .organization_capabilities?.[0]
+          ? (extractId(
+              input.organization_capabilities?.[0].organization_id
+            ) as OrganizationId)
           : undefined;
 
         // The admin orga should only allow to add users in the same organization and with the same domain.
@@ -114,27 +177,21 @@ const resolvers: Resolvers = {
         }
 
         const [existingUser] = await loadUnsecureUser({ email: input.email });
+
         const user = existingUser
           ? existingUser
-          : await addNewUserWithRoles(
-              {
-                email: input.email,
-                password: input.password,
-                first_name: input.first_name,
-                last_name: input.last_name,
-                selected_organization_id: chosenOrganization,
-              },
-              []
-            );
+          : await createUserWithPersonalSpace({
+              email: input.email,
+              password: input.password,
+              first_name: input.first_name,
+              last_name: input.last_name,
+              selected_organization_id: chosenOrganization,
+            });
 
-        await updateUserOrg(context, user.id, [
-          user.id, // Should always add the user personal space. User.Id is equal to Organization.Id
-          ...input.organizations.map(extractId<OrganizationId>),
-        ]);
-        await updateUserRolePortal(
+        await updateMultipleUserOrgWithCapabilities(
           context,
           user.id,
-          input.roles_id.map(extractId<RolePortalId>)
+          input.organization_capabilities
         );
 
         const loadUserFinalUser = await loadUserBy({
@@ -161,18 +218,46 @@ const resolvers: Resolvers = {
     editUser: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        await updateUser(context, id as UserId, input);
+        const { capabilities, ...userInput } = input;
+        await updateUser(context, id as UserId, userInput);
+        await updateUserOrgCapabilities(context, {
+          user_id: id as UserId,
+          organization_id: context.user.selected_organization_id,
+          orgCapabilities: capabilities,
+        });
         const user = await loadUserDetails({
           'User.id': id as UserId,
         });
-        const shouldChangeSelectedOrga = user.organizations.some(
-          (organization) => {
-            return organization.id === user.selected_organization_id;
-          }
+
+        updateUserSession(user);
+
+        await dispatch('User', 'edit', user);
+
+        const userMapped = mapUserToGraphqlUser(user);
+        await dispatch('MeUser', 'edit', userMapped, 'User');
+
+        await trx.commit();
+        return user;
+      } catch (error) {
+        await trx.rollback();
+        throw UnknownError('EDIT_USER_ERROR', {
+          detail: error.message,
+        });
+      }
+    },
+    adminEditUser: async (_, { id, input }, context) => {
+      const trx = await dbTx();
+      try {
+        const { organization_capabilities, ...userInput } = input;
+        await updateUser(context, id as UserId, userInput);
+        await updateMultipleUserOrgWithCapabilities(
+          context,
+          id as UserId,
+          organization_capabilities
         );
-        if (!shouldChangeSelectedOrga) {
-          user.selected_organization_id = user.organizations[0].id;
-        }
+        const user = await loadUserDetails({
+          'User.id': id as UserId,
+        });
         updateUserSession(user);
 
         await dispatch('User', 'edit', user);
@@ -219,10 +304,9 @@ const resolvers: Resolvers = {
         context.user.id,
         fromGlobalId(organization_id).id
       );
-      context.req.session.user.selected_organization_id =
-        updatedUser.selected_organization_id;
-
-      return mapUserToGraphqlUser(updatedUser);
+      const newUser = await loadUserBy({ 'User.id': updatedUser.id });
+      context.req.session.user = newUser;
+      return mapUserToGraphqlUser(newUser);
     },
     removeUserFromOrganization: async (
       _,
@@ -255,11 +339,7 @@ const resolvers: Resolvers = {
       try {
         const logged = await loadUserBy({ email });
         if (logged && validPassword(logged, password)) {
-          const organizations = await getOrganizations(context, logged.id);
-          req.session.user = await selectOrganizationAtLogin({
-            ...logged,
-            organizations,
-          });
+          req.session.user = await selectOrganizationAtLogin(logged);
           return mapUserToGraphqlUser(logged);
         }
         return undefined;

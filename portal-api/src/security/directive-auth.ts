@@ -106,11 +106,15 @@ const hasCapability = (
   if (userHasBypassCapability(user)) {
     return true;
   }
-  const { capabilities } = user;
-  const capabilityNames = capabilities.map((c) => c.name);
-  return capabilityNames.length > 0 && capabilitiesRequired.length === 0
-    ? true
-    : capabilityNames.some((name) => capabilitiesRequired.includes(name));
+  const { selected_org_capabilities } = user;
+
+  // Authorize if the user is connected and no need specific capabilities
+  if (!user.disabled && capabilitiesRequired.length === 0) {
+    return true;
+  }
+  return selected_org_capabilities.some((name) =>
+    capabilitiesRequired.includes(name)
+  );
 };
 
 const hasServiceCapability = async (

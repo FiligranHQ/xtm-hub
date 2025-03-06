@@ -1,13 +1,13 @@
 import { Portal, portalContext } from '@/components/me/portal-context';
-import { Restriction } from '@generated/meContext_fragment.graphql';
+import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import { useContext } from 'react';
 
 // Mock the useContext hook
 
-const useGranted = (capability: Restriction) => {
-  const { hasCapability } = useContext<Portal>(portalContext);
+const useGranted = (capability: ORGANIZATION_CAPACITY) => {
+  const { hasOrganizationCapability } = useContext<Portal>(portalContext);
 
-  return hasCapability && hasCapability(capability);
+  return hasOrganizationCapability && hasOrganizationCapability(capability);
 };
 
 export default useGranted;

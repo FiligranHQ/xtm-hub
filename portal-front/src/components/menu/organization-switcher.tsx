@@ -18,6 +18,7 @@ const changeSelectedOrganizationMutation = graphql`
     changeSelectedOrganization(organization_id: $organization_id) {
       id
       selected_organization_id
+      selected_org_capabilities
     }
   }
 `;

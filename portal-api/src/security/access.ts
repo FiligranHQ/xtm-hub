@@ -1,6 +1,5 @@
 import { Knex } from 'knex';
 import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
-import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
 import { PortalContext } from '../model/portal-context';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { TypedNode } from '../pub';
@@ -10,18 +9,18 @@ import { setQueryForDocument } from './document-security-access';
 import {
   meUserSSESecurity,
   setQueryForUser,
+  setUpdateSecurityForUser,
   userSSESecurity,
 } from './user-security-access';
 
 export const isUserGranted = (
   user: UserLoadUserBy,
-  capability: CapabilityPortal
+  orgCapabilitities?: string
 ) => {
   return (
     !!user &&
-    user.capabilities.some(
-      (c) => c.id === CAPABILITY_BYPASS.id || c.id === capability.id
-    )
+    (user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id) ||
+      user.selected_org_capabilities?.includes(orgCapabilitities))
   );
 };
 /**
@@ -35,7 +34,7 @@ export const applySSESecurity = (opt: {
   type: string;
   topic: string;
 }) => {
-  if (isUserGranted(opt.user, CAPABILITY_BYPASS)) {
+  if (isUserGranted(opt.user)) {
     return true;
   }
   if (opt.type === opt.topic) {
@@ -96,7 +95,7 @@ export const applyDbSecurity = <T>(
 
   // If user is admin, user has no access restriction
   // TODO We need to filter query that is not a select but the applyDbSecurity is used at the init of the query so we cannot not where it's used and how update/select etC..
-  if (unsecured || isUserGranted(context?.user, CAPABILITY_BYPASS)) {
+  if (unsecured || isUserGranted(context?.user)) {
     return queryContext;
   }
 
@@ -105,12 +104,30 @@ export const applyDbSecurity = <T>(
     queryContext: Knex.QueryBuilder<T>
   ) => Knex.QueryBuilder<T>;
 
-  const mapping: Partial<Record<DatabaseType, AccessibilityChecker>> = {
+  type UpdateAccessibilityChecker = <T>(
+    context: PortalContext,
+    queryContext: Knex.QueryBuilder<T>,
+    opts: QueryOpts
+  ) => Knex.QueryBuilder<T>;
+
+  if (opts.queryType === 'update') {
+    const updateMapping: Partial<
+      Record<DatabaseType, UpdateAccessibilityChecker>
+    > = {
+      User: setUpdateSecurityForUser,
+    };
+    const selectedFunction = updateMapping[type] || setQuery;
+    if (!selectedFunction) {
+      throw new Error(`Security behavior must be defined for type ${type}`);
+    }
+    return selectedFunction(context, queryContext, opts);
+  }
+
+  const queryMapping: Partial<Record<DatabaseType, AccessibilityChecker>> = {
     Document: setQueryForDocument,
     User: setQueryForUser,
   };
-
-  const selectedFunction = mapping[type] || setQuery;
+  const selectedFunction = queryMapping[type] || setQuery;
   if (!selectedFunction) {
     throw new Error(`Security behavior must be defined for type ${type}`);
   }

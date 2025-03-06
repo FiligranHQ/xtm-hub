@@ -1,21 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
 import { UserId } from '../../model/kanel/public/User';
-import { ROLE_ADMIN_ORGA, ROLE_USER } from '../../portal.const';
 import {
   deleteOrganizationByName,
   loadUnsecureOrganizationBy,
 } from '../organizations/organizations.helper';
-import {
-  createUser,
-  deleteUserById,
-  getCapabilities,
-  getOrganizations,
-  getRolesPortal,
-  loadUserBy,
-  loadUserRoles,
-} from './users.domain';
+import { loadUserBy, loadUserCapacityByOrganization } from './users.domain';
 import { createNewUserFromInvitation, removeUser } from './users.helper';
 
 describe('User helpers - createNewUserFromInvitation', async () => {
@@ -25,12 +16,9 @@ describe('User helpers - createNewUserFromInvitation', async () => {
       email: testMail,
     });
     const newUser = await loadUserBy({ email: testMail });
-    const roles_portal = await getRolesPortal(contextAdminUser, newUser.id);
-    const organizations = await getOrganizations(contextAdminUser, newUser.id);
     expect(newUser).toBeTruthy();
-    expect(roles_portal[0].id).toBe(ROLE_USER.id);
-    expect(organizations.length).toBe(1);
-    expect(organizations[0].personal_space).toBe(true);
+    expect(newUser.selected_org_capabilities.length).toBe(1);
+    expect(newUser.organizations[0].personal_space).toBe(true);
 
     // Delete corresponding in order to avoid issue with other tests
     await removeUser(contextAdminUser, { email: newUser.email });
@@ -46,41 +34,20 @@ describe('User helpers - createNewUserFromInvitation', async () => {
       'name',
       'test-new-organization'
     );
-    const userRoles = await loadUserRoles(newUser.id as UserId);
-    expect(userRoles.roles.length).toBe(2);
-    expect(userRoles.roles.includes('ADMIN_ORGA')).toBeTruthy();
-    expect(userRoles.roles.includes('USER')).toBeTruthy();
+    const userOrgCapa = await loadUserCapacityByOrganization(
+      newUser.id as UserId,
+      newOrganization.id
+    );
+    expect(userOrgCapa.capabilities.length).toBe(2);
+    expect(userOrgCapa.capabilities.includes('MANAGE_ACCESS')).toBeTruthy();
+    expect(
+      userOrgCapa.capabilities.includes('MANAGE_SUBSCRIPTION')
+    ).toBeTruthy();
 
     expect(newOrganization).toBeTruthy();
 
     // Delete corresponding in order to avoid issue with other tests
     await removeUser(contextAdminUser, { email: testMail });
     await deleteOrganizationByName('test-new-organization');
-  });
-});
-
-describe('User should be log with all the capacity', () => {
-  let newUser;
-  it('should be log with all the capacity with role ADMIN_ORGA and USER', async () => {
-    newUser = await createUser({
-      email: 'testCreateNewUserFromInvitation@filigran.io',
-      first_name: 'test',
-      roles: ['ADMIN_ORGA', 'USER'],
-      last_name: 'test',
-    });
-
-    const roles_portal = await getRolesPortal(contextAdminUser, newUser.id);
-    const capabilities = await getCapabilities(contextAdminUser, newUser.id);
-    expect(newUser).toBeTruthy();
-    expect(capabilities.length).toBe(7);
-    expect(roles_portal.length).toBe(2);
-    expect(roles_portal.some(({ id }) => id === ROLE_USER.id)).toBeTruthy();
-    expect(
-      roles_portal.some(({ id }) => id === ROLE_ADMIN_ORGA.id)
-    ).toBeTruthy();
-  });
-
-  afterAll(async () => {
-    await deleteUserById(newUser.id as UserId);
   });
 });

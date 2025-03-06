@@ -13,7 +13,7 @@ export default class UserPage {
     );
   }
 
-  async navigateToUserOrgaAdmin() {
+  async navigateToUserManageAccess() {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Users' }).click();
 
@@ -26,10 +26,12 @@ export default class UserPage {
     await this.page.getByLabel('Add user').click();
     await this.page.getByPlaceholder('Email', { exact: true }).fill(userEmail);
     await this.page.getByPlaceholder('Email', { exact: true }).press('Tab');
-    await this.page.getByLabel('Roles').press('Enter');
-    await this.page.getByRole('option', { name: 'USER' }).click();
-    await this.page.getByLabel('Organizations').press('Enter');
-    await this.page.getByRole('option', { name: userOrganizationName }).click();
+    await this.page.getByRole('combobox').click();
+    await this.page.getByLabel(userOrganizationName).click();
+    await this.page
+      .getByRole('button', { name: 'Additional capabilities' })
+      .click();
+    await this.page.getByRole('option', { name: 'MANAGE_ACCESS' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
@@ -40,8 +42,7 @@ export default class UserPage {
     ).toBeVisible();
 
     await this.page.getByLabel('Update').click();
-    await this.page.getByLabel('Roles').press('Enter');
-    await this.page.getByRole('option', { name: 'ADMIN_ORGA' }).click();
+    await this.page.getByPlaceholder('First name').fill('test e2e');
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 

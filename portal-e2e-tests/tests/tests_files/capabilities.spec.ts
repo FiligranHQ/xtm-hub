@@ -27,6 +27,7 @@ const TEST_CAPABILITY = {
   adminThalesEmail: 'admin@thales.com',
   userThalesEmail: 'user@thales.com',
   thalesOrgaId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
+  organizationName: 'Thales',
 };
 test.describe('FULL workflow', () => {
   let loginPage;
@@ -52,10 +53,13 @@ test.describe('FULL workflow', () => {
     await loginPage.login();
   });
   test('Should add subscription with capabilities', async ({ page }) => {
-    await test.step("Add orga's sub + admin_orga's access", async () => {
+    await test.step("Add orga's sub + user with manage access", async () => {
       await servicePage.navigateToServiceListAdmin();
 
-      await servicePage.addOrganizationIntoServiceWithCapabilities('Thales');
+      await servicePage.addOrganizationIntoServiceWithCapabilities(
+        TEST_CAPABILITY.organizationName,
+        TEST_CAPABILITY.adminThalesEmail
+      );
       await loginPage.logout();
     });
     await test.step('Add simple user access + upload capa', async () => {
