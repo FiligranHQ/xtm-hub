@@ -7,7 +7,8 @@ import { NavigationApp } from '@/components/navigation';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions } from '@/components/ui/icon-actions';
-import { cn } from '@/lib/utils';
+import { cn, isDevelopment } from '@/lib/utils';
+
 import { Avatar, Skeleton } from 'filigran-ui';
 import {
   Sheet,
@@ -19,6 +20,7 @@ import {
 } from 'filigran-ui/clients';
 import { MenuIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useTheme } from 'next-themes';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
@@ -35,6 +37,8 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
   const t = useTranslations();
+  const { setTheme } = useTheme();
+  setTheme('dark');
   useEffect(() => setOpen(false), [currentPath]);
 
   const User = () =>
@@ -72,7 +76,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
           }>
           <Logout className="normal-case w-full justify-start" />
         </IconActions>
-        <ThemeToggle />
+        {isDevelopment && <ThemeToggle />}
         <I18nSelect />
       </div>
       <div className="flex gap-xs items-center sm:hidden">
