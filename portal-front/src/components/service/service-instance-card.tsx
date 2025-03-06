@@ -35,7 +35,7 @@ const ServiceInstanceCard: React.FunctionComponent<
         : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`;
   }
 
-  const handleClick = (serviceHref) => {
+  const handleClick = (serviceHref: string) => {
     if (serviceInstance.links?.[0]?.url?.startsWith('http')) {
       window.open(serviceHref, '_blank');
     } else {
@@ -51,16 +51,16 @@ const ServiceInstanceCard: React.FunctionComponent<
           ? "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
           : ''
       )}
-      onClick={() => handleClick(serviceHref)}>
+      onClick={() => handleClick(serviceHref ?? '')}>
       <div className="relative flex justify-center items-center flex-col gap-s bg-blue-900 h-48 box-border pl-s pr-s">
         <LogoFiligranIcon className="absolute inset-0 text-white opacity-10 z-1 size-64 rotate-45 blur" />
-          <div
-            className="h-12 w-auto"
-            style={{
-              backgroundImage: `url(/document/visualize/${serviceInstance.id}/${serviceInstance.logo_document_id})`,
-              backgroundSize: 'cover',
-            }}
-          />
+        <div
+          className="h-12 w-auto"
+          style={{
+            backgroundImage: `url(/document/visualize/${serviceInstance.id}/${serviceInstance.logo_document_id})`,
+            backgroundSize: 'cover',
+          }}
+        />
 
         <div
           className="h-3/4 w-full"

@@ -76,7 +76,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
           }>
           <Logout className="normal-case w-full justify-start" />
         </IconActions>
-        {isDevelopment && <ThemeToggle />}
+        {isDevelopment() && <ThemeToggle />}
         <I18nSelect />
       </div>
       <div className="flex gap-xs items-center sm:hidden">
