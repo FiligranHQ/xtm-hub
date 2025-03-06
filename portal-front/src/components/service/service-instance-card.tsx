@@ -6,7 +6,7 @@ import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { cn } from '@/lib/utils';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import * as React from 'react';
 import { ReactNode } from 'react';
 
@@ -18,7 +18,6 @@ const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction }) => {
   const { h } = useDecodedQuery();
-  const router = useRouter();
 
   const isLinkService =
     serviceInstance?.service_definition?.identifier ===
@@ -27,21 +26,10 @@ const ServiceInstanceCard: React.FunctionComponent<
     serviceInstance?.creation_status === SERVICE_CREATION_STATUS.PENDING ||
     rightAction !== undefined;
 
-  let serviceHref: string | undefined;
-  if (!isDisabled) {
-    serviceHref =
-      isLinkService && serviceInstance.links?.[0]?.url
-        ? serviceInstance.links?.[0]?.url
-        : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`;
-  }
-
-  const handleClick = (serviceHref: string) => {
-    if (serviceInstance.links?.[0]?.url?.startsWith('http')) {
-      window.open(serviceHref, '_blank');
-    } else {
-      router.push(serviceHref);
-    }
-  };
+  const serviceHref =
+    isLinkService && serviceInstance.links?.[0]?.url
+      ? serviceInstance.links?.[0]?.url
+      : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`;
 
   return (
     <li
@@ -50,17 +38,19 @@ const ServiceInstanceCard: React.FunctionComponent<
         h === serviceInstance?.service_definition?.identifier
           ? "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
           : ''
-      )}
-      onClick={() => handleClick(serviceHref ?? '')}>
+      )}>
       <div className="relative flex justify-center items-center flex-col gap-s bg-blue-900 h-48 box-border pl-s pr-s">
         <LogoFiligranIcon className="absolute inset-0 text-white opacity-10 z-1 size-64 rotate-45 blur" />
-        <div
-          className="h-12 w-auto"
-          style={{
-            backgroundImage: `url(/document/visualize/${serviceInstance.id}/${serviceInstance.logo_document_id})`,
-            backgroundSize: 'cover',
-          }}
-        />
+
+        <div className="mt-s flex items-center h-12 w-full">
+          <div
+            className="w-full h-12"
+            style={{
+              backgroundImage: `url(/document/visualize/${serviceInstance.id}/${serviceInstance.logo_document_id})`,
+              backgroundSize: 'cover',
+            }}
+          />
+        </div>
 
         <div
           className="h-3/4 w-full"
@@ -70,9 +60,17 @@ const ServiceInstanceCard: React.FunctionComponent<
           }}
         />
       </div>
-      <div className="h-40 border-light flex flex-col relative border bg-page-background p-l gap-xs">
+      <div className="h-40 border-light flex flex-col border bg-page-background p-l gap-xs">
         <div className="mt-s flex items-center h-12 w-full">
-          <h3 className="">{serviceInstance.name}</h3>
+          <h3>
+            <Link
+              href={serviceHref}
+              target={serviceHref.startsWith('http') ? '_blank' : '_self'}
+              className="after:content-[''] after:absolute after:inset-0 aria-disabled:opacity-60 aria-disabled:after:hidden"
+              aria-disabled={isDisabled}>
+              {serviceInstance.name}
+            </Link>
+          </h3>
           <ArrowOutwardIcon className="ml-auto size-6" />
         </div>
         <p className="txt-sub-content">{serviceInstance.description}</p>

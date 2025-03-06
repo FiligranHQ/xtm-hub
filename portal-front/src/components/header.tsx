@@ -20,7 +20,6 @@ import {
 } from 'filigran-ui/clients';
 import { MenuIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
@@ -37,8 +36,6 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
   const t = useTranslations();
-  const { setTheme } = useTheme();
-  setTheme('dark');
   useEffect(() => setOpen(false), [currentPath]);
 
   const User = () =>
@@ -68,7 +65,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         <IconActions
           icon={
             <>
-              <div className="mt-s size-10">
+              <div className="my-auto size-10">
                 <Avatar src={me?.picture ?? ''} />
               </div>
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
