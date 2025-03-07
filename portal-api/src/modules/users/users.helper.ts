@@ -25,8 +25,7 @@ import { createUserOrganizationCapability } from '../common/user-organization-ca
 import {
   createUserOrganizationRelationUnsecure,
   loadUserOrganization,
-} from '../common/user-organization.helper';
-import { addRolesToUser } from '../common/user-role-portal.helper';
+} from '../common/user-organization.domain';
 import {
   insertNewOrganization,
   loadOrganizationsFromEmail,
@@ -172,7 +171,7 @@ export const insertUserIntoOrganization = async (
     );
   }
   if (isEmpty(userOrganization)) {
-    await createUserOrganizationRelationUnsecure({
+    const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
       user_id: user.id,
       organizations_id: [organization.id],
     });
@@ -181,7 +180,10 @@ export const insertUserIntoOrganization = async (
       organization.id
     );
     if (shouldBeAdminOrga) {
-      await addRolesToUser(user.id, ['ADMIN_ORGA']);
+      await createUserOrganizationCapability({
+        user_organization_id: userOrgRelation.id,
+        capabilities_name: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+      });
     }
   }
 };

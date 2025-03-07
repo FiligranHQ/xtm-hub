@@ -16,7 +16,7 @@ import {
   UserServiceCapabilityInitializer,
 } from '../../model/kanel/public/UserServiceCapability';
 import { sendMail } from '../../server/mail-service';
-import { loadUserOrganization } from '../common/user-organization.helper';
+import { loadUserOrganization } from '../common/user-organization.domain';
 import {
   getServiceDefinition,
   loadServiceInstanceBy,
