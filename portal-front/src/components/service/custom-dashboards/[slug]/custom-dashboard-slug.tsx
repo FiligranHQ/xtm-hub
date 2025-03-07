@@ -1,5 +1,4 @@
 import MDEditor from '@uiw/react-md-editor';
-import { LogoFiligranIcon } from 'filigran-icon';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
 
@@ -10,7 +9,7 @@ import {
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
 import { documentQuery } from '@generated/documentQuery.graphql';
-import { Button } from 'filigran-ui';
+import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -18,6 +17,9 @@ import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/
 import DashboardCarousel from '@/components/service/custom-dashboards/[details]/custom-dashboard-carousel-view';
 import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -56,6 +58,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
     {
       label: serviceInstance?.name,
       href: `/service/custom_dashboards/${serviceInstance?.id}`,
+      original: true,
     },
     {
       label: documentData?.name,
@@ -79,9 +82,12 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
+      <div className="flex gap-s pb-l flex-col md:flex-row">
+        <h1 className="whitespace-nowrap">{documentData?.name}</h1>
 
-      <div className="flex">
-        <h1 className="sr-only">{documentData?.name}</h1>
+        <BadgeOverflowCounter
+          badges={documentData?.labels as BadgeOverflow[]}
+        />
         <div className="flex items-center gap-2 ml-auto">
           {(userCanDelete || userCanUpdate) && (
             <DashboardUpdate
@@ -102,38 +108,40 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
           </Button>
         </div>
       </div>
-
-      <div className="flex w-full mt-l">
-        <div className=" w-3/4">
-          {documentData && (
-            <DashboardCarousel
-              serviceInstance={serviceInstance}
-              documentData={documentData}></DashboardCarousel>
-          )}
-          <div className="flex items-center p-l txt-title">
-            <LogoFiligranIcon className="size-10 mr-l" />
-            {documentData?.name}
-          </div>
-          <h2 className="p-l">{documentData?.short_description}</h2>
-
+      {documentData && (
+        <DashboardCarousel
+          serviceInstance={serviceInstance}
+          documentData={documentData}
+        />
+      )}
+      <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
+        <div className="flex-[3_3_0%]">
+          <h3 className="py-4 uppercase truncate">
+            {t('Service.CustomDashboards.Details.Overview')}
+          </h3>
           <div
             data-color-mode={theme}
-            className="flex">
+            className="border rounded border-border-light">
+            <h2 className="p-l">{documentData?.short_description}</h2>
             <MDEditor.Markdown
-              className="p-l"
+              className="p-l !bg-background"
               source={documentData?.description ?? ''}
-              style={{
-                background: 'transparent',
-              }}
             />
           </div>
         </div>
-        {documentData && (
-          <DashboardDetails
-            documentData={documentData}
-            downloadNumber={documentDownloadNumber}
-          />
-        )}
+        <div className="flex-1">
+          <h3 className="py-4 uppercase truncate text-ellipsis">
+            {t('Service.CustomDashboards.Details.BasicInformation')}
+          </h3>
+          <div className="border rounded border-border-light flex space-y-xl p-l">
+            {documentData && (
+              <DashboardDetails
+                documentData={documentData}
+                downloadNumber={documentDownloadNumber}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

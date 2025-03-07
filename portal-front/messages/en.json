@@ -193,6 +193,14 @@
       "AddDashboard": "Add new dashboard",
       "UpdateDashboard": "Update dashboard",
       "FromOCTIVersion": "From OpenCTI",
+      "Details": {
+        "Overview": "Overview",
+        "BasicInformation": "Basic information",
+        "Author":  "Author",
+        "LastUpdatedAt": "Last updated at",
+        "OpenCTIVersion": "OpenCTI minimum version",
+        "Downloads": "Downloads"
+      },
       "Form": {
         "JSONFile": "JSON file",
         "SelectJSONFile": "Select JSON file",

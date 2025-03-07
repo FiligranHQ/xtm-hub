@@ -20,7 +20,6 @@ import {
   FormMessage,
   Input,
   MultiSelectFormField,
-  Separator,
   SheetFooter,
   Textarea,
   toast,
@@ -146,7 +145,7 @@ export const CustomDashboardUpdateForm = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-xl">
           {userCanUpdate && (
-            <div>
+            <>
               <FormField
                 control={form.control}
                 name="name"
@@ -392,10 +391,8 @@ export const CustomDashboardUpdateForm = ({
                 }}>
                 {t('DialogActions.DeleteSentence')}
               </AlertDialogComponent>{' '}
-            </div>
+            </>
           )}
-
-          <Separator />
 
           <SheetFooter className="sm:justify-between pb-0">
             {userCanDelete && (
