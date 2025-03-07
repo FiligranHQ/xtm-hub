@@ -1,4 +1,4 @@
-import { PortalContext } from '@/components/me/portal-context';
+import { AppPortalContext } from '@/components/me/app-portal-context';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -45,7 +45,7 @@ export const ProvidersWrapper = ({
   const relayEnv = createMockEnvironment(relayConfig);
   return (
     <RelayEnvironmentProvider environment={relayEnv}>
-      <PortalContext me={me}>{children}</PortalContext>
+      <AppPortalContext me={me}>{children}</AppPortalContext>
     </RelayEnvironmentProvider>
   );
 };

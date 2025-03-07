@@ -1,4 +1,4 @@
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
 import { organizationSwitcherMutation } from '@generated/organizationSwitcherMutation.graphql';
@@ -27,7 +27,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
   open,
 }) => {
   const router = useRouter();
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
   if (!me) {
     return null;
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import UserList from '@/components/admin/user/user-list';
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -20,7 +20,7 @@ const breadcrumbValue = [
 // Component
 const PageLoader: React.FunctionComponent = () => {
   const t = useTranslations();
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
 
   return (
     <>

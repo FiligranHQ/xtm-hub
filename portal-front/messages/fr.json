@@ -304,6 +304,7 @@
     "UserCreated": "L'utilisateur {email} a été créé",
     "UserUpdated": "L'utilisateur {email} a été modifié",
     "UserDeleted": "L'utilisateur {email} a été supprimé",
+    "UserRemoved": "L'utilisateur {email} a été supprimé",
     "SearchUserWithEmail": "Rechercher l'utilisateur par email...",
     "Enable": "Activer",
     "Disable": "Désactiver"

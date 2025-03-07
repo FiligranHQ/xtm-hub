@@ -1,6 +1,6 @@
 'use client';
 
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import useAdminByPass from '@/hooks/useAdminByPass';
 import useGranted from '@/hooks/useGranted';
 import { ORGANIZATION_CAPACITY } from '@/utils/constant';
@@ -20,7 +20,7 @@ const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   capacityRestriction = [],
   displayError = false,
 }) => {
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
   if (!me) {
     return null;
   }

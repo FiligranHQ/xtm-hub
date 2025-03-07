@@ -1,7 +1,7 @@
 'use client';
 
+import { AppPortalContext } from '@/components/me/app-portal-context';
 import { MeContextFragment, MeQuery } from '@/components/me/me.graphql';
-import { PortalContext } from '@/components/me/portal-context';
 import UserEventSubscription from '@/components/me/user-event-subscription';
 import { meContext_fragment$key } from '@generated/meContext_fragment.graphql';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
@@ -23,10 +23,10 @@ const MeContext: React.FunctionComponent<ContextProps> = ({
   const me = useFragment<meContext_fragment$key>(MeContextFragment, data.me);
 
   return (
-    <PortalContext me={me}>
+    <AppPortalContext me={me}>
       <UserEventSubscription />
       {children}
-    </PortalContext>
+    </AppPortalContext>
   );
 };
 

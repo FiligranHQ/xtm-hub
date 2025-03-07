@@ -1,5 +1,5 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { LinkMenu } from '@/components/menu/menu';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { OrganizationSwitcher } from '@/components/menu/organization-switcher';
@@ -16,7 +16,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   open,
 }) => {
   const t = useTranslations();
-  const { hasOrganizationCapability } = useContext<Portal>(portalContext);
+  const { hasOrganizationCapability } = useContext(PortalContext);
   const canManageUser =
     hasOrganizationCapability &&
     hasOrganizationCapability(ORGANIZATION_CAPACITY.MANAGE_ACCESS);
