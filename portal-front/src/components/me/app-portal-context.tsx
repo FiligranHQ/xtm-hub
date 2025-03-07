@@ -17,7 +17,7 @@ export interface PortalProps extends Portal {
   children: React.ReactNode;
 }
 
-export const portalContext = createContext<Portal>({});
+export const PortalContext = createContext<Portal>({});
 
 export const generatePortalContext = (
   me: meContext_fragment$data | null | undefined
@@ -41,13 +41,13 @@ export const generatePortalContext = (
   };
 };
 
-export const PortalContext: FunctionComponent<PortalProps> = ({
+export const AppPortalContext: FunctionComponent<PortalProps> = ({
   children,
   me,
 }) => {
   return (
-    <portalContext.Provider value={generatePortalContext(me)}>
+    <PortalContext.Provider value={generatePortalContext(me)}>
       {children}
-    </portalContext.Provider>
+    </PortalContext.Provider>
   );
 };

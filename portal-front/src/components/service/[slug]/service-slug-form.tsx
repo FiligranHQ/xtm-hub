@@ -1,4 +1,5 @@
 import {
+  UserFragment,
   userListFragment,
   UserListQuery,
 } from '@/components/admin/user/user-list';
@@ -14,6 +15,7 @@ import { DEBOUNCE_TIME } from '@/utils/constant';
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
+import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import { userListQuery } from '@generated/userListQuery.graphql';
 import { userService_fragment$data } from '@generated/userService_fragment.graphql';
@@ -42,6 +44,7 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+  readInlineData,
   useLazyLoadQuery,
   useMutation,
   useRefetchableFragment,
@@ -243,10 +246,13 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     );
   };
 
-  const tagsAutocomplete = data?.users?.edges?.map((edge) => ({
-    id: edge.node.id,
-    text: edge.node.email,
-  }));
+  const tagsAutocomplete = data?.users?.edges?.map((edge) => {
+    const user = readInlineData<userList_fragment$key>(UserFragment, edge.node);
+    return {
+      id: user.id,
+      text: user.email,
+    };
+  });
   const { setValue } = form;
 
   const [tags, setTags] = useState<Tag[]>([]);

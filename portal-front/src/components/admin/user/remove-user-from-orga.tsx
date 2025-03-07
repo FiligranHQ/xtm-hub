@@ -1,22 +1,16 @@
+import { UserListContext } from '@/components/admin/user/user-list';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import {
-  IconActionContext,
-  IconActionsButton,
-} from '@/components/ui/icon-actions';
+import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { removeUserFromOrgaMutation } from '@generated/removeUserFromOrgaMutation.graphql';
-import { useToast } from 'filigran-ui';
+import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, ReactNode, useContext } from 'react';
+import { FunctionComponent, useContext } from 'react';
 import { graphql, useMutation } from 'react-relay';
 
 interface RemoveUserFromOrgaProps {
-  user: {
-    id: string;
-    email: string;
-  };
-  organization_id: string;
-  trigger?: ReactNode;
-  connectionID: string;
+  user: userList_fragment$data;
 }
 
 const removeUser = graphql`
@@ -37,19 +31,28 @@ const removeUser = graphql`
 
 export const RemoveUserFromOrga: FunctionComponent<RemoveUserFromOrgaProps> = ({
   user,
-  organization_id,
-  trigger,
-  connectionID,
 }) => {
-  const { setMenuOpen } = useContext(IconActionContext);
+  const { me } = useContext(PortalContext);
+  const { connectionID } = useContext(UserListContext);
+  const { setOpenSheet } = useDialogContext();
   const { toast } = useToast();
   const t = useTranslations();
   const [removeUserMutation] =
     useMutation<removeUserFromOrgaMutation>(removeUser);
   const onRemoveUser = (user_id: string): void => {
-    setMenuOpen(false);
     removeUserMutation({
-      variables: { user_id, organization_id, connections: [connectionID] },
+      variables: {
+        user_id,
+        organization_id: me!.selected_organization_id,
+        connections: [connectionID ?? ''],
+      },
+      onCompleted: () => {
+        setOpenSheet(false);
+        toast({
+          title: t('Utils.Success'),
+          description: t('UserActions.UserRemoved', { email: user.email }),
+        });
+      },
       onError: (error) => {
         toast({
           variant: 'destructive',
@@ -60,12 +63,8 @@ export const RemoveUserFromOrga: FunctionComponent<RemoveUserFromOrgaProps> = ({
     });
   };
 
-  const defaultTrigger = (
-    <IconActionsButton
-      className="normal-case"
-      aria-label={t('UserActions.RemoveUser')}>
-      {t('MenuActions.Remove')}
-    </IconActionsButton>
+  const trigger = (
+    <Button variant="outline-destructive">{t('MenuActions.Remove')}</Button>
   );
 
   return (
@@ -73,7 +72,7 @@ export const RemoveUserFromOrga: FunctionComponent<RemoveUserFromOrgaProps> = ({
       AlertTitle={t('UserActions.RemoveUser')}
       actionButtonText={t('MenuActions.Remove')}
       variantName={'destructive'}
-      triggerElement={trigger ?? defaultTrigger}
+      triggerElement={trigger}
       onClickContinue={() => onRemoveUser(user.id)}>
       {t('RemoveUserOrgDialog.TextRemoveThisUser', {
         email: user.email,

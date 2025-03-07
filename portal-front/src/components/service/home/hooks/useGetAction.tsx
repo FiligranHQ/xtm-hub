@@ -1,5 +1,5 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { ORGANIZATION_CAPACITY } from '@/utils/constant';
@@ -14,7 +14,7 @@ export default function useGetAction(
   addSubscriptionInDb: (service: serviceList_fragment$data) => void
 ) {
   const t = useTranslations();
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
 
   const [userServiceJoin] = useMutation(UserServiceCreateMutation);
 

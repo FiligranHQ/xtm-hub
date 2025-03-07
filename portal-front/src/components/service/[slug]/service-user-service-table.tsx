@@ -1,4 +1,4 @@
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
@@ -36,7 +36,7 @@ const ServiceUserServiceSlug: FunctionComponent<ServiceUserServiceProps> = ({
   setCurrentUser,
   toolbar,
 }) => {
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
   const t = useTranslations();
   const [commitUserServiceDeletingMutation] =
     useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
