@@ -22,7 +22,7 @@ import {
   removeUserFromOrganization,
   updateMultipleUserOrgWithCapabilities,
   updateUserOrgCapabilities,
-} from '../common/user-organization.helper';
+} from '../common/user-organization.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
   getCapabilities,
