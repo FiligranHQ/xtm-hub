@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -17,7 +16,6 @@ import {
 } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import {
-  grantServiceAccessUsers,
   loadServiceInstanceBy,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
@@ -150,14 +148,6 @@ const resolvers: Resolvers = {
         )
           .insert(subscriptionData)
           .returning('*');
-
-        await grantServiceAccessUsers(
-          context,
-          (fromGlobalId(organization_id).id ??
-            context.user.selected_organization_id) as OrganizationId,
-          context.user.id,
-          addedSubscription.id
-        );
 
         await addCapabilitiesToSubscription(
           context,

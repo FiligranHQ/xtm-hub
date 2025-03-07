@@ -10,26 +10,24 @@ import {
   ServiceInstance,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceMutator } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import User, { UserMutator } from '../../model/kanel/public/User';
+import { UserMutator } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { PortalContext } from '../../model/portal-context';
-import { CAPABILITY_BYPASS, ROLE_ADMIN_ORGA } from '../../portal.const';
+import { CAPABILITY_BYPASS } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
-import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { insertUserService } from '../user_service/user_service.domain';
-import { loadUserBy, loadUsersByOrganization } from '../users/users.domain';
+import { loadUserBy } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 
 export const loadSubscribedServiceInstancesByIdentifier = async (
@@ -429,31 +427,6 @@ export const loadServiceWithSubscriptions = async (
   }));
 
   return { ...serviceInstance, subscriptions };
-};
-
-export const grantServiceAccessUsers = async (
-  context: PortalContext,
-  organizationId: OrganizationId,
-  adminId: string,
-  subscriptionId: string
-): Promise<UserService[]> => {
-  const adminsOrga = (await loadUsersByOrganization(
-    organizationId,
-    adminId,
-    ROLE_ADMIN_ORGA.id
-  )) as User[];
-
-  return adminsOrga.length > 0
-    ? await grantServiceAccess(
-        context,
-        [
-          GenericServiceCapabilityIds.AccessId,
-          GenericServiceCapabilityIds.ManageAccessId,
-        ],
-        adminsOrga.map(({ id }) => id),
-        subscriptionId
-      )
-    : [];
 };
 
 export const grantServiceAccess = async (
