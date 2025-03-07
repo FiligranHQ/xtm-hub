@@ -1,6 +1,6 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import {
   GenericCapabilityName,
   hasGenericServiceCapa,
@@ -65,7 +65,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         ?.subscriptions?.[0] as subscriptionWithUserService_fragment$data
     );
 
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
   const { toast } = useToast();
   const t = useTranslations();
 

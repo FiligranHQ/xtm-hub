@@ -1,7 +1,7 @@
+import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
-import { Portal, portalContext } from '@/components/me/portal-context';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { isEmpty } from '@/lib/utils';
 import { ORGANIZATION_CAPACITY } from '@/utils/constant';
@@ -36,7 +36,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
   callback,
 }) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
   const t = useTranslations();
 
   const organizationCapabilitiesData = [
@@ -47,7 +47,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
     value: capabilities,
   }));
 
-  const userOrg = user.organization_capabilities.find(
+  const userOrg = user.organization_capabilities?.find(
     (org) => org.organization.id === me?.selected_organization_id
   );
   const form = useForm<z.infer<typeof userEditFormSchema>>({
@@ -70,30 +70,6 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
         input: {
           ...values,
         },
-        id: user.id,
-      },
-      onCompleted: () => {
-        toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserUpdated', { email: user.email }),
-        });
-        callback();
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-    });
-  };
-
-  const disableUser = (values: { disabled: boolean }) => {
-    const input = values;
-    updateUserMutation({
-      variables: {
-        input,
         id: user.id,
       },
       onCompleted: () => {
@@ -177,28 +153,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
         />
 
         <SheetFooter className="justify-between sm:justify-between pb-0">
-          {user.disabled ? (
-            <Button
-              variant="outline-primary"
-              onClick={() => disableUser({ disabled: false })}>
-              {t('UserActions.Enable')}
-            </Button>
-          ) : (
-            <AlertDialogComponent
-              AlertTitle={t('MenuActions.Disable')}
-              actionButtonText={t('MenuActions.Disable')}
-              variantName={'destructive'}
-              triggerElement={
-                <Button variant="outline-destructive">
-                  {t('UserActions.Disable')}
-                </Button>
-              }
-              onClickContinue={() => disableUser({ disabled: true })}>
-              {t('DisableUserDialog.TextDisableThisUser', {
-                email: user.email,
-              })}
-            </AlertDialogComponent>
-          )}
+          <RemoveUserFromOrga user={user} />
           <div className="flex gap-s">
             <Button
               variant="outline"

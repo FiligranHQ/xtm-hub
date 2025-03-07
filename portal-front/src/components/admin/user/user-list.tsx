@@ -2,7 +2,7 @@ import { EditUser } from '@/components/admin/user/[slug]/user-edit';
 import { AddUser } from '@/components/admin/user/add-user';
 import { AdminAddUser } from '@/components/admin/user/admin-add-user';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import {
   mapToSortingTableValue,
   transformSortingValueToParams,
@@ -11,7 +11,10 @@ import useAdminPath from '@/hooks/useAdminPath';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
-import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import {
+  userList_fragment$data,
+  userList_fragment$key,
+} from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import {
   OrderingMode,
@@ -22,8 +25,19 @@ import {
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { Badge, DataTable, DataTableHeadBarOptions, Input } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useEffect, useState } from 'react';
-import { graphql, useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import {
+  createContext,
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import {
+  graphql,
+  readInlineData,
+  useLazyLoadQuery,
+  useRefetchableFragment,
+} from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
 // Configuration or Preloader Query
@@ -55,7 +69,7 @@ export const userListFragment = graphql`
       totalCount
       edges {
         node {
-          ...userList_fragment @relay(mask: false)
+          ...userList_fragment
         }
       }
     }
@@ -63,13 +77,13 @@ export const userListFragment = graphql`
 `;
 
 export const UserFragment = graphql`
-  fragment userList_fragment on User {
+  fragment userList_fragment on User @inline {
     id
     email
     last_name
     first_name
     disabled
-    organization_capabilities @required(action: THROW) {
+    organization_capabilities {
       id
       organization {
         id
@@ -80,6 +94,8 @@ export const UserFragment = graphql`
     }
   }
 `;
+
+export const UserListContext = createContext<{ connectionID?: string }>({});
 
 interface UserListProps {
   organization?: string;
@@ -103,7 +119,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   } = useUserListLocalstorage();
 
   const isAdminPath = useAdminPath();
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
   const [userEdit, setUserEdit] = useState<userList_fragment$data | undefined>(
     undefined
   );
@@ -161,20 +177,6 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
         return <span className="truncate">{row.original.last_name}</span>;
       },
     },
-    // {
-    //   accessorKey: 'roles_portal',
-    //   id: 'roles_portal',
-    //   header: t('UserListPage.Roles'),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <div className="flex gap-xs">
-    //         {row.original.roles_portal?.map(({ id, name }) => (
-    //           <Badge key={id}>{name}</Badge>
-    //         ))}
-    //       </div>
-    //     );
-    //   },
-    // },
     ...(isAdminPath
       ? [
           {
@@ -184,7 +186,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             cell: ({ row }: { row: Row<userList_fragment$data> }) => {
               return (
                 <div className="flex gap-xs">
-                  {row.original.organization_capabilities.map(
+                  {row.original.organization_capabilities?.map(
                     ({ id, organization: { name, personal_space } }) =>
                       !personal_space ? <Badge key={id}>{name}</Badge> : null
                   )}
@@ -223,9 +225,9 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     }
   }, []);
 
-  const userData = data.users.edges.map(({ node }) => ({
-    ...node,
-  })) as userList_fragment$data[];
+  const userData = data.users.edges.map(({ node }) =>
+    readInlineData<userList_fragment$key>(UserFragment, node)
+  );
 
   const handleRefetchData = (args?: Partial<userListQuery$variables>) => {
     const sorting = mapToSortingTableValue(orderBy, orderMode);
@@ -281,7 +283,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   );
 
   return (
-    <>
+    <UserListContext.Provider value={{ connectionID: data.users.__id }}>
       <DataTable
         columns={columns}
         data={userData}
@@ -332,7 +334,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           }
         />
       )}
-    </>
+    </UserListContext.Provider>
   );
 };
 

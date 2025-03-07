@@ -2,7 +2,7 @@
 
 import I18nSelect from '@/components/i18n-select';
 import Logout from '@/components/logout';
-import { Portal, portalContext } from '@/components/me/portal-context';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { NavigationApp } from '@/components/navigation';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DisplayLogo } from '@/components/ui/display-logo';
@@ -31,7 +31,7 @@ interface HeaderComponentProps {
 const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   displayLogo,
 }) => {
-  const { me } = useContext<Portal>(portalContext);
+  const { me } = useContext(PortalContext);
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
   const t = useTranslations();
