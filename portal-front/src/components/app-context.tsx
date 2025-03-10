@@ -6,6 +6,7 @@ import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
 import * as React from 'react';
 import { geologica, ibmPlexSans } from '../../app/font';
+import Hubspot from './external/hubspot';
 
 // Component interface
 interface AppProps {
@@ -37,6 +38,7 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
           <RelayProvider>{children}</RelayProvider>
         </ThemeProvider>
         <Toaster />
+        <Hubspot />
       </body>
     </html>
   );
