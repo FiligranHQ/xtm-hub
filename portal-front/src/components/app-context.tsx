@@ -33,6 +33,7 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
+          forcedTheme="dark"
           enableSystem
           disableTransitionOnChange>
           <RelayProvider>{children}</RelayProvider>

@@ -7,7 +7,8 @@ import { NavigationApp } from '@/components/navigation';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions } from '@/components/ui/icon-actions';
-import { cn } from '@/lib/utils';
+import { cn, isDevelopment } from '@/lib/utils';
+
 import { Avatar, Skeleton } from 'filigran-ui';
 import {
   Sheet,
@@ -64,7 +65,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         <IconActions
           icon={
             <>
-              <div className="size-10">
+              <div className="my-auto size-10">
                 <Avatar src={me?.picture ?? ''} />
               </div>
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
@@ -72,7 +73,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
           }>
           <Logout className="normal-case w-full justify-start" />
         </IconActions>
-        <ThemeToggle />
+        {isDevelopment() && <ThemeToggle />}
         <I18nSelect />
       </div>
       <div className="flex gap-xs items-center sm:hidden">
