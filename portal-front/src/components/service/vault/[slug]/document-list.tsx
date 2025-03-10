@@ -257,6 +257,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
+      href: '/',
     },
     {
       label: queryDataService.serviceInstanceById?.name,
