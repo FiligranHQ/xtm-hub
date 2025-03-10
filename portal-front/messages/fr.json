@@ -193,6 +193,14 @@
       "AddDashboard": "Nouveau tableau de bord",
       "UpdateDashboard": "Tableau de bord des mises à jour",
       "FromOCTIVersion": "A partir d'OpenCTI",
+      "Details": {
+        "Overview": "Vue d'ensemble",
+        "BasicInformation": "Informations de base",
+        "Author": "Auteur",
+        "LastUpdatedAt": "Dernière mise à jour le",
+        "OpenCTIVersion": "Version minimale d'OpenCTI",
+        "Downloads": "Téléchargements"
+      },
       "Form": {
         "JSONFile": "Fichier JSON",
         "SelectJSONFile": "Selectionnez un fichier JSON",

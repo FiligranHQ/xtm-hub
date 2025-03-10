@@ -2,9 +2,10 @@ import { FormatDate } from '@/utils/date';
 import * as React from 'react';
 
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { Avatar, Badge } from 'filigran-ui';
+import { Avatar, Label } from 'filigran-ui/clients';
 
 import { roundToNearest } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 // Component interface
 interface DashboardDetailsProps {
@@ -16,43 +17,45 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
   documentData,
   downloadNumber,
 }) => {
+  const t = useTranslations();
   return (
-    <div className="border rounded border-gray-700 border-opacity-50 w-1/4 ml-xl p-xl space-y-xl">
-      <h2>Details</h2>
-      <div className="flex">
-        <h3>Built by</h3>
-        <div className="ml-xl rounded flex bg-gray-200 dark:bg-gray-800 p-l">
-          <div className="h-12 w-12">
+    <div className="space-y-xl">
+      <div>
+        <Label className="block pb-xs">
+          {t('Service.CustomDashboards.Details.Author')}
+        </Label>
+        <div className="flex items-center gap-s">
+          <div className="size-8">
             <Avatar src={documentData.uploader?.picture ?? ''} />
           </div>
-          <div className="ml-s flex items-center">
-            {`${documentData.uploader?.first_name} 
+          <span>
+            {`${documentData.uploader?.first_name}
                 ${documentData.uploader?.last_name}`}
-          </div>
+          </span>
         </div>
       </div>
-      <div className="flex">
-        <h3>Last updated at</h3>
-        <div className="ml-xl flex">
+      <div>
+        <Label className="block pb-xs">
+          {t('Service.CustomDashboards.Details.LastUpdatedAt')}
+        </Label>
+        <span>
           {FormatDate(
             documentData.updated_at ?? documentData.created_at,
-            false
+            'DATE_FULL'
           )}
-        </div>
+        </span>
       </div>
-      <div className="flex">
-        <h3>Tags</h3>
-        <div className="ml-xl flex gap-l">
-          <Badge>Tags</Badge>
-          <Badge variant="warning">Tags</Badge>
-        </div>
+      <div>
+        <Label className="block pb-xs">
+          {t('Service.CustomDashboards.Details.OpenCTIVersion')}
+        </Label>
+        <span>{documentData.product_version}</span>
       </div>
-      <div className="flex">
-        <h3>Downloads</h3>
-        <div className="ml-xl flex gap-l">
-          {/*+{roundToNearest(downloadNumber)}*/}+
-          {roundToNearest(downloadNumber)}
-        </div>
+      <div>
+        <Label className="block pb-xs">
+          {t('Service.CustomDashboards.Details.Downloads')}
+        </Label>
+        <span>{roundToNearest(downloadNumber)}</span>
       </div>
     </div>
   );
