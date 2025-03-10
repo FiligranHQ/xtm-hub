@@ -11,9 +11,9 @@ export const DisplayLogo: FunctionComponent<DisplayLogoProps> = ({
   className,
 }) => {
   const { resolvedTheme } = useTheme();
-  return resolvedTheme === 'dark' ? (
-    <LogoXTMDark className={className} />
-  ) : (
+  return resolvedTheme === 'light' ? (
     <LogoXTMLight className={className} />
+  ) : (
+    <LogoXTMDark className={className} />
   );
 };
