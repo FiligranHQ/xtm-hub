@@ -53,6 +53,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
+      href: '/',
     },
     {
       label: serviceInstance?.name,
