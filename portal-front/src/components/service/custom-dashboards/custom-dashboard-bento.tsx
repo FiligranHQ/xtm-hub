@@ -27,7 +27,7 @@ const CustomDashboardBento = ({
           <div className="flex items-center justify-center flex-[3] rounded border dark:text-white">
             {FormatDate(
               customDashboard.updated_at ?? customDashboard.created_at,
-              false
+              'DATE_FULL'
             )}
           </div>
           <div className="flex flex-1 items-center justify-center rounded border dark:text-white">
