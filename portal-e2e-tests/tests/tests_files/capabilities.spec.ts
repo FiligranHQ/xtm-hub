@@ -65,7 +65,8 @@ test.describe('FULL workflow', () => {
     await test.step('Add simple user access + upload capa', async () => {
       await loginPage.login(TEST_CAPABILITY.adminThalesEmail);
 
-      await page.getByRole('link', { name: 'Vault' }).click();
+      await documentPage.navigateToVault();
+
       await page.getByRole('link', { name: 'Manage vault' }).click();
 
       await servicePage.addUserIntoServiceWithCapability(
@@ -77,7 +78,7 @@ test.describe('FULL workflow', () => {
 
     await test.step('Simple user upload new doc', async () => {
       await loginPage.login(TEST_CAPABILITY.userThalesEmail);
-      await page.getByRole('link', { name: 'Vault' }).click();
+      await documentPage.navigateToVault();
       // Upload new document
       await documentPage.uploadDocument(TEST_FILE.path, TEST_FILE.description);
       await expect(
@@ -92,8 +93,9 @@ test.describe('FULL workflow', () => {
 
     await test.step('Admin user change simple user capa to delete', async () => {
       await loginPage.login(TEST_CAPABILITY.adminThalesEmail);
-      await page.getByRole('link', { name: 'Vault' }).click();
+      await documentPage.navigateToVault();
       await page.getByRole('link', { name: 'Manage vault' }).click();
+
       await servicePage.editUsersRightsForService(
         TEST_CAPABILITY.userThalesEmail,
         'DELETE access:'
@@ -102,7 +104,8 @@ test.describe('FULL workflow', () => {
     });
     await test.step('Simple user can delete document', async () => {
       await loginPage.login(TEST_CAPABILITY.userThalesEmail);
-      await page.getByRole('link', { name: 'Vault' }).click();
+      await documentPage.navigateToVault();
+
       await documentPage.deleteDocument(TEST_FILE.name);
       await expect(
         page.getByRole('cell', { name: TEST_FILE.name })

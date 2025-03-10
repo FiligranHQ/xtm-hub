@@ -5,10 +5,8 @@ export default class DocumentPage {
   constructor(private page: Page) {}
 
   async navigateToVault() {
-    await this.page
-      .getByRole('link', { name: 'Vault' })
-      .first()
-      .click({ force: true });
+    await this.page.getByRole('link', { name: 'Vault' }).click();
+
     await expect(
       this.page.getByRole('heading', { name: 'Vault' })
     ).toBeVisible();
