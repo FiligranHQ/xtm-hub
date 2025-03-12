@@ -78,13 +78,14 @@ export async function GET(
     return new Response('Invalid identifier', { status: 400 });
   }
 
-  try {
-    const settingsResponse = (await serverPortalApiFetch<
-      typeof SettingsQuery,
-      settingsQuery
-    >(SettingsQuery)) as SettingsResponse;
-    const baseUrlFront = settingsResponse.data.settings.base_url_front;
+  // Fetch settings to have the base URL for the frontend
+  const settingsResponse = (await serverPortalApiFetch<
+    typeof SettingsQuery,
+    settingsQuery
+  >(SettingsQuery)) as SettingsResponse;
+  const baseUrlFront = settingsResponse.data.settings.base_url_front;
 
+  try {
     // The URL to highlight the service in the homepage
     const highlightUrl = new URL(`/?h=${identifier}`, baseUrlFront);
 
@@ -191,11 +192,17 @@ export async function GET(
     // we redirect to the homepage with highlighting the services
     return NextResponse.redirect(highlightUrl);
   } catch (error) {
-    const loginURL = new URL('/', request.url);
+    const loginURL = new URL('/', baseUrlFront);
 
     // The user must be authenticated to access the service
     if ((error as Error).message === 'UNAUTHENTICATED') {
-      loginURL.searchParams.set('redirect', btoa(request.url));
+      // Build the login URL from the settings and the curent URL
+      const baseURL = new URL(baseUrlFront);
+      const redirectURL = new URL(request.url);
+      redirectURL.hostname = baseURL.hostname;
+      redirectURL.protocol = baseURL.protocol;
+      redirectURL.port = baseURL.port;
+      redirectURL.searchParams.set('redirect', btoa(redirectURL.toString()));
       return NextResponse.redirect('loginURL');
     }
 
