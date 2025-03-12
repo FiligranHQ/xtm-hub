@@ -6,6 +6,7 @@ type PlatformProvider {
 
 type Settings {
   platform_providers: [PlatformProvider!]!
+  base_url_front: String!
 }
 
 type Query {

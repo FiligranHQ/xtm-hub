@@ -11,5 +11,6 @@
       "type": "SSO",
       "provider": "oidc"
     }
-  ]
+  ],
+  "base_url_front": "http://localhost:3001"
 }

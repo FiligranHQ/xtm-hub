@@ -72,7 +72,7 @@
   "malware_analysis": {
     "url": "http://localhost:8080"
   },
-  "base_url_front": "https://portal.staging.filigran.io",
+  "base_url_front": "https://dev.xtmhub.staging.filigran.io",
   "app_logs": {
     "logs_level": "info",
     "extended_error_message": true
