@@ -182,7 +182,7 @@ export async function GET(
             'ServiceInstance',
             organizationServiceInstances[0].service_instance_id
           ),
-          request.url
+          baseUrlFront
         )
       );
     }
