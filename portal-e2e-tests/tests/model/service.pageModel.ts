@@ -7,8 +7,7 @@ export default class ServicePage {
   async navigateToServiceListAdmin() {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Services' }).click();
-    await this.page.getByRole('button', { name: 'Name' }).click();
-    await this.page.getByRole('menuitem', { name: 'Desc' }).click();
+    await this.page.getByText('Name', { exact: true }).click();
 
     await this.page
       .getByRole('row', { name: 'Vault' })
