@@ -24,6 +24,7 @@ export const manageRequest = (request: NextRequest) => {
   }
 
   if (pathname.startsWith('/document')) {
+    console.log('document', serverHttpApi + pathname);
     return NextResponse.rewrite(new URL(serverHttpApi + pathname, request.url));
   }
 
