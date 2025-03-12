@@ -85,6 +85,17 @@ export async function GET(
   >(SettingsQuery)) as SettingsResponse;
   const baseUrlFront = settingsResponse.data.settings.base_url_front;
 
+  // Build the login URL from the settings and the curent URL
+  const getRedirectionURL = () => {
+    const baseURL = new URL(baseUrlFront);
+    const redirectURL = new URL(request.url);
+    redirectURL.hostname = baseURL.hostname;
+    redirectURL.protocol = baseURL.protocol;
+    redirectURL.port = baseURL.port;
+    baseURL.searchParams.set('redirect', btoa(redirectURL.toString()));
+    return baseURL.toString();
+  };
+
   try {
     // The URL to highlight the service in the homepage
     const highlightUrl = new URL(`/?h=${identifier}`, baseUrlFront);
@@ -101,9 +112,7 @@ export async function GET(
 
     // The user must be authenticated to access the service
     if (!user) {
-      const loginURL = new URL('/', baseUrlFront);
-      loginURL.searchParams.set('redirect', btoa(request.url));
-      return NextResponse.redirect(loginURL);
+      return NextResponse.redirect(getRedirectionURL());
     }
 
     // Find the personal space organization
@@ -196,14 +205,7 @@ export async function GET(
 
     // The user must be authenticated to access the service
     if ((error as Error).message === 'UNAUTHENTICATED') {
-      // Build the login URL from the settings and the curent URL
-      const baseURL = new URL(baseUrlFront);
-      const redirectURL = new URL(request.url);
-      redirectURL.hostname = baseURL.hostname;
-      redirectURL.protocol = baseURL.protocol;
-      redirectURL.port = baseURL.port;
-      redirectURL.searchParams.set('redirect', btoa(redirectURL.toString()));
-      return NextResponse.redirect('loginURL');
+      return NextResponse.redirect(getRedirectionURL());
     }
 
     return NextResponse.redirect(loginURL);
