@@ -48,7 +48,7 @@ const ServiceInstanceCard: React.FunctionComponent<
             style={{
               backgroundImage: `url(/document/visualize/${serviceInstance.id}/${serviceInstance.logo_document_id})`,
               backgroundSize: 'contain',
-              backgroundPosition: 'center',
+              backgroundPosition: 'left center',
               backgroundRepeat: 'no-repeat',
             }}
           />
