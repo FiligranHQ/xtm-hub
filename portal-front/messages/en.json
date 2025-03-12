@@ -196,7 +196,7 @@
       "Details": {
         "Overview": "Overview",
         "BasicInformation": "Basic information",
-        "Author":  "Author",
+        "Author": "Author",
         "LastUpdatedAt": "Last updated at",
         "OpenCTIVersion": "OpenCTI minimum version",
         "Downloads": "Downloads"
@@ -220,7 +220,9 @@
         "PublishedPlaceholder": "Is the dashboard published?",
         "UploadImage": "Upload new image(s)",
         "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels"
+        "LabelsPlaceholder": "Add labels",
+        "SlugLabel": "Slug (url)",
+        "SlugPlaceholder": "dashboard-slug"
       },
       "Actions": {
         "Deleted": "{name} has been deleted",

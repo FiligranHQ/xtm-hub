@@ -1,8 +1,7 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-
 import { getLabels } from '@/components/admin/label/label.utils';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Checkbox,
@@ -19,8 +18,9 @@ import {
   Textarea,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import slugify from 'slugify';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
@@ -38,6 +38,7 @@ export const newCustomDashboardSchema = z.object({
   images: z.custom<FileList>(fileListCheck),
   active: z.boolean().optional(),
   labels: z.array(z.string()).optional(),
+  slug: z.string().optional(),
 });
 
 export type CustomDashboardFormValues = z.infer<
@@ -56,6 +57,7 @@ export const CustomDashboardForm = ({
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
+  const slugTouched = useRef(false);
 
   const form = useForm<CustomDashboardFormValues>({
     resolver: zodResolver(newCustomDashboardSchema),
@@ -70,11 +72,20 @@ export const CustomDashboardForm = ({
       document: undefined,
       images: undefined,
       labels: [],
+      slug: '',
     },
   });
 
   useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
   form.watch(['images', 'document']);
+
+  const watchedName = form.watch('name');
+  useEffect(() => {
+    if (!slugTouched.current && watchedName) {
+      const generatedSlug = slugify(watchedName, { lower: true, strict: true });
+      form.setValue('slug', generatedSlug, { shouldDirty: true });
+    }
+  }, [form, watchedName]);
 
   const onSubmit = (values: z.infer<typeof newCustomDashboardSchema>) => {
     handleSubmit(
@@ -83,6 +94,14 @@ export const CustomDashboardForm = ({
       },
       () => form.reset()
     );
+  };
+
+  const handleNameBlur = () => {
+    if (watchedName) {
+      slugTouched.current = true;
+      const generatedSlug = slugify(watchedName, { lower: true, strict: true });
+      form.setValue('slug', generatedSlug, { shouldDirty: true });
+    }
   };
 
   return (
@@ -103,6 +122,51 @@ export const CustomDashboardForm = ({
                   <Input
                     placeholder={t(
                       'Service.CustomDashboards.Form.NamePlaceholder'
+                    )}
+                    {...field}
+                    onBlur={() => {
+                      field.onBlur();
+                      handleNameBlur();
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.SlugLabel')}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.SlugPlaceholder'
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="productVersion"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.productVersion')}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.productVersionPlaceholder'
                     )}
                     {...field}
                   />
