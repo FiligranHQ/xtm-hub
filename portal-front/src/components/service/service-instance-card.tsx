@@ -34,7 +34,7 @@ const ServiceInstanceCard: React.FunctionComponent<
   return (
     <li
       className={cn(
-        'relative cursor-pointer',
+        'relative',
         h === serviceInstance?.service_definition?.identifier
           ? "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
           : ''
@@ -66,9 +66,9 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div className="mt-s flex items-center h-12 w-full">
           <h3>
             <Link
-              href={serviceHref}
+              href={isDisabled ? '' : serviceHref}
               target={serviceHref.startsWith('http') ? '_blank' : '_self'}
-              className="after:content-[''] after:absolute after:inset-0 aria-disabled:opacity-60 aria-disabled:after:hidden"
+              className=" after:cursor-pointer after:content-[''] after:absolute after:inset-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
               aria-disabled={isDisabled}>
               {serviceInstance.name}
             </Link>
