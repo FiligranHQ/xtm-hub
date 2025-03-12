@@ -6,5 +6,6 @@
       "type": "SSO",
       "provider": "oidc"
     }
-  ]
+  ],
+  "base_url_front": "https://xtmhub.filigran.io"
 }

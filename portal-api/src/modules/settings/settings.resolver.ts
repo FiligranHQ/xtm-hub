@@ -6,6 +6,7 @@ const resolvers: Resolvers = {
     settings: () => {
       return {
         platform_providers: config.get('login_settings'),
+        base_url_front: config.get('base_url_front'),
       };
     },
   },

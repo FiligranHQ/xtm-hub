@@ -10,6 +10,10 @@ import ServiceInstancesSubscribedByIdentifierQuery, {
   serviceInstancesSubscribedByIdentifierQuery,
   serviceInstancesSubscribedByIdentifierQuery$data,
 } from '@generated/serviceInstancesSubscribedByIdentifierQuery.graphql';
+import SettingsQuery, {
+  settingsQuery,
+  settingsQuery$data,
+} from '@generated/settingsQuery.graphql';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   fromGlobalId,
@@ -32,6 +36,10 @@ interface RedirectIdentifierGetRouteProps {
 
 interface UserServiceOwnedResponse {
   data: serviceInstancesSubscribedByIdentifierQuery$data;
+}
+
+interface SettingsResponse {
+  data: settingsQuery$data;
 }
 
 interface MeResponse {
@@ -70,10 +78,16 @@ export async function GET(
     return new Response('Invalid identifier', { status: 400 });
   }
 
-  // The URL to highlight the service in the homepage
-  const highlightUrl = new URL(`/?h=${identifier}`, request.url);
-
   try {
+    const settingsResponse = (await serverPortalApiFetch<
+      typeof SettingsQuery,
+      settingsQuery
+    >(SettingsQuery)) as SettingsResponse;
+    const baseUrlFront = settingsResponse.data.settings.base_url_front;
+
+    // The URL to highlight the service in the homepage
+    const highlightUrl = new URL(`/?h=${identifier}`, baseUrlFront);
+
     // 1. Load the user
     // ----------------
 
@@ -86,7 +100,7 @@ export async function GET(
 
     // The user must be authenticated to access the service
     if (!user) {
-      const loginURL = new URL('/', request.url);
+      const loginURL = new URL('/', baseUrlFront);
       loginURL.searchParams.set('redirect', btoa(request.url));
       return NextResponse.redirect(loginURL);
     }
@@ -182,7 +196,7 @@ export async function GET(
     // The user must be authenticated to access the service
     if ((error as Error).message === 'UNAUTHENTICATED') {
       loginURL.searchParams.set('redirect', btoa(request.url));
-      return NextResponse.redirect(loginURL);
+      return NextResponse.redirect('loginURL');
     }
 
     return NextResponse.redirect(loginURL);
