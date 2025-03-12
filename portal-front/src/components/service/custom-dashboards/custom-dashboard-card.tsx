@@ -9,10 +9,11 @@ import { documentItem_fragment$key } from '@generated/documentItem_fragment.grap
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, Carousel } from 'filigran-ui';
+import { CarouselItem } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { readInlineData } from 'react-relay';
-
 interface CustomDashboardCardProps {
   data: documentItem_fragment$key;
   connectionId: string;
@@ -45,22 +46,27 @@ const CustomDashboardCard = ({
 
   return (
     <>
-      <li className="border-light flex flex-col relative rounded border bg-page-background gap-xxl aria-disabled:opacity-60">
-        <Carousel
-          placeholder={
+      <li className="border-light flex flex-col relative rounded border bg-page-background gap-l aria-disabled:opacity-60">
+        <Carousel>
+          <CarouselItem>
             <CustomDashboardBento
               customDashboard={customDashboard}
               serviceInstance={serviceInstance}
             />
-          }
-          slides={
-            fileNames.length > 0
-              ? fileNames.map(
-                  (name) => `/document/visualize/${serviceInstance.id}/${name}`
-                )
-              : undefined
-          }
-        />
+          </CarouselItem>
+          {fileNames.map((name) => (
+            <CarouselItem key={name}>
+              <Image
+                fill
+                objectPosition="top"
+                objectFit="cover"
+                src={`/document/visualize/${serviceInstance.id}/${name}`}
+                alt={`An image of ${name}`}
+              />
+            </CarouselItem>
+          ))}
+        </Carousel>
+
         <div
           className="cursor-pointer"
           onClick={() =>
