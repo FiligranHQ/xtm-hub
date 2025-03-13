@@ -21,6 +21,7 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions } from '@/components/ui/icon-actions';
+import { SearchInput } from '@/components/ui/search-input';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
@@ -47,7 +48,6 @@ import {
   Button,
   DataTable,
   DataTableHeadBarOptions,
-  Input,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -295,8 +295,8 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
         }}
         toolbar={
           <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
-            <Input
-              className="w-full sm:w-1/3"
+            <SearchInput
+              containerClass="w-full sm:w-1/3"
               placeholder={t('Service.Vault.FileTab.Search')}
               onChange={debounceHandleInput}
             />

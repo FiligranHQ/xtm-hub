@@ -7,6 +7,7 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import { SearchInput } from '@/components/ui/search-input';
 import useAdminPath from '@/hooks/useAdminPath';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { DEBOUNCE_TIME } from '@/utils/constant';
@@ -23,7 +24,7 @@ import {
   UserOrdering,
 } from '@generated/userListQuery.graphql';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
-import { Badge, DataTable, DataTableHeadBarOptions, Input } from 'filigran-ui';
+import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import {
   createContext,
@@ -302,8 +303,8 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
         onClickRow={(row) => setUserEdit(row.original)}
         toolbar={
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
-            <Input
-              className="w-full sm:w-1/3"
+            <SearchInput
+              containerClass="w-full sm:w-1/3"
               placeholder={t('UserActions.SearchUserWithEmail')}
               onChange={debounceHandleInput}
             />

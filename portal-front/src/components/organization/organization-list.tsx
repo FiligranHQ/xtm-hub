@@ -10,6 +10,7 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions } from '@/components/ui/icon-actions';
+import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import {
@@ -20,7 +21,7 @@ import { organizationItem_fragment$data } from '@generated/organizationItem_frag
 import { OrganizationOrdering } from '@generated/organizationSelectQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { Badge, DataTable, DataTableHeadBarOptions, Input } from 'filigran-ui';
+import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, Suspense, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
@@ -179,9 +180,9 @@ const OrganizationList: FunctionComponent = () => {
               className="sr-only">
               {t('OrganizationActions.SearchOrganizationWithEmail')}
             </label>
-            <Input
+            <SearchInput
               id="organization-email"
-              className="w-full sm:w-1/3"
+              containerClass="w-full sm:w-1/3"
               placeholder={t('OrganizationActions.SearchOrganizationWithEmail')}
               onChange={debounceHandleInput}
             />

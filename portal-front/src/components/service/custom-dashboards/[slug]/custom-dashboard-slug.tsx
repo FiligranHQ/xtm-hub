@@ -116,31 +116,31 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
       )}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <div className="flex-[3_3_0%]">
-          <h3 className="py-4 uppercase truncate">
+          <h3 className="py-s txt-container-title truncate text-muted-foreground">
             {t('Service.CustomDashboards.Details.Overview')}
           </h3>
-          <div
+          <section
             data-color-mode={theme}
-            className="border rounded border-border-light">
+            className="border rounded border-border-light bg-page-background">
             <h2 className="p-l">{documentData?.short_description}</h2>
             <MDEditor.Markdown
-              className="p-l !bg-background"
+              className="p-l !bg-page-background"
               source={documentData?.description ?? ''}
             />
-          </div>
+          </section>
         </div>
         <div className="flex-1">
-          <h3 className="py-4 uppercase truncate text-ellipsis">
+          <h3 className="py-s txt-container-title truncate text-ellipsis text-muted-foreground">
             {t('Service.CustomDashboards.Details.BasicInformation')}
           </h3>
-          <div className="border rounded border-border-light flex space-y-xl p-l">
+          <section className="border rounded border-border-light bg-page-background flex space-y-xl p-l">
             {documentData && (
               <DashboardDetails
                 documentData={documentData}
                 downloadNumber={documentDownloadNumber}
               />
             )}
-          </div>
+          </section>
         </div>
       </div>
     </>
