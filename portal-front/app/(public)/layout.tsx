@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
   return {
     title:
-      'Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation | XTM Hub',
+      'Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation | XTM Hub by Filigran',
     description:
       "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Secure and optimize your defenses.",
     metadataBase: new URL(`https://${h.get('host')}`),
