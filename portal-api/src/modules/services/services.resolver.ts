@@ -27,6 +27,7 @@ import {
   getServiceDefinitionCapabilities,
   getUserJoined,
   loadPublicServiceInstances,
+  loadSeoServiceInstances,
   loadServiceInstanceByIdWithCapabilities,
   loadServiceInstances,
   loadServiceWithSubscriptions,
@@ -107,6 +108,9 @@ const resolvers: Resolvers = {
       context
     ) => {
       return loadSubscribedServiceInstancesByIdentifier(context, identifier);
+    },
+    seoServiceInstances: async (_, opt, context) => {
+      return loadSeoServiceInstances(context, opt);
     },
   },
   Mutation: {
