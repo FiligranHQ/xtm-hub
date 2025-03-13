@@ -176,8 +176,8 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
 
         <div
           className={cn(
-            '!mt-s px-l py-s',
-            fields.length > 0 && 'bg-primary/10'
+            '!mt-m px-l py-s space-y-s',
+            fields.length > 0 && 'border border-primary rounded'
           )}>
           {fields.map((field, index) => {
             return (
@@ -188,7 +188,7 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
                 render={({ field: formField }) => {
                   return (
                     <FormItem>
-                      <div className="grid gap-m items-center grid-cols-[1fr_4fr_3rem] pt-s">
+                      <div className="grid gap-m items-center grid-cols-[1fr_4fr_3rem]">
                         <Label>
                           {
                             organizations.find(

@@ -1,5 +1,6 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
 import {
   documentsList$data,
@@ -7,7 +8,7 @@ import {
 } from '@generated/documentsList.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import { Button, Input, MultiSelectFormField } from 'filigran-ui';
+import { Button, MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useMemo } from 'react';
@@ -79,39 +80,40 @@ const CustomDashbordDocumentList = ({
 
   return (
     <div className="flex flex-col gap-xl">
-      <div className="flex justify-between">
-        <h1>{serviceInstance.name}</h1>
-        {canManageService && (
-          <Button
-            className="ml-auto mr-s"
-            asChild
-            variant="outline">
-            <Link href={`/manage/service/${serviceInstance.id}`}>
-              {t('Service.Capabilities.ManageAccessName')}
-            </Link>
-          </Button>
-        )}
-        <CustomDashboardSheet
-          serviceInstance={serviceInstance}
-          serviceInstanceId={serviceInstance.id}
-          connectionId={data!.documents!.__id}
-        />
-      </div>
+      <h1>{serviceInstance.name}</h1>
       {/* TODO: add tabs to show non active dashboards for UPLOAD or BYPASS capas */}
-      <div className="flex gap-l">
-        <Input
-          className="w-[20rem]"
-          placeholder={t('GenericActions.Search')}
-          onChange={debounceHandleInput(onSearchChange)}
-        />
-        <div className="w-[20rem]">
-          <MultiSelectFormField
-            options={labelOptions}
-            defaultValue={labels}
-            placeholder={t('GenericActions.FilterLabels')}
-            noResultString={t('Utils.NotFound')}
-            onValueChange={onLabelFilterChange}
-            variant="inverted"
+      <div className="flex justify-between gap-s flex-wrap">
+        <div className="flex gap-s flex-wrap">
+          <SearchInput
+            containerClass="w-[20rem] flex-1 max-w-[50%]"
+            placeholder={t('GenericActions.Search')}
+            onChange={debounceHandleInput(onSearchChange)}
+          />
+          <div className="w-[20rem] flex-1 max-w-[50%]">
+            <MultiSelectFormField
+              options={labelOptions}
+              defaultValue={labels}
+              placeholder={t('GenericActions.FilterLabels')}
+              noResultString={t('Utils.NotFound')}
+              onValueChange={onLabelFilterChange}
+              variant="inverted"
+            />
+          </div>
+        </div>
+        <div className="flex gap-s">
+          {canManageService && (
+            <Button
+              asChild
+              variant="outline">
+              <Link href={`/manage/service/${serviceInstance.id}`}>
+                {t('Service.Capabilities.ManageAccessName')}
+              </Link>
+            </Button>
+          )}
+          <CustomDashboardSheet
+            serviceInstance={serviceInstance}
+            serviceInstanceId={serviceInstance.id}
+            connectionId={data!.documents!.__id}
           />
         </div>
       </div>
