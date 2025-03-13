@@ -89,6 +89,7 @@ type Query {
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
+  seoServiceInstances: [SeoServiceInstance!]!
   labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
   label(id: ID!): Label
   settings: Settings!
@@ -188,6 +189,7 @@ type ServiceInstance implements Node {
   id: ID!
   name: String!
   description: String
+  slug: String
   creation_status: String
   organization_subscribed: Boolean
   user_joined: Boolean
@@ -212,6 +214,18 @@ type ServiceConnection {
   totalCount: Int!
   edges: [ServiceInstanceEdge!]!
   pageInfo: PageInfo!
+}
+
+type SeoServiceInstance implements Node {
+  id: ID!
+  name: String!
+  slug: String
+  description: String
+  links: [ServiceLink]
+  tags: [String]
+  service_definition: ServiceDefinition!
+  logo_document_id: ID
+  illustration_document_id: ID
 }
 
 input AddServiceInput {

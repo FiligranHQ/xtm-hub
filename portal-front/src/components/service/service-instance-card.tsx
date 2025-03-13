@@ -2,7 +2,6 @@ import {
   SERVICE_CREATION_STATUS,
   SERVICE_DEFINITION_IDENTIFIER,
 } from '@/components/service/service.const';
-import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { cn } from '@/lib/utils';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
@@ -13,12 +12,12 @@ import { ReactNode } from 'react';
 interface ServiceInstanceCardProps {
   serviceInstance: serviceList_fragment$data;
   rightAction?: ReactNode;
+  h?: string | null;
+  seo?: boolean;
 }
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
-> = ({ serviceInstance, rightAction }) => {
-  const { h } = useDecodedQuery();
-
+> = ({ serviceInstance, rightAction, h, seo }) => {
   const isLinkService =
     serviceInstance?.service_definition?.identifier ===
     SERVICE_DEFINITION_IDENTIFIER.LINK;
@@ -29,7 +28,7 @@ const ServiceInstanceCard: React.FunctionComponent<
   const serviceHref =
     isLinkService && serviceInstance.links?.[0]?.url
       ? serviceInstance.links?.[0]?.url
-      : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`;
+      : `${seo ? `/cybersecurity-solutions/${serviceInstance.slug}` : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`}`;
 
   return (
     <li
@@ -46,7 +45,7 @@ const ServiceInstanceCard: React.FunctionComponent<
           <div
             className="w-full h-12"
             style={{
-              backgroundImage: `url(/document/visualize/${serviceInstance.id}/${serviceInstance.logo_document_id})`,
+              backgroundImage: `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`,
               backgroundSize: 'contain',
               backgroundPosition: 'left center',
               backgroundRepeat: 'no-repeat',
@@ -57,7 +56,7 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div
           className="h-3/4 w-full"
           style={{
-            backgroundImage: `url(/document/visualize/${serviceInstance.id}/${serviceInstance.illustration_document_id})`,
+            backgroundImage: `url(/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id})`,
             backgroundSize: 'cover',
           }}
         />
