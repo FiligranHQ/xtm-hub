@@ -3,12 +3,14 @@ import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
 } from '@generated/seoServiceInstancesQuery.graphql';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 
 const Page = async () => {
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
     SeoServiceInstancesQuery
   );
-  const services = response.data.seoServiceInstances;
+  const services = response.data
+    .seoServiceInstances as unknown as serviceList_fragment$data[];
 
   return (
     <>

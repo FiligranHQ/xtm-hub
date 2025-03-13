@@ -11,8 +11,10 @@ import { geologica, ibmPlexSans } from '../font';
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
   return {
-    title: 'XTM Hub',
-    description: 'XTM Hub application by Filigran',
+    title:
+      'Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation | XTM Hub',
+    description:
+      "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Secure and optimize your defenses.",
     metadataBase: new URL(`https://${h.get('host')}`),
   };
 }
@@ -37,20 +39,20 @@ export default function RootLayout({
       </Head>
       <body className="flex flex-col min-h-screen">
         <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
-          <a href="/cybersecurity-solutions">
+          <Link href="/cybersecurity-solutions">
             <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
-          </a>
+          </Link>
           <div className="flex gap-xl">
             <a
               href="https://filigran.io"
               target="_blank"
-              className="border border-[#0fbcff] shadow-[0_0_13.2px_-2px_#0fbcff] rounded-full px-4 py-2"
+              className="uppercase inline-flex items-center justify-center rounded font-normal text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border-medium bg-transparent hover:bg-hover h-9 px-4 py-2 whitespace-nowrap"
               rel="noopener noreferrer">
               Filigran Website
             </a>
             <Link
               href="/"
-              className="border border-[#0fbcff] shadow-[0_0_13.2px_-2px_#0fbcff] rounded-full px-4 py-2">
+              className="uppercase inline-flex items-center justify-center rounded font-normal text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/75 h-9 px-4 py-2 w-full">
               Sign In
             </Link>
           </div>
