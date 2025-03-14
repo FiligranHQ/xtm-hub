@@ -18,6 +18,7 @@
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
+      "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
