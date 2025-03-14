@@ -25,7 +25,7 @@ const PageLoader: React.FunctionComponent = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{t('UserListPage.Title')}</h1>
+      <h1 className="sr-only">{t('UserListPage.Title')}</h1>
       <UserList organization={me?.selected_organization_id} />
     </>
   );

@@ -21,7 +21,7 @@ const Page: React.FunctionComponent = () => {
   return (
     <GuardCapacityComponent displayError>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{t('MenuLinks.Parameters')}</h1>
+      <h1 className="sr-only">{t('MenuLinks.Parameters')}</h1>
       <Parameters />
     </GuardCapacityComponent>
   );

@@ -49,7 +49,7 @@ const Labels = () => {
           <Badge
             variant="outline"
             color={row.original.color}>
-            {row.original.name}
+            {row.original.name.toUpperCase()}
           </Badge>
         );
       },
