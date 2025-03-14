@@ -82,7 +82,7 @@ export async function generateMetadata({
 
   const { serviceInstance } = await getPageData(awaitedParams.slug);
 
-  return {
+  const metadata: Metadata = {
     title: `${serviceInstance.name} | XTM Hub by Filigran`,
     description:
       serviceInstance.description ||
@@ -93,6 +93,7 @@ export async function generateMetadata({
       description: serviceInstance.description!,
       url: `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}`,
       type: 'website',
+      siteName: 'XTM Hub by Filigran',
     },
     twitter: {
       card: 'summary_large_image',
@@ -100,6 +101,20 @@ export async function generateMetadata({
       description: serviceInstance.description!,
     },
   };
+
+  if (serviceInstance.illustration_document_id) {
+    metadata.openGraph!.images = [
+      {
+        url: `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
+        alt: serviceInstance.name,
+      },
+    ];
+    metadata.twitter!.images = [
+      `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
+    ];
+  }
+
+  return metadata;
 }
 
 /**
