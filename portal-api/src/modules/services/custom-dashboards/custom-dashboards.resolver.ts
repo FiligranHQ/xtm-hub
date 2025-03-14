@@ -7,10 +7,15 @@ import {
 
 const resolvers: Resolvers = {
   SeoCustomDashboard: {
-    children_documents: ({ id }, _, context) =>
-      loadImagesByCustomDashboardId(context, id),
-    uploader: ({ id }, _, context) => getUploader(context, id),
-    labels: ({ id }, _, context) => getLabels(context, id),
+    children_documents: ({ id }) => loadImagesByCustomDashboardId(id),
+    uploader: ({ id }, _, context) =>
+      getUploader(context, id, {
+        unsecured: true,
+      }),
+    labels: ({ id }, _, context) =>
+      getLabels(context, id, {
+        unsecured: true,
+      }),
   },
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
@@ -20,7 +25,6 @@ const resolvers: Resolvers = {
       );
       for (const dashboard of dashboards) {
         dashboard.children_documents = await loadImagesByCustomDashboardId(
-          context,
           dashboard.id
         );
         dashboard.uploader = await getUploader(context, dashboard.id, {

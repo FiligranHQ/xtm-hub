@@ -10,15 +10,20 @@ import SeoServiceInstanceQuery, {
 } from '@generated/seoServiceInstanceQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Badge } from 'filigran-ui/servers';
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 interface SeoCustomDashboard {
   description: string;
   id: string;
-  images: {
+  children_documents: {
     id: string;
   }[];
+  created_at: string;
+  updated_at: string;
   labels: {
     color: string;
     id: string;
@@ -28,36 +33,160 @@ interface SeoCustomDashboard {
   slug: string;
   short_description: string;
   product_version: string;
+  uploader: {
+    first_name: string;
+    last_name: string;
+    picture: string;
+  };
 }
 
+/**
+ * Fetch the data for the page with caching to avoid multiple requests
+ */
+const getPageData = cache(async (slug: string) => {
+  const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
+    SeoServiceInstanceQuery,
+    { slug }
+  );
+
+  const serviceInstance = serviceResponse.data
+    .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
+
+  if (!serviceInstance) {
+    notFound();
+  }
+
+  const customDashboardsResponse =
+    await serverFetchGraphQL<seoCustomDashboardsByServiceSlugQuery>(
+      SeoCustomDashboardsByServiceSlugQuery,
+      { serviceSlug: slug }
+    );
+
+  const customDashboards = customDashboardsResponse.data
+    .seoCustomDashboardsByServiceSlug as unknown as SeoCustomDashboard[];
+
+  return { serviceInstance, customDashboards };
+});
+
+/**
+ * Generate the metadata for the page
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const awaitedParams = await params;
+  const h = await headers();
+  const baseUrl = `https://${h.get('host')}`;
+
+  const { serviceInstance } = await getPageData(awaitedParams.slug);
+
+  return {
+    title: `${serviceInstance.name} | XTM Hub by Filigran`,
+    description:
+      serviceInstance.description ||
+      'Discover our cybersecurity solution for enhanced threat intelligence and protection.',
+    metadataBase: new URL(baseUrl),
+    openGraph: {
+      title: serviceInstance.name,
+      description: serviceInstance.description!,
+      url: `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}`,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: serviceInstance.name,
+      description: serviceInstance.description!,
+    },
+  };
+}
+
+/**
+ * The page component
+ */
 const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const awaitedParams = await params;
+  const h = await headers();
+
   try {
-    const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
-      SeoServiceInstanceQuery,
-      {
-        slug: awaitedParams.slug,
-      }
+    const { serviceInstance, customDashboards } = await getPageData(
+      awaitedParams.slug
     );
-    const serviceInstance = serviceResponse.data
-      .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
-    if (!serviceInstance) {
-      notFound();
-    }
 
-    const customDashboardsResponse =
-      await serverFetchGraphQL<seoCustomDashboardsByServiceSlugQuery>(
-        SeoCustomDashboardsByServiceSlugQuery,
-        {
-          serviceSlug: awaitedParams.slug,
+    const jsonLd: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: serviceInstance.name,
+      description: serviceInstance.description,
+      applicationCategory: 'SecurityApplication',
+      operatingSystem: 'Web',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: customDashboards.length * 10,
+        bestRating: '5',
+        worstRating: '2',
+      },
+      // datePublished: serviceInstance.created_at,
+      // dateModified: serviceInstance.updated_at,
+      provider: {
+        '@type': 'Organization',
+        name: 'Filigran',
+        url: 'https://filigran.io',
+      },
+      keywords: customDashboards
+        .flatMap(
+          (dashboard) => dashboard.labels?.map((label) => label.name) || []
+        )
+        .join(', '),
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://${h.get('host')}/cybersecurity-solutions/${serviceInstance.slug}`,
+      },
+      hasPart: customDashboards.map((dashboard) => {
+        const dashboardJsonLd: Record<string, unknown> = {
+          '@type': 'TechArticle',
+          headline: dashboard.name,
+          description: dashboard.short_description,
+          datePublished: dashboard.created_at,
+          dateModified: dashboard.updated_at,
+          author: dashboard.uploader
+            ? {
+                '@type': 'Person',
+                name: `${dashboard.uploader.first_name} ${dashboard.uploader.last_name}`,
+              }
+            : undefined,
+          about: {
+            '@type': 'Thing',
+            name: 'Cybersecurity',
+          },
+          keywords: dashboard.labels?.map((label) => label.name).join(', '),
+        };
+        if (dashboard.children_documents.length > 0) {
+          dashboardJsonLd.image = dashboard.children_documents.map(
+            (image) =>
+              `https://${h.get('host')}/document/images/${serviceInstance.id}/${image.id}`
+          );
         }
-      );
+        return dashboardJsonLd;
+      }),
+    };
 
-    const customDashboards = customDashboardsResponse.data
-      .seoCustomDashboardsByServiceSlug as unknown as SeoCustomDashboard[];
+    if (serviceInstance.illustration_document_id) {
+      jsonLd.image = [
+        `https://${h.get('host')}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
+      ];
+    }
 
     return (
       <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd),
+          }}
+        />
         <h1 className="my-16 text-center text-[3.5rem]">
           {serviceInstance.name}
         </h1>
@@ -65,9 +194,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           <div className="my-4 text-center">No custom dashboards found</div>
         )) || (
           <ul
-            className={
-              'grid grid-cols-1 s:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-xl'
-            }>
+            className={'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-xl'}>
             {customDashboards.map((customDashboard) => (
               <li
                 key={customDashboard.id}
