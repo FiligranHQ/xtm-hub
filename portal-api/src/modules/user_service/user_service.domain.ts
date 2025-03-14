@@ -201,7 +201,8 @@ export const loadUserServiceByUser = (context: PortalContext, opts) => {
 export const addAdminAccess = async (
   context: PortalContext,
   adminId: UserId,
-  subscriptionId: SubscriptionId
+  subscriptionId: SubscriptionId,
+  isPersonalSpace: boolean = false
 ) => {
   const dataUserService = {
     id: uuidv4() as UserServiceId,
@@ -209,10 +210,12 @@ export const addAdminAccess = async (
     subscription_id: subscriptionId,
   };
   const [userService] = await insertUserService(context, dataUserService);
-  const capabilitiesId = [
-    GenericServiceCapabilityIds.AccessId,
-    GenericServiceCapabilityIds.ManageAccessId,
-  ];
+  const capabilitiesId = isPersonalSpace
+    ? [GenericServiceCapabilityIds.AccessId]
+    : [
+        GenericServiceCapabilityIds.AccessId,
+        GenericServiceCapabilityIds.ManageAccessId,
+      ];
   const dataCapabilities = capabilitiesId.map((capabilityId) => ({
     id: uuidv4() as UserServiceCapabilityId,
     user_service_id: userService.id,
