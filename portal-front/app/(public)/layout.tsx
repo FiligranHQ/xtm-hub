@@ -57,7 +57,7 @@ export default function RootLayout({
             </Link>
           </div>
         </header>
-        <div className="container">
+        <div className="container flex-grow">
           <div className="pt-l">{children}</div>
         </div>
         <footer className="container">

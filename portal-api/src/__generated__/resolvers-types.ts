@@ -678,11 +678,11 @@ export type RolePortal = Node & {
 
 export type SeoCustomDashboard = {
   __typename?: 'SeoCustomDashboard';
+  children_documents?: Maybe<Array<Maybe<SeoCustomDashboardImage>>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
-  images?: Maybe<Array<Maybe<SeoCustomDashboardImage>>>;
   labels?: Maybe<Array<Maybe<Label>>>;
   name?: Maybe<Scalars['String']['output']>;
   product_version?: Maybe<Scalars['String']['output']>;
@@ -1441,11 +1441,11 @@ export type RolePortalResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboard'] = ResolversParentTypes['SeoCustomDashboard']> = ResolversObject<{
+  children_documents?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboardImage']>>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  images?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboardImage']>>>, ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<Maybe<ResolversTypes['Label']>>>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

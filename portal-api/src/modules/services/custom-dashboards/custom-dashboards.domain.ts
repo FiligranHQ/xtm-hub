@@ -26,9 +26,6 @@ export const loadImagesByCustomDashboardId = async (
   const images = await db<Document>(context, 'Document')
     .select('Document.id')
     .where('parent_document_id', '=', customDashboardId)
-    .where('Document.active', '=', true)
-    .first();
-  console.log(images);
-
+    .where('Document.active', '=', true);
   return images;
 };

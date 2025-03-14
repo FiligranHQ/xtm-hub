@@ -5,9 +5,23 @@ export const SeoServiceInstanceFragment = graphql`
     id
     name
     description
+    short_description
+    product_version
+    created_at
+    updated_at
     slug
-    images {
+    children_documents {
       id
+    }
+    labels {
+      id
+      name
+      color
+    }
+    uploader {
+      first_name
+      last_name
+      picture
     }
   }
 `;

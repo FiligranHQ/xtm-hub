@@ -130,7 +130,7 @@ type SeoCustomDashboard {
   updater_id: String
   download_number: Int
   product_version: String
-  images: [SeoCustomDashboardImage]
+  children_documents: [SeoCustomDashboardImage]
   labels: [Label]
 }
 

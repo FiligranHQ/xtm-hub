@@ -2,7 +2,7 @@ import { FormatDate } from '@/utils/date';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
-import { Avatar } from 'filigran-ui';
+import { Avatar } from 'filigran-ui/clients';
 
 const CustomDashboardBento = ({
   customDashboard,
@@ -14,7 +14,7 @@ const CustomDashboardBento = ({
   return (
     <div className="flex h-[15rem] p-2 gap-xs">
       <div className="flex flex-col flex-1 gap-xs text-xs">
-        <div className="flex flex-1 items-center justify-center rounded border gap-2 dark:text-white items-center">
+        <div className="flex flex-1 justify-center rounded border gap-2 dark:text-white items-center">
           <div className="size-6">
             <Avatar src={customDashboard.uploader?.picture ?? ''} />
           </div>
@@ -40,7 +40,7 @@ const CustomDashboardBento = ({
           <div
             className="flex-1"
             style={{
-              backgroundImage: `url(/document/visualize/${serviceInstance.id}/${customDashboard.children_documents?.[0]?.id})`,
+              backgroundImage: `url(/document/images/${serviceInstance.id}/${customDashboard.children_documents?.[0]?.id})`,
               backgroundSize: 'cover',
             }}
           />

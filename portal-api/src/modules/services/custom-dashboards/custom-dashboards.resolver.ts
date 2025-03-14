@@ -7,7 +7,8 @@ import {
 
 const resolvers: Resolvers = {
   SeoCustomDashboard: {
-    images: ({ id }, _, context) => loadImagesByCustomDashboardId(context, id),
+    children_documents: ({ id }, _, context) =>
+      loadImagesByCustomDashboardId(context, id),
     uploader: ({ id }, _, context) => getUploader(context, id),
     labels: ({ id }, _, context) => getLabels(context, id),
   },
@@ -18,7 +19,7 @@ const resolvers: Resolvers = {
         serviceSlug
       );
       for (const dashboard of dashboards) {
-        dashboard.images = await loadImagesByCustomDashboardId(
+        dashboard.children_documents = await loadImagesByCustomDashboardId(
           context,
           dashboard.id
         );

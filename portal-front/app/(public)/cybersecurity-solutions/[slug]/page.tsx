@@ -1,5 +1,6 @@
+import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { seoCustomDashboardFragment$data } from '@generated/seoCustomDashboardFragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardsByServiceSlugQuery, {
   seoCustomDashboardsByServiceSlugQuery,
 } from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
@@ -7,10 +8,27 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
+import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Badge } from 'filigran-ui/servers';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+
+interface SeoCustomDashboard {
+  description: string;
+  id: string;
+  images: {
+    id: string;
+  }[];
+  labels: {
+    color: string;
+    id: string;
+    name: string;
+  }[];
+  name: string;
+  slug: string;
+  short_description: string;
+  product_version: string;
+}
 
 const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const awaitedParams = await params;
@@ -36,9 +54,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
       );
 
     const customDashboards = customDashboardsResponse.data
-      .seoCustomDashboardsByServiceSlug as unknown as seoCustomDashboardFragment$data[];
-
-    console.log(customDashboards);
+      .seoCustomDashboardsByServiceSlug as unknown as SeoCustomDashboard[];
 
     return (
       <>
@@ -50,27 +66,31 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         )) || (
           <ul
             className={
-              'grid grid-cols-1 s:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-xl'
+              'grid grid-cols-1 s:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-xl'
             }>
             {customDashboards.map((customDashboard) => (
               <li
                 key={customDashboard.id}
-                className="border-light flex flex-col relative rounded border bg-page-background gap-xxl aria-disabled:opacity-60">
-                <Image
-                  alt={customDashboard.name}
-                  src={`/document/images/${serviceInstance.id}/${customDashboard.children_documents[0].id}`}
-                />
+                className="block">
                 <Link
-                  className="cursor-pointer"
+                  className="cursor-pointer border-light flex flex-col relative rounded border bg-page-background gap-l aria-disabled:opacity-60"
                   href={`/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}>
+                  <CustomDashboardBento
+                    customDashboard={
+                      customDashboard as unknown as documentItem_fragment$data
+                    }
+                    serviceInstance={
+                      serviceInstance as unknown as NonNullable<
+                        serviceByIdQuery$data['serviceInstanceById']
+                      >
+                    }
+                  />
                   <div className="flex items-center px-l justify-between">
                     <div className="flex gap-s items-center">
                       {customDashboard?.labels?.map(({ id, name, color }) => (
                         <Badge
                           key={id}
-                          size="sm"
-                          className="ml-auto"
-                          style={{ color }}>
+                          color={color}>
                           {name}
                         </Badge>
                       ))}
@@ -81,9 +101,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                   </h2>
                   <div className="txt-mini p-l items-center flex">
                     {customDashboard.product_version && (
-                      <div>
-                        From OpenCTI Version : {customDashboard.product_version}
-                      </div>
+                      <div>From OpenCTI: {customDashboard.product_version}</div>
                     )}
                     <Badge
                       size="sm"
