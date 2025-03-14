@@ -69,15 +69,13 @@ const ServiceInstanceCard: React.FunctionComponent<
       </div>
       <div className="relative h-40 border-light flex flex-col border bg-page-background p-l gap-xs z-1">
         <div className="flex items-center h-12 w-full">
-          <h2>
-            <Link
-              href={isDisabled ? '' : serviceHref}
-              target={serviceHref.startsWith('http') ? '_blank' : '_self'}
-              className=" after:cursor-pointer after:content-[''] after:absolute after:inset-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
-              aria-disabled={isDisabled}>
-              {serviceInstance.name}
-            </Link>
-          </h2>
+          <Link
+            href={isDisabled ? '' : serviceHref}
+            target={serviceHref.startsWith('http') ? '_blank' : '_self'}
+            className=" after:cursor-pointer after:content-[''] after:absolute after:inset-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
+            aria-disabled={isDisabled}>
+            <h2>{serviceInstance.name}</h2>
+          </Link>
           <ArrowOutwardIcon className="ml-auto size-6" />
         </div>
         <p className="txt-sub-content">{serviceInstance.description}</p>

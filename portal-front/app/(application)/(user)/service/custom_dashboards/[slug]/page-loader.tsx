@@ -51,8 +51,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
       )}
     </>
   );
-
-  return;
 };
 
 // Component export
