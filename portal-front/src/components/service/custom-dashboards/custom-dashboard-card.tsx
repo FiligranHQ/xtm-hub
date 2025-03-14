@@ -45,89 +45,89 @@ const CustomDashboardCard = ({
   );
 
   return (
-    <>
-      <li className="border-light flex flex-col relative rounded border bg-page-background gap-l aria-disabled:opacity-60">
-        <Carousel>
-          <CarouselItem>
-            <CustomDashboardBento
-              customDashboard={customDashboard}
-              serviceInstance={serviceInstance}
+    <li className="border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60">
+      <Carousel>
+        <CarouselItem>
+          <CustomDashboardBento
+            customDashboard={customDashboard}
+            serviceInstance={serviceInstance}
+          />
+        </CarouselItem>
+        {fileNames.map((name) => (
+          <CarouselItem key={name}>
+            <Image
+              fill
+              objectPosition="top"
+              objectFit="cover"
+              src={`/document/visualize/${serviceInstance.id}/${name}`}
+              alt={`An image of ${name}`}
             />
           </CarouselItem>
-          {fileNames.map((name) => (
-            <CarouselItem key={name}>
-              <Image
-                fill
-                objectPosition="top"
-                objectFit="cover"
-                src={`/document/visualize/${serviceInstance.id}/${name}`}
-                alt={`An image of ${name}`}
+        ))}
+      </Carousel>
+
+      <div
+        className="cursor-pointer p-l space-y-s"
+        onClick={() =>
+          router.push(
+            `/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`
+          )
+        }>
+        <div className="flex items-center justify-between">
+          {/*TODO : will be filled when design is finalized*/}
+          <div className="flex gap-s items-center">
+            {customDashboard?.labels?.map(({ id, name, color }) => (
+              <Badge
+                key={id}
+                color={color}>
+                {name.toUpperCase()}
+              </Badge>
+            ))}
+          </div>
+
+          {(userCanUpdate || userCanDelete) && (
+            <IconActions
+              icon={
+                <>
+                  <MoreVertIcon className="h-4 w-4 text-primary" />
+                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                </>
+              }>
+              <DashboardUpdate
+                userCanUpdate={userCanUpdate}
+                userCanDelete={userCanDelete}
+                serviceInstanceId={serviceInstance?.id}
+                customDashboard={customDashboard}
+                data={data as unknown as documentItem_fragment$key}
+                connectionId={connectionId}
+                variant="menu"
               />
-            </CarouselItem>
-          ))}
-        </Carousel>
-
-        <div
-          className="cursor-pointer"
-          onClick={() =>
-            router.push(
-              `/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`
-            )
-          }>
-          <div className="flex items-center px-l justify-between">
-            {/*TODO : will be filled when design is finalized*/}
-            <div className="flex gap-s items-center">
-              {customDashboard?.labels?.map(({ id, name, color }) => (
-                <Badge
-                  key={id}
-                  color={color}>
-                  {name}
-                </Badge>
-              ))}
-            </div>
-
-            {(userCanUpdate || userCanDelete) && (
-              <IconActions
-                icon={
-                  <>
-                    <MoreVertIcon className="h-4 w-4 text-primary" />
-                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                  </>
-                }>
-                <DashboardUpdate
-                  userCanUpdate={userCanUpdate}
-                  userCanDelete={userCanDelete}
-                  serviceInstanceId={serviceInstance?.id}
-                  customDashboard={customDashboard}
-                  data={data as unknown as documentItem_fragment$key}
-                  connectionId={connectionId}
-                  variant="menu"
-                />
-              </IconActions>
-            )}
-          </div>
-          <h2 className="truncate flex-1 px-l mt-l max-h-[10rem] overflow-hidden">
-            {(customDashboard?.short_description?.length ?? 0 > 0)
-              ? customDashboard.short_description
-              : 'No description'}
-          </h2>
-          <div className="txt-mini p-l items-center flex">
-            {customDashboard.product_version && (
-              <div>
-                {t('Service.CustomDashboards.FromOCTIVersion')} :{' '}
-                {customDashboard.product_version}
-              </div>
-            )}
-            <Badge
-              size="sm"
-              className="ml-auto"
-              style={{ color: '#7a7c85' }}>
-              {t(customDashboard.active ? 'Badge.Published' : 'Badge.Draft')}
-            </Badge>
-          </div>
+            </IconActions>
+          )}
         </div>
-      </li>
-    </>
+        <h2 className="truncate flex-1 max-h-[10rem] overflow-hidden">
+          {(customDashboard?.short_description?.length ?? 0 > 0)
+            ? customDashboard.short_description
+            : 'No description'}
+        </h2>
+        <div className="txt-mini items-center flex">
+          {customDashboard.product_version && (
+            <div>
+              {t('Service.CustomDashboards.FromOCTIVersion')} :{' '}
+              {customDashboard.product_version}
+            </div>
+          )}
+          <Badge
+            size="sm"
+            className="ml-auto"
+            variant={customDashboard.active ? 'default' : 'warning'}>
+            {t(
+              customDashboard.active ? 'Badge.Published' : 'Badge.Draft'
+            ).toUpperCase()}
+          </Badge>
+        </div>
+      </div>
+    </li>
   );
 };
 

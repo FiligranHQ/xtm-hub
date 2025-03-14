@@ -38,7 +38,7 @@ const Page = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1>{t('MenuLinks.Services')}</h1>
+      <h1 className="sr-only">{t('MenuLinks.Services')}</h1>
       <AdminServiceTab serviceData={serviceData} />
     </>
   );
