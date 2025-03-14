@@ -43,7 +43,7 @@ export const updateCustomDashboardSchema = z.object({
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   images: z.custom<FileList>(fileListCheck).optional(),
-  slug: z.string().optional(),
+  slug: z.string(),
 });
 
 interface CustomDashboardFormProps {
@@ -72,9 +72,6 @@ export const CustomDashboardUpdateForm = ({
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
-  const slugTouched = useRef(
-    customDashboard.slug !== '' && customDashboard.slug !== null
-  );
 
   const form = useForm<CustomDashboardUpdateFormValues>({
     resolver: zodResolver(updateCustomDashboardSchema),
@@ -95,14 +92,6 @@ export const CustomDashboardUpdateForm = ({
   });
 
   useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
-
-  const watchedName = form.watch('name');
-  useEffect(() => {
-    if (!slugTouched.current && watchedName) {
-      const generatedSlug = slugify(watchedName, { lower: true, strict: true });
-      form.setValue('slug', generatedSlug, { shouldDirty: true });
-    }
-  }, [form, watchedName]);
 
   const onSubmit = (values: z.infer<typeof updateCustomDashboardSchema>) => {
     handleSubmit(values, () => form.reset());
@@ -152,11 +141,11 @@ export const CustomDashboardUpdateForm = ({
     });
   };
 
-  const handleNameBlur = () => {
-    if (!slugTouched.current && watchedName) {
-      slugTouched.current = true;
-      const generatedSlug = slugify(watchedName, { lower: true, strict: true });
-      form.setValue('slug', generatedSlug, { shouldDirty: true });
+  const handleNameChange = (value: string) => {
+    const slug = form.getValues('slug');
+    if (!form.formState.dirtyFields.slug && slug && slug.trim() === '') {
+      const generatedSlug = slugify(value, { lower: true, strict: true });
+      form.setValue('slug', generatedSlug, { shouldDirty: false });
     }
   };
 
@@ -182,9 +171,9 @@ export const CustomDashboardUpdateForm = ({
                           'Service.CustomDashboards.Form.NamePlaceholder'
                         )}
                         {...field}
-                        onBlur={() => {
-                          field.onBlur();
-                          handleNameBlur();
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleNameChange(e.target.value);
                         }}
                       />
                     </FormControl>

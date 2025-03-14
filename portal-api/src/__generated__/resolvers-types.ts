@@ -90,6 +90,7 @@ export type Document = Node & {
   product_version?: Maybe<Scalars['String']['output']>;
   service_instance_id: Scalars['String']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
+  slug?: Maybe<Scalars['String']['output']>;
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
@@ -122,6 +123,7 @@ export type EditDocumentInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditLabelInput = {
@@ -258,6 +260,7 @@ export type MutationAddDocumentArgs = {
   product_version?: InputMaybe<Scalars['String']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1247,6 +1250,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;

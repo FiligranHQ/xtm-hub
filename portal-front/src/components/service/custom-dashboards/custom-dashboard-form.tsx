@@ -18,7 +18,7 @@ import {
   Textarea,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import slugify from 'slugify';
 import { z } from 'zod';
@@ -38,7 +38,7 @@ export const newCustomDashboardSchema = z.object({
   images: z.custom<FileList>(fileListCheck),
   active: z.boolean().optional(),
   labels: z.array(z.string()).optional(),
-  slug: z.string().optional(),
+  slug: z.string(),
 });
 
 export type CustomDashboardFormValues = z.infer<
@@ -57,7 +57,6 @@ export const CustomDashboardForm = ({
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
-  const slugTouched = useRef(false);
 
   const form = useForm<CustomDashboardFormValues>({
     resolver: zodResolver(newCustomDashboardSchema),
@@ -79,14 +78,6 @@ export const CustomDashboardForm = ({
   useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
   form.watch(['images', 'document']);
 
-  const watchedName = form.watch('name');
-  useEffect(() => {
-    if (!slugTouched.current && watchedName) {
-      const generatedSlug = slugify(watchedName, { lower: true, strict: true });
-      form.setValue('slug', generatedSlug, { shouldDirty: true });
-    }
-  }, [form, watchedName]);
-
   const onSubmit = (values: z.infer<typeof newCustomDashboardSchema>) => {
     handleSubmit(
       {
@@ -96,11 +87,10 @@ export const CustomDashboardForm = ({
     );
   };
 
-  const handleNameBlur = () => {
-    if (watchedName) {
-      slugTouched.current = true;
-      const generatedSlug = slugify(watchedName, { lower: true, strict: true });
-      form.setValue('slug', generatedSlug, { shouldDirty: true });
+  const handleNameChange = (value: string) => {
+    if (!form.formState.dirtyFields.slug) {
+      const generatedSlug = slugify(value, { lower: true, strict: true });
+      form.setValue('slug', generatedSlug, { shouldDirty: false });
     }
   };
 
@@ -124,9 +114,10 @@ export const CustomDashboardForm = ({
                       'Service.CustomDashboards.Form.NamePlaceholder'
                     )}
                     {...field}
-                    onBlur={() => {
-                      field.onBlur();
-                      handleNameBlur();
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleNameChange(e.target.value);
+                      return true;
                     }}
                   />
                 </FormControl>
