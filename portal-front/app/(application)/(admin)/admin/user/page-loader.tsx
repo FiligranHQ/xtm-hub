@@ -20,7 +20,7 @@ const PageLoader: React.FunctionComponent = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{t('MenuLinks.Security')}</h1>
+      <h1 className="sr-only">{t('MenuLinks.Security')}</h1>
       <UserList />
     </>
   );
