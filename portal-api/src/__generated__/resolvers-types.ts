@@ -504,6 +504,8 @@ export type Query = {
   publicServiceInstances: ServiceConnection;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
+  seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<SeoCustomDashboard>>>;
+  seoServiceInstance: SeoServiceInstance;
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceInstanceById?: Maybe<ServiceInstance>;
   serviceInstanceByIdWithSubscriptions?: Maybe<ServiceInstance>;
@@ -588,6 +590,16 @@ export type QueryRolePortalArgs = {
 };
 
 
+export type QuerySeoCustomDashboardsByServiceSlugArgs = {
+  serviceSlug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySeoServiceInstanceArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
 export type QueryServiceInstanceByIdArgs = {
   service_instance_id?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -659,6 +671,28 @@ export type RolePortal = Node & {
   __typename?: 'RolePortal';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type SeoCustomDashboard = {
+  __typename?: 'SeoCustomDashboard';
+  created_at: Scalars['Date']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  download_number?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  images?: Maybe<Array<Maybe<SeoCustomDashboardImage>>>;
+  labels?: Maybe<Array<Maybe<Label>>>;
+  name?: Maybe<Scalars['String']['output']>;
+  product_version?: Maybe<Scalars['String']['output']>;
+  short_description?: Maybe<Scalars['String']['output']>;
+  slug?: Maybe<Scalars['String']['output']>;
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
+  uploader?: Maybe<User>;
+};
+
+export type SeoCustomDashboardImage = {
+  __typename?: 'SeoCustomDashboardImage';
+  id: Scalars['ID']['output'];
 };
 
 export type SeoServiceInstance = Node & {
@@ -1054,6 +1088,8 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
+  SeoCustomDashboard: ResolverTypeWrapper<SeoCustomDashboard>;
+  SeoCustomDashboardImage: ResolverTypeWrapper<SeoCustomDashboardImage>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
@@ -1132,6 +1168,8 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformProvider: PlatformProvider;
   Query: {};
   RolePortal: RolePortal;
+  SeoCustomDashboard: SeoCustomDashboard;
+  SeoCustomDashboardImage: SeoCustomDashboardImage;
   SeoServiceInstance: SeoServiceInstance;
   ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
@@ -1377,6 +1415,8 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
+  seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
+  seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
   serviceInstanceByIdWithSubscriptions?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdWithSubscriptionsArgs>>;
@@ -1393,6 +1433,28 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
 export type RolePortalResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RolePortal'] = ResolversParentTypes['RolePortal']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboard'] = ResolversParentTypes['SeoCustomDashboard']> = ResolversObject<{
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  images?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboardImage']>>>, ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<Maybe<ResolversTypes['Label']>>>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SeoCustomDashboardImageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboardImage'] = ResolversParentTypes['SeoCustomDashboardImage']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1635,6 +1697,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
+  SeoCustomDashboard?: SeoCustomDashboardResolvers<ContextType>;
+  SeoCustomDashboardImage?: SeoCustomDashboardImageResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;

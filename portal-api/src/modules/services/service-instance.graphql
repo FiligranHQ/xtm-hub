@@ -90,6 +90,7 @@ type Query {
     identifier: ServiceDefinitionIdentifier!
   ): [SubscribedServiceInstance!]! @auth
   seoServiceInstances: [SeoServiceInstance!]!
+  seoServiceInstance(slug: String!): SeoServiceInstance!
 }
 
 type SubscribedServiceInstance {

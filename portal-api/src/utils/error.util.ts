@@ -97,7 +97,9 @@ export const NotFoundError = (
   information?: Record<string, unknown>,
   data?: Record<string, unknown>
 ) => {
-  logApp.error(message + ' details: ' + information.detail);
+  logApp.error(
+    `${message} ${information ? `details: ${information.detail}` : ''}`
+  );
 
   return errorUtil(ErrorType.NotFound, message, {
     http_status: 200,

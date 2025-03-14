@@ -16,6 +16,7 @@ import ServicePrice, {
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
+import { NotFoundError } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
@@ -27,6 +28,7 @@ import {
   getServiceDefinitionCapabilities,
   getUserJoined,
   loadPublicServiceInstances,
+  loadSeoServiceInstanceBySlug,
   loadSeoServiceInstances,
   loadServiceInstanceByIdWithCapabilities,
   loadServiceInstances,
@@ -111,6 +113,13 @@ const resolvers: Resolvers = {
     },
     seoServiceInstances: async (_, opt, context) => {
       return loadSeoServiceInstances(context, opt);
+    },
+    seoServiceInstance: async (_, { slug }, context) => {
+      const serviceInstance = await loadSeoServiceInstanceBySlug(context, slug);
+      if (!serviceInstance) {
+        return NotFoundError('SERVICE_NOT_FOUND_ERROR');
+      }
+      return serviceInstance;
     },
   },
   Mutation: {

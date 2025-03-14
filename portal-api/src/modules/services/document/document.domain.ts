@@ -208,9 +208,13 @@ export const getChildrenDocuments = async (
     .select('Document.*');
 };
 
-export const getUploader = async (context, documentId): Promise<User> => {
+export const getUploader = async (
+  context,
+  documentId,
+  opts = {}
+): Promise<User> => {
   return (
-    await db<User>(context, 'User')
+    await db<User>(context, 'User', opts)
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
       .where('Document.id', '=', documentId)
       .limit(1)
@@ -218,8 +222,8 @@ export const getUploader = async (context, documentId): Promise<User> => {
   )[0];
 };
 
-export const getLabels = (context, documentId): Promise<Label[]> =>
-  db<Label>(context, 'Label')
+export const getLabels = (context, documentId, opts = {}): Promise<Label[]> =>
+  db<Label>(context, 'Label', opts)
     .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
     .where('ol.object_id', '=', documentId)
     .returning('Label.*');
