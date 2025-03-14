@@ -33,3 +33,15 @@ export const loadImagesByCustomDashboardId = async (
     .where('Document.active', '=', true);
   return images;
 };
+
+export const loadSeoCustomDashboardBySlug = async (
+  context: PortalContext,
+  slug: string
+) => {
+  const dashboard = await db<Document>(context, 'Document')
+    .select('Document.*')
+    .where('Document.slug', '=', slug)
+    .where('Document.active', '=', true)
+    .first();
+  return dashboard;
+};

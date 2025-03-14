@@ -1,4 +1,5 @@
 import Hubspot from '@/components/external/hubspot';
+import { Button } from 'filigran-ui/servers';
 import 'filigran-ui/theme.css';
 import { Metadata } from 'next';
 import Head from 'next/head';
@@ -43,18 +44,22 @@ export default function RootLayout({
             <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
           </Link>
           <div className="flex gap-xl">
-            <a
-              href="https://filigran.io"
-              target="_blank"
-              className="uppercase inline-flex items-center justify-center rounded font-normal text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border-medium bg-transparent hover:bg-hover h-9 px-4 py-2 whitespace-nowrap"
-              rel="noopener noreferrer">
-              Filigran Website
-            </a>
-            <Link
-              href="/"
-              className="uppercase inline-flex items-center justify-center rounded font-normal text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/75 h-9 px-4 py-2 w-full">
-              Sign In
-            </Link>
+            <Button
+              asChild
+              variant="outline-primary"
+              className="whitespace-nowrap">
+              <Link
+                href="https://filigran.io"
+                target="_blank"
+                rel="noopener noreferrer">
+                Filigran Website
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="whitespace-nowrap">
+              <Link href="/">Sign In</Link>
+            </Button>
           </div>
         </header>
         <div className="container flex-grow">

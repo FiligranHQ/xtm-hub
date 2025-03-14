@@ -2,6 +2,7 @@ import { Resolvers } from '../../../__generated__/resolvers-types';
 import { getLabels, getUploader } from '../document/document.domain';
 import {
   loadImagesByCustomDashboardId,
+  loadSeoCustomDashboardBySlug,
   loadSeoCustomDashboardsByServiceSlug,
 } from './custom-dashboards.domain';
 
@@ -35,6 +36,10 @@ const resolvers: Resolvers = {
         });
       }
       return dashboards;
+    },
+    seoCustomDashboardBySlug: async (_, { slug }, context) => {
+      const dashboard = await loadSeoCustomDashboardBySlug(context, slug);
+      return dashboard;
     },
   },
 };

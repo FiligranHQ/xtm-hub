@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 
-interface SeoCustomDashboard {
+export interface SeoCustomDashboard {
   description: string;
   id: string;
   children_documents: {
@@ -33,6 +33,7 @@ interface SeoCustomDashboard {
   slug: string;
   short_description: string;
   product_version: string;
+  download_number: number;
   uploader: {
     first_name: string;
     last_name: string;

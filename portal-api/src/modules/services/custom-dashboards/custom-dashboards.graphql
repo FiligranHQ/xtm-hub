@@ -20,4 +20,5 @@ type SeoCustomDashboard {
 
 type Query {
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
+  seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
 }

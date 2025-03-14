@@ -10,6 +10,7 @@ export const SeoServiceInstanceFragment = graphql`
     created_at
     updated_at
     slug
+    download_number
     children_documents {
       id
     }
@@ -29,6 +30,14 @@ export const SeoServiceInstanceFragment = graphql`
 export const SeoCustomDashboardsByServiceSlugQuery = graphql`
   query seoCustomDashboardsByServiceSlugQuery($serviceSlug: String!) {
     seoCustomDashboardsByServiceSlug(serviceSlug: $serviceSlug) {
+      ...seoCustomDashboardFragment
+    }
+  }
+`;
+
+export const SeoCustomDashboardBySlugQuery = graphql`
+  query seoCustomDashboardBySlugQuery($slug: String!) {
+    seoCustomDashboardBySlug(slug: $slug) {
       ...seoCustomDashboardFragment
     }
   }
