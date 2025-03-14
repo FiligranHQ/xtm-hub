@@ -12,5 +12,6 @@ export const config = {
     '/auth/:path*',
     '/document/get/:filename*',
     '/document/visualize/:filename*',
+    '/document/images/:documentId*',
   ],
 };
