@@ -11,12 +11,45 @@ import { geologica, ibmPlexSans } from '../font';
 
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
+  const baseUrl = `https://${h.get('host')}`;
   return {
     title:
       'Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation | XTM Hub by Filigran',
     description:
-      "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Uncover Threats.",
-    metadataBase: new URL(`https://${h.get('host')}`),
+      "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Uncover Threats. Take Action.",
+    metadataBase: new URL(baseUrl),
+    openGraph: {
+      title: 'XTM Hub by Filigran - Cyber Threat Intelligence Platform',
+      description:
+        "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Uncover Threats. Take Action.",
+      url: baseUrl,
+      siteName: 'XTM Hub by Filigran',
+      images: [
+        {
+          url: `${baseUrl}/opengraph-image.png`,
+          width: 1200,
+          height: 630,
+          alt: 'XTM Hub by Filigran',
+        },
+      ],
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'XTM Hub by Filigran - Cyber Threat Intelligence Platform',
+      description:
+        "XTM Hub is your gateway to Filigran's cybersecurity solutions.",
+      images: [`${baseUrl}/opengraph-image.png`],
+      creator: '@FiligranHQ',
+      site: '@FiligranHQ',
+    },
+    alternates: {
+      canonical: baseUrl,
+    },
+    icons: {
+      icon: '/favicon.ico',
+    },
   };
 }
 
