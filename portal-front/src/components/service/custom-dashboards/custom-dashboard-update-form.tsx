@@ -43,7 +43,7 @@ export const updateCustomDashboardSchema = z.object({
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   images: z.custom<FileList>(fileListCheck).optional(),
-  slug: z.string(),
+  slug: z.string().optional(),
 });
 
 interface CustomDashboardFormProps {
@@ -143,7 +143,11 @@ export const CustomDashboardUpdateForm = ({
 
   const handleNameChange = (value: string) => {
     const slug = form.getValues('slug');
-    if (!form.formState.dirtyFields.slug && slug && slug.trim() === '') {
+    if (
+      !form.formState.dirtyFields.slug &&
+      typeof slug !== 'undefined' &&
+      slug.trim() === ''
+    ) {
       const generatedSlug = slugify(value, { lower: true, strict: true });
       form.setValue('slug', generatedSlug, { shouldDirty: false });
     }
