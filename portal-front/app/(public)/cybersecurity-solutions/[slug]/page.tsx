@@ -9,9 +9,9 @@ import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Badge } from 'filigran-ui/servers';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
@@ -45,6 +45,10 @@ export interface SeoCustomDashboard {
  * Fetch the data for the page with caching to avoid multiple requests
  */
 const getPageData = cache(async (slug: string) => {
+  const settingsResponse =
+    await serverFetchGraphQL<settingsQuery>(SettingsQuery);
+  const baseUrl = settingsResponse.data.settings.base_url_front;
+
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
     { slug }
@@ -66,7 +70,7 @@ const getPageData = cache(async (slug: string) => {
   const customDashboards = customDashboardsResponse.data
     .seoCustomDashboardsByServiceSlug as unknown as SeoCustomDashboard[];
 
-  return { serviceInstance, customDashboards };
+  return { baseUrl, serviceInstance, customDashboards };
 });
 
 /**
@@ -78,10 +82,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const awaitedParams = await params;
-  const h = await headers();
-  const baseUrl = `https://${h.get('host')}`;
 
-  const { serviceInstance } = await getPageData(awaitedParams.slug);
+  const { baseUrl, serviceInstance } = await getPageData(awaitedParams.slug);
 
   const metadata: Metadata = {
     title: `${serviceInstance.name} | XTM Hub by Filigran`,
@@ -123,10 +125,9 @@ export async function generateMetadata({
  */
 const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const awaitedParams = await params;
-  const h = await headers();
 
   try {
-    const { serviceInstance, customDashboards } = await getPageData(
+    const { baseUrl, serviceInstance, customDashboards } = await getPageData(
       awaitedParams.slug
     );
 
@@ -158,7 +159,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         .join(', '),
       mainEntityOfPage: {
         '@type': 'WebPage',
-        '@id': `https://${h.get('host')}/cybersecurity-solutions/${serviceInstance.slug}`,
+        '@id': `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}`,
       },
       hasPart: customDashboards.map((dashboard) => {
         const dashboardJsonLd: Record<string, unknown> = {
@@ -182,7 +183,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         if (dashboard.children_documents.length > 0) {
           dashboardJsonLd.image = dashboard.children_documents.map(
             (image) =>
-              `https://${h.get('host')}/document/images/${serviceInstance.id}/${image.id}`
+              `${baseUrl}/document/images/${serviceInstance.id}/${image.id}`
           );
         }
         return dashboardJsonLd;
@@ -191,7 +192,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
 
     if (serviceInstance.illustration_document_id) {
       jsonLd.image = [
-        `https://${h.get('host')}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
+        `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
       ];
     }
 

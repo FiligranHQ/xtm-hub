@@ -1,17 +1,19 @@
 import Hubspot from '@/components/external/hubspot';
+import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Button } from 'filigran-ui/servers';
 import 'filigran-ui/theme.css';
 import { Metadata } from 'next';
 import Head from 'next/head';
-import { headers } from 'next/headers';
 import Link from 'next/link';
 import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
 import '../../styles/globals.css';
 import { geologica, ibmPlexSans } from '../font';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
-  const baseUrl = `https://${h.get('host')}`;
+  const settingsResponse =
+    await serverFetchGraphQL<settingsQuery>(SettingsQuery);
+  const baseUrl = settingsResponse.data.settings.base_url_front;
   return {
     title:
       'Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation | XTM Hub by Filigran',

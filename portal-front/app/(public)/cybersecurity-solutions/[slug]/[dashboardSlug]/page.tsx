@@ -8,9 +8,9 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
+import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Badge, Button } from 'filigran-ui/servers';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -24,6 +24,10 @@ import { SeoCustomDashboard } from '../page';
  */
 const getPageData = cache(
   async (serviceSlug: string, dashboardSlug: string) => {
+    const settingsResponse =
+      await serverFetchGraphQL<settingsQuery>(SettingsQuery);
+    const baseUrl = settingsResponse.data.settings.base_url_front;
+
     const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
       SeoServiceInstanceQuery,
       { slug: serviceSlug }
@@ -49,7 +53,7 @@ const getPageData = cache(
       notFound();
     }
 
-    return { serviceInstance, customDashboard };
+    return { baseUrl, serviceInstance, customDashboard };
   }
 );
 
@@ -62,10 +66,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string; dashboardSlug: string }>;
 }): Promise<Metadata> {
   const awaitedParams = await params;
-  const h = await headers();
-  const baseUrl = `https://${h.get('host')}`;
 
-  const { serviceInstance, customDashboard } = await getPageData(
+  const { baseUrl, serviceInstance, customDashboard } = await getPageData(
     awaitedParams.slug,
     awaitedParams.dashboardSlug
   );
@@ -128,15 +130,13 @@ const Page = async ({
   params: Promise<{ slug: string; dashboardSlug: string }>;
 }) => {
   const awaitedParams = await params;
-  const h = await headers();
 
   try {
-    const { serviceInstance, customDashboard } = await getPageData(
+    const { baseUrl, serviceInstance, customDashboard } = await getPageData(
       awaitedParams.slug,
       awaitedParams.dashboardSlug
     );
 
-    const baseUrl = `https://${h.get('host')}`;
     const pageUrl = `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`;
 
     const jsonLd: Record<string, unknown> = {
