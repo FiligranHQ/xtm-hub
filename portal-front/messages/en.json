@@ -30,7 +30,8 @@
       "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exists",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
-      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service"
+      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
+      "SERVICE_NOT_FOUND_ERROR": "The service does not exist"
     },
     "Login": {
       "LoginError": "You are not allowed to login"
@@ -196,7 +197,7 @@
       "Details": {
         "Overview": "Overview",
         "BasicInformation": "Basic information",
-        "Author":  "Author",
+        "Author": "Author",
         "LastUpdatedAt": "Last updated at",
         "OpenCTIVersion": "OpenCTI minimum version",
         "Downloads": "Downloads"

@@ -26,3 +26,11 @@ export const SeoServiceInstancesQuery = graphql`
     }
   }
 `;
+
+export const SeoServiceInstanceQuery = graphql`
+  query seoServiceInstanceQuery($slug: String!) {
+    seoServiceInstance(slug: $slug) {
+      ...seoServiceInstanceFragment
+    }
+  }
+`;

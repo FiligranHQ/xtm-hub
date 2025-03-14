@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title:
       'Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation | XTM Hub by Filigran',
     description:
-      "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Secure and optimize your defenses.",
+      "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Uncover Threats.",
     metadataBase: new URL(`https://${h.get('host')}`),
   };
 }
@@ -57,7 +57,9 @@ export default function RootLayout({
             </Link>
           </div>
         </header>
-        <div className="container">{children}</div>
+        <div className="container">
+          <div className="pt-l">{children}</div>
+        </div>
         <footer className="container">
           <div className="flex items-center justify-between w-full px-4 py-8">
             <div>

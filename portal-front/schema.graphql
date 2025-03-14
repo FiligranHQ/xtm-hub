@@ -81,6 +81,7 @@ type Query {
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
@@ -90,6 +91,7 @@ type Query {
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
+  seoServiceInstance(slug: String!): SeoServiceInstance!
   labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
   label(id: ID!): Label
   settings: Settings!
@@ -110,6 +112,26 @@ input OrganizationInput {
 type RolePortal implements Node {
   id: ID!
   name: String!
+}
+
+type SeoCustomDashboardImage {
+  id: ID!
+}
+
+type SeoCustomDashboard {
+  id: ID!
+  uploader: User
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  product_version: String
+  images: [SeoCustomDashboardImage]
+  labels: [Label]
 }
 
 enum ServiceDefinitionIdentifier {
