@@ -16,7 +16,7 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
       <Suspense>
         <ul
           className={
-            'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-xxl'
+            'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l'
           }>
           {services.map(({ subscription, id }) => {
             return (

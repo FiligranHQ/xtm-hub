@@ -6,6 +6,8 @@ import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { cn } from '@/lib/utils';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
+import { AspectRatio } from 'filigran-ui/servers';
+import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
 import { ReactNode } from 'react';
@@ -39,8 +41,8 @@ const ServiceInstanceCard: React.FunctionComponent<
           ? "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
           : ''
       )}>
-      <div className="relative flex justify-center items-center flex-col gap-s bg-blue-900 h-48 box-border pl-s pr-s z-1">
-        <LogoFiligranIcon className="absolute inset-0 text-white opacity-10 z-1 size-64 rotate-45 blur" />
+      <div className="relative flex justify-center items-center flex-col gap-s bg-blue-900 overflow-hidden box-border pl-s pr-s z-1">
+        <LogoFiligranIcon className="absolute zinset-0 text-white opacity-10 z-1 size-64 rotate-45 blur" />
 
         <div className="mt-s flex items-center h-12 w-full">
           <div
@@ -53,18 +55,21 @@ const ServiceInstanceCard: React.FunctionComponent<
             }}
           />
         </div>
-
-        <div
-          className="h-3/4 w-full"
-          style={{
-            backgroundImage: `url(/document/visualize/${serviceInstance.id}/${serviceInstance.illustration_document_id})`,
-            backgroundSize: 'cover',
-          }}
-        />
+        <AspectRatio ratio={16 / 9}>
+          {serviceInstance.illustration_document_id && (
+            <Image
+              fill
+              src={`/document/visualize/${serviceInstance.id}/${serviceInstance.illustration_document_id}`}
+              objectPosition="top"
+              objectFit="cover"
+              alt={`Illustration of ${serviceInstance.name}`}
+            />
+          )}
+        </AspectRatio>
       </div>
       <div className="relative h-40 border-light flex flex-col border bg-page-background p-l gap-xs z-1">
-        <div className="mt-s flex items-center h-12 w-full">
-          <h3>
+        <div className="flex items-center h-12 w-full">
+          <h2>
             <Link
               href={isDisabled ? '' : serviceHref}
               target={serviceHref.startsWith('http') ? '_blank' : '_self'}
@@ -72,7 +77,7 @@ const ServiceInstanceCard: React.FunctionComponent<
               aria-disabled={isDisabled}>
               {serviceInstance.name}
             </Link>
-          </h3>
+          </h2>
           <ArrowOutwardIcon className="ml-auto size-6" />
         </div>
         <p className="txt-sub-content">{serviceInstance.description}</p>
