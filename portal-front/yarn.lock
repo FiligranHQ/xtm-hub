@@ -10778,6 +10778,7 @@ __metadata:
     rehype-sanitize: 6.0.0
     relay-compiler: 18.2.0
     relay-test-utils: 18.2.0
+    slugify: ^1.6.6
     tailwind-merge: 2.6.0
     tailwindcss: 3.4.17
     tailwindcss-animate: 1.0.7
@@ -12265,6 +12266,13 @@ __metadata:
     ansi-styles: ^6.2.1
     is-fullwidth-code-point: ^5.0.0
   checksum: 10313dd3cf7a2e4b265f527b1684c7c568210b09743fd1bd74f2194715ed13ffba653dc93a5fa79e3b1711518b8990a732cb7143aa01ddafe626e99dfa6474b2
+  languageName: node
+  linkType: hard
+
+"slugify@npm:^1.6.6":
+  version: 1.6.6
+  resolution: "slugify@npm:1.6.6"
+  checksum: 04773c2d3b7aea8d2a61fa47cc7e5d29ce04e1a96cbaec409da57139df906acb3a449fac30b167d203212c806e73690abd4ff94fbad0a9a7b7ea109a2a638ae9
   languageName: node
   linkType: hard
 

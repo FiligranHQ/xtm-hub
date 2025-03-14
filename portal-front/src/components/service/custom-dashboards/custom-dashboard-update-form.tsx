@@ -28,6 +28,7 @@ import { useTranslations } from 'next-intl';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
+import slugify from 'slugify';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
@@ -42,6 +43,7 @@ export const updateCustomDashboardSchema = z.object({
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   images: z.custom<FileList>(fileListCheck).optional(),
+  slug: z.string().optional(),
 });
 
 interface CustomDashboardFormProps {
@@ -70,6 +72,9 @@ export const CustomDashboardUpdateForm = ({
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
+  const slugTouched = useRef(
+    customDashboard.slug !== '' && customDashboard.slug !== null
+  );
 
   const form = useForm<CustomDashboardUpdateFormValues>({
     resolver: zodResolver(updateCustomDashboardSchema),
@@ -80,6 +85,7 @@ export const CustomDashboardUpdateForm = ({
       description: customDashboard.description ?? '',
       active: customDashboard.active ?? false,
       labels: customDashboard.labels.map(({ id }) => id) ?? [],
+      slug: customDashboard.slug ?? '',
       images:
         (customDashboard.children_documents?.map((n) => ({
           ...n,
@@ -89,6 +95,14 @@ export const CustomDashboardUpdateForm = ({
   });
 
   useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
+
+  const watchedName = form.watch('name');
+  useEffect(() => {
+    if (!slugTouched.current && watchedName) {
+      const generatedSlug = slugify(watchedName, { lower: true, strict: true });
+      form.setValue('slug', generatedSlug, { shouldDirty: true });
+    }
+  }, [form, watchedName]);
 
   const onSubmit = (values: z.infer<typeof updateCustomDashboardSchema>) => {
     handleSubmit(values, () => form.reset());
@@ -138,6 +152,14 @@ export const CustomDashboardUpdateForm = ({
     });
   };
 
+  const handleNameBlur = () => {
+    if (!slugTouched.current && watchedName) {
+      slugTouched.current = true;
+      const generatedSlug = slugify(watchedName, { lower: true, strict: true });
+      form.setValue('slug', generatedSlug, { shouldDirty: true });
+    }
+  };
+
   return (
     <>
       <Form {...form}>
@@ -158,6 +180,30 @@ export const CustomDashboardUpdateForm = ({
                       <Input
                         placeholder={t(
                           'Service.CustomDashboards.Form.NamePlaceholder'
+                        )}
+                        {...field}
+                        onBlur={() => {
+                          field.onBlur();
+                          handleNameBlur();
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t('Service.CustomDashboards.Form.SlugLabel')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t(
+                          'Service.CustomDashboards.Form.SlugPlaceholder'
                         )}
                         {...field}
                       />
