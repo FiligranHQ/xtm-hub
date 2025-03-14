@@ -299,8 +299,9 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
               'organization', to_jsonb("org") || jsonb_build_object('__typename', 'Organization'),
               'capabilities', (${userOrganizationCapabilityQuery})
           ) ) 
-            FILTER (WHERE "org".id IS NOT NULL), '[]' 
-        )::json AS organization_capabilities`
+            FILTER (WHERE "org".id = ?), '[]' 
+        )::json AS organization_capabilities`,
+        [context.user.selected_organization_id]
       ),
     ])
     .groupBy(['User.id']);
