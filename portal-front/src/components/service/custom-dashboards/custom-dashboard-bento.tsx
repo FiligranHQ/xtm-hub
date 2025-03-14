@@ -12,15 +12,15 @@ const CustomDashboardBento = ({
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }) => {
   return (
-    <div className="flex h-[15rem] p-2 gap-xs">
+    <div className="flex h-full py-2 gap-xs">
       <div className="flex flex-col flex-1 gap-xs text-xs">
-        <div className="flex flex-1 items-center justify-center rounded border gap-2 dark:text-white items-center">
+        <div className="flex flex-1 justify-center rounded border gap-2 dark:text-white items-center">
           <div className="size-6">
             <Avatar src={customDashboard.uploader?.picture ?? ''} />
           </div>
           {`${customDashboard.uploader?.first_name} ${customDashboard.uploader?.last_name}`}
         </div>
-        <div className="flex justify-center items-center flex-[2] rounded px-4 text-center border text-lg from-blue to-turquoise-300 bg-gradient-to-r dark:from-darkblue-900 dark:to-darkblue-600 dark:bg-gradient-to-r dark:txt-white">
+        <div className="flex justify-center items-center flex-[2] rounded px-4 text-center border from-blue to-turquoise-300 bg-gradient-to-r dark:from-darkblue-900 dark:to-darkblue-600 dark:bg-gradient-to-r dark:txt-white">
           {customDashboard.name}
         </div>
         <div className="flex flex-1 gap-xs text-xs">

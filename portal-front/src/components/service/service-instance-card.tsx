@@ -36,12 +36,12 @@ const ServiceInstanceCard: React.FunctionComponent<
   return (
     <li
       className={cn(
-        'relative',
+        'relative border border-light rounded',
         h === serviceInstance?.service_definition?.identifier
           ? "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
           : ''
       )}>
-      <div className="relative flex justify-center items-center flex-col gap-s bg-blue-900 overflow-hidden box-border pl-s pr-s z-1">
+      <div className="relative flex justify-center items-center flex-col gap-s bg-blue-900 overflow-hidden box-border px-s z-1">
         <LogoFiligranIcon className="absolute zinset-0 text-white opacity-10 z-1 size-64 rotate-45 blur" />
 
         <div className="mt-s flex items-center h-12 w-full">
@@ -55,7 +55,9 @@ const ServiceInstanceCard: React.FunctionComponent<
             }}
           />
         </div>
-        <AspectRatio ratio={16 / 9}>
+        <AspectRatio
+          ratio={16 / 9}
+          className="rounded-t overflow-hidden">
           {serviceInstance.illustration_document_id && (
             <Image
               fill
@@ -67,7 +69,7 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}
         </AspectRatio>
       </div>
-      <div className="relative h-40 border-light flex flex-col border bg-page-background p-l gap-xs z-1">
+      <div className="relative h-40 flex flex-col bg-page-background p-l gap-xs z-1">
         <div className="flex items-center h-12 w-full">
           <Link
             href={isDisabled ? '' : serviceHref}
@@ -76,9 +78,11 @@ const ServiceInstanceCard: React.FunctionComponent<
             aria-disabled={isDisabled}>
             <h2>{serviceInstance.name}</h2>
           </Link>
-          <ArrowOutwardIcon className="ml-auto size-6" />
+          <ArrowOutwardIcon className="ml-auto size-4 shrink-0" />
         </div>
-        <p className="txt-sub-content">{serviceInstance.description}</p>
+        <p className="txt-sub-content text-muted-foreground">
+          {serviceInstance.description}
+        </p>
         <div className="flex ml-auto">{rightAction}</div>
       </div>
     </li>
