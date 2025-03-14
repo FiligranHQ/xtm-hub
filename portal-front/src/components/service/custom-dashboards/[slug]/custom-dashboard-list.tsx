@@ -119,7 +119,7 @@ const CustomDashbordDocumentList = ({
       </div>
       <ul
         className={
-          'grid grid-cols-1 s:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-l'
+          'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
         }>
         {[...active, ..._nonActive].map((node) => (
           <CustomDashboardCard

@@ -10,6 +10,7 @@ import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, Carousel } from 'filigran-ui';
 import { CarouselItem } from 'filigran-ui/clients';
+import { AspectRatio } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -46,26 +47,29 @@ const CustomDashboardCard = ({
 
   return (
     <li className="border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60">
-      <Carousel>
-        <CarouselItem>
-          <CustomDashboardBento
-            customDashboard={customDashboard}
-            serviceInstance={serviceInstance}
-          />
-        </CarouselItem>
-        {fileNames.map((name) => (
-          <CarouselItem key={name}>
-            <Image
-              fill
-              objectPosition="top"
-              objectFit="cover"
-              src={`/document/visualize/${serviceInstance.id}/${name}`}
-              alt={`An image of ${name}`}
+      <AspectRatio ratio={16 / 9}>
+        <Carousel
+          scrollButton="hover"
+          className="h-full">
+          <CarouselItem>
+            <CustomDashboardBento
+              customDashboard={customDashboard}
+              serviceInstance={serviceInstance}
             />
           </CarouselItem>
-        ))}
-      </Carousel>
-
+          {fileNames.map((name) => (
+            <CarouselItem key={name}>
+              <Image
+                fill
+                objectPosition="top"
+                objectFit="cover"
+                src={`/document/visualize/${serviceInstance.id}/${name}`}
+                alt={`An image of ${name}`}
+              />
+            </CarouselItem>
+          ))}
+        </Carousel>
+      </AspectRatio>
       <div
         className="cursor-pointer p-l space-y-s"
         onClick={() =>
