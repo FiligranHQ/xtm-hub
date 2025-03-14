@@ -15,6 +15,7 @@ import {
   UnknownError,
 } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
 import {
   loadServiceInstanceBy,
   loadServiceWithSubscriptions,
@@ -80,10 +81,17 @@ const resolvers: Resolvers = {
           addedSubscription
         );
 
+        const selectedOrga = await loadOrganizationBy(
+          context,
+          'id',
+          context.user.selected_organization_id
+        );
+
         await addAdminAccess(
           context,
           context.user.id as UserId,
-          filledSubscription.id as SubscriptionId
+          filledSubscription.id as SubscriptionId,
+          selectedOrga.personal_space
         );
 
         // TODO If Service is AUTO_JOIN

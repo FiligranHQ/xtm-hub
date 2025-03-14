@@ -15,7 +15,7 @@ const PageLoader = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{t('MenuLinks.Organizations')}</h1>
+      <h1 className="sr-only">{t('MenuLinks.Organizations')}</h1>
       <OrganizationList />
     </>
   );

@@ -30,7 +30,7 @@ const dateStyleFormat: DateStyleFunctionMap = {
 
 export const FormatDate = (
   date?: Date | string,
-  dateStyle: FormatDateStyle = 'DATETIME_NUMERIC'
+  dateStyle: FormatDateStyle = 'DATE_NUMERIC'
 ) => {
   if (!date) {
     return null;

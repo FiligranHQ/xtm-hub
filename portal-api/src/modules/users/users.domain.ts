@@ -141,7 +141,7 @@ export const loadUserBy = async (
   }
 
   if (foundUser.disabled) {
-    throw ForbiddenAccess('You can not login');
+    throw ForbiddenAccess('User disabled');
   }
 
   const userOrganizationCapabilityQuery = dbUnsecure<UserService>(

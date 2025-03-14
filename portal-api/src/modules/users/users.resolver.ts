@@ -204,7 +204,17 @@ const resolvers: Resolvers = {
         return mapUserToGraphqlUser(loadUserFinalUser);
       } catch (error) {
         await trx.rollback();
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
+        if (
+          error.name.includes(FORBIDDEN_ACCESS) &&
+          error.message.includes('User disabled')
+        ) {
+          logApp.warn('You cannot add a user who is disabled in the plaform');
+          throw ForbiddenAccess('CANT_ADD_DISABLED_USER');
+        }
+        if (
+          error.name.includes(FORBIDDEN_ACCESS) &&
+          error.message.includes('EMAIL_OUTSIDE_ORGANIZATION_ERROR')
+        ) {
           logApp.warn(
             'You cannot add a user whose email domain is outside your organization'
           );
@@ -344,7 +354,10 @@ const resolvers: Resolvers = {
         }
         return undefined;
       } catch (error) {
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
+        if (
+          error.name.includes(FORBIDDEN_ACCESS) &&
+          error.message.includes('User disabled')
+        ) {
           logApp.warn('You can not login');
           throw ForbiddenAccess('You can not login');
         }
