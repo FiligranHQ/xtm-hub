@@ -510,3 +510,38 @@ export const getServiceDefinition = (context, id) =>
     )
     .select('service_def.*')
     .first();
+
+export const loadSeoServiceInstances = (context: PortalContext, opts) => {
+  return db<ServiceInstance>(context, 'ServiceInstance')
+    .leftJoin(
+      'Service_Link',
+      'Service_Link.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceDefinition.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
+    .select(
+      'ServiceInstance.id',
+      'ServiceInstance.name',
+      'ServiceInstance.slug',
+      'ServiceInstance.description',
+      'ServiceInstance.logo_document_id',
+      'ServiceInstance.illustration_document_id',
+      'ServiceInstance.tags',
+      dbRaw(
+        formatRawObject({
+          columnName: 'ServiceDefinition',
+          typename: 'ServiceDefinition',
+          as: 'service_definition',
+        })
+      ),
+      dbRaw('json_agg("Service_Link") AS links')
+    )
+    .where('ServiceInstance.public', '=', true)
+    .groupBy('ServiceInstance.id', 'ServiceDefinition.id');
+};
