@@ -18,7 +18,7 @@ export const documentDownloadEndpoint = (app) => {
     cors(),
     async (req, res) => {
       const { user } = req.session;
-      if (!user || user.capabilities.length === 0) {
+      if (!user) {
         res.status(401).json({ message: 'You must be logged in' });
         return;
       }
