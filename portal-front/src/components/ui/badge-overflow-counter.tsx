@@ -53,7 +53,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
       className="flex gap-s overflow-hidden flex-1 flex items-center gap-s">
       {badges.map(({ id, name, color }, index) => (
         <Badge
-          className="whitespace-nowrap aria-hidden:invisible aria-hidden:absolute"
+          className="whitespace-nowrap aria-hidden:invisible aria-hidden:absolute uppercase"
           aria-hidden={index >= visibleTags}
           key={id}
           color={color}>
@@ -73,6 +73,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
                 {badges.map(({ id, name, color }, index) =>
                   index >= visibleTags ? (
                     <Badge
+                      className="uppercase"
                       key={id}
                       color={color}>
                       {name}
