@@ -111,8 +111,8 @@ const resolvers: Resolvers = {
     ) => {
       return loadSubscribedServiceInstancesByIdentifier(context, identifier);
     },
-    seoServiceInstances: async (_, opt, context) => {
-      return loadSeoServiceInstances(context, opt);
+    seoServiceInstances: async (_, _opt, context) => {
+      return loadSeoServiceInstances(context);
     },
     seoServiceInstance: async (_, { slug }, context) => {
       const serviceInstance = await loadSeoServiceInstanceBySlug(context, slug);

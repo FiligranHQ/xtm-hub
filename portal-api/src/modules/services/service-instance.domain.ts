@@ -511,7 +511,7 @@ export const getServiceDefinition = (context, id) =>
     .select('service_def.*')
     .first();
 
-export const loadSeoServiceInstances = (context: PortalContext, opts) => {
+export const loadSeoServiceInstances = (context: PortalContext) => {
   return db<ServiceInstance>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link',
