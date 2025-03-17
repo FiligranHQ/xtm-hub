@@ -75,7 +75,7 @@ const CustomDashboardCard = ({
         </Carousel>
       </AspectRatio>
       <div
-        className="cursor-pointer p-l space-y-s"
+        className="flex flex-col flex-grow cursor-pointer p-l space-y-s"
         onClick={() =>
           router.push(
             `/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`
@@ -105,12 +105,12 @@ const CustomDashboardCard = ({
             </IconActions>
           )}
         </div>
-        <h2 className="truncate flex-1 max-h-[10rem] overflow-hidden">
+        <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
           {(customDashboard?.short_description?.length ?? 0 > 0)
             ? customDashboard.short_description
-            : 'No description'}
-        </h2>
-        <div className="txt-mini items-center flex">
+            : ''}
+        </h3>
+        <div className="txt-mini items-center flex mt-auto">
           {customDashboard.product_version && (
             <div>
               {t('Service.CustomDashboards.FromOCTIVersion')} :{' '}
