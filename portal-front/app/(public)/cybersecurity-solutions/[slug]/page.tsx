@@ -1,5 +1,6 @@
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { toGlobalId } from '@/utils/globaId';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardsByServiceSlugQuery, {
   seoCustomDashboardsByServiceSlugQuery,
@@ -108,12 +109,12 @@ export async function generateMetadata({
   if (serviceInstance.illustration_document_id) {
     metadata.openGraph!.images = [
       {
-        url: `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
+        url: `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
         alt: serviceInstance.name,
       },
     ];
     metadata.twitter!.images = [
-      `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
+      `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
     ];
   }
 
@@ -192,7 +193,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
 
     if (serviceInstance.illustration_document_id) {
       jsonLd.image = [
-        `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
+        `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
       ];
     }
 

@@ -1,3 +1,4 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbRaw, dbUnsecure } from '../../../../knexfile';
 import Document from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
@@ -31,6 +32,9 @@ export const loadImagesByCustomDashboardId = async (
     .where('parent_document_id', '=', customDashboardId)
     .where('Document.mime_type', 'like', 'image/%')
     .where('Document.active', '=', true);
+  for (const image of images) {
+    image.id = toGlobalId('Document', image.id);
+  }
   return images;
 };
 

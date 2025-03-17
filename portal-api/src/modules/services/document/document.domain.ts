@@ -200,9 +200,10 @@ export const loadDocumentBy = async (
 
 export const getChildrenDocuments = async (
   context,
-  documentId
+  documentId,
+  opts = {}
 ): Promise<Document[]> => {
-  return db<Document>(context, 'Document')
+  return db<Document>(context, 'Document', opts)
     .where('Document.parent_document_id', '=', documentId)
     .orderBy('created_at', 'asc')
     .select('Document.*');

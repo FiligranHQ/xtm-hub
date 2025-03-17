@@ -1,5 +1,6 @@
 import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { fromGlobalId } from '@/utils/globaId';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardBySlugQuery, {
   seoCustomDashboardBySlugQuery,
@@ -16,7 +17,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { MarkdownAsync } from 'react-markdown';
-import { fromGlobalId } from '../../../../redirect/[identifier]/helpers';
 import { SeoCustomDashboard } from '../page';
 
 /**
