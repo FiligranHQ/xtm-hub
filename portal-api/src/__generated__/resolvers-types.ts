@@ -777,7 +777,8 @@ export type ServiceInstanceEdge = {
 
 export enum ServiceInstanceOrdering {
   Description = 'description',
-  Name = 'name'
+  Name = 'name',
+  Ordering = 'ordering'
 }
 
 export type ServiceInstanceSubscription = {
@@ -962,6 +963,7 @@ export enum UserServiceOrdering {
   LastName = 'last_name',
   ServiceDescription = 'service_description',
   ServiceName = 'service_name',
+  ServiceOrdering = 'service_ordering',
   ServiceProvider = 'service_provider',
   ServiceType = 'service_type',
   SubscriptionStatus = 'subscription_status'

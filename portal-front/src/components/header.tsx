@@ -73,12 +73,20 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
           }>
           <Logout className="normal-case w-full justify-start" />
         </IconActions>
-        {isDevelopment() && <ThemeToggle />}
-        <I18nSelect />
+        {isDevelopment() && (
+          <>
+            <ThemeToggle />
+            <I18nSelect />
+          </>
+        )}
       </div>
       <div className="flex gap-xs items-center sm:hidden">
-        <ThemeToggle />
-        <I18nSelect />
+        {isDevelopment() && (
+          <>
+            <ThemeToggle />
+            <I18nSelect />
+          </>
+        )}
         <Sheet
           open={open}
           onOpenChange={setOpen}>
