@@ -148,27 +148,6 @@ export const CustomDashboardForm = ({
 
           <FormField
             control={form.control}
-            name="productVersion"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t('Service.CustomDashboards.Form.productVersion')}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder={t(
-                      'Service.CustomDashboards.Form.productVersionPlaceholder'
-                    )}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="shortDescription"
             render={({ field }) => (
               <FormItem>
