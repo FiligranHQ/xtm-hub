@@ -89,7 +89,8 @@ export const documentVisualizeEndpoint = (app) => {
           { req, res } as PortalContext,
           {
             'Document.id': fromGlobalId(req.params.documentId).id,
-          } as DocumentMutator
+          } as DocumentMutator,
+          { unsecured: true }
         );
 
         if (!document || !document.mime_type.startsWith('image/')) {
