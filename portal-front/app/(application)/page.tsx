@@ -23,7 +23,7 @@ const Page: React.FunctionComponent = () => {
   // Owned services
   const [count] = useLocalStorage('countServiceOwned', 50);
   const [orderMode] = useLocalStorage('orderModeServiceOwned', 'asc');
-  const [orderBy] = useLocalStorage('orderByServiceOwned', 'service_name');
+  const [orderBy] = useLocalStorage('orderByServiceOwned', 'service_ordering');
   const [queryRefUserServiceOwned, loadQueryUserServiceOwned] =
     useQueryLoader<userServiceOwnedQuery>(UserServiceOwnedQuery);
   useMountingLoader(loadQueryUserServiceOwned, { count, orderBy, orderMode });
@@ -36,7 +36,7 @@ const Page: React.FunctionComponent = () => {
   );
   const [orderByServiceList] = useLocalStorage<ServiceInstanceOrdering>(
     'orderByServiceList',
-    'name'
+    'ordering'
   );
 
   const [queryRefPublicServiceList, loadQueryPublicServiceList] =
