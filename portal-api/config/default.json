@@ -40,7 +40,8 @@
     "auth": {
       "user": "changeMe",
       "pass": "changeMe"
-    }
+    },
+    "from": "no-reply@filigran.cloud"
   },
   "login_settings": [
     {
