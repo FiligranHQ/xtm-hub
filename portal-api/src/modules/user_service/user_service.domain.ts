@@ -186,8 +186,12 @@ export const loadUserServiceByUser = (context: PortalContext, opts) => {
     .where('sub.status', 'ACCEPTED')
     .where('user.id', userId)
     .where('sub.organization_id', userSelectedOrganization)
-    .select(['User_Service.*', 'service.name as service_name'])
-    .groupBy(['User_Service.id', 'service.name', 'sub.id']);
+    .select([
+      'User_Service.*',
+      'service.name as service_name',
+      'service.ordering as service_ordering',
+    ])
+    .groupBy(['User_Service.id', 'service.name', 'service.ordering', 'sub.id']);
 
   return paginate<UserService, UserServiceConnection>(
     context,
