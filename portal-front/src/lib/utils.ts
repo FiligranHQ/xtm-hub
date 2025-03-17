@@ -14,10 +14,13 @@ export const roundToNearest = (num: number) => {
   const rounded = Math.floor(num / divisor) * divisor;
 
   if (rounded % 1000 === 0) {
-    return `${rounded / 1000}k`;
+    return `+${rounded / 1000}k`;
+  }
+  if (rounded < 10) {
+    return rounded;
   }
 
-  return rounded;
+  return `+${rounded}`;
 };
 
 export const isNil = (value: unknown): value is null | undefined => {
