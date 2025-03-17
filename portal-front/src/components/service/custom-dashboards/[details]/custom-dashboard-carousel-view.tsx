@@ -37,7 +37,7 @@ const DashboardCarousel: React.FunctionComponent<DashboardCarouselProps> = ({
             fill
             objectFit="cover"
             objectPosition="top"
-            src={`/document/visualize/${serviceInstance.id}/${name}`}
+            src={`/document/images/${serviceInstance.id}/${name}`}
             alt={`A picture of ${name}`}
           />
         </CarouselItem>
@@ -55,7 +55,7 @@ const DashboardCarousel: React.FunctionComponent<DashboardCarouselProps> = ({
                 <Image
                   fill
                   objectFit="contain"
-                  src={`/document/visualize/${serviceInstance.id}/${name}`}
+                  src={`/document/images/${serviceInstance.id}/${name}`}
                   alt={`A picture of ${name}`}
                 />
               </CarouselItem>

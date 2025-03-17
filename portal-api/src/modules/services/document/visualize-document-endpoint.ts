@@ -88,7 +88,7 @@ export const documentVisualizeEndpoint = (app) => {
         const [document] = await loadDocumentBy(
           { req, res } as PortalContext,
           {
-            'Document.id': req.params.documentId,
+            'Document.id': fromGlobalId(req.params.documentId),
           } as DocumentMutator
         );
 
