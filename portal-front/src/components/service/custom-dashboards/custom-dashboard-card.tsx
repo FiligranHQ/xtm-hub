@@ -63,7 +63,7 @@ const CustomDashboardCard = ({
                 fill
                 objectPosition="top"
                 objectFit="cover"
-                src={`/document/visualize/${serviceInstance.id}/${name}`}
+                src={`/document/images/${serviceInstance.id}/${name}`}
                 alt={`An image of ${name}`}
               />
             </CarouselItem>

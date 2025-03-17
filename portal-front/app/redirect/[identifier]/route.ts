@@ -2,6 +2,7 @@ import { getServiceInstanceUrl } from '@/lib/utils';
 import serverPortalApiFetch, {
   serverMutateGraphQL,
 } from '@/relay/serverPortalApiFetch';
+import { fromGlobalId, toGlobalId } from '@/utils/globaId';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import OrganizationSwitcherMutation, {
   organizationSwitcherMutation,
@@ -15,11 +16,7 @@ import SettingsQuery, {
   settingsQuery$data,
 } from '@generated/settingsQuery.graphql';
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  fromGlobalId,
-  isValidServiceDefinitionIdentifier,
-  toGlobalId,
-} from './helpers';
+import { isValidServiceDefinitionIdentifier } from './helpers';
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{

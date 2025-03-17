@@ -92,9 +92,17 @@ const resolvers: Resolvers = {
   },
   Document: {
     children_documents: ({ id }, _, context) =>
-      getChildrenDocuments(context, id),
-    uploader: ({ id }, _, context) => getUploader(context, id),
-    labels: ({ id }, _, context) => getLabels(context, id),
+      getChildrenDocuments(context, id, {
+        unsecured: true,
+      }),
+    uploader: ({ id }, _, context) =>
+      getUploader(context, id, {
+        unsecured: true,
+      }),
+    labels: ({ id }, _, context) =>
+      getLabels(context, id, {
+        unsecured: true,
+      }),
   },
   Query: {
     documentExists: async (_, input) => {
