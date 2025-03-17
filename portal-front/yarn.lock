@@ -10774,7 +10774,7 @@ __metadata:
     react: 19.0.0
     react-dom: 19.0.0
     react-hook-form: 7.52.0
-    react-markdown: ^10.1.0
+    react-markdown: 10.1.0
     react-relay: 18.2.0
     rehype-sanitize: 6.0.0
     relay-compiler: 18.2.0
@@ -11194,7 +11194,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-markdown@npm:^10.1.0":
+"react-markdown@npm:10.1.0":
   version: 10.1.0
   resolution: "react-markdown@npm:10.1.0"
   dependencies:
