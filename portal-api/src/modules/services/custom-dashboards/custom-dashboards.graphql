@@ -1,0 +1,24 @@
+type SeoCustomDashboardImage {
+  id: ID!
+}
+
+type SeoCustomDashboard {
+  id: ID!
+  uploader: User
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  product_version: String
+  children_documents: [SeoCustomDashboardImage]
+  labels: [Label]
+}
+
+type Query {
+  seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
+  seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
+}

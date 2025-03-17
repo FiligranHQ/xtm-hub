@@ -23,14 +23,7 @@ import {
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{
-    /**
-     The service definition identifier
-    */
     identifier: string;
-    /**
-     * The OpenCTI instance id from where the service is accessed
-     */
-    octi_instance_id?: string;
   }>;
 }
 
@@ -70,8 +63,11 @@ export async function GET(
   { params }: RedirectIdentifierGetRouteProps
 ) {
   const awaitedParams = await params;
+  const searchParams = request.nextUrl.searchParams;
   const identifier = awaitedParams.identifier;
-  const octi_instance_id = awaitedParams.octi_instance_id;
+  const octi_instance_id = searchParams.get('octi_instance_id');
+  const service_instance_id = searchParams.get('service_instance_id');
+  const custom_dashboard_id = searchParams.get('custom_dashboard_id');
 
   if (!isValidServiceDefinitionIdentifier(identifier)) {
     // Raise a bad request error
@@ -144,10 +140,18 @@ export async function GET(
     // 3. Try to find the right organization to switch to
     // --------------------------------------------------
 
-    // First, we check if the the OpenCTI instance is associated with any user's organization thanks to the services links
+    // We check if :
+    //   - there is a corresponding requested `service_instance_id` in the URL to directly redirect to the service
+    //   - the the OpenCTI instance is associated with any user's organization thanks to the services links
     let organizationGlobalId: string | undefined;
     for (const instance of servicesInstances) {
-      if (instance.links) {
+      if (instance.service_instance_id === service_instance_id) {
+        // We found the service instance associated with the requested service
+        organizationGlobalId = toGlobalId(
+          'Organization',
+          instance.organization_id
+        );
+      } else if (instance.links) {
         for (const link of instance.links) {
           if (link && link.url === octi_instance_id) {
             // We found the organization associated with the OpenCTI instance
@@ -169,15 +173,34 @@ export async function GET(
     // 4. Switch to the found organization
     await switchOrganization(organizationGlobalId);
 
-    // 5. Get the organization service instances
+    // 6. Redirect the user
+    // --------------------
+
+    // Get the organization service instances
     const organizationServiceInstances = servicesInstances.filter(
       (serviceInstance) =>
         serviceInstance.organization_id ===
         fromGlobalId(organizationGlobalId).id
     );
 
-    // 6. Redirect the user
-    // --------------------
+    // We have the requested service instance in the available services in the organization
+    if (
+      organizationServiceInstances.some(
+        (serviceInstance) =>
+          serviceInstance.service_instance_id === service_instance_id
+      )
+    ) {
+      return NextResponse.redirect(
+        getServiceInstanceUrl(
+          baseUrlFront,
+          identifier,
+          toGlobalId('ServiceInstance', service_instance_id!),
+          custom_dashboard_id
+            ? toGlobalId('Document', custom_dashboard_id)
+            : undefined
+        )
+      );
+    }
 
     // If we have only one service corresponding to the request,
     // we can directly redirect to the service
@@ -187,12 +210,12 @@ export async function GET(
     ) {
       return NextResponse.redirect(
         getServiceInstanceUrl(
+          baseUrlFront,
           identifier,
           toGlobalId(
             'ServiceInstance',
             organizationServiceInstances[0].service_instance_id
-          ),
-          baseUrlFront
+          )
         )
       );
     }

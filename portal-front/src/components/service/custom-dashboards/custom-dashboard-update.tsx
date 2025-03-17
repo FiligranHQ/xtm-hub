@@ -75,6 +75,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           name: values.name,
           labels: values.labels,
           active: values.active,
+          slug: values.slug,
         },
       },
       onCompleted: (response) => {

@@ -90,6 +90,7 @@ export type Document = Node & {
   product_version?: Maybe<Scalars['String']['output']>;
   service_instance_id: Scalars['String']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
+  slug?: Maybe<Scalars['String']['output']>;
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
@@ -122,6 +123,7 @@ export type EditDocumentInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditLabelInput = {
@@ -258,6 +260,7 @@ export type MutationAddDocumentArgs = {
   product_version?: InputMaybe<Scalars['String']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -504,6 +507,10 @@ export type Query = {
   publicServiceInstances: ServiceConnection;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
+  seoCustomDashboardBySlug?: Maybe<SeoCustomDashboard>;
+  seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<SeoCustomDashboard>>>;
+  seoServiceInstance: SeoServiceInstance;
+  seoServiceInstances: Array<SeoServiceInstance>;
   serviceInstanceById?: Maybe<ServiceInstance>;
   serviceInstanceByIdWithSubscriptions?: Maybe<ServiceInstance>;
   serviceInstances: ServiceConnection;
@@ -587,6 +594,21 @@ export type QueryRolePortalArgs = {
 };
 
 
+export type QuerySeoCustomDashboardBySlugArgs = {
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySeoCustomDashboardsByServiceSlugArgs = {
+  serviceSlug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySeoServiceInstanceArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
 export type QueryServiceInstanceByIdArgs = {
   service_instance_id?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -660,6 +682,41 @@ export type RolePortal = Node & {
   name: Scalars['String']['output'];
 };
 
+export type SeoCustomDashboard = {
+  __typename?: 'SeoCustomDashboard';
+  children_documents?: Maybe<Array<Maybe<SeoCustomDashboardImage>>>;
+  created_at: Scalars['Date']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  download_number?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  labels?: Maybe<Array<Maybe<Label>>>;
+  name?: Maybe<Scalars['String']['output']>;
+  product_version?: Maybe<Scalars['String']['output']>;
+  short_description?: Maybe<Scalars['String']['output']>;
+  slug?: Maybe<Scalars['String']['output']>;
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
+  uploader?: Maybe<User>;
+};
+
+export type SeoCustomDashboardImage = {
+  __typename?: 'SeoCustomDashboardImage';
+  id: Scalars['ID']['output'];
+};
+
+export type SeoServiceInstance = Node & {
+  __typename?: 'SeoServiceInstance';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  illustration_document_id?: Maybe<Scalars['ID']['output']>;
+  links?: Maybe<Array<Maybe<ServiceLink>>>;
+  logo_document_id?: Maybe<Scalars['ID']['output']>;
+  name: Scalars['String']['output'];
+  service_definition: ServiceDefinition;
+  slug?: Maybe<Scalars['String']['output']>;
+  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+};
+
 export type ServiceCapability = Node & {
   __typename?: 'ServiceCapability';
   description?: Maybe<Scalars['String']['output']>;
@@ -706,6 +763,7 @@ export type ServiceInstance = Node & {
   organization_subscribed?: Maybe<Scalars['Boolean']['output']>;
   public?: Maybe<Scalars['Boolean']['output']>;
   service_definition?: Maybe<ServiceDefinition>;
+  slug?: Maybe<Scalars['String']['output']>;
   subscriptions?: Maybe<Array<Maybe<SubscriptionModel>>>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   user_joined?: Maybe<Scalars['Boolean']['output']>;
@@ -988,7 +1046,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -1039,6 +1097,9 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
+  SeoCustomDashboard: ResolverTypeWrapper<SeoCustomDashboard>;
+  SeoCustomDashboardImage: ResolverTypeWrapper<SeoCustomDashboardImage>;
+  SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
@@ -1116,6 +1177,9 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformProvider: PlatformProvider;
   Query: {};
   RolePortal: RolePortal;
+  SeoCustomDashboard: SeoCustomDashboard;
+  SeoCustomDashboardImage: SeoCustomDashboardImage;
+  SeoServiceInstance: SeoServiceInstance;
   ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
   ServiceDefinition: ServiceDefinition;
@@ -1192,6 +1256,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -1299,7 +1364,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -1360,6 +1425,10 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
+  seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['SeoCustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
+  seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
+  seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
+  seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
   serviceInstanceByIdWithSubscriptions?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdWithSubscriptionsArgs>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -1375,6 +1444,41 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
 export type RolePortalResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RolePortal'] = ResolversParentTypes['RolePortal']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboard'] = ResolversParentTypes['SeoCustomDashboard']> = ResolversObject<{
+  children_documents?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboardImage']>>>, ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<Maybe<ResolversTypes['Label']>>>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SeoCustomDashboardImageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboardImage'] = ResolversParentTypes['SeoCustomDashboardImage']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoServiceInstance'] = ResolversParentTypes['SeoServiceInstance']> = ResolversObject<{
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  illustration_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
+  logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_definition?: Resolver<ResolversTypes['ServiceDefinition'], ParentType, ContextType>;
+  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1417,6 +1521,7 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   organization_subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   service_definition?: Resolver<Maybe<ResolversTypes['ServiceDefinition']>, ParentType, ContextType>;
+  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscriptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionModel']>>>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   user_joined?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -1603,6 +1708,9 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
+  SeoCustomDashboard?: SeoCustomDashboardResolvers<ContextType>;
+  SeoCustomDashboardImage?: SeoCustomDashboardImageResolvers<ContextType>;
+  SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceDefinition?: ServiceDefinitionResolvers<ContextType>;

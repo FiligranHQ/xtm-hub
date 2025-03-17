@@ -41,6 +41,8 @@ export default interface Document {
   short_description: string | null;
 
   product_version: string | null;
+
+  slug: string | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -82,6 +84,8 @@ export interface DocumentInitializer {
   short_description?: string | null;
 
   product_version?: string | null;
+
+  slug?: string | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -119,4 +123,6 @@ export interface DocumentMutator {
   short_description?: string | null;
 
   product_version?: string | null;
+
+  slug?: string | null;
 }

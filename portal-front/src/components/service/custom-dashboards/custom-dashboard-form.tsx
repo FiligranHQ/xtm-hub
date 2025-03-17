@@ -1,8 +1,7 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-
 import { getLabels } from '@/components/admin/label/label.utils';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Checkbox,
@@ -21,6 +20,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import slugify from 'slugify';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
@@ -38,6 +38,7 @@ export const newCustomDashboardSchema = z.object({
   images: z.custom<FileList>(fileListCheck),
   active: z.boolean().optional(),
   labels: z.array(z.string()).optional(),
+  slug: z.string(),
 });
 
 export type CustomDashboardFormValues = z.infer<
@@ -70,6 +71,7 @@ export const CustomDashboardForm = ({
       document: undefined,
       images: undefined,
       labels: [],
+      slug: '',
     },
   });
 
@@ -83,6 +85,13 @@ export const CustomDashboardForm = ({
       },
       () => form.reset()
     );
+  };
+
+  const handleNameChange = (value: string) => {
+    if (!form.formState.dirtyFields.slug) {
+      const generatedSlug = slugify(value, { lower: true, strict: true });
+      form.setValue('slug', generatedSlug, { shouldDirty: false });
+    }
   };
 
   return (
@@ -103,6 +112,52 @@ export const CustomDashboardForm = ({
                   <Input
                     placeholder={t(
                       'Service.CustomDashboards.Form.NamePlaceholder'
+                    )}
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleNameChange(e.target.value);
+                      return true;
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.SlugLabel')}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.SlugPlaceholder'
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="productVersion"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.productVersion')}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t(
+                      'Service.CustomDashboards.Form.productVersionPlaceholder'
                     )}
                     {...field}
                   />

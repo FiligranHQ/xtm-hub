@@ -28,6 +28,7 @@ import { useTranslations } from 'next-intl';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
+import slugify from 'slugify';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
@@ -42,6 +43,7 @@ export const updateCustomDashboardSchema = z.object({
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   images: z.custom<FileList>(fileListCheck).optional(),
+  slug: z.string().optional(),
 });
 
 interface CustomDashboardFormProps {
@@ -80,6 +82,7 @@ export const CustomDashboardUpdateForm = ({
       description: customDashboard.description ?? '',
       active: customDashboard.active ?? false,
       labels: customDashboard.labels.map(({ id }) => id) ?? [],
+      slug: customDashboard.slug ?? '',
       images:
         (customDashboard.children_documents?.map((n) => ({
           ...n,
@@ -138,6 +141,18 @@ export const CustomDashboardUpdateForm = ({
     });
   };
 
+  const handleNameChange = (value: string) => {
+    const slug = form.getValues('slug');
+    if (
+      !form.formState.dirtyFields.slug &&
+      typeof slug !== 'undefined' &&
+      slug.trim() === ''
+    ) {
+      const generatedSlug = slugify(value, { lower: true, strict: true });
+      form.setValue('slug', generatedSlug, { shouldDirty: false });
+    }
+  };
+
   return (
     <>
       <Form {...form}>
@@ -158,6 +173,30 @@ export const CustomDashboardUpdateForm = ({
                       <Input
                         placeholder={t(
                           'Service.CustomDashboards.Form.NamePlaceholder'
+                        )}
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleNameChange(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t('Service.CustomDashboards.Form.SlugLabel')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t(
+                          'Service.CustomDashboards.Form.SlugPlaceholder'
                         )}
                         {...field}
                       />

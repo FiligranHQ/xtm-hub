@@ -54,6 +54,7 @@ const resolvers: Resolvers = {
           parent_document_id,
           active: payload.active ?? true,
           labels: payload.labels,
+          slug: payload.slug,
         };
 
         const [addedDocument] = await createDocument(data);
