@@ -3,6 +3,9 @@ import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
 import { documentItem } from '@/components/service/document/document.graphql';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import { IconActions } from '@/components/ui/icon-actions';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
@@ -78,16 +81,9 @@ const CustomDashboardCard = ({
           )
         }>
         <div className="flex items-center justify-between">
-          {/*TODO : will be filled when design is finalized*/}
-          <div className="flex gap-s items-center">
-            {customDashboard?.labels?.map(({ id, name, color }) => (
-              <Badge
-                key={id}
-                color={color}>
-                {name.toUpperCase()}
-              </Badge>
-            ))}
-          </div>
+          <BadgeOverflowCounter
+            badges={customDashboard?.labels as BadgeOverflow[]}
+          />
 
           {(userCanUpdate || userCanDelete) && (
             <IconActions
