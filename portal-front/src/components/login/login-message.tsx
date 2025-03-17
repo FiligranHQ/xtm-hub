@@ -8,7 +8,7 @@ const LoginMessage = () => {
       {t('LoginPage.ToLoginPlease')}{' '}
       <Link
         className="text-primary"
-        href="https://filigran.io/xtm-hub-sign-up/">
+        href="https://filigran.io/filigran-account-creation/">
         {t('LoginPage.CreateYourAccount')}
       </Link>{' '}
       {t('LoginPage.OnFiligranWebsite')}
