@@ -44,23 +44,25 @@ export const sendMail = async <T extends keyof MailTemplates>({
   template,
   params,
 }: SendMailParams<T>) => {
-  const from = config.get('smtp_options.auth.user') as string;
+  const from = config.get<string>('smtp_options.from');
   const subject = templateSubjects[template](params);
   const html = await renderEmail(template, params);
-  const mailOptions = {
-    from,
-    to,
-    subject,
-    html,
-  };
 
   if (!(process.env.VITEST_MODE || process.env.NODE_ENV === 'test')) {
-    transporter?.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        logApp.error('Email error: ' + error);
-      } else {
-        logApp.info('Email sent: ' + info.response);
+    transporter?.sendMail(
+      {
+        from,
+        to,
+        subject,
+        html,
+      },
+      (error, info) => {
+        if (error) {
+          logApp.error('Email error: ' + error);
+        } else {
+          logApp.info('Email sent: ' + info.response);
+        }
       }
-    });
+    );
   }
 };
