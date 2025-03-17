@@ -250,7 +250,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                     <Badge
                       size="sm"
                       className="ml-auto"
-                      style={{ color: '#7a7c85' }}>
+                      variant="default">
                       Published
                     </Badge>
                   </div>
