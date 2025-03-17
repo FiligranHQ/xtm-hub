@@ -193,9 +193,12 @@ export const loadDocuments = (
 
 export const loadDocumentBy = async (
   context: PortalContext,
-  field: DocumentMutator
+  field: DocumentMutator,
+  opts = {}
 ) => {
-  return db<Document>(context, 'Document').where(field).select('Document.*');
+  return db<Document>(context, 'Document', opts)
+    .where(field)
+    .select('Document.*');
 };
 
 export const getChildrenDocuments = async (
