@@ -20,7 +20,6 @@ const AvailableServices = ({
   if (services.length > 0)
     return (
       <Suspense>
-        <Separator className="my-12" />
         <ul
           className={
             'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l'
@@ -37,6 +36,7 @@ const AvailableServices = ({
             );
           })}
         </ul>
+        {services.length > 0 && <Separator className="my-12" />}
       </Suspense>
     );
 };

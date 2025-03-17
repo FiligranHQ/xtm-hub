@@ -118,13 +118,13 @@ const ServiceList = ({
         ownedServices={ownedHighlightedServices}
         addSubscriptionInDb={addSubscriptionInDb}
       />
-      <OwnedServices
-        services={regularOwnedServices}
-        publicServices={publicOwnedServices}
-      />
       <AvailableServices
         services={availableServices}
         addSubscriptionInDb={addSubscriptionInDb}
+      />
+      <OwnedServices
+        services={regularOwnedServices}
+        publicServices={publicOwnedServices}
       />
     </>
   );
