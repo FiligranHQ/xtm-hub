@@ -80,7 +80,9 @@ const ServiceInstanceCard: React.FunctionComponent<
             aria-disabled={isDisabled}>
             <h2>{serviceInstance.name}</h2>
           </Link>
-          <ArrowOutwardIcon className="ml-auto size-4 shrink-0" />
+          {isLinkService && (
+            <ArrowOutwardIcon className="ml-auto size-4 shrink-0" />
+          )}
         </div>
         <p className="txt-sub-content text-muted-foreground">
           {serviceInstance.description}
