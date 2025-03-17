@@ -38,7 +38,6 @@
       "LoginError": "Vous n'êtes pas autorisé à vous connecter"
     },
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page.",
-    "Disconnected": "Pour accéder à XTM Hub, connectez-vous s'il vous plaît.",
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "AnErrorOccured": "Une erreur est survenue"
   },
