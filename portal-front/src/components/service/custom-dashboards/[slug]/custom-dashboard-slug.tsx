@@ -95,7 +95,6 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
               userCanUpdate={userCanUpdate}
               serviceInstanceId={serviceInstance.id ?? ''}
               customDashboard={documentData!}
-              data={data as unknown as documentItem_fragment$key}
               connectionId={''}
             />
           )}
