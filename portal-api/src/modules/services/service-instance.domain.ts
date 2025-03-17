@@ -6,7 +6,6 @@ import {
   ServiceCapability,
   ServiceConnection,
   ServiceDefinition,
-  ServiceDefinitionIdentifier,
   ServiceInstance,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
@@ -466,17 +465,16 @@ export const grantServiceAccess = async (
       context,
       serviceInstance.id
     );
-    if (service_definition.identifier === ServiceDefinitionIdentifier.Vault) {
-      await sendMail({
-        to: user.email,
-        template: 'partnerVault',
-        params: {
-          name: user.email,
-          partnerVaultLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
-          partnerVault: serviceInstance.name,
-        },
-      });
-    }
+
+    await sendMail({
+      to: user.email,
+      template: service_definition.identifier,
+      params: {
+        name: user.email,
+        serviceLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
+        serviceName: serviceInstance.name,
+      },
+    });
   }
 
   for (const capabilityId of capabilitiesIds) {

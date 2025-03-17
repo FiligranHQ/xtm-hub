@@ -1,20 +1,23 @@
-export interface PartnerVaultMailModel {
+export interface GenericServiceMailModel {
   name: string;
-  partnerVaultLink: string;
-  partnerVault: string;
+  serviceLink: string;
+  serviceName: string;
 }
-export type WelcomeMailModel = object;
+export type WelcomeMailModel = Record<string, unknown>;
 
 // ATTENTION, the key should be the same as the template file
 export type MailTemplates = {
   welcome: WelcomeMailModel;
-  partnerVault: PartnerVaultMailModel;
+  vault: GenericServiceMailModel;
+  custom_dashboards: GenericServiceMailModel;
 };
 
 export const templateSubjects: {
   [K in keyof MailTemplates]: (params: MailTemplates[K]) => string;
 } = {
   welcome: () => 'Welcome to XTM Hub – Let’s Get Started!',
-  partnerVault: (params: PartnerVaultMailModel) =>
-    `XTM Hub - Welcome to Your ${params.partnerVault}`,
+  vault: (params: GenericServiceMailModel) =>
+    `XTM Hub - You've been invited to the ${params.serviceName}`,
+  custom_dashboards: (params: GenericServiceMailModel) =>
+    `XTM Hub - You've been invited to the ${params.serviceName}`,
 };

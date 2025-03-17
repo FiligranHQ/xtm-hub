@@ -194,11 +194,11 @@ export const createUserServiceAccess = async (
   const service_definition = await getServiceDefinition(context, service.id);
   await sendMail({
     to: user.email,
-    template: 'partnerVault',
+    template: service_definition.identifier,
     params: {
       name: user.email,
-      partnerVaultLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', service.id)}`,
-      partnerVault: service.name,
+      serviceLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', service.id)}`,
+      serviceName: service.name,
     },
   });
   return addedUserService;
