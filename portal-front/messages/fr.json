@@ -122,7 +122,7 @@
     "NoOwnedService": "Vous n'avez pas encore de service.",
     "NoService": "Il n'y a pas encore de service...",
     "Subscribe": "Souscrire",
-    "SubscribeService": "Souscrire au service",
+    "SubscribeService": "Souscrire au service {serviceName}",
     "SubscribeOrganization": "Souscrire une organisation",
     "GoTo": "Aller au service",
     "GoToLabel": "Consulter",

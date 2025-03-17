@@ -77,7 +77,6 @@ const CustomDashbordDocumentList = ({
     label: name.toUpperCase(),
     value: id,
   }));
-
   return (
     <div className="flex flex-col gap-xl">
       <h1>{serviceInstance.name}</h1>

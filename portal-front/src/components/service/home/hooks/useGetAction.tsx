@@ -52,7 +52,9 @@ export default function useGetAction(
         <GuardCapacityComponent
           capacityRestriction={[ORGANIZATION_CAPACITY.MANAGE_SUBSCRIPTION]}>
           <AlertDialogComponent
-            AlertTitle={`${t('Service.SubscribeService')} ${service.name}`}
+            AlertTitle={`${t('Service.SubscribeService', {
+              serviceName: service.name,
+            })}`}
             actionButtonText={t('Utils.Continue')}
             triggerElement={
               <Button
