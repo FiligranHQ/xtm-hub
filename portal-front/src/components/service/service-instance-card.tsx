@@ -81,7 +81,7 @@ const ServiceInstanceCard: React.FunctionComponent<
             <h2>{serviceInstance.name}</h2>
           </Link>
           {isLinkService && (
-            <ArrowOutwardIcon className="ml-auto size-4 shrink-0" />
+            <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />
           )}
         </div>
         <p className="txt-sub-content text-muted-foreground">
