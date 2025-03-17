@@ -40,12 +40,12 @@ const resolvers: Resolvers = {
   ServiceInstance: {
     logo_document_id: ({ logo_document_id }) => {
       if (logo_document_id) {
-        return toGlobalId('ServiceInstance', logo_document_id);
+        return toGlobalId('Document', logo_document_id);
       }
     },
     illustration_document_id: ({ illustration_document_id }) => {
       if (illustration_document_id) {
-        return toGlobalId('ServiceInstance', illustration_document_id);
+        return toGlobalId('Document', illustration_document_id);
       }
     },
     links: ({ id }, _, context) => getLinks(context, id),

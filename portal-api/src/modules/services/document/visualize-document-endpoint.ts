@@ -88,7 +88,7 @@ export const documentVisualizeEndpoint = (app) => {
         const [document] = await loadDocumentBy(
           { req, res } as PortalContext,
           {
-            'Document.id': fromGlobalId(req.params.documentId),
+            'Document.id': fromGlobalId(req.params.documentId).id,
           } as DocumentMutator
         );
 
@@ -108,6 +108,7 @@ export const documentVisualizeEndpoint = (app) => {
 
         stream.pipe(res);
       } catch (error) {
+        console.error(error);
         logApp.error('Error while retrieving document VISUALIZE: ', error);
         res.status(404).json({ message: 'Document not found' });
       }
