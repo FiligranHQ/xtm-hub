@@ -4,6 +4,7 @@ import {
 } from '@/components/service/custom-dashboards/custom-dashboard-update-form';
 import {
   DocumentDeleteMutation,
+  DocumentDetailDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
 import {
@@ -11,25 +12,21 @@ import {
   IconActionsButton,
 } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import { customDashboardUpdate_update_childs$key } from '@generated/customDashboardUpdate_update_childs.graphql';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
-import {
-  documentItem_fragment$data,
-  documentItem_fragment$key,
-} from '@generated/documentItem_fragment.graphql';
+import { documentDetailDeleteMutation } from '@generated/documentDetailDeleteMutation.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useContext, useState } from 'react';
-import { graphql, useMutation } from 'react-relay';
+import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
 // Component interface
 interface DashboardUpdateProps {
   customDashboard: documentItem_fragment$data;
-  data: documentItem_fragment$key;
   serviceInstanceId: string;
   connectionId: string;
   variant?: 'menu' | 'button';
@@ -40,7 +37,6 @@ interface DashboardUpdateProps {
 // Component
 const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   customDashboard,
-  data,
   serviceInstanceId,
   connectionId,
   variant = 'button',
@@ -53,9 +49,13 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   const [openSheet, setOpenSheet] = useState(false);
   const { setMenuOpen } = useContext(IconActionContext);
 
+  const [deleteDetailDocumentationMutation] =
+    useMutation<documentDetailDeleteMutation>(DocumentDetailDeleteMutation);
+
   const [deleteDocumentMutation] = useMutation<documentDeleteMutation>(
     DocumentDeleteMutation
   );
+
   const [updateDocumentMutation] = useMutation<documentUpdateMutation>(
     DocumentUpdateMutation
   );
@@ -98,37 +98,35 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   };
 
   const deleteDocument = (id?: string) => {
-    if (!id) {
+    if (!id && connectionId) {
+      // In case we are in the list and we want to delete a dashboard
       setMenuOpen(false);
+      deleteDocumentMutation({
+        variables: {
+          documentId: customDashboard.id,
+          serviceInstanceId: serviceInstanceId,
+          connections: [connectionId],
+          forceDelete: true,
+        },
+        onCompleted() {
+          router.push(`/service/custom_dashboards/${serviceInstanceId}`);
+        },
+      });
+    } else {
+      // In case we are delete image or we are deleting document from the detail page
+      deleteDetailDocumentationMutation({
+        variables: {
+          documentId: id ?? customDashboard.id,
+          serviceInstanceId: serviceInstanceId,
+          forceDelete: true,
+        },
+        onCompleted() {
+          if (!id) {
+            router.push(`/service/custom_dashboards/${serviceInstanceId}`);
+          }
+        },
+      });
     }
-    deleteDocumentMutation({
-      variables: {
-        documentId: id ?? customDashboard.id,
-        serviceInstanceId: serviceInstanceId,
-        connections: id ? [] : [connectionId],
-        forceDelete: true,
-      },
-      updater: (store) => {
-        if (id) {
-          const { updatableData } =
-            store.readUpdatableFragment<customDashboardUpdate_update_childs$key>(
-              graphql`
-                fragment customDashboardUpdate_update_childs on Document
-                @updatable {
-                  children_documents {
-                    __id
-                    id
-                  }
-                }
-              `,
-              data as unknown as customDashboardUpdate_update_childs$key
-            );
-          updatableData.children_documents =
-            updatableData.children_documents!.filter((c) => c.id !== id) as [];
-        }
-      },
-    });
-    router.push(`/service/custom_dashboards/${serviceInstanceId}`);
   };
 
   return (

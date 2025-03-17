@@ -15,6 +15,7 @@ import ObjectLabel, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
+import { addPrefixToObject } from '../../../utils/typescript';
 import { extractId } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
@@ -133,7 +134,7 @@ export const deleteDocument = async (
   const [documentFromDb] = await loadDocumentBy(context, {
     'Document.id': documentId,
     'Document.service_instance_id': serviceInstanceId,
-  } as DocumentMutator);
+  });
   await db<ObjectLabel>(context, 'Object_Label')
     .where('object_id', '=', documentId)
     .delete('*');
@@ -144,7 +145,16 @@ export const deleteDocument = async (
   } else {
     await passDocumentToInactive(context, documentFromDb);
   }
-  return documentFromDb;
+
+  const parentDocument = documentFromDb.parent_document_id
+    ? (
+        await loadDocumentBy(context, {
+          'Document.id': documentFromDb.parent_document_id,
+          'Document.service_instance_id': serviceInstanceId,
+        })
+      )[0]
+    : documentFromDb;
+  return parentDocument;
 };
 
 export const passDocumentToInactive = async (
@@ -193,7 +203,7 @@ export const loadDocuments = (
 
 export const loadDocumentBy = async (
   context: PortalContext,
-  field: DocumentMutator,
+  field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator,
   opts = {}
 ) => {
   return db<Document>(context, 'Document', opts)
