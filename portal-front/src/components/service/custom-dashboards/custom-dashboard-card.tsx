@@ -102,7 +102,6 @@ const CustomDashboardCard = ({
                 userCanDelete={userCanDelete}
                 serviceInstanceId={serviceInstance?.id}
                 customDashboard={customDashboard}
-                data={data as unknown as documentItem_fragment$key}
                 connectionId={connectionId}
                 variant="menu"
               />
