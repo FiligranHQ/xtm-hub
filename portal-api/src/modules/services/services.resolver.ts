@@ -83,14 +83,6 @@ const resolvers: Resolvers = {
       if (!serviceInstance) {
         return null;
       }
-      const userJoined = await getUserJoined(context, serviceInstance.id);
-      // Found but the user has not joinded the service yet
-      if (
-        ['JOIN_AUTO', 'JOIN_SELF'].includes(serviceInstance.join_type) &&
-        !userJoined
-      ) {
-        throw new Error('ERROR_SERVICE_INSTANCE_USER_MUST_JOIN_SERVICE');
-      }
 
       return serviceInstance;
     },
