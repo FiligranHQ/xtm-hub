@@ -18,18 +18,11 @@ export const LoginLayout: FunctionComponent<LoginLayoutProps> = ({
   queryRef,
 }) => {
   const data = usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
-  const { redirect, error } = useDecodedQuery();
+  const { error } = useDecodedQuery();
   const currentPath = usePathname();
   const { toast } = useToast();
   const t = useTranslations();
   useEffect(() => {
-    if (redirect) {
-      toast({
-        variant: 'destructive',
-        title: t('Utils.Error'),
-        description: t('Error.Disconnected'),
-      });
-    }
     if (error) {
       toast({
         variant: 'destructive',
