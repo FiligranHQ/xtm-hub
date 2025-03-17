@@ -3,6 +3,7 @@ import {
   SERVICE_DEFINITION_IDENTIFIER,
 } from '@/components/service/service.const';
 import { cn } from '@/lib/utils';
+import { toGlobalId } from '@/utils/globaId';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
 import { AspectRatio } from 'filigran-ui/servers';
@@ -47,7 +48,10 @@ const ServiceInstanceCard: React.FunctionComponent<
           <div
             className="w-full h-12"
             style={{
-              backgroundImage: `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`,
+              backgroundImage:
+                serviceInstance.logo_document_id !== null
+                  ? `url(/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.logo_document_id as string)})`
+                  : '',
               backgroundSize: 'contain',
               backgroundPosition: 'left center',
               backgroundRepeat: 'no-repeat',
