@@ -123,7 +123,7 @@
     "NoOwnedService": "You don't have any services yet.",
     "NoService": "There is no service... Yet!",
     "Subscribe": "Subscribe",
-    "SubscribeService": "Subscribe service",
+    "SubscribeService": "Subscribe to {serviceName} service",
     "SubscribeOrganization": "Subscribe organization",
     "GoTo": "Go to service page",
     "GoToLabel": "Go to",
@@ -155,7 +155,7 @@
     },
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
     "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
-    "SureWantSubscriptionDirect": "Are you really sure you want to subscribe this service? This action can not be undone.",
+    "SureWantSubscriptionDirect": "Are you sure you want to subscribe to this service? This action can not be undone.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Vault": {
       "DropFile": "Drop the document here",
