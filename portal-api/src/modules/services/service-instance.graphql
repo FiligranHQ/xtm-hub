@@ -1,6 +1,7 @@
 enum ServiceInstanceOrdering {
   name
   description
+  ordering
 }
 
 type ServiceInstance implements Node {

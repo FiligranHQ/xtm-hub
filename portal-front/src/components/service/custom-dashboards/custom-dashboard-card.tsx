@@ -3,6 +3,9 @@ import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
 import { documentItem } from '@/components/service/document/document.graphql';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import { IconActions } from '@/components/ui/icon-actions';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
@@ -50,6 +53,7 @@ const CustomDashboardCard = ({
       <AspectRatio ratio={16 / 9}>
         <Carousel
           scrollButton="hover"
+          dotButton="hover"
           className="h-full">
           <CarouselItem>
             <CustomDashboardBento
@@ -71,23 +75,16 @@ const CustomDashboardCard = ({
         </Carousel>
       </AspectRatio>
       <div
-        className="cursor-pointer p-l space-y-s"
+        className="flex flex-col flex-grow cursor-pointer p-l space-y-s"
         onClick={() =>
           router.push(
             `/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`
           )
         }>
         <div className="flex items-center justify-between">
-          {/*TODO : will be filled when design is finalized*/}
-          <div className="flex gap-s items-center">
-            {customDashboard?.labels?.map(({ id, name, color }) => (
-              <Badge
-                key={id}
-                color={color}>
-                {name.toUpperCase()}
-              </Badge>
-            ))}
-          </div>
+          <BadgeOverflowCounter
+            badges={customDashboard?.labels as BadgeOverflow[]}
+          />
 
           {(userCanUpdate || userCanDelete) && (
             <IconActions
@@ -108,12 +105,12 @@ const CustomDashboardCard = ({
             </IconActions>
           )}
         </div>
-        <h2 className="truncate flex-1 max-h-[10rem] overflow-hidden">
+        <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
           {(customDashboard?.short_description?.length ?? 0 > 0)
             ? customDashboard.short_description
-            : 'No description'}
-        </h2>
-        <div className="txt-mini items-center flex">
+            : ''}
+        </h3>
+        <div className="txt-mini items-center flex mt-auto">
           {customDashboard.product_version && (
             <div>
               {t('Service.CustomDashboards.FromOCTIVersion')} :{' '}

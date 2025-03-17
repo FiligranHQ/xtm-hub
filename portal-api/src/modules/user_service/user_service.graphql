@@ -7,6 +7,7 @@ enum UserServiceOrdering {
   service_type
   service_description
   subscription_status
+  service_ordering
 }
 
 input UserServiceAddInput {
