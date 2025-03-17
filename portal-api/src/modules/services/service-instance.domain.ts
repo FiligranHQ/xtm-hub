@@ -156,10 +156,7 @@ export const loadServiceInstances = async (context: PortalContext, opts) =>
   );
 
 export const getUserJoined = async (context, id) => {
-  const { user_joined } = await db<{ user_joined: boolean }>(
-    context,
-    'ServiceInstance'
-  )
+  const result = await db<{ user_joined: boolean }>(context, 'ServiceInstance')
     .where('ServiceInstance.id', '=', id)
     .leftJoin(
       'Subscription',
@@ -167,13 +164,21 @@ export const getUserJoined = async (context, id) => {
       'Subscription.service_instance_id'
     )
     .leftJoin('User_Service', function () {
-      this.on('Subscription.id', 'User_Service.subscription_id').andOn(
-        dbRaw(`"User_Service"."user_id" = '${context.user.id}'`)
+      this.on('Subscription.id', 'User_Service.subscription_id').andOnVal(
+        'User_Service.user_id',
+        '=',
+        context.user.id
       );
     })
     .select(dbRaw(`"User_Service".id IS NOT NULL AS user_joined`))
+    .where(
+      'Subscription.organization_id',
+      '=',
+      context.user.selected_organization_id
+    )
     .first();
-  return user_joined;
+
+  return result?.user_joined === true;
 };
 
 export const loadServiceInstanceByIdWithCapabilities = async (

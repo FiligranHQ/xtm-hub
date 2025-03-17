@@ -16,7 +16,6 @@ const AvailableServices = ({
   services,
 }: PublicServicesProps) => {
   const { getAction } = useGetAction(addSubscriptionInDb);
-
   if (services.length > 0)
     return (
       <Suspense>
