@@ -53,6 +53,7 @@ const CustomDashboardCard = ({
       <AspectRatio ratio={16 / 9}>
         <Carousel
           scrollButton="hover"
+          dotButton="hover"
           className="h-full">
           <CarouselItem>
             <CustomDashboardBento
