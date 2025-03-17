@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
+import customDashboardsResolver from '../modules/services/custom-dashboards/custom-dashboards.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
 import servicesResolver from '../modules/services/services.resolver';
 import labelsResolver from '../modules/settings/labels/labels.resolver';
@@ -39,6 +40,7 @@ const resolvers = mergeResolvers([
   serviceCapabilityResolver,
   logResolver,
   labelsResolver,
+  customDashboardsResolver,
 ]);
 
 const createSchema = () => {

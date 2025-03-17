@@ -7,6 +7,7 @@ type ServiceInstance implements Node {
   id: ID!
   name: String!
   description: String
+  slug: String
   creation_status: String
   organization_subscribed: Boolean
   user_joined: Boolean
@@ -31,6 +32,18 @@ type ServiceConnection {
   totalCount: Int!
   edges: [ServiceInstanceEdge!]!
   pageInfo: PageInfo!
+}
+
+type SeoServiceInstance implements Node {
+  id: ID!
+  name: String!
+  slug: String
+  description: String
+  links: [ServiceLink]
+  tags: [String]
+  service_definition: ServiceDefinition!
+  logo_document_id: ID
+  illustration_document_id: ID
 }
 
 input AddServiceInput {
@@ -76,6 +89,8 @@ type Query {
   subscribedServiceInstancesByIdentifier(
     identifier: ServiceDefinitionIdentifier!
   ): [SubscribedServiceInstance!]! @auth
+  seoServiceInstances: [SeoServiceInstance!]!
+  seoServiceInstance(slug: String!): SeoServiceInstance!
 }
 
 type SubscribedServiceInstance {

@@ -88,9 +88,9 @@ const getPublicServices = (
           onCompleted: () => {
             router.push(
               getServiceInstanceUrl(
+                window.location.href,
                 service.service_definition!.identifier,
-                service.id,
-                window.location.href
+                service.id
               ).toString()
             );
             handleSuccess(successMessage);

@@ -48,7 +48,12 @@ export const isDevelopment = () =>
   getEnv() !== 'staging' && getEnv() !== 'production';
 
 export const getServiceInstanceUrl = (
+  base_url: string,
   identifier: string,
   global_service_instance_id: string,
-  base_url: string
-) => new URL(`/service/${identifier}/${global_service_instance_id}`, base_url);
+  global_secondary_item_id?: string
+) =>
+  new URL(
+    `/service/${identifier}/${global_service_instance_id}${global_secondary_item_id ? `/${global_secondary_item_id}` : ''}`,
+    base_url
+  );

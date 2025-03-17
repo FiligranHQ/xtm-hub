@@ -11,6 +11,7 @@ export const DocumentAddMutation = graphql`
     $active: Boolean
     $parentDocumentId: ID
     $labels: [String!]
+    $slug: String
     $connections: [ID!]!
   ) {
     addDocument(
@@ -23,6 +24,7 @@ export const DocumentAddMutation = graphql`
       service_instance_id: $serviceInstanceId
       active: $active
       parentDocumentId: $parentDocumentId
+      slug: $slug
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
       id
@@ -111,6 +113,7 @@ export const documentItem = graphql`
       download_number
       active
     }
+    slug
   }
 `;
 export const documentsFragment = graphql`

@@ -31,7 +31,8 @@
       "SUBSCRIPTION_NOT_FOUND_ERROR": "La souscription n'existe pas",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
-      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service"
+      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
+      "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas"
     },
     "Login": {
       "LoginError": "Vous n'êtes pas autorisé à vous connecter"
@@ -221,7 +222,9 @@
         "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
         "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
         "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes"
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "SlugLabel": "Slug (url)",
+        "SlugPlaceholder": "dashboard-slug"
       },
       "Actions": {
         "Deleted": "{name} has been deleted",
