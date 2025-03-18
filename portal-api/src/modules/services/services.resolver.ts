@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import {
   Resolvers,
+  SeoServiceInstance,
   ServiceInstance,
   ServiceLink,
   Subscription,
@@ -39,6 +40,7 @@ import {
 const resolvers: Resolvers = {
   ServiceInstance: {
     logo_document_id: ({ logo_document_id }) => {
+      console.log(logo_document_id);
       if (logo_document_id) {
         return toGlobalId('Document', logo_document_id);
       }
@@ -104,7 +106,22 @@ const resolvers: Resolvers = {
       return loadSubscribedServiceInstancesByIdentifier(context, identifier);
     },
     seoServiceInstances: async (_, _opt, context) => {
-      return loadSeoServiceInstances(context);
+      const services = await loadSeoServiceInstances(context);
+      return services.map((service: SeoServiceInstance) => {
+        if (service.illustration_document_id) {
+          service.illustration_document_id = toGlobalId(
+            'Document',
+            service.illustration_document_id
+          );
+        }
+        if (service.logo_document_id) {
+          service.logo_document_id = toGlobalId(
+            'Document',
+            service.logo_document_id
+          );
+        }
+        return service;
+      });
     },
     seoServiceInstance: async (_, { slug }, context) => {
       const serviceInstance = await loadSeoServiceInstanceBySlug(context, slug);

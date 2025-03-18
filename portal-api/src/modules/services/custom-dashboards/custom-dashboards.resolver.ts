@@ -20,10 +20,8 @@ const resolvers: Resolvers = {
   },
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
-      const dashboards = await loadSeoCustomDashboardsByServiceSlug(
-        context,
-        serviceSlug
-      );
+      const dashboards =
+        await loadSeoCustomDashboardsByServiceSlug(serviceSlug);
       for (const dashboard of dashboards) {
         dashboard.children_documents = await loadImagesByCustomDashboardId(
           dashboard.id
@@ -37,8 +35,8 @@ const resolvers: Resolvers = {
       }
       return dashboards;
     },
-    seoCustomDashboardBySlug: async (_, { slug }, context) => {
-      const dashboard = await loadSeoCustomDashboardBySlug(context, slug);
+    seoCustomDashboardBySlug: async (_, { slug }) => {
+      const dashboard = await loadSeoCustomDashboardBySlug(slug);
       return dashboard;
     },
   },
