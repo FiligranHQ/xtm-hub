@@ -84,12 +84,14 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const dataOrganizationsTab = (
     queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? []
-  ).map((subscription) => {
-    return {
-      value: subscription?.organization?.id ?? '',
-      label: subscription?.organization?.name ?? '',
-    };
-  });
+  )
+    .filter((sub) => !sub.organization.personal_space)
+    .map((subscription) => {
+      return {
+        value: subscription?.organization?.id ?? '',
+        label: subscription?.organization?.name ?? '',
+      };
+    });
 
   const onValueChange = (value: string) => {
     const subscription =
