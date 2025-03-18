@@ -8,7 +8,6 @@ import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import useAdminPath from '@/hooks/useAdminPath';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
@@ -236,7 +235,6 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     userListFragment,
     queryData
   );
-  const isAdminPath = useAdminPath();
   const isCapabilityDisabled = (id: string) => {
     if (id === GenericCapabilityName.ManageAccess) {
       return false;
@@ -338,48 +336,42 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
               name="capabilities"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2">
-                  {(isAdminPath || !isCapabilityDisabled(id)) && (
-                    <FormControl>
-                      <Checkbox
-                        disabled={isCapabilityDisabled(id)}
-                        className="mt-xs"
-                        checked={(field.value as string[]).includes(id)}
-                        onCheckedChange={(checked) => {
-                          const newValue = checked
-                            ? Array.from(new Set([...(field.value || []), id]))
-                            : (field.value || []).filter(
-                                (value) => value !== id
-                              );
-                          field.onChange(newValue);
-                        }}
-                        id={id}
-                      />
-                    </FormControl>
-                  )}
+                  <FormControl>
+                    <Checkbox
+                      disabled={isCapabilityDisabled(id)}
+                      className="mt-xs"
+                      checked={(field.value as string[]).includes(id)}
+                      onCheckedChange={(checked) => {
+                        const newValue = checked
+                          ? Array.from(new Set([...(field.value || []), id]))
+                          : (field.value || []).filter((value) => value !== id);
+                        field.onChange(newValue);
+                      }}
+                      id={id}
+                    />
+                  </FormControl>
 
-                  {(isAdminPath || !isCapabilityDisabled(id)) && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <label
-                            htmlFor={id}
-                            className={`txt-sub-content ${!isCapabilityDisabled(id) ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
-                            {name === GenericCapabilityName.ManageAccess
-                              ? 'Manage access: The user can invite other users from his/her organization to this service'
-                              : `${name} access: ${description}`}
-                            {isCapabilityDisabled(id)}
-                          </label>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {isCapabilityDisabled(id)
-                              ? t('InviteUserServiceForm.DisabledCapability')
-                              : t('InviteUserServiceForm.GrantCapability')}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <label
+                          htmlFor={id}
+                          className={`txt-sub-content ${!isCapabilityDisabled(id) ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+                          {name === GenericCapabilityName.ManageAccess
+                            ? 'Manage access: The user can invite other users from his/her organization to this service'
+                            : `${name} access: ${description}`}
+                          {isCapabilityDisabled(id)}
+                        </label>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {isCapabilityDisabled(id)
+                            ? t('InviteUserServiceForm.DisabledCapability')
+                            : t('InviteUserServiceForm.GrantCapability')}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </FormItem>
               )}
             />
