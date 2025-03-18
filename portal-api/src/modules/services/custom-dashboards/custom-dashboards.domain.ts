@@ -28,8 +28,7 @@ export const loadImagesByCustomDashboardId = async (
   const images = await dbUnsecure<Document>('Document')
     .select('Document.id')
     .where('parent_document_id', '=', customDashboardId)
-    .where('Document.mime_type', 'like', 'image/%')
-    .where('Document.active', '=', true);
+    .where('Document.mime_type', 'like', 'image/%');
   for (const image of images) {
     image.id = toGlobalId('Document', image.id);
   }
