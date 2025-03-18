@@ -85,7 +85,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const dataOrganizationsTab = (
     queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? []
   )
-    .filter((sub) => !sub.organization.personal_space)
+    .filter((sub) => !sub?.organization.personal_space)
     .map((subscription) => {
       return {
         value: subscription?.organization?.id ?? '',

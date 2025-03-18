@@ -64,6 +64,9 @@ const resolvers: Resolvers = {
     addUserService: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
+        if (input.email === context.user.email) {
+          throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
+        }
         const [subscription] = await loadSubscriptionBy({
           service_instance_id: extractId(input.serviceInstanceId),
           organization_id: extractId(input.organizationId),
@@ -105,6 +108,9 @@ const resolvers: Resolvers = {
         }
         if (error.name.includes(NOT_FOUND)) {
           throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
+        }
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
         }
         throw UnknownError('ADD_USER_SERVICE_ERROR', { detail: error });
       }

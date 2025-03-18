@@ -3,7 +3,10 @@ import {
   userListFragment,
   UserListQuery,
 } from '@/components/admin/user/user-list';
+import { FunctionComponent, useContext, useState } from 'react';
+
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
@@ -40,7 +43,7 @@ import {
   useToast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   readInlineData,
@@ -72,6 +75,8 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   dataOrganizationsTab,
 }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
+  const { me } = useContext(PortalContext);
+
   const [commitServiceCapabilityMutation] =
     useMutation<serviceCapabilityMutation>(ServiceCapabilityCreateMutation);
   const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
@@ -244,13 +249,24 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     );
   };
 
-  const tagsAutocomplete = data?.users?.edges?.map((edge) => {
-    const user = readInlineData<userList_fragment$key>(UserFragment, edge.node);
-    return {
-      id: user.id,
-      text: user.email,
-    };
-  });
+  const tagsAutocomplete = data?.users?.edges
+    ?.filter((edge) => {
+      const user = readInlineData<userList_fragment$key>(
+        UserFragment,
+        edge.node
+      );
+      return user.id !== me?.id;
+    })
+    ?.map((edge) => {
+      const user = readInlineData<userList_fragment$key>(
+        UserFragment,
+        edge.node
+      );
+      return {
+        id: user.id,
+        text: user.email,
+      };
+    });
   const { setValue } = form;
 
   const [tags, setTags] = useState<Tag[]>([]);
