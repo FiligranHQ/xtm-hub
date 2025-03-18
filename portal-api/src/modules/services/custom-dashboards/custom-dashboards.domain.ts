@@ -1,13 +1,11 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db, dbRaw, dbUnsecure } from '../../../../knexfile';
+import { dbRaw, dbUnsecure } from '../../../../knexfile';
 import Document from '../../../model/kanel/public/Document';
-import { PortalContext } from '../../../model/portal-context';
 
 export const loadSeoCustomDashboardsByServiceSlug = async (
-  context: PortalContext,
   serviceSlug: string
 ) => {
-  const dashboards = await db<Document>(context, 'Document')
+  const dashboards = await dbUnsecure<Document>('Document')
     .select('Document.*')
     .leftJoin(
       'ServiceInstance',
@@ -38,11 +36,8 @@ export const loadImagesByCustomDashboardId = async (
   return images;
 };
 
-export const loadSeoCustomDashboardBySlug = async (
-  context: PortalContext,
-  slug: string
-) => {
-  const dashboard = await db<Document>(context, 'Document')
+export const loadSeoCustomDashboardBySlug = async (slug: string) => {
+  const dashboard = await dbUnsecure<Document>('Document')
     .select('Document.*')
     .where('Document.slug', '=', slug)
     .where('Document.active', '=', true)
