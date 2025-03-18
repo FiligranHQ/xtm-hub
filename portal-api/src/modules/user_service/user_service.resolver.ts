@@ -64,7 +64,7 @@ const resolvers: Resolvers = {
     addUserService: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        if (input.email === context.user.email) {
+        if (input.email.some((email) => email === context.user.email)) {
           throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
         }
         const [subscription] = await loadSubscriptionBy({
