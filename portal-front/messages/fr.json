@@ -30,6 +30,7 @@
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "SUBSCRIPTION_NOT_FOUND_ERROR": "La souscription n'existe pas",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
+      "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
       "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas"

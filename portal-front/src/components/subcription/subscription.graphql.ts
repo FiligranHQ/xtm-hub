@@ -6,6 +6,7 @@ export const subscriptionWithUserServiceFragment = graphql`
     organization {
       id
       name
+      personal_space
     }
     subscription_capability {
       id
