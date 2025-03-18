@@ -40,7 +40,6 @@ import {
 const resolvers: Resolvers = {
   ServiceInstance: {
     logo_document_id: ({ logo_document_id }) => {
-      console.log(logo_document_id);
       if (logo_document_id) {
         return toGlobalId('Document', logo_document_id);
       }

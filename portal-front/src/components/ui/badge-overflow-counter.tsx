@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Tooltip,
   TooltipContent,
@@ -32,7 +34,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
     let lastVisibleIndex = badges.length;
     const children = Array.from(container.children) as unknown as HTMLElement[];
     for (let i = 0; i < children.length; i++) {
-      totalWidth += children[i]!.offsetWidth + 8; // 8px gap
+      totalWidth += children[i]!.offsetWidth;
       if (totalWidth > container.offsetWidth) {
         lastVisibleIndex = i - 1;
         break;
