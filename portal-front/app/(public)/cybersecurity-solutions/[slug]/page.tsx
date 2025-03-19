@@ -214,7 +214,8 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         {(customDashboards.length === 0 && (
           <div className="my-4 text-center">No custom dashboards found</div>
         )) || (
-          <ul className={'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'}>
+          <ul
+            className={'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l'}>
             {customDashboards.map((customDashboard) => (
               <li key={customDashboard.id}>
                 <Link
