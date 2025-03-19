@@ -14,12 +14,12 @@ import { ReactNode } from 'react';
 interface ServiceInstanceCardProps {
   serviceInstance: serviceList_fragment$data;
   rightAction?: ReactNode;
-  h?: string | null;
   seo?: boolean;
+  className?: string;
 }
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
-> = ({ serviceInstance, rightAction, h, seo }) => {
+> = ({ serviceInstance, rightAction, className, seo }) => {
   const isLinkService =
     serviceInstance?.service_definition?.identifier ===
     SERVICE_DEFINITION_IDENTIFIER.LINK;
@@ -35,10 +35,8 @@ const ServiceInstanceCard: React.FunctionComponent<
   return (
     <li
       className={cn(
-        'relative border border-light rounded',
-        h === serviceInstance?.service_definition?.identifier
-          ? "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
-          : ''
+        'relative border border-light rounded flex flex-col',
+        className
       )}>
       <div className="relative flex justify-center items-center flex-col gap-s bg-blue-900 overflow-hidden box-border px-s z-1">
         <LogoFiligranIcon className="absolute zinset-0 text-white opacity-10 z-1 size-64 rotate-45 blur" />
@@ -71,7 +69,9 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}
         </AspectRatio>
       </div>
-      <div className="relative h-40 flex flex-col bg-page-background p-l gap-xs z-1">
+      <div
+        className="relative min-h-40 flex flex-col bg-page-background p-l gap-xs
+       flex-1">
         <div className="flex items-center h-12 w-full">
           <Link
             href={isDisabled ? '' : serviceHref}
@@ -87,7 +87,7 @@ const ServiceInstanceCard: React.FunctionComponent<
         <p className="txt-sub-content text-muted-foreground">
           {serviceInstance.description}
         </p>
-        <div className="flex ml-auto">{rightAction}</div>
+        <div className="flex pt-s mt-auto ml-auto">{rightAction}</div>
       </div>
     </li>
   );
