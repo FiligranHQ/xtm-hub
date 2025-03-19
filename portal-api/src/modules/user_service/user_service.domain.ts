@@ -9,9 +9,11 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
+  UserServiceMutator,
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { PortalContext } from '../../model/portal-context';
+import { addPrefixToObject } from '../../utils/typescript';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
 import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
 
@@ -81,10 +83,10 @@ export const getSubscription = (context, id) => {
     .first();
 };
 
-export const getUserServiceCapabilities = async (context, id) => {
+export const getUserServiceCapabilities = async (context, userServiceId) => {
   const initialQuery = db<UserServiceCapability>(context, 'User_Service').where(
     'User_Service.id',
-    id
+    userServiceId
   );
   const generic_service_capabilities = await initialQuery
     .clone()
@@ -134,7 +136,7 @@ export const getUserServiceCapabilities = async (context, id) => {
     ...generic_service_capabilities.map(
       ({ userServcapaId, ...generic_service_capability }) => ({
         id: userServcapaId,
-        user_service_id: id,
+        user_service_id: userServiceId,
         generic_service_capability: {
           ...generic_service_capability,
           __typename: 'Generic_Service_Capability',
@@ -144,7 +146,7 @@ export const getUserServiceCapabilities = async (context, id) => {
     ...subscription_capabilities.map(
       ({ userServcapaId, subscriptionCapaId, ...service_capability }) => ({
         id: userServcapaId,
-        user_service_id: id,
+        user_service_id: userServiceId,
         subscription_capability: {
           id: subscriptionCapaId,
           service_capability: {
@@ -227,4 +229,13 @@ export const addAdminAccess = async (
   }));
 
   await insertServiceCapability(context, dataCapabilities);
+};
+
+export const loadUserServiceBy = async (
+  context: PortalContext,
+  field:
+    | addPrefixToObject<UserServiceMutator, 'User_Service.'>
+    | UserServiceMutator
+): Promise<UserService[]> => {
+  return db<UserService>(context, 'User_Service').where(field);
 };
