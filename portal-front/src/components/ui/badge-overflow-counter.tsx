@@ -30,13 +30,13 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
       return;
     }
     const container: HTMLDivElement = containerRef.current;
-    let totalWidth = 0;
+    let totalWidth = 56;
     let lastVisibleIndex = badges.length;
     const children = Array.from(container.children) as unknown as HTMLElement[];
     for (let i = 0; i < children.length; i++) {
       totalWidth += children[i]!.offsetWidth;
       if (totalWidth > container.offsetWidth) {
-        lastVisibleIndex = i - 1;
+        lastVisibleIndex = i;
         break;
       }
     }
@@ -52,7 +52,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
   return (
     <div
       ref={containerRef}
-      className="flex gap-s overflow-hidden flex-1 flex items-center gap-s">
+      className="flex gap-s overflow-hidden flex-1 items-center">
       {badges.map(({ id, name, color }, index) => (
         <Badge
           className="whitespace-nowrap aria-hidden:invisible aria-hidden:absolute uppercase"
