@@ -21,7 +21,7 @@ const MarkdownInput = ({
         value={value}
         onChange={onChange}
         style={{
-          background: 'transparent',
+          background: 'hsl(var(--page-background))',
           color: 'hsl(var(--text-foreground))',
         }}
         previewOptions={{

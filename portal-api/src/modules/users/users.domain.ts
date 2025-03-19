@@ -31,6 +31,7 @@ import { hashPassword } from '../../utils/hash-password.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { isEmpty } from '../../utils/utils';
+import { isAdmin } from '../role-portal/role-portal.domain';
 
 export const loadUsersByOrganization = async (
   organizationId: string,
@@ -279,7 +280,6 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
     .whereRaw(
       `"UserOrganization_Capability"."user_organization_id" = "UserOrg"."id"`
     );
-
   loadUserQuery
     .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
     .leftJoin(
@@ -299,13 +299,18 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
               'organization', to_jsonb("org") || jsonb_build_object('__typename', 'Organization'),
               'capabilities', (${userOrganizationCapabilityQuery})
           ) ) 
-            FILTER (WHERE "org".id = ?), '[]' 
-        )::json AS organization_capabilities`,
-        [context.user.selected_organization_id]
+           FILTER (WHERE "org".id IS NOT NULL), '[]' 
+        )::json AS organization_capabilities`
       ),
     ])
     .groupBy(['User.id']);
 
+  if (!isAdmin(context)) {
+    loadUserQuery.where(
+      'UserOrg.organization_id',
+      context.user.selected_organization_id
+    );
+  }
   return paginate<UserGenerated, UserConnection>(
     context,
     'User',

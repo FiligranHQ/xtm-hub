@@ -20,7 +20,7 @@ export const roundToNearest = (num: number) => {
     return rounded;
   }
 
-  return `+${rounded}`;
+  return `${rounded}+`;
 };
 
 export const isNil = (value: unknown): value is null | undefined => {
