@@ -34,6 +34,9 @@ const HighlightedServices = ({
                   service.subscription!
                     .service_instance as serviceList_fragment$data
                 }
+                className={
+                  "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
+                }
               />
             );
           })}
@@ -43,6 +46,9 @@ const HighlightedServices = ({
                 key={service.id}
                 rightAction={getAction(service)}
                 serviceInstance={service}
+                className={
+                  "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
+                }
               />
             );
           })}
