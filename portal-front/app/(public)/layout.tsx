@@ -77,6 +77,7 @@ export default function RootLayout({
         <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
           <Link href="/cybersecurity-solutions">
             <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
+            <span className="sr-only">XTM Hub by Filigran</span>
           </Link>
           <div className="flex gap-xl">
             <Button
