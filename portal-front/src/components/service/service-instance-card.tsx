@@ -17,6 +17,7 @@ interface ServiceInstanceCardProps {
   seo?: boolean;
   className?: string;
 }
+
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className, seo }) => {
@@ -72,7 +73,7 @@ const ServiceInstanceCard: React.FunctionComponent<
               <Link
                 href={isDisabled ? '#' : serviceHref}
                 target={serviceHref.startsWith('http') ? '_blank' : '_self'}
-                className="focus-visible:outline-none none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
+                className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
                 aria-disabled={isDisabled}>
                 <h2>{serviceInstance.name}</h2>
               </Link>
