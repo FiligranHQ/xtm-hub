@@ -48,6 +48,7 @@ minio:
     repository: quay.io/minio/minio
     tag: RELEASE.2024-08-03T04-33-23Z
     pullPolicy: IfNotPresent
+  ingressWhitelistSourceRange: "149.88.28.168/32,10.0.0.0/8"
   storage:
     diskSize: 10Gi
     diskCount: 2
