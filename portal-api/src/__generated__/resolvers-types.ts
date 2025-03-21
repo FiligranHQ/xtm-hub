@@ -759,6 +759,7 @@ export type ServiceInstance = Node & {
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   logo_document_id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
+  ordering: Scalars['Int']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
   organization_subscribed?: Maybe<Scalars['Boolean']['output']>;
   public?: Maybe<Scalars['Boolean']['output']>;
@@ -909,6 +910,7 @@ export enum UserOrdering {
 export type UserService = Node & {
   __typename?: 'UserService';
   id: Scalars['ID']['output'];
+  ordering: Scalars['Int']['output'];
   subscription?: Maybe<SubscriptionModel>;
   subscription_id: Scalars['ID']['output'];
   user?: Maybe<User>;
@@ -961,9 +963,9 @@ export enum UserServiceOrdering {
   Email = 'email',
   FirstName = 'first_name',
   LastName = 'last_name',
+  Ordering = 'ordering',
   ServiceDescription = 'service_description',
   ServiceName = 'service_name',
-  ServiceOrdering = 'service_ordering',
   ServiceProvider = 'service_provider',
   ServiceType = 'service_type',
   SubscriptionStatus = 'subscription_status'
@@ -1519,6 +1521,7 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organization']>>>, ParentType, ContextType>;
   organization_subscribed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   public?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -1641,6 +1644,7 @@ export type UserEdgeResolvers<ContextType = PortalContext, ParentType extends Re
 
 export type UserServiceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserService'] = ResolversParentTypes['UserService']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   subscription_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;

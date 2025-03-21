@@ -22,6 +22,7 @@ type ServiceInstance implements Node {
   service_definition: ServiceDefinition
   logo_document_id: ID
   illustration_document_id: ID
+  ordering: Int!
 }
 
 type ServiceInstanceEdge {
