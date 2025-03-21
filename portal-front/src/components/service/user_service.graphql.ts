@@ -77,6 +77,7 @@ export const userServicesOwnedFragment = graphql`
         ...serviceList_fragment @relay(mask: false)
       }
     }
+    ordering
   }
 `;
 
