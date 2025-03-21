@@ -67,6 +67,7 @@ export const serviceListFragment = graphql`
     logo_document_id
     illustration_document_id
     slug
+    ordering
   }
 `;
 
