@@ -83,7 +83,10 @@ export const getSubscription = (context, id) => {
     .first();
 };
 
-export const getUserServiceCapabilities = async (context, userServiceId) => {
+export const getUserServiceCapabilities = async (
+  context: PortalContext,
+  userServiceId: UserServiceId
+) => {
   const initialQuery = db<UserServiceCapability>(context, 'User_Service').where(
     'User_Service.id',
     userServiceId

@@ -382,6 +382,7 @@ export type MutationEditOrganizationArgs = {
 
 export type MutationEditServiceCapabilityArgs = {
   input?: InputMaybe<EditServiceCapabilityInput>;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 

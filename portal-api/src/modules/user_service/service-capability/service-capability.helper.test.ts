@@ -1,30 +1,48 @@
-import { describe, expect, it } from 'vitest';
-import { calculateShouldEditCapabilities } from './service_capability.helper';
+import { describe, expect, it, vi } from 'vitest';
+import { UserServiceId } from '../../../model/kanel/public/UserService';
+import { PortalContext } from '../../../model/portal-context';
+import * as UserServiceDomain from '../../user_service/user_service.domain';
+import * as ServiceCapaDomain from './service-capability.domain';
+import { willManageAccessBeConserved } from './service_capability.helper';
 
 describe('willManageAccessBeConserved', () => {
   it.each`
-    isCurrentUserManageAccess | capabilities         | manageAccessCount | expected
-    ${true}                   | ${[]}                | ${2}              | ${true}
-    ${false}                  | ${[]}                | ${2}              | ${true}
-    ${true}                   | ${['MANAGE_ACCESS']} | ${2}              | ${true}
-    ${false}                  | ${['MANAGE_ACCESS']} | ${2}              | ${true}
-    ${true}                   | ${['MANAGE_ACCESS']} | ${1}              | ${true}
-    ${false}                  | ${['MANAGE_ACCESS']} | ${1}              | ${true}
-    ${true}                   | ${[]}                | ${1}              | ${false}
+    capabilities         | getManageAccessLeft | userId          | shouldThrowError
+    ${[]}                | ${true}             | ${'notTheSame'} | ${false}
+    ${[]}                | ${true}             | ${'notTheSame'} | ${false}
+    ${['MANAGE_ACCESS']} | ${true}             | ${'notTheSame'} | ${false}
+    ${['MANAGE_ACCESS']} | ${true}             | ${'notTheSame'} | ${false}
+    ${['MANAGE_ACCESS']} | ${false}            | ${'notTheSame'} | ${false}
+    ${['MANAGE_ACCESS']} | ${false}            | ${'notTheSame'} | ${false}
+    ${[]}                | ${false}            | ${'notTheSame'} | ${false}
+    ${[]}                | ${false}            | ${'theSame'}    | ${true}
+    ${['MANAGE_ACCESS']} | ${false}            | ${'theSame'}    | ${false}
+    ${[]}                | ${true}             | ${'theSame'}    | ${false}
   `(
-    'Should return $expected if isCurrentUserManageAccess $isCurrentUserManageAccess, capabilities, $capabilities and manageAccessCount is $manageAccessCount',
-    async ({
-      isCurrentUserManageAccess,
-      capabilities,
-      manageAccessCount,
-      expected,
-    }) => {
-      const result = calculateShouldEditCapabilities(
-        isCurrentUserManageAccess,
-        capabilities,
-        manageAccessCount
+    'Should return $shouldThrowError if capabilities, $capabilities and manageAccessCount is $manageAccessCount and userId is $userId',
+    async ({ capabilities, getManageAccessLeft, userId, shouldThrowError }) => {
+      vi.spyOn(ServiceCapaDomain, 'getManageAccessLeft').mockResolvedValueOnce(
+        getManageAccessLeft
       );
-      expect(result).toEqual(expected);
+      vi.spyOn(UserServiceDomain, 'loadUserServiceById').mockReturnValue({
+        id: 'essai',
+        user_id: userId,
+      });
+
+      const result = () =>
+        willManageAccessBeConserved(
+          { user: { id: 'theSame' } } as PortalContext,
+          'userServiceId' as UserServiceId,
+          capabilities
+        );
+
+      if (shouldThrowError) {
+        await expect(result()).rejects.toThrow(
+          'EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS'
+        );
+      } else {
+        await expect(result()).resolves.not.toThrow();
+      }
     }
   );
 });
