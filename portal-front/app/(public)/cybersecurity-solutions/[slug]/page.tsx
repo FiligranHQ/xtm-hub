@@ -208,7 +208,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
             __html: JSON.stringify(jsonLd),
           }}
         />
-        <h1 className="my-16 text-center text-[3.5rem]">
+        <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
           {serviceInstance.name}
         </h1>
         {(customDashboards.length === 0 && (
@@ -219,7 +219,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
             {customDashboards.map((customDashboard) => (
               <li key={customDashboard.id}>
                 <Link
-                  className="cursor-pointer border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60"
+                  className="focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none cursor-pointer border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover"
                   href={`/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}>
                   <AspectRatio
                     ratio={16 / 9}
