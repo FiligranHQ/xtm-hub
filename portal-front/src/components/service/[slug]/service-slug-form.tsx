@@ -59,6 +59,7 @@ interface ServiceSlugFormSheetProps {
   userService: userService_fragment$data;
   subscription: subscriptionWithUserService_fragment$data;
   serviceName: string;
+  serviceId: string;
   serviceCapabilities: serviceCapability_fragment$data[];
   dataOrganizationsTab: {
     value: string;
@@ -71,6 +72,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   userService,
   subscription,
   serviceName,
+  serviceId,
   serviceCapabilities,
   dataOrganizationsTab,
 }) => {
@@ -140,7 +142,12 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     };
     commitServiceCapabilityMutation({
       variables: {
-        input: { user_service_id: userService?.id, ...editCapaValues },
+        input: {
+          user_service_id: userService?.id,
+
+          ...editCapaValues,
+        },
+        serviceInstanceId: serviceId,
       },
       onCompleted() {
         toast({

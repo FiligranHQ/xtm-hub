@@ -252,6 +252,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               serviceName={
                 queryData.serviceInstanceByIdWithSubscriptions?.name ?? ''
               }
+              serviceId={
+                queryData.serviceInstanceByIdWithSubscriptions?.id ?? ''
+              }
               dataOrganizationsTab={dataOrganizationsTab}
               subscription={selectedSubscription}
             />
