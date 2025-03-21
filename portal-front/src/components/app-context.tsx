@@ -6,6 +6,7 @@ import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
 import * as React from 'react';
 import { geologica, ibmPlexSans } from '../../app/font';
+import GoogleAnalytics from './external/google-analytics';
 import Hubspot from './external/hubspot';
 
 // Component interface
@@ -40,6 +41,7 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
         </ThemeProvider>
         <Toaster />
         <Hubspot />
+        <GoogleAnalytics />
       </body>
     </html>
   );

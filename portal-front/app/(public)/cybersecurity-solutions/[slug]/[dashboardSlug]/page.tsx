@@ -74,16 +74,16 @@ export async function generateMetadata({
 
   const metadata: Metadata = {
     title: `${customDashboard.name} | ${serviceInstance.name} | XTM Hub by Filigran`,
-    description:
-      customDashboard.short_description ||
-      customDashboard.description?.substring(0, 160) ||
-      'Explore this cybersecurity dashboard for enhanced threat intelligence and monitoring.',
+    description: customDashboard.short_description
+      ? `${customDashboard.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`
+      : customDashboard.description?.substring(0, 160) ||
+        'Explore this cybersecurity dashboard for enhanced threat intelligence and monitoring.',
     metadataBase: new URL(baseUrl),
     openGraph: {
       title: customDashboard.name,
-      description:
-        customDashboard.short_description ||
-        customDashboard.description?.substring(0, 160),
+      description: customDashboard.short_description
+        ? `${customDashboard.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`
+        : customDashboard.description?.substring(0, 160),
       url: `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`,
       type: 'article',
       siteName: 'XTM Hub by Filigran',
@@ -99,9 +99,9 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       title: customDashboard.name,
-      description:
-        customDashboard.short_description ||
-        customDashboard.description?.substring(0, 160),
+      description: customDashboard.short_description
+        ? `${customDashboard.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`
+        : customDashboard.description?.substring(0, 160),
       creator: '@FiligranHQ',
     },
   };
@@ -143,7 +143,7 @@ const Page = async ({
       '@context': 'https://schema.org',
       '@type': 'TechArticle',
       headline: customDashboard.name,
-      description: customDashboard.short_description,
+      description: `${customDashboard.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`,
       articleBody: customDashboard.description,
       author: customDashboard.uploader
         ? {
