@@ -536,6 +536,7 @@ export const loadSeoServiceInstances = (context: PortalContext) => {
       'ServiceInstance.logo_document_id',
       'ServiceInstance.illustration_document_id',
       'ServiceInstance.tags',
+      'ServiceInstance.ordering',
       dbRaw(
         formatRawObject({
           columnName: 'ServiceDefinition',
@@ -546,7 +547,8 @@ export const loadSeoServiceInstances = (context: PortalContext) => {
       dbRaw('json_agg("Service_Link") AS links')
     )
     .where('ServiceInstance.public', '=', true)
-    .groupBy('ServiceInstance.id', 'ServiceDefinition.id');
+    .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
+    .orderBy('ServiceInstance.ordering', 'asc');
 };
 
 export const loadSeoServiceInstanceBySlug = (

@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { Suspense } from 'react';
@@ -34,9 +35,10 @@ const HighlightedServices = ({
                   service.subscription!
                     .service_instance as serviceList_fragment$data
                 }
-                className={
-                  "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
-                }
+                className={cn(
+                  "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg",
+                  "after:content-[''] after:bg-page-background after:inset-0 after:absolute after:z-0 after:rounded-lg"
+                )}
               />
             );
           })}
@@ -46,9 +48,10 @@ const HighlightedServices = ({
                 key={service.id}
                 rightAction={getAction(service)}
                 serviceInstance={service}
-                className={
-                  "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg"
-                }
+                className={cn(
+                  "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg",
+                  "after:content-[''] after:bg-page-background after:inset-0 after:absolute after:-z-1 after:rounded-lg"
+                )}
               />
             );
           })}

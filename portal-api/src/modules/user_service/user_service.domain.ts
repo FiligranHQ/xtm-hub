@@ -189,7 +189,7 @@ export const loadUserServiceByUser = (context: PortalContext, opts) => {
     .select([
       'User_Service.*',
       'service.name as service_name',
-      'service.ordering as service_ordering',
+      'service.ordering as ordering',
     ])
     .groupBy(['User_Service.id', 'service.name', 'service.ordering', 'sub.id']);
 

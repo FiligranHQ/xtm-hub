@@ -16,17 +16,20 @@ import React, {
 interface IconActionsProps {
   children: ReactNode;
   icon: ReactNode;
+  className?: string;
 }
 
 interface IconActionContextProps {
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
 export const IconActionContext = createContext<IconActionContextProps>({
   setMenuOpen: () => {},
 });
 export const IconActions: FunctionComponent<IconActionsProps> = ({
   children,
   icon,
+  className,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -37,7 +40,10 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+          className={cn(
+            'flex h-8 w-8 p-0 data-[state=open]:bg-muted',
+            className
+          )}>
           {icon}
         </Button>
       </DropdownMenuTrigger>

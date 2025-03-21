@@ -1,0 +1,7 @@
+User-agent: *
+Sitemap: https://xtmhub.filigran.io/sitemap.xml
+Disallow: /
+Allow: /$
+Allow: /cybersecurity-solutions
+Allow: /cybersecurity-solutions/
+Allow: /cybersecurity-solutions/*

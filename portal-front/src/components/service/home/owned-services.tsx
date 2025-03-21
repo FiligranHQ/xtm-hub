@@ -11,24 +11,20 @@ interface OwnedServicesProps {
 }
 
 const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
-  if (services.length > 0 || publicServices.length > 0)
+  // Merge and sort by ordering property
+  const sortedServices = [
+    ...services.map(
+      ({ subscription }) =>
+        subscription!.service_instance as serviceList_fragment$data
+    ),
+    ...publicServices,
+  ].sort((a, b) => a!.ordering - b!.ordering);
+
+  if (sortedServices.length > 0) {
     return (
       <Suspense>
-        <ul
-          className={
-            'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l'
-          }>
-          {services.map(({ subscription, id }) => {
-            return (
-              <ServiceInstanceCard
-                key={id}
-                serviceInstance={
-                  subscription!.service_instance as serviceList_fragment$data
-                }
-              />
-            );
-          })}
-          {publicServices.map((service) => (
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l">
+          {sortedServices.map((service) => (
             <ServiceInstanceCard
               key={service.id}
               serviceInstance={service}
@@ -37,6 +33,9 @@ const OwnedServices = ({ services, publicServices }: OwnedServicesProps) => {
         </ul>
       </Suspense>
     );
+  }
+
+  return null;
 };
 
 export default OwnedServices;

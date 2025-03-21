@@ -14,7 +14,7 @@ const Page = async () => {
 
   return (
     <>
-      <h1 className="my-16 text-center text-[3.5rem]">
+      <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
         Discover resources and expertise
       </h1>
       <ul
