@@ -77,62 +77,68 @@ export default function RootLayout({
         <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
           <Link href="/cybersecurity-solutions">
             <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
+            <span className="sr-only">XTM Hub by Filigran</span>
           </Link>
-          <div className="flex gap-xl">
-            <Button
-              asChild
-              variant="outline-primary"
-              className="whitespace-nowrap">
-              <Link
-                href="https://filigran.io"
-                target="_blank"
-                rel="noopener noreferrer">
-                Filigran Website
-              </Link>
-            </Button>
-            <Button
-              asChild
-              className="whitespace-nowrap">
-              <Link href="/">Sign In</Link>
-            </Button>
-          </div>
+          <Button
+            asChild
+            className="whitespace-nowrap">
+            <Link href="/">Sign In</Link>
+          </Button>
         </header>
         <div className="container flex-grow">
           <div className="pt-l">{children}</div>
         </div>
-        <footer className="container">
-          <div className="flex items-center justify-between w-full px-4 py-8">
-            <div>
-              <p>© 2025 Filigran. All rights reserved</p>
-            </div>
-            <ul className="flex flex-row gap-l text-xs">
+        <footer className="container text-muted-foreground">
+          <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-8 gap-l text-center">
+            <span className="txt-default">
+              <Link
+                href="https://filigran.io"
+                target="_blank"
+                rel="noopener noreferrer">
+                © 2025 Filigran.
+              </Link>{' '}
+              All rights reserved
+            </span>
+            <ul className="flex flex-col md:flex-row gap-l text-xs">
               <li>
-                <a
+                <Link
                   target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://filigran.io/">
+                  Filigran website
+                </Link>
+              </li>
+              <li>
+                <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
                   href="https://filigran.io/privacy-policy/">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   target="_blank"
+                  rel="noopener noreferrer"
                   href="https://filigran.io/terms-of-services/">
                   Terms of Services
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   target="_blank"
+                  rel="noopener noreferrer"
                   href="https://filigran.io/licenses/">
                   Licenses
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   target="_blank"
+                  rel="noopener noreferrer"
                   href="https://filigran.io/contact/">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

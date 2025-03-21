@@ -12,7 +12,7 @@ const CustomDashboardBento = ({
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }) => {
   return (
-    <div className="flex h-full py-2 gap-xs">
+    <div className="flex h-full p-s -mx-s gap-xs bg-page-background">
       <div className="flex flex-col flex-1 gap-xs text-xs">
         <div className="flex flex-1 justify-center rounded border gap-2 dark:text-white items-center">
           <div className="size-6">
