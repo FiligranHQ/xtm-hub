@@ -25,8 +25,7 @@ input UserServiceDeleteInput {
 
 type Mutation {
   addUserService(input: UserServiceAddInput!): SubscriptionModel @auth
-  deleteUserService(input: UserServiceDeleteInput!): SubscriptionModel
-    @auth(requires: [MANAGE_ACCESS, MANAGE_SUBSCRIPTION])
+  deleteUserService(input: UserServiceDeleteInput!): SubscriptionModel @auth
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance @auth
 }
 type Query {

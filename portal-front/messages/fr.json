@@ -32,6 +32,8 @@
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
+      "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
+
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
       "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas"
     },

@@ -6,7 +6,9 @@ import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import UserService from '../../model/kanel/public/UserService';
+import UserService, {
+  UserServiceId,
+} from '../../model/kanel/public/UserService';
 import {
   ALREADY_EXISTS,
   AlreadyExistsError,
@@ -48,7 +50,7 @@ const resolvers: Resolvers = {
     user: ({ user_id }) => loadUserDetails({ 'User.id': user_id as UserId }),
     subscription: ({ id }, _, context) => getSubscription(context, id),
     user_service_capability: ({ id }, _, context) =>
-      getUserServiceCapabilities(context, id),
+      getUserServiceCapabilities(context, id as UserServiceId),
   },
   Query: {
     userServiceOwned: (_, { first, after, orderMode, orderBy }, context) => {

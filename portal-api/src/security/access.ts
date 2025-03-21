@@ -12,6 +12,7 @@ import {
   setUpdateSecurityForUser,
   userSSESecurity,
 } from './user-security-access';
+import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
 export const isUserGranted = (
   user: UserLoadUserBy,
@@ -115,6 +116,18 @@ export const applyDbSecurity = <T>(
       Record<DatabaseType, UpdateAccessibilityChecker>
     > = {
       User: setUpdateSecurityForUser,
+    };
+    const selectedFunction = updateMapping[type] || setQuery;
+    if (!selectedFunction) {
+      throw new Error(`Security behavior must be defined for type ${type}`);
+    }
+    return selectedFunction(context, queryContext, opts);
+  }
+  if (opts.queryType === 'delete') {
+    const updateMapping: Partial<
+      Record<DatabaseType, UpdateAccessibilityChecker>
+    > = {
+      UserService_Capability: setDeleteSecurityForUserServiceCapability,
     };
     const selectedFunction = updateMapping[type] || setQuery;
     if (!selectedFunction) {
