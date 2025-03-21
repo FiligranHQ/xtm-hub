@@ -1,3 +1,4 @@
+import GoogleAnalytics from '@/components/external/google-analytics';
 import Hubspot from '@/components/external/hubspot';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
@@ -144,6 +145,7 @@ export default function RootLayout({
           </div>
         </footer>
         <Hubspot />
+        <GoogleAnalytics />
       </body>
     </html>
   );
