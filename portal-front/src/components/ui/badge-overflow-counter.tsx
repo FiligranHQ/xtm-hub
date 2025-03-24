@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
@@ -12,6 +13,7 @@ import { useEventListener } from 'usehooks-ts';
 
 interface BadgeOverflowCounterProps {
   badges: BadgeOverflow[] | undefined;
+  className?: string;
 }
 
 export interface BadgeOverflow {
@@ -22,6 +24,7 @@ export interface BadgeOverflow {
 
 const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
   badges = [],
+  className,
 }) => {
   const containerRef = useRef(null);
   const [visibleTags, setVisibleTags] = useState<number>(badges.length);
@@ -52,7 +55,10 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
   return (
     <div
       ref={containerRef}
-      className="flex gap-s overflow-hidden flex-1 items-center">
+      className={cn(
+        'flex gap-s overflow-hidden flex-1 items-center',
+        className
+      )}>
       {badges.map(({ id, name, color }, index) => (
         <Badge
           className="whitespace-nowrap aria-hidden:invisible aria-hidden:absolute uppercase"

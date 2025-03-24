@@ -7,6 +7,7 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { IconActions } from '@/components/ui/icon-actions';
+import { ShareLinkButton } from '@/components/ui/share-link-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -93,6 +94,10 @@ const CustomDashboardCard = ({
         <div className="flex items-center justify-between">
           <BadgeOverflowCounter
             badges={customDashboard?.labels as BadgeOverflow[]}
+            className="z-[2]"
+          />
+          <ShareLinkButton
+            url={`${window.location.origin}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
           />
 
           {(userCanUpdate || userCanDelete) && (

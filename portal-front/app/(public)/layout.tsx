@@ -1,7 +1,9 @@
 import GoogleAnalytics from '@/components/external/google-analytics';
 import Hubspot from '@/components/external/hubspot';
+import I18nContext from '@/i18n/i18n-context';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
+import { Toaster } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import 'filigran-ui/theme.css';
 import { Metadata } from 'next';
@@ -74,79 +76,82 @@ export default function RootLayout({
           content="initial-scale=1.0, width=device-width"
         />
       </Head>
-      <body className="flex flex-col min-h-screen">
-        <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
-          <Link href="/cybersecurity-solutions">
-            <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
-            <span className="sr-only">XTM Hub by Filigran</span>
-          </Link>
-          <Button
-            asChild
-            className="whitespace-nowrap">
-            <Link href="/">Sign In</Link>
-          </Button>
-        </header>
-        <div className="container flex-grow">
-          <div className="pt-l">{children}</div>
-        </div>
-        <footer className="container text-muted-foreground">
-          <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-8 gap-l text-center">
-            <span className="txt-default">
-              <Link
-                href="https://filigran.io"
-                target="_blank"
-                rel="noopener noreferrer">
-                © 2025 Filigran.
-              </Link>{' '}
-              All rights reserved
-            </span>
-            <ul className="flex flex-col md:flex-row gap-l text-xs">
-              <li>
-                <Link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://filigran.io/">
-                  Filigran website
-                </Link>
-              </li>
-              <li>
-                <Link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://filigran.io/privacy-policy/">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://filigran.io/terms-of-services/">
-                  Terms of Services
-                </Link>
-              </li>
-              <li>
-                <Link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://filigran.io/licenses/">
-                  Licenses
-                </Link>
-              </li>
-              <li>
-                <Link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://filigran.io/contact/">
-                  Contact
-                </Link>
-              </li>
-            </ul>
+      <I18nContext>
+        <body className="flex flex-col min-h-screen">
+          <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
+            <Link href="/cybersecurity-solutions">
+              <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
+              <span className="sr-only">XTM Hub by Filigran</span>
+            </Link>
+            <Button
+              asChild
+              className="whitespace-nowrap">
+              <Link href="/">Sign In</Link>
+            </Button>
+          </header>
+          <div className="container flex-grow">
+            <div className="pt-l">{children}</div>
           </div>
-        </footer>
-        <Hubspot />
-        <GoogleAnalytics />
-      </body>
+          <footer className="container text-muted-foreground">
+            <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-8 gap-l text-center">
+              <span className="txt-default">
+                <Link
+                  href="https://filigran.io"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  © 2025 Filigran.
+                </Link>{' '}
+                All rights reserved
+              </span>
+              <ul className="flex flex-col md:flex-row gap-l text-xs">
+                <li>
+                  <Link
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://filigran.io/">
+                    Filigran website
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://filigran.io/privacy-policy/">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://filigran.io/terms-of-services/">
+                    Terms of Services
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://filigran.io/licenses/">
+                    Licenses
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://filigran.io/contact/">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </footer>
+          <Toaster />
+          <Hubspot />
+          <GoogleAnalytics />
+        </body>
+      </I18nContext>
     </html>
   );
 }
