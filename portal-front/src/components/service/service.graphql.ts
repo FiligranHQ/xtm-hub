@@ -35,6 +35,7 @@ export const ServiceById = graphql`
       id
       name
       description
+      slug
       capabilities @required(action: THROW)
       service_definition {
         identifier

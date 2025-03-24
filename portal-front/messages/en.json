@@ -268,7 +268,9 @@
     "Update": "Update",
     "Validate": "Validate",
     "ValidateForm": "Validate form",
-    "NotFound": "Not found"
+    "NotFound": "Not found",
+    "Copied": "Copied",
+    "FailedToCopy": "Failed to copy"
   },
   "DisableUserDialog": {
     "TextDisableThisUser": "Are you sure you want to disable this user {email} ?"

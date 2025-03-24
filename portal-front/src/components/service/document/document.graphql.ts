@@ -140,6 +140,10 @@ export const documentItem = graphql`
       active
     }
     slug
+    service_instance {
+      id
+      slug
+    }
   }
 `;
 export const documentsFragment = graphql`

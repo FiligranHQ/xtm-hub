@@ -175,6 +175,7 @@ type Document implements Node {
   children_documents: [Document!]
   labels: [Label!]!
   slug: String
+  service_instance: ServiceInstance
 }
 
 input EditDocumentInput {
