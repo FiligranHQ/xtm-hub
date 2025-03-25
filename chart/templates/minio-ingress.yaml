@@ -8,10 +8,11 @@ metadata:
     external-dns.alpha.kubernetes.io/hostname: s3.{{ .Values.xtmhub.host }}
     external-dns.alpha.kubernetes.io/ttl: "120"
     prometheus.io/probe: "true"
+    blackbox.io/path:
     {{- if eq .Values.ingressClass "nginx" }}
     nginx.ingress.kubernetes.io/proxy-body-size: 256m
     nginx.ingress.kubernetes.io/retry-non-idempotent: "true"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30s"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout http_502 http_503 http_504"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       if ($request_uri ~* \.(js|css|gif|jpe?g|png|svg|ico)) {

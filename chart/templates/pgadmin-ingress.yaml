@@ -10,7 +10,7 @@ metadata:
     {{- if eq .Values.ingressClass "nginx" }}
     nginx.ingress.kubernetes.io/proxy-body-size: 256m
     nginx.ingress.kubernetes.io/retry-non-idempotent: "true"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30s"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout http_502 http_503 http_504"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       if ($request_uri ~* \.(js|css|gif|jpe?g|png|svg|ico)) {
