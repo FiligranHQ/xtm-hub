@@ -33,7 +33,10 @@ export const EditService: FunctionComponent<EditServiceProps> = ({
   const [servicePictureMutation] =
     useMutation<serviceAddPictureMutation>(ServiceAddPicture);
 
-  const pictureMutation = (document: FileList, isLogo: boolean) => {
+  const pictureMutation = (document: FileList | undefined, isLogo: boolean) => {
+    if (!document) {
+      return;
+    }
     servicePictureMutation({
       variables: {
         serviceId: service.id,
