@@ -5,7 +5,7 @@ export const GRAPHQL_SSE = '/graphql-sse';
 
 export const manageRequest = (request: NextRequest) => {
   const { pathname, search } = request.nextUrl;
-  const serverHttpApi = process.env.SERVER_HTTP_API ?? 'http://localhost:4001';
+  const serverHttpApi = process.env.SERVER_HTTP_API ?? 'http://localhost:4002';
   if (pathname.startsWith(GRAPHQL_API)) {
     return NextResponse.rewrite(
       new URL(serverHttpApi + GRAPHQL_API, request.url)
