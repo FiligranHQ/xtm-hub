@@ -12,5 +12,5 @@
       "provider": "oidc"
     }
   ],
-  "base_url_front": "http://localhost:3001"
+  "base_url_front": "http://localhost:3002"
 }

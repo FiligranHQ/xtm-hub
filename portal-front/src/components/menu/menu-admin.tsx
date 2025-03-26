@@ -49,7 +49,7 @@ const OpenedMenuAdmin = () => {
         </AccordionTrigger>
         <AccordionContent>
           <ul className="space-y-xs">
-            <AdminLinks className="pl-12 ml-xs h-8 txt-sub-content" />
+            <AdminLinks className="pl-xl ml-xs h-8 txt-sub-content" />
           </ul>
         </AccordionContent>
       </AccordionItem>

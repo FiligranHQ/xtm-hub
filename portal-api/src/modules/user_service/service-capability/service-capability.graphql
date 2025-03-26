@@ -9,6 +9,8 @@ input EditServiceCapabilityInput {
 }
 
 type Mutation {
-  editServiceCapability(input: EditServiceCapabilityInput): SubscriptionModel
-    @auth(requires: [MANAGE_ACCESS, MANAGE_SUBSCRIPTION])
+  editServiceCapability(
+    input: EditServiceCapabilityInput
+    serviceInstanceId: String
+  ): SubscriptionModel @auth
 }

@@ -1,4 +1,4 @@
-version: '3'
+version: '4'
 services:
 
   portal-postgres:
@@ -13,7 +13,7 @@ services:
       - PGDATA=/data/postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5434:5432"
 
   pgadmin:
     image: dpage/pgadmin4
@@ -33,11 +33,11 @@ services:
       MINIO_ROOT_USER: portal
       MINIO_ROOT_PASSWORD: changeme
     ports:
-      - '9000:9000'
-      - '8900:8900'
+      - '9002:9000'
+      - '8902:8900'
     volumes:
       - 'minio:/data/minio'
-    command: 'minio server /data/minio --console-address ":8900"'
+    command: 'minio server /data/minio --console-address ":8902"'
     restart: always
     healthcheck:
       test: [ "CMD", "mc", "ready", "local" ]

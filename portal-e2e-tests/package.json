@@ -5,7 +5,7 @@
   "scripts": {
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "generate-test-e2e": "npx playwright codegen http://localhost:3001/"
+    "generate-test-e2e": "npx playwright codegen http://localhost:3002/"
   },
   "dependencies": {
     "knex": "3.1.0",

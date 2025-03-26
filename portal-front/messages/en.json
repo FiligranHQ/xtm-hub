@@ -32,6 +32,7 @@
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
+      "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
       "SERVICE_NOT_FOUND_ERROR": "The service does not exist"
     },
