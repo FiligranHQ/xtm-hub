@@ -12,7 +12,7 @@ function prepareUri(uri: string | undefined) {
     return uri.endsWith('/') ? uri : uri + '/';
   } else {
     // Default for dev
-    return 'http://localhost:4001/';
+    return 'http://localhost:4002/';
   }
 }
 
