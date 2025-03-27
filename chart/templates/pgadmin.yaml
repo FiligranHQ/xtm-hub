@@ -16,6 +16,10 @@ spec:
         app: xtmhub-pgadmin
         xtmhub.component: pgadmin
     spec:
+      {{- with .Values.xtmhub.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: pgadmin
           image: "dpage/pgadmin4:{{ .Values.postgres.pgadmin.version }}"
