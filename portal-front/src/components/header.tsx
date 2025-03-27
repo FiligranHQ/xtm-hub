@@ -50,7 +50,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   return (
     <header
       className={cn(
-        'sticky top-0 z-[100] flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between',
+        'sticky top-0 z-[20] flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between',
         displayLogo ? '' : 'sm:justify-end'
       )}>
       <DisplayLogo
