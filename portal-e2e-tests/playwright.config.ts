@@ -18,8 +18,14 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Parallel test is breaking tests */
+  workers: 1,
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixels: 100,
+      pathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+    },
+  },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
