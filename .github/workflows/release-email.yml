@@ -1,9 +1,6 @@
 name: Send Release Email
 
 on:
-  release:
-    types:
-      - published
   workflow_dispatch:
 
 jobs:
