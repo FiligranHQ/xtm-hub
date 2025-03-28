@@ -1,4 +1,5 @@
 import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
+import { ShareLinkButton } from '@/components/ui/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { fromGlobalId } from '@/utils/globaId';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -211,6 +212,7 @@ const Page = async ({
             ))}
           </div>
           <div className="flex items-center gap-2 ml-auto">
+            {<ShareLinkButton url={`${pageUrl}`} />}
             <Button
               asChild
               className="whitespace-nowrap">

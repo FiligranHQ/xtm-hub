@@ -11,6 +11,6 @@ export const db = knex({
     password: process.env.E2E_BASE_URL
       ? process.env.POSTGRES_PASSWORD
       : 'portal-password',
-    port: process.env.E2E_BASE_URL ? Number(process.env.DATABASE_PORT) : 5432,
+    port: process.env.E2E_BASE_URL ? Number(process.env.DATABASE_PORT) : 5434,
   },
 });

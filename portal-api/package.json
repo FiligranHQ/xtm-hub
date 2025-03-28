@@ -34,8 +34,10 @@
     "prepare": "cd .. && husky ./.husky",
     "seed:make:test": "VITEST_MODE=true && yarn knex:run seed:make",
     "start-dev-test": "VITEST_MODE=true && START_DEV_SERVER=true && yarn start-dev",
+    "start-dev-e2e-test": "yarn clean-db-test && VITEST_MODE=true && START_DEV_SERVER=true && DATA_SEEDING=true && yarn start-dev",
     "test:w": "VITEST_MODE=true && vitest",
     "init-db-test": "VITEST_MODE=true tsx tests/script/create-database.ts",
+    "clean-db-test": "VITEST_MODE=true tsx tests/script/clean-database.ts",
     "lint-staged": "lint-staged"
   },
   "dependencies": {

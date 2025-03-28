@@ -87,15 +87,18 @@ export async function seed(knex) {
     },
   ]);
 
-  await knex('ServiceDefinition').insert([
-    {
-      id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-      name: 'ServiceDef',
-      description: 'myDescription',
-      public: true,
-      identifier: 'vault',
-    },
-  ]);
+  await knex('ServiceDefinition')
+    .insert([
+      {
+        id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+        name: 'ServiceDef',
+        description: 'myDescription',
+        public: true,
+        identifier: 'vault',
+      },
+    ])
+    .onConflict('id')
+    .ignore();
 
   await knex('ServiceInstance')
     .insert([
