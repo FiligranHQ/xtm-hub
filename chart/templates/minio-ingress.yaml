@@ -4,6 +4,7 @@ kind: Ingress
 metadata:
   name: {{ .Release.Namespace}}-{{ .Release.Name }}-ingress-minio
   annotations:
+    blackbox.io/path: minio/health/live
     cert-manager.io/cluster-issuer: {{ .Values.tls_issuer }}
     external-dns.alpha.kubernetes.io/hostname: s3.{{ .Values.xtmhub.host }}
     external-dns.alpha.kubernetes.io/ttl: "120"
