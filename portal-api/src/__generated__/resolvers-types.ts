@@ -752,7 +752,7 @@ export enum ServiceDefinitionIdentifier {
 
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
-  capabilities?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  capabilities: Array<Maybe<Scalars['String']['output']>>;
   creation_status?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -1515,7 +1515,7 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
 }>;
 
 export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstance'] = ResolversParentTypes['ServiceInstance']> = ResolversObject<{
-  capabilities?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  capabilities?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
   creation_status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
