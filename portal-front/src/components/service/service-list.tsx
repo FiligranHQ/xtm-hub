@@ -95,8 +95,8 @@ const ServiceList = ({
     return ownedServices.reduce(
       (acc, service) => {
         if (
-          service.subscription!.service_instance!.service_definition!
-            .identifier === h
+          service.subscription?.service_instance?.service_definition
+            ?.identifier === h
         ) {
           acc.highlighted.push(service);
         } else {
