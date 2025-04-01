@@ -13,8 +13,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
-  serviceInstanceId: String!
-  organizationId: String!
+  subscriptionId: ID!
 }
 
 input UserServiceDeleteInput {
@@ -25,7 +24,7 @@ input UserServiceDeleteInput {
 
 type Mutation {
   addUserService(input: UserServiceAddInput!): SubscriptionModel @auth
-  deleteUserService(input: UserServiceDeleteInput!): SubscriptionModel @auth
+  deleteUserService(input: UserServiceDeleteInput!): UserService @auth
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance @auth
 }
 type Query {
@@ -41,6 +40,13 @@ type Query {
     after: ID
     orderBy: UserServiceOrdering!
     orderMode: OrderingMode!
+  ): UserServiceConnection @auth
+  userServiceFromSubscription(
+    first: Int!
+    after: ID
+    orderBy: UserServiceOrdering!
+    orderMode: OrderingMode!
+    subscription_id: ID!
   ): UserServiceConnection @auth
 }
 type UserServiceConnection {

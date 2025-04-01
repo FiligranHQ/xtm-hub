@@ -449,7 +449,7 @@ export const grantServiceAccess = async (
     dataUserServices
   )) as [UserService];
 
-  const [subscription] = await loadSubscriptionBy({
+  const [subscription] = await loadSubscriptionBy(context, {
     'Subscription.id': subscriptionId,
   } as SubscriptionMutator);
   for (const userId of usersId) {

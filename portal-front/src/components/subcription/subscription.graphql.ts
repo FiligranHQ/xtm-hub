@@ -74,3 +74,34 @@ export const AddSubscriptionMutation = graphql`
     }
   }
 `;
+
+export const SubscriptionByIdWithService = graphql`
+  query subscriptionByIdWithServiceQuery($subscriptionId: ID) {
+    subscriptionByIdWithService(subscription_id: $subscriptionId) {
+      id
+      organization {
+        id
+        name
+      }
+      service_instance {
+        id
+        name
+        description
+        service_definition {
+          service_capability {
+            id
+            name
+            description
+          }
+        }
+      }
+      subscription_capability {
+        id
+        service_capability {
+          id
+          name
+        }
+      }
+    }
+  }
+`;

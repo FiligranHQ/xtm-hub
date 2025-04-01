@@ -9,7 +9,4 @@
 - [ ] E2E tests
 - [ ] Local tests
 
-# Additional information: 
-
-
-Close #issueNumber 
+# Additional information:

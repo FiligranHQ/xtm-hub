@@ -2,7 +2,6 @@
 
 import { EditService } from '@/components/service/edit-service';
 import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
-import useGoToServiceLink from '@/hooks/useGoToServiceLink';
 import { i18nKey } from '@/utils/datatable';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
@@ -17,7 +16,6 @@ interface AdminServiceTabProps {
 
 const AdminServiceTab = ({ serviceData }: AdminServiceTabProps) => {
   const t = useTranslations();
-  const goToServiceLink = useGoToServiceLink();
   const router = useRouter();
 
   const columns: ColumnDef<serviceList_fragment$data>[] = [
@@ -61,12 +59,6 @@ const AdminServiceTab = ({ serviceData }: AdminServiceTabProps) => {
                   {t('Service.GoToAdminLabel')}
                 </IconActionsButton>
               )}
-              <IconActionsButton
-                aria-label={t('Service.GoTo')}
-                onClick={() => goToServiceLink(row.original, row.id)}>
-                {t('Service.GoToLabel')}
-              </IconActionsButton>
-
               <EditService service={row.original} />
             </IconActions>
           </div>

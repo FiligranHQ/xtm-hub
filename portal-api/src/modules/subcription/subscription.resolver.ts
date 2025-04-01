@@ -181,8 +181,8 @@ const resolvers: Resolvers = {
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
       try {
-        const [subscription] = await loadSubscriptionBy({
-          id: extractId(subscription_id),
+        const [subscription] = await loadSubscriptionBy(context, {
+          'Subscription.id': extractId<SubscriptionId>(subscription_id),
         } as SubscriptionMutator);
 
         // TODO: to be rethought when billing is used in XTM
@@ -207,6 +207,14 @@ const resolvers: Resolvers = {
         }
         throw UnknownError('DELETE_SUBSCRIPTION_ERROR', { detail: error });
       }
+    },
+  },
+  Query: {
+    subscriptionByIdWithService: async (_, { subscription_id }, context) => {
+      const essai = await loadSubscriptionBy(context, {
+        'Subscription.id': extractId<SubscriptionId>(subscription_id),
+      } as SubscriptionMutator);
+      return essai[0];
     },
   },
 };

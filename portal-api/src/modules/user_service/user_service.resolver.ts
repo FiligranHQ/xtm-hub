@@ -42,6 +42,7 @@ import {
 import {
   getSubscription,
   getUserServiceCapabilities,
+  loadUserServiceBySubscription,
   loadUserServiceByUser,
 } from './user_service.domain';
 
@@ -61,6 +62,22 @@ const resolvers: Resolvers = {
         orderBy,
       });
     },
+    userServiceFromSubscription: async (
+      _,
+      { first, after, orderMode, orderBy, subscription_id },
+      context
+    ) => {
+      return loadUserServiceBySubscription(
+        context,
+        {
+          first,
+          after,
+          orderMode,
+          orderBy,
+        },
+        fromGlobalId(subscription_id).id
+      );
+    },
   },
   Mutation: {
     addUserService: async (_, { input }, context) => {
@@ -69,9 +86,8 @@ const resolvers: Resolvers = {
         if (input.email.some((email) => email === context.user.email)) {
           throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
         }
-        const [subscription] = await loadSubscriptionBy({
-          service_instance_id: extractId(input.serviceInstanceId),
-          organization_id: extractId(input.organizationId),
+        const [subscription] = await loadSubscriptionBy(context, {
+          'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
         } as SubscriptionMutator);
 
         if (!subscription) {
@@ -134,21 +150,18 @@ const resolvers: Resolvers = {
       });
 
       if (usersServices.length === 0) {
-        const [subscription] = await loadSubscriptionBy({
+        const [subscription] = await loadSubscriptionBy(context, {
           id: deletedUserService.subscription_id,
         });
         await db<Subscription>(context, 'Subscription')
-          .where('id', '=', subscription.id)
+          .where('Subscription.id', '=', subscription.id)
           .delete('*')
           .returning('*');
       }
 
-      const subscription = await fillSubscriptionWithOrgaServiceAndUserService(
-        context,
-        extractId(input.subscriptionId) as SubscriptionId
-      );
-
-      return subscription;
+      return loadSubscriptionBy(context, {
+        'Subscription.id': extractId(input.subscriptionId),
+      } as SubscriptionMutator);
     },
     selfJoinServiceInstance: async (_, { service_instance_id }, context) => {
       const trx = await dbTx();

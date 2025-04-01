@@ -23,7 +23,7 @@ import {
   useToast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { Dispatch, FunctionComponent, SetStateAction } from 'react';
+import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
@@ -32,14 +32,11 @@ interface ServiceSlugAddOrgaFormSheetProps {
   serviceId: string;
   subscriptions: subscriptionWithUserService_fragment$data[];
   capabilities: serviceCapability_fragment$data[];
-  setSelectedSubscription: Dispatch<
-    SetStateAction<subscriptionWithUserService_fragment$data>
-  >;
 }
 
 export const ServiceSlugAddOrgaForm: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ serviceId, subscriptions, capabilities, setSelectedSubscription }) => {
+> = ({ serviceId, subscriptions, capabilities }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const [organizations] = getOrganizations();
   const t = useTranslations();
@@ -86,11 +83,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
           response.addSubscriptionInService?.subscriptions?.find(
             (sub) => sub?.organization.id === inputValue.organization_id
           );
-        if (findOrganization) {
-          setSelectedSubscription(
-            findOrganization as subscriptionWithUserService_fragment$data
-          );
-        }
+
         toast({
           title: t('Utils.Success'),
           description: t('ServiceActions.OrganizationAdded', {

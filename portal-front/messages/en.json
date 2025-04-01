@@ -140,6 +140,7 @@
       "AccessServiceDescription": "You just have access to a service"
     },
     "Management": {
+      "Subscription": "Subscription",
       "Email": "Email",
       "FirstName": "First Name",
       "LastName": "Last Name",
