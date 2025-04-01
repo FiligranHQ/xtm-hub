@@ -1,12 +1,15 @@
 import { db, dbUnsecure } from '../../../knexfile';
 import { OrganizationCapabilitiesInput } from '../../__generated__/resolvers-types';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { UserId } from '../../model/kanel/public/User';
+import Organization, {
+  OrganizationId,
+} from '../../model/kanel/public/Organization';
+import User, { UserId } from '../../model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationInitializer,
   UserOrganizationMutator,
 } from '../../model/kanel/public/UserOrganization';
 import { PortalContext } from '../../model/portal-context';
+import { sendMail } from '../../server/mail-service';
 import { extractId, isEmpty } from '../../utils/utils';
 import {
   createUserOrganizationCapability,
@@ -118,23 +121,36 @@ export const updateUserOrgCapabilities = async (
 export const createUserOrgCapabilities = async (
   context: PortalContext,
   {
-    user_id,
-    organization_id,
+    user,
+    organization,
     orgCapabilities,
+    userExists,
   }: {
-    user_id: UserId;
-    organization_id: OrganizationId;
+    user: User;
+    organization: Organization;
     orgCapabilities: string[];
+    userExists: boolean;
   }
 ) => {
   const [userOrganization] = await insertNewUserOrganization(context, {
-    user_id,
-    organization_id,
+    user_id: user.id,
+    organization_id: organization.id,
   });
   await updateUserOrganizationCapability(context, {
     user_organization_id: userOrganization.id,
     capabilities_name: orgCapabilities,
   });
+  if (userExists) {
+    await sendMail({
+      to: user.email,
+      template: 'new_user_organization',
+      params: {
+        organizationName: organization.name,
+        inviterName: `${context.user.first_name} ${context.user.last_name}`,
+        invitedName: `${user.first_name} ${user.last_name}`,
+      },
+    });
+  }
   return true;
 };
 
