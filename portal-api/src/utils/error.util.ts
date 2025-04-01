@@ -31,7 +31,7 @@ const errorUtil = (
 ) => {
   const Exception = createError(name, { data, message });
   console.trace(name, data, message);
-  if (information.detail instanceof Error) {
+  if (information?.detail instanceof Error) {
     console.error('Original error:', information.detail);
   }
   return new Exception();
