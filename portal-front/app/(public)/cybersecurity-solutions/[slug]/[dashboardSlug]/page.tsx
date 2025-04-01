@@ -114,6 +114,9 @@ export async function generateMetadata({
       {
         url: imageUrl,
         alt: `${customDashboard.name} - Dashboard Preview`,
+        width: 1200,
+        height: 630,
+        type: 'image/png',
       },
     ];
     metadata.twitter!.images = [imageUrl];
