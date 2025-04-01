@@ -226,7 +226,7 @@ export type Mutation = {
   addSubscription?: Maybe<ServiceInstance>;
   addSubscriptionInService?: Maybe<ServiceInstance>;
   addUser?: Maybe<User>;
-  addUserService?: Maybe<SubscriptionModel>;
+  addUserService?: Maybe<UserService>;
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
   changeSelectedOrganization?: Maybe<User>;
@@ -1383,7 +1383,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
   addSubscriptionInService?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionInServiceArgs>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
-  addUserService?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
+  addUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;

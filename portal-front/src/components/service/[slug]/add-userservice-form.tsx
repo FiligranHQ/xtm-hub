@@ -52,7 +52,7 @@ import {
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 
-interface ServiceSlugFormSheetProps {
+interface AddUserServiceFormProps {
   connectionId: string;
   userService: userService_fragment$data;
   subscription: subscriptionWithUserService_fragment$data;
@@ -64,7 +64,7 @@ interface ServiceSlugFormSheetProps {
   subscriptionId: string;
 }
 
-export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
+export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
   connectionId,
   userService,
   subscription,
@@ -167,7 +167,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   const onSubmitExtendSchema = (values: z.infer<typeof extendedSchema>) => {
     commitUserServiceMutation({
       variables: {
-        connections: [connectionId],
+        connections: [connectionId ?? ''],
         input: {
           email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,

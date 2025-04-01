@@ -21,7 +21,7 @@ import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.
 import { useMutation } from 'react-relay';
 
 import { PortalContext } from '@/components/me/app-portal-context';
-import { ServiceSlugForm } from '@/components/service/[slug]/service-slug-form';
+import { AddUserServiceForm } from '@/components/service/[slug]/add-userservice-form';
 import { SubscriptionByIdWithService } from '@/components/subcription/subscription.graphql';
 import {
   BreadcrumbNav,
@@ -31,6 +31,7 @@ import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing
 import TriggerButton from '@/components/ui/trigger-button';
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { subscriptionByIdWithServiceQuery } from '@generated/subscriptionByIdWithServiceQuery.graphql';
+import { userService_fragment$data } from '@generated/userService_fragment.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
 import {
   PreloadedQuery,
@@ -50,7 +51,9 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
   subscriptionId,
 }) => {
   const t = useTranslations();
-
+  const [currentUser, setCurrentUser] = useState<userService_fragment$data>(
+    {} as userService_fragment$data
+  );
   const queryData = usePreloadedQuery<userServiceFromSubscriptionQuery>(
     UserServiceFromSubscription,
     queryRef
@@ -173,7 +176,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
                 <IconActionsButton
                   aria-label="Edit user rights"
                   onClick={() => {
-                    // setCurrentUser(row.original);
+                    setCurrentUser(row.original);
                     setOpenSheet(true);
                   }}>
                   {t('Utils.Update')}
@@ -211,7 +214,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
   const deleteCurrentUser = (email: string) => {
     commitUserServiceDeletingMutation({
       variables: {
-        connections: [queryData.userServiceFromSubscription?.__id ?? ''],
+        connections: [userServices.userServiceFromSubscription?.__id ?? ''],
         input: {
           email,
           subscriptionId,
@@ -244,14 +247,13 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           trigger={
             <TriggerButton
               label={t('Service.Management.InviteUser.TitleInviteUser')}
+              onClick={() => setCurrentUser(undefined)}
             />
           }
           title={t('InviteUserServiceForm.Title')}>
-          <ServiceSlugForm
-            userService={undefined}
-            connectionId={
-              queryDataSubscription.subscriptionByIdWithService?.__id ?? ''
-            }
+          <AddUserServiceForm
+            userService={currentUser}
+            connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
             serviceCapabilities={
               queryDataSubscription.subscriptionByIdWithService
                 ?.service_instance?.service_definition?.service_capability ??

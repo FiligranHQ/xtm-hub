@@ -23,10 +23,7 @@ import {
   grantServiceAccess,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
-import {
-  checkSubscriptionExists,
-  fillSubscriptionWithOrgaServiceAndUserService,
-} from '../subcription/subscription.domain';
+import { checkSubscriptionExists } from '../subcription/subscription.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserDetails } from '../users/users.domain';
 import {
@@ -93,6 +90,7 @@ const resolvers: Resolvers = {
         if (!subscription) {
           throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
         }
+        let createdUserService;
         for (const email of input.email) {
           const user = await getOrCreateUser({
             email: email,
@@ -105,7 +103,7 @@ const resolvers: Resolvers = {
           );
 
           if (!userServiceAlreadyExist) {
-            await createUserServiceAccess(context, trx, {
+            createdUserService = await createUserServiceAccess(context, trx, {
               subscription_id: subscription.id,
               user_id: user.id as UserId,
               capabilities: input.capabilities,
@@ -115,10 +113,7 @@ const resolvers: Resolvers = {
 
         await trx.commit();
 
-        return await fillSubscriptionWithOrgaServiceAndUserService(
-          context,
-          subscription.id as SubscriptionId
-        );
+        return createdUserService;
       } catch (error) {
         await trx.rollback();
         if (error.name.includes(ALREADY_EXISTS)) {
@@ -159,9 +154,7 @@ const resolvers: Resolvers = {
           .returning('*');
       }
 
-      return loadSubscriptionBy(context, {
-        'Subscription.id': extractId(input.subscriptionId),
-      } as SubscriptionMutator);
+      return deletedUserService;
     },
     selfJoinServiceInstance: async (_, { service_instance_id }, context) => {
       const trx = await dbTx();
