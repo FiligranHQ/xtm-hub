@@ -303,7 +303,8 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
         )::json AS organization_capabilities`
       ),
     ])
-    .groupBy(['User.id']);
+    .groupBy(['User.id'])
+    .secureQuery({ opts1: 'options1' });
 
   if (!isAdmin(context)) {
     loadUserQuery.where(
@@ -365,6 +366,7 @@ export const updateUser = async (
     })
       .where({ id })
       .update(input)
+      .secureQuery()
       .returning('*');
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
