@@ -102,6 +102,7 @@ export async function generateMetadata({
       url: `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}`,
       type: 'website',
       siteName: 'XTM Hub by Filigran',
+      locale: 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
@@ -115,6 +116,9 @@ export async function generateMetadata({
       {
         url: `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
         alt: serviceInstance.name,
+        width: 1200,
+        height: 630,
+        type: 'png',
       },
     ];
     metadata.twitter!.images = [
