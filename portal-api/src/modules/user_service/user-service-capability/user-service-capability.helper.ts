@@ -122,9 +122,11 @@ export const loadCapabilities = async (
     )
     .select(
       dbRaw(
-        `json_agg(
-    COALESCE("Generic_Service_Capability".name, "Service_Capability".name)
-  ) AS capabilities`
+        `COALESCE(
+          json_agg(
+            COALESCE("Generic_Service_Capability".name, "Service_Capability".name)
+          ), '[]'::json
+        ) AS capabilities`
       )
     );
   return subscriptionWithCapabilities.capabilities;
