@@ -37,7 +37,8 @@ export const updateUserOrganizationCapability = async (
 ): Promise<UserOrganizationCapability[]> => {
   await db(context, 'UserOrganization_Capability')
     .where({ user_organization_id })
-    .delete();
+    .delete()
+    .secureQuery();
 
   if (capabilities_name.length === 0) {
     return [];
@@ -49,5 +50,6 @@ export const updateUserOrganizationCapability = async (
     }));
   return db(context, 'UserOrganization_Capability')
     .insert(usersOrgCapa)
-    .returning('*');
+    .returning('*')
+    .secureQuery();
 };

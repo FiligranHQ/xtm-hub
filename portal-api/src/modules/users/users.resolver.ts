@@ -275,6 +275,10 @@ const resolvers: Resolvers = {
         if (error.message === 'CANT_REMOVE_LAST_ADMINISTRATOR') {
           throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
         }
+        if (error.name === 'FORBIDDEN_ACCESS') {
+          logApp.warn('Forbidden access while editing user');
+          throw ForbiddenAccess('Not authorized');
+        }
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
         });
