@@ -34,16 +34,16 @@ import { z } from 'zod';
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 export const updateCustomDashboardSchema = z.object({
-  name: z.string().nonempty(),
-  shortDescription: z.string().max(255).optional(),
+  name: z.string().min(1, 'Required'),
+  shortDescription: z.string().max(255).min(1, 'Required'),
   productVersion: z.string().regex(/^\d+\.\d+\.\d+$/, {
     message: 'Product version must be X.Y.Z',
   }),
-  description: z.string().optional(),
+  description: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   images: z.custom<FileList>(fileListCheck).optional(),
-  slug: z.string().optional(),
+  slug: z.string().min(1, 'Required'),
 });
 
 interface CustomDashboardFormProps {

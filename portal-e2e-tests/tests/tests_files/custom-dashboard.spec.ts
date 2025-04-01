@@ -6,6 +6,7 @@ const DASHBOARD_TEST = {
   name: 'e2e dashboard name',
   shortDescription: 'This is a short description',
   version: '1.0.0',
+  description: 'This is a dashboard description markdown',
 };
 
 test.describe.serial('Custom dashboard', () => {

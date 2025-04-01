@@ -26,9 +26,9 @@ import { z } from 'zod';
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 export const newCustomDashboardSchema = z.object({
-  name: z.string().nonempty(),
-  shortDescription: z.string().max(255),
-  description: z.string().optional(),
+  name: z.string().min(1, 'Required'),
+  shortDescription: z.string().max(255).min(1, 'Required'),
+  description: z.string().min(1, 'Required'),
   productVersion: z.string().regex(/^\d+\.\d+\.\d+$/, {
     message: 'Product version must be X.Y.Z',
   }),
@@ -38,7 +38,7 @@ export const newCustomDashboardSchema = z.object({
   images: z.custom<FileList>(fileListCheck),
   active: z.boolean().optional(),
   labels: z.array(z.string()).optional(),
-  slug: z.string(),
+  slug: z.string().min(1, 'Required'),
 });
 
 export type CustomDashboardFormValues = z.infer<

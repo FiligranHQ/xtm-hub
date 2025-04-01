@@ -38,10 +38,12 @@ export default class DashboardPage {
     name,
     shortDescription,
     version,
+    description,
   }: {
     name: string;
     shortDescription: string;
     version: string;
+    description: string;
   }) {
     await this.page.getByLabel('Add new dashboard').click();
     await this.page.getByPlaceholder('Dashboard name').fill(name);
@@ -49,6 +51,9 @@ export default class DashboardPage {
       .getByPlaceholder('This is some catchphrases to')
       .fill(shortDescription);
     await this.page.getByPlaceholder('1.0.0').fill(version);
+    await this.page
+      .getByRole('textbox', { name: 'This is a paragraph to' })
+      .fill(description);
     await this.page.getByLabel('Publish').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
