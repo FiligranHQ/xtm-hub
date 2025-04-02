@@ -5,3 +5,4 @@ Allow: /$
 Allow: /cybersecurity-solutions
 Allow: /cybersecurity-solutions/
 Allow: /cybersecurity-solutions/*
+Allow: /document/images/*
