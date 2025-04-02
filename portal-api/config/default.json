@@ -34,8 +34,8 @@
     "useSsl": false
   },
   "smtp_options": {
-    "host": "changeMe",
-    "port": 587,
+    "host": "localhost",
+    "port": 1025,
     "secure": false,
     "auth": {
       "user": "changeMe",
