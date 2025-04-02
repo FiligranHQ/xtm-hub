@@ -6,8 +6,8 @@ export interface GenericServiceMailModel {
 export type WelcomeMailModel = Record<string, unknown>;
 export interface NewUserOrganizationMailModel {
   organizationName: string;
+  userName: string;
   invitedName: string;
-  inviterName: string;
 }
 
 // ATTENTION, the key should be the same as the template file
