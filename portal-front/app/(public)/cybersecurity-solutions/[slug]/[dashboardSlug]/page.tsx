@@ -1,4 +1,8 @@
 import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
+import { ShareLinkButton } from '@/components/ui/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { fromGlobalId } from '@/utils/globaId';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -10,7 +14,7 @@ import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
-import { Badge, Button } from 'filigran-ui/servers';
+import { Button } from 'filigran-ui/servers';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -113,6 +117,9 @@ export async function generateMetadata({
       {
         url: imageUrl,
         alt: `${customDashboard.name} - Dashboard Preview`,
+        width: 1200,
+        height: 630,
+        type: 'image/png',
       },
     ];
     metadata.twitter!.images = [imageUrl];
@@ -201,16 +208,13 @@ const Page = async ({
           <h1 className="whitespace-nowrap">{customDashboard?.name}</h1>
 
           <div className="flex gap-s overflow-hidden flex-1 items-center">
-            {customDashboard?.labels?.map(({ id, name, color }) => (
-              <Badge
-                key={id}
-                color={color}
-                className="whitespace-nowrap">
-                {name}
-              </Badge>
-            ))}
+            <BadgeOverflowCounter
+              badges={customDashboard?.labels as BadgeOverflow[]}
+              className="z-[2]"
+            />
           </div>
           <div className="flex items-center gap-2 ml-auto">
+            {<ShareLinkButton url={`${pageUrl}`} />}
             <Button
               asChild
               className="whitespace-nowrap">

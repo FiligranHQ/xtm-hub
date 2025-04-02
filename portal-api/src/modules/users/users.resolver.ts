@@ -23,7 +23,10 @@ import {
   updateMultipleUserOrgWithCapabilities,
   updateUserOrgCapabilities,
 } from '../common/user-organization.domain';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
+import {
+  loadOrganizationBy,
+  loadOrganizationsFromEmail,
+} from '../organizations/organizations.helper';
 import {
   getCapabilities,
   getOrganizations,
@@ -101,14 +104,17 @@ const resolvers: Resolvers = {
         const [organizationFromEmail] = await loadOrganizationsFromEmail(
           input.email
         );
-        //
-        const chosenOrganization: OrganizationId =
-          context.user.selected_organization_id;
+
+        const chosenOrganization = await loadOrganizationBy(
+          context,
+          'id',
+          context.user.selected_organization_id
+        );
 
         // The admin orga should only allow to add users in the same organization and with the same domain.
         // Only the admin PLTFM can by pass this check
         if (
-          chosenOrganization !== organizationFromEmail?.id &&
+          chosenOrganization.id !== organizationFromEmail?.id &&
           !context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)
         ) {
           throw ForbiddenAccess('EMAIL_OUTSIDE_ORGANIZATION_ERROR');
@@ -123,13 +129,14 @@ const resolvers: Resolvers = {
               password: input.password,
               first_name: input.first_name,
               last_name: input.last_name,
-              selected_organization_id: chosenOrganization,
+              selected_organization_id: chosenOrganization.id,
             });
 
         await createUserOrgCapabilities(context, {
-          user_id: user.id,
-          organization_id: chosenOrganization,
+          user,
+          organization: chosenOrganization,
           orgCapabilities: input.capabilities ?? [],
+          userExists: !!existingUser,
         });
 
         const loadUserFinalUser = await loadUserBy({

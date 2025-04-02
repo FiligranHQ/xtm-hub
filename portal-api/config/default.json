@@ -7,7 +7,7 @@
   },
   "database": {
     "host": "127.0.0.1",
-    "port": 5432,
+    "port": 5434,
     "user": "portal",
     "password": "portal-password",
     "database": "cloud-portal"
@@ -34,8 +34,8 @@
     "useSsl": false
   },
   "smtp_options": {
-    "host": "changeMe",
-    "port": 587,
+    "host": "localhost",
+    "port": 1025,
     "secure": false,
     "auth": {
       "user": "changeMe",

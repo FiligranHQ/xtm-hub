@@ -20,6 +20,7 @@ import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashb
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
+import { ShareLinkButton } from '@/components/ui/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -88,6 +89,11 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
         <BadgeOverflowCounter
           badges={documentData?.labels as BadgeOverflow[]}
         />
+
+        <ShareLinkButton
+          url={`${window.location.origin}/cybersecurity-solutions/${documentData?.service_instance?.slug}/${documentData?.slug}`}
+        />
+
         <div className="flex items-center gap-2 ml-auto">
           {(userCanDelete || userCanUpdate) && (
             <DashboardUpdate

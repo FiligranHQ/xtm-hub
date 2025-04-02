@@ -60,6 +60,21 @@ export async function createDatabase() {
   }
 }
 
+export async function cleanDatabase() {
+  const dbConnection = getDbConnection();
+  try {
+    await dbConnection.raw(
+      `DROP DATABASE IF EXISTS ${DATABASE_TEST} WITH (FORCE)`
+    );
+    await dbConnection.raw('CREATE DATABASE test_database');
+  } catch (err) {
+    logApp.error(err);
+    throw err;
+  } finally {
+    await dbConnection.destroy();
+  }
+}
+
 export async function setup() {
   await createDatabase();
 }

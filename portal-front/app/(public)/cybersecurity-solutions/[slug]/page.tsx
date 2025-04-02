@@ -2,6 +2,7 @@ import CustomDashboardBento from '@/components/service/custom-dashboards/custom-
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
+import { ShareLinkButton } from '@/components/ui/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globaId';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -114,6 +115,9 @@ export async function generateMetadata({
       {
         url: `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
         alt: serviceInstance.name,
+        width: 1200,
+        height: 630,
+        type: 'image/png',
       },
     ];
     metadata.twitter!.images = [
@@ -239,6 +243,9 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                     <div className="flex items-center justify-between">
                       <BadgeOverflowCounter
                         badges={customDashboard?.labels as BadgeOverflow[]}
+                      />
+                      <ShareLinkButton
+                        url={`${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
                       />
                     </div>
                     <h2 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">

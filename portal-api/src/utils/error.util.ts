@@ -1,6 +1,11 @@
 import { createError } from 'apollo-errors';
 import { logApp } from './app-logger.util';
 
+interface Information {
+  detail?: Error | string;
+  [key: string]: unknown;
+}
+
 enum ErrorCategory {
   BadRequest = 'BAD_REQUEST',
   Conflict = 'CONFLICT',
@@ -21,10 +26,14 @@ const errorUtil = (
   data: Record<string, unknown> & {
     genre?: ErrorCategory;
     http_status?: number;
-  }
+  },
+  information?: Information
 ) => {
   const Exception = createError(name, { data, message });
   console.trace(name, data, message);
+  if (information?.detail instanceof Error) {
+    console.error('Original error:', information.detail);
+  }
   return new Exception();
 };
 export const FORBIDDEN_ACCESS = 'FORBIDDEN_ACCESS';
@@ -49,7 +58,7 @@ export const ForbiddenAccess = (
 
 export const UnknownError = (
   message: string,
-  information?: Record<string, unknown>,
+  information?: Information,
   data?: Record<string, unknown>
 ) => {
   logApp.error(message + ' details: ' + information.detail);
@@ -60,50 +69,66 @@ export const UnknownError = (
       http_status: 500,
       genre: ErrorCategory.Technical,
       ...data,
-    }
+    },
+    information
   );
 };
 
 export const StillReferencedError = (
   message?: string,
-  information?: Record<string, unknown>,
+  information?: Information,
   data?: Record<string, unknown>
 ) => {
   logApp.error(message + ' details: ' + information.detail);
 
-  return errorUtil(ErrorType.StillReference, message, {
-    http_status: 200,
-    genre: ErrorCategory.Conflict,
-    ...data,
-  });
+  return errorUtil(
+    ErrorType.StillReference,
+    message,
+    {
+      http_status: 200,
+      genre: ErrorCategory.Conflict,
+      ...data,
+    },
+    information
+  );
 };
 
 export const AlreadyExistsError = (
   message?: string,
-  information?: Record<string, unknown>,
+  information?: Information,
   data?: Record<string, unknown>
 ) => {
   logApp.error(message + ' details: ' + information.detail);
 
-  return errorUtil(ErrorType.AlreadyExists, message, {
-    http_status: 200,
-    genre: ErrorCategory.Conflict,
-    ...data,
-  });
+  return errorUtil(
+    ErrorType.AlreadyExists,
+    message,
+    {
+      http_status: 200,
+      genre: ErrorCategory.Conflict,
+      ...data,
+    },
+    information
+  );
 };
 
 export const NotFoundError = (
   message?: string,
-  information?: Record<string, unknown>,
+  information?: Information,
   data?: Record<string, unknown>
 ) => {
   logApp.error(
     `${message} ${information ? `details: ${information.detail}` : ''}`
   );
 
-  return errorUtil(ErrorType.NotFound, message, {
-    http_status: 200,
-    genre: ErrorCategory.BadRequest,
-    ...data,
-  });
+  return errorUtil(
+    ErrorType.NotFound,
+    message,
+    {
+      http_status: 200,
+      genre: ErrorCategory.BadRequest,
+      ...data,
+    },
+    information
+  );
 };

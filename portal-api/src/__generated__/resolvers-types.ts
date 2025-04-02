@@ -88,6 +88,7 @@ export type Document = Node & {
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   product_version?: Maybe<Scalars['String']['output']>;
+  service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
   slug?: Maybe<Scalars['String']['output']>;
@@ -751,7 +752,7 @@ export enum ServiceDefinitionIdentifier {
 
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
-  capabilities?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  capabilities: Array<Maybe<Scalars['String']['output']>>;
   creation_status?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -1259,6 +1260,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1513,7 +1515,7 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
 }>;
 
 export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstance'] = ResolversParentTypes['ServiceInstance']> = ResolversObject<{
-  capabilities?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  capabilities?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
   creation_status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

@@ -589,3 +589,9 @@ export const loadSeoServiceInstanceBySlug = (
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
     .first();
 };
+
+export const getServiceInstance = async (context, id) => {
+  return await db<ServiceInstance>(context, 'ServiceInstance')
+    .where('ServiceInstance.id', '=', id)
+    .first();
+};

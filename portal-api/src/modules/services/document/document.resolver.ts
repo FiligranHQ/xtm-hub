@@ -9,6 +9,7 @@ import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
+import { getServiceInstance } from '../service-instance.domain';
 import {
   deleteDocument,
   getChildrenDocuments,
@@ -103,6 +104,9 @@ const resolvers: Resolvers = {
       getLabels(context, id, {
         unsecured: true,
       }),
+    service_instance: ({ service_instance_id }, _, context) => {
+      return getServiceInstance(context, service_instance_id);
+    },
   },
   Query: {
     documentExists: async (_, input) => {
