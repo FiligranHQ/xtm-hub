@@ -319,7 +319,7 @@ const resolvers: Resolvers = {
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateSelectedOrganization(
         context.user.id,
-        fromGlobalId(organization_id).id
+        fromGlobalId(organization_id).id as OrganizationId
       );
       const newUser = await loadUserBy({ 'User.id': updatedUser.id });
       context.req.session.user = newUser;

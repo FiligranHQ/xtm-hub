@@ -1,4 +1,4 @@
-import { FormatDate } from '@/utils/date';
+import { formatDate } from '@/utils/date';
 import * as React from 'react';
 
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -39,7 +39,7 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
           {t('Service.CustomDashboards.Details.LastUpdatedAt')}
         </Label>
         <span>
-          {FormatDate(
+          {formatDate(
             documentData.updated_at ?? documentData.created_at,
             'DATE_FULL'
           )}

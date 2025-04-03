@@ -29,6 +29,7 @@ type User implements Node {
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
   selected_org_capabilities: [String!]
+  last_login: Date
 }
 
 type UserEdge {

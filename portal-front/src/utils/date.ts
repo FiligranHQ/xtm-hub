@@ -8,7 +8,7 @@ export type DateStyleFunctionMap = {
   [key in FormatDateStyle]: DateTimeFormatOptions;
 };
 
-const dateStyleFormat: DateStyleFunctionMap = {
+const DATE_STYLE_FORMAT: DateStyleFunctionMap = {
   DATE_NUMERIC: {
     year: 'numeric',
     month: 'numeric',
@@ -28,7 +28,7 @@ const dateStyleFormat: DateStyleFunctionMap = {
   },
 };
 
-export const FormatDate = (
+export const formatDate = (
   date?: Date | string,
   dateStyle: FormatDateStyle = 'DATE_NUMERIC'
 ) => {
@@ -40,7 +40,7 @@ export const FormatDate = (
   const format = useFormatter();
 
   return format.dateTime(dateObject, {
-    ...dateStyleFormat[dateStyle],
+    ...DATE_STYLE_FORMAT[dateStyle],
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 };

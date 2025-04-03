@@ -143,6 +143,7 @@ export const getOrCreateUser = async (
     await dbUnsecure<User>('User')
       .where({ id: user.id })
       .update({
+        last_login: new Date(),
         first_name: isEmpty(user.first_name)
           ? userInfo.first_name
           : user.first_name,

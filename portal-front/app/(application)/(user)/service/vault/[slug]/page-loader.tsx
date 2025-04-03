@@ -6,7 +6,7 @@ import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { i18nKey } from '@/utils/datatable';
-import { FormatDate } from '@/utils/date';
+import { formatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -37,7 +37,7 @@ const PageLoader: React.FunctionComponent = ({}) => {
     {
       id: 'created_at',
       header: t('Service.Vault.FileTab.UploadDate'),
-      cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
+      cell: ({ row }) => <>{formatDate(row.original.created_at)}</>,
     },
     {
       accessorKey: 'download_number',

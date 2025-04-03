@@ -25,6 +25,8 @@ export default interface User {
   picture: string | null;
 
   disabled: boolean | null;
+
+  last_login: Date | null;
 }
 
 /** Represents the initializer for the table public.User */

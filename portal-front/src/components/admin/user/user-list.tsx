@@ -12,6 +12,7 @@ import useAdminPath from '@/hooks/useAdminPath';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import { formatDate } from '@/utils/date';
 import {
   userList_fragment$data,
   userList_fragment$key,
@@ -84,6 +85,7 @@ export const UserFragment = graphql`
     last_name
     first_name
     disabled
+    last_login
     organization_capabilities {
       id
       organization {
@@ -212,6 +214,20 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
                     {t(disabled ? 'Badge.Disabled' : 'Badge.Enabled')}
                   </Badge>
                 </div>
+              );
+            },
+          },
+          {
+            accessorKey: 'last_login',
+            id: 'last_login',
+            header: t('UserListPage.LastLogin'),
+            cell: ({ row }: { row: { original: userList_fragment$data } }) => {
+              return (
+                <span className="truncate">
+                  {row.original.last_login
+                    ? formatDate(row.original.last_login, 'DATE_FULL')
+                    : t('UserListPage.Never')}
+                </span>
               );
             },
           },

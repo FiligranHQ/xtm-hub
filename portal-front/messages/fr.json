@@ -374,8 +374,10 @@
       "SelectRoles": "Sélectionner rôles",
       "SelectOrganization": "Sélectionner une organisation",
       "Email": "Email",
-      "Password": "Password"
-    }
+      "Password": "Mot de passe"
+    },
+    "LastLogin": "Dernière connexion",
+    "Never": "Jamais"
   },
   "MenuActions": {
     "Delete": "Supprimer",

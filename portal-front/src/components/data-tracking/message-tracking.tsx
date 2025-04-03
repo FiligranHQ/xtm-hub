@@ -1,5 +1,5 @@
 import { messageTrackingFragment } from '@/components/data-tracking/tracking.graphql';
-import { FormatDate } from '@/utils/date';
+import { formatDate } from '@/utils/date';
 import {
   trackingMessage_fragment$data,
   trackingMessage_fragment$key,
@@ -43,7 +43,7 @@ export const MessageTracking: FunctionComponent<MessageTrackingProps> = ({
               className="border-b">
               <AccordionTrigger>
                 <h2 className="py-2">
-                  <strong>{type}</strong> {FormatDate(created_at)}
+                  <strong>{type}</strong> {formatDate(created_at)}
                 </h2>
               </AccordionTrigger>
               <AccordionContent>

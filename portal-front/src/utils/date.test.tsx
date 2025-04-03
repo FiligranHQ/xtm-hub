@@ -1,4 +1,4 @@
-import { FormatDate } from '@/utils/date';
+import { formatDate } from '@/utils/date';
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
@@ -10,7 +10,7 @@ describe('date', () => {
       return <TestWrapper>{children}</TestWrapper>;
     };
     const { result } = renderHook(
-      () => FormatDate('2024-11-08T10:20:30Z', false),
+      () => formatDate('2024-11-08T10:20:30Z', false),
       {
         wrapper,
       }
@@ -19,14 +19,14 @@ describe('date', () => {
   });
 
   it('should return null for undefined input', () => {
-    expect(FormatDate(undefined)).toBe(null);
+    expect(formatDate(undefined)).toBe(null);
   });
 
   it('should return null for empty string input', () => {
-    expect(FormatDate('')).toBe(null);
+    expect(formatDate('')).toBe(null);
   });
 
   it('should return null for invalid date input', () => {
-    expect(FormatDate(null)).toBe(null);
+    expect(formatDate(null)).toBe(null);
   });
 });

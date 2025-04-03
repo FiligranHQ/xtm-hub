@@ -1,4 +1,4 @@
-import { FormatDate } from '@/utils/date';
+import { formatDate } from '@/utils/date';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
@@ -25,7 +25,7 @@ const CustomDashboardBento = ({
         </div>
         <div className="flex flex-1 gap-xs text-xs">
           <div className="flex items-center justify-center flex-[3] rounded border dark:text-white">
-            {FormatDate(
+            {formatDate(
               customDashboard.updated_at ?? customDashboard.created_at,
               'DATE_FULL'
             )}

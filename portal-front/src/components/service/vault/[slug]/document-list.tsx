@@ -26,7 +26,7 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
-import { FormatDate } from '@/utils/date';
+import { formatDate } from '@/utils/date';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
@@ -127,7 +127,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       id: 'created_at',
       header: t('Service.Vault.FileTab.UploadDate'),
       size: 100,
-      cell: ({ row }) => <>{FormatDate(row.original.created_at)}</>,
+      cell: ({ row }) => <>{formatDate(row.original.created_at)}</>,
     },
     {
       accessorKey: 'download_number',
