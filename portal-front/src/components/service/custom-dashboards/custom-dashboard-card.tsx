@@ -90,7 +90,9 @@ const CustomDashboardCard = ({
             badges={customDashboard?.labels as BadgeOverflow[]}
             className="z-[2]"
           />
-          <ShareLinkButton url={`${window.location.origin}/${detailUrl}`} />
+          <ShareLinkButton
+            url={`${window.location.origin}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
+          />
 
           {(userCanUpdate || userCanDelete) && (
             <IconActions
