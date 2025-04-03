@@ -225,6 +225,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                 customDashboard={
                   customDashboard as unknown as documentItem_fragment$data
                 }
+                detailUrl={`/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
               />
             ))}
           </ul>

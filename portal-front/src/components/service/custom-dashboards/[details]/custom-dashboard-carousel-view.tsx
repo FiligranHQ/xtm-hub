@@ -1,3 +1,4 @@
+'use client';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { Carousel, CarouselItem, DialogContent } from 'filigran-ui/clients';
 import * as React from 'react';

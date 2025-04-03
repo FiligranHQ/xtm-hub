@@ -23,12 +23,14 @@ interface CustomDashboardCardProps {
   customDashboard: documentItem_fragment$data;
   connectionId?: string;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  detailUrl: string;
 }
 
 const CustomDashboardCard = ({
   customDashboard,
   connectionId,
   serviceInstance,
+  detailUrl,
 }: CustomDashboardCardProps) => {
   const router = useRouter();
 
@@ -46,9 +48,7 @@ const CustomDashboardCard = ({
   );
 
   const handleClickCarousel = () => {
-    router.push(
-      `/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`
-    );
+    router.push(detailUrl);
   };
 
   return (
@@ -90,9 +90,7 @@ const CustomDashboardCard = ({
             badges={customDashboard?.labels as BadgeOverflow[]}
             className="z-[2]"
           />
-          <ShareLinkButton
-            url={`${window.location.origin}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
-          />
+          <ShareLinkButton url={`${window.location.origin}/${detailUrl}`} />
 
           {(userCanUpdate || userCanDelete) && (
             <IconActions
@@ -116,7 +114,7 @@ const CustomDashboardCard = ({
         </div>
         <Link
           className="focus:outline-none focus:ring-2 focus:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0"
-          href={`/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`}>
+          href={detailUrl}>
           <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
             {customDashboard?.short_description}
           </h3>

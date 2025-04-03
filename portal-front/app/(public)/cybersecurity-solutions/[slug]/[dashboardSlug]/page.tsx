@@ -1,3 +1,4 @@
+import DashboardCarousel from '@/components/service/custom-dashboards/[details]/custom-dashboard-carousel-view';
 import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
 import BadgeOverflowCounter, {
   BadgeOverflow,
@@ -13,10 +14,10 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
+import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Button } from 'filigran-ui/servers';
 import { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
@@ -226,15 +227,16 @@ const Page = async ({
           </div>
         </div>
         {customDashboard.children_documents.length > 0 && (
-          <div className="relative h-[35vh] overflow-hidden rounded-t-lg">
-            <Image
-              src={`/document/images/${serviceInstance.id}/${customDashboard.children_documents[0]!.id}`}
-              fill
-              objectFit="cover"
-              objectPosition="top"
-              alt={customDashboard.name}
-            />
-          </div>
+          <DashboardCarousel
+            serviceInstance={
+              serviceInstance as unknown as NonNullable<
+                serviceByIdQuery$data['serviceInstanceById']
+              >
+            }
+            documentData={
+              customDashboard as unknown as documentItem_fragment$data
+            }
+          />
         )}
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
           <div className="flex-[3_3_0%]">

@@ -131,6 +131,7 @@ const CustomDashbordDocumentList = ({
             connectionId={data!.documents!.__id}
             key={node.id}
             customDashboard={node}
+            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${node.id}`}
           />
         ))}
       </ul>
