@@ -262,7 +262,6 @@ const Page = async ({
                   documentData={
                     customDashboard as unknown as documentItem_fragment$data
                   }
-                  downloadNumber={customDashboard.download_number}
                 />
               )}
             </section>

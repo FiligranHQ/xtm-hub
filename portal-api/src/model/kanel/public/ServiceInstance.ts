@@ -28,6 +28,10 @@ export default interface ServiceInstance {
   logo_document_id: DocumentId | null;
 
   illustration_document_id: string | null;
+
+  slug: string | null;
+
+  ordering: number | null;
 }
 
 /** Represents the initializer for the table public.ServiceInstance */
@@ -54,6 +58,11 @@ export interface ServiceInstanceInitializer {
   logo_document_id?: DocumentId | null;
 
   illustration_document_id?: string | null;
+
+  slug?: string | null;
+
+  /** Default value: 0 */
+  ordering?: number | null;
 }
 
 /** Represents the mutator for the table public.ServiceInstance */
@@ -77,4 +86,8 @@ export interface ServiceInstanceMutator {
   logo_document_id?: DocumentId | null;
 
   illustration_document_id?: string | null;
+
+  slug?: string | null;
+
+  ordering?: number | null;
 }

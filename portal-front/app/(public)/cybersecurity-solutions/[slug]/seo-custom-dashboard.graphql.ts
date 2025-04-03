@@ -11,6 +11,7 @@ export const SeoServiceInstanceFragment = graphql`
     updated_at
     slug
     download_number
+    share_number
     children_documents {
       id
     }

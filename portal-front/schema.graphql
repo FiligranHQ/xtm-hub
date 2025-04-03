@@ -130,6 +130,7 @@ type SeoCustomDashboard {
   updated_at: Date
   updater_id: String
   download_number: Int
+  share_number: Int
   product_version: String
   children_documents: [SeoCustomDashboardImage]
   labels: [Label]
@@ -171,6 +172,7 @@ type Document implements Node {
   updated_at: Date
   updater_id: String
   download_number: Int
+  share_number: Int
   product_version: String
   children_documents: [Document!]
   labels: [Label!]!
