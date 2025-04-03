@@ -3,9 +3,10 @@ import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/
 import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
 import {
-  documentsList$data,
-  documentsList$key,
-} from '@generated/documentsList.graphql';
+  documentItem_fragment$data,
+  documentItem_fragment$key,
+} from '@generated/documentItem_fragment.graphql';
+import { documentsList$key } from '@generated/documentsList.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button, MultiSelectFormField } from 'filigran-ui';
@@ -14,10 +15,12 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import {
   PreloadedQuery,
+  readInlineData,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
 import {
+  documentItem,
   documentsFragment,
   DocumentsListQuery,
 } from '../../document/document.graphql';
@@ -56,16 +59,18 @@ const CustomDashbordDocumentList = ({
 
   const [active, _nonActive] = useMemo(() => {
     return data?.documents.edges.reduce<
-      [
-        documentsList$data['documents']['edges'][0]['node'][],
-        documentsList$data['documents']['edges'][0]['node'][],
-      ]
+      [documentItem_fragment$data[], documentItem_fragment$data[]]
     >(
       (acc, { node }) => {
-        if (node.active) {
-          acc[0].push(node);
+        const customDashboard = readInlineData<documentItem_fragment$key>(
+          documentItem,
+          node
+        );
+
+        if (customDashboard.active) {
+          acc[0].push(customDashboard);
         } else {
-          acc[1].push(node);
+          acc[1].push(customDashboard);
         }
         return acc;
       },
@@ -125,7 +130,7 @@ const CustomDashbordDocumentList = ({
             serviceInstance={serviceInstance}
             connectionId={data!.documents!.__id}
             key={node.id}
-            data={node}
+            customDashboard={node}
           />
         ))}
       </ul>
