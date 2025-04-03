@@ -30,13 +30,14 @@ import { z, ZodSchema } from 'zod';
 
 interface ServiceSlugAddOrgaFormSheetProps {
   serviceId: string;
+  serviceName: string;
   subscriptions: subscriptionWithUserService_fragment$data[];
   capabilities: serviceCapability_fragment$data[];
 }
 
 export const ServiceSlugAddOrgaForm: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ serviceId, subscriptions, capabilities }) => {
+> = ({ serviceId, serviceName, subscriptions, capabilities }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const [organizations] = getOrganizations();
   const t = useTranslations();
@@ -88,6 +89,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
           title: t('Utils.Success'),
           description: t('ServiceActions.OrganizationAdded', {
             name: findOrganization?.organization?.name,
+            serviceName: serviceName,
           }),
         });
         setOpenSheet(false);

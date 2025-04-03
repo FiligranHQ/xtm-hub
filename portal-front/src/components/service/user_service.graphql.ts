@@ -59,7 +59,7 @@ export const userServiceOwnedFragment = graphql`
       edges {
         node {
           id
-          ...userServices_fragment
+          ...userServicesOwned_fragment @relay(mask: false)
         }
       }
     }
@@ -119,6 +119,7 @@ export const userServicesFragment = graphql`
   fragment userServices_fragment on UserService @inline {
     id
     user {
+      id
       first_name
       last_name
       email

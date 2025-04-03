@@ -57,6 +57,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const breadcrumbValue: BreadcrumbNavLink[] = [
     ...(isAdminPath
       ? [
+          { label: 'MenuLinks.Home', href: '/' },
           { label: 'MenuLinks.Settings' },
           { label: 'MenuLinks.Services', href: '/admin/service' },
         ]
@@ -91,7 +92,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               }>
               <IconActionsButton
                 onClick={() => {
-                  router.push(`/manage/service/${row.id}`);
+                  router.push(`/admin/service/${row.id}/subscription`);
                 }}>
                 {t('Service.Management.ManageUsers')}
               </IconActionsButton>
@@ -166,6 +167,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                   ?.service_capability as unknown as serviceCapability_fragment$data[]
               }
               serviceId={serviceId}
+              serviceName={queryData.serviceInstanceByIdWithSubscriptions?.name}
             />
           </SheetWithPreventingDialog>
         )}

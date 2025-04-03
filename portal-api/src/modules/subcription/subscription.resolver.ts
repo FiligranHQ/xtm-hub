@@ -211,10 +211,11 @@ const resolvers: Resolvers = {
   },
   Query: {
     subscriptionByIdWithService: async (_, { subscription_id }, context) => {
-      const essai = await loadSubscriptionBy(context, {
+      const subscriptions = await loadSubscriptionBy(context, {
         'Subscription.id': extractId<SubscriptionId>(subscription_id),
       } as SubscriptionMutator);
-      return essai[0];
+
+      return subscriptions[0];
     },
   },
 };

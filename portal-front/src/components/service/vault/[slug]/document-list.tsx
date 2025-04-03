@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions } from '@/components/ui/icon-actions';
 import { SearchInput } from '@/components/ui/search-input';
-import useDecodedParams from '@/hooks/useDecodedParams';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
@@ -78,7 +77,6 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     DocumentsListQuery,
     queryRef
   );
-  const { slug } = useDecodedParams();
   const t = useTranslations();
   const [data, refetch] = useRefetchableFragment<
     documentsQuery,
@@ -307,7 +305,8 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                 <Button
                   asChild
                   variant="outline">
-                  <Link href={`/manage/service/${slug}`}>
+                  <Link
+                    href={`/manage/service/vault=${documentData[0]?.service_instance?.id}/subscription/${documentData[0]?.subscription?.id}`}>
                     {t('Service.Vault.ManageVault')}
                   </Link>
                 </Button>

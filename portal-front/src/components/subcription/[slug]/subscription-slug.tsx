@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/breadcrumb-nav';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
+import useAdminByPass from '@/hooks/useAdminByPass';
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { subscriptionByIdWithServiceQuery } from '@generated/subscriptionByIdWithServiceQuery.graphql';
 import { userService_fragment$data } from '@generated/userService_fragment.graphql';
@@ -43,12 +44,14 @@ interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
   queryRefSubscription: PreloadedQuery<subscriptionByIdWithServiceQuery>;
   subscriptionId: string;
+  service: string | undefined;
 }
 
 const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
   queryRef,
   queryRefSubscription,
   subscriptionId,
+  service,
 }) => {
   const t = useTranslations();
   const [currentUser, setCurrentUser] = useState<userService_fragment$data>(
@@ -77,6 +80,38 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
 
   const { me } = useContext(PortalContext);
 
+  const isAdmin = useAdminByPass();
+  const breadcrumbValue: BreadcrumbNavLink[] = isAdmin
+    ? [
+        { label: 'MenuLinks.Home', href: '/' },
+        { label: 'MenuLinks.Settings' },
+        { label: 'MenuLinks.Services', href: '/admin/service' },
+        {
+          label:
+            queryDataSubscription.subscriptionByIdWithService?.service_instance
+              ?.name,
+          href: `/admin/service/${queryDataSubscription.subscriptionByIdWithService?.service_instance?.id}`,
+        },
+        {
+          label:
+            queryDataSubscription.subscriptionByIdWithService?.organization
+              ?.name,
+          original: true,
+        },
+      ]
+    : [
+        { label: 'MenuLinks.Home', href: '/' },
+        {
+          label: service.includes('dashboards')
+            ? 'OpenCTI Custom dashboards library'
+            : 'Vault partner',
+          href: `/service/${decodeURIComponent(service).replace('=', '/')}`,
+        },
+        {
+          label: t('Service.Management.ManageUsers'),
+        },
+      ];
+
   const canManageService = () => {
     return userData.some((userService) => {
       return (
@@ -89,34 +124,16 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       );
     });
   };
-
-  const breadcrumbValue: BreadcrumbNavLink[] = [
-    { label: 'MenuLinks.Home', href: '/' },
-    { label: 'MenuLinks.Settings' },
-    { label: 'MenuLinks.Services', href: '/admin/service' },
-    {
-      label:
-        queryDataSubscription.subscriptionByIdWithService?.service_instance
-          ?.name,
-      href: `/admin/service/${queryDataSubscription.subscriptionByIdWithService?.service_instance?.id}`,
-    },
-    {
-      label:
-        queryDataSubscription.subscriptionByIdWithService?.organization?.name,
-      original: true,
-    },
-  ];
-
   const columns: ColumnDef<userServiceFromSubscription$data>[] = useMemo(() => [
     {
       accessorKey: 'user.first_name',
       id: 'first_name',
-      header: 'first NAAAME',
+      header: 'First name',
     },
     {
       accessorKey: 'user.last_name',
       id: 'last_name',
-      header: 'last NAAAME',
+      header: 'Last name',
     },
     {
       accessorKey: 'user.email',
@@ -135,23 +152,25 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
             {GenericCapabilityName.Access}
           </Badge>
         ) : (
-          row.original?.user_service_capability?.map((user_service_capa) =>
-            user_service_capa?.generic_service_capability?.name !==
-            GenericCapabilityName.Access ? (
-              <Badge
-                key={
-                  user_service_capa?.generic_service_capability?.id ??
-                  user_service_capa?.subscription_capability?.service_capability
-                    ?.id
-                }
-                className="mb-2 mr-2 mt-2 uppercase">
-                {user_service_capa?.generic_service_capability?.name ??
-                  user_service_capa?.subscription_capability?.service_capability
-                    ?.name}
-              </Badge>
-            ) : (
-              <></>
-            )
+          row.original?.user_service_capability?.map(
+            (user_service_capa, index) =>
+              user_service_capa?.generic_service_capability?.name !==
+              GenericCapabilityName.Access ? (
+                <Badge
+                  key={
+                    user_service_capa?.generic_service_capability?.id ??
+                    user_service_capa?.subscription_capability
+                      ?.service_capability?.id ??
+                    `fallback-${index}`
+                  }
+                  className="mb-2 mr-2 mt-2 uppercase">
+                  {user_service_capa?.generic_service_capability?.name ??
+                    user_service_capa?.subscription_capability
+                      ?.service_capability?.name}
+                </Badge>
+              ) : (
+                <></>
+              )
           )
         );
       },
@@ -250,7 +269,11 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
               onClick={() => setCurrentUser(undefined)}
             />
           }
-          title={t('InviteUserServiceForm.Title')}>
+          title={t('InviteUserServiceForm.Title', {
+            serviceName:
+              queryDataSubscription.subscriptionByIdWithService
+                ?.service_instance?.name,
+          })}>
           <AddUserServiceForm
             userService={currentUser}
             connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
@@ -259,17 +282,21 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
                 ?.service_instance?.service_definition?.service_capability ??
               ([] as unknown as serviceCapability_fragment$data[])
             }
-            serviceName={'dsds'}
+            serviceName={
+              queryDataSubscription.subscriptionByIdWithService
+                ?.service_instance?.name
+            }
             serviceId={queryData.serviceInstanceByIdWithSubscriptions?.id ?? ''}
             subscription={
               queryDataSubscription.subscriptionByIdWithService
                 ?.subscription_capability
             }
             organizationId={
-              queryDataSubscription.subscriptionByIdWithService.organization.id
+              queryDataSubscription?.subscriptionByIdWithService?.organization
+                ?.id
             }
             subscriptionId={
-              queryDataSubscription.subscriptionByIdWithService.id
+              queryDataSubscription.subscriptionByIdWithService?.id
             }
           />
         </SheetWithPreventingDialog>
@@ -283,19 +310,32 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       <BreadcrumbNav value={breadcrumbValue} />
 
       <h1>
-        {t('Service.Management.Subscription')}:
-        {queryDataSubscription.subscriptionByIdWithService?.organization?.name}
+        {t('Service.Management.ManageUsersForOrganization', {
+          organizationName:
+            queryDataSubscription.subscriptionByIdWithService?.organization
+              ?.name,
+        })}
       </h1>
-      {/*TODO : What do we do with that ? */}
       {queryDataSubscription.subscriptionByIdWithService
         ?.subscription_capability.length > 0 && (
         <div className="border rounded border-border-light p-l">
-          <h2 className="mb-l">{t('InviteUserServiceForm.Capabilities')}: </h2>
-          {queryDataSubscription.subscriptionByIdWithService?.service_instance?.service_definition?.service_capability?.map(
-            (serviceCapa) => {
+          <h2>{t('InviteUserServiceForm.Capabilities')}: </h2>
+          <div className="italic mb-l">
+            {t('InviteUserServiceForm.CapabilitiesDescription', {
+              organizationName:
+                queryDataSubscription.subscriptionByIdWithService?.organization
+                  .name,
+              serviceName:
+                queryDataSubscription.subscriptionByIdWithService
+                  .service_instance.name,
+            })}
+          </div>
+          {queryDataSubscription.subscriptionByIdWithService?.subscription_capability?.map(
+            (subscriptionCapa) => {
               return (
-                <div key={serviceCapa.id}>
-                  {serviceCapa.name}: {serviceCapa.description}
+                <div key={subscriptionCapa?.id}>
+                  {subscriptionCapa?.service_capability.name}:{' '}
+                  {subscriptionCapa?.service_capability.description}
                 </div>
               );
             }

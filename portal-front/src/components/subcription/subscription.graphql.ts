@@ -100,6 +100,7 @@ export const SubscriptionByIdWithService = graphql`
         service_capability {
           id
           name
+          description
         }
       }
     }

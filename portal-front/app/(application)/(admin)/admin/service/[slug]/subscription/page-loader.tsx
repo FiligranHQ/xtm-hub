@@ -39,6 +39,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
   useMountingLoader(loadQuerySubscription, {
     subscriptionId: id,
   });
+
   return (
     <>
       {queryRef && queryRefSubscription ? (
@@ -46,6 +47,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
           queryRef={queryRef}
           queryRefSubscription={queryRefSubscription}
           subscriptionId={id}
+          service={undefined}
         />
       ) : (
         <Loader />

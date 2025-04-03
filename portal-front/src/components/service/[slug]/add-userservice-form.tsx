@@ -246,8 +246,8 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
     if (id === GenericCapabilityName.ManageAccess) {
       return false;
     }
-    return !subscription?.some(
-      (subscriptionCapa) => id === subscriptionCapa?.service_capability.id
+    return !subscription?.subscription_capability?.some(
+      (subscriptionCapa) => id === subscriptionCapa?.service_capability?.id
     );
   };
 

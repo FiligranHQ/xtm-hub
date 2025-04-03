@@ -125,3 +125,10 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
   }
   return userServicesData;
 };
+
+export const loadSubscription = async (context, id) => {
+  return await db<Subscription>(context, 'Subscription')
+    .where('service_instance_id', '=', id)
+    .where('organization_id', '=', context.user.selected_organization_id)
+    .first();
+};

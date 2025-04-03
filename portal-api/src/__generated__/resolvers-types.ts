@@ -93,6 +93,7 @@ export type Document = Node & {
   share_number: Scalars['Int']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
   slug?: Maybe<Scalars['String']['output']>;
+  subscription?: Maybe<SubscriptionModel>;
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
@@ -948,7 +949,7 @@ export enum UserOrdering {
 export type UserService = Node & {
   __typename?: 'UserService';
   id: Scalars['ID']['output'];
-  ordering: Scalars['Int']['output'];
+  ordering?: Maybe<Scalars['Int']['output']>;
   subscription?: Maybe<SubscriptionModel>;
   subscription_id: Scalars['ID']['output'];
   user?: Maybe<User>;
@@ -1302,6 +1303,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -1701,7 +1703,7 @@ export type UserEdgeResolvers<ContextType = PortalContext, ParentType extends Re
 
 export type UserServiceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserService'] = ResolversParentTypes['UserService']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  ordering?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   subscription_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;

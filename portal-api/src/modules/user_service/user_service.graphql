@@ -67,7 +67,7 @@ type UserService implements Node {
   user: User
   subscription: SubscriptionModel
   user_service_capability: [UserServiceCapability]
-  ordering: Int!
+  ordering: Int
 }
 
 type UserServiceDeleted implements Node {

@@ -5,169 +5,298 @@
     "CollapseSidebar": "Réduire la sidebar",
     "Title": "XTM Hub"
   },
+  "Badge": {
+    "Disabled": "Désactivé",
+    "Draft": "Brouillon",
+    "Enabled": "Activé",
+    "Published": "Publié"
+  },
+  "Datatable": {
+    "Asc": "Asc",
+    "Columns": "Colonnes",
+    "Desc": "Desc",
+    "GoFirstPage": "Aller à la première page",
+    "GoLastPage": "Aller à la dernière page",
+    "GoNextPage": "Aller à la page suivante",
+    "GoPreviousPage": "Aller à la page précédente",
+    "Hide": "Cacher",
+    "ManageColumnsVisibility": "Gérer la visibilité des colonnes",
+    "ResetTable": "Réinitialiser",
+    "RowsPerPage": "Lignes par page"
+  },
+  "DeleteLabelDialog": {
+    "TextDeleteLabel": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
+  },
+  "DialogActions": {
+    "ContinueTitle": "Progrès non sauvegardé",
+    "DeleteSentence": "Cet élément sera définitivement supprimé. Voulez-vous continuer ?",
+    "PreventSheetSentence": "Vous avez commencé à remplir le formulaire. Le fait de le fermer maintenant annulera toute progression non enregistrée. Voulez-vous continuer ?",
+    "PreventSheetTitle": "Progrès non sauvegardé"
+  },
+  "DisableUserDialog": {
+    "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
+  },
   "Error": {
-    "Server": {
-      "DELETE_ORGANIZATION": "Erreur lors de la suppression de l'organisation",
-      "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
-      "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
-      "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins une souscription y est toujours affiliée. Supprimez la/les souscription(s) d'abord.",
-      "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
-      "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
-      "DELETE_USER_ERROR": "Erreur lors de la suppression de l'utilisateur",
-      "CANT_EDIT_YOURSELF_ERROR": "Vous ne pouvez pas vous modifier vous-même",
-      "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
-      "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
-      "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
-      "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
-      "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
-      "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
-      "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
-      "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
-      "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
-      "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
-      "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation est déjà abonnée à ce service",
-      "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
-      "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
-      "SUBSCRIPTION_NOT_FOUND_ERROR": "La souscription n'existe pas",
-      "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
-      "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
-      "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
-      "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
-      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
-      "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas"
-    },
+    "AnErrorOccured": "Une erreur est survenue",
     "Login": {
       "LoginError": "Vous n'êtes pas autorisé à vous connecter"
     },
-    "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page.",
+    "Server": {
+      "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
+      "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
+      "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
+      "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation est déjà abonnée à ce service",
+      "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
+      "CANT_EDIT_YOURSELF_ERROR": "Vous ne pouvez pas vous modifier vous-même",
+      "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
+      "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
+      "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
+      "DELETE_ORGANIZATION": "Erreur lors de la suppression de l'organisation",
+      "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
+      "DELETE_USER_ERROR": "Erreur lors de la suppression de l'utilisateur",
+      "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
+      "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
+      "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
+      "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
+      "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
+      "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
+      "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
+      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
+      "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
+      "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas",
+      "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
+      "SUBSCRIPTION_NOT_FOUND_ERROR": "La souscription n'existe pas",
+      "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins une souscription y est toujours affiliée. Supprimez la/les souscription(s) d'abord.",
+      "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
+      "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
+      "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord."
+    },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
-    "AnErrorOccured": "Une erreur est survenue"
+    "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
+  },
+  "GenericActions": {
+    "FilterLabels": "Filtrer par étiquettes...",
+    "Search": "Recherche..."
   },
   "HomePage": {
     "Homepage": "Page d'accueil",
     "Manage": "Gérer",
     "OpenManagement": "Aller vers la page de management"
   },
+  "InviteUserServiceForm": {
+    "Capabilities": "Capacités disponibles",
+    "CapabilitiesDescription": "Vous pouvez ajouter des capacité spécifiques aux utilisateurs de {organizationName} pour leur souscription sur {serviceName}",
+    "CapabilitiesPlaceholder": "Sélectionner les capacités",
+    "Description": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée.",
+    "DisabledCapability": "Si vous voulez donner cette capacité à vos utilisateurs sur ce service, vous devez d'abord l'activer au niveau de l'organisation",
+    "Email": "Email",
+    "GrantCapability": "Donner cette capacité",
+    "Organization": "Organisation",
+    "Title": "Inviter l'utilisateur au service {serviceName} "
+  },
+  "LabelActions": {
+    "AddLabel": "Ajouter une étiquette",
+    "SearchLabel": "Rechercher"
+  },
+  "LabelForm": {
+    "Color": "Couleur",
+    "Name": "Nom"
+  },
+  "LabelListPage": {
+    "Color": "Couleur",
+    "Name": "Nom"
+  },
   "LocaleSwitcher": {
+    "Label": "Langage",
     "en": "English",
-    "fr": "Français",
-    "Label": "Langage"
-  },
-  "MenuUser": {
-    "ToggleUser": "Ouvrir menu utilisateur"
-  },
-  "ThemeToggle": {
-    "ToggleTheme": "Ouvrir menu thème",
-    "SetTheme": "Appliquer le thème",
-    "Light": "Clair",
-    "Dark": "Foncé",
-    "Automatic": "Automatique"
-  },
-  "OrganizationSwitcher": {
-    "SelectOrganization": "Choisir une organisation",
-    "SelectedOrganization": "Organisation choisie",
-    "PersonalSpace": "Espace personnel"
+    "fr": "Français"
   },
   "LoginPage": {
-    "Email": "Email",
-    "Login": "Connexion",
-    "SignIn": "S'inscrire",
-    "Logout": "Déconnexion",
-    "Password": "Mot de passe",
-    "Title": "Page de connexion XTM Hub",
-    "ToLoginPlease": "Pour vous connecter, veuillez",
     "CreateYourAccount": "créer votre compte",
-    "OnFiligranWebsite": "sur le site Filigran",
+    "Email": "Email",
     "Errors": {
-      "AccountNotProvidedTitle": "Votre compte n'existe pas !",
-      "AccountNotProvided": "Cette plateforme est pour l'instant dédiée aux partenaires de Filigran."
-    }
+      "AccountNotProvided": "Cette plateforme est pour l'instant dédiée aux partenaires de Filigran.",
+      "AccountNotProvidedTitle": "Votre compte n'existe pas !"
+    },
+    "Login": "Connexion",
+    "Logout": "Déconnexion",
+    "OnFiligranWebsite": "sur le site Filigran",
+    "Password": "Mot de passe",
+    "SignIn": "S'inscrire",
+    "Title": "Page de connexion XTM Hub",
+    "ToLoginPlease": "Pour vous connecter, veuillez"
+  },
+  "MenuActions": {
+    "Continue": "Continuer",
+    "Delete": "Supprimer",
+    "Details": "Détails",
+    "Disable": "Désactiver",
+    "Download": "Télécharger",
+    "Remove": "Retirer",
+    "Update": "Modifier"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",
     "Home": "Accueil",
+    "Labels": "Étiquettes",
     "Organizations": "Organisations",
     "Parameters": "Paramètres",
+    "Security": "Sécurité",
     "Services": "Services",
-    "Users": "Utilisateurs",
-    "SettingsLabel": "Menu des paramètres",
     "Settings": "Réglages",
-    "Labels": "Étiquettes",
-    "Security": "Sécurité"
+    "SettingsLabel": "Menu des paramètres",
+    "Users": "Utilisateurs"
   },
-  "LabelListPage": {
+  "MenuUser": {
+    "ToggleUser": "Ouvrir menu utilisateur"
+  },
+  "OrganizationActions": {
+    "ErrorNameAlreadyExists": "L'organisation {name} existe déjà.",
+    "OrganizationCreated": "L'organisation {name} a été créée",
+    "OrganizationDeleted": "L'organisation a été supprimée",
+    "OrganizationUpdated": "L'organisation {name} a été modifiée",
+    "SearchOrganizationWithEmail": "Recherche d'une organisation par email..."
+  },
+  "OrganizationForm": {
+    "CreateOrganization": "Créer une organisation",
+    "DeleteOrganization": "Supprimer une organisation",
+    "Domains": "Domaines",
+    "DomainsPlaceholder": "Ajouter un domaine",
+    "EditOrganization": "Modifier l'organisation",
+    "Error": {
+      "Domain": "Au moins un domaine est requis",
+      "DomainsInvalid": "La valeur du domaine n'est pas valide",
+      "DuplicateName": "Une organisation portant ce nom existe déjà",
+      "Name": "Le nom de l'organisation est requis"
+    },
     "Name": "Nom",
-    "Color": "Couleur"
+    "SureDeleteOrganization": "Êtes-vous sûr de vouloir supprimer l'organisation {organizationName} ? Cette action ne pourra pas être annulée."
   },
-  "LabelForm": {
-    "Name": "Nom",
-    "Color": "Couleur"
+  "OrganizationInServiceAction": {
+    "AddOrganization": "Abonnement de l'organisation au service",
+    "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
+    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
+    "DeleteOrgFromService": "Supprimer l'organisation du service",
+    "Organization": "Organisation",
+    "RemoveOrganization": "Supprimer l'organisation",
+    "SelectCapa": "Sélectionner les capabilités",
+    "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs.",
+    "SelectOrganization": "Sélectionner une organisation"
   },
-  "GenericActions": {
-    "Search": "Recherche...",
-    "FilterLabels": "Filtrer par étiquettes..."
+  "OrganizationSwitcher": {
+    "PersonalSpace": "Espace personnel",
+    "SelectOrganization": "Choisir une organisation",
+    "SelectedOrganization": "Organisation choisie"
   },
-  "LabelActions": {
-    "SearchLabel": "Rechercher",
-    "AddLabel": "Ajouter une étiquette"
+  "Parameters": {
+    "Version": "Version"
   },
-  "DeleteLabelDialog": {
-    "TextDeleteLabel": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
+  "RedirectPage": {
+    "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus.",
+    "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !"
   },
+  "RemoveUserOrgDialog": {
+    "TextRemoveThisUser": "Êtes-vous sûr de vouloir retirer cet utilisateur {email} de votre organisation ?"
+  },
+  "Reset table": "Remise à zéro de la table",
+  "Rows per page": "Lignes par page",
   "Service": {
-    "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
-    "CreationStatus": "Statut de la création",
+    "Capabilities": {
+      "AccessServiceDescription": "Vous avez uniquement accès à un service",
+      "AccessServiceName": "Access service",
+      "CapabilitiesTitle": "Capacités",
+      "ManageAccessDescription": "Vous pouvez accéder au service et inviter des utilisateurs à ce service",
+      "ManageAccessName": "Manage access",
+      "SelectCapabilities": "Sélectionner les capacités"
+    },
     "ComingSoon": "Bientôt disponible",
+    "CreationStatus": "Statut de la création",
+    "CustomDashboards": {
+      "Actions": {
+        "Added": "{name} has been added",
+        "Deleted": "{name} has been deleted",
+        "Updated": "{name} has been modified"
+      },
+      "AddDashboard": "Nouveau tableau de bord",
+      "Details": {
+        "Author": "Auteur",
+        "BasicInformation": "Informations de base",
+        "Downloads": "Téléchargements",
+        "LastUpdatedAt": "Dernière mise à jour le",
+        "OpenCTIVersion": "Version minimale d'OpenCTI",
+        "Overview": "Vue d'ensemble"
+      },
+      "Form": {
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Description du tableau de bord",
+        "ImageLabel": "Images",
+        "JSONFile": "Fichier JSON",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "NamePlaceholder": "Nom du tableau de bord",
+        "NoImage": "Pas d'image sélectionnée",
+        "NoJSONFile": "Pas de fichier JSON sélectionné",
+        "PublishedLabel": "Publier",
+        "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
+        "SelectImage": "Selectionnez une/des image(s)",
+        "SelectJSONFile": "Selectionnez un fichier JSON",
+        "ShortDescriptionLabel": "Brève description",
+        "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
+        "SlugLabel": "Slug (url)",
+        "SlugPlaceholder": "dashboard-slug",
+        "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
+        "productVersion": "OpenCTI version",
+        "productVersionPlaceholder": "1.0.0"
+      },
+      "FromOCTIVersion": "A partir d'OpenCTI",
+      "UpdateDashboard": "Tableau de bord des mises à jour"
+    },
     "Description": "Description",
-    "Name": "Nom",
-    "ServiceName": "Nom du service",
-    "NoOwnedService": "Vous n'avez pas encore de service.",
-    "NoService": "Il n'y a pas encore de service...",
-    "Subscribe": "Souscrire",
-    "SubscribeService": "Souscrire au service {serviceName}",
-    "SubscribeOrganization": "Souscrire une organisation",
     "GoTo": "Aller au service",
+    "GoToAdminLabel": "Administrer",
     "GoToLabel": "Consulter",
     "GoToManagement": "Aller à la gestion des services",
-    "GoToAdminLabel": "Administrer",
+    "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
     "Join": "Rejoindre",
-    "Capabilities": {
-      "CapabilitiesTitle": "Capacités",
-      "SelectCapabilities": "Sélectionner les capacités",
-      "ManageAccessName": "Manage access",
-      "ManageAccessDescription": "Vous pouvez accéder au service et inviter des utilisateurs à ce service",
-      "AccessServiceName": "Access service",
-      "AccessServiceDescription": "Vous avez uniquement accès à un service"
-    },
     "Management": {
-      "Subscription": "Souscription",
+      "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
       "Email": "Email",
       "FirstName": "Prénom",
+      "InviteUser": {
+        "InviteUser": "Ajouter un utilisateur au service",
+        "InviteUserSubtitle": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée dans l'encadré.",
+        "Organization": "Organisation",
+        "TitleInviteUser": "Inviter un utilisateur"
+      },
       "LastName": "Nom",
+      "ManageUsers": "Gérer les utilisateurs",
+      "ManageUsersForOrganization": "Gérer les utilisateurs poru {organizationName}",
       "OneUserMax": "1 utilisateur max",
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
-      "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
-      "InviteUser": {
-        "TitleInviteUser": "Inviter un utilisateur",
-        "InviteUser": "Ajouter un utilisateur au service",
-        "InviteUserSubtitle": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée dans l'encadré.",
-        "Organization": "Organisation"
-      }
+      "Subscription": "Souscription"
     },
+    "Name": "Nom",
+    "NoOwnedService": "Vous n'avez pas encore de service.",
+    "NoService": "Il n'y a pas encore de service...",
+    "ServiceName": "Nom du service",
+    "Subscribe": "Souscrire",
+    "SubscribeOrganization": "Souscrire une organisation",
+    "SubscribeService": "Souscrire au service {serviceName}",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
     "SureWantSubscriptionDirect": "Êtes-vous sûr de vouloir souscrire à ce service ? Cette action ne pourra pas être annulée.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Vault": {
+      "DeleteDocument": "Effacer le document",
       "DropFile": "Lâchez le document ici",
       "File": "Document à transmettre",
       "FileExtension": "Le document doit avoir une extension",
-      "DeleteDocument": "Effacer le document",
-      "ManageVault": "Gérer le service",
       "FileForm": {
         "AddFile": "Ajouter un document",
         "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé.",
+        "DeleteDialog": "Êtes-vous sûr de vouloir supprimer ce document ?",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est une courte description du document.",
         "DropDocuments": "Lâchez les documents ici",
@@ -175,7 +304,6 @@
         "File": "Document",
         "FileAlreadyExists": "Ce document existe déjà",
         "FileExistsDialog": "Ce document existe déjà. Ce document écrasera l'ancien document. Êtes-vous sûr de vouloir continuer ?",
-        "DeleteDialog": "Êtes-vous sûr de vouloir supprimer ce document ?",
         "NoDocument": "Pas de document sélectionné",
         "SelectDocument": "Sélectionnez un document",
         "ShortNameLabel": "Nom court",
@@ -185,10 +313,12 @@
       "FileTab": {
         "Description": "Description",
         "FileName": "Nom de document",
+        "NumberDownload": "Téléchargements",
         "Search": "Chercher par nom de document...",
-        "UploadDate": "Date d'ajout",
-        "NumberDownload": "Téléchargements"
+        "UploadDate": "Date d'ajout"
       },
+      "ManageVault": "Gérer le service",
+      "UpdateDocument": "Mise à jour du document",
       "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault",
       "UpdateDocument": "Mise à jour du document"
@@ -237,197 +367,114 @@
     }
   },
   "ServiceActions": {
+    "OrganizationAdded": "L'organisation {name} a souscrit au service {serviceName}",
     "OrganizationDeleted": "L'organisation {name} a été supprimée",
-    "OrganizationAdded": "L'organisation {name} a été ajoutée",
     "UserCapabilitiesModified": "Les capacités de {email}'s ont été modifiées",
     "UserServiceAdded": "{email} a été invité au service {serviceName}"
   },
-  "VaultActions": {
-    "DocumentDeleted": "{file_name} a été supprimé",
-    "DocumentAdded": "{file_name} a été ajouté",
-    "DocumentUpdated": "{file_name} a été modifié",
-    "UpdateDocument": "Modifier le document"
+  "ServiceForm": {
+    "EditService": "Editer les illustrations d'un service",
+    "Illustration": "Illustration du service",
+    "Logo": "Logo du service",
+    "PictureUpdated": "Illustrations mises à jour pour le service : {serviceName}",
+    "UpdatePictures": "Illustrations"
+  },
+  "ServiceName": {
+    "custom_dashboards": "Tableau de bord personnalisé"
+  },
+  "Sort Asc": "Tri Asc",
+  "Sort Desc": "Sort Desc",
+  "ThemeToggle": {
+    "Automatic": "Automatique",
+    "Dark": "Foncé",
+    "Light": "Clair",
+    "SetTheme": "Appliquer le thème",
+    "ToggleTheme": "Ouvrir menu thème"
+  },
+  "UpdateUserDialog": {
+    "TextUpdatedUser": "Votre compte a été modifié par un administrateur. Le comportement de l'application peut donc évoluer.",
+    "TextUpdatedUserTitle": "Compte modifié !"
+  },
+  "UserActions": {
+    "AddUser": "Ajouter un utilisateur",
+    "CreateUser": "Créer un nouvel utilisateur",
+    "DetailsUser": "Détails de l'utilisateur",
+    "Disable": "Désactiver",
+    "Enable": "Activer",
+    "RemoveUser": "Retirer l'utilisateur",
+    "SearchUserWithEmail": "Rechercher l'utilisateur par email...",
+    "UpdateUser": "Mettre à jour l'utilisateur",
+    "UserCreated": "L'utilisateur {email} a été créé",
+    "UserDeleted": "L'utilisateur {email} a été supprimé",
+    "UserRemoved": "L'utilisateur {email} a été supprimé",
+    "UserUpdated": "L'utilisateur {email} a été modifié"
+  },
+  "UserForm": {
+    "Email": "Courriel",
+    "Error": {
+      "FirstName": "Le prénom est requis",
+      "LastName": "Le nom de famille est requis"
+    },
+    "FirstName": "Prénom",
+    "LastName": "Nom de famille",
+    "OrganizationCapabilities": "Capacités",
+    "Organizations": "Organisations",
+    "OrganizationsCapabilitiesPlaceholder": "Capacités supplémentaires",
+    "OrganizationsPlaceholder": "Sélectionner une organisation",
+    "Password": "Mot de passe",
+    "WhoAreYou": "Qui êtes-vous ?",
+    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom"
+  },
+  "UserListPage": {
+    "Email": "Email",
+    "FirstName": "Prénom",
+    "LastName": "Nom de famille",
+    "Organizations": "Organisations",
+    "Roles": "Rôles",
+    "Status": "Statut",
+    "Title": "Liste des utilisateurs",
+    "UserForm": {
+      "Email": "Email",
+      "Password": "Password",
+      "SelectOrganization": "Sélectionner une organisation",
+      "Email": "Email",
+      "Password": "Mot de passe",
+      "SelectRoles": "Sélectionner rôles"
+    },
+    "LastLogin": "Dernière connexion",
+    "Never": "Jamais"
   },
   "Utils": {
     "Cancel": "Annuler",
     "Close": "Fermer",
     "Continue": "Continuer",
+    "Copied": "Copié",
     "Create": "Créer",
     "Delete": "Supprimer",
     "Deleted": "a été supprimé",
     "Download": "Télécharger",
-    "Visualize": "Visualiser",
     "Error": "Erreur",
+    "FailedToCopy": "Échec de la copie",
     "Form": {
       "ResetFile": "Supprimer l'actuel document sélectionné."
     },
     "Inserted": "a été inséré",
     "Loading": "Chargement...",
     "Modified": "a été modifié",
+    "NotFound": "Non trouvé",
     "OpenMenu": "Ouvrir le menu",
     "Reset": "Effacer",
     "Success": "Succès",
     "Update": "Editer",
     "Validate": "Valider",
     "ValidateForm": "Valider le formulaire",
-    "NotFound": "Non trouvé",
-    "Copied": "Copié",
-    "FailedToCopy": "Échec de la copie"
+    "Visualize": "Visualiser"
   },
-  "DisableUserDialog": {
-    "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
+  "VaultActions": {
+    "DocumentAdded": "{file_name} a été ajouté",
+    "DocumentDeleted": "{file_name} a été supprimé",
+    "DocumentUpdated": "{file_name} a été modifié",
+    "UpdateDocument": "Modifier le document"
   },
-  "UpdateUserDialog": {
-    "TextUpdatedUser": "Votre compte a été modifié par un administrateur. Le comportement de l'application peut donc évoluer.",
-    "TextUpdatedUserTitle": "Compte modifié !"
-  },
-  "RemoveUserOrgDialog": {
-    "TextRemoveThisUser": "Êtes-vous sûr de vouloir retirer cet utilisateur {email} de votre organisation ?"
-  },
-  "OrganizationActions": {
-    "OrganizationCreated": "L'organisation {name} a été créée",
-    "OrganizationUpdated": "L'organisation {name} a été modifiée",
-    "OrganizationDeleted": "L'organisation a été supprimée",
-    "ErrorNameAlreadyExists": "L'organisation {name} existe déjà.",
-    "SearchOrganizationWithEmail": "Recherche d'une organisation par email..."
-  },
-  "OrganizationInServiceAction": {
-    "RemoveOrganization": "Supprimer l'organisation",
-    "DeleteOrgFromService": "Supprimer l'organisation du service",
-    "SelectOrganization": "Sélectionner une organisation",
-    "Organization": "Organisation",
-    "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
-    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
-    "AddOrganization": "Abonnement de l'organisation au service",
-    "SelectCapa": "Sélectionner les capabilités",
-    "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs."
-  },
-  "InviteUserServiceForm": {
-    "Title": "Inviter l'utilisateur au service",
-    "Description": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée.",
-    "Email": "Email",
-    "Organization": "Organisation",
-    "Capabilities": "Capacités",
-    "CapabilitiesPlaceholder": "Sélectionner les capacités",
-    "DisabledCapability": "Si vous voulez donner cette capacité à vos utilisateurs sur ce service, vous devez d'abord l'activer au niveau de l'organisation",
-    "GrantCapability": "Donner cette capacité"
-  },
-  "UserActions": {
-    "UpdateUser": "Mettre à jour l'utilisateur",
-    "DetailsUser": "Détails de l'utilisateur",
-    "CreateUser": "Créer un nouvel utilisateur",
-    "AddUser": "Ajouter un utilisateur",
-    "RemoveUser": "Retirer l'utilisateur",
-    "UserCreated": "L'utilisateur {email} a été créé",
-    "UserUpdated": "L'utilisateur {email} a été modifié",
-    "UserDeleted": "L'utilisateur {email} a été supprimé",
-    "UserRemoved": "L'utilisateur {email} a été supprimé",
-    "SearchUserWithEmail": "Rechercher l'utilisateur par email...",
-    "Enable": "Activer",
-    "Disable": "Désactiver"
-  },
-  "UserForm": {
-    "Organizations": "Organisations",
-    "OrganizationsPlaceholder": "Sélectionner une organisation",
-    "OrganizationCapabilities": "Capacités",
-    "OrganizationsCapabilitiesPlaceholder": "Capacités supplémentaires",
-    "Password": "Mot de passe",
-    "Email": "Courriel",
-    "FirstName": "Prénom",
-    "LastName": "Nom de famille",
-    "WhoAreYou": "Qui êtes-vous ?",
-    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom",
-    "Error": {
-      "FirstName": "Le prénom est requis",
-      "LastName": "Le nom de famille est requis"
-    }
-  },
-  "OrganizationForm": {
-    "EditOrganization": "Modifier l'organisation",
-    "CreateOrganization": "Créer une organisation",
-    "DeleteOrganization": "Supprimer une organisation",
-    "SureDeleteOrganization": "Êtes-vous sûr de vouloir supprimer l'organisation {organizationName} ? Cette action ne pourra pas être annulée.",
-    "Name": "Nom",
-    "Domains": "Domaines",
-    "DomainsPlaceholder": "Ajouter un domaine",
-    "Error": {
-      "Domain": "Au moins un domaine est requis",
-      "Name": "Le nom de l'organisation est requis",
-      "DomainsInvalid": "La valeur du domaine n'est pas valide",
-      "DuplicateName": "Une organisation portant ce nom existe déjà"
-    }
-  },
-  "ServiceForm": {
-    "EditService": "Editer les illustrations d'un service",
-    "UpdatePictures": "Illustrations",
-    "PictureUpdated": "Illustrations mises à jour pour le service : {serviceName}",
-    "Illustration": "Illustration du service",
-    "Logo": "Logo du service"
-  },
-  "UserListPage": {
-    "Title": "Liste des utilisateurs",
-    "Email": "Email",
-    "FirstName": "Prénom",
-    "LastName": "Nom de famille",
-    "Roles": "Rôles",
-    "Organizations": "Organisations",
-    "Status": "Statut",
-    "UserForm": {
-      "SelectRoles": "Sélectionner rôles",
-      "SelectOrganization": "Sélectionner une organisation",
-      "Email": "Email",
-      "Password": "Mot de passe"
-    },
-    "LastLogin": "Dernière connexion",
-    "Never": "Jamais"
-  },
-  "MenuActions": {
-    "Delete": "Supprimer",
-    "Disable": "Désactiver",
-    "Update": "Modifier",
-    "Details": "Détails",
-    "Remove": "Retirer",
-    "Download": "Télécharger",
-    "Continue": "Continuer"
-  },
-  "DialogActions": {
-    "PreventSheetTitle": "Progrès non sauvegardé",
-    "ContinueTitle": "Progrès non sauvegardé",
-    "PreventSheetSentence": "Vous avez commencé à remplir le formulaire. Le fait de le fermer maintenant annulera toute progression non enregistrée. Voulez-vous continuer ?",
-    "DeleteSentence": "Cet élément sera définitivement supprimé. Voulez-vous continuer ?"
-  },
-  "RedirectPage": {
-    "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !",
-    "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus."
-  },
-  "Datatable": {
-    "RowsPerPage": "Lignes par page",
-    "ManageColumnsVisibility": "Gérer la visibilité des colonnes",
-    "Asc": "Asc",
-    "Desc": "Desc",
-    "Hide": "Cacher",
-    "GoFirstPage": "Aller à la première page",
-    "GoPreviousPage": "Aller à la page précédente",
-    "GoNextPage": "Aller à la page suivante",
-    "GoLastPage": "Aller à la dernière page",
-    "Columns": "Colonnes",
-    "ResetTable": "Réinitialiser"
-  },
-  "Parameters": {
-    "Version": "Version"
-  },
-  "ServiceName": {
-    "custom_dashboards": "Tableau de bord personnalisé"
-  },
-  "Reset table": "Remise à zéro de la table",
-  "entitie(s)": "entité(s)",
-  "Rows per page": "Lignes par page",
-  "Sort Asc": "Tri Asc",
-  "Sort Desc": "Sort Desc",
-  "Badge": {
-    "Published": "Publié",
-    "Draft": "Brouillon",
-    "Disabled": "Désactivé",
-    "Enabled": "Activé"
-  }
+  "entitie(s)": "entité(s)"
 }

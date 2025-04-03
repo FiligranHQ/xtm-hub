@@ -2,6 +2,7 @@ import { getLabels } from '@/components/admin/label/label.utils';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
+import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
@@ -78,6 +79,11 @@ const CustomDashbordDocumentList = ({
     );
   }, [data]);
 
+  const firstCustomDashboard = readInlineData<documentItem_fragment$key>(
+    documentItem,
+    _nonActive.length > 0 ? _nonActive[0] : active[0]
+  );
+
   const labelOptions = getLabels().map(({ name, id }) => ({
     label: name.toUpperCase(),
     value: id,
@@ -109,7 +115,8 @@ const CustomDashbordDocumentList = ({
             <Button
               asChild
               variant="outline">
-              <Link href={`/manage/service/${serviceInstance.id}`}>
+              <Link
+                href={`/manage/service/custom_dashboards=${serviceInstance.id}/subscription/${firstCustomDashboard?.subscription?.id}`}>
                 {t('Service.Capabilities.ManageAccessName')}
               </Link>
             </Button>

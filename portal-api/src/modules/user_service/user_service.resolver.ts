@@ -130,12 +130,16 @@ const resolvers: Resolvers = {
     },
     deleteUserService: async (_, { input }, context) => {
       const userToDelete = await loadUserBy({ email: input.email });
-      const [deletedUserService] = await db<UserService & Subscription>(
+      const [deletedUserService] = await db<UserService>(
         context,
         'User_Service'
       )
         .where('user_id', '=', userToDelete.id)
-        .where('subscription_id', '=', extractId(input.subscriptionId))
+        .where(
+          'subscription_id',
+          '=',
+          extractId<SubscriptionId>(input.subscriptionId)
+        )
         .delete('*')
         .returning('*');
 

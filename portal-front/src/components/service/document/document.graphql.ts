@@ -145,6 +145,9 @@ export const documentItem = graphql`
       id
       slug
     }
+    subscription {
+      id
+    }
   }
 `;
 export const documentsFragment = graphql`

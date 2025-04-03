@@ -181,6 +181,7 @@ type Document implements Node {
   labels: [Label!]!
   slug: String
   service_instance: ServiceInstance
+  subscription: SubscriptionModel
 }
 
 input EditDocumentInput {
@@ -469,7 +470,7 @@ type UserService implements Node {
   user: User
   subscription: SubscriptionModel
   user_service_capability: [UserServiceCapability]
-  ordering: Int!
+  ordering: Int
 }
 
 type UserServiceDeleted implements Node {
