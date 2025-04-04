@@ -96,14 +96,12 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
   });
   const populatedUserServices = await fillUserServiceData(userServices);
 
-  const returningSubscription = {
+  return {
     ...sub,
     organization,
     serviceInstance,
     user_service: populatedUserServices,
   };
-
-  return returningSubscription;
 };
 export const fillUserServiceData = async (userServices: UserService[]) => {
   const userServicesData = [];

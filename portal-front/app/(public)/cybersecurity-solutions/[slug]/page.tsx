@@ -1,6 +1,6 @@
 import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { toGlobalId } from '@/utils/globaId';
+import { toGlobalId } from '@/utils/globalId';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardsByServiceSlugQuery, {
   seoCustomDashboardsByServiceSlugQuery,
@@ -74,6 +74,7 @@ const getPageData = cache(async (slug: string) => {
 
 /**
  * Generate the metadata for the page
+ *
  */
 export async function generateMetadata({
   params,

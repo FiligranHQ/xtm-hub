@@ -58,7 +58,7 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
       </div>
       <div>
         <Label className="block pb-xs">
-          {t('Service.CustomDashboards.Details.Downloads')}
+          {t('Service.CustomDashboards.Details.Shares')}
         </Label>
         <span>{roundToNearest(documentData.share_number ?? 0)}</span>
       </div>

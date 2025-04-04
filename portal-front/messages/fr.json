@@ -202,7 +202,8 @@
         "Author": "Auteur",
         "LastUpdatedAt": "Dernière mise à jour le",
         "OpenCTIVersion": "Version minimale d'OpenCTI",
-        "Downloads": "Téléchargements"
+        "Downloads": "Téléchargements",
+        "Shares": "Actions"
       },
       "Form": {
         "JSONFile": "Fichier JSON",

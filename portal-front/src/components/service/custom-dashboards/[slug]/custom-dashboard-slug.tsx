@@ -20,7 +20,7 @@ import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashb
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
-import { ShareLinkButton } from '@/components/ui/share-link-button';
+import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -91,6 +91,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
         />
 
         <ShareLinkButton
+          documentId={documentData?.id ?? ''}
           url={`${window.location.origin}/cybersecurity-solutions/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
 

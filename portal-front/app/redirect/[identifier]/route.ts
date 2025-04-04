@@ -2,7 +2,7 @@ import { getServiceInstanceUrl } from '@/lib/utils';
 import serverPortalApiFetch, {
   serverMutateGraphQL,
 } from '@/relay/serverPortalApiFetch';
-import { fromGlobalId, toGlobalId } from '@/utils/globaId';
+import { fromGlobalId, toGlobalId } from '@/utils/globalId';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import OrganizationSwitcherMutation, {
   organizationSwitcherMutation,

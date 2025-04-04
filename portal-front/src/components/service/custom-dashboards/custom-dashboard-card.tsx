@@ -6,7 +6,7 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { IconActions } from '@/components/ui/icon-actions';
-import { ShareLinkButton } from '@/components/ui/share-link-button';
+import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -91,6 +91,7 @@ const CustomDashboardCard = ({
             className="z-[2]"
           />
           <ShareLinkButton
+            documentId={customDashboard.id}
             url={`${window.location.origin}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
           />
 
