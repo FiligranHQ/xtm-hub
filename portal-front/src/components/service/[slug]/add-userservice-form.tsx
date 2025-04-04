@@ -19,8 +19,8 @@ import { subscriptionWithUserService_fragment$data } from '@generated/subscripti
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import { userListQuery } from '@generated/userListQuery.graphql';
-import { userService_fragment$data } from '@generated/userService_fragment.graphql';
 import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
+import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -54,14 +54,13 @@ import { z } from 'zod';
 
 interface AddUserServiceFormProps {
   connectionId: string;
-  userService: userService_fragment$data;
+  userService: userServices_fragment$data | undefined;
   subscription: subscriptionWithUserService_fragment$data;
   serviceName: string;
   serviceId: string;
   serviceCapabilities: serviceCapability_fragment$data[];
 
   organizationId: string;
-  subscriptionId: string;
 }
 
 export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
@@ -72,7 +71,6 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
   serviceId,
   serviceCapabilities,
   organizationId,
-  subscriptionId,
 }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const { me } = useContext(PortalContext);
@@ -171,7 +169,7 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
         input: {
           email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,
-          subscriptionId: subscriptionId,
+          subscriptionId: subscription.id,
         },
       },
       onCompleted() {
@@ -242,10 +240,12 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
     userListFragment,
     queryData
   );
+
   const isCapabilityDisabled = (id: string) => {
     if (id === GenericCapabilityName.ManageAccess) {
       return false;
     }
+
     return !subscription?.subscription_capability?.some(
       (subscriptionCapa) => id === subscriptionCapa?.service_capability?.id
     );

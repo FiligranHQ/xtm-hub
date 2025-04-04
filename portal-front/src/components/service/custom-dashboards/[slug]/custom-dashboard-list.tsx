@@ -1,8 +1,12 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import {
+  documentItem,
+  documentsFragment,
+  DocumentsListQuery,
+} from '@/components/service/document/document.graphql';
 import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
-import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
@@ -20,11 +24,6 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import {
-  documentItem,
-  documentsFragment,
-  DocumentsListQuery,
-} from '../../document/document.graphql';
 import CustomDashboardCard from '../custom-dashboard-card';
 import { CustomDashboardSheet } from '../custom-dashboard-sheet';
 

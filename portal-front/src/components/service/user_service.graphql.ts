@@ -127,6 +127,7 @@ export const userServicesFragment = graphql`
     user_service_capability {
       generic_service_capability {
         name
+        id
       }
       subscription_capability {
         service_capability {

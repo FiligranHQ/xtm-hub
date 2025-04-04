@@ -25,7 +25,7 @@ import {
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { FunctionComponent, useMemo, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 
 interface ServiceSlugProps {
@@ -71,7 +71,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     pageIndex: 0,
     pageSize: 500,
   });
-  const columns: ColumnDef[] = useMemo(() => [
+  const columns: ColumnDef<subscriptionWithUserService_fragment$data>[] = [
     {
       accessorKey: 'organization.name',
       id: 'organizationName',
@@ -104,11 +104,15 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                   <Button
                     variant="ghost"
                     className="w-full justify-start normal-case"
-                    aria-label={t('Service.Management.RemoveAccess')}>
+                    aria-label={t('Utils.Delete')}>
                     {t('Utils.Delete')}
                   </Button>
                 }
-                onClickContinue={() => removeOrganization(row.original)}>
+                onClickContinue={() =>
+                  removeOrganization(
+                    row.original as subscriptionWithUserService_fragment$data
+                  )
+                }>
                 {'Sure ?'}
               </AlertDialogComponent>
             </IconActions>
@@ -116,7 +120,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         );
       },
     },
-  ]);
+  ];
 
   const removeOrganization = (
     subscription: subscriptionWithUserService_fragment$data
@@ -167,7 +171,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                   ?.service_capability as unknown as serviceCapability_fragment$data[]
               }
               serviceId={serviceId}
-              serviceName={queryData.serviceInstanceByIdWithSubscriptions?.name}
+              serviceName={
+                queryData.serviceInstanceByIdWithSubscriptions?.name ?? ''
+              }
             />
           </SheetWithPreventingDialog>
         )}
@@ -190,7 +196,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         i18nKey={i18nKey(t)}
         columns={columns}
         data={
-          queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? {}
+          (queryData.serviceInstanceByIdWithSubscriptions
+            ?.subscriptions as subscriptionWithUserService_fragment$data[]) ??
+          ([] as subscriptionWithUserService_fragment$data[])
         }
         toolbar={toolbar}
         tableState={{
