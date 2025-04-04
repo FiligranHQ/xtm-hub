@@ -6,7 +6,7 @@ const usePublicPath = () => {
     'cybersecurity-solutions',
     // Add more as needed
   ];
-  return publicPaths.some((path) => pathname.includes(path));
+  return publicPaths.some((path) => pathname.startsWith(path, 1));
 };
 
 export default usePublicPath;

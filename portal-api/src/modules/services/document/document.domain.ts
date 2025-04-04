@@ -243,13 +243,6 @@ export const getLabels = (context, documentId, opts = {}): Promise<Label[]> =>
     .returning('Label.*');
 
 export const incrementShareNumber = (documentId: DocumentId) => {
-  console.log(
-    dbUnsecure<Document>('Document')
-      .where('id', '=', documentId)
-      .increment('share_number', 1)
-      .returning('*')
-      .toString()
-  );
   return dbUnsecure<Document>('Document')
     .where('id', '=', documentId)
     .increment('share_number', 1)

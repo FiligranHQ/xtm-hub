@@ -24,6 +24,7 @@ interface CustomDashboardCardProps {
   connectionId?: string;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
   detailUrl: string;
+  shareLinkUrl: string;
 }
 
 const CustomDashboardCard = ({
@@ -31,6 +32,7 @@ const CustomDashboardCard = ({
   connectionId,
   serviceInstance,
   detailUrl,
+  shareLinkUrl,
 }: CustomDashboardCardProps) => {
   const router = useRouter();
 
@@ -92,7 +94,7 @@ const CustomDashboardCard = ({
           />
           <ShareLinkButton
             documentId={customDashboard.id}
-            url={`${window.location.origin}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
+            url={shareLinkUrl}
           />
 
           {(userCanUpdate || userCanDelete) && (
@@ -116,7 +118,7 @@ const CustomDashboardCard = ({
           )}
         </div>
         <Link
-          className="focus:outline-none focus:ring-2 focus:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0"
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0"
           href={detailUrl}>
           <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
             {customDashboard?.short_description}

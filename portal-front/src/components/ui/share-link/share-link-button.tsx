@@ -100,7 +100,7 @@ export const ShareLinkCommonButton: FunctionComponent<ShareLinkCommonProps> = ({
       variant="ghost"
       size="icon"
       onClick={handleCopy}
-      className="z-[2]">
+      className="z-[2] text-primary">
       <ShareIcon className="h-4 w-4" />
     </Button>
   );
