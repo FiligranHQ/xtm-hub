@@ -335,17 +335,10 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
   return dbUnsecure<User>('User').where(field);
 };
 
-export const updateSelectedOrganization = async (
-  id: UserId,
-  selected_organization_id: OrganizationId,
-  updateLastLogin?: boolean
-) => {
+export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
   const [updatedUser] = await dbUnsecure<User>('User')
-    .where({ id: id as UserId })
-    .update({
-      selected_organization_id,
-      ...(updateLastLogin ? { last_login: new Date() } : {}),
-    })
+    .where({ id })
+    .update(fields)
     .returning('*');
   return updatedUser;
 };
@@ -484,22 +477,19 @@ export const userHasOrganizationWithSubscription = async (
 /**
  * #185: If the user has only ONE organization, land him on it rather than its personal space
  */
-export const selectOrganizationAtLogin = async <
-  T extends UserWithOrganizations,
->(
+export const updateUserAtLogin = async <T extends UserWithOrganizations>(
   user: T
 ): Promise<T> => {
   const organizations = user.organizations.filter((o) => !o.personal_space);
+  const fields: UserMutator = {
+    last_login: new Date(),
+  };
   if (organizations.length === 1) {
-    const updatedUser = await updateSelectedOrganization(
-      user.id,
-      organizations[0].id,
-      true
-    );
-    return {
-      ...user,
-      selected_organization_id: updatedUser.selected_organization_id,
-    };
+    fields.selected_organization_id = organizations[0].id;
   }
-  return user;
+  const updatedUser = await updateUnsecureUser(user.id, fields);
+  return {
+    ...user,
+    selected_organization_id: updatedUser.selected_organization_id,
+  };
 };

@@ -48,6 +48,8 @@ export interface UserInitializer {
   picture?: string | null;
 
   disabled?: boolean | null;
+
+  last_login?: Date | null;
 }
 
 /** Represents the mutator for the table public.User */
@@ -69,4 +71,6 @@ export interface UserMutator {
   picture?: string | null;
 
   disabled?: boolean | null;
+
+  last_login?: Date | null;
 }
