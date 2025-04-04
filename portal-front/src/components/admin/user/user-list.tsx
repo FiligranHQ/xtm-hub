@@ -184,6 +184,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             accessorKey: 'organizations',
             id: 'organizations',
             header: t('UserListPage.Organizations'),
+            enableSorting: false,
             cell: ({ row }: { row: Row<userList_fragment$data> }) => {
               return (
                 <div className="flex gap-xs">
