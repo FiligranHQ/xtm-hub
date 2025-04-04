@@ -70,9 +70,7 @@ export default class DashboardPage {
       .click();
   }
 
-  async navigateToPublicDashboardDetail() {
-    await this.page
-      .getByRole('link', { name: 'firstname lastname e2e' })
-      .click();
+  async navigateToPublicDashboardDetail(shortDescription: string) {
+    await this.page.getByRole('link', { name: shortDescription }).click();
   }
 }

@@ -1,8 +1,4 @@
-import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/badge-overflow-counter';
-import { ShareLinkButton } from '@/components/ui/share-link-button';
+import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globaId';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -15,9 +11,7 @@ import SeoServiceInstanceQuery, {
 } from '@generated/seoServiceInstanceQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
-import { AspectRatio, Badge } from 'filigran-ui/servers';
 import { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 
@@ -221,51 +215,18 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           <ul
             className={'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l'}>
             {customDashboards.map((customDashboard) => (
-              <li key={customDashboard.id}>
-                <Link
-                  className="focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none cursor-pointer border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover"
-                  href={`/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}>
-                  <AspectRatio
-                    ratio={16 / 9}
-                    className={'px-s'}>
-                    <CustomDashboardBento
-                      customDashboard={
-                        customDashboard as unknown as documentItem_fragment$data
-                      }
-                      serviceInstance={
-                        serviceInstance as unknown as NonNullable<
-                          serviceByIdQuery$data['serviceInstanceById']
-                        >
-                      }
-                    />
-                  </AspectRatio>
-                  <div className={'p-l space-y-s'}>
-                    <div className="flex items-center justify-between">
-                      <BadgeOverflowCounter
-                        badges={customDashboard?.labels as BadgeOverflow[]}
-                      />
-                      <ShareLinkButton
-                        url={`${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
-                      />
-                    </div>
-                    <h2 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
-                      {customDashboard?.short_description}
-                    </h2>
-                    <div className="txt-mini items-center flex">
-                      {customDashboard.product_version && (
-                        <div>
-                          From OpenCTI: {customDashboard.product_version}
-                        </div>
-                      )}
-                      <Badge
-                        size="sm"
-                        className="ml-auto">
-                        Published
-                      </Badge>
-                    </div>
-                  </div>
-                </Link>
-              </li>
+              <CustomDashboardCard
+                serviceInstance={
+                  serviceInstance as unknown as NonNullable<
+                    serviceByIdQuery$data['serviceInstanceById']
+                  >
+                }
+                key={customDashboard.id}
+                customDashboard={
+                  customDashboard as unknown as documentItem_fragment$data
+                }
+                detailUrl={`/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
+              />
             ))}
           </ul>
         )}

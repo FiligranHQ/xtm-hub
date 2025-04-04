@@ -2,14 +2,13 @@
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
-import { documentItem } from '@/components/service/document/document.graphql';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { IconActions } from '@/components/ui/icon-actions';
 import { ShareLinkButton } from '@/components/ui/share-link-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, Carousel } from 'filigran-ui';
@@ -19,23 +18,20 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { readInlineData } from 'react-relay';
 
 interface CustomDashboardCardProps {
-  data: documentItem_fragment$key;
-  connectionId: string;
+  customDashboard: documentItem_fragment$data;
+  connectionId?: string;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  detailUrl: string;
 }
 
 const CustomDashboardCard = ({
-  data,
+  customDashboard,
   connectionId,
   serviceInstance,
+  detailUrl,
 }: CustomDashboardCardProps) => {
-  const customDashboard = readInlineData<documentItem_fragment$key>(
-    documentItem,
-    data
-  );
   const router = useRouter();
 
   const t = useTranslations();
@@ -52,9 +48,7 @@ const CustomDashboardCard = ({
   );
 
   const handleClickCarousel = () => {
-    router.push(
-      `/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`
-    );
+    router.push(detailUrl);
   };
 
   return (
@@ -114,7 +108,7 @@ const CustomDashboardCard = ({
                 userCanDelete={userCanDelete}
                 serviceInstanceId={serviceInstance?.id}
                 customDashboard={customDashboard}
-                connectionId={connectionId}
+                connectionId={connectionId!}
                 variant="menu"
               />
             </IconActions>
@@ -122,7 +116,7 @@ const CustomDashboardCard = ({
         </div>
         <Link
           className="focus:outline-none focus:ring-2 focus:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0"
-          href={`/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`}>
+          href={detailUrl}>
           <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
             {customDashboard?.short_description}
           </h3>

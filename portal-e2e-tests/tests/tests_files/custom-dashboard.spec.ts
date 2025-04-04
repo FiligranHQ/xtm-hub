@@ -33,7 +33,9 @@ test.describe.serial('Custom dashboard', () => {
     await page.goto('/cybersecurity-solutions');
     await dashboardPage.navigateToPublicCustomDashboard();
     // await expect(page).toHaveScreenshot();
-    await dashboardPage.navigateToPublicDashboardDetail();
+    await dashboardPage.navigateToPublicDashboardDetail(
+      DASHBOARD_TEST.shortDescription
+    );
     // await expect(page).toHaveScreenshot();
   });
 });
