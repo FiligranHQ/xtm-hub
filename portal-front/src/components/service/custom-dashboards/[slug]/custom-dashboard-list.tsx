@@ -78,10 +78,8 @@ const CustomDashbordDocumentList = ({
     );
   }, [data]);
 
-  const firstCustomDashboard = readInlineData<documentItem_fragment$key>(
-    documentItem,
-    _nonActive.length > 0 ? _nonActive[0] : active[0]
-  );
+  const firstCustomDashboard =
+    _nonActive.length > 0 ? _nonActive[0] : active[0];
 
   const labelOptions = getLabels().map(({ name, id }) => ({
     label: name.toUpperCase(),
