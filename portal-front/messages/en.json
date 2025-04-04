@@ -375,7 +375,9 @@
       "SelectOrganization": "Select an organization",
       "Email": "Email",
       "Password": "Password"
-    }
+    },
+    "LastLogin": "Last login",
+    "Never": "Never"
   },
   "MenuActions": {
     "Delete": "Delete",

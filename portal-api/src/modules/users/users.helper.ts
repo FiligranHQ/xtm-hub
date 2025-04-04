@@ -143,9 +143,14 @@ export const getOrCreateUser = async (
     await dbUnsecure<User>('User')
       .where({ id: user.id })
       .update({
-        first_name: user.first_name ?? userInfo.first_name,
-        last_name: user.last_name ?? userInfo.last_name,
-        picture: user.picture ?? userInfo.picture,
+        last_login: new Date(),
+        first_name: isEmpty(user.first_name)
+          ? userInfo.first_name
+          : user.first_name,
+        last_name: isEmpty(user.last_name)
+          ? userInfo.last_name
+          : user.last_name,
+        picture: isEmpty(user.picture) ? userInfo.picture : user.picture,
       });
   }
   return user ? user : await createNewUserFromInvitation(userInfo);

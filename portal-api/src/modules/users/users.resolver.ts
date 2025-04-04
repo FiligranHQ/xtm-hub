@@ -35,10 +35,10 @@ import {
   loadUserBy,
   loadUserDetails,
   loadUsers,
-  selectOrganizationAtLogin,
   updateMeUser,
-  updateSelectedOrganization,
+  updateUnsecureUser,
   updateUser,
+  updateUserAtLogin,
   userHasOrganizationWithSubscription,
 } from './users.domain';
 import {
@@ -317,10 +317,10 @@ const resolvers: Resolvers = {
       }
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
-      const updatedUser = await updateSelectedOrganization(
-        context.user.id,
-        fromGlobalId(organization_id).id
-      );
+      const updatedUser = await updateUnsecureUser(context.user.id, {
+        selected_organization_id: fromGlobalId(organization_id)
+          .id as OrganizationId,
+      });
       const newUser = await loadUserBy({ 'User.id': updatedUser.id });
       context.req.session.user = newUser;
       return mapUserToGraphqlUser(newUser);
@@ -356,7 +356,7 @@ const resolvers: Resolvers = {
       try {
         const logged = await loadUserBy({ email });
         if (logged && validPassword(logged, password)) {
-          req.session.user = await selectOrganizationAtLogin(logged);
+          req.session.user = await updateUserAtLogin(logged);
           return mapUserToGraphqlUser(logged);
         }
         return undefined;

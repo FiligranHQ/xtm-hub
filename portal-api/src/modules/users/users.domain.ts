@@ -232,20 +232,20 @@ export const loadUserBy = async (
       ),
       dbRaw(
         `COALESCE(
-    json_agg(DISTINCT "UserOrganization_Capability".name) 
-    FILTER (WHERE "UserOrganization_Capability".name IS NOT NULL), 
+    json_agg(DISTINCT "UserOrganization_Capability".name)
+    FILTER (WHERE "UserOrganization_Capability".name IS NOT NULL),
     '[]'
   )::json AS selected_org_capabilities`
       ),
       dbRaw(
-        `COALESCE( 
-          json_agg( DISTINCT jsonb_build_object( 
+        `COALESCE(
+          json_agg( DISTINCT jsonb_build_object(
               '__typename', 'User_Organization',
               'id', "UserOrg".id,
               'organization', to_jsonb("org") || jsonb_build_object('__typename', 'Organization'),
               'capabilities', (${userOrganizationCapabilityQuery})
-          ) ) 
-            FILTER (WHERE "org".id IS NOT NULL), '[]' 
+          ) )
+            FILTER (WHERE "org".id IS NOT NULL), '[]'
         )::json AS organization_capabilities`
       ),
     ])
@@ -292,14 +292,14 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
     .select([
       'User.*',
       dbRaw(
-        `COALESCE( 
-          json_agg( DISTINCT jsonb_build_object( 
+        `COALESCE(
+          json_agg( DISTINCT jsonb_build_object(
               '__typename', 'User_Organization',
               'id', "UserOrg".id,
               'organization', to_jsonb("org") || jsonb_build_object('__typename', 'Organization'),
               'capabilities', (${userOrganizationCapabilityQuery})
-          ) ) 
-           FILTER (WHERE "org".id IS NOT NULL), '[]' 
+          ) )
+           FILTER (WHERE "org".id IS NOT NULL), '[]'
         )::json AS organization_capabilities`
       ),
     ])
@@ -335,13 +335,10 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
   return dbUnsecure<User>('User').where(field);
 };
 
-export const updateSelectedOrganization = async (
-  id,
-  selected_organization_id
-) => {
+export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
   const [updatedUser] = await dbUnsecure<User>('User')
-    .where({ id: id as UserId })
-    .update({ selected_organization_id })
+    .where({ id })
+    .update(fields)
     .returning('*');
   return updatedUser;
 };
@@ -448,14 +445,14 @@ export const loadUserDetails = async (
     .select([
       'User.*',
       dbRaw(
-        `COALESCE( 
-          json_agg( DISTINCT jsonb_build_object( 
+        `COALESCE(
+          json_agg( DISTINCT jsonb_build_object(
               '__typename', 'User_Organization',
               'id', "UserOrg".id,
               'organization', to_jsonb("org") || jsonb_build_object('__typename', 'Organization'),
               'capabilities', (${userOrganizationCapabilityQuery})
-          ) ) 
-            FILTER (WHERE "org".id IS NOT NULL), '[]' 
+          ) )
+            FILTER (WHERE "org".id IS NOT NULL), '[]'
         )::json AS organization_capabilities`
       ),
     ])
@@ -480,21 +477,19 @@ export const userHasOrganizationWithSubscription = async (
 /**
  * #185: If the user has only ONE organization, land him on it rather than its personal space
  */
-export const selectOrganizationAtLogin = async <
-  T extends UserWithOrganizations,
->(
+export const updateUserAtLogin = async <T extends UserWithOrganizations>(
   user: T
 ): Promise<T> => {
   const organizations = user.organizations.filter((o) => !o.personal_space);
+  const fields: UserMutator = {
+    last_login: new Date(),
+  };
   if (organizations.length === 1) {
-    const updatedUser = await updateSelectedOrganization(
-      user.id,
-      organizations[0].id
-    );
-    return {
-      ...user,
-      selected_organization_id: updatedUser.selected_organization_id,
-    };
+    fields.selected_organization_id = organizations[0].id;
   }
-  return user;
+  const updatedUser = await updateUnsecureUser(user.id, fields);
+  return {
+    ...user,
+    selected_organization_id: updatedUser.selected_organization_id,
+  };
 };
