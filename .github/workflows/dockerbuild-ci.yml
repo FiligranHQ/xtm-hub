@@ -243,7 +243,7 @@ jobs:
             --conf.token ${{ secrets.AWX_TOKEN }} \
             -f human job_templates launch 'Deploy XTM Hub' \
             --inventory eu-west-production \
-            --extra_vars '{"env":"Production"}'
+            --extra_vars '{"env":"Production","xtmhub_version":"${{ github.ref_name }}"}'
       - name: Deploy on Staging
         if: github.ref == 'refs/heads/main'
         run: |
