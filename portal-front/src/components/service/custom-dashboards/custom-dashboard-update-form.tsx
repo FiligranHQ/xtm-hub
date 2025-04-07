@@ -5,6 +5,8 @@ import { DocumentAddMutation } from '@/components/service/document/document.grap
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
+import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
@@ -105,6 +107,7 @@ export const CustomDashboardUpdateForm = ({
   const [addDocument] = useMutation<documentAddMutation>(DocumentAddMutation);
 
   const uploadNewImage = (image: File) => {
+    revalidatePathActions([`${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`]);
     return addDocument({
       variables: {
         name: customDashboard.name,

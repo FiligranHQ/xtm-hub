@@ -26,13 +26,23 @@ export function getGraphqlApi(serverSide: boolean, type: 'sse' | 'api') {
   }
 }
 
-export async function networkFetch(
-  apiUri: string,
-  request: RequestParameters,
-  variables: Variables,
-  portalCookie?: RequestCookie,
-  redirectOnAuthFailure = true
-): Promise<GraphQLResponse> {
+export async function networkFetch({
+  apiUri = '/graphql-api',
+  request,
+  variables,
+  portalCookie,
+  cache = portalCookie ? 'no-store' : undefined,
+  redirectOnAuthFailure = true,
+  options = {},
+}: {
+  apiUri?: string;
+  request: RequestParameters;
+  variables: Variables;
+  portalCookie?: RequestCookie;
+  redirectOnAuthFailure?: boolean;
+  cache?: RequestCache;
+  options?: RequestInit;
+}): Promise<GraphQLResponse> {
   const headers: { [k: string]: string } = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -45,8 +55,9 @@ export async function networkFetch(
     method: 'POST',
     credentials: 'same-origin',
     headers,
-    cache: portalCookie ? 'no-store' : undefined,
+    cache,
     body: JSON.stringify({ query: request.text, variables }),
+    ...options,
   });
   const json = await resp.json();
   // GraphQL returns exceptions (for example, a missing required variable) in the "errors"

@@ -58,7 +58,7 @@ export function createClientSideRelayEnvironment() {
       return fetchFormData('/graphql-api', request, variables, uploadables);
     }
     // If we don't have hydration responses, execute the request as usual.
-    return networkFetch('/graphql-api', request, variables);
+    return networkFetch({ request, variables });
   };
 
   // Create a new helper or reuse the existing one, if one has already been created.

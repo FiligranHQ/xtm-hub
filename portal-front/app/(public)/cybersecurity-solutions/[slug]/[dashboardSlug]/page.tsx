@@ -20,47 +20,49 @@ import { Button } from 'filigran-ui/servers';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { cache } from 'react';
 import { MarkdownAsync } from 'react-markdown';
 import { SeoCustomDashboard } from '../page';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
  */
-const getPageData = cache(
-  async (serviceSlug: string, dashboardSlug: string) => {
-    const settingsResponse =
-      await serverFetchGraphQL<settingsQuery>(SettingsQuery);
-    const baseUrl = settingsResponse.data.settings.base_url_front;
+const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
+  const settingsResponse = await serverFetchGraphQL<settingsQuery>(
+    SettingsQuery,
+    {},
+    { cache: 'force-cache' }
+  );
+  const baseUrl = settingsResponse.data.settings.base_url_front;
 
-    const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
-      SeoServiceInstanceQuery,
-      { slug: serviceSlug }
+  const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
+    SeoServiceInstanceQuery,
+    { slug: serviceSlug },
+    { cache: 'force-cache' }
+  );
+
+  const serviceInstance = serviceResponse.data
+    .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
+
+  if (!serviceInstance) {
+    notFound();
+  }
+
+  const customDashboardResponse =
+    await serverFetchGraphQL<seoCustomDashboardBySlugQuery>(
+      SeoCustomDashboardBySlugQuery,
+      { slug: dashboardSlug },
+      { cache: 'force-cache' }
     );
 
-    const serviceInstance = serviceResponse.data
-      .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
+  const customDashboard = customDashboardResponse.data
+    .seoCustomDashboardBySlug as unknown as SeoCustomDashboard;
 
-    if (!serviceInstance) {
-      notFound();
-    }
-
-    const customDashboardResponse =
-      await serverFetchGraphQL<seoCustomDashboardBySlugQuery>(
-        SeoCustomDashboardBySlugQuery,
-        { slug: dashboardSlug }
-      );
-
-    const customDashboard = customDashboardResponse.data
-      .seoCustomDashboardBySlug as unknown as SeoCustomDashboard;
-
-    if (!customDashboard) {
-      notFound();
-    }
-
-    return { baseUrl, serviceInstance, customDashboard };
+  if (!customDashboard) {
+    notFound();
   }
-);
+
+  return { baseUrl, serviceInstance, customDashboard };
+};
 
 /**
  * Generate the metadata for the page

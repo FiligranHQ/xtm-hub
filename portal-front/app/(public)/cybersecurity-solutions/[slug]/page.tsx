@@ -44,13 +44,17 @@ export interface SeoCustomDashboard {
  * Fetch the data for the page with caching to avoid multiple requests
  */
 const getPageData = cache(async (slug: string) => {
-  const settingsResponse =
-    await serverFetchGraphQL<settingsQuery>(SettingsQuery);
+  const settingsResponse = await serverFetchGraphQL<settingsQuery>(
+    SettingsQuery,
+    {},
+    { cache: 'force-cache' }
+  );
   const baseUrl = settingsResponse.data.settings.base_url_front;
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
-    { slug }
+    { slug },
+    { cache: 'force-cache' }
   );
 
   const serviceInstance = serviceResponse.data
@@ -63,7 +67,8 @@ const getPageData = cache(async (slug: string) => {
   const customDashboardsResponse =
     await serverFetchGraphQL<seoCustomDashboardsByServiceSlugQuery>(
       SeoCustomDashboardsByServiceSlugQuery,
-      { serviceSlug: slug }
+      { serviceSlug: slug },
+      { cache: 'force-cache' }
     );
 
   const customDashboards = customDashboardsResponse.data

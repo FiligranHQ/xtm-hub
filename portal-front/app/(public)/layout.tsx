@@ -14,8 +14,11 @@ import '../../styles/globals.css';
 import { geologica, ibmPlexSans } from '../font';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settingsResponse =
-    await serverFetchGraphQL<settingsQuery>(SettingsQuery);
+  const settingsResponse = await serverFetchGraphQL<settingsQuery>(
+    SettingsQuery,
+    {},
+    { cache: 'force-cache' }
+  );
   const baseUrl = settingsResponse.data.settings.base_url_front;
   return {
     title:
