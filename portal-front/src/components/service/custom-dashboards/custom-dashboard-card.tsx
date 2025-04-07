@@ -6,7 +6,7 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { IconActions } from '@/components/ui/icon-actions';
-import { ShareLinkButton } from '@/components/ui/share-link-button';
+import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -24,6 +24,7 @@ interface CustomDashboardCardProps {
   connectionId?: string;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
   detailUrl: string;
+  shareLinkUrl: string;
 }
 
 const CustomDashboardCard = ({
@@ -31,6 +32,7 @@ const CustomDashboardCard = ({
   connectionId,
   serviceInstance,
   detailUrl,
+  shareLinkUrl,
 }: CustomDashboardCardProps) => {
   const router = useRouter();
 
@@ -91,7 +93,8 @@ const CustomDashboardCard = ({
             className="z-[2]"
           />
           <ShareLinkButton
-            url={`${window.location.origin}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
+            documentId={customDashboard.id}
+            url={shareLinkUrl}
           />
 
           {(userCanUpdate || userCanDelete) && (
@@ -115,7 +118,7 @@ const CustomDashboardCard = ({
           )}
         </div>
         <Link
-          className="focus:outline-none focus:ring-2 focus:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0"
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0"
           href={detailUrl}>
           <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
             {customDashboard?.short_description}

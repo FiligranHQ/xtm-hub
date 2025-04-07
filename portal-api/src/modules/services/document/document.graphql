@@ -18,7 +18,8 @@ type Document implements Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int
+  download_number: Int!
+  share_number: Int!
   product_version: String
   children_documents: [Document!]
   labels: [Label!]!
@@ -59,6 +60,7 @@ type Mutation {
     service_instance_id: String
     forceDelete: Boolean
   ): Document! @auth @service_capa(requires: [UPLOAD, DELETE])
+  incrementShareNumberDocument(documentId: ID): Document!
 }
 
 type DocumentEdge {

@@ -3,9 +3,9 @@ import DashboardDetails from '@/components/service/custom-dashboards/[details]/c
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
-import { ShareLinkButton } from '@/components/ui/share-link-button';
+import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { fromGlobalId } from '@/utils/globaId';
+import { fromGlobalId } from '@/utils/globalId';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardBySlugQuery, {
   seoCustomDashboardBySlugQuery,
@@ -215,7 +215,12 @@ const Page = async ({
             />
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            {<ShareLinkButton url={`${pageUrl}`} />}
+            {
+              <ShareLinkButton
+                documentId={customDashboard.id}
+                url={`${pageUrl}`}
+              />
+            }
             <Button
               asChild
               className="whitespace-nowrap">
@@ -262,7 +267,6 @@ const Page = async ({
                   documentData={
                     customDashboard as unknown as documentItem_fragment$data
                   }
-                  downloadNumber={customDashboard.download_number}
                 />
               )}
             </section>

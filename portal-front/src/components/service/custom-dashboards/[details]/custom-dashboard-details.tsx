@@ -10,12 +10,11 @@ import { useTranslations } from 'next-intl';
 // Component interface
 interface DashboardDetailsProps {
   documentData: documentItem_fragment$data;
-  downloadNumber: number;
+  downloadNumber?: number;
 }
 
 const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
   documentData,
-  downloadNumber,
 }) => {
   const t = useTranslations();
   return (
@@ -55,7 +54,13 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
         <Label className="block pb-xs">
           {t('Service.CustomDashboards.Details.Downloads')}
         </Label>
-        <span>{roundToNearest(downloadNumber)}</span>
+        <span>{roundToNearest(documentData.download_number ?? 0)}</span>
+      </div>
+      <div>
+        <Label className="block pb-xs">
+          {t('Service.CustomDashboards.Details.Shares')}
+        </Label>
+        <span>{roundToNearest(documentData.share_number ?? 0)}</span>
       </div>
     </div>
   );

@@ -202,7 +202,8 @@
         "Author": "Author",
         "LastUpdatedAt": "Last updated at",
         "OpenCTIVersion": "OpenCTI minimum version",
-        "Downloads": "Downloads"
+        "Downloads": "Downloads",
+        "Shares": "Shares"
       },
       "Form": {
         "JSONFile": "JSON file",

@@ -43,6 +43,8 @@ export default interface Document {
   product_version: string | null;
 
   slug: string | null;
+
+  share_number: number | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -86,6 +88,9 @@ export interface DocumentInitializer {
   product_version?: string | null;
 
   slug?: string | null;
+
+  /** Default value: 0 */
+  share_number?: number | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -125,4 +130,6 @@ export interface DocumentMutator {
   product_version?: string | null;
 
   slug?: string | null;
+
+  share_number?: number | null;
 }

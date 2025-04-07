@@ -241,3 +241,10 @@ export const getLabels = (context, documentId, opts = {}): Promise<Label[]> =>
     .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
     .where('ol.object_id', '=', documentId)
     .returning('Label.*');
+
+export const incrementShareNumber = (documentId: DocumentId) => {
+  return dbUnsecure<Document>('Document')
+    .where('id', '=', documentId)
+    .increment('share_number', 1)
+    .returning('*');
+};

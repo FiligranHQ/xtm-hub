@@ -118,6 +118,7 @@ export const documentItem = graphql`
     description
     product_version
     download_number
+    share_number
     active
     updated_at
     labels {

@@ -15,6 +15,7 @@ import {
   getChildrenDocuments,
   getLabels,
   getUploader,
+  incrementShareNumber,
   loadDocumentBy,
   loadDocuments,
   sendFileToS3,
@@ -88,6 +89,16 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
+      }
+    },
+    incrementShareNumberDocument: async (_, { documentId }) => {
+      try {
+        const [result] = await incrementShareNumber(
+          extractId<DocumentId>(documentId)
+        );
+        return result;
+      } catch (error) {
+        throw UnknownError('INCREMENT_SHARE_NUMBER', { detail: error });
       }
     },
   },

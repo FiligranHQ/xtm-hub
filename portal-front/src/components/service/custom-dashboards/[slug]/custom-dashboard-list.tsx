@@ -132,6 +132,7 @@ const CustomDashbordDocumentList = ({
             key={node.id}
             customDashboard={node}
             detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${node.id}`}
+            shareLinkUrl={`${window.location.origin}/cybersecurity-solutions/${serviceInstance.slug}/${node.slug}`}
           />
         ))}
       </ul>
