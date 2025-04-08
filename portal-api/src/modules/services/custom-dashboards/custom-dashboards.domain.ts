@@ -40,6 +40,7 @@ export const loadSeoCustomDashboardBySlug = async (slug: string) => {
     .select('Document.*')
     .where('Document.slug', '=', slug)
     .where('Document.active', '=', true)
+    .where(dbRaw('"Document"."parent_document_id" IS NULL'))
     .first();
   return dashboard;
 };
