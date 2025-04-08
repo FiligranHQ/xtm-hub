@@ -23,6 +23,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import useServiceCapability from '@/hooks/useServiceCapability';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
@@ -92,7 +93,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
 
         <ShareLinkButton
           documentId={documentData?.id ?? ''}
-          url={`${window.location.origin}/cybersecurity-solutions/${documentData?.service_instance?.slug}/${documentData?.slug}`}
+          url={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
 
         <div className="flex items-center gap-2 ml-auto">
