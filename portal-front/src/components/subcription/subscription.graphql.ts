@@ -75,9 +75,9 @@ export const AddSubscriptionMutation = graphql`
   }
 `;
 
-export const SubscriptionByIdWithService = graphql`
-  query subscriptionByIdWithServiceQuery($subscriptionId: ID) {
-    subscriptionByIdWithService(subscription_id: $subscriptionId) {
+export const SubscriptionById = graphql`
+  query subscriptionByIdQuery($subscriptionId: ID) {
+    subscriptionById(subscription_id: $subscriptionId) {
       id
       organization {
         id

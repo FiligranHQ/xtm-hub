@@ -97,7 +97,7 @@ type Query {
   labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
   label(id: ID!): Label
   settings: Settings!
-  subscriptionByIdWithService(subscription_id: ID): SubscriptionWithService
+  subscriptionById(subscription_id: ID): SubscriptionWithService
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection

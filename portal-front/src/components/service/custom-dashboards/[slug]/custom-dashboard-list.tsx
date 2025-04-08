@@ -113,7 +113,7 @@ const CustomDashbordDocumentList = ({
               asChild
               variant="outline">
               <Link
-                href={`/manage/service/custom_dashboards=${serviceInstance.id}/subscription/${firstCustomDashboard?.subscription?.id}`}>
+                href={`/manage/service/${serviceInstance.id}/subscription/${firstCustomDashboard?.subscription?.id}`}>
                 {t('Service.Capabilities.ManageAccessName')}
               </Link>
             </Button>

@@ -42,6 +42,7 @@ export type DatabaseType =
   | 'Label'
   | 'Object_Label'
   | 'UserOrganization_Capability';
+
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {

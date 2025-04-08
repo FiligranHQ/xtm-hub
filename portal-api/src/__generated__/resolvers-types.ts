@@ -527,7 +527,7 @@ export type Query = {
   serviceUsers?: Maybe<UserServiceConnection>;
   settings: Settings;
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
-  subscriptionByIdWithService?: Maybe<SubscriptionWithService>;
+  subscriptionById?: Maybe<SubscriptionWithService>;
   user?: Maybe<User>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
@@ -653,7 +653,7 @@ export type QuerySubscribedServiceInstancesByIdentifierArgs = {
 };
 
 
-export type QuerySubscriptionByIdWithServiceArgs = {
+export type QuerySubscriptionByIdArgs = {
   subscription_id?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -1483,7 +1483,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   serviceUsers?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryServiceUsersArgs, 'first' | 'id' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
-  subscriptionByIdWithService?: Resolver<Maybe<ResolversTypes['SubscriptionWithService']>, ParentType, ContextType, Partial<QuerySubscriptionByIdWithServiceArgs>>;
+  subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionWithService']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
