@@ -32,10 +32,10 @@ const TEST_CAPABILITY = {
   thalesOrgaId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
   organizationName: 'Thales',
 };
-test.describe('FULL workflow', () => {
-  let loginPage;
-  let documentPage;
-  let servicePage;
+test.describe('Capabilities', () => {
+  let loginPage: LoginPage;
+  let documentPage: DocumentPage;
+  let servicePage: ServicePage;
 
   test.beforeEach(async ({ page }) => {
     await addServiceCapability({
