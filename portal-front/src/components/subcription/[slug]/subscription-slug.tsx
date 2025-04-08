@@ -5,6 +5,9 @@ import {
   userServiceFromSubscriptionFragment,
   userServicesFragment,
 } from '@/components/service/user_service.graphql';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import { userServiceFromSubscription$key } from '@generated/userServiceFromSubscription.graphql';
 import {
   userServices_fragment$data,
@@ -159,31 +162,32 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
         size: -1,
         enableSorting: false,
         cell: ({ row }) => {
-          return row.original?.user_service_capability?.length === 0 ? (
-            <Badge className="mb-2 mr-2 mt-2">
-              {GenericCapabilityName.Access}
-            </Badge>
-          ) : (
-            row.original?.user_service_capability?.map(
-              (user_service_capa, index) =>
-                user_service_capa?.generic_service_capability?.name !==
-                GenericCapabilityName.Access ? (
-                  <Badge
-                    key={
-                      user_service_capa?.generic_service_capability?.name ??
-                      user_service_capa?.subscription_capability
-                        ?.service_capability?.id ??
-                      `fallback-${index}`
-                    }
-                    className="mb-2 mr-2 mt-2 uppercase">
-                    {user_service_capa?.generic_service_capability?.name ??
-                      user_service_capa?.subscription_capability
-                        ?.service_capability?.name}
-                  </Badge>
-                ) : (
-                  <></>
-                )
-            )
+          const capabilities = row.original?.user_service_capability ?? [];
+          if (
+            capabilities.length === 1 &&
+            capabilities[0]?.generic_service_capability?.name ===
+              GenericCapabilityName.Access
+          ) {
+            return (
+              <Badge className="uppercase">
+                {GenericCapabilityName.Access}
+              </Badge>
+            );
+          }
+          const capabilityNames = capabilities
+            .map((capability) => {
+              const genericName = capability?.generic_service_capability?.name;
+              const fallbackName =
+                capability?.subscription_capability?.service_capability?.name;
+              if (genericName === GenericCapabilityName.Access) return null;
+              return {
+                id: genericName ?? fallbackName,
+                name: genericName ?? fallbackName,
+              };
+            })
+            .filter(Boolean);
+          return (
+            <BadgeOverflowCounter badges={capabilityNames as BadgeOverflow[]} />
           );
         },
       },

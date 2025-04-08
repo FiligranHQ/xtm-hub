@@ -39,7 +39,7 @@ type Mutation {
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID]): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
-  addUserService(input: UserServiceAddInput!): UserService
+  addUserService(input: UserServiceAddInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
   mergeTest(from: ID!, target: ID!): ID!

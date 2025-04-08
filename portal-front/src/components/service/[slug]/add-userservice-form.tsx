@@ -54,7 +54,7 @@ import { z } from 'zod';
 
 interface AddUserServiceFormProps {
   connectionId: string;
-  userService: userServices_fragment$data | undefined;
+  userService?: userServices_fragment$data;
   subscription: subscriptionWithUserService_fragment$data;
   serviceName: string;
   serviceId: string;
@@ -110,7 +110,7 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
 
   const form = useForm({
     resolver: zodResolver(
-      !userService?.id ? extendedSchema : capabilitiesFormSchema
+      userService?.id ? capabilitiesFormSchema : extendedSchema
     ),
     defaultValues: {
       email: [{ id: '', text: '' }],
@@ -193,9 +193,9 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
     });
   };
 
-  const onSubmit = !userService?.id
-    ? onSubmitExtendSchema
-    : onSubmitCapabilitiesSchema;
+  const onSubmit = userService?.id
+    ? onSubmitCapabilitiesSchema
+    : onSubmitExtendSchema;
 
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
 

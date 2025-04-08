@@ -90,7 +90,7 @@ const resolvers: Resolvers = {
         if (!subscription) {
           throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
         }
-        let createdUserService;
+        const userServices = [];
         for (const email of input.email) {
           const user = await getOrCreateUser({
             email: email,
@@ -103,17 +103,23 @@ const resolvers: Resolvers = {
           );
 
           if (!userServiceAlreadyExist) {
-            createdUserService = await createUserServiceAccess(context, trx, {
-              subscription_id: subscription.id,
-              user_id: user.id as UserId,
-              capabilities: input.capabilities,
-            });
+            const createdUserService = await createUserServiceAccess(
+              context,
+              trx,
+              {
+                subscription_id: subscription.id,
+                user_id: user.id as UserId,
+                capabilities: input.capabilities,
+              }
+            );
+            userServices.push(createdUserService);
           }
         }
 
         await trx.commit();
 
-        return createdUserService;
+        console.log('userServices', userServices);
+        return userServices;
       } catch (error) {
         await trx.rollback();
         if (error.name.includes(ALREADY_EXISTS)) {

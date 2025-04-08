@@ -23,7 +23,7 @@ input UserServiceDeleteInput {
 }
 
 type Mutation {
-  addUserService(input: UserServiceAddInput!): UserService @auth
+  addUserService(input: UserServiceAddInput!): [UserService] @auth
   deleteUserService(input: UserServiceDeleteInput!): UserService @auth
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance @auth
 }
