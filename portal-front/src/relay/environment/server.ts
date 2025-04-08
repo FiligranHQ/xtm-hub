@@ -27,7 +27,10 @@ export function createServerSideRelayEnvironment(
   observer: Observer<QueryResponsePayload>
 ) {
   const curriedFetchFn: FetchFunction = (request, variables) => {
-    const observable = networkFetch('/graphql-api', request, variables);
+    const observable = networkFetch({
+      request,
+      variables,
+    });
 
     if (isRelayObservable(observable)) {
       const queryId = buildQueryId(request, variables);

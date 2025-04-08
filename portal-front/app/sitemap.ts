@@ -1,4 +1,5 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import SeoCustomDashboardsByServiceSlugQuery, {
   seoCustomDashboardsByServiceSlugQuery,
 } from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
@@ -15,13 +16,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const sitemap: MetadataRoute.Sitemap = [
     {
-      url: `${baseURI}/cybersecurity-solutions`,
+      url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${baseURI}/cybersecurity-solutions/${CUSTOM_DASHBOARD_SERVICE_SLUG}`,
+      url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${CUSTOM_DASHBOARD_SERVICE_SLUG}`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
@@ -39,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const customDashboard of customDashboards) {
     sitemap.push({
-      url: `${baseURI}/cybersecurity-solutions/${CUSTOM_DASHBOARD_SERVICE_SLUG}/${customDashboard.slug}`,
+      url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${CUSTOM_DASHBOARD_SERVICE_SLUG}/${customDashboard.slug}`,
       lastModified: customDashboard.updated_at ?? customDashboard.created_at,
       changeFrequency: 'monthly',
       priority: 0.8,

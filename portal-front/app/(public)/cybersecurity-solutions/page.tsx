@@ -7,7 +7,9 @@ import { serviceList_fragment$data } from '@generated/serviceList_fragment.graph
 
 const Page = async () => {
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
-    SeoServiceInstancesQuery
+    SeoServiceInstancesQuery,
+    {},
+    { cache: undefined, next: { revalidate: 3600 } }
   );
   const services = response.data
     .seoServiceInstances as unknown as serviceList_fragment$data[];

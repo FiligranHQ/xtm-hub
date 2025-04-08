@@ -1,6 +1,7 @@
 import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardsByServiceSlugQuery, {
   seoCustomDashboardsByServiceSlugQuery,
@@ -44,13 +45,17 @@ export interface SeoCustomDashboard {
  * Fetch the data for the page with caching to avoid multiple requests
  */
 const getPageData = cache(async (slug: string) => {
-  const settingsResponse =
-    await serverFetchGraphQL<settingsQuery>(SettingsQuery);
+  const settingsResponse = await serverFetchGraphQL<settingsQuery>(
+    SettingsQuery,
+    {},
+    { cache: 'force-cache' }
+  );
   const baseUrl = settingsResponse.data.settings.base_url_front;
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
-    { slug }
+    { slug },
+    { cache: 'force-cache' }
   );
 
   const serviceInstance = serviceResponse.data
@@ -63,7 +68,8 @@ const getPageData = cache(async (slug: string) => {
   const customDashboardsResponse =
     await serverFetchGraphQL<seoCustomDashboardsByServiceSlugQuery>(
       SeoCustomDashboardsByServiceSlugQuery,
-      { serviceSlug: slug }
+      { serviceSlug: slug },
+      { cache: 'force-cache' }
     );
 
   const customDashboards = customDashboardsResponse.data
@@ -94,7 +100,7 @@ export async function generateMetadata({
     openGraph: {
       title: serviceInstance.name,
       description: serviceInstance.description!,
-      url: `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}`,
+      url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
       type: 'website',
       siteName: 'XTM Hub by Filigran',
     },
@@ -162,7 +168,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         .join(', '),
       mainEntityOfPage: {
         '@type': 'WebPage',
-        '@id': `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}`,
+        '@id': `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
       },
       hasPart: customDashboards.map((dashboard) => {
         const dashboardJsonLd: Record<string, unknown> = {
@@ -226,8 +232,8 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                 customDashboard={
                   customDashboard as unknown as documentItem_fragment$data
                 }
-                detailUrl={`/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
-                shareLinkUrl={`${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`}
+                detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
+                shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
               />
             ))}
           </ul>

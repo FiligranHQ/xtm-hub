@@ -3,6 +3,7 @@ import {
   SERVICE_DEFINITION_IDENTIFIER,
 } from '@/components/service/service.const';
 import { cn } from '@/lib/utils';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
 import { AspectRatio } from 'filigran-ui/servers';
@@ -30,7 +31,7 @@ const ServiceInstanceCard: React.FunctionComponent<
   const serviceHref =
     isLinkService && serviceInstance.links?.[0]?.url
       ? serviceInstance.links?.[0]?.url
-      : `${seo ? `/cybersecurity-solutions/${serviceInstance.slug}` : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`}`;
+      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`}`;
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>

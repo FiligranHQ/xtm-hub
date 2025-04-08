@@ -2,6 +2,7 @@ import GoogleAnalytics from '@/components/external/google-analytics';
 import Hubspot from '@/components/external/hubspot';
 import I18nContext from '@/i18n/i18n-context';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Toaster } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
@@ -14,8 +15,11 @@ import '../../styles/globals.css';
 import { geologica, ibmPlexSans } from '../font';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settingsResponse =
-    await serverFetchGraphQL<settingsQuery>(SettingsQuery);
+  const settingsResponse = await serverFetchGraphQL<settingsQuery>(
+    SettingsQuery,
+    {},
+    { cache: 'force-cache' }
+  );
   const baseUrl = settingsResponse.data.settings.base_url_front;
   return {
     title:
@@ -79,7 +83,7 @@ export default function RootLayout({
       <I18nContext>
         <body className="flex flex-col min-h-screen">
           <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
-            <Link href="/cybersecurity-solutions">
+            <Link href={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`}>
               <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
               <span className="sr-only">XTM Hub by Filigran</span>
             </Link>

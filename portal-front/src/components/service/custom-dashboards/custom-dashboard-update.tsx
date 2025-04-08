@@ -12,6 +12,8 @@ import {
   IconActionsButton,
 } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
+import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentDetailDeleteMutation } from '@generated/documentDetailDeleteMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -79,6 +81,12 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         },
       },
       onCompleted: (response) => {
+        // If the service has changed, we need to revalidate the path
+        // If the slug has changed, it's necessary to revalidate the previous path, as the new one may not yet be cached.
+        revalidatePathActions([
+          `${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`,
+          `${PUBLIC_DASHBOARD_URL}`,
+        ]);
         setOpenSheet(false);
         toast({
           title: t('Utils.Success'),
@@ -112,6 +120,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           router.push(`/service/custom_dashboards/${serviceInstanceId}`);
         },
       });
+      revalidatePathActions([`${PUBLIC_DASHBOARD_URL}`]);
     } else {
       // In case we are delete image or we are deleting document from the detail page
       deleteDetailDocumentationMutation({
@@ -127,6 +136,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         },
       });
     }
+    revalidatePathActions([`${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`]);
   };
 
   return (

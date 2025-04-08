@@ -2,6 +2,7 @@ import { getLabels } from '@/components/admin/label/label.utils';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
@@ -132,7 +133,7 @@ const CustomDashbordDocumentList = ({
             key={node.id}
             customDashboard={node}
             detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${node.id}`}
-            shareLinkUrl={`${window.location.origin}/cybersecurity-solutions/${serviceInstance.slug}/${node.slug}`}
+            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${node.slug}`}
           />
         ))}
       </ul>

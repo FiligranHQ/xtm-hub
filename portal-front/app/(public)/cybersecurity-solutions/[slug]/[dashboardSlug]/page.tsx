@@ -6,6 +6,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { fromGlobalId } from '@/utils/globalId';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardBySlugQuery, {
   seoCustomDashboardBySlugQuery,
@@ -20,47 +21,49 @@ import { Button } from 'filigran-ui/servers';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { cache } from 'react';
 import { MarkdownAsync } from 'react-markdown';
 import { SeoCustomDashboard } from '../page';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
  */
-const getPageData = cache(
-  async (serviceSlug: string, dashboardSlug: string) => {
-    const settingsResponse =
-      await serverFetchGraphQL<settingsQuery>(SettingsQuery);
-    const baseUrl = settingsResponse.data.settings.base_url_front;
+const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
+  const settingsResponse = await serverFetchGraphQL<settingsQuery>(
+    SettingsQuery,
+    {},
+    { cache: 'force-cache' }
+  );
+  const baseUrl = settingsResponse.data.settings.base_url_front;
 
-    const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
-      SeoServiceInstanceQuery,
-      { slug: serviceSlug }
+  const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
+    SeoServiceInstanceQuery,
+    { slug: serviceSlug },
+    { cache: 'force-cache' }
+  );
+
+  const serviceInstance = serviceResponse.data
+    .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
+
+  if (!serviceInstance) {
+    notFound();
+  }
+
+  const customDashboardResponse =
+    await serverFetchGraphQL<seoCustomDashboardBySlugQuery>(
+      SeoCustomDashboardBySlugQuery,
+      { slug: dashboardSlug },
+      { cache: 'force-cache' }
     );
 
-    const serviceInstance = serviceResponse.data
-      .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
+  const customDashboard = customDashboardResponse.data
+    .seoCustomDashboardBySlug as unknown as SeoCustomDashboard;
 
-    if (!serviceInstance) {
-      notFound();
-    }
-
-    const customDashboardResponse =
-      await serverFetchGraphQL<seoCustomDashboardBySlugQuery>(
-        SeoCustomDashboardBySlugQuery,
-        { slug: dashboardSlug }
-      );
-
-    const customDashboard = customDashboardResponse.data
-      .seoCustomDashboardBySlug as unknown as SeoCustomDashboard;
-
-    if (!customDashboard) {
-      notFound();
-    }
-
-    return { baseUrl, serviceInstance, customDashboard };
+  if (!customDashboard) {
+    notFound();
   }
-);
+
+  return { baseUrl, serviceInstance, customDashboard };
+};
 
 /**
  * Generate the metadata for the page
@@ -89,7 +92,7 @@ export async function generateMetadata({
       description: customDashboard.short_description
         ? `${customDashboard.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`
         : customDashboard.description?.substring(0, 160),
-      url: `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`,
+      url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`,
       type: 'article',
       siteName: 'XTM Hub by Filigran',
       publishedTime: customDashboard.created_at,
@@ -145,7 +148,7 @@ const Page = async ({
       awaitedParams.dashboardSlug
     );
 
-    const pageUrl = `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}/${customDashboard.slug}`;
+    const pageUrl = `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`;
 
     const jsonLd: Record<string, unknown> = {
       '@context': 'https://schema.org',
@@ -174,7 +177,7 @@ const Page = async ({
         '@type': 'SoftwareApplication',
         name: serviceInstance.name,
         applicationCategory: 'SecurityApplication',
-        url: `${baseUrl}/cybersecurity-solutions/${serviceInstance.slug}`,
+        url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
       },
       keywords: customDashboard.labels?.map((label) => label.name).join(', '),
       mainEntityOfPage: {
