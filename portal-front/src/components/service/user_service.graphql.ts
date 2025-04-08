@@ -124,6 +124,15 @@ export const userServicesFragment = graphql`
       last_name
       email
     }
+    subscription {
+      service_instance {
+        service_definition {
+          identifier
+        }
+        id
+        name
+      }
+    }
     user_service_capability {
       generic_service_capability {
         name

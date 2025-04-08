@@ -5,17 +5,18 @@ import PageLoader from './page-loader';
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-  params: Promise<{ slug: string; url: string }>;
+  params: Promise<{ subscriptionId: string; serviceInstanceId: string }>;
 }
 
 const Page: FunctionComponent<PageProps> = async ({ params }) => {
-  const { slug, url } = await params;
-  const id = decodeURIComponent(slug);
+  const { subscriptionId, serviceInstanceId } = await params;
+  const decodedSubscriptionId = decodeURIComponent(subscriptionId);
+  const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
   try {
     return (
       <PageLoader
-        id={id}
-        url={url}
+        subscriptionId={decodedSubscriptionId}
+        serviceInstanceId={decodedServiceInstanceId}
       />
     );
   } catch (_) {

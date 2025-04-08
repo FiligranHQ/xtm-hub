@@ -25,16 +25,17 @@ import { useMutation } from 'react-relay';
 
 import { PortalContext } from '@/components/me/app-portal-context';
 import { AddUserServiceForm } from '@/components/service/[slug]/add-userservice-form';
-import { SubscriptionByIdWithService } from '@/components/subcription/subscription.graphql';
+import { ServiceById } from '@/components/service/service.graphql';
+import { SubscriptionById } from '@/components/subcription/subscription.graphql';
 import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
-import useAdminByPass from '@/hooks/useAdminByPass';
+import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
-import { subscriptionByIdWithServiceQuery } from '@generated/subscriptionByIdWithServiceQuery.graphql';
+import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
 import {
@@ -45,16 +46,16 @@ import {
 } from 'react-relay';
 interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
-  queryRefSubscription: PreloadedQuery<subscriptionByIdWithServiceQuery>;
+  queryRefSubscription: PreloadedQuery<subscriptionByIdQuery>;
+  queryRefService: PreloadedQuery<serviceByIdQuery> | undefined;
   subscriptionId: string;
-  service: string | undefined;
 }
 
 const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
   queryRef,
   queryRefSubscription,
+  queryRefService,
   subscriptionId,
-  service,
 }) => {
   const t = useTranslations();
   const [currentUser, setCurrentUser] = useState<
@@ -65,11 +66,43 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     queryRef
   );
 
-  const queryDataSubscription =
-    usePreloadedQuery<subscriptionByIdWithServiceQuery>(
-      SubscriptionByIdWithService,
-      queryRefSubscription
+  const queryDataSubscription = usePreloadedQuery<subscriptionByIdQuery>(
+    SubscriptionById,
+    queryRefSubscription
+  );
+  let breadcrumbValue: BreadcrumbNavLink[];
+  if (queryRefService) {
+    const queryDataService = usePreloadedQuery<serviceByIdQuery>(
+      ServiceById,
+      queryRefService
     );
+    breadcrumbValue = [
+      { label: 'MenuLinks.Home', href: '/' },
+      {
+        label: `${queryDataService.serviceInstanceById.name}`,
+        original: true,
+        href: `/service/${queryDataService.serviceInstanceById.service_definition.identifier}/${queryDataService.serviceInstanceById.id}`,
+      },
+      {
+        label: t('Service.Management.ManageUsers'),
+      },
+    ];
+  } else {
+    breadcrumbValue = [
+      { label: 'MenuLinks.Home', href: '/' },
+      { label: 'MenuLinks.Settings' },
+      { label: 'MenuLinks.Services', href: '/admin/service' },
+      {
+        label: queryDataSubscription.subscriptionById?.service_instance?.name,
+        href: `/admin/service/${queryDataSubscription.subscriptionById?.service_instance?.id}`,
+        original: true,
+      },
+      {
+        label: queryDataSubscription.subscriptionById?.organization?.name,
+        original: true,
+      },
+    ];
+  }
 
   const [userServices] = useRefetchableFragment<
     userServiceFromSubscriptionQuery,
@@ -87,38 +120,6 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
   const [openSheet, setOpenSheet] = useState(false);
 
   const { me } = useContext(PortalContext);
-
-  const isAdmin = useAdminByPass();
-  const breadcrumbValue: BreadcrumbNavLink[] = isAdmin
-    ? [
-        { label: 'MenuLinks.Home', href: '/' },
-        { label: 'MenuLinks.Settings' },
-        { label: 'MenuLinks.Services', href: '/admin/service' },
-        {
-          label:
-            queryDataSubscription.subscriptionByIdWithService?.service_instance
-              ?.name,
-          href: `/admin/service/${queryDataSubscription.subscriptionByIdWithService?.service_instance?.id}`,
-        },
-        {
-          label:
-            queryDataSubscription.subscriptionByIdWithService?.organization
-              ?.name,
-          original: true,
-        },
-      ]
-    : [
-        { label: 'MenuLinks.Home', href: '/' },
-        {
-          label: service?.includes('dashboards')
-            ? 'OpenCTI Custom dashboards library'
-            : 'Vault partner',
-          href: `/service/${decodeURIComponent(service ?? '').replace('=', '/')}`,
-        },
-        {
-          label: t('Service.Management.ManageUsers'),
-        },
-      ];
 
   const canManageService = () => {
     return userData.some((userService) => {
@@ -282,32 +283,29 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           }
           title={t('InviteUserServiceForm.Title', {
             serviceName:
-              queryDataSubscription.subscriptionByIdWithService
-                ?.service_instance?.name,
+              queryDataSubscription.subscriptionById?.service_instance?.name,
           })}>
           <AddUserServiceForm
             userService={currentUser}
             connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
             serviceCapabilities={
-              (queryDataSubscription.subscriptionByIdWithService
-                ?.service_instance?.service_definition?.service_capability ??
+              (queryDataSubscription.subscriptionById?.service_instance
+                ?.service_definition?.service_capability ??
                 []) as serviceCapability_fragment$data[]
             }
             serviceName={
-              queryDataSubscription.subscriptionByIdWithService
-                ?.service_instance?.name ?? ''
+              queryDataSubscription.subscriptionById?.service_instance?.name ??
+              ''
             }
             serviceId={
-              queryDataSubscription.subscriptionByIdWithService
-                ?.service_instance?.id ?? ''
+              queryDataSubscription.subscriptionById?.service_instance?.id ?? ''
             }
             subscription={
-              (queryDataSubscription.subscriptionByIdWithService ??
+              (queryDataSubscription.subscriptionById ??
                 {}) as subscriptionWithUserService_fragment$data
             }
             organizationId={
-              queryDataSubscription.subscriptionByIdWithService?.organization
-                ?.id ?? ''
+              queryDataSubscription.subscriptionById?.organization?.id ?? ''
             }
           />
         </SheetWithPreventingDialog>
@@ -323,12 +321,11 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       <h1>
         {t('Service.Management.ManageUsersForOrganization', {
           organizationName:
-            queryDataSubscription.subscriptionByIdWithService?.organization
-              ?.name,
+            queryDataSubscription.subscriptionById?.organization?.name,
         })}
       </h1>
-      {queryDataSubscription.subscriptionByIdWithService!
-        .subscription_capability!.length > 0 && (
+      {queryDataSubscription.subscriptionById!.subscription_capability!.length >
+        0 && (
         <div className="border rounded border-primary p-l  txt-sub-content">
           <div className="txt-container-title">
             {t('InviteUserServiceForm.Capabilities')}:{' '}
@@ -336,14 +333,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           <div className="italic mb-s">
             {t('InviteUserServiceForm.CapabilitiesDescription', {
               organizationName:
-                queryDataSubscription.subscriptionByIdWithService?.organization
-                  .name,
+                queryDataSubscription.subscriptionById?.organization.name,
               serviceName:
-                queryDataSubscription.subscriptionByIdWithService
-                  ?.service_instance?.name,
+                queryDataSubscription.subscriptionById?.service_instance?.name,
             })}
           </div>
-          {queryDataSubscription.subscriptionByIdWithService?.subscription_capability?.map(
+          {queryDataSubscription.subscriptionById?.subscription_capability?.map(
             (subscriptionCapa) => {
               return (
                 <div key={subscriptionCapa?.id}>

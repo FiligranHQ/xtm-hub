@@ -27,36 +27,34 @@ const HighlightedServices = ({
           className={
             'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l mb-12'
           }>
-          {ownedServices.length > 0 &&
-            ownedServices?.map((service) => {
-              return (
-                <ServiceInstanceCard
-                  key={service.id}
-                  serviceInstance={
-                    service.subscription!
-                      .service_instance as serviceList_fragment$data
-                  }
-                  className={cn(
-                    "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg",
-                    "after:content-[''] after:bg-page-background after:inset-0 after:absolute after:z-0 after:rounded-lg"
-                  )}
-                />
-              );
-            })}
-          {publicServices.length > 0 &&
-            publicServices?.map((service) => {
-              return (
-                <ServiceInstanceCard
-                  key={service.id}
-                  rightAction={getAction(service)}
-                  serviceInstance={service}
-                  className={cn(
-                    "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg",
-                    "after:content-[''] after:bg-page-background after:inset-0 after:absolute after:-z-1 after:rounded-lg"
-                  )}
-                />
-              );
-            })}
+          {ownedServices.map((service) => {
+            return (
+              <ServiceInstanceCard
+                key={service.id}
+                serviceInstance={
+                  service.subscription!
+                    .service_instance as serviceList_fragment$data
+                }
+                className={cn(
+                  "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg",
+                  "after:content-[''] after:bg-page-background after:inset-0 after:absolute after:z-0 after:rounded-lg"
+                )}
+              />
+            );
+          })}
+          {publicServices.map((service) => {
+            return (
+              <ServiceInstanceCard
+                key={service.id}
+                rightAction={getAction(service)}
+                serviceInstance={service}
+                className={cn(
+                  "before:content-[''] before:bg-white before:absolute before:-inset-1 before:bg-gradient-to-r before:from-[#001BDA] before:to-[#0FBCFF] dark:from-[#0FBCFF] dark:to-[#00F1BD] before:blur-lg before:opacity-75 before:-z-1 before:rounded-lg",
+                  "after:content-[''] after:bg-page-background after:inset-0 after:absolute after:-z-1 after:rounded-lg"
+                )}
+              />
+            );
+          })}
         </ul>
       </Suspense>
     );
