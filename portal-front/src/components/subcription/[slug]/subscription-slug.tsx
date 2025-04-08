@@ -328,7 +328,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       </h1>
       {queryDataSubscription.subscriptionById!.subscription_capability!.length >
         0 && (
-        <div className="border rounded border-primary p-l  txt-sub-content">
+        <div className="inline-block border rounded border-primary p-l txt-sub-content">
           <div className="txt-container-title">
             {t('InviteUserServiceForm.Capabilities')}:{' '}
           </div>
