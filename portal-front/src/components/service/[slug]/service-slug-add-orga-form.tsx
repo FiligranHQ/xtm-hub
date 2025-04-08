@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Checkbox,
+  DatePicker,
   Form,
   FormControl,
   FormField,
@@ -64,13 +65,19 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
           message: 'You must choose an organization.',
         }),
         capability_ids: z.array(z.string()),
+        start_date: z.coerce.date(),
+        end_date: z.coerce.date().optional(),
+        isPrivate: z.boolean().optional(),
       })
     ),
     defaultValues: {
       organization_id: '',
       capability_ids: [],
+      start_date: new Date(),
+      isPrivate: false,
     },
   });
+
   setIsDirty(form.formState.isDirty);
   const onSubmit = (inputValue: z.infer<ZodSchema>) => {
     commitSubscriptionCreateMutation({
@@ -78,6 +85,9 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
         service_instance_id: serviceId,
         organization_id: inputValue.organization_id,
         capability_ids: inputValue.capability_ids,
+        is_private: inputValue.isPrivate,
+        start_date: inputValue.start_date,
+        end_date: inputValue.end_date,
       },
       onCompleted: (response) => {
         const findOrganization =
@@ -105,94 +115,161 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-xl">
-        <FormField
-          control={form.control}
-          name="organization_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t('OrganizationInServiceAction.Organization')}
-              </FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={t(
-                        'OrganizationInServiceAction.SelectOrganization'
-                      )}
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-xl">
+          <FormField
+            control={form.control}
+            name="organization_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('OrganizationInServiceAction.Organization')}
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t(
+                          'OrganizationInServiceAction.SelectOrganization'
+                        )}
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {canBeSelectedOrganizations.map(({ node }) => (
+                      <SelectItem
+                        key={node.id}
+                        value={node.id}>
+                        {node.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="border border-primary rounded-lg p-l">
+            <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
+            <p className="txt-sub-content italic">
+              {t('OrganizationInServiceAction.SelectCapaDescription')}
+            </p>
+            {capabilities.map(({ id, name, description }) => (
+              <FormField
+                key={id}
+                control={form.control}
+                name="capability_ids"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <Checkbox
+                      className="mt-xs"
+                      checked={field.value.includes(id)}
+                      onCheckedChange={(checked) => {
+                        const newValue = checked
+                          ? [...field.value, id]
+                          : field.value.filter((value: string) => value !== id);
+                        field.onChange(newValue);
+                      }}
+                      id={id}
                     />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {canBeSelectedOrganizations.map(({ node }) => (
-                    <SelectItem
-                      key={node.id}
-                      value={node.id}>
-                      {node.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
-        <div className="border border-primary rounded-lg p-l">
-          <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
-          <p className="txt-sub-content italic">
-            {t('OrganizationInServiceAction.SelectCapaDescription')}
-          </p>
-          {capabilities.map(({ id, name, description }) => (
-            <FormField
-              key={id}
-              control={form.control}
-              name="capability_ids"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <Checkbox
-                    className="mt-xs"
-                    checked={field.value.includes(id)}
-                    onCheckedChange={(checked) => {
-                      const newValue = checked
-                        ? [...field.value, id]
-                        : field.value.filter((value: string) => value !== id);
-                      field.onChange(newValue);
-                    }}
-                    id={id}
+                    <label
+                      htmlFor={id}
+                      className="txt-sub-content cursor-pointer">
+                      {name} access: {description}
+                    </label>
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
+
+          <FormField
+            control={form.control}
+            name="start_date"
+            render={({ field }) => (
+              <>
+                <FormItem>
+                  <FormLabel>
+                    {t('OrganizationInServiceAction.StartDate')}
+                  </FormLabel>
+                  <DatePicker
+                    date={field.value}
+                    setDate={field.onChange}
                   />
-
-                  <label
-                    htmlFor={id}
-                    className="txt-sub-content cursor-pointer">
-                    {name} access: {description}
-                  </label>
+                  <FormMessage />
                 </FormItem>
-              )}
-            />
-          ))}
-        </div>
+              </>
+            )}
+          />
 
-        <SheetFooter className="pt-2">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={(e) => handleCloseSheet(e)}>
-            {t('Utils.Cancel')}
-          </Button>
-          <Button
-            disabled={!form.formState.isValid}
-            type="submit">
-            {t('Utils.Validate')}
-          </Button>
-        </SheetFooter>
-      </form>
-    </Form>
+          <FormField
+            control={form.control}
+            name="end_date"
+            render={({ field }) => (
+              <>
+                <FormItem>
+                  <FormLabel>
+                    {t('OrganizationInServiceAction.EndDate')}
+                  </FormLabel>
+                  <DatePicker
+                    date={field.value}
+                    setDate={field.onChange}
+                  />
+                  <FormMessage />
+                </FormItem>
+              </>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="isPrivate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('OrganizationInServiceAction.isPrivate')}
+                </FormLabel>
+                <div className="flex items-center gap-2">
+                  <FormControl>
+                    <Checkbox
+                      {...field}
+                      checked={field.value}
+                      value="on"
+                      onCheckedChange={() =>
+                        form.setValue('isPrivate', !field.value)
+                      }
+                    />
+                  </FormControl>
+                  <FormLabel className="font-normal cursor-pointer">
+                    {t('OrganizationInServiceAction.Private')}
+                  </FormLabel>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <SheetFooter className="pt-2">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={(e) => handleCloseSheet(e)}>
+              {t('Utils.Cancel')}
+            </Button>
+            <Button
+              disabled={!form.formState.isValid}
+              type="submit">
+              {t('Utils.Validate')}
+            </Button>
+          </SheetFooter>
+        </form>
+      </Form>
+    </>
   );
 };

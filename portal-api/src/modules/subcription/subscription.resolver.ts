@@ -121,7 +121,14 @@ const resolvers: Resolvers = {
     },
     addSubscriptionInService: async (
       _,
-      { service_instance_id, organization_id, capability_ids },
+      {
+        service_instance_id,
+        organization_id,
+        capability_ids,
+        start_date,
+        end_date,
+        is_private,
+      },
       context
     ) => {
       const trx = await dbTx();
@@ -144,10 +151,11 @@ const resolvers: Resolvers = {
           organization_id:
             fromGlobalId(organization_id).id ??
             context.user.selected_organization_id,
-          start_date: new Date(),
-          end_date: undefined,
+          start_date: start_date,
+          end_date: end_date,
           billing: 0,
           status: 'ACCEPTED',
+          is_private: is_private,
         };
 
         const [addedSubscription] = await db<Subscription>(

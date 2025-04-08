@@ -181,7 +181,12 @@
     "RemoveOrganization": "Supprimer l'organisation",
     "SelectCapa": "Sélectionner les capabilités",
     "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs.",
-    "SelectOrganization": "Sélectionner une organisation"
+    "SelectOrganization": "Sélectionner une organisation",
+    "StartDate": "Date de début",
+    "EndDate": "Date de fin (optionnel)",
+    "isPrivate": "Cette souscription est-elle privée",
+    "Private": "Privée"
+
   },
   "OrganizationSwitcher": {
     "PersonalSpace": "Espace personnel",
@@ -428,21 +433,19 @@
   "UserListPage": {
     "Email": "Email",
     "FirstName": "Prénom",
+    "LastLogin": "Dernière connexion",
     "LastName": "Nom de famille",
+    "Never": "Jamais",
     "Organizations": "Organisations",
     "Roles": "Rôles",
     "Status": "Statut",
     "Title": "Liste des utilisateurs",
     "UserForm": {
       "Email": "Email",
-      "Password": "Password",
-      "SelectOrganization": "Sélectionner une organisation",
-      "Email": "Email",
       "Password": "Mot de passe",
+      "SelectOrganization": "Sélectionner une organisation",
       "SelectRoles": "Sélectionner rôles"
-    },
-    "LastLogin": "Dernière connexion",
-    "Never": "Jamais"
+    }
   },
   "Utils": {
     "Cancel": "Annuler",
