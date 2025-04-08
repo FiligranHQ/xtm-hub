@@ -13,7 +13,7 @@ export default class ServicePage {
       .getByRole('row', { name: 'Vault' })
       .getByRole('button')
       .click();
-    await this.page.getByLabel('Admin').click();
+    await this.page.getByLabel('Manage').click();
   }
 
   async addOrganizationIntoService(organizationName: string) {
