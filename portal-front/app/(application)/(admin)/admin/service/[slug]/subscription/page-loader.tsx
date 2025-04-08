@@ -5,6 +5,7 @@ import { UserServiceFromSubscription } from '@/components/service/user_service.g
 import SubscriptionSlug from '@/components/subcription/[slug]/subscription-slug';
 import { SubscriptionById } from '@/components/subcription/subscription.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';

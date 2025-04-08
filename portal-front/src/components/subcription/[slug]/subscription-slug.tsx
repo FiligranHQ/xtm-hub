@@ -47,7 +47,7 @@ import {
 interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
   queryRefSubscription: PreloadedQuery<subscriptionByIdQuery>;
-  queryRefService: PreloadedQuery<serviceByIdQuery> | undefined;
+  queryRefService?: PreloadedQuery<serviceByIdQuery>;
   subscriptionId: string;
 }
 
@@ -70,23 +70,25 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     SubscriptionById,
     queryRefSubscription
   );
-  let breadcrumbValue: BreadcrumbNavLink[];
+  let breadcrumbValue: BreadcrumbNavLink[] = [];
   if (queryRefService) {
     const queryDataService = usePreloadedQuery<serviceByIdQuery>(
       ServiceById,
       queryRefService
     );
-    breadcrumbValue = [
-      { label: 'MenuLinks.Home', href: '/' },
-      {
-        label: `${queryDataService.serviceInstanceById.name}`,
-        original: true,
-        href: `/service/${queryDataService.serviceInstanceById.service_definition.identifier}/${queryDataService.serviceInstanceById.id}`,
-      },
-      {
-        label: t('Service.Management.ManageUsers'),
-      },
-    ];
+    if (queryDataService && queryDataService.serviceInstanceById) {
+      breadcrumbValue = [
+        { label: 'MenuLinks.Home', href: '/' },
+        {
+          label: `${queryDataService.serviceInstanceById.name}`,
+          original: true,
+          href: `/service/${queryDataService.serviceInstanceById.service_definition!.identifier}/${queryDataService.serviceInstanceById.id}`,
+        },
+        {
+          label: t('Service.Management.ManageUsers'),
+        },
+      ];
+    }
   } else {
     breadcrumbValue = [
       { label: 'MenuLinks.Home', href: '/' },
