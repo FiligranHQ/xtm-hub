@@ -25,6 +25,7 @@ export const SeoServiceInstanceFragment = graphql`
       last_name
       picture
     }
+    active
   }
 `;
 

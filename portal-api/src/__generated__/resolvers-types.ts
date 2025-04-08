@@ -693,6 +693,7 @@ export type RolePortal = Node & {
 
 export type SeoCustomDashboard = {
   __typename?: 'SeoCustomDashboard';
+  active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<Maybe<SeoCustomDashboardImage>>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -1466,6 +1467,7 @@ export type RolePortalResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboard'] = ResolversParentTypes['SeoCustomDashboard']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboardImage']>>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

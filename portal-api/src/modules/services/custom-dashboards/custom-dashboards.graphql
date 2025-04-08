@@ -17,6 +17,7 @@ type SeoCustomDashboard {
   product_version: String
   children_documents: [SeoCustomDashboardImage]
   labels: [Label]
+  active: Boolean!
 }
 
 type Query {

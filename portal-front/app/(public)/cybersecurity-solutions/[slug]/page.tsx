@@ -38,6 +38,7 @@ export interface SeoCustomDashboard {
     last_name: string;
     picture: string;
   };
+  active: boolean;
 }
 
 /**
