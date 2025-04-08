@@ -227,7 +227,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
                 <span className="truncate">
                   {row.original.last_login
                     ? formatDate(row.original.last_login, 'DATE_FULL')
-                    : t('UserListPage.Never')}
+                    : '-'}
                 </span>
               );
             },

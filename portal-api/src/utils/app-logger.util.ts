@@ -84,7 +84,7 @@ export const appLogger = createLogger({
     format.errors({ stack: appLogsConfig.extended_error_message }),
     config.get('environment') !== 'development'
       ? format.json()
-      : format.combine(format.colorize(), format.simple())
+      : format.combine(format.colorize(), format.prettyPrint())
   ),
   transports: [new transports.Console()],
 });
