@@ -234,95 +234,29 @@ jobs:
     timeout-minutes: 20
     if: github.event_name != 'pull_request'
     steps:
-      #- name: restart deployment on production
-      #  run: kubectl --server=https://api.PROD.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN_PROD }}" -n xtmhub rollout restart deployment
-      #  if: contains(github.ref, 'refs/tags/')
-      - name: restart deployment on staging
-        run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN }}" -n xtmhub rollout restart deployment
+      - name: Install AWX cli
+        run: pip install awxkit
+      - name: Deploy on Production
+        if: contains(github.ref, 'refs/tags/')
+        run: |
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Deploy XTM Hub' \
+            --inventory eu-west-production \
+            --extra_vars '{"env":"Production","xtmhub_version":"${{ github.ref_name }}"}'
+      - name: Deploy on Staging
         if: github.ref == 'refs/heads/main'
-      - name: restart deployment on development
-        run: kubectl --server=https://api.staging.eu-west.filigran.io --token="${{ secrets.K8S_TOKEN_DEV }}" -n 'xtmhub-dev' rollout restart deployment
+        run: |
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Deploy XTM Hub' \
+            --inventory eu-west-staging \
+            --extra_vars '{"env":"Staging"}'
+      - name: Deploy on Development
         if: github.ref == 'refs/heads/development'
-
-  post-deployment-message-to-platform:
-    needs: build-images-prod
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: |
-      always() &&
-      contains(github.ref, 'refs/tags/') &&
-      (needs.build-images-prod.result == 'success')
-    steps:
-      - name: Extract Tag Version
-        id: tag_version
         run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          echo "VERSION=$TAG" >> $GITHUB_ENV
-      - name: Post deployment message to platform
-        env:
-          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
-        run: |
-          curl -X POST \
-          -H 'Content-Type: application/json' \
-          -d '    {
-             "type":"message",
-             "attachments":[
-                {
-                   "contentType":"application/vnd.microsoft.card.adaptive",
-                   "contentUrl":null,
-                   "content":{
-                      "$schema":"http://adaptivecards.io/schemas/adaptive-card.json",
-                      "type":"AdaptiveCard",
-                      "version":"1.2",
-                      "body":[
-                      {
-                        "type": "TextBlock",
-                        "size": "large",
-                        "weight": "bolder",
-                        "color": "accent",
-                        "text": "🚀 XTM Hub ${{ env.VERSION }} ready for deployment",
-                        "wrap": true
-                      },
-                      {
-                        "type": "TextBlock",
-                        "text": "👋 Hi team,",
-                        "weight": "Bolder",
-                        "spacing": "Small",
-                        "wrap": true
-                      },
-                      {
-                        "type": "TextBlock",
-                        "text": "We have just built a **new version** of XTM Hub for production. Can you please restart our k8s deployment? 🙏",
-                        "spacing": "Medium",
-                        "wrap": true
-                      },
-                      {
-                        "type": "FactSet",
-                        "facts": [
-                            {
-                              "title": "Version:",
-                              "value": "${{ env.VERSION }}"
-                            },
-                            {
-                              "title": "Environment:",
-                              "value": "Production"
-                            },
-                            {
-                              "title": "Build Status:",
-                              "value": "✅ Successful"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "TextBlock",
-                          "text": "Thanks!\n\n**- JBx**",
-                          "spacing": "Medium",
-                          "wrap": true,
-                          "horizontalAlignment": "Right"
-                        }
-                      ]
-                   }
-                }
-             ]
-          }' \
-          $TEAMS_WEBHOOK_URL
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Deploy XTM Hub' \
+            --inventory eu-west-staging \
+            --extra_vars '{"env":"Development"}'
