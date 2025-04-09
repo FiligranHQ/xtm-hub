@@ -228,22 +228,26 @@ jobs:
             type=registry,ref=filigran/${{ matrix.image }}:latest
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
-  restart-deployment:
+  deploy:
     needs: build-images-prod
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: github.event_name != 'pull_request'
+    if: |
+      always() &&
+      github.event_name != 'pull_request' &&
+      (needs.build-images-prod.result == 'success')
     steps:
       - name: Install AWX cli
         run: pip install awxkit
       - name: Deploy on Production
         if: contains(github.ref, 'refs/tags/')
         run: |
+          export VERSION=$(echo "${GITHUB_REF_NAME}" | sed 's/^v//')
           awx --conf.host https://awx.filigran.io \
             --conf.token ${{ secrets.AWX_TOKEN }} \
             -f human job_templates launch 'Deploy XTM Hub' \
             --inventory eu-west-production \
-            --extra_vars '{"env":"Production","xtmhub_version":"${{ github.ref_name }}"}'
+            --extra_vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}"
       - name: Deploy on Staging
         if: github.ref == 'refs/heads/main'
         run: |
