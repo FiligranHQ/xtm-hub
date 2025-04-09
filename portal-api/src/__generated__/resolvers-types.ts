@@ -97,6 +97,7 @@ export type Document = Node & {
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
+  uploader_organization?: Maybe<Organization>;
 };
 
 export type DocumentConnection = {
@@ -127,6 +128,7 @@ export type EditDocumentInput = {
   product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditLabelInput = {
@@ -1308,6 +1310,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

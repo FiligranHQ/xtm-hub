@@ -1,4 +1,5 @@
 import { formatDate } from '@/utils/date';
+import { LogoFiligranIcon } from 'filigran-icon';
 import * as React from 'react';
 
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -19,10 +20,24 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
   const t = useTranslations();
   return (
     <div className="space-y-xl">
+      {!documentData.uploader_organization?.personal_space && (
+        <div>
+          <div>
+            <Label className="block pb-s">{'Organization'}</Label>
+            <div className="flex items-center gap-s mb-s">
+              <LogoFiligranIcon className="size-8" />
+              {/*By default, if the organization is undefined, we display Filigran*/}
+
+              {`${documentData.uploader_organization?.name ?? 'Filigran'}`}
+            </div>
+          </div>
+        </div>
+      )}
       <div>
-        <Label className="block pb-xs">
+        <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.Author')}
         </Label>
+
         <div className="flex items-center gap-s">
           <div className="size-8">
             <Avatar src={documentData.uploader?.picture ?? ''} />
@@ -34,7 +49,7 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
         </div>
       </div>
       <div>
-        <Label className="block pb-xs">
+        <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.LastUpdatedAt')}
         </Label>
         <span>
@@ -45,19 +60,19 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
         </span>
       </div>
       <div>
-        <Label className="block pb-xs">
+        <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.OpenCTIVersion')}
         </Label>
         <span>{documentData.product_version}</span>
       </div>
       <div>
-        <Label className="block pb-xs">
+        <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.Downloads')}
         </Label>
         <span>{roundToNearest(documentData.download_number ?? 0)}</span>
       </div>
       <div>
-        <Label className="block pb-xs">
+        <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.Shares')}
         </Label>
         <span>{roundToNearest(documentData.share_number ?? 0)}</span>

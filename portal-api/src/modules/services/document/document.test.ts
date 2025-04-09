@@ -3,6 +3,7 @@ import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import { DocumentMutator } from '../../../model/kanel/public/Document';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import * as FileStorage from './document-storage';
@@ -115,6 +116,8 @@ describe('Should modify document', () => {
       description: 'description',
       minio_name: 'minioName',
       file_name: 'filename',
+      uploader_organization_id:
+        'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId,
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
     });

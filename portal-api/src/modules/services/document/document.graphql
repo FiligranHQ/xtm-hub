@@ -8,6 +8,7 @@ enum DocumentOrdering {
 type Document implements Node {
   id: ID!
   uploader: User
+  uploader_organization: Organization
   service_instance_id: String!
   name: String
   short_description: String
@@ -33,6 +34,7 @@ input EditDocumentInput {
   product_version: String
   labels: [String!]
   description: String
+  uploader_organization_id: String
   name: String
   active: Boolean
   slug: String

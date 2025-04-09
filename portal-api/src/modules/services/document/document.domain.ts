@@ -2,6 +2,7 @@ import config from 'config';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../../knexfile';
 import {
   DocumentConnection,
+  Organization,
   QueryDocumentsArgs,
 } from '../../../__generated__/resolvers-types';
 import {
@@ -234,6 +235,23 @@ export const getUploader = async (
       .limit(1)
       .returning('User.*')
   )[0];
+};
+
+export const getUploaderOrganization = async (
+  context,
+  documentId,
+  opts = {}
+): Promise<Organization> => {
+  const [organization] = await db<Organization>(context, 'Organization', opts)
+    .leftJoin(
+      'Document',
+      'Document.uploader_organization_id',
+      'Organization.id'
+    )
+    .where('Document.id', '=', documentId)
+    .select('Organization.*');
+
+  return organization;
 };
 
 export const getLabels = (context, documentId, opts = {}): Promise<Label[]> =>
