@@ -183,10 +183,7 @@
     "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs.",
     "SelectOrganization": "Sélectionner une organisation",
     "StartDate": "Date de début",
-    "EndDate": "Date de fin (optionnel)",
-    "isPrivate": "Cette souscription est-elle privée",
-    "Private": "Privée"
-
+    "EndDate": "Date de fin (optionnel)"
   },
   "OrganizationSwitcher": {
     "PersonalSpace": "Espace personnel",

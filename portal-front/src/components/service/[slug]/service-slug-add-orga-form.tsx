@@ -67,14 +67,12 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
         capability_ids: z.array(z.string()),
         start_date: z.coerce.date(),
         end_date: z.coerce.date().optional(),
-        isPrivate: z.boolean().optional(),
       })
     ),
     defaultValues: {
       organization_id: '',
       capability_ids: [],
       start_date: new Date(),
-      isPrivate: false,
     },
   });
 
@@ -85,7 +83,6 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
         service_instance_id: serviceId,
         organization_id: inputValue.organization_id,
         capability_ids: inputValue.capability_ids,
-        is_private: inputValue.isPrivate,
         start_date: inputValue.start_date,
         end_date: inputValue.end_date,
       },
@@ -225,33 +222,6 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
                   <FormMessage />
                 </FormItem>
               </>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="isPrivate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t('OrganizationInServiceAction.isPrivate')}
-                </FormLabel>
-                <div className="flex items-center gap-2">
-                  <FormControl>
-                    <Checkbox
-                      {...field}
-                      checked={field.value}
-                      value="on"
-                      onCheckedChange={() =>
-                        form.setValue('isPrivate', !field.value)
-                      }
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal cursor-pointer">
-                    {t('OrganizationInServiceAction.Private')}
-                  </FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
             )}
           />
 

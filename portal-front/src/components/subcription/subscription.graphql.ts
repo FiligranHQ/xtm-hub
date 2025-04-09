@@ -54,7 +54,6 @@ export const AddSubscriptionInServiceMutation = graphql`
     $capability_ids: [ID]
     $start_date: Date!
     $end_date: Date
-    $is_private: Boolean!
   ) {
     addSubscriptionInService(
       service_instance_id: $service_instance_id
@@ -62,7 +61,6 @@ export const AddSubscriptionInServiceMutation = graphql`
       capability_ids: $capability_ids
       start_date: $start_date
       end_date: $end_date
-      is_private: $is_private
     ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }

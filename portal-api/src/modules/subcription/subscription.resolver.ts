@@ -127,7 +127,6 @@ const resolvers: Resolvers = {
         capability_ids,
         start_date,
         end_date,
-        is_private,
       },
       context
     ) => {
@@ -155,7 +154,6 @@ const resolvers: Resolvers = {
           end_date: end_date,
           billing: 0,
           status: 'ACCEPTED',
-          is_private: is_private,
         };
 
         const [addedSubscription] = await db<Subscription>(

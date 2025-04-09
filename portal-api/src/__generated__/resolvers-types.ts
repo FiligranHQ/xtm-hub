@@ -298,7 +298,6 @@ export type MutationAddSubscriptionArgs = {
 export type MutationAddSubscriptionInServiceArgs = {
   capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
-  is_private?: InputMaybe<Scalars['Boolean']['input']>;
   organization_id?: InputMaybe<Scalars['ID']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
   start_date?: InputMaybe<Scalars['Date']['input']>;

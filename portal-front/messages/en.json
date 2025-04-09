@@ -183,9 +183,7 @@
     "SelectCapaDescription": "If you select these capabilities, the administrator will be able to assign these capabilities to the users later.",
     "SelectOrganization": "Select an organization",
     "StartDate": "Start date",
-    "EndDate": "End date (optional)",
-    "isPrivate": "Is this subscription private",
-    "Private": "Private"
+    "EndDate": "End date (optional)"
   },
   "OrganizationSwitcher": {
     "PersonalSpace": "Personal space",
