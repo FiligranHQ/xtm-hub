@@ -1,5 +1,10 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import {
+  documentItem,
+  documentsFragment,
+  DocumentsListQuery,
+} from '@/components/service/document/document.graphql';
 import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -20,11 +25,6 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import {
-  documentItem,
-  documentsFragment,
-  DocumentsListQuery,
-} from '../../document/document.graphql';
 import CustomDashboardCard from '../custom-dashboard-card';
 import { CustomDashboardSheet } from '../custom-dashboard-sheet';
 
@@ -79,6 +79,9 @@ const CustomDashbordDocumentList = ({
     );
   }, [data]);
 
+  const firstCustomDashboard =
+    _nonActive.length > 0 ? _nonActive[0] : active[0];
+
   const labelOptions = getLabels().map(({ name, id }) => ({
     label: name.toUpperCase(),
     value: id,
@@ -110,7 +113,8 @@ const CustomDashbordDocumentList = ({
             <Button
               asChild
               variant="outline">
-              <Link href={`/manage/service/${serviceInstance.id}`}>
+              <Link
+                href={`/manage/service/${serviceInstance.id}/subscription/${firstCustomDashboard?.subscription?.id}`}>
                 {t('Service.Capabilities.ManageAccessName')}
               </Link>
             </Button>

@@ -23,10 +23,7 @@ import {
   grantServiceAccess,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
-import {
-  checkSubscriptionExists,
-  fillSubscriptionWithOrgaServiceAndUserService,
-} from '../subcription/subscription.domain';
+import { checkSubscriptionExists } from '../subcription/subscription.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserDetails } from '../users/users.domain';
 import {
@@ -42,6 +39,7 @@ import {
 import {
   getSubscription,
   getUserServiceCapabilities,
+  loadUserServiceBySubscription,
   loadUserServiceByUser,
 } from './user_service.domain';
 
@@ -61,6 +59,22 @@ const resolvers: Resolvers = {
         orderBy,
       });
     },
+    userServiceFromSubscription: async (
+      _,
+      { first, after, orderMode, orderBy, subscription_id },
+      context
+    ) => {
+      return loadUserServiceBySubscription(
+        context,
+        {
+          first,
+          after,
+          orderMode,
+          orderBy,
+        },
+        fromGlobalId(subscription_id).id
+      );
+    },
   },
   Mutation: {
     addUserService: async (_, { input }, context) => {
@@ -69,14 +83,14 @@ const resolvers: Resolvers = {
         if (input.email.some((email) => email === context.user.email)) {
           throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
         }
-        const [subscription] = await loadSubscriptionBy({
-          service_instance_id: extractId(input.serviceInstanceId),
-          organization_id: extractId(input.organizationId),
+        const [subscription] = await loadSubscriptionBy(context, {
+          'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
         } as SubscriptionMutator);
 
         if (!subscription) {
           throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
         }
+        const userServices = [];
         for (const email of input.email) {
           const user = await getOrCreateUser({
             email: email,
@@ -89,20 +103,23 @@ const resolvers: Resolvers = {
           );
 
           if (!userServiceAlreadyExist) {
-            await createUserServiceAccess(context, trx, {
-              subscription_id: subscription.id,
-              user_id: user.id as UserId,
-              capabilities: input.capabilities,
-            });
+            const createdUserService = await createUserServiceAccess(
+              context,
+              trx,
+              {
+                subscription_id: subscription.id,
+                user_id: user.id as UserId,
+                capabilities: input.capabilities,
+              }
+            );
+            userServices.push(createdUserService);
           }
         }
 
         await trx.commit();
 
-        return await fillSubscriptionWithOrgaServiceAndUserService(
-          context,
-          subscription.id as SubscriptionId
-        );
+        console.log('userServices', userServices);
+        return userServices;
       } catch (error) {
         await trx.rollback();
         if (error.name.includes(ALREADY_EXISTS)) {
@@ -119,12 +136,16 @@ const resolvers: Resolvers = {
     },
     deleteUserService: async (_, { input }, context) => {
       const userToDelete = await loadUserBy({ email: input.email });
-      const [deletedUserService] = await db<UserService & Subscription>(
+      const [deletedUserService] = await db<UserService>(
         context,
         'User_Service'
       )
         .where('user_id', '=', userToDelete.id)
-        .where('subscription_id', '=', extractId(input.subscriptionId))
+        .where(
+          'subscription_id',
+          '=',
+          extractId<SubscriptionId>(input.subscriptionId)
+        )
         .delete('*')
         .returning('*');
 
@@ -134,21 +155,16 @@ const resolvers: Resolvers = {
       });
 
       if (usersServices.length === 0) {
-        const [subscription] = await loadSubscriptionBy({
+        const [subscription] = await loadSubscriptionBy(context, {
           id: deletedUserService.subscription_id,
         });
         await db<Subscription>(context, 'Subscription')
-          .where('id', '=', subscription.id)
+          .where('Subscription.id', '=', subscription.id)
           .delete('*')
           .returning('*');
       }
 
-      const subscription = await fillSubscriptionWithOrgaServiceAndUserService(
-        context,
-        extractId(input.subscriptionId) as SubscriptionId
-      );
-
-      return subscription;
+      return deletedUserService;
     },
     selfJoinServiceInstance: async (_, { service_instance_id }, context) => {
       const trx = await dbTx();

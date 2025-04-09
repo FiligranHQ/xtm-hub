@@ -9,7 +9,10 @@ import {
 import Organization, {
   OrganizationId,
 } from '../../model/kanel/public/Organization';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import {
+  SubscriptionId,
+  SubscriptionMutator,
+} from '../../model/kanel/public/Subscription';
 import User, {
   UserId,
   UserInitializer,
@@ -161,7 +164,9 @@ export const insertUserIntoOrganization = async (
   user: User,
   subscriptionId: SubscriptionId
 ) => {
-  const [subscription] = await loadSubscriptionBy({ id: subscriptionId });
+  const [subscription] = await loadSubscriptionBy(context, {
+    'Subscription.id': subscriptionId,
+  } as SubscriptionMutator);
   const [organization] = await loadOrganizationsFromEmail(user.email);
   const userOrganization = await loadUserOrganization(context, {
     user_id: user.id,

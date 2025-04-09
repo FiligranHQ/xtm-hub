@@ -25,6 +25,7 @@ type Document implements Node {
   labels: [Label!]!
   slug: String
   service_instance: ServiceInstance
+  subscription: SubscriptionModel
 }
 
 input EditDocumentInput {

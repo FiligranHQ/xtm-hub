@@ -9,6 +9,7 @@ import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
+import { loadSubscription } from '../../subcription/subscription.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
   deleteDocument,
@@ -117,6 +118,9 @@ const resolvers: Resolvers = {
       }),
     service_instance: ({ service_instance_id }, _, context) => {
       return getServiceInstance(context, service_instance_id);
+    },
+    subscription: ({ service_instance_id }, _, context) => {
+      return loadSubscription(context, service_instance_id);
     },
   },
   Query: {

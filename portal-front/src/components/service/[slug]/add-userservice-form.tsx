@@ -11,7 +11,6 @@ import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import useDecodedParams from '@/hooks/useDecodedParams';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
@@ -20,13 +19,12 @@ import { subscriptionWithUserService_fragment$data } from '@generated/subscripti
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import { userListQuery } from '@generated/userListQuery.graphql';
-import { userService_fragment$data } from '@generated/userService_fragment.graphql';
 import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
+import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Checkbox,
-  Combobox,
   Form,
   FormControl,
   FormField,
@@ -54,27 +52,25 @@ import {
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 
-interface ServiceSlugFormSheetProps {
+interface AddUserServiceFormProps {
   connectionId: string;
-  userService: userService_fragment$data;
+  userService?: userServices_fragment$data;
   subscription: subscriptionWithUserService_fragment$data;
   serviceName: string;
   serviceId: string;
   serviceCapabilities: serviceCapability_fragment$data[];
-  dataOrganizationsTab: {
-    value: string;
-    label: string;
-  }[];
+
+  organizationId: string;
 }
 
-export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
+export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
   connectionId,
   userService,
   subscription,
   serviceName,
   serviceId,
   serviceCapabilities,
-  dataOrganizationsTab,
+  organizationId,
 }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const { me } = useContext(PortalContext);
@@ -84,7 +80,6 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
     UserServiceCreateMutation
   );
-  const { slug } = useDecodedParams();
   const { toast } = useToast();
   const t = useTranslations();
 
@@ -111,17 +106,16 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
         })
       )
       .min(1, { message: 'Please provide at least one email.' }),
-    organizationId: z.string(),
   });
 
   const form = useForm({
     resolver: zodResolver(
-      !userService.id ? extendedSchema : capabilitiesFormSchema
+      userService?.id ? capabilitiesFormSchema : extendedSchema
     ),
     defaultValues: {
       email: [{ id: '', text: '' }],
       capabilities: [],
-      organizationId: subscription?.organization?.id,
+      organizationId: organizationId,
     },
   });
   setIsDirty(form.formState.isDirty);
@@ -130,9 +124,9 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     form.reset({
       email: [{ id: '', text: '' }],
       capabilities: [],
-      organizationId: subscription?.organization?.id,
+      organizationId: organizationId,
     });
-  }, [subscription]);
+  }, [organizationId]);
 
   const onSubmitCapabilitiesSchema = (
     values: z.infer<typeof capabilitiesFormSchema>
@@ -171,12 +165,11 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
   const onSubmitExtendSchema = (values: z.infer<typeof extendedSchema>) => {
     commitUserServiceMutation({
       variables: {
-        connections: [connectionId],
+        connections: [connectionId ?? ''],
         input: {
           email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,
-          serviceInstanceId: slug ?? '',
-          organizationId: values.organizationId,
+          subscriptionId: subscription.id,
         },
       },
       onCompleted() {
@@ -200,9 +193,9 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     });
   };
 
-  const onSubmit = !userService.id
-    ? onSubmitExtendSchema
-    : onSubmitCapabilitiesSchema;
+  const onSubmit = userService?.id
+    ? onSubmitCapabilitiesSchema
+    : onSubmitExtendSchema;
 
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
 
@@ -211,15 +204,15 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     organization?: string;
   }>({
     search: undefined,
-    organization: subscription?.organization?.id,
+    organization: organizationId,
   });
 
   useEffect(() => {
     setFilter((prevFilter) => ({
       ...prevFilter,
-      organization: subscription?.organization?.id,
+      organization: organizationId,
     }));
-  }, [subscription]);
+  }, [organizationId]);
 
   const handleInputChange = (inputValue: string) => {
     setFilter((prevFilter) => ({
@@ -247,11 +240,13 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
     userListFragment,
     queryData
   );
+
   const isCapabilityDisabled = (id: string) => {
     if (id === GenericCapabilityName.ManageAccess) {
       return false;
     }
-    return !subscription.subscription_capability?.some(
+
+    return !subscription?.subscription_capability?.some(
       (subscriptionCapa) => id === subscriptionCapa?.service_capability?.id
     );
   };
@@ -287,7 +282,7 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
           e.preventDefault();
           form.handleSubmit(onSubmit)(e);
         }}>
-        {!userService.id && (
+        {!userService?.id && (
           <>
             <FormField
               control={form.control}
@@ -310,34 +305,6 @@ export const ServiceSlugForm: FunctionComponent<ServiceSlugFormSheetProps> = ({
                         setValue('email', newTags as Tag[]);
                       }}
                       onInputChange={debounceHandleInput}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="organizationId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t('InviteUserServiceForm.Organization')}
-                  </FormLabel>
-                  <FormControl>
-                    <Combobox
-                      dataTab={dataOrganizationsTab}
-                      order={t(
-                        'OrganizationInServiceAction.SelectOrganization'
-                      )}
-                      placeholder={t(
-                        'OrganizationInServiceAction.SelectOrganization'
-                      )}
-                      emptyCommand={t('Utils.NotFound')}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      onInputChange={() => {}}
                     />
                   </FormControl>
                   <FormMessage />

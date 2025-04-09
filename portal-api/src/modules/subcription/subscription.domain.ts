@@ -77,13 +77,13 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
   context: PortalContext,
   subscriptionId: SubscriptionId
 ) => {
-  const [sub] = await loadSubscriptionBy({
+  const [sub] = await loadSubscriptionBy(context, {
     'Subscription.id': subscriptionId,
   } as SubscriptionMutator);
 
   const organization = await loadOrganizationBy(
     context,
-    'id',
+    'Organization.id',
     sub.organization_id
   );
   const serviceInstance = await loadServiceInstanceBy(
@@ -124,4 +124,11 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
     userServicesData.push(userServiceData);
   }
   return userServicesData;
+};
+
+export const loadSubscription = async (context, id) => {
+  return await db<Subscription>(context, 'Subscription')
+    .where('service_instance_id', '=', id)
+    .where('organization_id', '=', context.user.selected_organization_id)
+    .first();
 };
