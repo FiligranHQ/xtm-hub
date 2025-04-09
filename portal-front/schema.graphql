@@ -36,7 +36,7 @@ type Mutation {
   editLabel(id: ID!, input: EditLabelInput!): Label!
   deleteLabel(id: ID!): Label!
   addSubscription(service_instance_id: String): ServiceInstance
-  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID]): ServiceInstance
+  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]

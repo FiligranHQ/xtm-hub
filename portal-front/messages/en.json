@@ -181,7 +181,9 @@
     "RemoveOrganization": "Remove organization",
     "SelectCapa": "Select capabilities",
     "SelectCapaDescription": "If you select these capabilities, the administrator will be able to assign these capabilities to the users later.",
-    "SelectOrganization": "Select an organization"
+    "SelectOrganization": "Select an organization",
+    "StartDate": "Start date",
+    "EndDate": "End date (optional)"
   },
   "OrganizationSwitcher": {
     "PersonalSpace": "Personal space",
@@ -254,7 +256,7 @@
     },
     "Description": "Description",
     "GoTo": "Go to service page",
-    "GoToAdminLabel": "Admin",
+    "GoToAdminLabel": "Manage",
     "GoToLabel": "Go to",
     "GoToManagement": "Go to service management",
     "HighlightedServices": "To use this feature, please subscribe to one of the highlighted services first",
@@ -428,7 +430,9 @@
   "UserListPage": {
     "Email": "Email",
     "FirstName": "First name",
+    "LastLogin": "Last login",
     "LastName": "Last name",
+    "Never": "Never",
     "Organizations": "Organizations",
     "Roles": "Roles",
     "Status": "Status",
@@ -437,12 +441,8 @@
       "Email": "Email",
       "Password": "Password",
       "SelectOrganization": "Select an organization",
-      "Email": "Email",
-      "Password": "Password",
       "SelectRoles": "Select roles"
-    },
-    "LastLogin": "Last login",
-    "Never": "Never"
+    }
   },
   "Utils": {
     "Cancel": "Cancel",

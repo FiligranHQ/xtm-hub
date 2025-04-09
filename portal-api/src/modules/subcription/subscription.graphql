@@ -44,6 +44,8 @@ type Mutation {
     service_instance_id: String
     organization_id: ID
     capability_ids: [ID]
+    start_date: Date
+    end_date: Date
   ): ServiceInstance @auth(requires: [BYPASS])
   deleteSubscription(subscription_id: ID!): ServiceInstance
     @auth(requires: [MANAGE_SUBSCRIPTION])
