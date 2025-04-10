@@ -188,9 +188,10 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       <h1 className="pb-s">
         {queryData.serviceInstanceByIdWithSubscriptions?.name}
       </h1>
-      <div className="pb-s">
+      <div className="pb-s italic">
         {queryData.serviceInstanceByIdWithSubscriptions?.description}
       </div>
+      <div className="pb-s">{t('Service.Management.Description') + ':'}</div>
 
       <DataTable
         i18nKey={i18nKey(t)}

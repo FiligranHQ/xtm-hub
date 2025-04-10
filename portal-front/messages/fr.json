@@ -262,6 +262,7 @@
     "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
     "Join": "Rejoindre",
     "Management": {
+      "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
       "Email": "Email",
       "FirstName": "Prénom",
@@ -273,7 +274,7 @@
       },
       "LastName": "Nom",
       "ManageUsers": "Gérer les utilisateurs",
-      "ManageUsersForOrganization": "Gérer les utilisateurs poru {organizationName}",
+      "ManageUsersForOrganization": "Gérer les utilisateurs de {organizationName} dans le service {serviceName}",
       "OneUserMax": "1 utilisateur max",
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
