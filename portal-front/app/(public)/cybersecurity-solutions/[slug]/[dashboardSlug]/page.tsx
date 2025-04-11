@@ -31,14 +31,14 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
   const settingsResponse = await serverFetchGraphQL<settingsQuery>(
     SettingsQuery,
     {},
-    { cache: 'force-cache' }
+    { cache: undefined, next: { revalidate: 3600 } }
   );
   const baseUrl = settingsResponse.data.settings.base_url_front;
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
     { slug: serviceSlug },
-    { cache: 'force-cache' }
+    { cache: undefined, next: { revalidate: 3600 } }
   );
 
   const serviceInstance = serviceResponse.data
@@ -52,7 +52,7 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
     await serverFetchGraphQL<seoCustomDashboardBySlugQuery>(
       SeoCustomDashboardBySlugQuery,
       { slug: dashboardSlug },
-      { cache: 'force-cache' }
+      { cache: undefined, next: { revalidate: 3600 } }
     );
 
   const customDashboard = customDashboardResponse.data

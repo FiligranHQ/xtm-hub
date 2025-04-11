@@ -42,6 +42,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         <CustomDashbordDocumentList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
+          search={search}
           onSearchChange={setSearch}
           onLabelFilterChange={setLabels}
           labels={labels}
