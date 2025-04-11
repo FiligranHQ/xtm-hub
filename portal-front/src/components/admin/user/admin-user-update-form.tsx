@@ -229,10 +229,11 @@ export const AdminUserUpdateForm: FunctionComponent<
                       <div className="grid gap-m items-center grid-cols-[1fr_4fr_3rem]">
                         <Label>
                           {
-                            organizations.find(
-                              (organization) =>
-                                organization.node.id === field.organization_id
-                            )?.node.name
+                            user.organization_capabilities?.find(
+                              (orgaCapa) =>
+                                orgaCapa.organization.id ===
+                                field.organization_id
+                            )?.organization.name
                           }
                         </Label>
                         <FormControl>
