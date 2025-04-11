@@ -177,13 +177,13 @@
     "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
     "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
     "DeleteOrgFromService": "Supprimer l'organisation du service",
+    "EndDate": "Date de fin (optionnel)",
     "Organization": "Organisation",
     "RemoveOrganization": "Supprimer l'organisation",
     "SelectCapa": "Sélectionner les capabilités",
     "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs.",
     "SelectOrganization": "Sélectionner une organisation",
-    "StartDate": "Date de début",
-    "EndDate": "Date de fin (optionnel)"
+    "StartDate": "Date de début"
   },
   "OrganizationSwitcher": {
     "PersonalSpace": "Espace personnel",
@@ -226,7 +226,8 @@
         "Downloads": "Téléchargements",
         "LastUpdatedAt": "Dernière mise à jour le",
         "OpenCTIVersion": "Version minimale d'OpenCTI",
-        "Overview": "Vue d'ensemble"
+        "Overview": "Vue d'ensemble",
+        "Shares": "Actions"
       },
       "Form": {
         "DescriptionLabel": "Description",
@@ -262,9 +263,8 @@
     "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
     "Join": "Rejoindre",
     "Management": {
-      "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",
-      "ShowPersonalSpaces": "Montrer les espaces personnels",
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
+      "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",
       "Email": "Email",
       "FirstName": "Prénom",
       "InviteUser": {
@@ -279,6 +279,7 @@
       "OneUserMax": "1 utilisateur max",
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
+      "ShowPersonalSpaces": "Montrer les espaces personnels",
       "Subscription": "Souscription"
     },
     "Name": "Nom",
@@ -324,50 +325,7 @@
       "ManageVault": "Gérer le service",
       "UpdateDocument": "Mise à jour du document",
       "Vault": "Partenaire Vault",
-      "VaultTitle": "Administration du Vault",
-      "UpdateDocument": "Mise à jour du document"
-    },
-    "CustomDashboards": {
-      "AddDashboard": "Nouveau tableau de bord",
-      "UpdateDashboard": "Tableau de bord des mises à jour",
-      "FromOCTIVersion": "A partir d'OpenCTI",
-      "Details": {
-        "Overview": "Vue d'ensemble",
-        "BasicInformation": "Informations de base",
-        "Author": "Auteur",
-        "LastUpdatedAt": "Dernière mise à jour le",
-        "OpenCTIVersion": "Version minimale d'OpenCTI",
-        "Downloads": "Téléchargements",
-        "Shares": "Actions"
-      },
-      "Form": {
-        "JSONFile": "Fichier JSON",
-        "SelectJSONFile": "Selectionnez un fichier JSON",
-        "NoJSONFile": "Pas de fichier JSON sélectionné",
-        "productVersion": "OpenCTI version",
-        "productVersionPlaceholder": "1.0.0",
-        "NameLabel": "Nom",
-        "NamePlaceholder": "Nom du tableau de bord",
-        "ShortDescriptionLabel": "Brève description",
-        "DescriptionLabel": "Description",
-        "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
-        "DescriptionPlaceholder": "Description du tableau de bord",
-        "ImageLabel": "Images",
-        "SelectImage": "Selectionnez une/des image(s)",
-        "NoImage": "Pas d'image sélectionnée",
-        "PublishedLabel": "Publier",
-        "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
-        "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
-        "SlugLabel": "Slug (url)",
-        "SlugPlaceholder": "dashboard-slug"
-      },
-      "Actions": {
-        "Deleted": "{name} has been deleted",
-        "Added": "{name} has been added",
-        "Updated": "{name} has been modified"
-      }
+      "VaultTitle": "Administration du Vault"
     }
   },
   "ServiceActions": {
@@ -388,6 +346,9 @@
   },
   "Sort Asc": "Tri Asc",
   "Sort Desc": "Sort Desc",
+  "TestEnvCallout": "Vous êtes sur l'environnement {environnement}",
+  "GoToProd": "Allez sur la production",
+
   "ThemeToggle": {
     "Automatic": "Automatique",
     "Dark": "Foncé",

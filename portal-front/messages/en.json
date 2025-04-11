@@ -177,13 +177,13 @@
     "ConfirmDelete1": "Are you sure you want to delete this organization",
     "ConfirmDelete2": "from this service ? This action cannot be undone.",
     "DeleteOrgFromService": "Delete Organization from the service",
+    "EndDate": "End date (optional)",
     "Organization": "Organization",
     "RemoveOrganization": "Remove organization",
     "SelectCapa": "Select capabilities",
     "SelectCapaDescription": "If you select these capabilities, the administrator will be able to assign these capabilities to the users later.",
     "SelectOrganization": "Select an organization",
-    "StartDate": "Start date",
-    "EndDate": "End date (optional)"
+    "StartDate": "Start date"
   },
   "OrganizationSwitcher": {
     "PersonalSpace": "Personal space",
@@ -226,7 +226,8 @@
         "Downloads": "Downloads",
         "LastUpdatedAt": "Last updated at",
         "OpenCTIVersion": "OpenCTI minimum version",
-        "Overview": "Overview"
+        "Overview": "Overview",
+        "Shares": "Shares"
       },
       "Form": {
         "DescriptionLabel": "Description",
@@ -262,9 +263,8 @@
     "HighlightedServices": "To use this feature, please subscribe to one of the highlighted services first",
     "Join": "Join",
     "Management": {
-      "Description": "Find below the list of organizations subscribed to this service",
-      "ShowPersonalSpaces": "Show personal spaces",
       "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
+      "Description": "Find below the list of organizations subscribed to this service",
       "Email": "Email",
       "FirstName": "First Name",
       "InviteUser": {
@@ -279,6 +279,7 @@
       "OneUserMax": "Add 1 user max",
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",
+      "ShowPersonalSpaces": "Show personal spaces",
       "Subscription": "Subscription"
     },
     "Name": "Name",
@@ -324,50 +325,7 @@
       "ManageVault": "Manage vault",
       "UpdateDocument": "Update document",
       "Vault": "Partner Vault",
-      "VaultTitle": "Vault Administration",
-      "UpdateDocument": "Update document"
-    },
-    "CustomDashboards": {
-      "AddDashboard": "Add new dashboard",
-      "UpdateDashboard": "Update dashboard",
-      "FromOCTIVersion": "From OpenCTI",
-      "Details": {
-        "Overview": "Overview",
-        "BasicInformation": "Basic information",
-        "Author": "Author",
-        "LastUpdatedAt": "Last updated at",
-        "OpenCTIVersion": "OpenCTI minimum version",
-        "Downloads": "Downloads",
-        "Shares": "Shares"
-      },
-      "Form": {
-        "JSONFile": "JSON file",
-        "SelectJSONFile": "Select JSON file",
-        "NoJSONFile": "No JSON file selected",
-        "productVersion": "OpenCTI version",
-        "productVersionPlaceholder": "1.0.0",
-        "NameLabel": "Name",
-        "NamePlaceholder": "Dashboard name",
-        "ShortDescriptionLabel": "Short Description",
-        "DescriptionLabel": "Description",
-        "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
-        "DescriptionPlaceholder": "This is a paragraph to describe the document.",
-        "ImageLabel": "Images",
-        "SelectImage": "Select image(s)",
-        "NoImage": "No image selected",
-        "PublishedLabel": "Publish",
-        "PublishedPlaceholder": "Is the dashboard published?",
-        "UploadImage": "Upload new image(s)",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
-        "SlugLabel": "Slug (url)",
-        "SlugPlaceholder": "dashboard-slug"
-      },
-      "Actions": {
-        "Deleted": "{name} has been deleted",
-        "Added": "{name} has been added",
-        "Updated": "{name} has been modified"
-      }
+      "VaultTitle": "Vault Administration"
     }
   },
   "ServiceActions": {
@@ -388,6 +346,8 @@
   },
   "Sort Asc": "Sort Asc",
   "Sort Desc": "Sort Desc",
+  "TestEnvCallout": "You are viewing the {environnement} environment.",
+  "GoToProd": "Go to production",
   "ThemeToggle": {
     "Automatic": "Automatic",
     "Dark": "Dark",
