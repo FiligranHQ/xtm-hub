@@ -3,6 +3,9 @@ import { SubscriptionDeleteMutation } from '@/components/subcription/subscriptio
 import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/service-slug-add-orga-form';
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import {
   BreadcrumbNav,
   BreadcrumbNavLink,
@@ -19,6 +22,7 @@ import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import {
   Button,
+  Checkbox,
   DataTable,
   DataTableHeadBarOptions,
   useToast,
@@ -48,6 +52,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   );
 
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
+  const [shouldDisplayPersonalSpaces, setShouldDisplayPersonalSpaces] =
+    useState(false);
 
   const isAdminPath = useAdminPath();
 
@@ -76,6 +82,26 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       accessorKey: 'organization.name',
       id: 'organizationName',
       header: 'Name',
+    },
+    {
+      id: 'capabilities',
+      header: 'Capabilities',
+      cell: ({ row }) => {
+        const subscriptionCapabilities =
+          row.original.subscription_capability?.map(
+            (subscription_capability) => {
+              return {
+                id: subscription_capability?.service_capability?.id,
+                name: subscription_capability?.service_capability?.name,
+              };
+            }
+          );
+        return (
+          <BadgeOverflowCounter
+            badges={subscriptionCapabilities as BadgeOverflow[]}
+          />
+        );
+      },
     },
     {
       id: 'actions',
@@ -149,7 +175,20 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
-      <div className="flex gap-s flex-wrap ml-auto ">
+      <div className="flex items-center ml-l">
+        <Checkbox
+          checked={shouldDisplayPersonalSpaces}
+          onCheckedChange={(value) => setShouldDisplayPersonalSpaces(!!value)}
+          id="displayPersonalSpaces"
+          className=""
+        />
+        <label
+          htmlFor="displayPersonalSpaces"
+          className="ml-s">
+          {t('Service.Management.ShowPersonalSpaces')}
+        </label>
+      </div>
+      <div className="flex gap-s flex-wrap ml-auto">
         {useAdminPath() && (
           <SheetWithPreventingDialog
             open={openSheetAddOrga}
@@ -188,16 +227,20 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       <h1 className="pb-s">
         {queryData.serviceInstanceByIdWithSubscriptions?.name}
       </h1>
-      <div className="pb-s">
+      <div className="pb-s italic">
         {queryData.serviceInstanceByIdWithSubscriptions?.description}
       </div>
+      <div className="pb-s">{t('Service.Management.Description') + ':'}</div>
 
       <DataTable
         i18nKey={i18nKey(t)}
         columns={columns}
         data={
-          (queryData.serviceInstanceByIdWithSubscriptions
-            ?.subscriptions as subscriptionWithUserService_fragment$data[]) ??
+          (queryData.serviceInstanceByIdWithSubscriptions?.subscriptions?.filter(
+            (subscription) =>
+              subscription?.organization?.personal_space ===
+              shouldDisplayPersonalSpaces
+          ) as subscriptionWithUserService_fragment$data[]) ??
           ([] as subscriptionWithUserService_fragment$data[])
         }
         toolbar={toolbar}

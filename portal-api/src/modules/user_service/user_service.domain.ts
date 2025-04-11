@@ -216,6 +216,7 @@ export const loadUserServiceByUser = (context: PortalContext, opts) => {
     )
     .where('sub.status', 'ACCEPTED')
     .where('sub.end_date', '>', new Date())
+    .where('sub.start_date', '<', new Date())
     .orWhereNull('sub.end_date')
     .where('user.id', userId)
     .where('sub.organization_id', userSelectedOrganization)

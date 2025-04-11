@@ -324,10 +324,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     <>
       <BreadcrumbNav value={breadcrumbValue} />
 
-      <h1>
+      <h1 className="pb-xl">
         {t('Service.Management.ManageUsersForOrganization', {
           organizationName:
             queryDataSubscription.subscriptionById?.organization?.name,
+          serviceName:
+            queryDataSubscription.subscriptionById?.service_instance?.name,
         })}
       </h1>
       {queryDataSubscription.subscriptionById!.subscription_capability!.length >
