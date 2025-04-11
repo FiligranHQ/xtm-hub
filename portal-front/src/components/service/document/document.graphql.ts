@@ -131,6 +131,11 @@ export const documentItem = graphql`
       last_name
       picture
     }
+    uploader_organization {
+      id
+      name
+      personal_space
+    }
     children_documents {
       id
       file_name

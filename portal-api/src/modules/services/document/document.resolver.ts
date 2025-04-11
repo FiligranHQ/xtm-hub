@@ -4,6 +4,7 @@ import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
@@ -16,6 +17,7 @@ import {
   getChildrenDocuments,
   getLabels,
   getUploader,
+  getUploaderOrganization,
   incrementShareNumber,
   loadDocumentBy,
   loadDocuments,
@@ -58,6 +60,7 @@ const resolvers: Resolvers = {
           active: payload.active ?? true,
           labels: payload.labels,
           slug: payload.slug,
+          uploader_organization_id: context.user.selected_organization_id,
         };
 
         const [addedDocument] = await createDocument(data);
@@ -71,7 +74,14 @@ const resolvers: Resolvers = {
       try {
         const [document] = await updateDocumentDescription(
           context,
-          input,
+          input.uploader_organization_id
+            ? ({
+                ...input,
+                uploader_organization_id: extractId<OrganizationId>(
+                  input.uploader_organization_id
+                ),
+              } as DocumentMutator)
+            : input,
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId
         );
@@ -110,6 +120,10 @@ const resolvers: Resolvers = {
       }),
     uploader: ({ id }, _, context) =>
       getUploader(context, id, {
+        unsecured: true,
+      }),
+    uploader_organization: ({ id }, _, context) =>
+      getUploaderOrganization(context, id, {
         unsecured: true,
       }),
     labels: ({ id }, _, context) =>
