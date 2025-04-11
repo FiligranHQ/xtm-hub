@@ -3,6 +3,7 @@ import DashboardDetails from '@/components/service/custom-dashboards/[details]/c
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { fromGlobalId } from '@/utils/globalId';
@@ -199,7 +200,21 @@ const Page = async ({
         (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
       );
     }
-
+    const breadcrumbValue = [
+      {
+        label: 'MenuLinks.Home',
+        href: '/cybersecurity-solutions',
+      },
+      {
+        label: serviceInstance.name,
+        href: `/cybersecurity-solutions/${serviceInstance.slug}`,
+        original: true,
+      },
+      {
+        label: `${customDashboard?.name}`,
+        original: true,
+      },
+    ];
     return (
       <>
         <script
@@ -208,6 +223,8 @@ const Page = async ({
             __html: JSON.stringify(jsonLd),
           }}
         />
+        <BreadcrumbNav value={breadcrumbValue} />
+
         <div className="flex gap-s pb-l flex-col md:flex-row">
           <h1 className="whitespace-nowrap">{customDashboard?.name}</h1>
 

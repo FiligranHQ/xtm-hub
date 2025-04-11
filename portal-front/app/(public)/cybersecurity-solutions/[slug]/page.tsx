@@ -1,4 +1,5 @@
 import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -205,7 +206,16 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
       ];
     }
-
+    const breadcrumbValue = [
+      {
+        label: 'MenuLinks.Home',
+        href: '/cybersecurity-solutions',
+      },
+      {
+        label: serviceInstance.name,
+        original: true,
+      },
+    ];
     return (
       <>
         <script
@@ -214,9 +224,12 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
             __html: JSON.stringify(jsonLd),
           }}
         />
+        <BreadcrumbNav value={breadcrumbValue} />
+
         <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
           {serviceInstance.name}
         </h1>
+
         {(customDashboards.length === 0 && (
           <div className="my-4 text-center">No custom dashboards found</div>
         )) || (
