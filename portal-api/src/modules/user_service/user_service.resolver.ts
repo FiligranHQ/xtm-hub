@@ -149,14 +149,17 @@ const resolvers: Resolvers = {
         .delete('*')
         .returning('*');
 
+      if (!deletedUserService) {
+        return;
+      }
       // Find subscription and remove it if no other userServices
       const usersServices = await loadUnsecureUserServiceBy({
-        subscription_id: deletedUserService.subscription_id,
+        subscription_id: deletedUserService?.subscription_id,
       });
 
       if (usersServices.length === 0) {
         const [subscription] = await loadSubscriptionBy(context, {
-          id: deletedUserService.subscription_id,
+          id: deletedUserService?.subscription_id,
         });
         await db<Subscription>(context, 'Subscription')
           .where('Subscription.id', '=', subscription.id)

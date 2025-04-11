@@ -71,12 +71,14 @@ test.describe('Capabilities', () => {
       await servicePage.addOrganizationIntoServiceWithCapabilities(
         TEST_CAPABILITY.organizationName
       );
+
       await page
         .getByRole('row', {
-          name: `${TEST_CAPABILITY.organizationName} Open menu`,
+          name: `${TEST_CAPABILITY.organizationName} DELETE UPLOAD Open menu`,
         })
         .getByRole('button')
         .click();
+
       await page.getByRole('button', { name: 'Manage users' }).click();
       await servicePage.addUserIntoService(TEST_CAPABILITY.adminThalesEmail);
 

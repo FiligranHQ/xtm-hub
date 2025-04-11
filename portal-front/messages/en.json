@@ -263,6 +263,7 @@
     "Join": "Join",
     "Management": {
       "Description": "Find below the list of organizations subscribed to this service",
+      "ShowPersonalSpaces": "Show personal spaces",
       "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
       "Email": "Email",
       "FirstName": "First Name",
