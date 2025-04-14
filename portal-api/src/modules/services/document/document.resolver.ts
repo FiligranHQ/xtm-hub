@@ -61,6 +61,7 @@ const resolvers: Resolvers = {
           labels: payload.labels,
           slug: payload.slug,
           uploader_organization_id: context.user.selected_organization_id,
+          type: payload.type,
         };
 
         const [addedDocument] = await createDocument(data);

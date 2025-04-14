@@ -125,6 +125,7 @@ export const CustomDashboardUpdateForm = ({
         parentDocumentId: customDashboard.id,
         serviceInstanceId,
         connections: [],
+        type: 'custom_dashboard',
       },
       uploadables: { 0: image },
       updater: (store, response) => {

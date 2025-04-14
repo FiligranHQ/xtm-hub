@@ -13,6 +13,7 @@ export const DocumentAddMutation = graphql`
     $labels: [String!]
     $slug: String
     $connections: [ID!]!
+    $type: String!
   ) {
     addDocument(
       document: $document
@@ -25,6 +26,7 @@ export const DocumentAddMutation = graphql`
       active: $active
       parentDocumentId: $parentDocumentId
       slug: $slug
+      type: $type
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
       id

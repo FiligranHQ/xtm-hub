@@ -55,6 +55,7 @@ export async function up(knex) {
  */
 export async function down(knex) {
   await knex.schema.dropTableIfExists('Document_Children');
+  await knex.schema.dropTableIfExists('Document_Metadata');
 
   await knex.schema.table('Document', function (table) {
     table.dropColumn('type');

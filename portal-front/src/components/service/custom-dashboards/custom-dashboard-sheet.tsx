@@ -52,6 +52,7 @@ export const CustomDashboardSheet = ({
       const variables: documentAddMutation$variables = {
         ...(values as Partial<documentAddMutation$variables>),
         serviceInstanceId,
+        type: 'custom_dashboard',
         connections: !parent ? [connectionId] : [], // Don't pass the connectionId to bypass update the list of documents with hidden documents
       };
 
