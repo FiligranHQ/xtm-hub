@@ -8,6 +8,7 @@ import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import { AdminCallout } from '@/components/admin/admin-callout';
 import AppContext from '@/components/app-context';
 import { ContentLayout } from '@/components/content-layout';
+import Intercom from '@/components/external/intercom';
 import HeaderComponent from '@/components/header';
 import Login from '@/components/login/login';
 import Menu from '@/components/menu/menu';
@@ -63,6 +64,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
                 </div>
               </div>
             </div>
+            <Intercom />
           </PageLoader>
         </AppContext>
       </I18nContext>
