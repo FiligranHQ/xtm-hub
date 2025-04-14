@@ -32,6 +32,7 @@ interface CustomDashbordDocumentListProps {
   queryRef: PreloadedQuery<documentsQuery>;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
   labels?: string[];
+  search: string;
   onSearchChange: (v: string) => void;
   onLabelFilterChange: (v: string[]) => void;
 }
@@ -39,6 +40,7 @@ interface CustomDashbordDocumentListProps {
 const CustomDashbordDocumentList = ({
   queryRef,
   serviceInstance,
+  search,
   onSearchChange,
   onLabelFilterChange,
   labels,
@@ -95,6 +97,7 @@ const CustomDashbordDocumentList = ({
           <SearchInput
             containerClass="w-[20rem] flex-1 max-w-[50%]"
             placeholder={t('GenericActions.Search')}
+            defaultValue={search}
             onChange={debounceHandleInput(onSearchChange)}
           />
           <div className="w-[20rem] flex-1 max-w-[50%]">
