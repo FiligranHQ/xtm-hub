@@ -335,6 +335,7 @@ type PlatformProvider {
 type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
+  environment: String!
 }
 
 enum SubscriptionOrdering {

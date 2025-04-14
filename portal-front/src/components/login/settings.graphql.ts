@@ -8,6 +8,7 @@ export const SettingsQuery = graphql`
         provider
         type
       }
+      environment
       base_url_front
     }
   }
