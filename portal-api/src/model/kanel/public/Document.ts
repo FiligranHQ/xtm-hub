@@ -47,6 +47,8 @@ export default interface Document {
   share_number: number | null;
 
   uploader_organization_id: string | null;
+
+  type: string | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -95,6 +97,8 @@ export interface DocumentInitializer {
   share_number?: number | null;
 
   uploader_organization_id?: string | null;
+
+  type?: string | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -138,4 +142,6 @@ export interface DocumentMutator {
   share_number?: number | null;
 
   uploader_organization_id?: string | null;
+
+  type?: string | null;
 }
