@@ -6,6 +6,7 @@ import '../../styles/globals.css';
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 
 import { AdminCallout } from '@/components/admin/admin-callout';
+import { TestEnvCallout } from '@/components/admin/test-env-callout';
 import AppContext from '@/components/app-context';
 import { ContentLayout } from '@/components/content-layout';
 import HeaderComponent from '@/components/header';
@@ -54,6 +55,7 @@ const RootLayout: React.FunctionComponent<RootLayoutProps> = async ({
         <AppContext>
           <PageLoader>
             <div className="flex flex-col w-full h-screen">
+              <TestEnvCallout />
               <AdminCallout />
               <div className="flex flex-row flex-grow overflow-hidden">
                 <Menu />
