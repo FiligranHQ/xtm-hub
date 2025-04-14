@@ -1,6 +1,6 @@
 # Contributing to XTM Hub
 
-Thank you for reading this documentation and considering making your contribution to the project. Any contribution that helps us improve the platform is valuable and much appreciated. If it is also meaningful to you or your organisation it’s all for the best.
+Thank you for reading this documentation and considering making your contribution to the project. Any contribution that helps us improve the platform is valuable and much appreciated. 
 
 In order to help you understand the project, where we are heading and how you can contribute, below are several resources and answers.
 
