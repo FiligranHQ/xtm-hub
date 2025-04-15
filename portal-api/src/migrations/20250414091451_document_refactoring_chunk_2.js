@@ -3,9 +3,9 @@
  * @returns { Promise<void> }
  */
 export async function up(knex) {
-  await knex.schema.alterTable('Document', function (table) {
+  /*await knex.schema.alterTable('Document', function (table) {
     table.string('type').notNullable().alter();
-  });
+  });*/
 
   await knex.raw(`
     INSERT INTO "Document_Children" ("parent_document_id", "child_document_id")
