@@ -1,5 +1,11 @@
 import config from 'config';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../../knexfile';
+import {
+  db,
+  dbRaw,
+  dbUnsecure,
+  paginate,
+  QueryOpts,
+} from '../../../../knexfile';
 import {
   DocumentConnection,
   Organization,
@@ -147,14 +153,24 @@ export const deleteDocument = async (
     await passDocumentToInactive(context, documentFromDb);
   }
 
-  const parentDocument = documentFromDb.parent_document_id
-    ? (
-        await loadDocumentBy(context, {
-          'Document.id': documentFromDb.parent_document_id,
-          'Document.service_instance_id': serviceInstanceId,
-        })
-      )[0]
-    : documentFromDb;
+  // Check if this document has a parent
+  let parentDocument = documentFromDb;
+  const parentDocuments = await db(context, 'Document_Children')
+    .select('parent_document_id')
+    .where('child_document_id', documentFromDb.id)
+    .limit(1);
+
+  if (parentDocuments.length > 0) {
+    const parents = await loadDocumentBy(context, {
+      'Document.id': parentDocuments[0].parent_document_id,
+      'Document.service_instance_id': serviceInstanceId,
+    });
+
+    if (parents.length > 0) {
+      parentDocument = parents[0];
+    }
+  }
+
   return parentDocument;
 };
 
@@ -177,11 +193,25 @@ export const loadDocuments = (
     .where(field);
 
   if (opts.parentsOnly) {
-    loadDocumentQuery.whereNull('Document.parent_document_id');
-    // left join children_documents
-    loadDocumentQuery.leftJoin('Document as children_documents', function () {
-      this.on('Document.id', '=', 'children_documents.parent_document_id');
+    // Using the Document_Children table to filter for parent documents (those that have children)
+    loadDocumentQuery.whereNotExists(function () {
+      this.select(dbRaw('1'))
+        .from('Document_Children')
+        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
     });
+
+    loadDocumentQuery
+      .leftJoin(
+        'Document_Children',
+        'Document.id',
+        'Document_Children.parent_document_id'
+      )
+      .leftJoin(
+        'Document as children_documents',
+        'Document_Children.child_document_id',
+        'children_documents.id'
+      );
+
     loadDocumentQuery.select(
       dbRaw(
         `CASE
@@ -213,14 +243,16 @@ export const loadDocumentBy = async (
 };
 
 export const getChildrenDocuments = async (
-  context,
-  documentId,
-  opts = {}
+  context: PortalContext,
+  documentId: string,
+  opts: Partial<QueryOpts> = {}
 ): Promise<Document[]> => {
-  return db<Document>(context, 'Document', opts)
-    .where('Document.parent_document_id', '=', documentId)
+  return db<Document>(context, 'Document_Children', opts)
+    .leftJoin('Document', 'Document.id', 'Document_Children.child_document_id')
+    .where('Document_Children.parent_document_id', '=', documentId)
     .orderBy('created_at', 'asc')
-    .select('Document.*');
+    .select('Document.*')
+    .groupBy('Document.id');
 };
 
 export const getUploader = async (

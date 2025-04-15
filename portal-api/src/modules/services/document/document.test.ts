@@ -2,7 +2,10 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser } from '../../../../tests/tests.const';
-import { DocumentMutator } from '../../../model/kanel/public/Document';
+import {
+  DocumentId,
+  DocumentMutator,
+} from '../../../model/kanel/public/Document';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
@@ -69,6 +72,7 @@ describe('should add new file', () => {
       file_name: 'filename',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     });
   });
   it('should create Document entry in DB', async () => {
@@ -79,6 +83,7 @@ describe('should add new file', () => {
       file_name: 'filename2',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     };
     await insertDocument(data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
@@ -94,6 +99,7 @@ describe('should add new file', () => {
       file_name: 'filename',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     };
     await insertDocument(data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
@@ -111,7 +117,7 @@ describe('should add new file', () => {
 describe('Should modify document', () => {
   beforeAll(async () => {
     await createDocument({
-      id: 'bc348e84-3635-46de-9b56-38db09c35f4d',
+      id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'description',
       minio_name: 'minioName',
@@ -120,6 +126,7 @@ describe('Should modify document', () => {
         'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId,
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     });
   });
   it('Should update document description', async () => {
@@ -182,6 +189,7 @@ describe('should check if file already exists', () => {
       file_name: 'filename',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     });
   });
 
@@ -206,22 +214,24 @@ describe('should check if file already exists', () => {
 describe('Documents loading', () => {
   beforeAll(async () => {
     await createDocument({
-      id: 'aefd2d32-adae-4329-b772-90a2fb8516ad',
+      id: 'aefd2d32-adae-4329-b772-90a2fb8516ad' as DocumentId,
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'description',
       minio_name: 'minioName',
       file_name: 'filename',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     });
     await createDocument({
-      id: '96847916-2f35-4402-8e64-888c5d5e8b7a',
+      id: '96847916-2f35-4402-8e64-888c5d5e8b7a' as DocumentId,
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'xdescription',
       minio_name: 'xminioName',
       file_name: 'xfilename',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     });
   });
 

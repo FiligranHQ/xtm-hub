@@ -83,7 +83,7 @@ export const appLogger = createLogger({
     format.timestamp(),
     format.errors({ stack: appLogsConfig.extended_error_message }),
     process.env.LOCAL_DEV === 'true'
-      ? format.combine(format.colorize(), format.prettyPrint())
+      ? format.combine(format.prettyPrint(), format.colorize())
       : format.json()
   ),
   transports: [new transports.Console()],

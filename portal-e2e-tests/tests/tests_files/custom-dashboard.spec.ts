@@ -10,8 +10,8 @@ const DASHBOARD_TEST = {
 };
 
 test.describe.serial('Custom dashboard', () => {
-  let loginPage;
-  let dashboardPage;
+  let loginPage: LoginPage;
+  let dashboardPage: DashboardPage;
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
     dashboardPage = new DashboardPage(page);
@@ -29,7 +29,7 @@ test.describe.serial('Custom dashboard', () => {
     // await expect(page).toHaveScreenshot();
   });
 
-  test('Should see the custom dashboard', async ({ page }) => {
+  test('Should see the custom dashboard on public page', async ({ page }) => {
     await page.goto('/cybersecurity-solutions');
     await dashboardPage.navigateToPublicCustomDashboard();
     // await expect(page).toHaveScreenshot();

@@ -1,5 +1,5 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { dbRaw, dbUnsecure } from '../../../../knexfile';
+import { dbUnsecure } from '../../../../knexfile';
 import Document from '../../../model/kanel/public/Document';
 
 export const loadSeoCustomDashboardsByServiceSlug = async (
@@ -12,7 +12,11 @@ export const loadSeoCustomDashboardsByServiceSlug = async (
       'Document.service_instance_id',
       'ServiceInstance.id'
     )
-    .where(dbRaw('"Document"."parent_document_id" IS NULL'))
+    .whereNotExists(function () {
+      this.select('*')
+        .from('Document_Children')
+        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
+    })
     .where('ServiceInstance.slug', '=', serviceSlug)
     .where('Document.active', '=', true)
     .orderBy([
@@ -27,8 +31,15 @@ export const loadImagesByCustomDashboardId = async (
 ) => {
   const images = await dbUnsecure<Document>('Document')
     .select('Document.id')
-    .where('parent_document_id', '=', customDashboardId)
+    .join(
+      'Document_Children',
+      'Document.id',
+      '=',
+      'Document_Children.child_document_id'
+    )
+    .where('Document_Children.parent_document_id', '=', customDashboardId)
     .where('Document.mime_type', 'like', 'image/%');
+
   for (const image of images) {
     image.id = toGlobalId('Document', image.id);
   }
@@ -40,7 +51,11 @@ export const loadSeoCustomDashboardBySlug = async (slug: string) => {
     .select('Document.*')
     .where('Document.slug', '=', slug)
     .where('Document.active', '=', true)
-    .where(dbRaw('"Document"."parent_document_id" IS NULL'))
+    .whereNotExists(function () {
+      this.select('*')
+        .from('Document_Children')
+        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
+    })
     .first();
   return dashboard;
 };

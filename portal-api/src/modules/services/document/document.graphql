@@ -52,6 +52,7 @@ type Mutation {
     labels: [String!]
     active: Boolean
     slug: String
+    type: String!
   ): Document! @auth @service_capa(requires: [UPLOAD])
   editDocument(
     documentId: ID

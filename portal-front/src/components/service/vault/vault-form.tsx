@@ -37,6 +37,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         ...values,
         serviceInstanceId: slug,
         connections: [connectionId],
+        type: 'vault',
       },
       uploadables: values.document as unknown as UploadableMap,
       onCompleted: (response) => {

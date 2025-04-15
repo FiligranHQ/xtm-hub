@@ -267,6 +267,7 @@ export type MutationAddDocumentArgs = {
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  type: Scalars['String']['input'];
 };
 
 
@@ -1384,7 +1385,7 @@ export type MessageTrackingResolvers<ContextType = PortalContext, ParentType ext
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationAddDocumentArgs>>;
+  addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationAddDocumentArgs, 'type'>>;
   addLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationAddLabelArgs, 'input'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServiceInstance?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationAddServiceInstanceArgs>>;

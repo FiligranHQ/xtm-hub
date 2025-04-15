@@ -118,7 +118,6 @@ const resolvers: Resolvers = {
 
         await trx.commit();
 
-        console.log('userServices', userServices);
         return userServices;
       } catch (error) {
         await trx.rollback();

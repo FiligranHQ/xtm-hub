@@ -3,12 +3,12 @@ import {
   DocumentMutator,
   default as DocumentType,
 } from '../../../model/kanel/public/Document';
+import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
 import Label, { LabelId } from '../../../model/kanel/public/Label';
 import ObjectLabel, {
   ObjectLabelObjectId,
 } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
 import { extractId } from '../../../utils/utils';
 import { sendFileToS3 } from './document.domain';
@@ -50,12 +50,21 @@ export const loadUnsecureDocumentsBy = async (
 
 export const createDocument = async ({
   labels,
+  parent_document_id,
   ...documentData
 }: DocumentMutator & { labels?: string[] }): Promise<Document[]> => {
   const [document] = await dbUnsecure<Document>('Document')
     .insert(documentData)
     .returning('*');
-  if ((labels?.length ?? 0) > 0) {
+
+  if (parent_document_id) {
+    await dbUnsecure<DocumentChildren>('Document_Children').insert({
+      parent_document_id: parent_document_id,
+      child_document_id: document.id,
+    });
+  }
+
+  if (labels?.length) {
     await dbUnsecure<ObjectLabel>('Object_Label').insert(
       labels.map((id) => ({
         object_id: document.id as unknown as ObjectLabelObjectId,
@@ -82,13 +91,14 @@ export const uploadNewFile = async (
   );
 
   const data: DocumentMutator & { labels?: string[] } = {
-    uploader_id: context.user.id as UserId,
-    name: 'picture for service' + serviceInstanceId,
+    uploader_id: context.user.id,
+    name: serviceInstanceId,
     minio_name: minioName,
     file_name: document.file.name,
     service_instance_id: null,
     created_at: new Date(),
     mime_type: document.file.mimetype,
+    type: 'service_picture',
   };
 
   const [addedDocument] = await createDocument(data);
