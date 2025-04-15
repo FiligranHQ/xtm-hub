@@ -3,6 +3,7 @@ ingressClass: nginx
 xtmhub:
   node_env: "production"
   api:
+    repository: "portal-api-prod"
     resources: {}
     replicas: 1
     admin:
@@ -20,6 +21,7 @@ xtmhub:
       OIDC_CLIENT_SECRET: ""
     livenessProbe: {}
   front:
+    repository: "portal-front-prod"
     resources: {}
     replicas: 1
     livenessProbe: {}
