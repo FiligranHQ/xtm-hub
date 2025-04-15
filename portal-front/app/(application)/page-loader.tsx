@@ -1,11 +1,12 @@
 'use client';
 
-import { SettingsQuery } from '@/components/login/settings.graphql';
+import { SettingsContextQuery } from '@/components/login/settings.graphql';
 import Context from '@/components/me/me-context';
 import { MeQuery } from '@/components/me/me.graphql';
+import SettingsContext from '@/components/settings/settings-context';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
-import { settingsQuery } from '@generated/settingsQuery.graphql';
+import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 
@@ -21,18 +22,15 @@ const PageLoader: React.FunctionComponent<LayoutPreloaderProps> = ({
   const [queryRef, loadQuery] = useQueryLoader<meLoaderQuery>(MeQuery);
   useMountingLoader(loadQuery, {});
   const [queryRefSettings, loadQuerySettings] =
-    useQueryLoader<settingsQuery>(SettingsQuery);
-  useMountingLoader(loadQuerySettings, {});
-  if (queryRef && queryRefSettings) {
-    return (
-      <Context
-        queryRef={queryRef}
-        queryRefSettings={queryRefSettings}>
-        {children}
-      </Context>
-    );
-  }
-  return <>{children}</>;
+    useQueryLoader<settingsContextQuery>(SettingsContextQuery);
+  useMountingLoader(loadQuerySettings, { fetchPolicy: 'store-only' });
+  return (
+    queryRefSettings && (
+      <SettingsContext queryRefSettings={queryRefSettings}>
+        {queryRef && <Context queryRef={queryRef}>{children}</Context>}
+      </SettingsContext>
+    )
+  );
 };
 
 // Component export
