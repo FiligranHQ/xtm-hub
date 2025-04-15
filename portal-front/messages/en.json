@@ -213,6 +213,22 @@
     },
     "ComingSoon": "Coming soon",
     "CreationStatus": "Creation status",
+    "CsvFeed": {
+      "Actions": {
+        "Added": "{name} has been added",
+        "Deleted": "{name} has been deleted",
+        "Updated": "{name} has been modified"
+      },
+      "Form": {
+        "NameLabel": "Name",
+        "ShortDescriptionLabel": "Short Description",
+        "DescriptionLabel": "description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the CSV Feed.",
+        "LabelsLabel": "Labels",
+        "PublishedPlaceholder": "Is the CSV Feed published?"
+      },
+      "AddCsvFeed": "Add new CSV Feed"
+    },
     "CustomDashboards": {
       "Actions": {
         "Added": "{name} has been added",

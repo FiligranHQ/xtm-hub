@@ -1,0 +1,35 @@
+type CsvFeed implements Node {
+  id: ID!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  labels: [Label!]!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+}
+
+input CsvFeedAddInput {
+  name: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+}
+
+type Mutation {
+  addCsvFeed(
+    input: CsvFeedAddInput!
+    document: Upload
+    serviceInstanceId: String
+  ): CsvFeed @auth
+}

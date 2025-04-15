@@ -6,6 +6,7 @@ import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import customDashboardsResolver from '../modules/services/custom-dashboards/custom-dashboards.resolver';
+import csvFeedResolver from '../modules/services/document/csv-feed/csv-feed.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
 import servicesResolver from '../modules/services/services.resolver';
 import labelsResolver from '../modules/settings/labels/labels.resolver';
@@ -41,6 +42,7 @@ const resolvers = mergeResolvers([
   logResolver,
   labelsResolver,
   customDashboardsResolver,
+  csvFeedResolver,
 ]);
 
 const createSchema = () => {
