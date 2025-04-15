@@ -158,8 +158,8 @@ const resolvers: Resolvers = {
 
       if (usersServices.length === 0) {
         const [subscription] = await loadSubscriptionBy(context, {
-          id: deletedUserService?.subscription_id,
-        });
+          'Subscription.id': deletedUserService?.subscription_id,
+        } as SubscriptionMutator);
         await db<Subscription>(context, 'Subscription')
           .where('Subscription.id', '=', subscription.id)
           .delete('*')

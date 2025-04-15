@@ -776,6 +776,7 @@ export type ServiceDefinition = Node & {
 };
 
 export enum ServiceDefinitionIdentifier {
+  CsvFeed = 'csv_feed',
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
   Vault = 'vault'
