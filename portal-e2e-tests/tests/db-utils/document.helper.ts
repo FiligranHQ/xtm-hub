@@ -4,5 +4,8 @@ export const removeDocument = async (fileName: string) => {
 };
 
 export const addDocumentInVault = async (data) => {
-  await db('Document').insert(data);
+  await db('Document').insert({
+    ...data,
+    type: 'vault',
+  });
 };

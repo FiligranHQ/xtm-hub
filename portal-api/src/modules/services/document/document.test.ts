@@ -72,6 +72,7 @@ describe('should add new file', () => {
       file_name: 'filename',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     });
   });
   it('should create Document entry in DB', async () => {
@@ -82,6 +83,7 @@ describe('should add new file', () => {
       file_name: 'filename2',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     };
     await insertDocument(data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
@@ -97,6 +99,7 @@ describe('should add new file', () => {
       file_name: 'filename',
       service_instance_id:
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+      type: 'vault',
     };
     await insertDocument(data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
