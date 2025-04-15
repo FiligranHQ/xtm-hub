@@ -7,5 +7,6 @@
       "provider": "oidc"
     }
   ],
+
   "base_url_front": "https://xtmhub.staging.filigran.io"
 }

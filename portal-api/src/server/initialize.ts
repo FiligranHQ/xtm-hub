@@ -15,6 +15,7 @@ import {
   ensurePersonalSpaceExist,
   ensureRoleExists,
   ensureRoleHasCapability,
+  ensureServiceCapabilityExists,
   ensureServiceDefinitionExists,
   ensureServiceExists,
   ensureUserOrganizationExist,
@@ -99,6 +100,9 @@ const initializeDefaultServices = async () => {
   }
   for (const service of portalConfig.services) {
     await ensureServiceExists(service);
+  }
+  for (const serviceCapa of portalConfig.serviceCapabilities) {
+    await ensureServiceCapabilityExists(serviceCapa);
   }
 };
 
