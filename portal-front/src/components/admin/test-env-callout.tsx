@@ -1,22 +1,24 @@
 'use client';
 
-import { getEnv } from '@/lib/utils';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { Callout } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useContext } from 'react';
 
 export function TestEnvCallout() {
   const t = useTranslations();
-  const currentEnvironnement = getEnv();
+  const { settings } = useContext(SettingsContext);
 
   return (
-    currentEnvironnement !== 'production' && (
+    settings?.environment &&
+    settings.environment !== 'production' && (
       <Callout
         variant="destructive"
         className="rounded-none text-black justify-center uppercase">
         <div className="">
           {t('TestEnvCallout', {
-            environnement: currentEnvironnement,
+            environnement: settings?.environment,
           })}
           <Link
             href="https://xtmhub.filigran.io/"

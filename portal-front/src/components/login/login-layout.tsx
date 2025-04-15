@@ -1,23 +1,18 @@
+import { TestEnvCallout } from '@/components/admin/test-env-callout';
 import LoginForm from '@/components/login/login-form';
 import LoginMessage from '@/components/login/login-message';
 import LoginTitleForm from '@/components/login/login-title';
 import { PlatformProviderButton } from '@/components/login/platform-provider-button';
-import { SettingsQuery } from '@/components/login/settings.graphql';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
-import { settingsQuery } from '@generated/settingsQuery.graphql';
 import { useToast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
-import { FunctionComponent, useEffect } from 'react';
-import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
-interface LoginLayoutProps {
-  queryRef: PreloadedQuery<settingsQuery>;
-}
+import { FunctionComponent, useContext, useEffect } from 'react';
 
-export const LoginLayout: FunctionComponent<LoginLayoutProps> = ({
-  queryRef,
-}) => {
-  const data = usePreloadedQuery<settingsQuery>(SettingsQuery, queryRef);
+export const LoginLayout: FunctionComponent = ({}) => {
+  const { settings } = useContext(SettingsContext);
+
   const { error } = useDecodedQuery();
   const currentPath = usePathname();
   const { toast } = useToast();
@@ -33,11 +28,12 @@ export const LoginLayout: FunctionComponent<LoginLayoutProps> = ({
   }, [currentPath]);
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
+      <TestEnvCallout />
       <div className="flex flex-col items-center p-xl sm:p-0">
         <LoginTitleForm />
         <div className="space-y-l mt-l w-full flex flex-col items-center">
           <LoginMessage />
-          {data.settings.platform_providers.map((platformProvider) =>
+          {settings?.platform_providers?.map((platformProvider) =>
             platformProvider.provider === 'local' ? (
               <LoginForm key={platformProvider.provider} />
             ) : (

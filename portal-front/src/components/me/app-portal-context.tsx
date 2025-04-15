@@ -20,7 +20,7 @@ export interface PortalProps extends Portal {
 export const PortalContext = createContext<Portal>({});
 
 export const generatePortalContext = (
-  me: meContext_fragment$data | null | undefined
+  me?: meContext_fragment$data | null
 ): Portal => {
   return {
     me,
