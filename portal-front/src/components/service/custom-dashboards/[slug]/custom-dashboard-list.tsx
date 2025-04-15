@@ -1,5 +1,10 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import {
+  documentItem,
+  documentsFragment,
+  DocumentsListQuery,
+} from '@/components/service/document/document.graphql';
 import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -20,11 +25,6 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import {
-  documentItem,
-  documentsFragment,
-  DocumentsListQuery,
-} from '../../document/document.graphql';
 import CustomDashboardCard from '../custom-dashboard-card';
 import { CustomDashboardSheet } from '../custom-dashboard-sheet';
 
@@ -32,6 +32,7 @@ interface CustomDashbordDocumentListProps {
   queryRef: PreloadedQuery<documentsQuery>;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
   labels?: string[];
+  search: string;
   onSearchChange: (v: string) => void;
   onLabelFilterChange: (v: string[]) => void;
 }
@@ -39,6 +40,7 @@ interface CustomDashbordDocumentListProps {
 const CustomDashbordDocumentList = ({
   queryRef,
   serviceInstance,
+  search,
   onSearchChange,
   onLabelFilterChange,
   labels,
@@ -79,6 +81,9 @@ const CustomDashbordDocumentList = ({
     );
   }, [data]);
 
+  const firstCustomDashboard =
+    _nonActive.length > 0 ? _nonActive[0] : active[0];
+
   const labelOptions = getLabels().map(({ name, id }) => ({
     label: name.toUpperCase(),
     value: id,
@@ -92,6 +97,7 @@ const CustomDashbordDocumentList = ({
           <SearchInput
             containerClass="w-[20rem] flex-1 max-w-[50%]"
             placeholder={t('GenericActions.Search')}
+            defaultValue={search}
             onChange={debounceHandleInput(onSearchChange)}
           />
           <div className="w-[20rem] flex-1 max-w-[50%]">
@@ -110,7 +116,8 @@ const CustomDashbordDocumentList = ({
             <Button
               asChild
               variant="outline">
-              <Link href={`/manage/service/${serviceInstance.id}`}>
+              <Link
+                href={`/manage/service/${serviceInstance.id}/subscription/${firstCustomDashboard?.subscription?.id}`}>
                 {t('Service.Capabilities.ManageAccessName')}
               </Link>
             </Button>

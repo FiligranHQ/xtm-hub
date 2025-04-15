@@ -4,17 +4,20 @@ import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
+import { loadSubscription } from '../../subcription/subscription.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
   deleteDocument,
   getChildrenDocuments,
   getLabels,
   getUploader,
+  getUploaderOrganization,
   incrementShareNumber,
   loadDocumentBy,
   loadDocuments,
@@ -57,6 +60,8 @@ const resolvers: Resolvers = {
           active: payload.active ?? true,
           labels: payload.labels,
           slug: payload.slug,
+          uploader_organization_id: context.user.selected_organization_id,
+          type: payload.type,
         };
 
         const [addedDocument] = await createDocument(data);
@@ -70,7 +75,14 @@ const resolvers: Resolvers = {
       try {
         const [document] = await updateDocumentDescription(
           context,
-          input,
+          input.uploader_organization_id
+            ? ({
+                ...input,
+                uploader_organization_id: extractId<OrganizationId>(
+                  input.uploader_organization_id
+                ),
+              } as DocumentMutator)
+            : input,
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId
         );
@@ -111,12 +123,19 @@ const resolvers: Resolvers = {
       getUploader(context, id, {
         unsecured: true,
       }),
+    uploader_organization: ({ id }, _, context) =>
+      getUploaderOrganization(context, id, {
+        unsecured: true,
+      }),
     labels: ({ id }, _, context) =>
       getLabels(context, id, {
         unsecured: true,
       }),
     service_instance: ({ service_instance_id }, _, context) => {
       return getServiceInstance(context, service_instance_id);
+    },
+    subscription: ({ service_instance_id }, _, context) => {
+      return loadSubscription(context, service_instance_id);
     },
   },
   Query: {

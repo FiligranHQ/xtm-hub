@@ -13,50 +13,32 @@ export default class ServicePage {
       .getByRole('row', { name: 'Vault' })
       .getByRole('button')
       .click();
-    await this.page.getByLabel('Admin').click();
+    await this.page.getByRole('button', { name: 'Manage' }).click();
   }
 
-  async addOrganizationIntoService(
-    organizationName: string,
-    userEmail: string
-  ) {
+  async addOrganizationIntoService(organizationName: string) {
     await this.page
       .getByRole('button', { name: 'Subscribe organization' })
       .click();
     await this.page.getByLabel('Organization', { exact: true }).click();
     await this.page.getByLabel(organizationName).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByLabel('Invite user').click();
-    await this.page.getByText(userEmail).click();
-    await this.page.getByLabel('Manage access: The user can').click();
-    await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page
-      .getByRole('main')
-      .getByText(organizationName, { exact: true })
-      .click();
   }
-  async addOrganizationIntoServiceWithCapabilities(
-    organizationName: string,
-    userEmail: string
-  ) {
+  async addOrganizationIntoServiceWithCapabilities(organizationName: string) {
     await this.page
       .getByRole('button', { name: 'Subscribe organization' })
       .click();
     await this.page.getByLabel('Organization', { exact: true }).click();
     await this.page.getByLabel(organizationName).click();
-    await this.page.getByText('DELETE access:').click();
-    await this.page.getByLabel('UPLOAD access:').click();
-    await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByLabel('Invite user').click();
-    await this.page.getByText(userEmail).click();
-    await this.page.getByLabel('Manage access: The user can').click();
+    await this.page.getByText('DELETE access:', { exact: true }).click();
+    await this.page.getByLabel('UPLOAD access:', { exact: true }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
   async addUserIntoService(userEmail: string) {
     await this.page.getByLabel('Invite user').click();
     await this.page.getByPlaceholder('EMAIL').click();
-    await this.page.getByPlaceholder('EMAIL').fill('use');
+    await this.page.getByPlaceholder('EMAIL').fill(userEmail);
     await this.page.getByText(userEmail).click();
     await this.page.getByRole('dialog').nth(1).press('Enter');
     await this.page.getByLabel('Manage access').click();
@@ -90,10 +72,18 @@ export default class ServicePage {
     await this.page.getByLabel('Edit user rights').click();
     await this.page.getByLabel(newCapability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    // Wait for dialog to close
+    await this.page.waitForSelector('div[role="dialog"]', { state: 'hidden' });
+    // Dirty fix: make sure the dropdown is closed
+    await this.page.click('body', { position: { x: 1, y: 1 }, force: true });
   }
 
-  async deleteOrganizationFromService() {
-    await this.page.getByLabel('Delete Organization from the').click();
-    await this.page.getByRole('button', { name: 'Remove' }).click();
+  async deleteOrganizationFromService(organizationName: string = 'Thales') {
+    await this.page
+      .getByRole('row', { name: organizationName })
+      .getByRole('button')
+      .click();
+    await this.page.getByRole('button', { name: 'Delete' }).click();
+    await this.page.getByRole('button', { name: 'Remove access' }).click();
   }
 }

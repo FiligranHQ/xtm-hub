@@ -8,6 +8,7 @@ enum DocumentOrdering {
 type Document implements Node {
   id: ID!
   uploader: User
+  uploader_organization: Organization
   service_instance_id: String!
   name: String
   short_description: String
@@ -25,6 +26,7 @@ type Document implements Node {
   labels: [Label!]!
   slug: String
   service_instance: ServiceInstance
+  subscription: SubscriptionModel
 }
 
 input EditDocumentInput {
@@ -32,6 +34,7 @@ input EditDocumentInput {
   product_version: String
   labels: [String!]
   description: String
+  uploader_organization_id: String
   name: String
   active: Boolean
   slug: String
@@ -49,6 +52,7 @@ type Mutation {
     labels: [String!]
     active: Boolean
     slug: String
+    type: String!
   ): Document! @auth @service_capa(requires: [UPLOAD])
   editDocument(
     documentId: ID

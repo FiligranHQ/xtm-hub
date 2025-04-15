@@ -45,6 +45,10 @@ export default interface Document {
   slug: string | null;
 
   share_number: number | null;
+
+  uploader_organization_id: string | null;
+
+  type: string | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -91,6 +95,10 @@ export interface DocumentInitializer {
 
   /** Default value: 0 */
   share_number?: number | null;
+
+  uploader_organization_id?: string | null;
+
+  type?: string | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -132,4 +140,8 @@ export interface DocumentMutator {
   slug?: string | null;
 
   share_number?: number | null;
+
+  uploader_organization_id?: string | null;
+
+  type?: string | null;
 }

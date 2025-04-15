@@ -1,6 +1,6 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { dbRaw, dbUnsecure } from '../../knexfile';
-import { loadSubscriptionBy } from '../modules/subcription/subscription.helper';
+import { loadUnsecureSubscriptionBy } from '../modules/subcription/subscription.helper';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { ServiceCapabilityArgs } from './directive-auth';
 
@@ -89,7 +89,7 @@ export const getCapabilityUser = (
         user,
         fromGlobalId(args.service_instance_id).id
       )
-    : loadSubscriptionBy({
+    : loadUnsecureSubscriptionBy({
         id: extractId(args.subscription_id),
       } as SubscriptionMutator).then(([subscription]) =>
         loadCapabilitiesByServiceId(user, subscription.service_instance_id)

@@ -24,7 +24,7 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addDocument(document: Upload, name: String, short_description: String, product_version: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean, slug: String): Document!
+  addDocument(document: Upload, name: String, short_description: String, product_version: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
@@ -36,11 +36,11 @@ type Mutation {
   editLabel(id: ID!, input: EditLabelInput!): Label!
   deleteLabel(id: ID!): Label!
   addSubscription(service_instance_id: String): ServiceInstance
-  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID]): ServiceInstance
+  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
-  addUserService(input: UserServiceAddInput!): SubscriptionModel
-  deleteUserService(input: UserServiceDeleteInput!): SubscriptionModel
+  addUserService(input: UserServiceAddInput!): [UserService]
+  deleteUserService(input: UserServiceDeleteInput!): UserService
   selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
@@ -97,8 +97,10 @@ type Query {
   labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
   label(id: ID!): Label
   settings: Settings!
+  subscriptionById(subscription_id: ID): SubscriptionWithService
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
+  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
   me: User
   user(id: ID!): User
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
@@ -163,6 +165,7 @@ enum DocumentOrdering {
 type Document implements Node {
   id: ID!
   uploader: User
+  uploader_organization: Organization
   service_instance_id: String!
   name: String
   short_description: String
@@ -180,6 +183,7 @@ type Document implements Node {
   labels: [Label!]!
   slug: String
   service_instance: ServiceInstance
+  subscription: SubscriptionModel
 }
 
 input EditDocumentInput {
@@ -187,6 +191,7 @@ input EditDocumentInput {
   product_version: String
   labels: [String!]
   description: String
+  uploader_organization_id: String
   name: String
   active: Boolean
   slug: String
@@ -330,6 +335,7 @@ type PlatformProvider {
 type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
+  environment: String!
 }
 
 enum SubscriptionOrdering {
@@ -355,6 +361,16 @@ type SubscriptionModel implements Node {
   service_instance: ServiceInstance
   subscription_capability: [SubscriptionCapability]
   user_service: [UserService]!
+}
+
+type SubscriptionWithService implements Node {
+  id: ID!
+  start_date: Date
+  end_date: Date
+  status: String
+  organization: Organization!
+  service_instance: ServiceInstance
+  subscription_capability: [SubscriptionCapability]
 }
 
 type SubscriptionEdge {
@@ -431,8 +447,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
-  serviceInstanceId: String!
-  organizationId: String!
+  subscriptionId: ID!
 }
 
 input UserServiceDeleteInput {
@@ -459,7 +474,7 @@ type UserService implements Node {
   user: User
   subscription: SubscriptionModel
   user_service_capability: [UserServiceCapability]
-  ordering: Int!
+  ordering: Int
 }
 
 type UserServiceDeleted implements Node {

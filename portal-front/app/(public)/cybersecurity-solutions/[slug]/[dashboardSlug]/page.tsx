@@ -3,6 +3,7 @@ import DashboardDetails from '@/components/service/custom-dashboards/[details]/c
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { fromGlobalId } from '@/utils/globalId';
@@ -31,14 +32,14 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
   const settingsResponse = await serverFetchGraphQL<settingsQuery>(
     SettingsQuery,
     {},
-    { cache: 'force-cache' }
+    { cache: undefined, next: { revalidate: 3600 } }
   );
   const baseUrl = settingsResponse.data.settings.base_url_front;
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
     { slug: serviceSlug },
-    { cache: 'force-cache' }
+    { cache: undefined, next: { revalidate: 3600 } }
   );
 
   const serviceInstance = serviceResponse.data
@@ -52,7 +53,7 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
     await serverFetchGraphQL<seoCustomDashboardBySlugQuery>(
       SeoCustomDashboardBySlugQuery,
       { slug: dashboardSlug },
-      { cache: 'force-cache' }
+      { cache: undefined, next: { revalidate: 3600 } }
     );
 
   const customDashboard = customDashboardResponse.data
@@ -199,7 +200,21 @@ const Page = async ({
         (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
       );
     }
-
+    const breadcrumbValue = [
+      {
+        label: 'MenuLinks.Home',
+        href: '/cybersecurity-solutions',
+      },
+      {
+        label: serviceInstance.name,
+        href: `/cybersecurity-solutions/${serviceInstance.slug}`,
+        original: true,
+      },
+      {
+        label: `${customDashboard?.name}`,
+        original: true,
+      },
+    ];
     return (
       <>
         <script
@@ -208,6 +223,8 @@ const Page = async ({
             __html: JSON.stringify(jsonLd),
           }}
         />
+        <BreadcrumbNav value={breadcrumbValue} />
+
         <div className="flex gap-s pb-l flex-col md:flex-row">
           <h1 className="whitespace-nowrap">{customDashboard?.name}</h1>
 

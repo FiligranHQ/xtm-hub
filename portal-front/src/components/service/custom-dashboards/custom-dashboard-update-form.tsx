@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { getLabels } from '@/components/admin/label/label.utils';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
@@ -22,12 +23,17 @@ import {
   FormMessage,
   Input,
   MultiSelectFormField,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   SheetFooter,
   Textarea,
   toast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import slugify from 'slugify';
@@ -42,6 +48,7 @@ export const updateCustomDashboardSchema = z.object({
     message: 'Product version must be X.Y.Z',
   }),
   description: z.string().min(1, 'Required'),
+  uploader_organization_id: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   images: z.custom<FileList>(fileListCheck).optional(),
@@ -75,6 +82,8 @@ export const CustomDashboardUpdateForm = ({
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
+  const { me } = useContext(PortalContext);
+
   const form = useForm<CustomDashboardUpdateFormValues>({
     resolver: zodResolver(updateCustomDashboardSchema),
     defaultValues: {
@@ -82,6 +91,7 @@ export const CustomDashboardUpdateForm = ({
       shortDescription: customDashboard.short_description ?? '',
       productVersion: customDashboard.product_version ?? '',
       description: customDashboard.description ?? '',
+      uploader_organization_id: customDashboard.uploader_organization?.id ?? '',
       active: customDashboard.active ?? false,
       labels: customDashboard.labels.map(({ id }) => id) ?? [],
       slug: customDashboard.slug ?? '',
@@ -115,6 +125,7 @@ export const CustomDashboardUpdateForm = ({
         parentDocumentId: customDashboard.id,
         serviceInstanceId,
         connections: [],
+        type: 'custom_dashboard',
       },
       uploadables: { 0: image },
       updater: (store, response) => {
@@ -266,6 +277,42 @@ export const CustomDashboardUpdateForm = ({
                         }
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="uploader_organization_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t('OrganizationInServiceAction.Organization')}
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t(
+                              'OrganizationInServiceAction.SelectOrganization'
+                            )}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {me?.organizations.map((node) => {
+                          return (
+                            <SelectItem
+                              key={node?.id}
+                              value={node?.id}>
+                              {node?.name}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

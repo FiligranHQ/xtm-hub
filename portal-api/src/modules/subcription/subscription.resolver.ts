@@ -121,7 +121,13 @@ const resolvers: Resolvers = {
     },
     addSubscriptionInService: async (
       _,
-      { service_instance_id, organization_id, capability_ids },
+      {
+        service_instance_id,
+        organization_id,
+        capability_ids,
+        start_date,
+        end_date,
+      },
       context
     ) => {
       const trx = await dbTx();
@@ -144,8 +150,8 @@ const resolvers: Resolvers = {
           organization_id:
             fromGlobalId(organization_id).id ??
             context.user.selected_organization_id,
-          start_date: new Date(),
-          end_date: undefined,
+          start_date: start_date,
+          end_date: end_date,
           billing: 0,
           status: 'ACCEPTED',
         };
@@ -181,8 +187,8 @@ const resolvers: Resolvers = {
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
       try {
-        const [subscription] = await loadSubscriptionBy({
-          id: extractId(subscription_id),
+        const [subscription] = await loadSubscriptionBy(context, {
+          'Subscription.id': extractId<SubscriptionId>(subscription_id),
         } as SubscriptionMutator);
 
         // TODO: to be rethought when billing is used in XTM
@@ -207,6 +213,15 @@ const resolvers: Resolvers = {
         }
         throw UnknownError('DELETE_SUBSCRIPTION_ERROR', { detail: error });
       }
+    },
+  },
+  Query: {
+    subscriptionById: async (_, { subscription_id }, context) => {
+      const subscriptions = await loadSubscriptionBy(context, {
+        'Subscription.id': extractId<SubscriptionId>(subscription_id),
+      } as SubscriptionMutator);
+
+      return subscriptions[0];
     },
   },
 };

@@ -1,5 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import { expect } from '../fixtures/baseFixtures';
+import { openAndGetRowActionsDropdown } from './common';
 
 export default class DocumentPage {
   constructor(private page: Page) {}
@@ -25,12 +26,11 @@ export default class DocumentPage {
   }
 
   async editDocument(newDescription: string) {
-    await this.page.getByRole('cell', { name: 'Open menu' }).click();
+    await this.page.getByRole('cell', { name: 'Open menu' }).first().click();
     await expect(this.page.getByLabel('Delete document')).not.toBeVisible();
     await this.page.getByLabel('Update document').click();
-    await this.page.getByPlaceholder('This is a short paragraph to').click();
     await this.page
-      .getByPlaceholder('This is a short paragraph to')
+      .getByRole('textbox', { name: 'Description' })
       .fill(newDescription);
     await this.page.getByRole('button', { name: 'Validate' }).click();
     await expect(
@@ -47,8 +47,9 @@ export default class DocumentPage {
 
   async deleteDocument(documentName: string) {
     const documentRow = await this.getDocumentRow(documentName);
-    await documentRow.getByRole('cell', { name: 'Open menu' }).click();
-    await this.page.getByText('Delete').click();
+    const dropdown = await openAndGetRowActionsDropdown(this.page, documentRow);
+    const deleteButton = dropdown.getByText('Delete');
+    await deleteButton.click();
   }
 
   async getDocumentRow(documentName) {

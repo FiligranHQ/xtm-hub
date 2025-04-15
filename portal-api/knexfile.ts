@@ -41,7 +41,10 @@ export type DatabaseType =
   | 'User_Organization'
   | 'Label'
   | 'Object_Label'
-  | 'UserOrganization_Capability';
+  | 'UserOrganization_Capability'
+  | 'Document_Children'
+  | 'Document_Metadata';
+
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 
 interface Pagination {

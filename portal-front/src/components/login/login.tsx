@@ -2,16 +2,24 @@
 import { FunctionComponent } from 'react';
 
 import { LoginLayout } from '@/components/login/login-layout';
-import { SettingsQuery } from '@/components/login/settings.graphql';
+import { SettingsContextQuery } from '@/components/login/settings.graphql';
+import SettingsContext from '@/components/settings/settings-context';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { settingsQuery } from '@generated/settingsQuery.graphql';
+import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import { useQueryLoader } from 'react-relay';
 
 // Component
 const Login: FunctionComponent = () => {
-  const [queryRef, loadQuery] = useQueryLoader<settingsQuery>(SettingsQuery);
-  useMountingLoader(loadQuery, {});
-  return queryRef ? <LoginLayout queryRef={queryRef} /> : <></>;
+  const [queryRefSettings, loadQuerySettings] =
+    useQueryLoader<settingsContextQuery>(SettingsContextQuery);
+  useMountingLoader(loadQuerySettings, { fetchPolicy: 'store-only' });
+  return (
+    queryRefSettings && (
+      <SettingsContext queryRefSettings={queryRefSettings}>
+        <LoginLayout />
+      </SettingsContext>
+    )
+  );
 };
 
 // Component export

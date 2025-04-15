@@ -30,26 +30,26 @@ test.describe('Service Management', () => {
   test('should be able to admin service', async ({ page }) => {
     await test.step("Add orga's sub + admin with manage access", async () => {
       await servicePage.addOrganizationIntoService(
-        TEST_SUBSCRIPTION.organizationName,
-        TEST_SUBSCRIPTION.adminOrgaEmail
+        TEST_SUBSCRIPTION.organizationName
       );
-
       await expect(
-        page.getByRole('cell', { name: TEST_SUBSCRIPTION.adminOrgaEmail })
-      ).toBeVisible();
-      await expect(
-        page.getByText(GENERIC_CAPABILITY.manageAccess)
+        page.getByRole('cell', { name: TEST_SUBSCRIPTION.organizationName })
       ).toBeVisible();
     });
 
     await test.step("Add user's rights for service", async () => {
+      await page
+        .getByRole('row', { name: TEST_SUBSCRIPTION.organizationName })
+        .getByRole('button')
+        .click();
+      await page.getByRole('button', { name: 'Manage users' }).click();
       await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);
 
       await expect(
         page.getByRole('cell', { name: TEST_SUBSCRIPTION.userInOrgaEmail })
       ).toBeVisible();
       await expect(
-        page.getByText(GENERIC_CAPABILITY.manageAccess).nth(1)
+        page.getByText(GENERIC_CAPABILITY.manageAccess)
       ).toBeVisible();
     });
 
@@ -58,7 +58,7 @@ test.describe('Service Management', () => {
         TEST_SUBSCRIPTION.userInOrgaEmail
       );
       await expect(
-        page.getByText(GENERIC_CAPABILITY.manageAccess).first()
+        page.getByText(GENERIC_CAPABILITY.manageAccess)
       ).toBeVisible();
     });
 
@@ -71,13 +71,14 @@ test.describe('Service Management', () => {
     });
 
     await test.step("Delete an organization's subscription", async () => {
-      await servicePage.deleteOrganizationFromService();
-      await page
-        .getByRole('main')
-        .getByText('Filigran', { exact: true })
-        .click();
+      await page.getByRole('link', { name: 'Vault' }).click();
+      await expect(page.getByRole('heading', { name: 'Vault' })).toBeVisible();
+      await servicePage.deleteOrganizationFromService(
+        TEST_SUBSCRIPTION.organizationName
+      );
+
       await expect(
-        page.getByRole('option', { name: TEST_SUBSCRIPTION.organizationName })
+        page.getByRole('cell', { name: TEST_SUBSCRIPTION.organizationName })
       ).not.toBeVisible();
     });
   });

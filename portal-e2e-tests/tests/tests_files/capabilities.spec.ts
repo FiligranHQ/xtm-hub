@@ -6,7 +6,10 @@ import {
   deleteServiceCapability,
 } from '../db-utils/service.helper';
 import ServicePage from '../model/service.pageModel';
-import { removeDocument } from '../db-utils/document.helper';
+import {
+  addDocumentInVault,
+  removeDocument,
+} from '../db-utils/document.helper';
 import { removeSubscription } from '../db-utils/subscription.helper';
 
 const TEST_FILE = {
@@ -29,10 +32,10 @@ const TEST_CAPABILITY = {
   thalesOrgaId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
   organizationName: 'Thales',
 };
-test.describe('FULL workflow', () => {
-  let loginPage;
-  let documentPage;
-  let servicePage;
+test.describe('Capabilities', () => {
+  let loginPage: LoginPage;
+  let documentPage: DocumentPage;
+  let servicePage: ServicePage;
 
   test.beforeEach(async ({ page }) => {
     await addServiceCapability({
@@ -44,6 +47,15 @@ test.describe('FULL workflow', () => {
       id: SERVICE_CAPABILITY.idDelete,
       name: SERVICE_CAPABILITY.nameDelete,
       service_definition_id: TEST_CAPABILITY.vaultServiceDefId,
+    });
+    await addDocumentInVault({
+      id: '312a4ce7-cac6-4d98-a8b2-2351dbc23bf5',
+      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+      description: 'description',
+      file_name: 'fileName.pdf',
+      minio_name: 'fileName',
+      active: true,
     });
 
     loginPage = new LoginPage(page);
@@ -57,9 +69,19 @@ test.describe('FULL workflow', () => {
       await servicePage.navigateToServiceListAdmin();
 
       await servicePage.addOrganizationIntoServiceWithCapabilities(
-        TEST_CAPABILITY.organizationName,
-        TEST_CAPABILITY.adminThalesEmail
+        TEST_CAPABILITY.organizationName
       );
+
+      await page
+        .getByRole('row', {
+          name: `${TEST_CAPABILITY.organizationName} DELETE UPLOAD Open menu`,
+        })
+        .getByRole('button')
+        .click();
+
+      await page.getByRole('button', { name: 'Manage users' }).click();
+      await servicePage.addUserIntoService(TEST_CAPABILITY.adminThalesEmail);
+
       await loginPage.logout();
     });
     await test.step('Add simple user access + upload capa', async () => {
@@ -67,7 +89,7 @@ test.describe('FULL workflow', () => {
 
       await documentPage.navigateToVault();
 
-      await page.getByRole('link', { name: 'Manage vault' }).click();
+      await page.getByRole('link', { name: 'Manage Vault' }).click();
 
       await servicePage.addUserIntoServiceWithCapability(
         TEST_CAPABILITY.userThalesEmail,
@@ -117,5 +139,6 @@ test.describe('FULL workflow', () => {
     await deleteServiceCapability(SERVICE_CAPABILITY.idDelete);
     await deleteServiceCapability(SERVICE_CAPABILITY.idUpload);
     await removeDocument(TEST_FILE.name);
+    await removeDocument('fileName.pdf');
   });
 });

@@ -13,6 +13,7 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { PortalContext } from '../../model/portal-context';
+import { formatRawObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
 import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
@@ -163,7 +164,32 @@ export const getUserServiceCapabilities = async (
   ];
   return userServiceCapability.length > 0 ? userServiceCapability : undefined;
 };
-
+export const loadUserServiceBySubscription = (
+  context: PortalContext,
+  opts,
+  subscriptionId
+) => {
+  const userServiceQuery = db<UserService>(context, 'User_Service', opts)
+    .where('subscription_id', '=', subscriptionId)
+    .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
+    .select([
+      'User_Service.*',
+      dbRaw(
+        formatRawObject({
+          columnName: 'user',
+          typename: 'User',
+          as: 'user',
+        })
+      ),
+    ]);
+  return paginate<UserService, UserServiceConnection>(
+    context,
+    'User_Service',
+    opts,
+    undefined,
+    userServiceQuery
+  );
+};
 export const loadUserServiceByUser = (context: PortalContext, opts) => {
   const userSelectedOrganization = context.user.selected_organization_id;
   const userId = context.user.id;
@@ -189,6 +215,9 @@ export const loadUserServiceByUser = (context: PortalContext, opts) => {
       'service_link.service_instance_id'
     )
     .where('sub.status', 'ACCEPTED')
+    .where('sub.end_date', '>', new Date())
+    .where('sub.start_date', '<', new Date())
+    .orWhereNull('sub.end_date')
     .where('user.id', userId)
     .where('sub.organization_id', userSelectedOrganization)
     .select([

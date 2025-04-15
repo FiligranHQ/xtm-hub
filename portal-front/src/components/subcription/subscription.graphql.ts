@@ -52,11 +52,15 @@ export const AddSubscriptionInServiceMutation = graphql`
     $service_instance_id: String!
     $organization_id: ID
     $capability_ids: [ID]
+    $start_date: Date!
+    $end_date: Date
   ) {
     addSubscriptionInService(
       service_instance_id: $service_instance_id
       organization_id: $organization_id
       capability_ids: $capability_ids
+      start_date: $start_date
+      end_date: $end_date
     ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }
@@ -71,6 +75,38 @@ export const AddSubscriptionMutation = graphql`
     addSubscription(service_instance_id: $service_instance_id)
       @prependNode(connections: $connections, edgeTypeName: "Subscription") {
       ...serviceList_fragment
+    }
+  }
+`;
+
+export const SubscriptionById = graphql`
+  query subscriptionByIdQuery($subscriptionId: ID) {
+    subscriptionById(subscription_id: $subscriptionId) {
+      id
+      organization {
+        id
+        name
+      }
+      service_instance {
+        id
+        name
+        description
+        service_definition {
+          service_capability {
+            id
+            name
+            description
+          }
+        }
+      }
+      subscription_capability {
+        id
+        service_capability {
+          id
+          name
+          description
+        }
+      }
     }
   }
 `;
