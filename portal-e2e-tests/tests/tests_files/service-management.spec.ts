@@ -2,6 +2,7 @@ import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import { removeSubscription } from '../db-utils/subscription.helper';
 import ServicePage from '../model/service.pageModel';
+import { clickRowAction } from '../model/common.js';
 
 const TEST_SUBSCRIPTION = {
   organizationName: 'Thales',
@@ -14,8 +15,8 @@ export const GENERIC_CAPABILITY = {
   manageAccess: 'MANAGE_ACCESS',
 };
 test.describe('Service Management', () => {
-  let loginPage;
-  let servicePage;
+  let loginPage: LoginPage;
+  let servicePage: ServicePage;
 
   test.beforeEach(async ({ page }) => {
     await removeSubscription(TEST_SUBSCRIPTION.organizationId);
@@ -38,11 +39,11 @@ test.describe('Service Management', () => {
     });
 
     await test.step("Add user's rights for service", async () => {
-      await page
-        .getByRole('row', { name: TEST_SUBSCRIPTION.organizationName })
-        .getByRole('button')
-        .click();
-      await page.getByRole('button', { name: 'Manage users' }).click();
+      await clickRowAction(
+        page,
+        page.getByRole('row', { name: TEST_SUBSCRIPTION.organizationName }),
+        'Manage users'
+      );
       await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);
 
       await expect(
@@ -73,6 +74,7 @@ test.describe('Service Management', () => {
     await test.step("Delete an organization's subscription", async () => {
       await page.getByRole('link', { name: 'Vault' }).click();
       await expect(page.getByRole('heading', { name: 'Vault' })).toBeVisible();
+
       await servicePage.deleteOrganizationFromService(
         TEST_SUBSCRIPTION.organizationName
       );

@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import { expect } from '../fixtures/baseFixtures';
-import { openAndGetRowActionsDropdown } from './common';
+import { clickRowAction, openAndGetRowActionsDropdown } from './common';
 
 export default class DocumentPage {
   constructor(private page: Page) {}
@@ -19,13 +19,15 @@ export default class DocumentPage {
       .getByPlaceholder('This is a short paragraph to describe the document.')
       .fill(fileDescription);
 
-    const fileInput = await this.page.locator('input[type="file"]');
+    const fileInput = this.page.locator('input[type="file"]');
 
     await fileInput.setInputFiles(filePath);
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
   async editDocument(newDescription: string) {
+    await this.page.pause();
+    await openAndGetRowActionsDropdown(this.page, this.page.getByRole('row'));
     await this.page.getByRole('cell', { name: 'Open menu' }).first().click();
     await expect(this.page.getByLabel('Delete document')).not.toBeVisible();
     await this.page.getByLabel('Update document').click();

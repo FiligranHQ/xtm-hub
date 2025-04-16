@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { GENERIC_CAPABILITY } from '../tests_files/service-management.spec';
+import { clickRowAction } from './common';
 
 export default class ServicePage {
   constructor(private page: Page) {}
@@ -64,12 +64,11 @@ export default class ServicePage {
     userEmail: string,
     newCapability: string = 'Manage access'
   ) {
-    await this.page
-      .getByRole('row', { name: userEmail })
-      .getByRole('button')
-      .first()
-      .click();
-    await this.page.getByLabel('Edit user rights').click();
+    await clickRowAction(
+      this.page,
+      this.page.getByRole('row', { name: userEmail }),
+      'Edit user rights'
+    );
     await this.page.getByLabel(newCapability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
     // Wait for dialog to close
@@ -79,11 +78,8 @@ export default class ServicePage {
   }
 
   async deleteOrganizationFromService(organizationName: string = 'Thales') {
-    await this.page
-      .getByRole('row', { name: organizationName })
-      .getByRole('button')
-      .click();
-    await this.page.getByRole('button', { name: 'Delete' }).click();
+    const row = this.page.getByRole('row', { name: organizationName });
+    await clickRowAction(this.page, row, 'Delete');
     await this.page.getByRole('button', { name: 'Remove access' }).click();
   }
 }
