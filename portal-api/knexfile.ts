@@ -3,18 +3,15 @@ import pkg, { type Knex } from 'knex';
 import { Filter, FilterKey } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
-import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
+import { applyDbSecurity } from './src/security/access';
 import { extractId } from './src/utils/utils';
 
-export interface SecuryQueryOpts {
-  [key: string]: string | number | boolean;
-}
 declare module 'knex' {
   // TODO: Knex specificity, could be complicated modify the model directly
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Knex {
     interface QueryBuilder {
-      secureQuery(opt?: SecuryQueryOpts): Knex.QueryBuilder;
+      asConnection<T>(): Promise<T>;
     }
   }
 }
@@ -61,11 +58,6 @@ interface Pagination {
 
 const knex = pkg;
 
-pkg.QueryBuilder.extend('secureQuery', function (opts: SecuryQueryOpts) {
-  return this.modify(async (qb) => {
-    return applyDbSecurityLayer(qb, opts);
-  }); // Returning the query builder instance to maintain chaining
-});
 const config: Knex.Config = {
   client: 'pg',
   connection: {
@@ -124,10 +116,7 @@ export const db = <T>(
   type: DatabaseType,
   opts: Partial<QueryOpts> = {}
 ) => {
-  const queryContext = database<T>(type).queryContext({
-    __typename: type,
-    context,
-  });
+  const queryContext = database<T>(type).queryContext({ __typename: type });
   return applyDbSecurity<T>(context, type, queryContext, opts);
 };
 
