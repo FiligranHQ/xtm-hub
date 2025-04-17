@@ -1,5 +1,10 @@
 import { Knex } from 'knex';
-import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
+import {
+  ActionType,
+  DatabaseType,
+  QueryOpts,
+  SecuryQueryOpts,
+} from '../../knexfile';
 import { PortalContext } from '../model/portal-context';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { TypedNode } from '../pub';
@@ -145,4 +150,26 @@ export const applyDbSecurity = <T>(
     throw new Error(`Security behavior must be defined for type ${type}`);
   }
   return selectedFunction(context, queryContext);
+};
+
+export const applyDbSecurityLayer = (
+  qb: Knex.QueryBuilder,
+  opts: SecuryQueryOpts
+) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const context = qb._queryContext;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const method = qb._method;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const properties = qb._single;
+  console.log({ context });
+  console.log({ method });
+  console.log({ properties });
+  console.log({ opts });
+  // if qb is a UPDATE, DELETE, INSERT
+  // if qb is a SELECT add the join to select only the data that the user has access to
+  return qb;
 };
