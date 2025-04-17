@@ -348,7 +348,6 @@
   "Sort Desc": "Sort Desc",
   "TestEnvCallout": "Vous êtes sur l'environnement {environnement}",
   "GoToProd": "Allez sur la production",
-
   "ThemeToggle": {
     "Automatic": "Automatique",
     "Dark": "Foncé",
@@ -388,7 +387,8 @@
     "OrganizationsPlaceholder": "Sélectionner une organisation",
     "Password": "Mot de passe",
     "WhoAreYou": "Qui êtes-vous ?",
-    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom"
+    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom",
+    "AddOrganization": "Ajouter une organisation"
   },
   "UserListPage": {
     "Email": "Email",
