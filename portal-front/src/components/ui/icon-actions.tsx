@@ -41,7 +41,7 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
         <Button
           variant="ghost"
           className={cn(
-            'flex h-8 w-8 p-0 data-[state=open]:bg-muted',
+            'flex h-8 w-8 p-0 data-[state=open]:bg-hover',
             className
           )}>
           {icon}
