@@ -63,6 +63,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       <div className="mobile:hidden flex items-center gap-s">
         <User />
         <IconActions
+          className="rounded-full"
           icon={
             <>
               <div className="my-auto size-10">
