@@ -387,7 +387,8 @@
     "OrganizationsPlaceholder": "Select an organization",
     "Password": "Password",
     "WhoAreYou": "Who are you?",
-    "WhoAreYouDescription": "Let us know you first name and last name"
+    "WhoAreYouDescription": "Let us know you first name and last name",
+    "AddOrganization": "Add organization"
   },
   "UserListPage": {
     "Email": "Email",
