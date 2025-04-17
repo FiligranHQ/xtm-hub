@@ -27,7 +27,7 @@ export default class UserPage {
     await this.page.getByPlaceholder('Email', { exact: true }).fill(userEmail);
     await this.page.getByPlaceholder('Email', { exact: true }).press('Tab');
     await this.page.getByRole('combobox').click();
-    await this.page.getByLabel(userOrganizationName).click();
+    await this.page.getByRole('option', { name: userOrganizationName }).click();
     await this.page
       .getByRole('button', { name: 'Additional capabilities' })
       .click();

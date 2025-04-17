@@ -1,5 +1,8 @@
+import {
+  AutocompleteOrganization,
+  UserOrganizationFormProps,
+} from '@/components/admin/user/autocomplete-organization';
 import { userEditAdminFormSchema } from '@/components/admin/user/user-form.schema';
-import { getOrganizations } from '@/components/organization/organization.service';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isEmpty } from '@/lib/utils';
@@ -17,19 +20,12 @@ import {
   FormMessage,
   Input,
   MultiSelectFormField,
-  SelectValue,
   SheetFooter,
   toast,
 } from 'filigran-ui';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from 'filigran-ui/clients';
+import { Label } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -50,11 +46,31 @@ export const AdminUserUpdateFormMutation = graphql`
 export const AdminUserUpdateForm: FunctionComponent<
   AdminUserUpdateFormProps
 > = ({ user, callback }) => {
+  const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
-  const t = useTranslations();
-  const [organizationsData] = getOrganizations();
-  const organizations = organizationsData.organizations.edges;
+  const [userOrganization, setUserOrganization] = useState<
+    UserOrganizationFormProps[]
+  >(
+    user.organization_capabilities?.map(({ organization }) => organization) ??
+      []
+  );
+
+  const addUserOrganization = (value: UserOrganizationFormProps) => {
+    setUserOrganization([...userOrganization, value]);
+  };
+
+  const onChangeAutocompleteOrganizationValue = (
+    value?: UserOrganizationFormProps
+  ) => {
+    if (value) {
+      append({
+        organization_id: value.id,
+        capabilities: [],
+      });
+      addUserOrganization(value);
+    }
+  };
 
   const organizationCapabilitiesData = [
     ORGANIZATION_CAPACITY.MANAGE_ACCESS,
@@ -83,13 +99,6 @@ export const AdminUserUpdateForm: FunctionComponent<
     control: form.control,
   });
 
-  const isOrganizationAlreadySelected = (id: string) => {
-    const orgCapabilities = form.getValues('organization_capabilities');
-
-    return orgCapabilities.find(
-      ({ organization_id }) => organization_id === id
-    );
-  };
   // Some issue with addUser, the formState isDirty without any modification, so for now we check if dirtyFields get any key
   setIsDirty(!isEmpty(form.formState.dirtyFields));
 
@@ -186,30 +195,12 @@ export const AdminUserUpdateForm: FunctionComponent<
         />
         <div className="flex items-center gap-m">
           <Label>{t('UserForm.Organizations')}</Label>
-          <Select
-            onValueChange={(value) => {
-              append({
-                organization_id: value,
-                capabilities: [],
-              });
-            }}
-            value={''}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Add organization" />
-            </SelectTrigger>
-            <SelectContent>
-              {organizations.map(
-                (organization) =>
-                  !isOrganizationAlreadySelected(organization.node.id) && (
-                    <SelectItem
-                      key={organization.node.id}
-                      value={organization.node.id}>
-                      {organization.node.name}
-                    </SelectItem>
-                  )
-              )}
-            </SelectContent>
-          </Select>
+          <AutocompleteOrganization
+            selectedOrganizationCapabilities={form.getValues(
+              'organization_capabilities'
+            )}
+            onValueChange={onChangeAutocompleteOrganizationValue}
+          />
         </div>
 
         <div
@@ -229,11 +220,9 @@ export const AdminUserUpdateForm: FunctionComponent<
                       <div className="grid gap-m items-center grid-cols-[1fr_4fr_3rem]">
                         <Label>
                           {
-                            user.organization_capabilities?.find(
-                              (orgaCapa) =>
-                                orgaCapa.organization.id ===
-                                field.organization_id
-                            )?.organization.name
+                            userOrganization.find(
+                              ({ id }) => id === field.organization_id
+                            )?.name
                           }
                         </Label>
                         <FormControl>

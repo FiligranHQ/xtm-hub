@@ -1,11 +1,13 @@
+import {
+  AutocompleteOrganization,
+  UserOrganizationFormProps,
+} from '@/components/admin/user/autocomplete-organization';
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
-import { getOrganizations } from '@/components/organization/organization.service';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isDevelopment, isEmpty } from '@/lib/utils';
 import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
-import { SelectValue } from 'filigran-ui';
 import {
   Form,
   FormControl,
@@ -15,15 +17,11 @@ import {
   FormMessage,
   Label,
   MultiSelectFormField,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
   SheetFooter,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -36,9 +34,10 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const t = useTranslations();
+  const [userOrganization, setUserOrganization] = useState<
+    UserOrganizationFormProps[]
+  >([]);
 
-  const [organizationsData] = getOrganizations();
-  const organizations = organizationsData.organizations.edges;
   const organizationCapabilitiesData = [
     ORGANIZATION_CAPACITY.MANAGE_ACCESS,
     ORGANIZATION_CAPACITY.MANAGE_SUBSCRIPTION,
@@ -46,6 +45,10 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
     label: capabilities,
     value: capabilities,
   }));
+
+  const addUserOrganization = (value: UserOrganizationFormProps) => {
+    setUserOrganization([...userOrganization, value]);
+  };
 
   const form = useForm<z.infer<typeof userAdminFormSchema>>({
     resolver: zodResolver(userAdminFormSchema),
@@ -58,12 +61,16 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
     name: 'organization_capabilities',
     control: form.control,
   });
-  const isOrganizationAlreadySelected = (id: string) => {
-    const orgCapabilities = form.getValues('organization_capabilities');
-
-    return orgCapabilities.find(
-      ({ organization_id }) => organization_id === id
-    );
+  const onChangeAutocompleteOrganizationValue = (
+    value?: UserOrganizationFormProps
+  ) => {
+    if (value) {
+      append({
+        organization_id: value.id,
+        capabilities: [],
+      });
+      addUserOrganization(value);
+    }
   };
   // Some issue with addUser, the formState isDirty without any modification, so for now we check if dirtyFields get any key
   setIsDirty(!isEmpty(form.formState.dirtyFields));
@@ -148,30 +155,12 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
 
         <div className="flex items-center gap-m">
           <Label>{t('UserForm.Organizations')}</Label>
-          <Select
-            onValueChange={(value) => {
-              append({
-                organization_id: value,
-                capabilities: [],
-              });
-            }}
-            value={''}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Add organization" />
-            </SelectTrigger>
-            <SelectContent>
-              {organizations.map(
-                (organization) =>
-                  !isOrganizationAlreadySelected(organization.node.id) && (
-                    <SelectItem
-                      key={organization.node.id}
-                      value={organization.node.id}>
-                      {organization.node.name}
-                    </SelectItem>
-                  )
-              )}
-            </SelectContent>
-          </Select>
+          <AutocompleteOrganization
+            selectedOrganizationCapabilities={form.getValues(
+              'organization_capabilities'
+            )}
+            onValueChange={onChangeAutocompleteOrganizationValue}
+          />
         </div>
 
         <div
@@ -191,10 +180,9 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
                       <div className="grid gap-m items-center grid-cols-[1fr_4fr_3rem]">
                         <Label>
                           {
-                            organizations.find(
-                              (organization) =>
-                                organization.node.id === field.organization_id
-                            )?.node.name
+                            userOrganization.find(
+                              ({ id }) => id === field.organization_id
+                            )?.name
                           }
                         </Label>
                         <FormControl>
