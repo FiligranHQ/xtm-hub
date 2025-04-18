@@ -79,7 +79,7 @@ test.describe('Capabilities', () => {
         .getByRole('button')
         .click();
 
-      await page.getByRole('button', { name: 'Manage users' }).click();
+      await page.getByRole('link', { name: 'Manage users' }).click();
       await servicePage.addUserIntoService(TEST_CAPABILITY.adminThalesEmail);
 
       await loginPage.logout();
