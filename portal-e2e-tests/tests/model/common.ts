@@ -3,7 +3,7 @@ import { Locator, Page } from '@playwright/test';
 export async function openAndGetRowActionsDropdown(page: Page, row: Locator) {
   // Dirty fix: make sure every dropdown is closed
   await page.click('body', { position: { x: 1, y: 1 }, force: true });
-  await row.getByRole('button').click();
+  await row.locator('td:last-child').getByRole('button').click();
   const dropdown = page.getByRole('menu');
   await dropdown.waitFor();
   return dropdown;

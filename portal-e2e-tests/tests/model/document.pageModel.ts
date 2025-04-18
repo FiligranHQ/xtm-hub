@@ -26,10 +26,9 @@ export default class DocumentPage {
   }
 
   async editDocument(newDescription: string) {
-    await this.page.pause();
-    await openAndGetRowActionsDropdown(this.page, this.page.getByRole('row'));
-    await this.page.getByRole('cell', { name: 'Open menu' }).first().click();
-    await expect(this.page.getByLabel('Delete document')).not.toBeVisible();
+    const row = this.page.locator('table tbody tr').first();
+    const dropdown = await openAndGetRowActionsDropdown(this.page, row);
+    await expect(dropdown.getByLabel('Delete document')).not.toBeVisible();
     await this.page.getByLabel('Update document').click();
     await this.page
       .getByRole('textbox', { name: 'Description' })
@@ -48,18 +47,7 @@ export default class DocumentPage {
   }
 
   async deleteDocument(documentName: string) {
-    const documentRow = await this.getDocumentRow(documentName);
-    const dropdown = await openAndGetRowActionsDropdown(this.page, documentRow);
-    const deleteButton = dropdown.getByText('Delete');
-    await deleteButton.click();
-  }
-
-  async getDocumentRow(documentName) {
-    const documentCell = await this.getDocumentByName(documentName);
-    return documentCell.locator('xpath=ancestor::tr');
-  }
-
-  getDocumentByName(documentName) {
-    return this.page.getByRole('cell', { name: documentName });
+    const documentRow = this.page.getByRole('row', { name: documentName });
+    await clickRowAction(this.page, documentRow, 'Delete');
   }
 }
