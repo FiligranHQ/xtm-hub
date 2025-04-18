@@ -84,7 +84,7 @@ export default class ServicePage {
     const row = this.page.getByRole('row', { name: organizationName });
     await clickRowAction(this.page, row, 'Delete');
     // Wait for the dialog to appear and animation to finish
-    await this.page.waitForTimeout(300);
+    await this.page.waitForTimeout(600);
     await this.page.getByRole('button', { name: 'Remove access' }).click();
   }
 }
