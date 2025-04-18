@@ -48,7 +48,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.52.0":
+"@playwright/test@npm:1.52.0":
   version: 1.52.0
   resolution: "@playwright/test@npm:1.52.0"
   dependencies:
@@ -1703,7 +1703,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "test_e2e@workspace:."
   dependencies:
-    "@playwright/test": ^1.52.0
+    "@playwright/test": 1.52.0
     "@types/node": 22.13.14
     knex: 3.1.0
     monocart-reporter: 2.9.17
