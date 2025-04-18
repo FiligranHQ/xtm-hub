@@ -1,5 +1,9 @@
 import { Page } from '@playwright/test';
-import { clickRowAction } from './common';
+import {
+  clickRowAction,
+  forceCloseAllDropdowns,
+  waitForDrawerToClose,
+} from './common';
 
 export default class ServicePage {
   constructor(private page: Page) {}
@@ -9,11 +13,11 @@ export default class ServicePage {
     await this.page.getByRole('link', { name: 'Services' }).click();
     await this.page.getByText('Name', { exact: true }).click();
 
-    await this.page
-      .getByRole('row', { name: 'Vault' })
-      .getByRole('button')
-      .click();
-    await this.page.getByRole('button', { name: 'Manage' }).click();
+    await clickRowAction(
+      this.page,
+      this.page.getByRole('row', { name: 'Vault' }),
+      'Manage'
+    );
   }
 
   async addOrganizationIntoService(organizationName: string) {
@@ -33,6 +37,7 @@ export default class ServicePage {
     await this.page.getByText('DELETE access:', { exact: true }).click();
     await this.page.getByLabel('UPLOAD access:', { exact: true }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await waitForDrawerToClose(this.page);
   }
 
   async addUserIntoService(userEmail: string) {
@@ -42,8 +47,8 @@ export default class ServicePage {
     await this.page.getByText(userEmail).click();
     await this.page.getByRole('dialog').nth(1).press('Enter');
     await this.page.getByLabel('Manage access').click();
-
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await waitForDrawerToClose(this.page);
   }
 
   async addUserIntoServiceWithCapability(
@@ -56,8 +61,8 @@ export default class ServicePage {
     await this.page.getByText(userEmail).click();
     await this.page.getByRole('dialog').nth(1).press('Enter');
     await this.page.getByLabel(capability).click();
-
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await waitForDrawerToClose(this.page);
   }
 
   async editUsersRightsForService(
@@ -71,10 +76,7 @@ export default class ServicePage {
     );
     await this.page.getByLabel(newCapability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    // Wait for dialog to close
-    await this.page.waitForSelector('div[role="dialog"]', { state: 'hidden' });
-    // Dirty fix: make sure the dropdown is closed
-    await this.page.click('body', { position: { x: 1, y: 1 }, force: true });
+    await waitForDrawerToClose(this.page);
   }
 
   async deleteOrganizationFromService(organizationName: string = 'Thales') {

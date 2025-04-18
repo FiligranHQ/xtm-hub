@@ -2,7 +2,11 @@ import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import { removeSubscription } from '../db-utils/subscription.helper';
 import ServicePage from '../model/service.pageModel';
-import { clickRowAction } from '../model/common.js';
+import {
+  clickRowAction,
+  waitForReactIdle,
+  waitForToasterToHide,
+} from '../model/common.js';
 
 const TEST_SUBSCRIPTION = {
   organizationName: 'Thales',
@@ -74,6 +78,7 @@ test.describe('Service Management', () => {
     await test.step("Delete an organization's subscription", async () => {
       await page.getByRole('link', { name: 'Vault' }).click();
       await expect(page.getByRole('heading', { name: 'Vault' })).toBeVisible();
+      await waitForReactIdle(page);
 
       await servicePage.deleteOrganizationFromService(
         TEST_SUBSCRIPTION.organizationName

@@ -17,7 +17,7 @@
     "jsx": "preserve",
     "incremental": true,
     "noImplicitOverride": true,
-    "lib": ["es2022"],
+    "lib": ["es2022", "dom"],
     "types": ["vitest/globals"]
   },
   "exclude": ["node_modules"]
