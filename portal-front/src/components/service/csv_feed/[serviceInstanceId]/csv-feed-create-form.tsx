@@ -16,7 +16,7 @@ import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
-export const csvFeedAddFormSchema = z.object({
+export const csvFeedCreateFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   short_description: z.string().min(1, 'Required').max(250),
   description: z.string().min(1, 'Required'),
@@ -24,13 +24,13 @@ export const csvFeedAddFormSchema = z.object({
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
 });
-export type CsvFeedAddFormValues = z.infer<typeof csvFeedAddFormSchema>;
+export type CsvFeedCreateFormValues = z.infer<typeof csvFeedCreateFormSchema>;
 
-interface CsvFeedAddFormProps {
-  handleSubmit: (values: z.infer<typeof csvFeedAddFormSchema>) => void;
+interface CsvFeedCreateFormProps {
+  handleSubmit: (values: z.infer<typeof csvFeedCreateFormSchema>) => void;
 }
 
-export const CsvFeedAddForm = ({ handleSubmit }: CsvFeedAddFormProps) => {
+export const CsvFeedCreateForm = ({ handleSubmit }: CsvFeedCreateFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet } = useDialogContext();
 
@@ -38,9 +38,9 @@ export const CsvFeedAddForm = ({ handleSubmit }: CsvFeedAddFormProps) => {
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
-          handleSubmit(values as z.infer<typeof csvFeedAddFormSchema>);
+          handleSubmit(values as z.infer<typeof csvFeedCreateFormSchema>);
         }}
-        formSchema={csvFeedAddFormSchema}
+        formSchema={csvFeedCreateFormSchema}
         fieldConfig={{
           description: {
             fieldType: ({ field }) => (

@@ -24,7 +24,7 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addCsvFeed(input: CsvFeedAddInput!, document: Upload, serviceInstanceId: String): CsvFeed
+  createCsvFeed(input: CsvFeedCreateInput!, document: Upload, serviceInstanceId: String): CsvFeed
   addDocument(document: Upload, name: String, short_description: String, product_version: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -177,7 +177,7 @@ type CsvFeed implements Node {
   subscription: SubscriptionModel
 }
 
-input CsvFeedAddInput {
+input CsvFeedCreateInput {
   name: String
   short_description: String
   description: String

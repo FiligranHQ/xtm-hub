@@ -69,7 +69,8 @@
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
-      "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first."
+      "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
+      "CSV_FEED_INSERTION_ERROR": "An error occured while creating the CSV Feed."
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."

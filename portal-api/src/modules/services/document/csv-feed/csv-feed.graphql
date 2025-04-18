@@ -18,7 +18,7 @@ type CsvFeed implements Node {
   subscription: SubscriptionModel
 }
 
-input CsvFeedAddInput {
+input CsvFeedCreateInput {
   name: String
   short_description: String
   description: String
@@ -27,8 +27,8 @@ input CsvFeedAddInput {
 }
 
 type Mutation {
-  addCsvFeed(
-    input: CsvFeedAddInput!
+  createCsvFeed(
+    input: CsvFeedCreateInput!
     document: Upload
     serviceInstanceId: String
   ): CsvFeed @auth

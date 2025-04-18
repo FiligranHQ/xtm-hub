@@ -1,13 +1,13 @@
 import { graphql } from 'react-relay';
 
-export const CsvFeedAddMutation = graphql`
-  mutation csvFeedAddMutation(
-    $input: CsvFeedAddInput!
+export const CsvFeedCreateMutation = graphql`
+  mutation csvFeedCreateMutation(
+    $input: CsvFeedCreateInput!
     $document: Upload
     $serviceInstanceId: String
     $connections: [ID!]!
   ) {
-    addCsvFeed(
+    createCsvFeed(
       input: $input
       document: $document
       serviceInstanceId: $serviceInstanceId

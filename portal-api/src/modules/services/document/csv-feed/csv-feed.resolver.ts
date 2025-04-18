@@ -1,14 +1,15 @@
 import { dbTx } from '../../../../../knexfile';
 import { Resolvers } from '../../../../__generated__/resolvers-types';
 import { UnknownError } from '../../../../utils/error.util';
-import { addJsonInMinIO, createCsvFeed } from './csv-feed.helper';
+import { createFileInMinIO } from '../document.helper';
+import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
-    addCsvFeed: async (_, input, context) => {
+    createCsvFeed: async (_, input, context) => {
       const trx = await dbTx();
       try {
-        const { minioName, fileName } = await addJsonInMinIO(
+        const { minioName, fileName } = await createFileInMinIO(
           input.document,
           context
         );
