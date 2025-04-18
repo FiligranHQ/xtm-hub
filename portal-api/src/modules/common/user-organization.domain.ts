@@ -146,8 +146,8 @@ export const createUserOrgCapabilities = async (
       template: 'new_user_organization',
       params: {
         organizationName: organization.name,
-        userName: `${context.user.first_name} ${context.user.last_name}`,
-        invitedName: `${user.first_name} ${user.last_name}`,
+        userName: `${context.user.first_name ?? ''} ${context.user.last_name ?? ''}`,
+        invitedName: `${user.first_name ?? ''} ${user.last_name ?? ''}`,
       },
     });
   }
