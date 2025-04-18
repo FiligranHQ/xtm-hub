@@ -39,35 +39,5 @@ const test = testBase.extend({
       auto: true,
     },
   ],
-  page: async ({ page }, use) => {
-    // Hide toasts for e2e tests
-    // Toasts can intercept user interactions and prevent them from being tested.
-    const addStyles = async () => {
-      await page.addStyleTag({
-        content: `
-        div[role="region"][aria-label="Notifications (F8)"] {
-          display: none !important;
-          visibility: hidden !important;
-          opacity: 0 !important;
-          pointer-events: none !important;
-          position: fixed !important;
-          z-index: -9999 !important;
-        }
-      `,
-      });
-      console.log('Style tag added to page');
-    };
-
-    /*page.on('framenavigated', async (frame) => {
-      if (frame === page.mainFrame()) {
-        await frame.waitForLoadState('domcontentloaded');
-        await addStyles();
-      }
-    });
-
-    page.on('load', addStyles);*/
-
-    await use(page);
-  },
 });
 export { test, expect };
