@@ -1,6 +1,10 @@
 import { Locator, Page } from '@playwright/test';
 import { expect } from '../fixtures/baseFixtures';
-import { clickRowAction, openAndGetRowActionsDropdown } from './common';
+import {
+  clickRowAction,
+  openAndGetRowActionsDropdown,
+  waitForDrawerToClose,
+} from './common';
 
 export default class DocumentPage {
   constructor(private page: Page) {}
@@ -23,6 +27,7 @@ export default class DocumentPage {
 
     await fileInput.setInputFiles(filePath);
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await waitForDrawerToClose(this.page);
   }
 
   async editDocument(newDescription: string) {
@@ -34,6 +39,7 @@ export default class DocumentPage {
       .getByRole('textbox', { name: 'Description' })
       .fill(newDescription);
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await waitForDrawerToClose(this.page);
     await expect(
       this.page.getByRole('cell', { name: newDescription })
     ).toBeVisible();

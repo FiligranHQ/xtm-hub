@@ -27,6 +27,7 @@ export default class ServicePage {
     await this.page.getByLabel('Organization', { exact: true }).click();
     await this.page.getByLabel(organizationName).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await waitForDrawerToClose(this.page);
   }
   async addOrganizationIntoServiceWithCapabilities(organizationName: string) {
     await this.page
@@ -82,6 +83,8 @@ export default class ServicePage {
   async deleteOrganizationFromService(organizationName: string = 'Thales') {
     const row = this.page.getByRole('row', { name: organizationName });
     await clickRowAction(this.page, row, 'Delete');
+    // Wait for the dialog to appear and animation to finish
+    await this.page.waitForTimeout(300);
     await this.page.getByRole('button', { name: 'Remove access' }).click();
   }
 }
