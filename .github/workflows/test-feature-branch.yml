@@ -22,7 +22,7 @@ jobs:
         run: pip install awxkit
       - name: Deploy feature environment
         run: |
-          awx --conf.host https://awx.staging.filigran.io \
+          awx --conf.host https://awx.filigran.io \
             --conf.token ${{ secrets.AWX_TOKEN }} \
             -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
             --inventory eu-west-staging \
