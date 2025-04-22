@@ -1,5 +1,4 @@
 'use client';
-import { RelayProvider } from '@/relay/RelayProvider';
 import { Toaster } from 'filigran-ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
@@ -30,18 +29,18 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
           content="initial-scale=1.0, width=device-width"
         />
       </Head>
-      <body className="flex min-h-screen">
+
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          forcedTheme="dark"
           enableSystem
           disableTransitionOnChange>
-          <RelayProvider>{children}</RelayProvider>
+          {children}
+          <Toaster />
+          <Hubspot />
+          <GoogleAnalytics />
         </ThemeProvider>
-        <Toaster />
-        <Hubspot />
-        <GoogleAnalytics />
       </body>
     </html>
   );
