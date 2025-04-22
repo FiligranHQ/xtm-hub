@@ -10,7 +10,7 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
-import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import { IconActions, IconActionsLink } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { i18nKey } from '@/utils/datatable';
@@ -28,7 +28,6 @@ import {
   useToast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { FunctionComponent, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 
@@ -45,7 +44,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     ServiceByIdWithSubscriptions,
     queryRef
   );
-  const router = useRouter();
 
   const [commitSubscriptionMutation] = useMutation<subscriptionDeleteMutation>(
     SubscriptionDeleteMutation
@@ -116,12 +114,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                   <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
               }>
-              <IconActionsButton
-                onClick={() => {
-                  router.push(`/admin/service/${row.id}/subscription`);
-                }}>
+              <IconActionsLink href={`/admin/service/${row.id}/subscription`}>
                 {t('Service.Management.ManageUsers')}
-              </IconActionsButton>
+              </IconActionsLink>
               <AlertDialogComponent
                 AlertTitle={t('Service.Management.RemoveAccess')}
                 actionButtonText={t('Service.Management.RemoveAccess')}

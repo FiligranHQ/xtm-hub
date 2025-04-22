@@ -42,7 +42,7 @@ test.describe('Service Management', () => {
         .getByRole('row', { name: TEST_SUBSCRIPTION.organizationName })
         .getByRole('button')
         .click();
-      await page.getByRole('button', { name: 'Manage users' }).click();
+      await page.getByRole('link', { name: 'Manage users' }).click();
       await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);
 
       await expect(
