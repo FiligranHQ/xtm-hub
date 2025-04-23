@@ -33,6 +33,14 @@ export const AutocompleteOrganization: FunctionComponent<
   const onAutocompleteOrganization = (value: string) => {
     refetch({ searchTerm: value });
   };
+
+  const handleOnValueChange = (
+    value: UserOrganizationFormProps | undefined
+  ) => {
+    refetch({ searchTerm: '' });
+    return onValueChange(value);
+  };
+
   return (
     <Combobox
       className="w-[180px]"
@@ -40,7 +48,7 @@ export const AutocompleteOrganization: FunctionComponent<
       order={t('UserForm.AddOrganization')}
       placeholder={t('UserForm.AddOrganization')}
       emptyCommand={t('Utils.NotFound')}
-      onValueChange={onValueChange}
+      onValueChange={handleOnValueChange}
       keyValue={'name'}
       keyLabel={'name'}
       onInputChange={onAutocompleteOrganization}
