@@ -17,12 +17,13 @@ export async function openAndGetRowActionsDropdown(page: Page, row: Locator) {
 export async function clickRowAction(
   page: Page,
   row: Locator,
-  actionLabel: string
+  actionLabel: string,
+  role = 'button'
 ) {
   const dropdown = await openAndGetRowActionsDropdown(page, row);
-  const button = dropdown.getByRole('button', { name: actionLabel });
+  const button = dropdown.getByRole(role, { name: actionLabel });
   await button.waitFor();
-  await button.click();
+  await button.click({ force: true });
 }
 
 export async function waitForDrawerToClose(page: Page) {

@@ -46,7 +46,8 @@ test.describe('Service Management', () => {
       await clickRowAction(
         page,
         page.getByRole('row', { name: TEST_SUBSCRIPTION.organizationName }),
-        'Manage users'
+        'Manage users',
+        'link'
       );
       await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);
 

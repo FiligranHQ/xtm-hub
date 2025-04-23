@@ -78,7 +78,8 @@ test.describe('Capabilities', () => {
         page.getByRole('row', {
           name: `${TEST_CAPABILITY.organizationName} DELETE UPLOAD Open menu`,
         }),
-        'Manage users'
+        'Manage users',
+        'link'
       );
       await servicePage.addUserIntoService(TEST_CAPABILITY.adminThalesEmail);
 

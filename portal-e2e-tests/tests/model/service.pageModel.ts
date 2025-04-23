@@ -16,7 +16,8 @@ export default class ServicePage {
     await clickRowAction(
       this.page,
       this.page.getByRole('row', { name: 'Vault' }),
-      'Manage'
+      'Manage',
+      'link'
     );
   }
 
@@ -81,10 +82,10 @@ export default class ServicePage {
   }
 
   async deleteOrganizationFromService(organizationName: string = 'Thales') {
+    await this.page.waitForTimeout(2000);
     const row = this.page.getByRole('row', { name: organizationName });
     await clickRowAction(this.page, row, 'Delete');
     // Wait for the dialog to appear and animation to finish
-    await this.page.waitForTimeout(600);
     await this.page.getByRole('button', { name: 'Remove access' }).click();
   }
 }
