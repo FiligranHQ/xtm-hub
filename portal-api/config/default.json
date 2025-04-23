@@ -55,55 +55,7 @@
       "provider": "oidc"
     }
   ],
-  "init_service_definitions": [
-    {
-      "serviceDefinition": {
-        "id": "42007953-4dbc-480a-8693-8c05f1123460",
-        "name": "CSV Feed",
-        "description": "Explore a range of CSV Feeds shared by the Filigran team",
-        "identifier": "csv_feed"
-      },
-      "price": {
-        "id": "275386af-36c2-4bb3-b0d8-f74d447b309e",
-        "service_definition_id": "42007953-4dbc-480a-8693-8c05f1123460",
-        "fee_type": "YEARLY",
-        "start_date": null,
-        "price": 0
-      }
-    }
-  ],
-  "init_services": [
-    {
-      "service": {
-        "id": "0f4aad4b-bdd6-4084-8b1f-82c9c66578cc",
-        "name": "CSV Feed",
-        "description": "Explore a range of CSV Feeds shared by the Filigran team.",
-        "service_definition_id": "42007953-4dbc-480a-8693-8c05f1123460",
-        "public": true,
-        "join_type": "JOIN_AUTO"
-      },
-      "link": {
-        "id": "972ad779-675a-4dab-bee0-c67d6c22b7bd",
-        "service_instance_id": "0f4aad4b-bdd6-4084-8b1f-82c9c66578cc",
-        "url": "",
-        "name": "CSV Feed"
-      }
-    }
-  ],
-  "init_service_capabilities": [
-    {
-      "id": "26611d56-e443-45fb-9f6c-cc6b9b8a5de9",
-      "name": "UPLOAD",
-      "description": "The user can upload CSV Feeds in this service.",
-      "service_definition_id": "42007953-4dbc-480a-8693-8c05f1123460"
-    },
-    {
-      "id": "283e06b2-2d64-42c7-b432-890e69ac8b8f",
-      "name": "DELETE",
-      "description": "The user can delete CSV Feeds in this service.",
-      "service_definition_id": "42007953-4dbc-480a-8693-8c05f1123460"
-    }
-  ],
+
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,
