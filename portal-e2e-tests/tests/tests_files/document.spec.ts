@@ -10,8 +10,8 @@ export const TEST_FILE = {
 };
 
 test.describe('Document Management', () => {
-  let loginPage;
-  let documentPage;
+  let loginPage: LoginPage;
+  let documentPage: DocumentPage;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);

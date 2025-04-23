@@ -14,7 +14,7 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.51.1",
+    "@playwright/test": "1.52.0",
     "@types/node": "22.13.14",
     "monocart-reporter": "2.9.17",
     "prettier": "3.5.3"

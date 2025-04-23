@@ -32,6 +32,7 @@ interface PortalConfig {
   services: Services[];
   serviceCapabilities: ServiceCapability[];
   service_definitions: ServiceDefinitions[];
+  environment: string;
 }
 
 const portalConfig: PortalConfig = {
@@ -58,5 +59,6 @@ const portalConfig: PortalConfig = {
   services: config.get('init_services'),
   serviceCapabilities: config.get('init_service_capabilities'),
   service_definitions: config.get('init_service_definitions'),
+  environment: config.get<string>('environment'),
 };
 export default portalConfig;
