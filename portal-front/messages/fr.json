@@ -69,7 +69,9 @@
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins une souscription y est toujours affiliée. Supprimez la/les souscription(s) d'abord.",
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
-      "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord."
+      "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
+      "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed."
+
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -213,6 +215,22 @@
     },
     "ComingSoon": "Bientôt disponible",
     "CreationStatus": "Statut de la création",
+    "CsvFeed": {
+      "Actions": {
+        "Added": "{name} a été ajouté",
+        "Deleted": "{name} a été supprimé",
+        "Updated": "{name} a été modifié"
+      },
+      "Form": {
+        "NameLabel": "Nom",
+        "ShortDescriptionLabel": "Courte Description",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le CSV Feed.",
+        "LabelsLabel": "Labels",
+        "PublishedPlaceholder": "Le CSV Feed est-il publié?"
+      },
+      "AddCsvFeed": "Ajouter un CSV Feed"
+    },
     "CustomDashboards": {
       "Actions": {
         "Added": "{name} has been added",

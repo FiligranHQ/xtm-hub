@@ -1,14 +1,13 @@
 'use client';
 
 import { EditService } from '@/components/service/edit-service';
-import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import { IconActions, IconActionsLink } from '@/components/ui/icon-actions';
 import { i18nKey } from '@/utils/datatable';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 
 interface AdminServiceTabProps {
   serviceData: serviceList_fragment$data[];
@@ -16,7 +15,6 @@ interface AdminServiceTabProps {
 
 const AdminServiceTab = ({ serviceData }: AdminServiceTabProps) => {
   const t = useTranslations();
-  const router = useRouter();
 
   const columns: ColumnDef<serviceList_fragment$data>[] = [
     {
@@ -51,13 +49,9 @@ const AdminServiceTab = ({ serviceData }: AdminServiceTabProps) => {
                 </>
               }>
               {row.original.service_definition?.identifier !== 'link' && (
-                <IconActionsButton
-                  aria-label={t('Service.GoToAdminLabel')}
-                  onClick={() => {
-                    router.push(`/admin/service/${row.id}`);
-                  }}>
+                <IconActionsLink href={`/admin/service/${row.id}`}>
                   {t('Service.GoToAdminLabel')}
-                </IconActionsButton>
+                </IconActionsLink>
               )}
               <EditService service={row.original} />
             </IconActions>

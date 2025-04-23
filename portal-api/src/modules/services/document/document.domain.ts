@@ -26,7 +26,7 @@ import { addPrefixToObject } from '../../../utils/typescript';
 import { extractId } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
-  createDocument,
+  createDocumentCustomDashboard,
   Document,
   getDocumentName,
   loadUnsecureDocumentsBy,
@@ -76,7 +76,7 @@ export const insertDocument = async (
     passOldDocumentsIntoInactive(existingDocuments);
   }
 
-  return createDocument(documentData);
+  return createDocumentCustomDashboard(documentData);
 };
 
 export const updateDocumentDescription = async (
@@ -297,4 +297,15 @@ export const incrementShareNumber = (documentId: DocumentId) => {
     .where('id', '=', documentId)
     .increment('share_number', 1)
     .returning('*');
+};
+
+export const createDocument = async (
+  context: PortalContext,
+  trx,
+  data: DocumentMutator
+): Promise<Document[]> => {
+  return db<Document>(context, 'Document')
+    .insert(data)
+    .returning('*')
+    .transacting(trx);
 };
