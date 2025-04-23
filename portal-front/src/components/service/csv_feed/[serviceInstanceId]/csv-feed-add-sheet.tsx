@@ -21,7 +21,10 @@ interface CSVFeedAddSheetProps {
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 
-export const CSVFeedAddSheet = ({ serviceInstance }: CSVFeedAddSheetProps) => {
+export const CSVFeedAddSheet = ({
+  serviceInstance,
+  connectionId,
+}: CSVFeedAddSheetProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
   const [createCsvFeed] = useMutation<csvFeedCreateMutation>(
@@ -35,11 +38,12 @@ export const CSVFeedAddSheet = ({ serviceInstance }: CSVFeedAddSheetProps) => {
           name: values.name,
           short_description: values.short_description,
           description: values.description,
-          active: values.active,
+          active: values.active ?? false,
           labels: values.labels,
         },
+        verified_json_text: values.verified_json_text,
         serviceInstanceId: serviceInstance.id,
-        connections: [''],
+        connections: [connectionId],
       },
       uploadables: fileListToUploadableMap(values.document),
 

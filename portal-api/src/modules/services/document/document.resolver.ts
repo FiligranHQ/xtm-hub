@@ -27,6 +27,7 @@ import {
 import {
   checkDocumentExists,
   createDocumentCustomDashboard,
+  loadDocumentMetadata,
   normalizeDocumentName,
 } from './document.helper';
 
@@ -136,6 +137,11 @@ const resolvers: Resolvers = {
     },
     subscription: ({ service_instance_id }, _, context) => {
       return loadSubscription(context, service_instance_id);
+    },
+    document_metadata: ({ id }, _, context) => {
+      return loadDocumentMetadata(context, {
+        document_id: id,
+      } as DocumentMutator);
     },
   },
   Query: {

@@ -1,15 +1,17 @@
-import { dbUnsecure } from '../../../../knexfile';
+import { db, dbUnsecure } from '../../../../knexfile';
 import {
   DocumentMutator,
   default as DocumentType,
 } from '../../../model/kanel/public/Document';
 import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
+import DocumentMetadata from '../../../model/kanel/public/DocumentMetadata';
 import Label, { LabelId } from '../../../model/kanel/public/Label';
 import ObjectLabel, {
   ObjectLabelObjectId,
 } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
+import { addPrefixToObject } from '../../../utils/typescript';
 import { extractId } from '../../../utils/utils';
 import { sendFileToS3 } from './document.domain';
 
@@ -57,6 +59,30 @@ export const loadUnsecureDocumentsBy = async (
   field: DocumentMutator
 ): Promise<Document[]> => {
   return dbUnsecure<Document[]>('Document').where(field).select('*');
+};
+
+export const createDocumentMetadata = async (
+  context: PortalContext,
+  data: {
+    document_id;
+    key;
+    value;
+  },
+  trx
+): Promise<DocumentMetadata[]> => {
+  return db<DocumentMetadata>(context, 'Document_Metadata')
+    .insert(data)
+    .returning('*')
+    .transacting(trx);
+};
+
+export const loadDocumentMetadata = async (
+  context: PortalContext,
+  field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator
+): Promise<DocumentMetadata[]> => {
+  return db<DocumentMetadata>(context, 'Document_Metadata')
+    .where(field)
+    .select('*');
 };
 
 export const createDocumentCustomDashboard = async ({

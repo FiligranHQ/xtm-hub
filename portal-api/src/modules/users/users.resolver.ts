@@ -169,9 +169,9 @@ const resolvers: Resolvers = {
         // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
         const chosenOrganization: OrganizationId | undefined = input
           .organization_capabilities?.[0]
-          ? (extractId(
+          ? extractId<OrganizationId>(
               input.organization_capabilities?.[0].organization_id
-            ) as OrganizationId)
+            )
           : undefined;
 
         // The admin orga should only allow to add users in the same organization and with the same domain.

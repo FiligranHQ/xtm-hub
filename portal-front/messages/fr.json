@@ -226,6 +226,8 @@
         "ShortDescriptionLabel": "Courte Description",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le CSV Feed.",
+        "VerifiedJsonText": "Réponse du feed (illustration)",
+        "VerifiedJsonTextPlaceholder": "Copiez ici la réponse entière du CSV feed",
         "LabelsLabel": "Labels",
         "PublishedPlaceholder": "Le CSV Feed est-il publié?"
       },

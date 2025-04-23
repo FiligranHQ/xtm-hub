@@ -223,8 +223,10 @@
       "Form": {
         "NameLabel": "Name",
         "ShortDescriptionLabel": "Short Description",
-        "DescriptionLabel": "description",
+        "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the CSV Feed.",
+        "VerifiedJsonText": "Response from the feed (to illustrate)",
+        "VerifiedJsonTextPlaceholder": "Paste here the full response of your feed's verification",
         "LabelsLabel": "Labels",
         "PublishedPlaceholder": "Is the CSV Feed published?"
       },

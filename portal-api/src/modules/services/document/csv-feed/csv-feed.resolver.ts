@@ -1,7 +1,16 @@
 import { dbTx } from '../../../../../knexfile';
 import { Resolvers } from '../../../../__generated__/resolvers-types';
+import { DocumentMutator } from '../../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../../../utils/app-logger.util';
 import { UnknownError } from '../../../../utils/error.util';
-import { createFileInMinIO } from '../document.helper';
+import { extractId } from '../../../../utils/utils';
+import { loadDocuments } from '../document.domain';
+import {
+  createDocumentMetadata,
+  createFileInMinIO,
+  normalizeDocumentName,
+} from '../document.helper';
 import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
@@ -21,12 +30,58 @@ const resolvers: Resolvers = {
           context,
           trx
         );
+        await createDocumentMetadata(
+          context,
+          {
+            document_id: addedCsvFeed.id,
+            key: 'verified_json_text',
+            value: input.verified_json_text,
+          },
+          trx
+        );
         await trx.commit();
 
         return addedCsvFeed;
       } catch (error) {
         await trx.rollback();
         throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
+      }
+    },
+  },
+  Query: {
+    csvFeeds: async (
+      _,
+      {
+        first,
+        after,
+        orderMode,
+        orderBy,
+        searchTerm,
+        filters,
+        serviceInstanceId,
+      },
+      context
+    ) => {
+      try {
+        return loadDocuments(
+          context,
+          {
+            first,
+            after,
+            orderMode,
+            orderBy,
+            parentsOnly: false, // TODO When JB will refacto this (#494) remove this
+            filters,
+            searchTerm: normalizeDocumentName(searchTerm ?? ''),
+          },
+          {
+            'Document.service_instance_id':
+              extractId<ServiceInstanceId>(serviceInstanceId),
+          } as DocumentMutator
+        );
+      } catch (error) {
+        logApp.error('Error while fetching csvFeeds:', error);
+        throw error;
       }
     },
   },

@@ -5,17 +5,126 @@ export const CsvFeedCreateMutation = graphql`
     $input: CsvFeedCreateInput!
     $document: Upload
     $serviceInstanceId: String
+    $verified_json_text: String
     $connections: [ID!]!
   ) {
     createCsvFeed(
       input: $input
       document: $document
+      verified_json_text: $verified_json_text
       serviceInstanceId: $serviceInstanceId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
       id
       name
       file_name
+      created_at
+      product_version
+      active
+      short_description
+      uploader {
+        first_name
+        last_name
+        picture
+      }
+      labels {
+        id
+        name
+        color
+      }
+      uploader_organization {
+        id
+        name
+        personal_space
+      }
+      document_metadata {
+        document_id
+        key
+        value
+      }
     }
+  }
+`;
+
+export const csvFeedItem = graphql`
+  fragment csvFeedItem_fragment on Document @inline {
+    id
+    file_name
+    created_at
+    name
+    short_description
+    description
+    product_version
+    download_number
+    share_number
+    active
+    updated_at
+    labels {
+      id
+      name
+      color
+    }
+    uploader {
+      first_name
+      last_name
+      picture
+    }
+    uploader_organization {
+      id
+      name
+      personal_space
+    }
+    document_metadata {
+      document_id
+      key
+      value
+    }
+    slug
+    service_instance {
+      id
+      slug
+    }
+    subscription {
+      id
+    }
+  }
+`;
+
+export const csvFeedsFragment = graphql`
+  fragment csvFeedsList on Query
+  @refetchable(queryName: "CsvFeedsPaginationQuery") {
+    csvFeeds(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+      searchTerm: $searchTerm
+      filters: $filters
+      serviceInstanceId: $serviceInstanceId
+    ) {
+      __id
+      totalCount
+      edges {
+        node {
+          id
+          active
+          ...csvFeedItem_fragment
+        }
+      }
+    }
+  }
+`;
+
+export const CsvFeedsListQuery = graphql`
+  query csvFeedsQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: DocumentOrdering!
+    $orderMode: OrderingMode!
+    $filters: [Filter!]
+    $searchTerm: String
+    $serviceInstanceId: String
+  ) {
+    ...csvFeedsList
   }
 `;

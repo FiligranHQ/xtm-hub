@@ -110,6 +110,7 @@ export type Document = Node & {
   children_documents?: Maybe<Array<Document>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  document_metadata?: Maybe<Array<Maybe<DocumentMetadata>>>;
   download_number: Scalars['Int']['output'];
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -140,6 +141,13 @@ export type DocumentEdge = {
   __typename?: 'DocumentEdge';
   cursor: Scalars['String']['output'];
   node: Document;
+};
+
+export type DocumentMetadata = {
+  __typename?: 'DocumentMetadata';
+  document_id: Scalars['ID']['output'];
+  key?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
 };
 
 export enum DocumentOrdering {
@@ -262,7 +270,7 @@ export type Mutation = {
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
   changeSelectedOrganization?: Maybe<User>;
-  createCsvFeed?: Maybe<CsvFeed>;
+  createCsvFeed?: Maybe<Document>;
   deleteDocument: Document;
   deleteLabel: Label;
   deleteOrganization?: Maybe<Organization>;
@@ -367,6 +375,7 @@ export type MutationCreateCsvFeedArgs = {
   document?: InputMaybe<Scalars['Upload']['input']>;
   input: CsvFeedCreateInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  verified_json_text?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -547,6 +556,7 @@ export type PlatformProvider = {
 
 export type Query = {
   __typename?: 'Query';
+  csvFeeds: DocumentConnection;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
@@ -575,6 +585,17 @@ export type Query = {
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
+};
+
+
+export type QueryCsvFeedsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  filters?: InputMaybe<Array<Filter>>;
+  first: Scalars['Int']['input'];
+  orderBy: DocumentOrdering;
+  orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1152,6 +1173,7 @@ export type ResolversTypes = ResolversObject<{
   Document: ResolverTypeWrapper<Document>;
   DocumentConnection: ResolverTypeWrapper<DocumentConnection>;
   DocumentEdge: ResolverTypeWrapper<DocumentEdge>;
+  DocumentMetadata: ResolverTypeWrapper<DocumentMetadata>;
   DocumentOrdering: DocumentOrdering;
   EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
@@ -1241,6 +1263,7 @@ export type ResolversParentTypes = ResolversObject<{
   Document: Document;
   DocumentConnection: DocumentConnection;
   DocumentEdge: DocumentEdge;
+  DocumentMetadata: DocumentMetadata;
   EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
@@ -1361,6 +1384,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   children_documents?: Resolver<Maybe<Array<ResolversTypes['Document']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  document_metadata?: Resolver<Maybe<Array<Maybe<ResolversTypes['DocumentMetadata']>>>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1391,6 +1415,13 @@ export type DocumentConnectionResolvers<ContextType = PortalContext, ParentType 
 export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DocumentEdge'] = ResolversParentTypes['DocumentEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Document'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DocumentMetadataResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DocumentMetadata'] = ResolversParentTypes['DocumentMetadata']> = ResolversObject<{
+  document_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1460,7 +1491,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
-  createCsvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input'>>;
+  createCsvFeed?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
@@ -1533,6 +1564,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  csvFeeds?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -1830,6 +1862,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
+  DocumentMetadata?: DocumentMetadataResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Label?: LabelResolvers<ContextType>;

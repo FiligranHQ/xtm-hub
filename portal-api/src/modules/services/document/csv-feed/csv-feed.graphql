@@ -30,6 +30,19 @@ type Mutation {
   createCsvFeed(
     input: CsvFeedCreateInput!
     document: Upload
+    verified_json_text: String
     serviceInstanceId: String
-  ): CsvFeed @auth
+  ): Document @auth
+}
+
+type Query {
+  csvFeeds(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): DocumentConnection! @auth
 }
