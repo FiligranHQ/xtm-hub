@@ -17,7 +17,7 @@ services:
       timeout: 5s
       retries: 10
     environment:
-      - SERVER_HTTP_API=http://portal-api:4002
+      - SERVER_HTTP_API=http://portal-api:4001
 
   portal-front-test:
     container_name: portal-front-test
@@ -29,7 +29,7 @@ services:
         - type=registry,ref=filigran/portal-front:main
         - type=registry,ref=filigran/portal-front:development
     environment:
-      - SERVER_HTTP_API=http://portal-api:4002
+      - SERVER_HTTP_API=http://portal-api:4001
 
   portal-api-test:
     container_name: portal-api-test
@@ -70,7 +70,7 @@ services:
         - type=registry,ref=filigran/portal-api:main
         - type=registry,ref=filigran/portal-api:development
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://portal-api:4002/health"]
+      test: ["CMD", "wget", "-qO-", "http://portal-api:4001/health"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -117,8 +117,6 @@ services:
     environment:
       MINIO_ROOT_USER: portal
       MINIO_ROOT_PASSWORD: changeme
-    volumes:
-      - "minio:/data/minio"
     command: "minio server /data/minio"
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
@@ -152,7 +150,3 @@ services:
       - TEAMS_WEBHOOK_E2E=${TEAMS_WEBHOOK_E2E}
       - GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}
       - GITHUB_PR_TITLE=${GITHUB_PR_TITLE}
-
-volumes:
-  minio:
-    driver: local
