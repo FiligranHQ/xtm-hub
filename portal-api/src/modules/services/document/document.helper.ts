@@ -80,7 +80,7 @@ export const loadDocumentMetadata = async (
   context: PortalContext,
   field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator
 ): Promise<DocumentMetadata[]> => {
-  return db<DocumentMetadata>(context, 'Document_Metadata')
+  return db<DocumentMetadata[]>(context, 'Document_Metadata')
     .where(field)
     .select('*');
 };

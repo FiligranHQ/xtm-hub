@@ -30,7 +30,6 @@ type Mutation {
   createCsvFeed(
     input: CsvFeedCreateInput!
     document: Upload
-    verified_json_text: String
     serviceInstanceId: String
   ): Document @auth
 }

@@ -5,13 +5,11 @@ export const CsvFeedCreateMutation = graphql`
     $input: CsvFeedCreateInput!
     $document: Upload
     $serviceInstanceId: String
-    $verified_json_text: String
     $connections: [ID!]!
   ) {
     createCsvFeed(
       input: $input
       document: $document
-      verified_json_text: $verified_json_text
       serviceInstanceId: $serviceInstanceId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
@@ -32,15 +30,19 @@ export const CsvFeedCreateMutation = graphql`
         name
         color
       }
+      children_documents {
+        id
+        file_name
+        created_at
+        name
+        description
+        download_number
+        active
+      }
       uploader_organization {
         id
         name
         personal_space
-      }
-      document_metadata {
-        document_id
-        key
-        value
       }
     }
   }
@@ -74,10 +76,14 @@ export const csvFeedItem = graphql`
       name
       personal_space
     }
-    document_metadata {
-      document_id
-      key
-      value
+    children_documents {
+      id
+      file_name
+      created_at
+      name
+      description
+      download_number
+      active
     }
     slug
     service_instance {

@@ -6,11 +6,7 @@ import { logApp } from '../../../../utils/app-logger.util';
 import { UnknownError } from '../../../../utils/error.util';
 import { extractId } from '../../../../utils/utils';
 import { loadDocuments } from '../document.domain';
-import {
-  createDocumentMetadata,
-  createFileInMinIO,
-  normalizeDocumentName,
-} from '../document.helper';
+import { createFileInMinIO, normalizeDocumentName } from '../document.helper';
 import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
@@ -30,15 +26,7 @@ const resolvers: Resolvers = {
           context,
           trx
         );
-        await createDocumentMetadata(
-          context,
-          {
-            document_id: addedCsvFeed.id,
-            key: 'verified_json_text',
-            value: input.verified_json_text,
-          },
-          trx
-        );
+
         await trx.commit();
 
         return addedCsvFeed;
@@ -70,7 +58,7 @@ const resolvers: Resolvers = {
             after,
             orderMode,
             orderBy,
-            parentsOnly: false, // TODO When JB will refacto this (#494) remove this
+            parentsOnly: true,
             filters,
             searchTerm: normalizeDocumentName(searchTerm ?? ''),
           },

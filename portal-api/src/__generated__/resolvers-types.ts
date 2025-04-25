@@ -375,7 +375,6 @@ export type MutationCreateCsvFeedArgs = {
   document?: InputMaybe<Scalars['Upload']['input']>;
   input: CsvFeedCreateInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-  verified_json_text?: InputMaybe<Scalars['String']['input']>;
 };
 
 

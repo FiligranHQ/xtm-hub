@@ -20,10 +20,10 @@ export const csvFeedCreateFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   short_description: z.string().min(1, 'Required').max(250),
   description: z.string().min(1, 'Required'),
-  verified_json_text: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
+  illustration: z.custom<FileList>(fileListCheck),
 });
 export type CsvFeedCreateFormValues = z.infer<typeof csvFeedCreateFormSchema>;
 
@@ -80,21 +80,21 @@ export const CsvFeedCreateForm = ({ handleSubmit }: CsvFeedCreateFormProps) => {
             ),
           },
           document: {
+            label: t('Service.CsvFeed.Form.CsvFeedFile'),
             fieldType: 'file',
             inputProps: {
               allowedTypes: 'application/json',
               multiple: 'multiple',
             },
           },
-          verified_json_text: {
-            label: t('Service.CsvFeed.Form.VerifiedJsonText'),
-            fieldType: 'textarea',
+          illustration: {
+            label: t('Service.CsvFeed.Form.CsvFeedIllustration'),
+            fieldType: 'file',
             inputProps: {
-              placeholder: t(
-                'Service.CsvFeed.Form.VerifiedJsonTextPlaceholder'
-              ),
+              allowedTypes: 'image/jpeg, image/png',
             },
           },
+
           active: {
             label: t('Service.CsvFeed.Form.PublishedPlaceholder'),
           },

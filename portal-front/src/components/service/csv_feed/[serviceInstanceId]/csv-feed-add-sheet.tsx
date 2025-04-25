@@ -5,11 +5,14 @@ import {
   CsvFeedCreateFormValues,
 } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-create-form';
 import { CsvFeedCreateMutation } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
+import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
+import { documentAddMutation } from '@generated/documentAddMutation.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -35,7 +38,49 @@ export const CSVFeedAddSheet = ({
     ServiceCapabilityName.Upload,
     serviceInstance
   );
+  const [addDocument] = useMutation<documentAddMutation>(DocumentAddMutation);
 
+  const addIllustrationDocument = (
+    image: FileList,
+    csvFeedName: string,
+    csvFeedId: string
+  ) => {
+    return addDocument({
+      variables: {
+        name: csvFeedName,
+        document: { 0: image },
+        parentDocumentId: csvFeedId,
+        serviceInstanceId: serviceInstance.id,
+        connections: [],
+        type: 'csv-feed',
+      },
+      uploadables: fileListToUploadableMap(image),
+      updater: (store, response) => {
+        if (response?.addDocument?.id) {
+          const newNode = store.get(response!.addDocument!.id);
+          if (!newNode) {
+            return;
+          }
+          const items = store
+            .get<documentItem_fragment$data>(csvFeedId)
+            ?.getLinkedRecords<'children_documents'>('children_documents');
+          store
+            .get(csvFeedId)
+            ?.setLinkedRecords(
+              [...(items ?? []), newNode],
+              'children_documents'
+            );
+        }
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${(error as Error).message}`),
+        });
+      },
+    });
+  };
   const handleSubmit = async (values: CsvFeedCreateFormValues) => {
     createCsvFeed({
       variables: {
@@ -46,7 +91,6 @@ export const CSVFeedAddSheet = ({
           active: values.active ?? false,
           labels: values.labels,
         },
-        verified_json_text: values.verified_json_text,
         serviceInstanceId: serviceInstance.id,
         connections: [connectionId],
       },
@@ -54,6 +98,12 @@ export const CSVFeedAddSheet = ({
 
       onCompleted: (response) => {
         setOpenSheet(false);
+
+        addIllustrationDocument(
+          values.illustration,
+          response.createCsvFeed?.name ?? '',
+          response.createCsvFeed?.id ?? ''
+        );
 
         toast({
           title: t('Utils.Success'),
