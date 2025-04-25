@@ -15,8 +15,10 @@ import {
 } from '@generated/csvFeedItem_fragment.graphql';
 import { MultiSelectFormField } from 'filigran-ui';
 
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import CsvFeedBento from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-bento';
 import CsvFeedButtons from '@/components/service/csv_feed/[serviceInstanceId]/csv-feeds-list-buttons';
+import useServiceCapability from '@/hooks/useServiceCapability';
 import { csvFeedsList$key } from '@generated/csvFeedsList.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -56,6 +58,10 @@ const CsvFeedsList = ({
   const [data] = useRefetchableFragment<csvFeedsQuery, csvFeedsList$key>(
     csvFeedsFragment,
     queryData
+  );
+  const userCanUpdate = useServiceCapability(
+    ServiceCapabilityName.Upload,
+    serviceInstance
   );
 
   const [active, _nonActive] = useMemo(() => {
@@ -118,20 +124,26 @@ const CsvFeedsList = ({
           />
         </div>
       </div>
-      <ul
-        className={
-          'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
-        }>
-        {_nonActive.map((csvFeed) => (
-          <ShareableObjectCard
-            key={csvFeed.id}
-            document={csvFeed as unknown as documentItem_fragment$data}
-            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`} // Both will be modified
-            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
-            <CsvFeedBento csvFeed={csvFeed}></CsvFeedBento>
-          </ShareableObjectCard>
-        ))}
-      </ul>
+      {userCanUpdate && (
+        <>
+          <div className="txt-category">{t('Service.CsvFeed.NonActive')}:</div>
+          <ul
+            className={
+              'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
+            }>
+            {_nonActive.map((csvFeed) => (
+              <ShareableObjectCard
+                key={csvFeed.id}
+                document={csvFeed as unknown as documentItem_fragment$data}
+                detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`} // Both will be modified
+                shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
+                <CsvFeedBento csvFeed={csvFeed}></CsvFeedBento>
+              </ShareableObjectCard>
+            ))}
+          </ul>
+          <div className="txt-category">{t('Service.CsvFeed.Active')}:</div>
+        </>
+      )}
       <ul
         className={
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'

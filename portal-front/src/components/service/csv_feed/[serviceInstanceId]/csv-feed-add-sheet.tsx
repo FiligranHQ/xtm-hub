@@ -31,6 +31,11 @@ export const CSVFeedAddSheet = ({
     CsvFeedCreateMutation
   );
 
+  const userCanUpdate = useServiceCapability(
+    ServiceCapabilityName.Upload,
+    serviceInstance
+  );
+
   const handleSubmit = async (values: CsvFeedCreateFormValues) => {
     createCsvFeed({
       variables: {
@@ -66,11 +71,6 @@ export const CSVFeedAddSheet = ({
       },
     });
   };
-
-  const userCanUpdate = useServiceCapability(
-    ServiceCapabilityName.Upload,
-    serviceInstance
-  );
 
   return (
     <>

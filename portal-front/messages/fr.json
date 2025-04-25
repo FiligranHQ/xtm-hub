@@ -231,7 +231,9 @@
         "LabelsLabel": "Labels",
         "PublishedPlaceholder": "Le CSV Feed est-il publié?"
       },
-      "AddCsvFeed": "Ajouter un CSV Feed"
+      "AddCsvFeed": "Ajouter un CSV Feed",
+      "NonActive": "Non actif",
+      "Active": "Actif"
     },
     "CustomDashboards": {
       "Actions": {
