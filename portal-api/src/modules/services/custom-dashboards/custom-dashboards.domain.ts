@@ -1,6 +1,14 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { Knex } from 'knex';
 import { dbUnsecure } from '../../../../knexfile';
+import {
+  CreateCustomDashboardInput,
+  CustomDashboard,
+} from '../../../__generated__/resolvers-types';
 import Document from '../../../model/kanel/public/Document';
+import { PortalContext } from '../../../model/portal-context';
+import { UnknownError } from '../../../utils/error.util';
+import { createDocument, MinioFile } from '../document/document.helper';
 
 export const loadSeoCustomDashboardsByServiceSlug = async (
   serviceSlug: string
@@ -58,4 +66,26 @@ export const loadSeoCustomDashboardBySlug = async (slug: string) => {
     })
     .first();
   return dashboard;
+};
+
+export const createCustomDashboard = async (
+  inputData: CreateCustomDashboardInput,
+  files: MinioFile[],
+  context: PortalContext,
+  trx: Knex.Transaction
+): CustomDashboard => {
+  const parentDocument = await createDocument({
+    service_instance_id: customDashboardId,
+    mime_type: 'text/csv',
+    content: csvData,
+    active: true,
+  });
+
+  if (!document) {
+    throw UnknownError('CUSTOM_DASHBOARD_CREATION_ERROR', {
+      detail: 'Failed to create CSV feed',
+    });
+  }
+
+  return csvFeed;
 };

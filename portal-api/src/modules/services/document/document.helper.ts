@@ -1,5 +1,6 @@
 import { dbUnsecure } from '../../../../knexfile';
 import {
+  DocumentId,
   DocumentMutator,
   default as DocumentType,
 } from '../../../model/kanel/public/Document';
@@ -30,7 +31,15 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .replace(/[&\\#,+()$~%'":*?!<>{}\s]/g, '-');
 };
 
-export const createFileInMinIO = async (jsonFile, context) => {
+export type MinioFile = {
+  minioName: string;
+  fileName: string;
+};
+
+export const createFileInMinIO = async (
+  jsonFile,
+  context
+): Promise<MinioFile> => {
   const fileName = normalizeDocumentName(jsonFile.file.filename);
   const minioName = await sendFileToS3(
     jsonFile.file,
@@ -59,7 +68,12 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const createDocumentCustomDashboard = async ({
+export type CreateDocumentInput = DocumentMutator & {
+  parent_document_id?: DocumentId;
+  labels?: string[];
+};
+
+export const createDocument = async ({
   labels,
   parent_document_id,
   ...documentData
@@ -112,7 +126,7 @@ export const uploadNewFile = async (
     type: 'service_picture',
   };
 
-  const [addedDocument] = await createDocumentCustomDashboard(data);
+  const [addedDocument] = await createDocument(data);
   return addedDocument;
 };
 

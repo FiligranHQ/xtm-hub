@@ -26,7 +26,7 @@ import {
 } from './document.domain';
 import {
   checkDocumentExists,
-  createDocumentCustomDashboard,
+  createDocument,
   normalizeDocumentName,
 } from './document.helper';
 
@@ -64,7 +64,7 @@ const resolvers: Resolvers = {
           type: payload.type,
         };
 
-        const [addedDocument] = await createDocumentCustomDashboard(data);
+        const [addedDocument] = await createDocument(data);
         return addedDocument;
       } catch (error) {
         console.error('Error while adding document:', error);

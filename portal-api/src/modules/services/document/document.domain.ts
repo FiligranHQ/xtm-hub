@@ -26,7 +26,7 @@ import { addPrefixToObject } from '../../../utils/typescript';
 import { extractId } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
-  createDocumentCustomDashboard,
+  createDocument,
   Document,
   getDocumentName,
   loadUnsecureDocumentsBy,
@@ -76,7 +76,7 @@ export const insertDocument = async (
     passOldDocumentsIntoInactive(existingDocuments);
   }
 
-  return createDocumentCustomDashboard(documentData);
+  return createDocument(documentData);
 };
 
 export const updateDocumentDescription = async (

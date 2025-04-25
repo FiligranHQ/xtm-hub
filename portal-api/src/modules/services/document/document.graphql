@@ -21,7 +21,6 @@ type Document implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
-  product_version: String
   children_documents: [Document!]
   labels: [Label!]!
   slug: String

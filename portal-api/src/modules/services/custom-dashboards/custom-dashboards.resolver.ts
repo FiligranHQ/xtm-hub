@@ -1,6 +1,10 @@
+import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
+import { UnknownError } from '../../../utils/error.util';
 import { getLabels, getUploader } from '../document/document.domain';
+import { createFileInMinIO } from '../document/document.helper';
 import {
+  createCustomDashboard,
   loadImagesByCustomDashboardId,
   loadSeoCustomDashboardBySlug,
   loadSeoCustomDashboardsByServiceSlug,
@@ -38,6 +42,30 @@ const resolvers: Resolvers = {
     seoCustomDashboardBySlug: async (_, { slug }) => {
       const dashboard = await loadSeoCustomDashboardBySlug(slug);
       return dashboard;
+    },
+  },
+  Mutation: {
+    createCustomDashboard: async (_, { input, document }, context) => {
+      const trx = await dbTx();
+      try {
+        const files = await Promise.all(
+          document.map((document) => createFileInMinIO(document, context))
+        );
+        const customDashboard = await createCustomDashboard(
+          input,
+          files,
+          context,
+          trx
+        );
+        await trx.commit();
+
+        return customDashboard;
+      } catch (error) {
+        await trx.rollback();
+        throw UnknownError('CUSTOM_DASHBOARD_CREATION_ERROR', {
+          detail: error,
+        });
+      }
     },
   },
 };

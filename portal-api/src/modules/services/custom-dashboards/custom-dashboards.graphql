@@ -20,7 +20,46 @@ type SeoCustomDashboard {
   active: Boolean!
 }
 
+type CustomDashboard implements Node {
+  id: ID!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  labels: [Label!]!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  # Specific Custom Dashboard fields
+  product_version: String
+}
+
 type Query {
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
   seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
+}
+
+input CreateCustomDashboardInput {
+  name: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+  product_version: String!
+}
+
+type Mutation {
+  createCustomDashboard(
+    input: CreateCustomDashboardInput!
+    document: [Upload!]!
+    serviceInstanceId: String!
+  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
 }
