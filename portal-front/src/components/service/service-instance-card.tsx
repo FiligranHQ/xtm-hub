@@ -36,8 +36,8 @@ const ServiceInstanceCard: React.FunctionComponent<
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
-        <div className=" flex relative justify-center items-center flex-col gap-s bg-blue-900 overflow-hidden box-border px-s">
-          <LogoFiligranIcon className="absolute text-white opacity-10 z-1 size-64 rotate-45 blur" />
+        <div className="flex relative justify-center items-center flex-col gap-s bg-blue-900 overflow-hidden box-border px-s">
+          <LogoFiligranIcon className="absolute text-white opacity-5 z-1 size-64 rotate-45 -translate-y-1/4 -translate-x-1/4" />
           <div className="mt-s flex items-center h-12 w-full">
             <div
               className="w-full h-12"
