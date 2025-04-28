@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
-interface ShareableObjectCardProps {
+interface ShareableResourceCardProps {
   document: documentItem_fragment$data;
   detailUrl: string;
   shareLinkUrl: string;
@@ -18,13 +18,13 @@ interface ShareableObjectCardProps {
   extraContent?: ReactNode;
 }
 
-const ShareableObjectCard = ({
+const ShareableResourceCard = ({
   document,
   detailUrl,
   shareLinkUrl,
   children,
   extraContent,
-}: ShareableObjectCardProps) => {
+}: ShareableResourceCardProps) => {
   const t = useTranslations();
 
   return (
@@ -78,4 +78,4 @@ const ShareableObjectCard = ({
   );
 };
 
-export default ShareableObjectCard;
+export default ShareableResourceCard;

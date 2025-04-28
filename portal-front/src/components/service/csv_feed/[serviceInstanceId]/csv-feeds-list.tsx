@@ -6,7 +6,7 @@ import {
 } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
 
 import { SearchInput } from '@/components/ui/search-input';
-import ShareableObjectCard from '@/components/ui/sharable-object-card';
+import ShareableResourceCard from '@/components/ui/sharable-resource-card';
 import { debounceHandleInput } from '@/utils/debounce';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
@@ -85,8 +85,7 @@ const CsvFeedsList = ({
     );
   }, [data]);
 
-  const firstCustomDashboard =
-    _nonActive.length > 0 ? _nonActive[0] : active[0];
+  const firstCsvFeed = _nonActive.length > 0 ? _nonActive[0] : active[0];
 
   const labelOptions = getLabels().map(({ name, id }) => ({
     label: name.toUpperCase(),
@@ -117,9 +116,7 @@ const CsvFeedsList = ({
         <div className="flex gap-s">
           <CsvFeedButtons
             serviceInstance={serviceInstance}
-            firstDashboardSubscriptionId={
-              firstCustomDashboard?.subscription?.id ?? ''
-            }
+            firstCsvFeedSubscriptionId={firstCsvFeed?.subscription?.id ?? ''}
             connectionId={data!.csvFeeds!.__id}
           />
         </div>
@@ -132,7 +129,7 @@ const CsvFeedsList = ({
               'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
             }>
             {_nonActive.map((csvFeed) => (
-              <ShareableObjectCard
+              <ShareableResourceCard
                 key={csvFeed.id}
                 document={csvFeed as unknown as documentItem_fragment$data}
                 detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`} // Both will be modified
@@ -140,7 +137,7 @@ const CsvFeedsList = ({
                 <CsvFeedBento
                   csvFeed={csvFeed}
                   serviceInstanceId={serviceInstance.id}></CsvFeedBento>
-              </ShareableObjectCard>
+              </ShareableResourceCard>
             ))}
           </ul>
           <div className="txt-category">{t('Service.CsvFeed.Active')}:</div>
@@ -151,7 +148,7 @@ const CsvFeedsList = ({
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
         }>
         {active.map((csvFeed) => (
-          <ShareableObjectCard
+          <ShareableResourceCard
             key={csvFeed.id}
             document={csvFeed as unknown as documentItem_fragment$data}
             detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`}
@@ -159,7 +156,7 @@ const CsvFeedsList = ({
             <CsvFeedBento
               csvFeed={csvFeed}
               serviceInstanceId={serviceInstance.id}></CsvFeedBento>
-          </ShareableObjectCard>
+          </ShareableResourceCard>
         ))}
       </ul>
     </div>

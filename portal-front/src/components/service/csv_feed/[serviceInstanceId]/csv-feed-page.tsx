@@ -29,7 +29,8 @@ const CsvFeedPage = ({
           search={search}
           onSearchChange={onSearchChange}
           onLabelFilterChange={onLabelFilterChange}
-          labels={labels}></CsvFeedsList>
+          labels={labels}
+        />
       </>
     )
   );

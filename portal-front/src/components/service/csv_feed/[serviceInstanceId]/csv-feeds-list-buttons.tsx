@@ -7,12 +7,12 @@ import Link from 'next/link';
 
 interface CsvFeedButtonsProps {
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
-  firstDashboardSubscriptionId: string;
+  firstCsvFeedSubscriptionId: string;
   connectionId: string;
 }
 const CsvFeedButtons = ({
   serviceInstance,
-  firstDashboardSubscriptionId,
+  firstCsvFeedSubscriptionId,
   connectionId,
 }: CsvFeedButtonsProps) => {
   const t = useTranslations();
@@ -27,7 +27,7 @@ const CsvFeedButtons = ({
           asChild
           variant="outline">
           <Link
-            href={`/manage/service/${serviceInstance.id}/subscription/${firstDashboardSubscriptionId}`}>
+            href={`/manage/service/${serviceInstance.id}/subscription/${firstCsvFeedSubscriptionId}`}>
             {t('Service.Capabilities.ManageAccessName')}
           </Link>
         </Button>

@@ -3,7 +3,7 @@ import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/
 import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
 import { IconActions } from '@/components/ui/icon-actions';
-import ShareableObjectCard from '@/components/ui/sharable-object-card';
+import ShareableResourceCard from '@/components/ui/sharable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -50,7 +50,7 @@ const CustomDashboardCard = ({
   };
 
   return (
-    <ShareableObjectCard
+    <ShareableResourceCard
       key={customDashboard.id}
       document={customDashboard}
       detailUrl={detailUrl}
@@ -103,7 +103,7 @@ const CustomDashboardCard = ({
           </CarouselItem>
         ))}
       </Carousel>
-    </ShareableObjectCard>
+    </ShareableResourceCard>
   );
 };
 

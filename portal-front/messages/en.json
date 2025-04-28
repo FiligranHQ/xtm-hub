@@ -231,8 +231,8 @@
         "PublishedPlaceholder": "Is the CSV Feed published?"
       },
       "AddCsvFeed": "Add new CSV Feed",
-      "NonActive": "Non active",
-      "Active": "Active"
+      "NonActive": "Draft",
+      "Active": "Published"
     },
     "CustomDashboards": {
       "Actions": {
