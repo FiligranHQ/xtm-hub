@@ -1,4 +1,5 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 
 import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/service-slug-add-orga-form';
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
@@ -29,12 +30,15 @@ import {
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
-
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
+  serviceId: string;
 }
 
-const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
+const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
+  queryRef,
+  serviceId,
+}) => {
   const queryData = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
     ServiceByIdWithSubscriptions,
     queryRef
@@ -189,7 +193,21 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
               ' ' +
               queryData?.serviceInstanceByIdWithSubscriptions?.name
             }>
-            <ServiceSlugAddOrgaForm serviceByIdWithSubscriptions={queryData} />
+            <ServiceSlugAddOrgaForm
+              subscriptions={
+                queryData?.serviceInstanceByIdWithSubscriptions
+                  ?.subscriptions as subscriptionWithUserService_fragment$data[]
+              }
+              capabilities={
+                queryData?.serviceInstanceByIdWithSubscriptions
+                  ?.service_definition
+                  ?.service_capability as unknown as serviceCapability_fragment$data[]
+              }
+              serviceId={serviceId}
+              serviceName={
+                queryData.serviceInstanceByIdWithSubscriptions?.name ?? ''
+              }
+            />
           </SheetWithPreventingDialog>
         )}
         <DataTableHeadBarOptions />

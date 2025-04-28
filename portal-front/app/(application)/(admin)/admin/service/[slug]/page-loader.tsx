@@ -22,7 +22,18 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
     );
   useMountingLoader(loadQuery, { service_instance_id: id });
 
-  return <>{queryRef ? <ServiceSlug queryRef={queryRef} /> : <Loader />}</>;
+  return (
+    <>
+      {queryRef ? (
+        <ServiceSlug
+          queryRef={queryRef}
+          serviceId={id}
+        />
+      ) : (
+        <Loader />
+      )}
+    </>
+  );
 };
 
 // Component export
