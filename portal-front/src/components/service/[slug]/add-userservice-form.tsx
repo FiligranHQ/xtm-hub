@@ -13,9 +13,8 @@ import { UserServiceCreateMutation } from '@/components/service/user_service.gra
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
-import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
+import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import { userListQuery } from '@generated/userListQuery.graphql';
@@ -55,22 +54,13 @@ import { z } from 'zod';
 interface AddUserServiceFormProps {
   connectionId: string;
   userService?: userServices_fragment$data;
-  subscription: subscriptionWithUserService_fragment$data;
-  serviceName: string;
-  serviceId: string;
-  serviceCapabilities: serviceCapability_fragment$data[];
-
-  organizationId: string;
+  subscription: subscriptionByIdQuery$data;
 }
 
 export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
   connectionId,
   userService,
   subscription,
-  serviceName,
-  serviceId,
-  serviceCapabilities,
-  organizationId,
 }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const { me } = useContext(PortalContext);
@@ -91,7 +81,11 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
     },
   ];
 
-  const capabilitiesData = [...serviceCapabilities, ...genericCapabilities];
+  const capabilitiesData = [
+    ...(subscription.subscriptionById?.service_instance?.service_definition
+      ?.service_capability ?? []),
+    ...genericCapabilities,
+  ];
 
   const capabilitiesFormSchema = z.object({
     capabilities: z.array(z.string()),
@@ -115,7 +109,7 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
     defaultValues: {
       email: [{ id: '', text: '' }],
       capabilities: [],
-      organizationId: organizationId,
+      organizationId: subscription.subscriptionById?.organization?.id,
     },
   });
   setIsDirty(form.formState.isDirty);
@@ -124,9 +118,9 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
     form.reset({
       email: [{ id: '', text: '' }],
       capabilities: [],
-      organizationId: organizationId,
+      organizationId: subscription.subscriptionById?.organization?.id,
     });
-  }, [organizationId]);
+  }, [subscription.subscriptionById]);
 
   const onSubmitCapabilitiesSchema = (
     values: z.infer<typeof capabilitiesFormSchema>
@@ -141,7 +135,7 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
 
           ...editCapaValues,
         },
-        serviceInstanceId: serviceId,
+        serviceInstanceId: subscription.subscriptionById?.service_instance?.id,
       },
       onCompleted() {
         toast({
@@ -169,7 +163,7 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
         input: {
           email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,
-          subscriptionId: subscription.id,
+          subscriptionId: subscription.subscriptionById?.id ?? '',
         },
       },
       onCompleted() {
@@ -177,7 +171,7 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
           title: t('Utils.Success'),
           description: t('ServiceActions.UserServiceAdded', {
             email: values.email.map((item) => item.text).join(', '),
-            serviceName: serviceName,
+            serviceName: subscription.subscriptionById?.service_instance?.name,
           }),
         });
         setOpenSheet(false);
@@ -204,15 +198,15 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
     organization?: string;
   }>({
     search: undefined,
-    organization: organizationId,
+    organization: subscription.subscriptionById?.organization?.id,
   });
 
   useEffect(() => {
     setFilter((prevFilter) => ({
       ...prevFilter,
-      organization: organizationId,
+      organization: subscription.subscriptionById?.organization?.id,
     }));
-  }, [organizationId]);
+  }, [subscription.subscriptionById]);
 
   const handleInputChange = (inputValue: string) => {
     setFilter((prevFilter) => ({
@@ -246,7 +240,7 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
       return false;
     }
 
-    return !subscription?.subscription_capability?.some(
+    return !subscription.subscriptionById?.subscription_capability?.some(
       (subscriptionCapa) => id === subscriptionCapa?.service_capability?.id
     );
   };
@@ -319,25 +313,31 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
           <p className="txt-sub-content italic">
             {t('InviteUserServiceForm.Description')}
           </p>
-          {capabilitiesData.map(({ id, name, description }) => (
+          {capabilitiesData.map((capability) => (
             <FormField
-              key={id}
+              key={capability!.id}
               control={form.control}
               name="capabilities"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2">
                   <FormControl>
                     <Checkbox
-                      disabled={isCapabilityDisabled(id)}
+                      disabled={isCapabilityDisabled(capability!.id)}
                       className="mt-xs"
-                      checked={(field.value as string[]).includes(id)}
+                      checked={(field.value as string[]).includes(
+                        capability!.id
+                      )}
                       onCheckedChange={(checked) => {
                         const newValue = checked
-                          ? Array.from(new Set([...(field.value || []), id]))
-                          : (field.value || []).filter((value) => value !== id);
+                          ? Array.from(
+                              new Set([...(field.value || []), capability!.id])
+                            )
+                          : (field.value || []).filter(
+                              (value) => value !== capability!.id
+                            );
                         field.onChange(newValue);
                       }}
-                      id={id}
+                      id={capability!.id}
                     />
                   </FormControl>
 
@@ -345,17 +345,18 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <label
-                          htmlFor={id}
-                          className={`txt-sub-content ${!isCapabilityDisabled(id) ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
-                          {name === GenericCapabilityName.ManageAccess
+                          htmlFor={capability!.id}
+                          className={`txt-sub-content ${!isCapabilityDisabled(capability!.id) ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+                          {capability!.name ===
+                          GenericCapabilityName.ManageAccess
                             ? 'Manage access: The user can invite other users from his/her organization to this service'
-                            : `${name} access: ${description}`}
-                          {isCapabilityDisabled(id)}
+                            : `${capability!.name} access: ${capability!.description}`}
+                          {isCapabilityDisabled(capability!.id)}
                         </label>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>
-                          {isCapabilityDisabled(id)
+                          {isCapabilityDisabled(capability!.id)
                             ? t('InviteUserServiceForm.DisabledCapability')
                             : t('InviteUserServiceForm.GrantCapability')}
                         </p>

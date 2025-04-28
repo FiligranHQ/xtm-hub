@@ -37,9 +37,7 @@ import {
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';
 import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
-import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
 import {
   PreloadedQuery,
@@ -294,25 +292,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           <AddUserServiceForm
             userService={currentUser}
             connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
-            serviceCapabilities={
-              (queryDataSubscription.subscriptionById?.service_instance
-                ?.service_definition?.service_capability ??
-                []) as serviceCapability_fragment$data[]
-            }
-            serviceName={
-              queryDataSubscription.subscriptionById?.service_instance?.name ??
-              ''
-            }
-            serviceId={
-              queryDataSubscription.subscriptionById?.service_instance?.id ?? ''
-            }
-            subscription={
-              (queryDataSubscription.subscriptionById ??
-                {}) as subscriptionWithUserService_fragment$data
-            }
-            organizationId={
-              queryDataSubscription.subscriptionById?.organization?.id ?? ''
-            }
+            subscription={queryDataSubscription ?? {}}
           />
         </SheetWithPreventingDialog>
         <DataTableHeadBarOptions />

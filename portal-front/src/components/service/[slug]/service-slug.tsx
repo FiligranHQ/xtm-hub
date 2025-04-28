@@ -15,7 +15,6 @@ import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing
 import useAdminPath from '@/hooks/useAdminPath';
 import { i18nKey } from '@/utils/datatable';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
@@ -33,13 +32,9 @@ import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
-  serviceId: string;
 }
 
-const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
-  queryRef,
-  serviceId,
-}) => {
+const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({ queryRef }) => {
   const queryData = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
     ServiceByIdWithSubscriptions,
     queryRef
@@ -194,21 +189,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
               ' ' +
               queryData?.serviceInstanceByIdWithSubscriptions?.name
             }>
-            <ServiceSlugAddOrgaForm
-              subscriptions={
-                queryData?.serviceInstanceByIdWithSubscriptions
-                  ?.subscriptions as subscriptionWithUserService_fragment$data[]
-              }
-              capabilities={
-                queryData?.serviceInstanceByIdWithSubscriptions
-                  ?.service_definition
-                  ?.service_capability as unknown as serviceCapability_fragment$data[]
-              }
-              serviceId={serviceId}
-              serviceName={
-                queryData.serviceInstanceByIdWithSubscriptions?.name ?? ''
-              }
-            />
+            <ServiceSlugAddOrgaForm serviceByIdWithSubscriptions={queryData} />
           </SheetWithPreventingDialog>
         )}
         <DataTableHeadBarOptions />
