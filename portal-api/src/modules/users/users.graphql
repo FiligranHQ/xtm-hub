@@ -98,6 +98,14 @@ input AdminAddUserInput {
   organization_capabilities: [OrganizationCapabilitiesInput!]
 }
 
+input EditProfileInput {
+  first_name: String
+  last_name: String
+  password: String
+  picture: String
+  country: String
+}
+
 type Mutation {
   # Management
   mergeTest(from: ID!, target: ID!): ID! @auth(requires: [MANAGE_ACCESS])
@@ -108,6 +116,7 @@ type Mutation {
   editUser(id: ID!, input: EditUserInput!): User!
     @auth(requires: [MANAGE_ACCESS])
   editMeUser(input: EditMeUserInput!): User! @auth
+  editProfile(input: EditProfileInput): User! @auth
   changeSelectedOrganization(organization_id: ID!): User @auth
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
     @auth(requires: [MANAGE_ACCESS])

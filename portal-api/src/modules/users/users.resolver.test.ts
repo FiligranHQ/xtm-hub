@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { v4 as uuidv4 } from 'uuid';
-import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
+import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'vitest';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
@@ -22,6 +22,7 @@ import {
 } from '../subcription/subscription.helper';
 import { deleteUserById, loadUserBy } from './users.domain';
 import usersResolver from './users.resolver';
+import { UserLoadUserBy } from "../../model/user";
 
 const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
 const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
@@ -337,4 +338,43 @@ describe('User mutation resolver', () => {
       });
     });
   });
+
+  describe('editProfile', () => {
+    let adminUser: UserLoadUserBy | undefined
+    beforeAll(async () => {
+      adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL })
+      if (!adminUser) {
+        throw new Error('admin user not found')
+      }
+    })
+
+    it('should edit an existing user profile', async () => {
+      // @ts-ignore
+      const response = await usersResolver.Mutation.editProfile(
+        undefined,
+        {
+          input: {
+            first_name: 'Roger',
+            last_name: 'Testeur',
+            country: 'France',
+            picture: 'http://picture.com'
+          }
+        },
+        contextAdminUser
+      )
+
+      expect(response).toBeTruthy()
+    })
+
+    afterAll(async () => {
+      // @ts-ignore
+      await usersResolver.Mutation.editProfile(
+        undefined,
+        {
+          input: adminUser
+        },
+        contextAdminUser
+      )
+    })
+  })
 });

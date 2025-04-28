@@ -36,6 +36,7 @@ import {
   loadUserDetails,
   loadUsers,
   updateMeUser,
+  updateProfile,
   updateUnsecureUser,
   updateUser,
   updateUserAtLogin,
@@ -289,6 +290,25 @@ const resolvers: Resolvers = {
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
         });
+      }
+    },
+
+    editProfile: async (_, { input }, context) => {
+      const trx = await dbTx();
+      try {
+        const user = await updateProfile(context, input)
+
+        updateUserSession(user)
+        await dispatch('User', 'edit', user)
+
+        await trx.commit()
+
+        return user
+      } catch (error) {
+        await trx.rollback()
+        throw UnknownError('EDIT_USER_PROFILE_ERROR', {
+          detail: error
+        })
       }
     },
 

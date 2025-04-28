@@ -194,6 +194,14 @@ export type EditMeUserInput = {
   last_name: Scalars['String']['input'];
 };
 
+export type EditProfileInput = {
+  country?: InputMaybe<Scalars['String']['input']>;
+  first_name?: InputMaybe<Scalars['String']['input']>;
+  last_name?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+  picture?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type EditServiceCapabilityInput = {
   capabilities: Array<InputMaybe<Scalars['String']['input']>>;
   user_service_id?: InputMaybe<Scalars['String']['input']>;
@@ -297,6 +305,7 @@ export type Mutation = {
   editLabel: Label;
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
+  editProfile: User;
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
   editUser: User;
@@ -447,6 +456,11 @@ export type MutationEditMeUserArgs = {
 export type MutationEditOrganizationArgs = {
   id: Scalars['ID']['input'];
   input: OrganizationInput;
+};
+
+
+export type MutationEditProfileArgs = {
+  input?: InputMaybe<EditProfileInput>;
 };
 
 
@@ -1197,6 +1211,7 @@ export type ResolversTypes = ResolversObject<{
   EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
+  EditProfileInput: EditProfileInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
   Filter: Filter;
@@ -1288,6 +1303,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
+  EditProfileInput: EditProfileInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
   Filter: Filter;
@@ -1539,6 +1555,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationEditLabelArgs, 'id' | 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
+  editProfile?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationEditProfileArgs>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
   editUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserArgs, 'id' | 'input'>>;

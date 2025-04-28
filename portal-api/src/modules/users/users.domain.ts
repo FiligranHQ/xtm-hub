@@ -1,4 +1,4 @@
-import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
+import {db, dbRaw, dbUnsecure, paginate, QueryOpts} from '../../../knexfile';
 import {
   AddUserInput,
   EditMeUserInput,
@@ -388,6 +388,22 @@ export const loadUserCapacityByOrganization = async (
     ])
     .first();
 };
+
+type UpdateProfileProps = Partial<Pick<User, 'first_name' | 'last_name' | 'password' | 'picture' | 'country'>>
+
+export const updateProfile = async (
+  context: PortalContext,
+  props: UpdateProfileProps
+): Promise<UserWithOrganizationsAndRole> => {
+  const userId = context.user.id
+  await updateUser(context, userId, props);
+
+  const user = await loadUserDetails({
+    'User.id': userId
+  })
+
+  return user
+}
 
 export const addNewUser = async (
   context: PortalContext,

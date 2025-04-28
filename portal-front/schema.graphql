@@ -49,6 +49,7 @@ type Mutation {
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
   editUser(id: ID!, input: EditUserInput!): User!
   editMeUser(input: EditMeUserInput!): User!
+  editProfile(input: EditProfileInput): User!
   changeSelectedOrganization(organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   login(email: String!, password: String): User
@@ -622,6 +623,14 @@ input AdminAddUserInput {
   last_name: String
   password: String
   organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+input EditProfileInput {
+  first_name: String
+  last_name: String
+  password: String
+  picture: String
+  country: String
 }
 
 type UserSubscription {
