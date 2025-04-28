@@ -11,6 +11,7 @@ import {
   removeDocument,
 } from '../db-utils/document.helper';
 import { removeSubscription } from '../db-utils/subscription.helper';
+import { clickRowAction } from '../model/common.js';
 
 const TEST_FILE = {
   path: './tests/tests_files/assets/teste2e.pdf',
@@ -72,14 +73,14 @@ test.describe('Capabilities', () => {
         TEST_CAPABILITY.organizationName
       );
 
-      await page
-        .getByRole('row', {
+      await clickRowAction(
+        page,
+        page.getByRole('row', {
           name: `${TEST_CAPABILITY.organizationName} DELETE UPLOAD Open menu`,
-        })
-        .getByRole('button')
-        .click();
-
-      await page.getByRole('button', { name: 'Manage users' }).click();
+        }),
+        'Manage users',
+        'link'
+      );
       await servicePage.addUserIntoService(TEST_CAPABILITY.adminThalesEmail);
 
       await loginPage.logout();

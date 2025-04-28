@@ -9,6 +9,7 @@ import Organization, {
 } from '../model/kanel/public/Organization';
 import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
+import ServiceCapability from '../model/kanel/public/ServiceCapability';
 import ServiceLink from '../model/kanel/public/ServiceLink';
 import ServicePrice from '../model/kanel/public/ServicePrice';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
@@ -69,6 +70,22 @@ export const ensureServiceExists = async (service) => {
     await dbUnsecure<ServiceLink>('Service_Link')
       .where({ id: service.link.id })
       .update(service.link)
+      .returning('*');
+  }
+};
+
+export const ensureServiceCapabilityExists = async (serviceCapability) => {
+  const serviceCapas = await dbUnsecure('Service_Capability');
+  if (
+    !serviceCapas.find((serviceCapa) => serviceCapa.id === serviceCapability.id)
+  ) {
+    await dbUnsecure<ServiceCapability>('Service_Capability').insert(
+      serviceCapability
+    );
+  } else {
+    await dbUnsecure<ServiceCapability>('Service_Capability')
+      .where({ id: serviceCapability.id })
+      .update(serviceCapability)
       .returning('*');
   }
 };

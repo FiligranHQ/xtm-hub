@@ -7,5 +7,10 @@
       "provider": "oidc"
     }
   ],
-  "base_url_front": "https://xtmhub.staging.filigran.io"
+
+  "base_url_front": "https://xtmhub.staging.filigran.io",
+
+  "init_service_definitions": [],
+  "init_services": [],
+  "init_service_capabilities": []
 }

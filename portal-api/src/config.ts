@@ -1,5 +1,6 @@
 // https://github.com/node-config/node-config
 import config from 'config';
+import ServiceCapability from './model/kanel/public/ServiceCapability';
 
 interface Services {
   name: string;
@@ -29,7 +30,9 @@ interface PortalConfig {
     seeds: string;
   };
   services: Services[];
+  serviceCapabilities: ServiceCapability[];
   service_definitions: ServiceDefinitions[];
+  environment: string;
 }
 
 const portalConfig: PortalConfig = {
@@ -54,6 +57,8 @@ const portalConfig: PortalConfig = {
         : 'src/seeds',
   },
   services: config.get('init_services'),
+  serviceCapabilities: config.get('init_service_capabilities'),
   service_definitions: config.get('init_service_definitions'),
+  environment: config.get<string>('environment'),
 };
 export default portalConfig;

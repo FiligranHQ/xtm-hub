@@ -24,6 +24,7 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
+  createCsvFeed(input: CsvFeedCreateInput!, document: Upload, serviceInstanceId: String): CsvFeed
   addDocument(document: Upload, name: String, short_description: String, product_version: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -144,6 +145,7 @@ enum ServiceDefinitionIdentifier {
   vault
   link
   custom_dashboards
+  csv_feed
 }
 
 type ServiceDefinition implements Node {
@@ -153,6 +155,34 @@ type ServiceDefinition implements Node {
   public: Boolean
   identifier: ServiceDefinitionIdentifier!
   service_capability: [ServiceCapability]
+}
+
+type CsvFeed implements Node {
+  id: ID!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  labels: [Label!]!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+}
+
+input CsvFeedCreateInput {
+  name: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
 }
 
 enum DocumentOrdering {

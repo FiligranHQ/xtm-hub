@@ -6,7 +6,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from 'filigran-ui';
+import Link from 'next/link';
 import React, {
+  ComponentProps,
   createContext,
   FunctionComponent,
   ReactNode,
@@ -41,7 +43,7 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
         <Button
           variant="ghost"
           className={cn(
-            'flex h-8 w-8 p-0 data-[state=open]:bg-muted',
+            'flex h-8 w-8 p-0 data-[state=open]:bg-hover',
             className
           )}>
           {icon}
@@ -68,6 +70,24 @@ export const IconActionsButton: FunctionComponent<
       onClick={(e) => e.stopPropagation()}
       {...props}>
       {children}
+    </Button>
+  );
+};
+type IconActionsLinkProps = ComponentProps<typeof Link> & {
+  className?: string;
+};
+export const IconActionsLink: FunctionComponent<IconActionsLinkProps> = ({
+  children,
+  className,
+  ...props
+}) => {
+  return (
+    <Button
+      asChild
+      variant="ghost"
+      className={cn('w-full justify-start normal-case', className)}
+      onClick={(e) => e.stopPropagation()}>
+      <Link {...props}>{children}</Link>
     </Button>
   );
 };

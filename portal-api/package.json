@@ -1,6 +1,6 @@
 {
   "name": "portal-api",
-  "version": "1.4.1",
+  "version": "1.4.4",
   "description": "Portal API",
   "main": "src/index.js",
   "repository": "https://github.com/FiligranHQ/cloud-portal",
@@ -24,9 +24,7 @@
     "start-tsx": "LOCAL_DEV=true tsx --watch src/index.ts --clear-screen=false",
     "dev:tsc": "tsc --watch --preserveWatchOutput",
     "dev:node": "node --watch dist/index.js",
-    "dev:esbuild": "yarn copy && node builder/dev/dev.js",
-    "start-dev": "concurrently \"yarn dev:tsc\" \"yarn dev:esbuild\" \"yarn dev:node\"",
-    "start-dev-tsx": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\"",
+    "start-dev": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\"",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "format:check": "prettier --check .",

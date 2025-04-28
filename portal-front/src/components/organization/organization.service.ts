@@ -17,6 +17,7 @@ interface OrganizationParamsQuery {
   searchTerm?: string;
 }
 export const getOrganizations = ({
+  searchTerm = '',
   count = 50,
   orderBy = 'name',
   orderMode = 'asc',
@@ -24,6 +25,7 @@ export const getOrganizations = ({
   const organizationData = useLazyLoadQuery<organizationSelectQuery>(
     organizationFetch,
     {
+      searchTerm,
       count,
       orderBy,
       orderMode,

@@ -69,7 +69,8 @@
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
-      "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first."
+      "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
+      "CSV_FEED_INSERTION_ERROR": "An error occured while creating the CSV Feed."
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -213,6 +214,22 @@
     },
     "ComingSoon": "Coming soon",
     "CreationStatus": "Creation status",
+    "CsvFeed": {
+      "Actions": {
+        "Added": "{name} has been added",
+        "Deleted": "{name} has been deleted",
+        "Updated": "{name} has been modified"
+      },
+      "Form": {
+        "NameLabel": "Name",
+        "ShortDescriptionLabel": "Short Description",
+        "DescriptionLabel": "description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the CSV Feed.",
+        "LabelsLabel": "Labels",
+        "PublishedPlaceholder": "Is the CSV Feed published?"
+      },
+      "AddCsvFeed": "Add new CSV Feed"
+    },
     "CustomDashboards": {
       "Actions": {
         "Added": "{name} has been added",
@@ -387,7 +404,8 @@
     "OrganizationsPlaceholder": "Select an organization",
     "Password": "Password",
     "WhoAreYou": "Who are you?",
-    "WhoAreYouDescription": "Let us know you first name and last name"
+    "WhoAreYouDescription": "Let us know you first name and last name",
+    "AddOrganization": "Add organization"
   },
   "UserListPage": {
     "Email": "Email",

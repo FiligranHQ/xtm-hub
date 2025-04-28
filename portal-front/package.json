@@ -1,6 +1,6 @@
 {
   "name": "portal-front",
-  "version": "1.4.1",
+  "version": "1.4.4",
   "private": true,
   "scripts": {
     "dev": "concurrently \"relay-compiler\" \"next dev  --turbopack -p 3002\"",
@@ -26,7 +26,7 @@
     "clsx": "2.1.1",
     "extract-files": "13.0.0",
     "filigran-icon": "0.14.1",
-    "filigran-ui": "0.36.1",
+    "filigran-ui": "0.37.0",
     "graphql": "16.10.0",
     "graphql-sse": "2.5.4",
     "lucide-react": "0.471.1",
@@ -44,7 +44,7 @@
     "tailwindcss": "3.4.17",
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
-    "zod": "3.24.1"
+    "zod": "3.24.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.2.0",

@@ -55,13 +55,12 @@
       "provider": "oidc"
     }
   ],
-  "init_service_definitions": [],
-  "init_services": [],
+
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,
     "roles_path": "resource_access.scred-portal-dev.roles",
-    "role_mappings": ["XTMHubAdmin:ADMIN", "User:USER", "admin_orga:ADMIN_ORGA"]
+    "role_mappings": ["XTMHubAdmin:ADMIN", "User:USER"]
   },
   "awx": {
     "activate": false,
@@ -69,9 +68,6 @@
     "token": null,
     "workflow": null,
     "action_mapping": null
-  },
-  "malware_analysis": {
-    "url": "http://localhost:8080"
   },
   "base_url_front": "https://dev.xtmhub.staging.filigran.io",
   "app_logs": {

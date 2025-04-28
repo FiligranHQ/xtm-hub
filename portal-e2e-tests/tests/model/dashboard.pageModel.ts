@@ -12,14 +12,14 @@ export default class DashboardPage {
   constructor(private page: Page) {}
 
   async uploadJsonDocument(filePath: string) {
-    const fileInput = await this.page.locator(
+    const fileInput = this.page.locator(
       'input[type="file"][accept="application/json"]'
     );
     await fileInput.setInputFiles(filePath);
   }
 
   async uploadImageDocument(filePath: string) {
-    const fileInput = await this.page.locator(
+    const fileInput = this.page.locator(
       'input[type="file"][accept="image/jpeg, image/png"]'
     );
     await fileInput.setInputFiles(filePath);

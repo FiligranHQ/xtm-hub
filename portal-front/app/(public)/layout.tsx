@@ -1,18 +1,12 @@
-import GoogleAnalytics from '@/components/external/google-analytics';
-import Hubspot from '@/components/external/hubspot';
-import I18nContext from '@/i18n/i18n-context';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
-import { Toaster } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import 'filigran-ui/theme.css';
 import { Metadata } from 'next';
-import Head from 'next/head';
 import Link from 'next/link';
 import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
 import '../../styles/globals.css';
-import { geologica, ibmPlexSans } from '../font';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settingsResponse = await serverFetchGraphQL<settingsQuery>(
@@ -68,94 +62,76 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      suppressHydrationWarning
-      lang="en"
-      className={`dark ${geologica.variable} ${ibmPlexSans.variable}`}
-      style={{ colorScheme: 'dark' }}>
-      <Head>
-        <title>XTM Hub</title>
-        <meta
-          name="viewport"
-          content="initial-scale=1.0, width=device-width"
-        />
-      </Head>
-      <I18nContext>
-        <body className="flex flex-col min-h-screen">
-          <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
-            <Link href={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`}>
-              <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
-              <span className="sr-only">XTM Hub by Filigran</span>
-            </Link>
-            <Button
-              asChild
-              className="whitespace-nowrap">
-              <Link href="/">Sign In</Link>
-            </Button>
-          </header>
-          <div className="container flex-grow">
-            <div className="pt-l">{children}</div>
-          </div>
-          <footer className="container text-muted-foreground">
-            <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-8 gap-l text-center">
-              <span className="txt-default">
-                <Link
-                  href="https://filigran.io"
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  © 2025 Filigran.
-                </Link>{' '}
-                All rights reserved
-              </span>
-              <ul className="flex flex-col md:flex-row gap-l text-xs">
-                <li>
-                  <Link
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://filigran.io/">
-                    Filigran website
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://filigran.io/privacy-policy/">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://filigran.io/terms-of-services/">
-                    Terms of Services
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://filigran.io/licenses/">
-                    Licenses
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://filigran.io/contact/">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </footer>
-          <Toaster />
-          <Hubspot />
-          <GoogleAnalytics />
-        </body>
-      </I18nContext>
-    </html>
+    <div className="flex flex-col min-h-screen">
+      <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
+        <Link href={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`}>
+          <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
+          <span className="sr-only">XTM Hub by Filigran</span>
+        </Link>
+        <Button
+          asChild
+          className="whitespace-nowrap">
+          <Link href="/">Sign In</Link>
+        </Button>
+      </header>
+      <main className="container flex-grow">
+        <div className="pt-l">{children}</div>
+      </main>
+      <footer className="container text-muted-foreground">
+        <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-8 gap-l text-center">
+          <span className="txt-default">
+            <Link
+              href="https://filigran.io"
+              target="_blank"
+              rel="noopener noreferrer">
+              © 2025 Filigran.
+            </Link>{' '}
+            All rights reserved
+          </span>
+          <ul className="flex flex-col md:flex-row gap-l text-xs">
+            <li>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://filigran.io/">
+                Filigran website
+              </Link>
+            </li>
+            <li>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://filigran.io/privacy-policy/">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://filigran.io/terms-of-services/">
+                Terms of Services
+              </Link>
+            </li>
+            <li>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://filigran.io/licenses/">
+                Licenses
+              </Link>
+            </li>
+            <li>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://filigran.io/contact/">
+                Contact
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </footer>
+    </div>
   );
 }

@@ -30,6 +30,17 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .replace(/[&\\#,+()$~%'":*?!<>{}\s]/g, '-');
 };
 
+export const createFileInMinIO = async (jsonFile, context) => {
+  const fileName = normalizeDocumentName(jsonFile.file.filename);
+  const minioName = await sendFileToS3(
+    jsonFile.file,
+    fileName,
+    context.user.id,
+    context.serviceInstanceId as ServiceInstanceId
+  );
+  return { minioName, fileName };
+};
+
 export const checkDocumentExists = async (
   documentName: string,
   serviceInstanceId: ServiceInstanceId
@@ -48,7 +59,7 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const createDocument = async ({
+export const createDocumentCustomDashboard = async ({
   labels,
   parent_document_id,
   ...documentData
@@ -101,7 +112,7 @@ export const uploadNewFile = async (
     type: 'service_picture',
   };
 
-  const [addedDocument] = await createDocument(data);
+  const [addedDocument] = await createDocumentCustomDashboard(data);
   return addedDocument;
 };
 
