@@ -1,15 +1,15 @@
 import { formatDate } from '@/utils/date';
+import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
-import { ReactNode } from 'react';
 
 const DocumentBento = ({
   document,
-  children,
+  serviceInstanceId,
 }: {
-  document: documentItem_fragment$data;
-  children: ReactNode;
+  document: documentItem_fragment$data | csvFeedItem_fragment$data;
+  serviceInstanceId: string;
 }) => {
   return (
     <div className="flex h-full -mx-s gap-xs bg-page-background">
@@ -35,7 +35,17 @@ const DocumentBento = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-1 w-1/2 border rounded p-xs">{children}</div>
+      <div className="flex flex-1 w-1/2 border rounded p-xs">
+        {document.children_documents?.[0] && (
+          <div
+            className="flex-1"
+            style={{
+              backgroundImage: `url(/document/images/${serviceInstanceId}/${document.children_documents?.[0]?.id})`,
+              backgroundSize: 'cover',
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -1,9 +1,9 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import CustomDashboardBento from '@/components/service/custom-dashboards/custom-dashboard-bento';
 import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
+import DocumentBento from '@/components/ui/document-bento';
 import { IconActions } from '@/components/ui/icon-actions';
-import ShareableResourceCard from '@/components/ui/sharable-resource-card';
+import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -83,8 +83,8 @@ const CustomDashboardCard = ({
         <CarouselItem
           className={'cursor-pointer'}
           onClick={() => handleClickCarousel(customDashboard)}>
-          <CustomDashboardBento
-            customDashboard={customDashboard}
+          <DocumentBento
+            document={customDashboard}
             serviceInstanceId={serviceInstance.id}
           />
         </CarouselItem>

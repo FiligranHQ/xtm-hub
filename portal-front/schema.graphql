@@ -24,7 +24,7 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  createCsvFeed(input: CsvFeedCreateInput!, document: Upload, serviceInstanceId: String): Document
+  createCsvFeed(input: CsvFeedCreateInput!, document: Upload, serviceInstanceId: String): CsvFeed
   addDocument(document: Upload, name: String, short_description: String, product_version: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -85,7 +85,7 @@ type Query {
   rolesPortal: [RolePortal!]!
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
   seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
-  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): DocumentConnection!
+  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedsConnection!
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
@@ -173,9 +173,11 @@ type CsvFeed implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
+  slug: String!
   labels: [Label!]!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
+  children_documents: [Document!]
 }
 
 input CsvFeedCreateInput {
@@ -184,6 +186,17 @@ input CsvFeedCreateInput {
   description: String
   active: Boolean
   labels: [String!]
+}
+
+type CsvFeedsEdge {
+  cursor: String!
+  node: CsvFeed!
+}
+
+type CsvFeedsConnection {
+  totalCount: Int!
+  edges: [CsvFeedsEdge!]!
+  pageInfo: PageInfo!
 }
 
 enum DocumentOrdering {

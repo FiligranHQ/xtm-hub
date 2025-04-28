@@ -13,9 +13,11 @@ type CsvFeed implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
+  slug: String!
   labels: [Label!]!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
+  children_documents: [Document!]
 }
 
 input CsvFeedCreateInput {
@@ -31,7 +33,18 @@ type Mutation {
     input: CsvFeedCreateInput!
     document: Upload
     serviceInstanceId: String
-  ): Document @auth
+  ): CsvFeed @auth
+}
+
+type CsvFeedsEdge {
+  cursor: String!
+  node: CsvFeed!
+}
+
+type CsvFeedsConnection {
+  totalCount: Int!
+  edges: [CsvFeedsEdge!]!
+  pageInfo: PageInfo!
 }
 
 type Query {
@@ -43,5 +56,5 @@ type Query {
     searchTerm: String
     filters: [Filter!]
     serviceInstanceId: String
-  ): DocumentConnection! @auth
+  ): CsvFeedsConnection! @auth
 }

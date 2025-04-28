@@ -17,7 +17,6 @@ export const CsvFeedCreateMutation = graphql`
       name
       file_name
       created_at
-      product_version
       active
       short_description
       uploader {
@@ -49,17 +48,17 @@ export const CsvFeedCreateMutation = graphql`
 `;
 
 export const csvFeedItem = graphql`
-  fragment csvFeedItem_fragment on Document @inline {
+  fragment csvFeedItem_fragment on CsvFeed @inline {
     id
     file_name
     created_at
     name
     short_description
     description
-    product_version
     download_number
     share_number
     active
+    slug
     updated_at
     labels {
       id
@@ -85,7 +84,6 @@ export const csvFeedItem = graphql`
       download_number
       active
     }
-    slug
     service_instance {
       id
       slug

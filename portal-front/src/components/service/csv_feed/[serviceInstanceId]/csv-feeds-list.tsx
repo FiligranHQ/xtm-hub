@@ -6,7 +6,7 @@ import {
 } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
 
 import { SearchInput } from '@/components/ui/search-input';
-import ShareableResourceCard from '@/components/ui/sharable-resource-card';
+import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { debounceHandleInput } from '@/utils/debounce';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
@@ -16,8 +16,8 @@ import {
 import { MultiSelectFormField } from 'filigran-ui';
 
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import CsvFeedBento from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-bento';
 import CsvFeedButtons from '@/components/service/csv_feed/[serviceInstanceId]/csv-feeds-list-buttons';
+import DocumentBento from '@/components/ui/document-bento';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { csvFeedsList$key } from '@generated/csvFeedsList.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
@@ -134,9 +134,10 @@ const CsvFeedsList = ({
                 document={csvFeed as unknown as documentItem_fragment$data}
                 detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`} // Both will be modified
                 shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
-                <CsvFeedBento
-                  csvFeed={csvFeed}
-                  serviceInstanceId={serviceInstance.id}></CsvFeedBento>
+                <DocumentBento
+                  document={csvFeed}
+                  serviceInstanceId={serviceInstance.id}
+                />
               </ShareableResourceCard>
             ))}
           </ul>
@@ -153,9 +154,10 @@ const CsvFeedsList = ({
             document={csvFeed as unknown as documentItem_fragment$data}
             detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`}
             shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
-            <CsvFeedBento
-              csvFeed={csvFeed}
-              serviceInstanceId={serviceInstance.id}></CsvFeedBento>
+            <DocumentBento
+              document={csvFeed}
+              serviceInstanceId={serviceInstance.id}
+            />
           </ShareableResourceCard>
         ))}
       </ul>

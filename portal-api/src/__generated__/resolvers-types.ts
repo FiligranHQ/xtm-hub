@@ -78,6 +78,7 @@ export type Capability = Node & {
 export type CsvFeed = Node & {
   __typename?: 'CsvFeed';
   active: Scalars['Boolean']['output'];
+  children_documents?: Maybe<Array<Document>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number: Scalars['Int']['output'];
@@ -89,6 +90,7 @@ export type CsvFeed = Node & {
   service_instance?: Maybe<ServiceInstance>;
   share_number: Scalars['Int']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
@@ -102,6 +104,19 @@ export type CsvFeedCreateInput = {
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CsvFeedsConnection = {
+  __typename?: 'CsvFeedsConnection';
+  edges: Array<CsvFeedsEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type CsvFeedsEdge = {
+  __typename?: 'CsvFeedsEdge';
+  cursor: Scalars['String']['output'];
+  node: CsvFeed;
 };
 
 export type Document = Node & {
@@ -270,7 +285,7 @@ export type Mutation = {
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
   changeSelectedOrganization?: Maybe<User>;
-  createCsvFeed?: Maybe<Document>;
+  createCsvFeed?: Maybe<CsvFeed>;
   deleteDocument: Document;
   deleteLabel: Label;
   deleteOrganization?: Maybe<Organization>;
@@ -555,7 +570,7 @@ export type PlatformProvider = {
 
 export type Query = {
   __typename?: 'Query';
-  csvFeeds: DocumentConnection;
+  csvFeeds: CsvFeedsConnection;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
@@ -1168,6 +1183,8 @@ export type ResolversTypes = ResolversObject<{
   Capability: ResolverTypeWrapper<Capability>;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CsvFeedCreateInput: CsvFeedCreateInput;
+  CsvFeedsConnection: ResolverTypeWrapper<CsvFeedsConnection>;
+  CsvFeedsEdge: ResolverTypeWrapper<CsvFeedsEdge>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   Document: ResolverTypeWrapper<Document>;
   DocumentConnection: ResolverTypeWrapper<DocumentConnection>;
@@ -1258,6 +1275,8 @@ export type ResolversParentTypes = ResolversObject<{
   Capability: Capability;
   CsvFeed: CsvFeed;
   CsvFeedCreateInput: CsvFeedCreateInput;
+  CsvFeedsConnection: CsvFeedsConnection;
+  CsvFeedsEdge: CsvFeedsEdge;
   Date: Scalars['Date']['output'];
   Document: Document;
   DocumentConnection: DocumentConnection;
@@ -1355,6 +1374,7 @@ export type CapabilityResolvers<ContextType = PortalContext, ParentType extends 
 
 export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CsvFeed'] = ResolversParentTypes['CsvFeed']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['Document']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1366,11 +1386,25 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CsvFeedsConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CsvFeedsConnection'] = ResolversParentTypes['CsvFeedsConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['CsvFeedsEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CsvFeedsEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CsvFeedsEdge'] = ResolversParentTypes['CsvFeedsEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1490,7 +1524,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
-  createCsvFeed?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input'>>;
+  createCsvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
@@ -1563,7 +1597,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  csvFeeds?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  csvFeeds?: Resolver<ResolversTypes['CsvFeedsConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -1857,6 +1891,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
+  CsvFeedsConnection?: CsvFeedsConnectionResolvers<ContextType>;
+  CsvFeedsEdge?: CsvFeedsEdgeResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
