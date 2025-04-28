@@ -540,6 +540,7 @@ enum UserOrdering {
   first_name
   last_name
   disabled
+  country
 }
 
 type Capability implements Node {
@@ -559,6 +560,7 @@ type User implements Node {
   first_name: String
   last_name: String
   picture: String
+  country: String
   disabled: Boolean
   selected_organization_id: String
   organizations: [Organization!]

@@ -86,6 +86,7 @@ export const UserFragment = graphql`
     first_name
     disabled
     last_login
+    country
     organization_capabilities {
       id
       organization {
@@ -197,6 +198,19 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
                 </div>
               );
             },
+          },
+          {
+            accessorKey: 'country',
+            id: 'country',
+            header: t('UserListPage.Country'),
+            enableSorting: true,
+            cell: ({ row }: { row: Row<userList_fragment$data> }) => {
+              return (
+                <div className="flex gap-xs">
+                  { row.original.country }
+                </div>
+              )
+            }
           },
           {
             accessorKey: 'disabled',
