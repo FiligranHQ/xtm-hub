@@ -26,4 +26,4 @@ jobs:
             --conf.token ${{ secrets.AWX_TOKEN }} \
             -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
             --inventory eu-west-staging \
-            --extra_vars "{\"env\":\"Production\",\"xtmhub_version\":\"${{ inputs.pr_number }}\"}"
+            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"${{ inputs.pr_number }}\"}"
