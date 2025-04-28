@@ -8,8 +8,6 @@ import {
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
-import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { userServiceFromSubscription$key } from '@generated/userServiceFromSubscription.graphql';
 import {
   userServices_fragment$data,
@@ -296,25 +294,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           })}>
           <UserServiceForm
             connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
-            serviceCapabilities={
-              (queryDataSubscription.subscriptionById?.service_instance
-                ?.service_definition?.service_capability ??
-                []) as serviceCapability_fragment$data[]
-            }
-            serviceName={
-              queryDataSubscription.subscriptionById?.service_instance?.name ??
-              ''
-            }
-            serviceId={
-              queryDataSubscription.subscriptionById?.service_instance?.id ?? ''
-            }
-            subscription={
-              (queryDataSubscription.subscriptionById ??
-                {}) as subscriptionWithUserService_fragment$data
-            }
-            organizationId={
-              queryDataSubscription.subscriptionById?.organization?.id ?? ''
-            }
+            subscription={queryDataSubscription}
           />
         </SheetWithPreventingDialog>
         <DataTableHeadBarOptions />

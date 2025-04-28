@@ -74,7 +74,7 @@ export default class ServicePage {
     await clickRowAction(
       this.page,
       this.page.getByRole('row', { name: userEmail }),
-      'Edit user rights'
+      'Update'
     );
     await this.page.getByLabel(newCapability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();

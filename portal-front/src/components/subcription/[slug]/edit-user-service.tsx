@@ -34,8 +34,7 @@ export const EditUserService: FunctionComponent<EditUserServiceProps> = ({
       trigger={
         <Button
           variant="ghost"
-          className="w-full justify-start normal-case"
-          aria-label={'edit'}>
+          className="w-full justify-start normal-case">
           {t('Utils.Update')}
         </Button>
       }
