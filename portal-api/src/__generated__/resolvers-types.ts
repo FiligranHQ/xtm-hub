@@ -993,6 +993,7 @@ export type TrackingSubscription = {
 export type User = Node & {
   __typename?: 'User';
   capabilities?: Maybe<Array<Capability>>;
+  country?: Maybe<Scalars['String']['output']>;
   disabled?: Maybe<Scalars['Boolean']['output']>;
   email: Scalars['String']['output'];
   first_name?: Maybe<Scalars['String']['output']>;
@@ -1021,6 +1022,7 @@ export type UserEdge = {
 };
 
 export enum UserOrdering {
+  Country = 'country',
   Disabled = 'disabled',
   Email = 'email',
   FirstName = 'first_name',
@@ -1814,6 +1816,7 @@ export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type UserResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   capabilities?: Resolver<Maybe<Array<ResolversTypes['Capability']>>, ParentType, ContextType>;
+  country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   disabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
