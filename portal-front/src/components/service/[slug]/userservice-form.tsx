@@ -49,22 +49,20 @@ import {
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
-
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
-
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
-interface AddUserServiceFormProps {
+
+interface UserServiceFormProps {
   connectionId: string;
   userService?: userServices_fragment$data;
   subscription: subscriptionWithUserService_fragment$data;
   serviceName: string;
   serviceId: string;
   serviceCapabilities: serviceCapability_fragment$data[];
-
   organizationId: string;
 }
 
-export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
+export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   connectionId,
   userService,
   subscription,
@@ -109,25 +107,48 @@ export const AddUserServiceForm: FunctionComponent<AddUserServiceFormProps> = ({
       .min(1, { message: 'Please provide at least one email.' }),
   });
 
+  const getCurrentCapabilities = (): string[] => {
+    const currentCapabilities: string[] | undefined =
+      userService?.user_service_capability
+        ?.map((capability) => {
+          return (
+            capability?.generic_service_capability?.name ||
+            capability?.subscription_capability?.service_capability?.id
+          );
+        })
+        .filter((id) => id !== undefined);
+    return currentCapabilities ?? [];
+  };
   const form = useForm({
     resolver: zodResolver(
       userService?.id ? capabilitiesFormSchema : extendedSchema
     ),
     defaultValues: {
       email: [{ id: '', text: '' }],
-      capabilities: [],
-      organizationId: organizationId,
+      capabilities: getCurrentCapabilities(),
+      organizationId: subscription.subscriptionById?.organization?.id,
     },
   });
-  setIsDirty(form.formState.isDirty);
+  useEffect(() => {
+    setIsDirty(form.formState.isDirty);
+  }, [form.formState.isDirty]);
 
   useEffect(() => {
-    form.reset({
-      email: [{ id: '', text: '' }],
-      capabilities: [],
-      organizationId: organizationId,
-    });
-  }, [organizationId]);
+    if (userService?.id) {
+      form.reset({
+        email: [{ id: '', text: '' }],
+        capabilities: getCurrentCapabilities(),
+        organizationId: subscription.subscriptionById?.organization?.id,
+      });
+    } else {
+      // For creating user
+      form.reset({
+        email: [{ id: '', text: '' }],
+        capabilities: [],
+        organizationId: subscription.subscriptionById?.organization?.id,
+      });
+    }
+  }, [subscription.subscriptionById]);
 
   const onSubmitCapabilitiesSchema = (
     values: z.infer<typeof capabilitiesFormSchema>
