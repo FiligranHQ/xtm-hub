@@ -16,7 +16,7 @@
     {
       "serviceDefinition": {
         "id": "42007953-4dbc-480a-8693-8c05f1123460",
-        "name": "CSV Feed",
+        "name": "CSV Feeds Library",
         "description": "Explore a range of CSV Feeds shared by the Filigran team",
         "identifier": "csv_feed"
       },
@@ -33,7 +33,7 @@
     {
       "service": {
         "id": "0f4aad4b-bdd6-4084-8b1f-82c9c66578cc",
-        "name": "CSV Feed",
+        "name": "CSV Feeds Library",
         "description": "Explore a range of CSV Feeds shared by the Filigran team.",
         "service_definition_id": "42007953-4dbc-480a-8693-8c05f1123460",
         "public": true,
@@ -43,7 +43,7 @@
         "id": "972ad779-675a-4dab-bee0-c67d6c22b7bd",
         "service_instance_id": "0f4aad4b-bdd6-4084-8b1f-82c9c66578cc",
         "url": "",
-        "name": "CSV Feed"
+        "name": "CSV Feeds Library"
       }
     }
   ],

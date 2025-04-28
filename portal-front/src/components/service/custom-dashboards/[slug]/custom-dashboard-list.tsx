@@ -5,19 +5,23 @@ import {
   documentsFragment,
   DocumentsListQuery,
 } from '@/components/service/document/document.graphql';
+
 import { SearchInput } from '@/components/ui/search-input';
+import Link from 'next/link';
+
 import { debounceHandleInput } from '@/utils/debounce';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
 } from '@generated/documentItem_fragment.graphql';
+
+import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { documentsList$key } from '@generated/documentsList.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button, MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useMemo } from 'react';
 import {
   PreloadedQuery,
@@ -25,7 +29,6 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import CustomDashboardCard from '../custom-dashboard-card';
 import { CustomDashboardSheet } from '../custom-dashboard-sheet';
 
 interface CustomDashbordDocumentListProps {
@@ -88,6 +91,7 @@ const CustomDashbordDocumentList = ({
     label: name.toUpperCase(),
     value: id,
   }));
+
   return (
     <div className="flex flex-col gap-xl">
       <h1>{serviceInstance.name}</h1>
@@ -135,13 +139,12 @@ const CustomDashbordDocumentList = ({
         }>
         {[...active, ..._nonActive].map((node) => (
           <CustomDashboardCard
-            serviceInstance={serviceInstance}
-            connectionId={data!.documents!.__id}
             key={node.id}
             customDashboard={node}
+            connectionId={data!.documents!.__id!}
             detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${node.id}`}
             shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${node.slug}`}
-          />
+            serviceInstance={serviceInstance}></CustomDashboardCard>
         ))}
       </ul>
     </div>

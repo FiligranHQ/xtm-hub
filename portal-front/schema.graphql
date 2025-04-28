@@ -85,6 +85,7 @@ type Query {
   rolesPortal: [RolePortal!]!
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
   seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
+  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedsConnection!
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
@@ -172,9 +173,11 @@ type CsvFeed implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
+  slug: String!
   labels: [Label!]!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
+  children_documents: [Document!]
 }
 
 input CsvFeedCreateInput {
@@ -185,11 +188,28 @@ input CsvFeedCreateInput {
   labels: [String!]
 }
 
+type CsvFeedsEdge {
+  cursor: String!
+  node: CsvFeed!
+}
+
+type CsvFeedsConnection {
+  totalCount: Int!
+  edges: [CsvFeedsEdge!]!
+  pageInfo: PageInfo!
+}
+
 enum DocumentOrdering {
   file_name
   description
   created_at
   download_number
+}
+
+type DocumentMetadata {
+  document_id: ID!
+  key: String
+  value: String
 }
 
 type Document implements Node {
@@ -210,6 +230,7 @@ type Document implements Node {
   share_number: Int!
   product_version: String
   children_documents: [Document!]
+  document_metadata: [DocumentMetadata]
   labels: [Label!]!
   slug: String
   service_instance: ServiceInstance

@@ -1,32 +1,32 @@
 import { formatDate } from '@/utils/date';
+import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
 
-const CustomDashboardBento = ({
-  customDashboard,
-  serviceInstance,
+const DocumentBento = ({
+  document,
+  serviceInstanceId,
 }: {
-  customDashboard: documentItem_fragment$data;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  document: documentItem_fragment$data | csvFeedItem_fragment$data;
+  serviceInstanceId: string;
 }) => {
   return (
-    <div className="flex h-full p-s -mx-s gap-xs bg-page-background">
+    <div className="flex h-full -mx-s gap-xs bg-page-background">
       <div className="flex flex-col flex-1 gap-xs text-xs">
         <div className="flex flex-1 justify-center rounded border gap-2 dark:text-white items-center">
           <div className="size-6">
-            <Avatar src={customDashboard.uploader?.picture ?? ''} />
+            <Avatar src={document.uploader?.picture ?? ''} />
           </div>
-          {`${customDashboard.uploader?.first_name} ${customDashboard.uploader?.last_name}`}
+          {`${document.uploader?.first_name} ${document.uploader?.last_name}`}
         </div>
         <div className="flex justify-center items-center flex-[2] rounded px-4 text-center border from-blue to-turquoise-300 bg-gradient-to-r dark:from-darkblue-900 dark:to-darkblue-600 dark:bg-gradient-to-r dark:txt-white">
-          {customDashboard.name}
+          {document.name}
         </div>
         <div className="flex flex-1 gap-xs text-xs">
           <div className="flex items-center justify-center flex-[3] rounded border dark:text-white">
             {formatDate(
-              customDashboard.updated_at ?? customDashboard.created_at,
+              document.updated_at ?? document.created_at,
               'DATE_FULL'
             )}
           </div>
@@ -35,12 +35,12 @@ const CustomDashboardBento = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-1 border rounded p-2 bg-background">
-        {customDashboard.children_documents?.[0] && (
+      <div className="flex flex-1 w-1/2 border rounded p-xs">
+        {document.children_documents?.[0] && (
           <div
             className="flex-1"
             style={{
-              backgroundImage: `url(/document/images/${serviceInstance.id}/${customDashboard.children_documents?.[0]?.id})`,
+              backgroundImage: `url(/document/images/${serviceInstanceId}/${document.children_documents?.[0]?.id})`,
               backgroundSize: 'cover',
             }}
           />
@@ -50,4 +50,4 @@ const CustomDashboardBento = ({
   );
 };
 
-export default CustomDashboardBento;
+export default DocumentBento;

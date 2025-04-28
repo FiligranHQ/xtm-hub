@@ -7,6 +7,7 @@ import {
   QueryOpts,
 } from '../../../../knexfile';
 import {
+  CsvFeedsConnection,
   DocumentConnection,
   Organization,
   QueryDocumentsArgs,
@@ -187,7 +188,7 @@ export const loadDocuments = (
   context: PortalContext,
   opts: QueryDocumentsArgs,
   field: DocumentMutator
-): Promise<DocumentConnection> => {
+): Promise<DocumentConnection | CsvFeedsConnection> => {
   const loadDocumentQuery = db<Document>(context, 'Document', opts)
     .select(['Document.*'])
     .where(field);

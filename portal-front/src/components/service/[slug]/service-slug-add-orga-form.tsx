@@ -1,8 +1,10 @@
 import { getOrganizations } from '@/components/organization/organization.service';
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { serviceByIdWithSubscriptionsQuery$data } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
+
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
+import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -29,25 +31,25 @@ import { useMutation } from 'react-relay';
 import { z, ZodSchema } from 'zod';
 
 interface ServiceSlugAddOrgaFormSheetProps {
-  serviceByIdWithSubscriptions: serviceByIdWithSubscriptionsQuery$data;
+  serviceId: string;
+  serviceName: string;
+  subscriptions: subscriptionWithUserService_fragment$data[];
+  capabilities: serviceCapability_fragment$data[];
 }
 
 export const ServiceSlugAddOrgaForm: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
-> = ({ serviceByIdWithSubscriptions }) => {
+> = ({ serviceId, serviceName, subscriptions, capabilities }) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const [organizations] = getOrganizations();
   const t = useTranslations();
   const { toast } = useToast();
 
-  const currentOrganizationSubscriptions =
-    serviceByIdWithSubscriptions.serviceInstanceByIdWithSubscriptions?.subscriptions?.map(
-      (subscription) => subscription?.organization.name
-    );
-
+  const currentOrganizationSubscriptions = subscriptions.map(
+    ({ organization }) => organization.name
+  );
   const canBeSelectedOrganizations = organizations.organizations.edges.filter(
     (organization) =>
-      currentOrganizationSubscriptions &&
       !currentOrganizationSubscriptions.includes(organization.node.name)
   );
 
@@ -78,8 +80,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
   const onSubmit = (inputValue: z.infer<ZodSchema>) => {
     commitSubscriptionCreateMutation({
       variables: {
-        service_instance_id:
-          serviceByIdWithSubscriptions.serviceInstanceByIdWithSubscriptions!.id,
+        service_instance_id: serviceId,
         organization_id: inputValue.organization_id,
         capability_ids: inputValue.capability_ids,
         start_date: inputValue.start_date,
@@ -95,9 +96,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
           title: t('Utils.Success'),
           description: t('ServiceActions.OrganizationAdded', {
             name: findOrganization?.organization?.name,
-            serviceName:
-              serviceByIdWithSubscriptions.serviceInstanceByIdWithSubscriptions!
-                .name,
+            serviceName: serviceName,
           }),
         });
         setOpenSheet(false);
@@ -158,40 +157,34 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
             <p className="txt-sub-content italic">
               {t('OrganizationInServiceAction.SelectCapaDescription')}
             </p>
-            {serviceByIdWithSubscriptions.serviceInstanceByIdWithSubscriptions?.service_definition?.service_capability?.map(
-              (service_capability) => (
-                <FormField
-                  key={service_capability!.id}
-                  control={form.control}
-                  name="capability_ids"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center space-x-2">
-                      <Checkbox
-                        className="mt-xs"
-                        checked={field.value.includes(service_capability!.id)}
-                        onCheckedChange={(checked) => {
-                          const newValue = checked
-                            ? [...field.value, service_capability!.id]
-                            : field.value.filter(
-                                (value: string) =>
-                                  value !== service_capability!.id
-                              );
-                          field.onChange(newValue);
-                        }}
-                        id={service_capability!.id}
-                      />
+            {capabilities.map(({ id, name, description }) => (
+              <FormField
+                key={id}
+                control={form.control}
+                name="capability_ids"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <Checkbox
+                      className="mt-xs"
+                      checked={field.value.includes(id)}
+                      onCheckedChange={(checked) => {
+                        const newValue = checked
+                          ? [...field.value, id]
+                          : field.value.filter((value: string) => value !== id);
+                        field.onChange(newValue);
+                      }}
+                      id={id}
+                    />
 
-                      <label
-                        htmlFor={service_capability!.id}
-                        className="txt-sub-content cursor-pointer">
-                        {service_capability!.name} access:{' '}
-                        {service_capability!.description}
-                      </label>
-                    </FormItem>
-                  )}
-                />
-              )
-            )}
+                    <label
+                      htmlFor={id}
+                      className="txt-sub-content cursor-pointer">
+                      {name} access: {description}
+                    </label>
+                  </FormItem>
+                )}
+              />
+            ))}
           </div>
 
           <FormField

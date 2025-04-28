@@ -5,6 +5,12 @@ enum DocumentOrdering {
   download_number
 }
 
+type DocumentMetadata {
+  document_id: ID!
+  key: String
+  value: String
+}
+
 type Document implements Node {
   id: ID!
   uploader: User
@@ -23,6 +29,7 @@ type Document implements Node {
   share_number: Int!
   product_version: String
   children_documents: [Document!]
+  document_metadata: [DocumentMetadata]
   labels: [Label!]!
   slug: String
   service_instance: ServiceInstance

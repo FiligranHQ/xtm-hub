@@ -1,9 +1,9 @@
 'use client';
 
 import CsvFeedPage from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-page';
+import { CsvFeedsListQuery } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
 import { csvFeedListLocalStorage } from '@/components/service/csv_feed/csv_feed-list-localstorage';
-import { DocumentsListQuery } from '@/components/service/document/document.graphql';
-import { documentsQuery } from '@generated/documentsQuery.graphql';
+import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
@@ -15,8 +15,9 @@ interface PageLoaderProps {
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] =
-    useQueryLoader<documentsQuery>(DocumentsListQuery);
-  const { count, search, labels } = csvFeedListLocalStorage();
+    useQueryLoader<csvFeedsQuery>(CsvFeedsListQuery);
+  const { count, search, labels, setSearch, setLabels } =
+    csvFeedListLocalStorage();
 
   useEffect(() => {
     loadQuery(
@@ -25,7 +26,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderBy: 'created_at',
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
-        parentsOnly: true,
         searchTerm: search,
         filters: [{ key: 'label', value: labels }],
       },
@@ -41,6 +41,10 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         <CsvFeedPage
           serviceInstance={serviceInstance}
           queryRef={queryRef}
+          search={search}
+          onSearchChange={setSearch}
+          onLabelFilterChange={setLabels}
+          labels={labels}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

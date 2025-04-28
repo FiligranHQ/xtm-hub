@@ -227,9 +227,13 @@
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le CSV Feed.",
         "LabelsLabel": "Labels",
+        "CsvFeedFile": "Fichier Csv Feed",
+        "CsvFeedIllustration": "Illustration",
         "PublishedPlaceholder": "Le CSV Feed est-il publié?"
       },
-      "AddCsvFeed": "Ajouter un CSV Feed"
+      "AddCsvFeed": "Ajouter un CSV Feed",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
     },
     "CustomDashboards": {
       "Actions": {
