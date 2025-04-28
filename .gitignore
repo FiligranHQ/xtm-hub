@@ -1,4 +1,8 @@
+# Editor config
 .idea
+*.iml
 .zed
+
+# System files
 *~
 .DS_Store

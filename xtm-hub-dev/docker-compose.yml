@@ -33,7 +33,7 @@ services:
       MINIO_ROOT_PASSWORD: changeme
     ports:
       - "9002:9000"
-      - "8902:8900"
+      - "8902:8902"
     volumes:
       - "minio:/data/minio"
     command: 'minio server /data/minio --console-address ":8902"'
