@@ -8,7 +8,7 @@
     }
   ],
 
-  "base_url_front": "https://xtmhub.staging.filigran.io",
+  "base_url_front": "https://hub.staging.filigran.io",
 
   "init_service_definitions": [],
   "init_services": [],
