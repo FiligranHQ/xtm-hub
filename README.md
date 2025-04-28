@@ -1,9 +1,9 @@
 <h1 align="center">
-  <a href="https://xtmhub.filigran.io"><img src="./.github/img/logo_xtm_hub.png" alt="XTMHub"></a>
+  <a href="https://hub.filigran.io"><img src="./.github/img/logo_xtm_hub.png" alt="XTMHub"></a>
 </h1>
 <p align="center">
-  <a href="https://xtmhub.filigran.io" alt="Website"><img src="https://img.shields.io/badge/website-xtmhub.filigran.io-blue.svg" /></a>
-  <a href="https://docs.xtmhub.filigran.io" alt="Documentation"><img src="https://img.shields.io/badge/documentation-latest-orange.svg" /></a>
+  <a href="https://hub.filigran.io" alt="Website"><img src="https://img.shields.io/badge/website-hub.filigran.io-blue.svg" /></a>
+  <a href="https://docs.hub.filigran.io" alt="Documentation"><img src="https://img.shields.io/badge/documentation-latest-orange.svg" /></a>
   <a href="https://community.filigran.io" alt="Slack"><img src="https://img.shields.io/badge/slack-3K%2B%20members-4A154B" /></a>
   <a href="https://github.com/FiligranHQ/xtm-hub/actions"><img src="https://github.com/FiligranHQ/xtm-hub/actions/workflows/dockerbuild-ci.yml/badge.svg?branch=main" /></a>
 </p>
@@ -25,7 +25,7 @@ The goal is simple: **grow the Filigran community** by boosting acquisition and 
 
 ## Documentation
 
-If you want to know more on XTH Hub, you can read the [documentation on the tool](https://docs.xtmhub.filigran.io).
+If you want to know more on XTH Hub, you can read the [documentation on the tool](https://docs.hub.filigran.io).
 
 ## Releases download
 
@@ -33,7 +33,7 @@ The releases are available on the [Github releases page](https://github.com/Fili
 
 ## Installation
 
-All you need to install the XTM Hub platform can be found in the [official documentation](https://docs.xtmhub.filigran.io).
+All you need to install the XTM Hub platform can be found in the [official documentation](https://docs.hub.filigran.io).
 
 ## Contributing
 
