@@ -20,30 +20,30 @@ type CsvFeed implements Node {
   children_documents: [Document!]
 }
 
-input CsvFeedCreateInput {
-  name: String
-  short_description: String
-  description: String
-  active: Boolean
+input CreateCsvFeedInput {
+  name: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
   labels: [String!]
 }
 
 type Mutation {
   createCsvFeed(
-    input: CsvFeedCreateInput!
-    document: Upload
-    serviceInstanceId: String
-  ): CsvFeed @auth
+    input: CreateCsvFeedInput!
+    document: Upload!
+    serviceInstanceId: String!
+  ): CsvFeed @auth @service_capa(requires: [UPLOAD])
 }
 
-type CsvFeedsEdge {
+type CsvFeedEdge {
   cursor: String!
   node: CsvFeed!
 }
 
-type CsvFeedsConnection {
+type CsvFeedConnection {
   totalCount: Int!
-  edges: [CsvFeedsEdge!]!
+  edges: [CsvFeedEdge!]!
   pageInfo: PageInfo!
 }
 
@@ -56,5 +56,5 @@ type Query {
     searchTerm: String
     filters: [Filter!]
     serviceInstanceId: String
-  ): CsvFeedsConnection! @auth
+  ): CsvFeedConnection! @auth
 }

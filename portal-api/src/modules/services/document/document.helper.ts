@@ -32,7 +32,16 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .replace(/[&\\#,+()$~%'":*?!<>{}\s]/g, '-');
 };
 
-export const createFileInMinIO = async (jsonFile, context) => {
+export interface MinioFile {
+  minioName: string;
+  fileName: string;
+  mimeType: string;
+}
+
+export const createFileInMinIO = async (
+  jsonFile,
+  context: PortalContext
+): Promise<MinioFile> => {
   const fileName = normalizeDocumentName(jsonFile.file.filename);
   const minioName = await sendFileToS3(
     jsonFile.file,
@@ -40,7 +49,7 @@ export const createFileInMinIO = async (jsonFile, context) => {
     context.user.id,
     context.serviceInstanceId as ServiceInstanceId
   );
-  return { minioName, fileName };
+  return { minioName, fileName, mimeType: jsonFile.file.mimetype };
 };
 
 export const checkDocumentExists = async (

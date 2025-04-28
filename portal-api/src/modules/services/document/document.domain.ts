@@ -7,6 +7,8 @@ import {
   QueryOpts,
 } from '../../../../knexfile';
 import {
+  CsvFeedConnection,
+  CustomDashboardConnection,
   DocumentConnection,
   Organization,
   QueryDocumentsArgs,
@@ -22,7 +24,6 @@ import ObjectLabel, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
-import { addPrefixToObject } from '../../../utils/typescript';
 import { extractId } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
@@ -30,6 +31,7 @@ import {
   Document,
   getDocumentName,
   loadUnsecureDocumentsBy,
+  normalizeDocumentName,
 } from './document.helper';
 
 export const sendFileToS3 = async (
@@ -183,11 +185,37 @@ export const passDocumentToInactive = async (
     .update({ active: false, remover_id: context.user.id });
 };
 
-export const loadDocuments = (
+export const loadParentDocumentsByServiceInstance = <
+  T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
+>(
+  context: PortalContext,
+  input: QueryDocumentsArgs,
+  include_metadata?: string[]
+): Promise<T> => {
+  return loadDocuments<T>(
+    context,
+    {
+      ...input,
+      parentsOnly: true,
+      searchTerm: normalizeDocumentName(input.searchTerm),
+    },
+    {
+      'Document.service_instance_id': extractId<ServiceInstanceId>(
+        input.serviceInstanceId
+      ),
+    },
+    include_metadata
+  );
+};
+
+export const loadDocuments = <
+  T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
+>(
   context: PortalContext,
   opts: QueryDocumentsArgs,
-  field: DocumentMutator
-): Promise<DocumentConnection> => {
+  field: Record<string, unknown>,
+  include_metadata?: string[]
+): Promise<T> => {
   const loadDocumentQuery = db<Document>(context, 'Document', opts)
     .select(['Document.*'])
     .where(field);
@@ -212,6 +240,20 @@ export const loadDocuments = (
         'children_documents.id'
       );
 
+    if (Array.isArray(include_metadata)) {
+      include_metadata.forEach((metaKey, index) => {
+        const metaAlias = `meta${index}`;
+        loadDocumentQuery
+          .leftJoin(
+            { [metaAlias]: 'Document_Metadata' },
+            `${metaAlias}.document_id`,
+            'document.id'
+          )
+          .andWhere(`${metaAlias}.key`, '=', metaKey);
+        loadDocumentQuery.select(`${metaAlias}.value as ${metaKey}`);
+      });
+    }
+
     loadDocumentQuery.select(
       dbRaw(
         `CASE
@@ -223,7 +265,7 @@ export const loadDocuments = (
     loadDocumentQuery.groupBy(['Document.id']);
   }
 
-  return paginate<Document, DocumentConnection>(
+  return paginate<Document, T>(
     context,
     'Document',
     opts,
@@ -234,7 +276,7 @@ export const loadDocuments = (
 
 export const loadDocumentBy = async (
   context: PortalContext,
-  field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator,
+  field: Record<string, unknown>,
   opts = {}
 ) => {
   return db<Document>(context, 'Document', opts)

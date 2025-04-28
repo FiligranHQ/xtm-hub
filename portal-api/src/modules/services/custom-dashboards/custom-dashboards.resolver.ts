@@ -1,5 +1,12 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { getLabels, getUploader } from '../document/document.domain';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../../utils/app-logger.util';
+import { extractId } from '../../../utils/utils';
+import {
+  getLabels,
+  getUploader,
+  loadDocuments,
+} from '../document/document.domain';
 import {
   loadImagesByCustomDashboardId,
   loadSeoCustomDashboardBySlug,
@@ -38,6 +45,26 @@ const resolvers: Resolvers = {
     seoCustomDashboardBySlug: async (_, { slug }) => {
       const dashboard = await loadSeoCustomDashboardBySlug(slug);
       return dashboard;
+    },
+    customDashboards: async (_, input, context) => {
+      try {
+        return loadDocuments(
+          context,
+          {
+            ...input,
+            parentsOnly: true,
+          },
+          {
+            'Document.service_instance_id': extractId<ServiceInstanceId>(
+              input.serviceInstanceId
+            ),
+          },
+          ['product_version']
+        );
+      } catch (error) {
+        logApp.error('Error while fetching custom dashboards', error);
+        throw error;
+      }
     },
   },
 };
