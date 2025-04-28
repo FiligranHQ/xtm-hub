@@ -1,0 +1,29 @@
+---
+
+name: Deploy an ephemeral environment to test a specific pull request
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request Number'
+        type: string
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-feature-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install AWX cli
+        run: pip install awxkit
+      - name: Deploy feature environment
+        run: |
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
+            --inventory eu-west-staging \
+            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"${{ inputs.pr_number }}\"}"
