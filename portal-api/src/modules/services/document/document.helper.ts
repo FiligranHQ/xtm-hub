@@ -1,5 +1,6 @@
 import { db, dbUnsecure } from '../../../../knexfile';
 import {
+  DocumentId,
   DocumentMutator,
   default as DocumentType,
 } from '../../../model/kanel/public/Document';
@@ -16,6 +17,10 @@ import { extractId } from '../../../utils/utils';
 import { sendFileToS3 } from './document.domain';
 
 export type Document = DocumentType & { labels: Label[] };
+export type FullDocumentMutator = DocumentMutator & {
+  labels?: string[];
+  parent_document_id?: DocumentId;
+};
 
 export const getDocumentName = (documentName: string) => {
   const splitName = documentName.split('.');
@@ -98,7 +103,7 @@ export const createDocumentCustomDashboard = async ({
   labels,
   parent_document_id,
   ...documentData
-}: DocumentMutator & { labels?: string[] }): Promise<Document[]> => {
+}: FullDocumentMutator): Promise<Document[]> => {
   const [document] = await dbUnsecure<Document>('Document')
     .insert(documentData)
     .returning('*');
@@ -136,7 +141,7 @@ export const uploadNewFile = async (
     serviceInstanceId
   );
 
-  const data: DocumentMutator & { labels?: string[] } = {
+  const data: FullDocumentMutator = {
     uploader_id: context.user.id,
     name: serviceInstanceId,
     minio_name: minioName,

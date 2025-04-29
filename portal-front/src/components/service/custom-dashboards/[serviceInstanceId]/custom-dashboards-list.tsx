@@ -1,28 +1,19 @@
 import { getLabels } from '@/components/admin/label/label.utils';
-import {
-  csvFeedItem,
-  csvFeedsFragment,
-  CsvFeedsListQuery,
-} from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
-
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import DocumentBento from '@/components/ui/document-bento';
 import { SearchInput } from '@/components/ui/search-input';
 import ShareableResourceCard from '@/components/ui/shareable-resource-card';
+import useServiceCapability from '@/hooks/useServiceCapability';
 import { debounceHandleInput } from '@/utils/debounce';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
-  csvFeedItem_fragment$data,
-  csvFeedItem_fragment$key,
-} from '@generated/csvFeedItem_fragment.graphql';
-import { MultiSelectFormField } from 'filigran-ui';
-
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import CsvFeedButtons from '@/components/service/csv_feed/[serviceInstanceId]/csv-feeds-list-buttons';
-import DocumentBento from '@/components/ui/document-bento';
-import useServiceCapability from '@/hooks/useServiceCapability';
-import { csvFeedsList$key } from '@generated/csvFeedsList.graphql';
-import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+  customDashboardsItem_fragment$data,
+  customDashboardsItem_fragment$key,
+} from '@generated/customDashboardsItem_fragment.graphql';
+import { customDashboardsList$key } from '@generated/customDashboardsList.graphql';
+import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import {
@@ -31,9 +22,15 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
+import {
+  customDashboardsFragment,
+  customDashboardsItem,
+  CustomDashboardsListQuery,
+} from '../custom-dashboards.graphql';
+import CustomDashboardsListButtons from './custom-dashboards-list-buttons';
 
-interface CsvFeedsListProps {
-  queryRef: PreloadedQuery<csvFeedsQuery>;
+interface CustomDashboardsListProps {
+  queryRef: PreloadedQuery<customDashboardsQuery>;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
   labels?: string[];
   search: string;
@@ -41,43 +38,47 @@ interface CsvFeedsListProps {
   onLabelFilterChange: (v: string[]) => void;
 }
 
-const CsvFeedsList = ({
+const CustomDashboardsList = ({
   queryRef,
   serviceInstance,
   search,
   onSearchChange,
   onLabelFilterChange,
   labels,
-}: CsvFeedsListProps) => {
+}: CustomDashboardsListProps) => {
   const t = useTranslations();
-  const queryData = usePreloadedQuery<csvFeedsQuery>(
-    CsvFeedsListQuery,
+  const queryData = usePreloadedQuery<customDashboardsQuery>(
+    CustomDashboardsListQuery,
     queryRef
   );
 
-  const [data] = useRefetchableFragment<csvFeedsQuery, csvFeedsList$key>(
-    csvFeedsFragment,
-    queryData
-  );
+  const [data] = useRefetchableFragment<
+    customDashboardsQuery,
+    customDashboardsList$key
+  >(customDashboardsFragment, queryData);
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
     serviceInstance
   );
 
-  const [active, _nonActive] = useMemo(() => {
-    return data?.csvFeeds.edges.reduce<
-      [csvFeedItem_fragment$data[], csvFeedItem_fragment$data[]]
+  const [active, nonActive] = useMemo(() => {
+    return data?.customDashboards.edges.reduce<
+      [
+        customDashboardsItem_fragment$data[],
+        customDashboardsItem_fragment$data[],
+      ]
     >(
       (acc, { node }) => {
-        const csvFeed = readInlineData<csvFeedItem_fragment$key>(
-          csvFeedItem,
-          node
-        );
+        const customDashboard =
+          readInlineData<customDashboardsItem_fragment$key>(
+            customDashboardsItem,
+            node
+          );
 
-        if (csvFeed.active) {
-          acc[0].push(csvFeed);
+        if (customDashboard.active) {
+          acc[0].push(customDashboard);
         } else {
-          acc[1].push(csvFeed);
+          acc[1].push(customDashboard);
         }
         return acc;
       },
@@ -85,12 +86,13 @@ const CsvFeedsList = ({
     );
   }, [data]);
 
-  const firstCsvFeed = _nonActive.length > 0 ? _nonActive[0] : active[0];
+  const firstCustomDashboard = nonActive.length > 0 ? nonActive[0] : active[0];
 
   const labelOptions = getLabels().map(({ name, id }) => ({
     label: name.toUpperCase(),
     value: id,
   }));
+
   return (
     <div className="flex flex-col gap-xl">
       <h1>{serviceInstance.name}</h1>
@@ -114,10 +116,10 @@ const CsvFeedsList = ({
           </div>
         </div>
         <div className="flex gap-s">
-          <CsvFeedButtons
+          <CustomDashboardsListButtons
             serviceInstance={serviceInstance}
-            firstCsvFeedSubscriptionId={firstCsvFeed?.subscription?.id ?? ''}
-            connectionId={data!.csvFeeds!.__id}
+            subscriptionId={firstCustomDashboard?.subscription?.id ?? ''}
+            connectionId={data!.customDashboards!.__id}
           />
         </div>
       </div>
@@ -128,14 +130,14 @@ const CsvFeedsList = ({
             className={
               'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
             }>
-            {_nonActive.map((csvFeed) => (
+            {nonActive.map((doc) => (
               <ShareableResourceCard
-                key={csvFeed.id}
-                document={csvFeed as unknown as documentItem_fragment$data}
-                detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`} // Both will be modified
-                shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
+                key={doc.id}
+                document={doc}
+                detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
+                shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}>
                 <DocumentBento
-                  document={csvFeed}
+                  document={doc}
                   serviceInstanceId={serviceInstance.id}
                 />
               </ShareableResourceCard>
@@ -148,14 +150,14 @@ const CsvFeedsList = ({
         className={
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
         }>
-        {active.map((csvFeed) => (
+        {active.map((doc) => (
           <ShareableResourceCard
-            key={csvFeed.id}
-            document={csvFeed as unknown as documentItem_fragment$data}
-            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`}
-            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
+            key={doc.id}
+            document={doc}
+            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
+            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}>
             <DocumentBento
-              document={csvFeed}
+              document={doc}
               serviceInstanceId={serviceInstance.id}
             />
           </ShareableResourceCard>
@@ -165,4 +167,4 @@ const CsvFeedsList = ({
   );
 };
 
-export default CsvFeedsList;
+export default CustomDashboardsList;

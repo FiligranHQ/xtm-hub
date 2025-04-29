@@ -1,8 +1,8 @@
 'use client';
 
-import CsvFeedPage from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-page';
-import { CsvFeedsListQuery } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
-import { csvFeedListLocalStorage } from '@/components/service/csv_feed/csv_feed-list-localstorage';
+import CsvFeedsList from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feeds-list';
+import { csvFeedListLocalStorage } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feeds-list-localstorage';
+import { CsvFeedsListQuery } from '@/components/service/csv-feeds/csv-feeds.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Skeleton } from 'filigran-ui';
@@ -38,7 +38,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   return (
     <>
       {queryRef ? (
-        <CsvFeedPage
+        <CsvFeedsList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           search={search}

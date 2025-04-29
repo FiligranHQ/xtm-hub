@@ -1,7 +1,7 @@
 'use client';
 
-import CustomDashbordDocumentList from '@/components/service/custom-dashboards/[slug]/custom-dashboard-list';
-import { customDashboardListLocalStorage } from '@/components/service/custom-dashboards/custom-dashboard-list-localstorage';
+import { customDashboardListLocalStorage } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-list-localstorage';
+import CustomDashbordDocumentList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
 import { DocumentsListQuery } from '@/components/service/document/document.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';

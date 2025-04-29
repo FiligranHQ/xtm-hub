@@ -3,6 +3,8 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { Badge } from 'filigran-ui';
 import { AspectRatio } from 'filigran-ui/servers';
@@ -10,13 +12,24 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
+export type ShareableResource =
+  | documentItem_fragment$data
+  | customDashboardsItem_fragment$data
+  | csvFeedsItem_fragment$data;
+
 interface ShareableResourceCardProps {
-  document: documentItem_fragment$data;
+  document: ShareableResource;
   detailUrl: string;
   shareLinkUrl: string;
   children: ReactNode;
   extraContent?: ReactNode;
 }
+
+const isCustomDashboard = (
+  document: ShareableResource
+): document is customDashboardsItem_fragment$data => {
+  return 'customDashboard' in document;
+};
 
 const ShareableResourceCard = ({
   document,
@@ -58,7 +71,7 @@ const ShareableResourceCard = ({
         </Link>
 
         <div className="txt-mini items-center flex mt-auto">
-          {document.product_version && (
+          {isCustomDashboard(document) && document.product_version && (
             <div>
               {t('Service.CustomDashboards.FromOCTIVersion')} :{' '}
               {document.product_version}

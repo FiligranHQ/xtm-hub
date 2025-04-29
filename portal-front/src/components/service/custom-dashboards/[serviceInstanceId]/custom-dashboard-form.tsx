@@ -27,16 +27,16 @@ const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 export const newCustomDashboardSchema = z.object({
   name: z.string().min(1, 'Required'),
-  shortDescription: z.string().max(255).min(1, 'Required'),
+  short_description: z.string().max(255).min(1, 'Required'),
   description: z.string().min(1, 'Required'),
-  productVersion: z.string().regex(/^\d+\.\d+\.\d+$/, {
+  product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
     message: 'Product version must be X.Y.Z',
   }),
   documentId: z.string().optional(),
   parentDocumentId: z.string().optional(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck),
-  active: z.boolean().optional(),
+  active: z.boolean(),
   labels: z.array(z.string()).optional(),
   slug: z.string().min(1, 'Required'),
 });

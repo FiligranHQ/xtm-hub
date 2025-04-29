@@ -1,15 +1,15 @@
 import { graphql } from 'react-relay';
 
-export const CsvFeedCreateMutation = graphql`
-  mutation csvFeedCreateMutation(
-    $input: CsvFeedCreateInput!
-    $document: Upload
-    $serviceInstanceId: String
+export const CustomDashboardsCreateMutation = graphql`
+  mutation customDashboardsCreateMutation(
+    $input: CreateCustomDashboardInput!
+    $documents: [Upload!]!
+    $serviceInstanceId: String!
     $connections: [ID!]!
   ) {
-    createCsvFeed(
+    createCustomDashboard(
       input: $input
-      document: $document
+      document: $documents
       serviceInstanceId: $serviceInstanceId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
@@ -43,12 +43,14 @@ export const CsvFeedCreateMutation = graphql`
         name
         personal_space
       }
+      # Specific fields
+      product_version
     }
   }
 `;
 
-export const csvFeedItem = graphql`
-  fragment csvFeedItem_fragment on CsvFeed @inline {
+export const customDashboardsItem = graphql`
+  fragment customDashboardsItem_fragment on CustomDashboard @inline {
     id
     file_name
     created_at
@@ -91,13 +93,15 @@ export const csvFeedItem = graphql`
     subscription {
       id
     }
+    # Specific fields
+    product_version
   }
 `;
 
-export const csvFeedsFragment = graphql`
-  fragment csvFeedsList on Query
-  @refetchable(queryName: "CsvFeedsPaginationQuery") {
-    csvFeeds(
+export const customDashboardsFragment = graphql`
+  fragment customDashboardsList on Query
+  @refetchable(queryName: "CustomDashboardsPaginationQuery") {
+    customDashboards(
       first: $count
       after: $cursor
       orderBy: $orderBy
@@ -112,15 +116,15 @@ export const csvFeedsFragment = graphql`
         node {
           id
           active
-          ...csvFeedItem_fragment
+          ...customDashboardsItem_fragment
         }
       }
     }
   }
 `;
 
-export const CsvFeedsListQuery = graphql`
-  query csvFeedsQuery(
+export const CustomDashboardsListQuery = graphql`
+  query customDashboardsQuery(
     $count: Int!
     $cursor: ID
     $orderBy: DocumentOrdering!
@@ -129,6 +133,6 @@ export const CsvFeedsListQuery = graphql`
     $searchTerm: String
     $serviceInstanceId: String
   ) {
-    ...csvFeedsList
+    ...customDashboardsList
   }
 `;

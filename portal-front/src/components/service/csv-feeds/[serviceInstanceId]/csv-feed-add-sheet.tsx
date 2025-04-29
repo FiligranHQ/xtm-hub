@@ -3,8 +3,8 @@ import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/
 import {
   CsvFeedCreateForm,
   CsvFeedCreateFormValues,
-} from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-create-form';
-import { CsvFeedCreateMutation } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
+} from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-create-form';
+import { CsvFeedCreateMutation } from '@/components/service/csv-feeds/csv-feeds.graphql';
 import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import TriggerButton from '@/components/ui/trigger-button';

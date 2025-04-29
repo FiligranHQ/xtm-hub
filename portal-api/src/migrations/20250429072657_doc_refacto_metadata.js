@@ -13,7 +13,7 @@ export async function up(knex) {
       key: 'product_version',
       value: doc.product_version,
     }));
-    await knex('DocumentMetadata').insert(metadataEntries);
+    await knex('Document_Metadata').insert(metadataEntries);
   }
 
   await knex.schema.alterTable('Document', (table) => {
@@ -30,7 +30,7 @@ export async function down(knex) {
     table.string('product_version');
   });
 
-  const metadataEntries = await knex('DocumentMetadata')
+  const metadataEntries = await knex('Document_Metadata')
     .where('key', 'product_version')
     .select('document_id', 'value');
 
@@ -44,5 +44,5 @@ export async function down(knex) {
     await Promise.all(updates);
   }
 
-  return knex('DocumentMetadata').where('key', 'product_version').delete();
+  return knex('Document_Metadata').where('key', 'product_version').delete();
 }

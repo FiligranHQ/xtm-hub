@@ -8,6 +8,7 @@ import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
@@ -56,7 +57,7 @@ export const updateCustomDashboardSchema = z.object({
 });
 
 interface CustomDashboardFormProps {
-  customDashboard: documentItem_fragment$data;
+  customDashboard: customDashboardsItem_fragment$data;
   serviceInstanceId: string;
   handleSubmit: (
     values: z.infer<typeof updateCustomDashboardSchema>,

@@ -192,6 +192,7 @@ export const loadParentDocumentsByServiceInstance = <
   input: QueryDocumentsArgs,
   include_metadata?: string[]
 ): Promise<T> => {
+  console.log('loadParentDocumentsByServiceInstance', include_metadata);
   return loadDocuments<T>(
     context,
     {
@@ -239,20 +240,22 @@ export const loadDocuments = <
         'Document_Children.child_document_id',
         'children_documents.id'
       );
+  }
 
-    if (Array.isArray(include_metadata)) {
-      include_metadata.forEach((metaKey, index) => {
-        const metaAlias = `meta${index}`;
-        loadDocumentQuery
-          .leftJoin(
-            { [metaAlias]: 'Document_Metadata' },
-            `${metaAlias}.document_id`,
-            'document.id'
-          )
-          .andWhere(`${metaAlias}.key`, '=', metaKey);
-        loadDocumentQuery.select(`${metaAlias}.value as ${metaKey}`);
-      });
-    }
+  console.log(include_metadata);
+
+  if (Array.isArray(include_metadata)) {
+    include_metadata.forEach((metaKey, index) => {
+      const metaAlias = `meta${index}`;
+      loadDocumentQuery
+        .leftJoin(
+          { [metaAlias]: 'Document_Metadata' },
+          `${metaAlias}.document_id`,
+          'document.id'
+        )
+        .andWhere(`${metaAlias}.key`, '=', metaKey);
+      loadDocumentQuery.select(`${metaAlias}.value as ${metaKey}`);
+    });
 
     loadDocumentQuery.select(
       dbRaw(
@@ -264,6 +267,8 @@ export const loadDocuments = <
     );
     loadDocumentQuery.groupBy(['Document.id']);
   }
+
+  console.log(loadDocumentQuery.toQuery());
 
   return paginate<Document, T>(
     context,

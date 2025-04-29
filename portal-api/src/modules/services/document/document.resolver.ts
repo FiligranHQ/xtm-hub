@@ -46,7 +46,7 @@ const resolvers: Resolvers = {
           context.serviceInstanceId as ServiceInstanceId
         );
 
-        const data: DocumentMutator & { labels?: string[] } = {
+        const [addedDocument] = await createDocumentCustomDashboard({
           uploader_id: context.user.id as UserId,
           name: payload.name,
           description: payload.description,
@@ -63,9 +63,7 @@ const resolvers: Resolvers = {
           slug: payload.slug,
           uploader_organization_id: context.user.selected_organization_id,
           type: payload.type,
-        };
-
-        const [addedDocument] = await createDocumentCustomDashboard(data);
+        });
         return addedDocument;
       } catch (error) {
         console.error('Error while adding document:', error);

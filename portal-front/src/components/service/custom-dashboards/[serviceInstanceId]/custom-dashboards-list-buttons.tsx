@@ -1,20 +1,19 @@
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import { CSVFeedAddSheet } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-add-sheet';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-
-interface CsvFeedButtonsProps {
+import { CustomDashboardSheet } from './custom-dashboard-sheet';
+interface CustomDashboardsListButtonsProps {
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
-  firstCsvFeedSubscriptionId: string;
+  subscriptionId: string;
   connectionId: string;
 }
-const CsvFeedButtons = ({
+const CustomDashboardsListButtons = ({
   serviceInstance,
-  firstCsvFeedSubscriptionId,
+  subscriptionId,
   connectionId,
-}: CsvFeedButtonsProps) => {
+}: CustomDashboardsListButtonsProps) => {
   const t = useTranslations();
 
   const canManageService = serviceInstance.capabilities.includes(
@@ -27,12 +26,12 @@ const CsvFeedButtons = ({
           asChild
           variant="outline">
           <Link
-            href={`/manage/service/${serviceInstance.id}/subscription/${firstCsvFeedSubscriptionId}`}>
+            href={`/manage/service/${serviceInstance.id}/subscription/${subscriptionId}`}>
             {t('Service.Capabilities.ManageAccessName')}
           </Link>
         </Button>
       )}
-      <CSVFeedAddSheet
+      <CustomDashboardSheet
         serviceInstance={serviceInstance}
         connectionId={connectionId}
       />
@@ -40,4 +39,4 @@ const CsvFeedButtons = ({
   );
 };
 
-export default CsvFeedButtons;
+export default CustomDashboardsListButtons;

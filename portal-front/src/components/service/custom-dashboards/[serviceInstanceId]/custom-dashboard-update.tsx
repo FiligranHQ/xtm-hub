@@ -1,7 +1,7 @@
 import {
   CustomDashboardUpdateForm,
   updateCustomDashboardSchema,
-} from '@/components/service/custom-dashboards/custom-dashboard-update-form';
+} from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-update-form';
 import {
   DocumentDeleteMutation,
   DocumentDetailDeleteMutation,
@@ -14,9 +14,9 @@ import {
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentDetailDeleteMutation } from '@generated/documentDetailDeleteMutation.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -28,7 +28,7 @@ import { z } from 'zod';
 
 // Component interface
 interface DashboardUpdateProps {
-  customDashboard: documentItem_fragment$data;
+  customDashboard: customDashboardsItem_fragment$data;
   serviceInstanceId: string;
   connectionId: string;
   variant?: 'menu' | 'button';

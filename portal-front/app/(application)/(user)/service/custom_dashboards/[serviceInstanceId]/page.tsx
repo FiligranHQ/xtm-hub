@@ -13,12 +13,12 @@ import ServiceSelfJoinMutation, {
 import PageLoader from './page-loader';
 
 interface ServiceCustomDashboardsPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ serviceInstanceId: string }>;
 }
 
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
-  const { slug } = await params;
-  const service_instance_id = decodeURIComponent(slug);
+  const { serviceInstanceId } = await params;
+  const service_instance_id = decodeURIComponent(serviceInstanceId);
   let serviceInstance:
     | serviceByIdQuery$data['serviceInstanceById']
     | null

@@ -1,7 +1,9 @@
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
 
-export const fileListToUploadableMap = (files: FileList): UploadableMap =>
+export const fileListToUploadableMap = (
+  files: FileList | File[]
+): UploadableMap =>
   Array.from(files).reduce((acc, file) => ({ ...acc, [file.name]: file }), {});
 
 export const fetchFormData = async (
