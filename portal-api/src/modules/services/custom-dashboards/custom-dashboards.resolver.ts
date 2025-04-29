@@ -52,7 +52,7 @@ const resolvers: Resolvers = {
         return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
           context,
           input,
-          []
+          ['product_version']
         );
       } catch (error) {
         logApp.error('Error while fetching custom dashboards', error);
