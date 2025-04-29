@@ -156,7 +156,7 @@ const searchAttributes = [
   'email',
   'first_name',
   'last_name',
-  'country'
+  'country',
 ];
 
 export const paginate = async <T, U>(

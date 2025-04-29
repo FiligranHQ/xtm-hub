@@ -296,19 +296,19 @@ const resolvers: Resolvers = {
     editProfile: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        const user = await updateProfile(context, input)
+        const user = await updateProfile(context, input);
 
-        updateUserSession(user)
-        await dispatch('User', 'edit', user)
+        updateUserSession(user);
+        await dispatch('User', 'edit', user);
 
-        await trx.commit()
+        await trx.commit();
 
-        return user
+        return user;
       } catch (error) {
-        await trx.rollback()
+        await trx.rollback();
         throw UnknownError('EDIT_USER_PROFILE_ERROR', {
-          detail: error
-        })
+          detail: error,
+        });
       }
     },
 

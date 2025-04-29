@@ -1,10 +1,19 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { v4 as uuidv4 } from 'uuid';
-import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from 'vitest';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
-  DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD,
+  DEFAULT_ADMIN_EMAIL,
+  DEFAULT_ADMIN_PASSWORD,
   SERVICE_VAULT_ID,
   SIMPLE_USER_FILIGRAN_ID,
   THALES_ORGA_ID,
@@ -15,14 +24,14 @@ import {
 } from '../../__generated__/resolvers-types';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
 } from '../subcription/subscription.helper';
-import {deleteUserById, loadUserBy} from './users.domain';
+import { deleteUserById, loadUserBy } from './users.domain';
 import usersResolver from './users.resolver';
-import { UserLoadUserBy } from "../../model/user";
 
 const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
 const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
@@ -340,20 +349,20 @@ describe('User mutation resolver', () => {
   });
 
   describe('EditProfile Mutation', () => {
-    let adminUser: UserLoadUserBy | undefined
+    let adminUser: UserLoadUserBy | undefined;
     beforeAll(async () => {
-      adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL })
+      adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL });
       if (!adminUser) {
-        throw new Error('admin user not found')
+        throw new Error('admin user not found');
       }
-    })
+    });
 
     it('should edit an existing user profile', async () => {
-      const newFirstName = 'Roger'
-      const newLastName = 'Testeur'
-      const newCountry = 'France'
-      const newPicture = 'http://picture.com'
-      const newPassword = 'new password'
+      const newFirstName = 'Roger';
+      const newLastName = 'Testeur';
+      const newCountry = 'France';
+      const newPicture = 'http://picture.com';
+      const newPassword = 'new password';
 
       // @ts-ignore
       const response = await usersResolver.Mutation.editProfile(
@@ -364,18 +373,18 @@ describe('User mutation resolver', () => {
             last_name: newLastName,
             country: newCountry,
             picture: newPicture,
-            password: newPassword
-          }
+            password: newPassword,
+          },
         },
         contextAdminUser
-      )
+      );
 
-      expect(response).toBeTruthy()
+      expect(response).toBeTruthy();
 
-      expect(response.first_name).toEqual(newFirstName)
-      expect(response.last_name).toEqual(newLastName)
-      expect(response.country).toEqual(newCountry)
-      expect(response.picture).toEqual(newPicture)
+      expect(response.first_name).toEqual(newFirstName);
+      expect(response.last_name).toEqual(newLastName);
+      expect(response.country).toEqual(newCountry);
+      expect(response.picture).toEqual(newPicture);
 
       // @ts-ignore
       const loginResponse = await usersResolver.Mutation.login(
@@ -390,7 +399,7 @@ describe('User mutation resolver', () => {
         }
       );
       expect(loginResponse).toBeTruthy();
-    })
+    });
 
     afterAll(async () => {
       // @ts-ignore
@@ -399,11 +408,11 @@ describe('User mutation resolver', () => {
         {
           input: {
             ...adminUser,
-            password: DEFAULT_ADMIN_PASSWORD
-          }
+            password: DEFAULT_ADMIN_PASSWORD,
+          },
         },
         contextAdminUser
-      )
-    })
-  })
+      );
+    });
+  });
 });

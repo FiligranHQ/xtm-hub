@@ -1,4 +1,4 @@
-import {db, dbRaw, dbUnsecure, paginate, QueryOpts} from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
 import {
   AddUserInput,
   EditMeUserInput,
@@ -370,36 +370,41 @@ export const updateUser = async (
   }
 };
 
-type UpdateProfileProps = Partial<Pick<User, 'first_name' | 'last_name' | 'password' | 'picture' | 'country'>>
-type UpdateProfilePropsWithHashedPassword = UpdateProfileProps & Partial<Pick<User, 'salt'>>
+type UpdateProfileProps = Partial<
+  Pick<User, 'first_name' | 'last_name' | 'password' | 'picture' | 'country'>
+>;
+type UpdateProfilePropsWithHashedPassword = UpdateProfileProps &
+  Partial<Pick<User, 'salt'>>;
 
-const getUpdateProfilePropsWithHashedPassword = (props: UpdateProfileProps): UpdateProfilePropsWithHashedPassword => {
+const getUpdateProfilePropsWithHashedPassword = (
+  props: UpdateProfileProps
+): UpdateProfilePropsWithHashedPassword => {
   if (!props.password) {
-    return props
+    return props;
   }
 
-  const { salt, hash } = hashPassword(props.password)
+  const { salt, hash } = hashPassword(props.password);
   return {
     ...props,
     salt,
-    password: hash
-  }
-}
+    password: hash,
+  };
+};
 
 export const updateProfile = async (
   context: PortalContext,
   props: UpdateProfileProps
 ): Promise<UserWithOrganizationsAndRole> => {
-  const userId = context.user.id
-  const updated_props = getUpdateProfilePropsWithHashedPassword(props)
+  const userId = context.user.id;
+  const updated_props = getUpdateProfilePropsWithHashedPassword(props);
   await updateUser(context, userId, updated_props);
 
   const user = await loadUserDetails({
-    'User.id': userId
-  })
+    'User.id': userId,
+  });
 
-  return user
-}
+  return user;
+};
 
 export const deleteUserById = async (userId: UserId) => {
   return dbUnsecure<User>('User').where('id', userId).delete().returning('*');
