@@ -184,7 +184,7 @@ const resolvers: Resolvers = {
           },
           {
             'Document.service_instance_id': fromGlobalId(serviceInstanceId).id,
-          } as DocumentMutator
+          }
         );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);
@@ -194,7 +194,7 @@ const resolvers: Resolvers = {
     document: async (_, { documentId }, context) => {
       const [parentDocument] = await loadDocumentBy(context, {
         'Document.id': fromGlobalId(documentId).id as DocumentId,
-      } as DocumentMutator);
+      });
       return parentDocument;
     },
   },

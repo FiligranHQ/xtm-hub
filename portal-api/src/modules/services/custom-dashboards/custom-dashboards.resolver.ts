@@ -1,11 +1,12 @@
-import { Resolvers } from '../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import {
+  CustomDashboardConnection,
+  Resolvers,
+} from '../../../__generated__/resolvers-types';
 import { logApp } from '../../../utils/app-logger.util';
-import { extractId } from '../../../utils/utils';
 import {
   getLabels,
   getUploader,
-  loadDocuments,
+  loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
 import {
   loadImagesByCustomDashboardId,
@@ -48,18 +49,10 @@ const resolvers: Resolvers = {
     },
     customDashboards: async (_, input, context) => {
       try {
-        return loadDocuments(
+        return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
           context,
-          {
-            ...input,
-            parentsOnly: true,
-          },
-          {
-            'Document.service_instance_id': extractId<ServiceInstanceId>(
-              input.serviceInstanceId
-            ),
-          },
-          ['product_version']
+          input,
+          []
         );
       } catch (error) {
         logApp.error('Error while fetching custom dashboards', error);

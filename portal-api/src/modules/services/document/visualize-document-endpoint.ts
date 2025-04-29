@@ -1,7 +1,6 @@
 import cors from 'cors';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
-import { DocumentMutator } from '../../../model/kanel/public/Document';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
@@ -32,7 +31,7 @@ export const documentVisualizeEndpoint = (app) => {
 
         const [document] = await loadDocumentBy(context, {
           'Document.id': fromGlobalId(req.params.filename).id,
-        } as DocumentMutator);
+        });
         if (!document) {
           logApp.error(
             `VISUALIZE Error while retrieving document: document not found. Required documentId: ${fromGlobalId(req.params.filename).id}`
@@ -89,7 +88,7 @@ export const documentVisualizeEndpoint = (app) => {
           { req, res } as PortalContext,
           {
             'Document.id': fromGlobalId(req.params.documentId).id,
-          } as DocumentMutator,
+          },
           { unsecured: true }
         );
 

@@ -30,8 +30,6 @@ export default interface Document {
 
   mime_type: string | null;
 
-  parent_document_id: DocumentId | null;
-
   name: string | null;
 
   updated_at: Date | null;
@@ -48,7 +46,7 @@ export default interface Document {
 
   uploader_organization_id: string | null;
 
-  type: string | null;
+  type: string;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -79,8 +77,6 @@ export interface DocumentInitializer {
 
   mime_type?: string | null;
 
-  parent_document_id?: DocumentId | null;
-
   name?: string | null;
 
   updated_at?: Date | null;
@@ -98,7 +94,7 @@ export interface DocumentInitializer {
 
   uploader_organization_id?: string | null;
 
-  type?: string | null;
+  type: string;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -125,8 +121,6 @@ export interface DocumentMutator {
 
   mime_type?: string | null;
 
-  parent_document_id?: DocumentId | null;
-
   name?: string | null;
 
   updated_at?: Date | null;
@@ -143,5 +137,5 @@ export interface DocumentMutator {
 
   uploader_organization_id?: string | null;
 
-  type?: string | null;
+  type?: string;
 }

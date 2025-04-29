@@ -1,10 +1,7 @@
 import cors from 'cors';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
-import {
-  DocumentId,
-  DocumentMutator,
-} from '../../../model/kanel/public/Document';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
@@ -33,7 +30,7 @@ export const documentDownloadEndpoint = (app) => {
 
         const [document] = await loadDocumentBy(context, {
           'Document.id': fromGlobalId(req.params.filename).id as DocumentId,
-        } as DocumentMutator);
+        });
         if (!document) {
           logApp.error('Error while retrieving document: document not found.');
           res.status(404).json({ message: 'Document not found' });

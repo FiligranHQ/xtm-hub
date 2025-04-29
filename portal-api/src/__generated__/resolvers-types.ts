@@ -140,7 +140,7 @@ export type CustomDashboard = Node & {
   labels: Array<Label>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  product_version: Scalars['String']['output'];
+  product_version?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
   share_number: Scalars['Int']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
@@ -1493,7 +1493,7 @@ export type CustomDashboardResolvers<ContextType = PortalContext, ParentType ext
   labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  product_version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
