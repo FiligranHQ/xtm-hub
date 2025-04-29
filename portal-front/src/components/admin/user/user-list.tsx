@@ -203,14 +203,6 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             accessorKey: 'country',
             id: 'country',
             header: t('UserListPage.Country'),
-            enableSorting: true,
-            cell: ({ row }: { row: Row<userList_fragment$data> }) => {
-              return (
-                <div className="flex gap-xs">
-                  { row.original.country }
-                </div>
-              )
-            }
           },
           {
             accessorKey: 'disabled',
