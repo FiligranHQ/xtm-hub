@@ -8,8 +8,6 @@ import {
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
-import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { userServiceFromSubscription$key } from '@generated/userServiceFromSubscription.graphql';
 import {
   userServices_fragment$data,
@@ -23,14 +21,15 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useMemo, useState } from 'react';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { IconActions, IconActionsButton } from '@/components/ui/icon-actions';
+import { IconActionContext, IconActions } from '@/components/ui/icon-actions';
 import { RESTRICTION } from '@/utils/constant';
 import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
 import { useMutation } from 'react-relay';
 
 import { PortalContext } from '@/components/me/app-portal-context';
-import { AddUserServiceForm } from '@/components/service/[slug]/add-userservice-form';
+import { UserServiceForm } from '@/components/service/[slug]/userservice-form';
 import { ServiceById } from '@/components/service/service.graphql';
+import { EditUserService } from '@/components/subcription/[slug]/edit-user-service';
 import { SubscriptionById } from '@/components/subcription/subscription.graphql';
 import {
   BreadcrumbNav,
@@ -41,12 +40,14 @@ import TriggerButton from '@/components/ui/trigger-button';
 import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
+import { useEffect } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
+
 interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
   queryRefSubscription: PreloadedQuery<subscriptionByIdQuery>;
@@ -61,9 +62,15 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
   subscriptionId,
 }) => {
   const t = useTranslations();
-  const [currentUser, setCurrentUser] = useState<
-    userServices_fragment$data | undefined
-  >({} as userServices_fragment$data);
+  const [openSheet, setOpenSheet] = useState(false);
+
+  const { me } = useContext(PortalContext);
+  const { setMenuOpen } = useContext(IconActionContext);
+
+  useEffect(() => {
+    if (!openSheet && openSheet !== null) setMenuOpen(false);
+  }, [openSheet]);
+
   const queryData = usePreloadedQuery<userServiceFromSubscriptionQuery>(
     UserServiceFromSubscription,
     queryRef
@@ -121,10 +128,6 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       readInlineData<userServices_fragment$key>(userServicesFragment, node)
     )
     .filter((data) => !!data);
-
-  const [openSheet, setOpenSheet] = useState(false);
-
-  const { me } = useContext(PortalContext);
 
   const canManageService = () => {
     return userData.some((userService) => {
@@ -208,14 +211,13 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
                       <span className="sr-only">{t('Utils.OpenMenu')}</span>
                     </>
                   }>
-                  <IconActionsButton
-                    aria-label="Edit user rights"
-                    onClick={() => {
-                      setCurrentUser(row.original);
-                      setOpenSheet(true);
-                    }}>
-                    {t('Utils.Update')}
-                  </IconActionsButton>
+                  <EditUserService
+                    userService={row.original}
+                    connectionId={
+                      userServices.userServiceFromSubscription?.__id ?? ''
+                    }
+                    subscription={queryDataSubscription ?? {}}
+                  />
                   <AlertDialogComponent
                     AlertTitle={t('Service.Management.RemoveAccess')}
                     actionButtonText={t('Service.Management.RemoveAccess')}
@@ -284,35 +286,15 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           trigger={
             <TriggerButton
               label={t('Service.Management.InviteUser.TitleInviteUser')}
-              onClick={() => setCurrentUser(undefined)}
             />
           }
           title={t('InviteUserServiceForm.Title', {
             serviceName:
               queryDataSubscription.subscriptionById?.service_instance?.name,
           })}>
-          <AddUserServiceForm
-            userService={currentUser}
+          <UserServiceForm
             connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
-            serviceCapabilities={
-              (queryDataSubscription.subscriptionById?.service_instance
-                ?.service_definition?.service_capability ??
-                []) as serviceCapability_fragment$data[]
-            }
-            serviceName={
-              queryDataSubscription.subscriptionById?.service_instance?.name ??
-              ''
-            }
-            serviceId={
-              queryDataSubscription.subscriptionById?.service_instance?.id ?? ''
-            }
-            subscription={
-              (queryDataSubscription.subscriptionById ??
-                {}) as subscriptionWithUserService_fragment$data
-            }
-            organizationId={
-              queryDataSubscription.subscriptionById?.organization?.id ?? ''
-            }
+            subscription={queryDataSubscription}
           />
         </SheetWithPreventingDialog>
         <DataTableHeadBarOptions />
