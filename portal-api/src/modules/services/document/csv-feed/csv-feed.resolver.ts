@@ -5,6 +5,7 @@ import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstanc
 import { logApp } from '../../../../utils/app-logger.util';
 import { UnknownError } from '../../../../utils/error.util';
 import { extractId } from '../../../../utils/utils';
+import { loadSubscription } from '../../../subcription/subscription.domain';
 import {
   getChildrenDocuments,
   getLabels,
@@ -59,6 +60,9 @@ const resolvers: Resolvers = {
       getUploaderOrganization(context, id, {
         unsecured: true,
       }),
+    subscription: ({ service_instance_id }, _, context) => {
+      return loadSubscription(context, service_instance_id);
+    },
   },
   Query: {
     csvFeeds: async (
