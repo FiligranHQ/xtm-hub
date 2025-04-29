@@ -349,7 +349,7 @@ describe('User mutation resolver', () => {
   });
 
   describe('EditProfile Mutation', () => {
-    let adminUser: UserLoadUserBy | undefined;
+    let adminUser: UserLoadUserBy;
     beforeAll(async () => {
       adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL });
       if (!adminUser) {
@@ -364,7 +364,7 @@ describe('User mutation resolver', () => {
       const newPicture = 'http://picture.com';
       const newPassword = 'new password';
 
-      // @ts-ignore
+      // @ts-expect-error editProfile is not considered as callable
       const response = await usersResolver.Mutation.editProfile(
         undefined,
         {
@@ -386,7 +386,7 @@ describe('User mutation resolver', () => {
       expect(response.country).toEqual(newCountry);
       expect(response.picture).toEqual(newPicture);
 
-      // @ts-ignore
+      // @ts-expect-error login is not considered as callable
       const loginResponse = await usersResolver.Mutation.login(
         undefined,
         { email: DEFAULT_ADMIN_EMAIL, password: newPassword },
@@ -402,7 +402,7 @@ describe('User mutation resolver', () => {
     });
 
     afterAll(async () => {
-      // @ts-ignore
+      // @ts-expect-error editProfile is not considered as callable
       await usersResolver.Mutation.editProfile(
         undefined,
         {

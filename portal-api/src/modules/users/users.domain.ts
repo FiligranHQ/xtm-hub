@@ -399,11 +399,9 @@ export const updateProfile = async (
   const updated_props = getUpdateProfilePropsWithHashedPassword(props);
   await updateUser(context, userId, updated_props);
 
-  const user = await loadUserDetails({
+  return loadUserDetails({
     'User.id': userId,
   });
-
-  return user;
 };
 
 export const deleteUserById = async (userId: UserId) => {
