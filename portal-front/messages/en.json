@@ -387,7 +387,7 @@
     "Disable": "Disable",
     "Enable": "Enable",
     "RemoveUser": "Remove user",
-    "SearchUserWithEmail": "Search user with email...",
+    "SearchUser": "Search user...",
     "UpdateUser": "Update user - {email}",
     "UserCreated": "User {email} has been created",
     "UserDeleted": "User {email} has been deleted",

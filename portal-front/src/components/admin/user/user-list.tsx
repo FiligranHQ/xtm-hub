@@ -203,14 +203,6 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             accessorKey: 'country',
             id: 'country',
             header: t('UserListPage.Country'),
-            enableSorting: true,
-            cell: ({ row }: { row: Row<userList_fragment$data> }) => {
-              return (
-                <div className="flex gap-xs">
-                  { row.original.country }
-                </div>
-              )
-            }
           },
           {
             accessorKey: 'disabled',
@@ -336,7 +328,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
             <SearchInput
               containerClass="w-full sm:w-1/3"
-              placeholder={t('UserActions.SearchUserWithEmail')}
+              placeholder={t('UserActions.SearchUser')}
               onChange={debounceHandleInput}
             />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">
