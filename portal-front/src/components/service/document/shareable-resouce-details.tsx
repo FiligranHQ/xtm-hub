@@ -9,14 +9,14 @@ import { roundToNearest } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 
 // Component interface
-interface DashboardDetailsProps {
+interface ShareableResourceDetailsProps {
   documentData: documentItem_fragment$data;
   downloadNumber?: number;
 }
 
-const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
-  documentData,
-}) => {
+const ShareableResourceDetails: React.FunctionComponent<
+  ShareableResourceDetailsProps
+> = ({ documentData, downloadNumber }) => {
   const t = useTranslations();
   return (
     <div className="space-y-xl">
@@ -59,17 +59,12 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
           )}
         </span>
       </div>
-      <div>
-        <Label className="block pb-s">
-          {t('Service.CustomDashboards.Details.OpenCTIVersion')}
-        </Label>
-        <span>{documentData.product_version}</span>
-      </div>
+
       <div>
         <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.Downloads')}
         </Label>
-        <span>{roundToNearest(documentData.download_number ?? 0)}</span>
+        <span>{roundToNearest(downloadNumber ?? 0)}</span>
       </div>
       <div>
         <Label className="block pb-s">
@@ -81,4 +76,4 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
   );
 };
 
-export default DashboardDetails;
+export default ShareableResourceDetails;

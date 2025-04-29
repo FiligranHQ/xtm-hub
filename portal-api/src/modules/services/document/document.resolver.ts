@@ -193,7 +193,7 @@ const resolvers: Resolvers = {
     },
     document: async (_, { documentId }, context) => {
       const [parentDocument] = await loadDocumentBy(context, {
-        'Document.id': fromGlobalId(documentId).id as DocumentId,
+        'Document.id': extractId<DocumentId>(documentId),
       } as DocumentMutator);
       return parentDocument;
     },

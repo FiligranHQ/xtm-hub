@@ -1,10 +1,12 @@
 import { db, dbRaw, paginate } from '../../../../../knexfile';
 import {
+  CsvFeed,
   CsvFeedsConnection,
   QueryDocumentsArgs,
 } from '../../../../__generated__/resolvers-types';
 import { DocumentMutator } from '../../../../model/kanel/public/Document';
 import { PortalContext } from '../../../../model/portal-context';
+import { addPrefixToObject } from '../../../../utils/typescript';
 import { Document } from '../document.helper';
 
 export const loadCsvFeeds = (
@@ -54,4 +56,14 @@ export const loadCsvFeeds = (
     undefined,
     loadDocumentQuery
   );
+};
+
+export const loadCsvFeedBy = async (
+  context: PortalContext,
+  field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator,
+  opts = {}
+) => {
+  return db<CsvFeed>(context, 'Document', opts)
+    .where(field)
+    .select('Document.*');
 };
