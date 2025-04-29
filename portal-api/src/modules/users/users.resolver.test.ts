@@ -4,7 +4,7 @@ import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from '
 import {
   contextAdminOrgaThales,
   contextAdminUser,
-  DEFAULT_ADMIN_EMAIL,
+  DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD,
   SERVICE_VAULT_ID,
   SIMPLE_USER_FILIGRAN_ID,
   THALES_ORGA_ID,
@@ -20,7 +20,7 @@ import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
 } from '../subcription/subscription.helper';
-import { deleteUserById, loadUserBy } from './users.domain';
+import {deleteUserById, loadUserBy} from './users.domain';
 import usersResolver from './users.resolver';
 import { UserLoadUserBy } from "../../model/user";
 
@@ -87,7 +87,7 @@ describe('User mutation resolver', () => {
     // @ts-ignore
     const response = await usersResolver.Mutation.login(
       undefined,
-      { email: DEFAULT_ADMIN_EMAIL, password: 'admin' },
+      { email: DEFAULT_ADMIN_EMAIL, password: DEFAULT_ADMIN_PASSWORD },
       {
         req: {
           session: {
@@ -108,7 +108,7 @@ describe('User mutation resolver', () => {
           {
             input: {
               email: DEFAULT_ADMIN_EMAIL,
-              password: 'admin',
+              password: DEFAULT_ADMIN_PASSWORD,
             } as AddUserInput,
           },
           contextAdminUser
@@ -128,7 +128,7 @@ describe('User mutation resolver', () => {
         {
           input: {
             email: testMail,
-            password: 'admin',
+            password: DEFAULT_ADMIN_PASSWORD,
           } as AddUserInput,
         },
         contextAdminUser
@@ -157,7 +157,7 @@ describe('User mutation resolver', () => {
         {
           input: {
             email: testMail,
-            password: 'admin',
+            password: DEFAULT_ADMIN_PASSWORD,
             organization_capabilities: [
               {
                 organization_id: toGlobalId(
@@ -203,7 +203,7 @@ describe('User mutation resolver', () => {
           {
             input: {
               email: testMail,
-              password: 'admin',
+              password: DEFAULT_ADMIN_PASSWORD,
               organization_capabilities: [
                 {
                   organization_id: toGlobalId('Organization', THALES_ORGA_ID),
@@ -230,7 +230,7 @@ describe('User mutation resolver', () => {
       {
         input: {
           email: testMail,
-          password: 'admin',
+          password: DEFAULT_ADMIN_PASSWORD,
           organization_capabilities: [
             {
               organization_id: toGlobalId('Organization', THALES_ORGA_ID),
@@ -339,7 +339,7 @@ describe('User mutation resolver', () => {
     });
   });
 
-  describe('editProfile', () => {
+  describe('EditProfile Mutation', () => {
     let adminUser: UserLoadUserBy | undefined
     beforeAll(async () => {
       adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL })
@@ -349,21 +349,47 @@ describe('User mutation resolver', () => {
     })
 
     it('should edit an existing user profile', async () => {
+      const newFirstName = 'Roger'
+      const newLastName = 'Testeur'
+      const newCountry = 'France'
+      const newPicture = 'http://picture.com'
+      const newPassword = 'new password'
+
       // @ts-ignore
       const response = await usersResolver.Mutation.editProfile(
         undefined,
         {
           input: {
-            first_name: 'Roger',
-            last_name: 'Testeur',
-            country: 'France',
-            picture: 'http://picture.com'
+            first_name: newFirstName,
+            last_name: newLastName,
+            country: newCountry,
+            picture: newPicture,
+            password: newPassword
           }
         },
         contextAdminUser
       )
 
       expect(response).toBeTruthy()
+
+      expect(response.first_name).toEqual(newFirstName)
+      expect(response.last_name).toEqual(newLastName)
+      expect(response.country).toEqual(newCountry)
+      expect(response.picture).toEqual(newPicture)
+
+      // @ts-ignore
+      const loginResponse = await usersResolver.Mutation.login(
+        undefined,
+        { email: DEFAULT_ADMIN_EMAIL, password: newPassword },
+        {
+          req: {
+            session: {
+              user: {},
+            },
+          },
+        }
+      );
+      expect(loginResponse).toBeTruthy();
     })
 
     afterAll(async () => {
@@ -371,7 +397,10 @@ describe('User mutation resolver', () => {
       await usersResolver.Mutation.editProfile(
         undefined,
         {
-          input: adminUser
+          input: {
+            ...adminUser,
+            password: DEFAULT_ADMIN_PASSWORD
+          }
         },
         contextAdminUser
       )

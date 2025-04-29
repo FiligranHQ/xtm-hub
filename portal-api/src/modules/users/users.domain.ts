@@ -369,6 +369,38 @@ export const updateUser = async (
     }
   }
 };
+
+type UpdateProfileProps = Partial<Pick<User, 'first_name' | 'last_name' | 'password' | 'picture' | 'country'>>
+type UpdateProfilePropsWithHashedPassword = UpdateProfileProps & Partial<Pick<User, 'salt'>>
+
+const getUpdateProfilePropsWithHashedPassword = (props: UpdateProfileProps): UpdateProfilePropsWithHashedPassword => {
+  if (!props.password) {
+    return props
+  }
+
+  const { salt, hash } = hashPassword(props.password)
+  return {
+    ...props,
+    salt,
+    password: hash
+  }
+}
+
+export const updateProfile = async (
+  context: PortalContext,
+  props: UpdateProfileProps
+): Promise<UserWithOrganizationsAndRole> => {
+  const userId = context.user.id
+  const updated_props = getUpdateProfilePropsWithHashedPassword(props)
+  await updateUser(context, userId, updated_props);
+
+  const user = await loadUserDetails({
+    'User.id': userId
+  })
+
+  return user
+}
+
 export const deleteUserById = async (userId: UserId) => {
   return dbUnsecure<User>('User').where('id', userId).delete().returning('*');
 };
@@ -388,22 +420,6 @@ export const loadUserCapacityByOrganization = async (
     ])
     .first();
 };
-
-type UpdateProfileProps = Partial<Pick<User, 'first_name' | 'last_name' | 'password' | 'picture' | 'country'>>
-
-export const updateProfile = async (
-  context: PortalContext,
-  props: UpdateProfileProps
-): Promise<UserWithOrganizationsAndRole> => {
-  const userId = context.user.id
-  await updateUser(context, userId, props);
-
-  const user = await loadUserDetails({
-    'User.id': userId
-  })
-
-  return user
-}
 
 export const addNewUser = async (
   context: PortalContext,
