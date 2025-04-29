@@ -10,9 +10,9 @@ import {
   getLabels,
   getUploader,
   getUploaderOrganization,
-  loadDocuments,
 } from '../document.domain';
 import { createFileInMinIO, normalizeDocumentName } from '../document.helper';
+import { loadCsvFeeds } from './csv-feed.domain';
 import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
@@ -75,7 +75,7 @@ const resolvers: Resolvers = {
       context
     ) => {
       try {
-        return loadDocuments(
+        return loadCsvFeeds(
           context,
           {
             first,

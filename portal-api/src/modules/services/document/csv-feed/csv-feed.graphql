@@ -13,7 +13,7 @@ type CsvFeed implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
-  slug: String!
+  slug: String
   labels: [Label!]!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
