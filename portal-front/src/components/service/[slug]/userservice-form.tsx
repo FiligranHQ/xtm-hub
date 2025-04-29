@@ -12,7 +12,6 @@ import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/cap
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { emailRegex } from '@/lib/regexs';
-import { cn } from '@/lib/utils';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
 import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
@@ -365,12 +364,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
                         <label
                           htmlFor={capability!.id}
                           aria-disabled={isCapabilityDisabled(capability!.id)}
-                          className={cn(
-                            'txt-sub-content',
-                            isCapabilityDisabled(capability!.id)
-                              ? 'cursor-not-allowed'
-                              : 'cursor-pointer'
-                          )}>
+                          className="txt-sub-content cursor-pointer aria-disabled:cursor-not-allowed">
                           {capability!.name ===
                           GenericCapabilityName.ManageAccess
                             ? 'Manage access: The user can invite other users from his/her organization to this service'
