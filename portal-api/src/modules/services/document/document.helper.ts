@@ -17,7 +17,7 @@ import ObjectLabel, {
 } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
-import { extractId, omit } from '../../../utils/utils';
+import { extractId, pick } from '../../../utils/utils';
 import { sendFileToS3 } from './document.domain';
 
 export type Document = DocumentType & { labels: Label[] };
@@ -81,14 +81,36 @@ export const loadUnsecureDocumentsBy = async (
 
 export const createDocument = async <
   T extends DocumentResolverType | CustomDashboard | CsvFeed,
+  K extends keyof T,
 >(
   context: PortalContext,
   { labels, parent_document_id, ...documentData }: FullDocumentMutator,
-  metadataKeys: string[] = []
+  metadataKeys: K[] = []
 ): Promise<T> => {
   const [document] = await db<DocumentType>(context, 'Document')
     .insert({
-      ...omit(documentData, metadataKeys as any),
+      ...pick(documentData, [
+        'id',
+        'uploader_id',
+        'service_instance_id',
+        'description',
+        'file_name',
+        'minio_name',
+        'active',
+        'created_at',
+        'download_number',
+        'remover_id',
+        'mime_type',
+        'name',
+        'updated_at',
+        'updater_id',
+        'short_description',
+        'product_version',
+        'slug',
+        'share_number',
+        'uploader_organization_id',
+        'type',
+      ]),
       uploader_id: context.user.id,
       service_instance_id: context.serviceInstanceId as ServiceInstanceId,
       uploader_organization_id: context.user.selected_organization_id,
