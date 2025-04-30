@@ -599,8 +599,10 @@ input EditUserInput {
 }
 
 input EditMeUserInput {
-  first_name: String!
-  last_name: String!
+  first_name: String
+  last_name: String
+  picture: String
+  country: String
 }
 
 input OrganizationCapabilitiesInput {

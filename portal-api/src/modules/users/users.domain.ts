@@ -343,12 +343,11 @@ export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
   return updatedUser;
 };
 
-export const updateMeUser = async (userId: UserId, input: EditMeUserInput) => {
-  const [updatedUser] = await dbUnsecure<User>('User')
-    .where({ id: userId })
-    .update({ first_name: input.first_name, last_name: input.last_name })
-    .returning('*');
-  return updatedUser;
+export const updateMeUser = async (
+  context: PortalContext,
+  input: EditMeUserInput
+): Promise<void> => {
+  await updateUser(context, context.user.id, input);
 };
 
 export const updateUser = async (
@@ -369,6 +368,7 @@ export const updateUser = async (
     }
   }
 };
+
 export const deleteUserById = async (userId: UserId) => {
   return dbUnsecure<User>('User').where('id', userId).delete().returning('*');
 };

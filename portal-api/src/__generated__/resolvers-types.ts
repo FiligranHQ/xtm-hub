@@ -190,8 +190,10 @@ export type EditLabelInput = {
 };
 
 export type EditMeUserInput = {
-  first_name: Scalars['String']['input'];
-  last_name: Scalars['String']['input'];
+  country?: InputMaybe<Scalars['String']['input']>;
+  first_name?: InputMaybe<Scalars['String']['input']>;
+  last_name?: InputMaybe<Scalars['String']['input']>;
+  picture?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditServiceCapabilityInput = {
