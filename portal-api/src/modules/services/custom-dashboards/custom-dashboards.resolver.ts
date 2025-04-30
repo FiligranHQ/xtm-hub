@@ -2,13 +2,15 @@ import {
   CustomDashboardConnection,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
-import { logApp } from '../../../utils/app-logger.util';
+import { UnknownError } from '../../../utils/error.util';
 import {
   getLabels,
   getUploader,
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
+import { createFileInMinIO } from '../document/document.helper';
 import {
+  createCustomDashboard,
   loadImagesByCustomDashboardId,
   loadSeoCustomDashboardBySlug,
   loadSeoCustomDashboardsByServiceSlug,
@@ -44,19 +46,27 @@ const resolvers: Resolvers = {
       return dashboards;
     },
     seoCustomDashboardBySlug: async (_, { slug }) => {
-      const dashboard = await loadSeoCustomDashboardBySlug(slug);
-      return dashboard;
+      return loadSeoCustomDashboardBySlug(slug);
     },
     customDashboards: async (_, input, context) => {
+      return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
+        context,
+        input,
+        ['product_version']
+      );
+    },
+  },
+  Mutation: {
+    createCustomDashboard: async (_, { input, document }, context) => {
       try {
-        return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
-          context,
-          input,
-          ['product_version']
+        const files = await Promise.all(
+          document.map((doc) => createFileInMinIO(doc, context))
         );
+        return createCustomDashboard(input, files, context);
       } catch (error) {
-        logApp.error('Error while fetching custom dashboards', error);
-        throw error;
+        throw UnknownError('CUSTOM_DASHBOARD_INSERTION_ERROR', {
+          detail: error,
+        });
       }
     },
   },

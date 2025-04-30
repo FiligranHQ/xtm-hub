@@ -3,48 +3,21 @@ import { graphql } from 'react-relay';
 export const CustomDashboardsCreateMutation = graphql`
   mutation customDashboardsCreateMutation(
     $input: CreateCustomDashboardInput!
-    $documents: [Upload!]!
+    $document: [Upload!]!
     $serviceInstanceId: String!
     $connections: [ID!]!
   ) {
     createCustomDashboard(
       input: $input
-      document: $documents
+      document: $document
       serviceInstanceId: $serviceInstanceId
-    ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
+    )
+      @prependNode(
+        connections: $connections
+        edgeTypeName: "CustomDashboardEdge"
+      ) {
       __id
-      id
-      name
-      file_name
-      created_at
-      active
-      short_description
-      uploader {
-        first_name
-        last_name
-        picture
-      }
-      labels {
-        id
-        name
-        color
-      }
-      children_documents {
-        id
-        file_name
-        created_at
-        name
-        description
-        download_number
-        active
-      }
-      uploader_organization {
-        id
-        name
-        personal_space
-      }
-      # Specific fields
-      product_version
+      ...customDashboardsItem_fragment
     }
   }
 `;
@@ -79,12 +52,6 @@ export const customDashboardsItem = graphql`
     }
     children_documents {
       id
-      file_name
-      created_at
-      name
-      description
-      download_number
-      active
     }
     service_instance {
       id
@@ -114,8 +81,6 @@ export const customDashboardsFragment = graphql`
       totalCount
       edges {
         node {
-          id
-          active
           ...customDashboardsItem_fragment
         }
       }

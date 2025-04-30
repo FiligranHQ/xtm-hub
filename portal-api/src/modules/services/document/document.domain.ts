@@ -27,8 +27,9 @@ import { PortalContext } from '../../../model/portal-context';
 import { extractId } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
-  createDocumentCustomDashboard,
+  createDocument,
   Document,
+  FullDocumentMutator,
   getDocumentName,
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
@@ -69,8 +70,9 @@ export const passOldDocumentsIntoInactive = async (
 };
 
 export const insertDocument = async (
-  documentData: DocumentMutator
-): Promise<Document[]> => {
+  context: PortalContext,
+  documentData: FullDocumentMutator
+): Promise<Document> => {
   const existingDocuments = await loadUnsecureDocumentsBy({
     file_name: documentData.file_name,
   });
@@ -78,7 +80,7 @@ export const insertDocument = async (
     passOldDocumentsIntoInactive(existingDocuments);
   }
 
-  return createDocumentCustomDashboard(documentData);
+  return createDocument<Document>(context, documentData);
 };
 
 export const updateDocumentDescription = async (
@@ -192,7 +194,6 @@ export const loadParentDocumentsByServiceInstance = <
   input: QueryDocumentsArgs,
   include_metadata?: string[]
 ): Promise<T> => {
-  console.log('loadParentDocumentsByServiceInstance', include_metadata);
   return loadDocuments<T>(
     context,
     {
@@ -242,33 +243,31 @@ export const loadDocuments = <
       );
   }
 
-  console.log(include_metadata);
+  loadDocumentQuery.select(
+    dbRaw(
+      `CASE
+      WHEN COUNT("children_documents"."id") = 0 THEN NULL
+      ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
+    END AS children_documents`
+    )
+  );
+
+  loadDocumentQuery.groupBy(['Document.id']);
 
   if (Array.isArray(include_metadata)) {
     include_metadata.forEach((metaKey, index) => {
       const metaAlias = `meta${index}`;
       loadDocumentQuery
+        .select(`${metaAlias}.value as ${metaKey}`)
         .leftJoin(
           { [metaAlias]: 'Document_Metadata' },
           `${metaAlias}.document_id`,
-          'document.id'
+          'Document.id'
         )
-        .andWhere(`${metaAlias}.key`, '=', metaKey);
-      loadDocumentQuery.select(`${metaAlias}.value as ${metaKey}`);
+        .andWhere(`${metaAlias}.key`, '=', metaKey)
+        .groupBy([metaKey]);
     });
-
-    loadDocumentQuery.select(
-      dbRaw(
-        `CASE
-        WHEN COUNT("children_documents"."id") = 0 THEN NULL
-        ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
-      END AS children_documents`
-      )
-    );
-    loadDocumentQuery.groupBy(['Document.id']);
   }
-
-  console.log(loadDocumentQuery.toQuery());
 
   return paginate<Document, T>(
     context,
@@ -344,15 +343,4 @@ export const incrementShareNumber = (documentId: DocumentId) => {
     .where('id', '=', documentId)
     .increment('share_number', 1)
     .returning('*');
-};
-
-export const createDocument = async (
-  context: PortalContext,
-  trx,
-  data: DocumentMutator
-): Promise<Document[]> => {
-  return db<Document>(context, 'Document')
-    .insert(data)
-    .returning('*')
-    .transacting(trx);
 };

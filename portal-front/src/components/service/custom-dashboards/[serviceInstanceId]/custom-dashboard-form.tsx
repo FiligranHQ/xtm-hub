@@ -63,9 +63,9 @@ export const CustomDashboardForm = ({
     criteriaMode: 'all',
     defaultValues: {
       name: '',
-      shortDescription: undefined,
+      short_description: undefined,
       description: '',
-      productVersion: '',
+      product_version: '',
       documentId: '',
       active: false,
       document: undefined,
@@ -148,7 +148,7 @@ export const CustomDashboardForm = ({
 
           <FormField
             control={form.control}
-            name="shortDescription"
+            name="short_description"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
@@ -170,7 +170,7 @@ export const CustomDashboardForm = ({
 
           <FormField
             control={form.control}
-            name="productVersion"
+            name="product_version"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>

@@ -1,4 +1,3 @@
-import { dbTx } from '../../../../knexfile';
 import {
   CsvFeedConnection,
   Resolvers,
@@ -18,12 +17,10 @@ import { createCsvFeed } from './csv-feeds.domain';
 const resolvers: Resolvers = {
   Mutation: {
     createCsvFeed: async (_, input, context) => {
-      const trx = await dbTx();
       try {
         const document = await createFileInMinIO(input.document, context);
-        return createCsvFeed(input.input, document, context, trx);
+        return createCsvFeed(input.input, document, context);
       } catch (error) {
-        await trx.rollback();
         throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
       }
     },

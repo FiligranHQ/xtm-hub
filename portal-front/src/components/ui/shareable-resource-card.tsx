@@ -1,7 +1,5 @@
 'use client';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/badge-overflow-counter';
+import BadgeOverflowCounter from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
@@ -51,10 +49,12 @@ const ShareableResourceCard = ({
       </div>
       <div className="flex flex-col flex-grow p-l space-y-s">
         <div className="flex items-center justify-between">
-          <BadgeOverflowCounter
-            badges={document?.labels as BadgeOverflow[]}
-            className="z-[2]"
-          />
+          {document?.labels && (
+            <BadgeOverflowCounter
+              badges={document?.labels}
+              className="z-[2]"
+            />
+          )}
           <ShareLinkButton
             documentId={document.id}
             url={shareLinkUrl}

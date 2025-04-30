@@ -1,5 +1,10 @@
 import { db, dbUnsecure } from '../../../../knexfile';
 import {
+  CsvFeed,
+  CustomDashboard,
+  Document as DocumentResolverType,
+} from '../../../__generated__/resolvers-types';
+import {
   DocumentId,
   DocumentMutator,
   default as DocumentType,
@@ -12,8 +17,7 @@ import ObjectLabel, {
 } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
-import { addPrefixToObject } from '../../../utils/typescript';
-import { extractId } from '../../../utils/utils';
+import { extractId, omit } from '../../../utils/utils';
 import { sendFileToS3 } from './document.domain';
 
 export type Document = DocumentType & { labels: Label[] };
@@ -75,55 +79,49 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const createDocumentMetadata = async (
+export const createDocument = async <
+  T extends DocumentResolverType | CustomDashboard | CsvFeed,
+>(
   context: PortalContext,
-  data: {
-    document_id;
-    key;
-    value;
-  },
-  trx
-): Promise<DocumentMetadata[]> => {
-  return db<DocumentMetadata>(context, 'Document_Metadata')
-    .insert(data)
-    .returning('*')
-    .transacting(trx);
-};
-
-export const loadDocumentMetadata = async (
-  context: PortalContext,
-  field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator
-): Promise<DocumentMetadata[]> => {
-  return db<DocumentMetadata[]>(context, 'Document_Metadata')
-    .where(field)
-    .select('*');
-};
-
-export const createDocumentCustomDashboard = async ({
-  labels,
-  parent_document_id,
-  ...documentData
-}: FullDocumentMutator): Promise<Document[]> => {
-  const [document] = await dbUnsecure<Document>('Document')
-    .insert(documentData)
+  { labels, parent_document_id, ...documentData }: FullDocumentMutator,
+  metadataKeys: string[] = []
+): Promise<T> => {
+  const [document] = await db<DocumentType>(context, 'Document')
+    .insert({
+      ...omit(documentData, metadataKeys as any),
+      uploader_id: context.user.id,
+      service_instance_id: context.serviceInstanceId as ServiceInstanceId,
+      uploader_organization_id: context.user.selected_organization_id,
+    })
     .returning('*');
 
   if (parent_document_id) {
-    await dbUnsecure<DocumentChildren>('Document_Children').insert({
+    await db<DocumentChildren>(context, 'Document_Children').insert({
       parent_document_id: parent_document_id,
       child_document_id: document.id,
     });
   }
 
   if (labels?.length) {
-    await dbUnsecure<ObjectLabel>('Object_Label').insert(
+    await db<ObjectLabel>(context, 'Object_Label').insert(
       labels.map((id) => ({
         object_id: document.id as unknown as ObjectLabelObjectId,
         label_id: extractId(id) as LabelId,
       }))
     );
   }
-  return [document];
+
+  if (metadataKeys.length) {
+    await db<DocumentMetadata>(context, 'Document_Metadata').insert(
+      metadataKeys.map((key: any) => ({
+        document_id: document.id,
+        key,
+        value: documentData[key],
+      }))
+    );
+  }
+
+  return document as unknown as T;
 };
 
 export const uploadNewFile = async (
@@ -152,7 +150,7 @@ export const uploadNewFile = async (
     type: 'service_picture',
   };
 
-  const [addedDocument] = await createDocumentCustomDashboard(data);
+  const addedDocument = await createDocument(context, data);
   return addedDocument;
 };
 

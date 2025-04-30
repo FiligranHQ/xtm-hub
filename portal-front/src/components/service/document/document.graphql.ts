@@ -5,7 +5,6 @@ export const DocumentAddMutation = graphql`
     $document: Upload
     $name: String
     $shortDescription: String
-    $productVersion: String
     $description: String
     $serviceInstanceId: String
     $active: Boolean
@@ -20,7 +19,6 @@ export const DocumentAddMutation = graphql`
       name: $name
       labels: $labels
       short_description: $shortDescription
-      product_version: $productVersion
       description: $description
       service_instance_id: $serviceInstanceId
       active: $active
@@ -33,7 +31,6 @@ export const DocumentAddMutation = graphql`
       name
       file_name
       ...documentItem_fragment
-      ...customDashboardSheet_update_childs
     }
   }
 `;
@@ -118,7 +115,6 @@ export const documentItem = graphql`
     name
     short_description
     description
-    product_version
     download_number
     share_number
     active

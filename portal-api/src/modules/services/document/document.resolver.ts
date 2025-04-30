@@ -1,15 +1,14 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { Resolvers } from '../../../__generated__/resolvers-types';
+import { Document, Resolvers } from '../../../__generated__/resolvers-types';
 import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
-import { extractId } from '../../../utils/utils';
+import { extractId, omit } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
@@ -26,8 +25,7 @@ import {
 } from './document.domain';
 import {
   checkDocumentExists,
-  createDocumentCustomDashboard,
-  loadDocumentMetadata,
+  createDocument,
   normalizeDocumentName,
 } from './document.helper';
 
@@ -46,23 +44,12 @@ const resolvers: Resolvers = {
           context.serviceInstanceId as ServiceInstanceId
         );
 
-        const [addedDocument] = await createDocumentCustomDashboard({
-          uploader_id: context.user.id as UserId,
-          name: payload.name,
-          description: payload.description,
-          short_description: payload.short_description,
-          product_version: payload.product_version,
+        const addedDocument = await createDocument<Document>(context, {
+          ...omit(payload, ['service_instance_id']),
           minio_name: minioName,
           file_name,
-          service_instance_id: context.serviceInstanceId as ServiceInstanceId,
-          created_at: new Date(),
           mime_type: payload.document.file.mimetype,
           parent_document_id,
-          active: payload.active ?? true,
-          labels: payload.labels,
-          slug: payload.slug,
-          uploader_organization_id: context.user.selected_organization_id,
-          type: payload.type,
         });
         return addedDocument;
       } catch (error) {
@@ -135,11 +122,6 @@ const resolvers: Resolvers = {
     },
     subscription: ({ service_instance_id }, _, context) => {
       return loadSubscription(context, service_instance_id);
-    },
-    document_metadata: ({ id }, _, context) => {
-      return loadDocumentMetadata(context, {
-        document_id: id,
-      } as DocumentMutator);
     },
   },
   Query: {

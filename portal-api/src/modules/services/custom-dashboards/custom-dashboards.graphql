@@ -1,4 +1,4 @@
-type SeoCustomDashboardImage {
+type CustomDashboardImage {
   id: ID!
 }
 
@@ -15,17 +15,19 @@ type SeoCustomDashboard {
   download_number: Int
   share_number: Int
   product_version: String
-  children_documents: [SeoCustomDashboardImage]
+  children_documents: [CustomDashboardImage]
   labels: [Label]
   active: Boolean!
 }
 
 input CreateCustomDashboardInput {
   name: String!
+  slug: String!
   short_description: String!
   description: String!
   active: Boolean!
   labels: [String!]
+  # Specific fields for custom dashboards
   product_version: String!
 }
 
@@ -45,10 +47,10 @@ type CustomDashboard implements Node {
   download_number: Int!
   share_number: Int!
   slug: String!
-  labels: [Label!]!
+  labels: [Label]
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [Document!]
+  children_documents: [CustomDashboardImage]
   # Specific fields for custom dashboards
   product_version: String
 }

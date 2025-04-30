@@ -27,7 +27,6 @@ type Document implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
-  product_version: String
   children_documents: [Document!]
   document_metadata: [DocumentMetadata]
   labels: [Label!]!
@@ -38,7 +37,6 @@ type Document implements Node {
 
 input EditDocumentInput {
   short_description: String
-  product_version: String
   labels: [String!]
   description: String
   uploader_organization_id: String
@@ -52,7 +50,6 @@ type Mutation {
     document: Upload
     name: String
     short_description: String
-    product_version: String
     description: String
     service_instance_id: String
     parentDocumentId: ID

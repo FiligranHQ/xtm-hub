@@ -90,6 +90,7 @@ export type CreateCustomDashboardInput = {
   name: Scalars['String']['input'];
   product_version: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
+  slug: Scalars['String']['input'];
 };
 
 export type CsvFeed = Node & {
@@ -131,13 +132,13 @@ export type CsvFeedEdge = {
 export type CustomDashboard = Node & {
   __typename?: 'CustomDashboard';
   active: Scalars['Boolean']['output'];
-  children_documents?: Maybe<Array<Document>>;
+  children_documents?: Maybe<Array<Maybe<CustomDashboardImage>>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number: Scalars['Int']['output'];
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  labels: Array<Label>;
+  labels?: Maybe<Array<Maybe<Label>>>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   product_version?: Maybe<Scalars['String']['output']>;
@@ -165,6 +166,11 @@ export type CustomDashboardEdge = {
   node: CustomDashboard;
 };
 
+export type CustomDashboardImage = {
+  __typename?: 'CustomDashboardImage';
+  id: Scalars['ID']['output'];
+};
+
 export type Document = Node & {
   __typename?: 'Document';
   active: Scalars['Boolean']['output'];
@@ -178,7 +184,6 @@ export type Document = Node & {
   labels: Array<Label>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  product_version?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
   share_number: Scalars['Int']['output'];
@@ -223,7 +228,6 @@ export type EditDocumentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
-  product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
@@ -363,7 +367,6 @@ export type MutationAddDocumentArgs = {
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
   parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
-  product_version?: InputMaybe<Scalars['String']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
@@ -854,7 +857,7 @@ export type RolePortal = Node & {
 export type SeoCustomDashboard = {
   __typename?: 'SeoCustomDashboard';
   active: Scalars['Boolean']['output'];
-  children_documents?: Maybe<Array<Maybe<SeoCustomDashboardImage>>>;
+  children_documents?: Maybe<Array<Maybe<CustomDashboardImage>>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
@@ -868,11 +871,6 @@ export type SeoCustomDashboard = {
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
-};
-
-export type SeoCustomDashboardImage = {
-  __typename?: 'SeoCustomDashboardImage';
-  id: Scalars['ID']['output'];
 };
 
 export type SeoServiceInstance = Node & {
@@ -1255,6 +1253,7 @@ export type ResolversTypes = ResolversObject<{
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   CustomDashboardConnection: ResolverTypeWrapper<CustomDashboardConnection>;
   CustomDashboardEdge: ResolverTypeWrapper<CustomDashboardEdge>;
+  CustomDashboardImage: ResolverTypeWrapper<CustomDashboardImage>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   Document: ResolverTypeWrapper<Document>;
   DocumentConnection: ResolverTypeWrapper<DocumentConnection>;
@@ -1295,7 +1294,6 @@ export type ResolversTypes = ResolversObject<{
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
   SeoCustomDashboard: ResolverTypeWrapper<SeoCustomDashboard>;
-  SeoCustomDashboardImage: ResolverTypeWrapper<SeoCustomDashboardImage>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
@@ -1351,6 +1349,7 @@ export type ResolversParentTypes = ResolversObject<{
   CustomDashboard: CustomDashboard;
   CustomDashboardConnection: CustomDashboardConnection;
   CustomDashboardEdge: CustomDashboardEdge;
+  CustomDashboardImage: CustomDashboardImage;
   Date: Scalars['Date']['output'];
   Document: Document;
   DocumentConnection: DocumentConnection;
@@ -1385,7 +1384,6 @@ export type ResolversParentTypes = ResolversObject<{
   Query: {};
   RolePortal: RolePortal;
   SeoCustomDashboard: SeoCustomDashboard;
-  SeoCustomDashboardImage: SeoCustomDashboardImage;
   SeoServiceInstance: SeoServiceInstance;
   ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
@@ -1484,13 +1482,13 @@ export type CsvFeedEdgeResolvers<ContextType = PortalContext, ParentType extends
 
 export type CustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboard'] = ResolversParentTypes['CustomDashboard']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  children_documents?: Resolver<Maybe<Array<ResolversTypes['Document']>>, ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboardImage']>>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<Maybe<ResolversTypes['Label']>>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1519,6 +1517,11 @@ export type CustomDashboardEdgeResolvers<ContextType = PortalContext, ParentType
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type CustomDashboardImageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboardImage'] = ResolversParentTypes['CustomDashboardImage']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
@@ -1535,7 +1538,6 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1749,7 +1751,7 @@ export type RolePortalResolvers<ContextType = PortalContext, ParentType extends 
 
 export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboard'] = ResolversParentTypes['SeoCustomDashboard']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  children_documents?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboardImage']>>>, ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboardImage']>>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1763,11 +1765,6 @@ export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType 
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type SeoCustomDashboardImageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboardImage'] = ResolversParentTypes['SeoCustomDashboardImage']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2009,6 +2006,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CustomDashboard?: CustomDashboardResolvers<ContextType>;
   CustomDashboardConnection?: CustomDashboardConnectionResolvers<ContextType>;
   CustomDashboardEdge?: CustomDashboardEdgeResolvers<ContextType>;
+  CustomDashboardImage?: CustomDashboardImageResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
@@ -2033,7 +2031,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
   SeoCustomDashboard?: SeoCustomDashboardResolvers<ContextType>;
-  SeoCustomDashboardImage?: SeoCustomDashboardImageResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;

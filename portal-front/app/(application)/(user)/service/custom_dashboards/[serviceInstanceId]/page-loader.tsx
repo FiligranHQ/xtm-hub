@@ -2,8 +2,8 @@
 
 import { customDashboardListLocalStorage } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-list-localstorage';
 import CustomDashbordDocumentList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
-import { DocumentsListQuery } from '@/components/service/document/document.graphql';
-import { documentsQuery } from '@generated/documentsQuery.graphql';
+import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboards.graphql';
+import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
@@ -14,8 +14,9 @@ interface PageLoaderProps {
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
-  const [queryRef, loadQuery] =
-    useQueryLoader<documentsQuery>(DocumentsListQuery);
+  const [queryRef, loadQuery] = useQueryLoader<customDashboardsQuery>(
+    CustomDashboardsListQuery
+  );
   const { count, search, setSearch, labels, setLabels } =
     customDashboardListLocalStorage();
 
@@ -26,7 +27,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderBy: 'created_at',
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
-        parentsOnly: true,
         searchTerm: search,
         filters: [{ key: 'label', value: labels }],
       },

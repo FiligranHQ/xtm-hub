@@ -38,10 +38,11 @@ export const CustomDashboardSheet = ({
     values: CustomDashboardFormValues,
     callback: () => void
   ) => {
-    const input = omit(values, ['images', 'document']);
+    console.log('handleSubmit', values);
+    const input = omit(values, ['document', 'images', 'documentId']);
     const documents = [
-      ...Array.from(values.images),
       ...Array.from(values.document),
+      ...Array.from(values.images),
     ];
 
     createCustomDashboards({
@@ -49,17 +50,25 @@ export const CustomDashboardSheet = ({
         input,
         serviceInstanceId: serviceInstance.id,
         connections: [connectionId],
-        documents,
+        document: documents,
       },
       uploadables: fileListToUploadableMap(documents),
       onCompleted: (response) => {
+        if (!response.createCustomDashboard) {
+          toast({
+            variant: 'destructive',
+            title: t('Utils.Error'),
+            description: t('Error.AnErrorOccured'),
+          });
+          return;
+        }
         setOpenSheet(false);
         revalidatePathActions([PUBLIC_DASHBOARD_URL]);
         callback();
         toast({
           title: t('Utils.Success'),
           description: t('Service.CustomDashboards.Actions.Added', {
-            name: response.createCustomDashboard!.name,
+            name: response.createCustomDashboard.name,
           }),
         });
       },

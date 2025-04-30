@@ -105,6 +105,10 @@ export const logApp = {
         source: 'backend',
       })
     );
+    if (process.env.LOCAL_DEV === 'true' && meta.codeStack) {
+      console.error('Original error:');
+      console.error(meta.codeStack);
+    }
   },
   _logWithError: (
     level: AppLogsLevel,

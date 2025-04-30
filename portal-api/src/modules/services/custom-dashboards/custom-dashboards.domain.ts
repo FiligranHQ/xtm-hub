@@ -1,6 +1,12 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { dbUnsecure } from '../../../../knexfile';
-import Document from '../../../model/kanel/public/Document';
+import {
+  CreateCustomDashboardInput,
+  CustomDashboard,
+} from '../../../__generated__/resolvers-types';
+import Document, { DocumentId } from '../../../model/kanel/public/Document';
+import { PortalContext } from '../../../model/portal-context';
+import { createDocument, MinioFile } from '../document/document.helper';
 
 export const loadSeoCustomDashboardsByServiceSlug = async (
   serviceSlug: string
@@ -57,5 +63,39 @@ export const loadSeoCustomDashboardBySlug = async (slug: string) => {
         .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
     })
     .first();
+  return dashboard;
+};
+
+export const createCustomDashboard = async (
+  input: CreateCustomDashboardInput,
+  files: MinioFile[],
+  context: PortalContext
+) => {
+  const dashboardFile = files.shift();
+  const dashboard = await createDocument<CustomDashboard>(
+    context,
+    {
+      ...input,
+      type: 'custom_dashboard',
+      file_name: dashboardFile.fileName,
+      minio_name: dashboardFile.minioName,
+      mime_type: dashboardFile.mimeType,
+    },
+    ['product_version']
+  );
+  console.log('Dashboard created:', dashboard);
+  if (files.length > 0) {
+    await Promise.all(
+      files.map((file) => {
+        createDocument(context, {
+          type: 'image',
+          parent_document_id: dashboard.id as DocumentId,
+          file_name: file.fileName,
+          minio_name: file.minioName,
+          mime_type: file.mimeType,
+        });
+      })
+    );
+  }
   return dashboard;
 };
