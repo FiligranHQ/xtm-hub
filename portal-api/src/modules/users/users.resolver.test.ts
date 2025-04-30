@@ -407,7 +407,10 @@ describe('User mutation resolver', () => {
         undefined,
         {
           input: {
-            ...adminUser,
+            first_name: adminUser.first_name,
+            last_name: adminUser.last_name,
+            country: adminUser.country,
+            picture: adminUser.picture,
             password: DEFAULT_ADMIN_PASSWORD,
           },
         },

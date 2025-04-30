@@ -301,6 +301,9 @@ const resolvers: Resolvers = {
         updateUserSession(user);
         await dispatch('User', 'edit', user);
 
+        const userMapped = mapUserToGraphqlUser(user);
+        await dispatch('MeUser', 'edit', userMapped, 'User');
+
         await trx.commit();
 
         return user;
