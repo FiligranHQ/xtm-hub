@@ -36,7 +36,6 @@ import {
   loadUserDetails,
   loadUsers,
   updateMeUser,
-  updateProfile,
   updateUnsecureUser,
   updateUser,
   updateUserAtLogin,
@@ -293,47 +292,19 @@ const resolvers: Resolvers = {
       }
     },
 
-    editProfile: async (_, { input }, context) => {
-      const trx = await dbTx();
-      try {
-        const user = await updateProfile(context, input);
-
-        updateUserSession(user);
-        await dispatch('User', 'edit', user);
-
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
-        await trx.commit();
-
-        return user;
-      } catch (error) {
-        await trx.rollback();
-        throw UnknownError('EDIT_USER_PROFILE_ERROR', {
-          detail: error,
-        });
-      }
-    },
-
     editMeUser: async (_, { input }, context) => {
-      const trx = await dbTx();
       try {
-        await updateMeUser(context.user.id, input);
+        await updateMeUser(context, input);
         const user = await loadUserDetails({
           'User.id': context.user.id,
         });
 
+        updateUserSession(user);
+
         await dispatch('User', 'edit', user);
-        context.req.session.user = {
-          ...context.user,
-          ...user,
-        };
-
-        await trx.commit();
-
+        await dispatch('MeUser', 'edit', user);
         return user;
       } catch (error) {
-        await trx.rollback();
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error,
         });

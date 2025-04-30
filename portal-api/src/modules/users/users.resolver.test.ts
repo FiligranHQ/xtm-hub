@@ -348,7 +348,7 @@ describe('User mutation resolver', () => {
     });
   });
 
-  describe('EditProfile Mutation', () => {
+  describe('EditMeUser Mutation', () => {
     let adminUser: UserLoadUserBy;
     beforeAll(async () => {
       adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL });
@@ -357,15 +357,14 @@ describe('User mutation resolver', () => {
       }
     });
 
-    it('should edit an existing user profile', async () => {
+    it('should edit me user', async () => {
       const newFirstName = 'Roger';
       const newLastName = 'Testeur';
       const newCountry = 'France';
       const newPicture = 'http://picture.com';
-      const newPassword = 'new password';
 
-      // @ts-expect-error editProfile is not considered as callable
-      const response = await usersResolver.Mutation.editProfile(
+      // @ts-expect-error editMeUser is not considered as callable
+      const response = await usersResolver.Mutation.editMeUser(
         undefined,
         {
           input: {
@@ -373,7 +372,6 @@ describe('User mutation resolver', () => {
             last_name: newLastName,
             country: newCountry,
             picture: newPicture,
-            password: newPassword,
           },
         },
         contextAdminUser
@@ -385,25 +383,11 @@ describe('User mutation resolver', () => {
       expect(response.last_name).toEqual(newLastName);
       expect(response.country).toEqual(newCountry);
       expect(response.picture).toEqual(newPicture);
-
-      // @ts-expect-error login is not considered as callable
-      const loginResponse = await usersResolver.Mutation.login(
-        undefined,
-        { email: DEFAULT_ADMIN_EMAIL, password: newPassword },
-        {
-          req: {
-            session: {
-              user: {},
-            },
-          },
-        }
-      );
-      expect(loginResponse).toBeTruthy();
     });
 
     afterAll(async () => {
-      // @ts-expect-error editProfile is not considered as callable
-      await usersResolver.Mutation.editProfile(
+      // @ts-expect-error editMeUser is not considered as callable
+      await usersResolver.Mutation.editMeUser(
         undefined,
         {
           input: {
@@ -411,7 +395,6 @@ describe('User mutation resolver', () => {
             last_name: adminUser.last_name,
             country: adminUser.country,
             picture: adminUser.picture,
-            password: DEFAULT_ADMIN_PASSWORD,
           },
         },
         contextAdminUser

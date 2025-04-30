@@ -343,12 +343,11 @@ export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
   return updatedUser;
 };
 
-export const updateMeUser = async (userId: UserId, input: EditMeUserInput) => {
-  const [updatedUser] = await dbUnsecure<User>('User')
-    .where({ id: userId })
-    .update({ first_name: input.first_name, last_name: input.last_name })
-    .returning('*');
-  return updatedUser;
+export const updateMeUser = async (
+  context: PortalContext,
+  input: EditMeUserInput
+): Promise<void> => {
+  await updateUser(context, context.user.id, input);
 };
 
 export const updateUser = async (
@@ -368,40 +367,6 @@ export const updateUser = async (
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }
   }
-};
-
-type UpdateProfileProps = Partial<
-  Pick<User, 'first_name' | 'last_name' | 'password' | 'picture' | 'country'>
->;
-type UpdateProfilePropsWithHashedPassword = UpdateProfileProps &
-  Partial<Pick<User, 'salt'>>;
-
-const enrichUpdateProfilePropsWithHashedPassword = (
-  props: UpdateProfileProps
-): UpdateProfilePropsWithHashedPassword => {
-  if (!props.password) {
-    return props;
-  }
-
-  const { salt, hash } = hashPassword(props.password);
-  return {
-    ...props,
-    salt,
-    password: hash,
-  };
-};
-
-export const updateProfile = async (
-  context: PortalContext,
-  props: UpdateProfileProps
-): Promise<UserWithOrganizationsAndRole> => {
-  const userId = context.user.id;
-  const updated_props = enrichUpdateProfilePropsWithHashedPassword(props);
-  await updateUser(context, userId, updated_props);
-
-  return loadUserDetails({
-    'User.id': userId,
-  });
 };
 
 export const deleteUserById = async (userId: UserId) => {
