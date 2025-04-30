@@ -376,7 +376,7 @@ type UpdateProfileProps = Partial<
 type UpdateProfilePropsWithHashedPassword = UpdateProfileProps &
   Partial<Pick<User, 'salt'>>;
 
-const getUpdateProfilePropsWithHashedPassword = (
+const enrichUpdateProfilePropsWithHashedPassword = (
   props: UpdateProfileProps
 ): UpdateProfilePropsWithHashedPassword => {
   if (!props.password) {
@@ -396,7 +396,7 @@ export const updateProfile = async (
   props: UpdateProfileProps
 ): Promise<UserWithOrganizationsAndRole> => {
   const userId = context.user.id;
-  const updated_props = getUpdateProfilePropsWithHashedPassword(props);
+  const updated_props = enrichUpdateProfilePropsWithHashedPassword(props);
   await updateUser(context, userId, updated_props);
 
   return loadUserDetails({
