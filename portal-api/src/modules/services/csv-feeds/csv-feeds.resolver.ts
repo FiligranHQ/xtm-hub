@@ -11,13 +11,14 @@ import {
   getUploaderOrganization,
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
-import { createFileInMinIO } from '../document/document.helper';
+import { createFileInMinIO, waitForUploads } from '../document/document.helper';
 import { createCsvFeed } from './csv-feeds.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
     createCsvFeed: async (_, input, context) => {
       try {
+        await waitForUploads(input.document);
         const document = await createFileInMinIO(input.document, context);
         return createCsvFeed(input.input, document, context);
       } catch (error) {

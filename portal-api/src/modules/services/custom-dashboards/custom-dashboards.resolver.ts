@@ -8,7 +8,11 @@ import {
   getUploader,
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
-import { createFileInMinIO } from '../document/document.helper';
+import {
+  createFileInMinIO,
+  Upload,
+  waitForUploads,
+} from '../document/document.helper';
 import {
   createCustomDashboard,
   loadImagesByCustomDashboardId,
@@ -59,8 +63,9 @@ const resolvers: Resolvers = {
   Mutation: {
     createCustomDashboard: async (_, { input, document }, context) => {
       try {
+        await waitForUploads(document);
         const files = await Promise.all(
-          document.map((doc) => createFileInMinIO(doc, context))
+          document.map((doc: Upload) => createFileInMinIO(doc, context))
         );
         return createCustomDashboard(input, files, context);
       } catch (error) {

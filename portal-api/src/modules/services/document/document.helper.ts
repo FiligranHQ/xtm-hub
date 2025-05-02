@@ -1,3 +1,4 @@
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { db, dbUnsecure } from '../../../../knexfile';
 import {
   CsvFeed,
@@ -38,7 +39,9 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[&\\#,+()$~%'":*?!<>{}\s]/g, '-');
+    .replace(/[^a-z0-9\-_.]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 };
 
 export interface MinioFile {
@@ -47,8 +50,20 @@ export interface MinioFile {
   mimeType: string;
 }
 
+export interface Upload {
+  file: FileUpload;
+  promise: Promise<FileUpload>;
+}
+
+export const waitForUploads = async (uploads: Upload[] | Upload) => {
+  if (!Array.isArray(uploads)) {
+    uploads = [uploads];
+  }
+  await Promise.all(uploads.map((upload) => upload.promise));
+};
+
 export const createFileInMinIO = async (
-  jsonFile,
+  jsonFile: Upload,
   context: PortalContext
 ): Promise<MinioFile> => {
   const fileName = normalizeDocumentName(jsonFile.file.filename);
@@ -81,11 +96,10 @@ export const loadUnsecureDocumentsBy = async (
 
 export const createDocument = async <
   T extends DocumentResolverType | CustomDashboard | CsvFeed,
-  K extends keyof T,
 >(
   context: PortalContext,
   { labels, parent_document_id, ...documentData }: FullDocumentMutator,
-  metadataKeys: K[] = []
+  metadataKeys: Array<keyof T> = []
 ): Promise<T> => {
   const [document] = await db<DocumentType>(context, 'Document')
     .insert({
@@ -105,7 +119,6 @@ export const createDocument = async <
         'updated_at',
         'updater_id',
         'short_description',
-        'product_version',
         'slug',
         'share_number',
         'uploader_organization_id',

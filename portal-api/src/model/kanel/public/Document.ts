@@ -38,8 +38,6 @@ export default interface Document {
 
   short_description: string | null;
 
-  product_version: string | null;
-
   slug: string | null;
 
   share_number: number | null;
@@ -85,8 +83,6 @@ export interface DocumentInitializer {
 
   short_description?: string | null;
 
-  product_version?: string | null;
-
   slug?: string | null;
 
   /** Default value: 0 */
@@ -128,8 +124,6 @@ export interface DocumentMutator {
   updater_id?: string | null;
 
   short_description?: string | null;
-
-  product_version?: string | null;
 
   slug?: string | null;
 
