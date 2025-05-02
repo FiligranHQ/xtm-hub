@@ -338,25 +338,25 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
 };
 
 export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
-  const trx = await dbTx();
+  const tx = await dbTx();
   try {
     const [updatedUser] = await dbUnsecure<User>('User')
       .where({ id })
       .update(fields)
       .returning('*')
-      .transacting(trx);
+      .transacting(tx);
 
     const auth0Client = getAuth0Client();
     await auth0Client.updateUser({
-      ...fields,
       email: updatedUser.email,
+      ...fields,
     });
 
-    await trx.commit();
+    await tx.commit();
 
     return updatedUser;
   } catch (err) {
-    await trx.rollback();
+    await tx.rollback();
     throw err;
   }
 };
@@ -369,7 +369,7 @@ export const updateMeUser = async (
     return;
   }
 
-  const trx = await dbTx();
+  const tx = await dbTx();
   try {
     const [updatedUser] = await db<User>(context, 'User', {
       queryType: 'update',
@@ -377,14 +377,14 @@ export const updateMeUser = async (
       .where({ id: context.user.id })
       .update(input)
       .returning('email')
-      .transacting(trx);
+      .transacting(tx);
 
     const auth0Client = getAuth0Client();
     await auth0Client.updateUser({ email: updatedUser.email, ...input });
 
-    await trx.commit();
+    await tx.commit();
   } catch (err) {
-    await trx.rollback();
+    await tx.rollback();
     throw err;
   }
 };
@@ -402,7 +402,7 @@ export const updateUser = async (
   if (isEmpty(input)) {
     return;
   }
-  const trx = await dbTx();
+  const tx = await dbTx();
   try {
     const [updatedUser] = await db<User>(context, 'User', {
       queryType: 'update',
@@ -410,7 +410,7 @@ export const updateUser = async (
       .where({ id })
       .update(input)
       .returning('*')
-      .transacting(trx);
+      .transacting(tx);
 
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
@@ -423,9 +423,9 @@ export const updateUser = async (
       ...input,
     });
 
-    await trx.commit();
+    await tx.commit();
   } catch (err) {
-    await trx.rollback();
+    await tx.rollback();
     throw err;
   }
 };
