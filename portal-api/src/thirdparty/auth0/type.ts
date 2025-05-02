@@ -6,6 +6,7 @@ export interface Auth0UpdateUser {
   country?: string;
 }
 
-export interface Auth0Management {
+export interface Auth0Client {
   updateUser(user: Auth0UpdateUser): Promise<void>;
+  resetPassword(email: string): Promise<void>;
 }

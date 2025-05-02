@@ -35,6 +35,7 @@ import {
   loadUserBy,
   loadUserDetails,
   loadUsers,
+  resetPassword,
   updateMeUser,
   updateUnsecureUser,
   updateUser,
@@ -309,6 +310,10 @@ const resolvers: Resolvers = {
           detail: error,
         });
       }
+    },
+    resetPassword: async (_, __, context) => {
+      await resetPassword(context);
+      return true;
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateUnsecureUser(context.user.id, {

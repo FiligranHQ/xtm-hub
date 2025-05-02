@@ -28,7 +28,7 @@ import {
 } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
-import { getAuth0Management } from '../../thirdparty/auth0/factory';
+import { getAuth0Client } from '../../thirdparty/auth0/factory';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
@@ -346,8 +346,8 @@ export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
       .returning('*')
       .transacting(trx);
 
-    const auth0Management = getAuth0Management();
-    await auth0Management.updateUser({
+    const auth0Client = getAuth0Client();
+    await auth0Client.updateUser({
       ...fields,
       email: updatedUser.email,
     });
@@ -379,14 +379,19 @@ export const updateMeUser = async (
       .returning('email')
       .transacting(trx);
 
-    const auth0Management = getAuth0Management();
-    await auth0Management.updateUser({ email: updatedUser.email, ...input });
+    const auth0Client = getAuth0Client();
+    await auth0Client.updateUser({ email: updatedUser.email, ...input });
 
     await trx.commit();
   } catch (err) {
     await trx.rollback();
     throw err;
   }
+};
+
+export const resetPassword = async (context: PortalContext): Promise<void> => {
+  const auth0Client = getAuth0Client();
+  await auth0Client.resetPassword(context.user.email);
 };
 
 export const updateUser = async (
@@ -412,8 +417,8 @@ export const updateUser = async (
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }
 
-    const auth0Management = getAuth0Management();
-    await auth0Management.updateUser({
+    const auth0Client = getAuth0Client();
+    await auth0Client.updateUser({
       email: updatedUser.email,
       ...input,
     });

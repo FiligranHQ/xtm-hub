@@ -1,11 +1,11 @@
-import { Auth0ManagementClient } from './client';
-import { Auth0ManagementMock } from './mock';
-import { Auth0Management } from './type';
+import { Auth0ClientImplementation } from './client';
+import { Auth0ClientMock } from './mock';
+import { Auth0Client } from './type';
 
-export const getAuth0Management = (): Auth0Management => {
+export const getAuth0Client = (): Auth0Client => {
   if (process.env.NODE_ENV === 'test') {
-    return new Auth0ManagementMock();
+    return new Auth0ClientMock();
   }
 
-  return Auth0ManagementClient.getInstance();
+  return Auth0ClientImplementation.getInstance();
 };
