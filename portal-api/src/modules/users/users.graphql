@@ -80,6 +80,7 @@ input EditMeUserInput {
   last_name: String
   picture: String
   country: String
+  password: String
 }
 
 input OrganizationCapabilitiesInput {

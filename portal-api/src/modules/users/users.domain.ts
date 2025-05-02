@@ -1,6 +1,12 @@
-import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
 import {
-  AddUserInput,
+  db,
+  dbRaw,
+  dbTx,
+  dbUnsecure,
+  paginate,
+  QueryOpts,
+} from '../../../knexfile';
+import {
   EditMeUserInput,
   EditUserInput,
   Filter,
@@ -12,11 +18,7 @@ import {
   User as UserGenerated,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import User, {
-  UserId,
-  UserInitializer,
-  UserMutator,
-} from '../../model/kanel/public/User';
+import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import {
@@ -26,8 +28,8 @@ import {
 } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
+import { getAuth0Management } from '../../thirdparty/auth0/factory';
 import { ForbiddenAccess } from '../../utils/error.util';
-import { hashPassword } from '../../utils/hash-password.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { isEmpty } from '../../utils/utils';
@@ -336,18 +338,56 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
 };
 
 export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
-  const [updatedUser] = await dbUnsecure<User>('User')
-    .where({ id })
-    .update(fields)
-    .returning('*');
-  return updatedUser;
+  const trx = await dbTx();
+  try {
+    const [updatedUser] = await dbUnsecure<User>('User')
+      .where({ id })
+      .update(fields)
+      .returning('*')
+      .transacting(trx);
+
+    const auth0Management = getAuth0Management();
+    await auth0Management.updateUserWithoutPassword(id, fields);
+
+    await trx.commit();
+
+    return updatedUser;
+  } catch (err) {
+    await trx.rollback();
+    throw err;
+  }
 };
 
 export const updateMeUser = async (
   context: PortalContext,
   input: EditMeUserInput
 ): Promise<void> => {
-  await updateUser(context, context.user.id, input);
+  if (isEmpty(input)) {
+    return;
+  }
+
+  const trx = await dbTx();
+  try {
+    const id = context.user.id;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...user } = input;
+
+    if (!isEmpty(user)) {
+      await db<User>(context, 'User', {
+        queryType: 'update',
+      })
+        .where({ id })
+        .update(user);
+    }
+
+    const auth0Management = getAuth0Management();
+    await auth0Management.updateUser(id, input);
+
+    await trx.commit();
+  } catch (err) {
+    await trx.rollback();
+    throw err;
+  }
 };
 
 export const updateUser = async (
@@ -355,17 +395,30 @@ export const updateUser = async (
   id: UserId,
   input: Omit<EditUserInput, 'organization_capabilities'>
 ) => {
-  if (!isEmpty(input)) {
+  if (isEmpty(input)) {
+    return;
+  }
+  const trx = await dbTx();
+  try {
     const [updatedUser] = await db<User>(context, 'User', {
       queryType: 'update',
     })
       .where({ id })
       .update(input)
       .returning('*');
+
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }
+
+    const auth0Management = getAuth0Management();
+    await auth0Management.updateUserWithoutPassword(id, input);
+
+    await trx.commit();
+  } catch (err) {
+    await trx.rollback();
+    throw err;
   }
 };
 
@@ -387,32 +440,6 @@ export const loadUserCapacityByOrganization = async (
       dbRaw('json_agg("UserOrganization_Capability".name) as capabilities'),
     ])
     .first();
-};
-
-export const addNewUser = async (
-  context: PortalContext,
-  {
-    input,
-    userId,
-    selected_organization_id,
-  }: {
-    input: AddUserInput;
-    userId: string;
-    selected_organization_id: OrganizationId;
-  }
-) => {
-  const { salt, hash } = hashPassword(input.password ?? '');
-  const data: UserInitializer = {
-    id: userId as UserId,
-    email: input.email,
-    salt,
-    password: hash,
-    selected_organization_id,
-  };
-  const [addedUser] = await db<User>(context, 'User')
-    .insert(data)
-    .returning('*');
-  return addedUser;
 };
 
 export const loadUserDetails = async (
