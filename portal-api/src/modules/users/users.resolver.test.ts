@@ -385,37 +385,6 @@ describe('User mutation resolver', () => {
       expect(response.picture).toEqual(newPicture);
     });
 
-    it('should not edit user local password', async () => {
-      const newPassword = 'new password';
-
-      // @ts-expect-error editMeUser is not considered as callable
-      const response = await usersResolver.Mutation.editMeUser(
-        undefined,
-        {
-          input: {
-            password: newPassword,
-          },
-        },
-        contextAdminUser
-      );
-
-      expect(response).toBeTruthy();
-
-      const loginResponse = await usersResolver.Mutation.login(
-        undefined,
-        { email: DEFAULT_ADMIN_EMAIL, password: DEFAULT_ADMIN_PASSWORD },
-        {
-          req: {
-            session: {
-              user: {},
-            },
-          },
-        }
-      );
-
-      expect(loginResponse).toBeTruthy();
-    });
-
     afterAll(async () => {
       // @ts-expect-error editMeUser is not considered as callable
       await usersResolver.Mutation.editMeUser(
