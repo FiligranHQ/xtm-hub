@@ -1,15 +1,11 @@
-export interface Auth0UpdateUserPayload {
+export interface Auth0UpdateUser {
+  email: string;
   first_name?: string;
   last_name?: string;
   picture?: string;
-  password?: string;
   country?: string;
 }
 
 export interface Auth0Management {
-  updateUser(id: string, user: Auth0UpdateUserPayload): Promise<void>;
-  updateUserWithoutPassword(
-    id: string,
-    user: Auth0UpdateUserPayload
-  ): Promise<void>;
+  updateUser(user: Auth0UpdateUser): Promise<void>;
 }

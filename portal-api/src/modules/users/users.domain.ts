@@ -347,7 +347,10 @@ export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
       .transacting(trx);
 
     const auth0Management = getAuth0Management();
-    await auth0Management.updateUserWithoutPassword(id, fields);
+    await auth0Management.updateUser({
+      ...fields,
+      email: updatedUser.email,
+    });
 
     await trx.commit();
 
@@ -368,20 +371,16 @@ export const updateMeUser = async (
 
   const trx = await dbTx();
   try {
-    const id = context.user.id;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...user } = input;
-
-    if (!isEmpty(user)) {
-      await db<User>(context, 'User', {
-        queryType: 'update',
-      })
-        .where({ id })
-        .update(user);
-    }
+    const [updatedUser] = await db<User>(context, 'User', {
+      queryType: 'update',
+    })
+      .where({ id: context.user.id })
+      .update(input)
+      .returning('email')
+      .transacting(trx);
 
     const auth0Management = getAuth0Management();
-    await auth0Management.updateUser(id, input);
+    await auth0Management.updateUser({ email: updatedUser.email, ...input });
 
     await trx.commit();
   } catch (err) {
@@ -405,7 +404,8 @@ export const updateUser = async (
     })
       .where({ id })
       .update(input)
-      .returning('*');
+      .returning('*')
+      .transacting(trx);
 
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
@@ -413,7 +413,10 @@ export const updateUser = async (
     }
 
     const auth0Management = getAuth0Management();
-    await auth0Management.updateUserWithoutPassword(id, input);
+    await auth0Management.updateUser({
+      email: updatedUser.email,
+      ...input,
+    });
 
     await trx.commit();
   } catch (err) {

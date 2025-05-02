@@ -7,5 +7,5 @@ export const getAuth0Management = (): Auth0Management => {
     return new Auth0ManagementMock();
   }
 
-  return new Auth0ManagementClient();
+  return Auth0ManagementClient.getInstance();
 };
