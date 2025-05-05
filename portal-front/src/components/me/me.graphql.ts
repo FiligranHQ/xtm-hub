@@ -24,6 +24,12 @@ export const MeContextFragment = graphql`
   }
 `;
 
+export const ResetPasswordMutation = graphql`
+  mutation meResetPasswordMutation {
+    resetPassword
+  }
+`;
+
 // Configuration or Preloader Query
 export const MeQuery = graphql`
   query meLoaderQuery {

@@ -1,7 +1,7 @@
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import * as React from 'react';
+import React from 'react';
 
 interface ProfileButtonProps {
   className?: string;
