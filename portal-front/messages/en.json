@@ -46,6 +46,7 @@
       "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
       "ALREADY_SUBSCRIBED": "You have already subscribed to this service",
       "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "You have already subscribed this organization to this service",
+      "AUTH0_USER_NOT_FOUND_ERROR": "Your user profile was not found",
       "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
       "CANT_EDIT_YOURSELF_ERROR": "You cannot edit yourself",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
@@ -415,6 +416,7 @@
     "OrganizationsPlaceholder": "Select an organization",
     "Password": "Password",
     "Picture": "Picture",
+    "Reset": "Reset",
     "WhoAreYou": "Who are you?",
     "WhoAreYouDescription": "Let us know you first name and last name",
     "AddOrganization": "Add organization"
