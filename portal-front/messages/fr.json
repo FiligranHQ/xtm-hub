@@ -143,6 +143,7 @@
     "Labels": "Étiquettes",
     "Organizations": "Organisations",
     "Parameters": "Paramètres",
+    "Profile": "Profile",
     "Security": "Sécurité",
     "Services": "Services",
     "Settings": "Réglages",
@@ -150,6 +151,7 @@
     "Users": "Utilisateurs"
   },
   "MenuUser": {
+    "Profile": "Profile",
     "ToggleUser": "Ouvrir menu utilisateur"
   },
   "OrganizationActions": {
@@ -432,6 +434,9 @@
       "SelectOrganization": "Sélectionner une organisation",
       "SelectRoles": "Sélectionner rôles"
     }
+  },
+  "ProfilePage": {
+    "Title": "Profile"
   },
   "Utils": {
     "Cancel": "Annuler",
