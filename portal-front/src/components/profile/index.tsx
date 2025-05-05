@@ -1,6 +1,9 @@
 'use client';
 
-import { ResetPasswordMutation } from '@/components/me/me.graphql';
+import {
+  MeEditUserMutation,
+  MeResetPasswordMutation,
+} from '@/components/me/me.graphql';
 import {
   ProfileFormEdit,
   ProfileFormEditSchema,
@@ -13,10 +16,25 @@ import { useMutation } from 'react-relay';
 
 export const Profile: React.FC = () => {
   const t = useTranslations();
-  const [commitResetPasswordMutation] = useMutation(ResetPasswordMutation);
+  const [commitResetPasswordMutation] = useMutation(MeResetPasswordMutation);
+  const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
 
   const handleSubmit = (values: ProfileFormEditSchema) => {
-    console.warn(values);
+    commitEditMeUserMutation({
+      variables: values,
+      onError(error) {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+      onCompleted() {
+        toast({
+          title: t('Utils.Success'),
+        });
+      },
+    });
   };
 
   const handleResetPassword = () => {

@@ -16,7 +16,7 @@ export const ProfileMenuButton: React.FC<ProfileButtonProps> = ({
     <Button
       variant="ghost"
       className={className}>
-      <Link href="profile">{t('MenuUser.Profile')}</Link>
+      <Link href="/profile">{t('MenuUser.Profile')}</Link>
     </Button>
   );
 };
