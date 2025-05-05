@@ -9,6 +9,7 @@ import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions } from '@/components/ui/icon-actions';
 import { cn, isDevelopment } from '@/lib/utils';
 
+import { ProfileMenuButton } from '@/components/profile/menu/button';
 import { Avatar, Skeleton } from 'filigran-ui';
 import {
   Sheet,
@@ -72,6 +73,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
             </>
           }>
+          <ProfileMenuButton className="normal-case w-full justify-start" />
           <Logout className="normal-case w-full justify-start" />
         </IconActions>
         {isDevelopment() && (
