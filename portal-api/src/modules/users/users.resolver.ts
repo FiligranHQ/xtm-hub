@@ -303,10 +303,13 @@ const resolvers: Resolvers = {
         updateUserSession(user);
 
         await dispatch('User', 'edit', user);
-        await dispatch('MeUser', 'edit', user);
+
+        const userMapped = mapUserToGraphqlUser(user);
+        await dispatch('MeUser', 'edit', userMapped, 'User');
+
         return user;
       } catch (error) {
-        throw UnknownError('EDIT_USER_ERROR', {
+        throw UnknownError('EDIT_ME_USER_ERROR', {
           detail: error,
         });
       }

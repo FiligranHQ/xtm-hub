@@ -42,7 +42,7 @@ export class Auth0ClientImplementation implements Auth0Client {
       { id: auth0_user.user_id },
       {
         given_name: user.first_name,
-        last_name: user.last_name,
+        family_name: user.last_name,
         user_metadata: {
           country: user.country,
         },

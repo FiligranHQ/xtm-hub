@@ -477,6 +477,18 @@ export const loadUserDetails = async (
     .where(field)
     .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
     .leftJoin('Organization as org', 'UserOrg.organization_id', '=', 'org.id')
+    .leftJoin(
+      'User_RolePortal as user_RolePortal',
+      'User.id',
+      '=',
+      'user_RolePortal.user_id'
+    )
+    .leftJoin(
+      'RolePortal as rolePortal',
+      'user_RolePortal.role_portal_id',
+      '=',
+      'rolePortal.id'
+    )
     .select([
       'User.*',
       dbRaw(
@@ -489,6 +501,13 @@ export const loadUserDetails = async (
           ) )
             FILTER (WHERE "org".id IS NOT NULL), '[]'
         )::json AS organization_capabilities`
+      ),
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'rolePortal',
+          typename: 'RolePortal',
+          as: 'roles_portal',
+        })
       ),
     ])
     .groupBy(['User.id'])
