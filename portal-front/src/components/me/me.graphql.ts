@@ -24,9 +24,29 @@ export const MeContextFragment = graphql`
   }
 `;
 
-export const ResetPasswordMutation = graphql`
+export const MeResetPasswordMutation = graphql`
   mutation meResetPasswordMutation {
     resetPassword
+  }
+`;
+
+export const MeEditUserMutation = graphql`
+  mutation meEditUserMutation(
+    $first_name: String
+    $last_name: String
+    $country: String
+    $picture: String
+  ) {
+    editMeUser(
+      input: {
+        first_name: $first_name
+        last_name: $last_name
+        country: $country
+        picture: $picture
+      }
+    ) {
+      ...meContext_fragment
+    }
   }
 `;
 
