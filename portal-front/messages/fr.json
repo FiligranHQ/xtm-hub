@@ -46,6 +46,7 @@
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
       "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation est déjà abonnée à ce service",
+      "AUTH0_USER_NOT_FOUND_ERROR": "Votre profile utilisateur est introuvable",
       "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
       "CANT_EDIT_YOURSELF_ERROR": "Vous ne pouvez pas vous modifier vous-même",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
@@ -415,6 +416,7 @@
     "OrganizationsPlaceholder": "Sélectionner une organisation",
     "Password": "Mot de passe",
     "Picture": "Photo",
+    "Reset": "Réinitialiser",
     "WhoAreYou": "Qui êtes-vous ?",
     "WhoAreYouDescription": "Dites-nous votre prénom et votre nom",
     "AddOrganization": "Ajouter une organisation"

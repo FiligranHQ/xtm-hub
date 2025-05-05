@@ -1,3 +1,5 @@
+'use client';
+
 import { PortalContext } from '@/components/me/app-portal-context';
 import {
   AutoForm,
