@@ -401,6 +401,7 @@
     "UserUpdated": "User {email} has been modified"
   },
   "UserForm": {
+    "Country": "Country",
     "Email": "Email",
     "Error": {
       "FirstName": "First_name is required",
@@ -413,6 +414,7 @@
     "OrganizationsCapabilitiesPlaceholder": "Additional capabilities",
     "OrganizationsPlaceholder": "Select an organization",
     "Password": "Password",
+    "Picture": "Picture",
     "WhoAreYou": "Who are you?",
     "WhoAreYouDescription": "Let us know you first name and last name",
     "AddOrganization": "Add organization"
