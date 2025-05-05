@@ -6,11 +6,12 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { Avatar, Label } from 'filigran-ui/clients';
 
 import { roundToNearest } from '@/lib/utils';
+import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 
 // Component interface
 interface ShareableResourceDetailsProps {
-  documentData: documentItem_fragment$data;
+  documentData: documentItem_fragment$data | csvFeedItem_fragment$data;
   downloadNumber?: number;
 }
 

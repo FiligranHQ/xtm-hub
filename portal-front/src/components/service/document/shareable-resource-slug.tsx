@@ -8,8 +8,6 @@ import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
 import BadgeOverflowCounter, {
@@ -17,26 +15,23 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
-import useServiceCapability from '@/hooks/useServiceCapability';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { ReactNode } from 'react';
 
 // Component interface
-interface DashboardSlugProps {
-  documentData: csvFeedItem_fragment$data;
+interface ShareableResourceSlugProps {
+  documentData: csvFeedItem_fragment$data | documentItem_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   children: ReactNode;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  updateActions?: ReactNode;
 }
 
 // Component
-const ShareableResourceSlug: React.FunctionComponent<DashboardSlugProps> = ({
-  documentData,
-  breadcrumbValue,
-  children,
-  serviceInstance,
-}) => {
+const ShareableResourceSlug: React.FunctionComponent<
+  ShareableResourceSlugProps
+> = ({ documentData, breadcrumbValue, children, updateActions }) => {
   const t = useTranslations();
   const { slug } = useDecodedParams();
 
@@ -44,18 +39,9 @@ const ShareableResourceSlug: React.FunctionComponent<DashboardSlugProps> = ({
     documentData?.download_number ?? 0
   );
 
-  const addDownloadNumber = () => {
+  const incrementDownloadNumber = () => {
     setDocumentDownloadNumber(documentDownloadNumber + 1);
   };
-
-  const userCanDelete = useServiceCapability(
-    ServiceCapabilityName.Delete,
-    serviceInstance
-  );
-  const userCanUpdate = useServiceCapability(
-    ServiceCapabilityName.Upload,
-    serviceInstance
-  );
 
   return (
     <>
@@ -73,18 +59,10 @@ const ShareableResourceSlug: React.FunctionComponent<DashboardSlugProps> = ({
         />
 
         <div className="flex items-center gap-2 ml-auto">
-          {(userCanDelete || userCanUpdate) && (
-            <DashboardUpdate
-              userCanDelete={userCanDelete}
-              userCanUpdate={userCanUpdate}
-              serviceInstanceId={serviceInstance.id ?? ''}
-              customDashboard={documentData!}
-              connectionId={''}
-            />
-          )}
+          {updateActions}
           <Button
             onClick={() => {
-              addDownloadNumber();
+              incrementDownloadNumber();
               window.location.href = `/document/get/${slug}/${documentData?.id}`;
             }}>
             {t('Utils.Download')}
@@ -94,7 +72,7 @@ const ShareableResourceSlug: React.FunctionComponent<DashboardSlugProps> = ({
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <ShareableResourceDescription
-          shortDescription={documentData?.short_description}
+          shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
         />
         <div className="flex-1">

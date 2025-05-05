@@ -16,7 +16,7 @@ import {
   getUploaderOrganization,
 } from '../document.domain';
 import { createFileInMinIO, normalizeDocumentName } from '../document.helper';
-import { loadCsvFeedBy, loadCsvFeeds } from './csv-feed.domain';
+import { loadCsvFeeds, loadCsvFeedsBy } from './csv-feed.domain';
 import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
@@ -104,7 +104,7 @@ const resolvers: Resolvers = {
       }
     },
     csvFeed: async (_, { documentId }, context) => {
-      const [parentDocument] = await loadCsvFeedBy(context, {
+      const [parentDocument] = await loadCsvFeedsBy(context, {
         'Document.id': extractId<DocumentId>(documentId),
       } as DocumentMutator);
       return parentDocument;

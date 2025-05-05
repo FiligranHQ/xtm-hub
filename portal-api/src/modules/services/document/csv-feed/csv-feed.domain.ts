@@ -58,7 +58,7 @@ export const loadCsvFeeds = (
   );
 };
 
-export const loadCsvFeedBy = async (
+export const loadCsvFeedsBy = async (
   context: PortalContext,
   field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator,
   opts = {}
