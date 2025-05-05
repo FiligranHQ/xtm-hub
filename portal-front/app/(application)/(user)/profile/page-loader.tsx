@@ -19,7 +19,7 @@ const PageLoader: React.FunctionComponent = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <Profile></Profile>
+      <Profile />
     </>
   );
 };
