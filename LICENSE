@@ -1,1 +1,25 @@
-Copyright (c) 2021-2023 Filigran SAS
+# Business Source License 1.1
+
+## Parameters
+
+Licensor: Filigran
+Licensed Work: XTM Hub
+Additional Use Grant: You may make non-production use of the Licensed Work.
+Change Date: 2025-05-16
+Change License: Private
+
+## Terms
+
+The Licensor hereby grants you the right to copy, modify, create derivative works, redistribute, and make non-production use of the Licensed Work. “Non-production use” means use of the Licensed Work solely for internal development, testing, or evaluation purposes. This license does not grant you the right to use the Licensed Work in a production environment.
+
+Effective on the Change Date, or the fourth anniversary of the first publicly available distribution of a specific version of the Licensed Work under this license, whichever comes first, the license granted hereunder will terminate, and you will be granted a license to the Licensed Work under the Change License, as specified above.
+
+Any use of the Licensed Work other than as expressly permitted above (including, without limitation, in production environments) is prohibited. If you use the Licensed Work in violation of this license, you must purchase a commercial license from the Licensor, or you must refrain from using the Licensed Work.
+
+This license does not grant you any trademark rights, and you may not use the Licensor’s name, logo, or trademarks without prior written permission.
+
+Unless required by applicable law or agreed to in writing, the Licensor provides the Licensed Work “as-is” and makes no representations or warranties of any kind concerning the Licensed Work, express, implied, statutory, or otherwise, including without limitation warranties of title, merchantability, fitness for a particular purpose, non-infringement, or the absence of latent or other defects, accuracy, or the presence or absence of errors, whether or not discoverable.
+
+To the extent permitted by applicable law, in no event will the Licensor be liable to you on any legal theory (including, without limitation, negligence) or otherwise for any direct, special, indirect, incidental, consequential, punitive, exemplary, or other losses, costs, expenses, or damages arising out of this license or use of the Licensed Work.
+
+See https://mariadb.com/bsl11 for more information.
