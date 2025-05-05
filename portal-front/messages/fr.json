@@ -402,6 +402,7 @@
     "UserUpdated": "L'utilisateur {email} a été modifié"
   },
   "UserForm": {
+    "Country": "Pays",
     "Email": "Courriel",
     "Error": {
       "FirstName": "Le prénom est requis",
@@ -414,6 +415,7 @@
     "OrganizationsCapabilitiesPlaceholder": "Capacités supplémentaires",
     "OrganizationsPlaceholder": "Sélectionner une organisation",
     "Password": "Mot de passe",
+    "Picture": "Photo",
     "WhoAreYou": "Qui êtes-vous ?",
     "WhoAreYouDescription": "Dites-nous votre prénom et votre nom",
     "AddOrganization": "Ajouter une organisation"
