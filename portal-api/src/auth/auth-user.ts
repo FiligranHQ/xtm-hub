@@ -1,4 +1,5 @@
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
+import { PortalContext } from '../model/portal-context';
 import { UserInfo } from '../model/user';
 import { loadUserBy, updateUserAtLogin } from '../modules/users/users.domain';
 import { getOrCreateUser } from '../modules/users/users.helper';
@@ -32,12 +33,21 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   return user;
 };
 
-export const authenticateUser = async (req: Request, user: UserInfo) => {
+export const authenticateUser = async (
+  req: Request,
+  res: Response,
+  user: UserInfo
+) => {
   const logged = await loadUserBy({ email: user.email });
   if (!logged || logged.disabled) {
     return;
   }
-  req.session.user = await updateUserAtLogin(logged);
+  const context: PortalContext = {
+    req,
+    res,
+    user: logged,
+  };
+  req.session.user = await updateUserAtLogin(context, logged);
   req.session.save();
   return logged;
 };

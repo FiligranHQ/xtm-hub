@@ -7,8 +7,6 @@ import {
   QueryOpts,
 } from '../../../knexfile';
 import {
-  EditMeUserInput,
-  EditUserInput,
   Filter,
   FilterKey,
   Organization,
@@ -337,58 +335,6 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
   return dbUnsecure<User>('User').where(field);
 };
 
-export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
-  const tx = await dbTx();
-  try {
-    const [updatedUser] = await dbUnsecure<User>('User')
-      .where({ id })
-      .update(fields)
-      .returning('*')
-      .transacting(tx);
-
-    const auth0Client = getAuth0Client();
-    await auth0Client.updateUser({
-      ...fields,
-      email: updatedUser.email,
-    });
-
-    await tx.commit();
-
-    return updatedUser;
-  } catch (err) {
-    await tx.rollback();
-    throw err;
-  }
-};
-
-export const updateMeUser = async (
-  context: PortalContext,
-  input: EditMeUserInput
-): Promise<void> => {
-  if (isEmpty(input)) {
-    return;
-  }
-
-  const tx = await dbTx();
-  try {
-    const [updatedUser] = await db<User>(context, 'User', {
-      queryType: 'update',
-    })
-      .where({ id: context.user.id })
-      .update(input)
-      .returning('email')
-      .transacting(tx);
-
-    const auth0Client = getAuth0Client();
-    await auth0Client.updateUser({ ...input, email: updatedUser.email });
-
-    await tx.commit();
-  } catch (err) {
-    await tx.rollback();
-    throw err;
-  }
-};
-
 export const resetPassword = async (context: PortalContext): Promise<void> => {
   const auth0Client = getAuth0Client();
   await auth0Client.resetPassword(context.user.email);
@@ -397,8 +343,8 @@ export const resetPassword = async (context: PortalContext): Promise<void> => {
 export const updateUser = async (
   context: PortalContext,
   id: UserId,
-  input: Omit<EditUserInput, 'organization_capabilities'>
-) => {
+  input: UserMutator
+): Promise<User> => {
   if (isEmpty(input)) {
     return;
   }
@@ -424,6 +370,7 @@ export const updateUser = async (
     });
 
     await tx.commit();
+    return updatedUser;
   } catch (err) {
     await tx.rollback();
     throw err;
@@ -532,6 +479,7 @@ export const userHasOrganizationWithSubscription = async (
  * #185: If the user has only ONE organization, land him on it rather than its personal space
  */
 export const updateUserAtLogin = async <T extends UserWithOrganizations>(
+  context: PortalContext,
   user: T
 ): Promise<T> => {
   const organizations = user.organizations.filter((o) => !o.personal_space);
@@ -541,7 +489,7 @@ export const updateUserAtLogin = async <T extends UserWithOrganizations>(
   if (organizations.length === 1) {
     fields.selected_organization_id = organizations[0].id;
   }
-  const updatedUser = await updateUnsecureUser(user.id, fields);
+  const updatedUser = await updateUser(context, user.id, fields);
   return {
     ...user,
     selected_organization_id: updatedUser.selected_organization_id,

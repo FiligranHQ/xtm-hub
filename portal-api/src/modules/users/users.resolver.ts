@@ -36,8 +36,6 @@ import {
   loadUserDetails,
   loadUsers,
   resetPassword,
-  updateMeUser,
-  updateUnsecureUser,
   updateUser,
   updateUserAtLogin,
   userHasOrganizationWithSubscription,
@@ -295,7 +293,7 @@ const resolvers: Resolvers = {
 
     editMeUser: async (_, { input }, context) => {
       try {
-        await updateMeUser(context, input);
+        await updateUser(context, context.user.id, input);
         const user = await loadUserDetails({
           'User.id': context.user.id,
         });
@@ -319,7 +317,7 @@ const resolvers: Resolvers = {
       return true;
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
-      const updatedUser = await updateUnsecureUser(context.user.id, {
+      const updatedUser = await updateUser(context, context.user.id, {
         selected_organization_id: fromGlobalId(organization_id)
           .id as OrganizationId,
       });
@@ -358,7 +356,13 @@ const resolvers: Resolvers = {
       try {
         const logged = await loadUserBy({ email });
         if (logged && validPassword(logged, password)) {
-          req.session.user = await updateUserAtLogin(logged);
+          req.session.user = await updateUserAtLogin(
+            {
+              ...context,
+              user: logged,
+            },
+            logged
+          );
           return mapUserToGraphqlUser(logged);
         }
         return undefined;
