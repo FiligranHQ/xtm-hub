@@ -348,8 +348,8 @@ export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
 
     const auth0Client = getAuth0Client();
     await auth0Client.updateUser({
-      email: updatedUser.email,
       ...fields,
+      email: updatedUser.email,
     });
 
     await tx.commit();
@@ -380,7 +380,7 @@ export const updateMeUser = async (
       .transacting(tx);
 
     const auth0Client = getAuth0Client();
-    await auth0Client.updateUser({ email: updatedUser.email, ...input });
+    await auth0Client.updateUser({ ...input, email: updatedUser.email });
 
     await tx.commit();
   } catch (err) {
@@ -419,8 +419,8 @@ export const updateUser = async (
 
     const auth0Client = getAuth0Client();
     await auth0Client.updateUser({
-      email: updatedUser.email,
       ...input,
+      email: updatedUser.email,
     });
 
     await tx.commit();

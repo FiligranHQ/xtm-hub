@@ -50,7 +50,7 @@
     "@graphql-tools/merge": "9.0.7",
     "@graphql-tools/schema": "10.0.6",
     "apollo-errors": "1.9.0",
-    "auth0": "^4.22.0",
+    "auth0": "4.22.0",
     "body-parser": "1.20.3",
     "config": "3.3.12",
     "copyfiles": "2.4.1",
