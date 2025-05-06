@@ -47,9 +47,8 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
     documentData && (
       <ShareableResourceSlug
         breadcrumbValue={breadcrumbValue}
-        documentData={documentData}>
-        <></>
-      </ShareableResourceSlug>
+        documentData={documentData}
+      />
     )
   );
 };

@@ -1,3 +1,4 @@
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import {
   CustomDashboardUpdateForm,
   updateCustomDashboardSchema,
@@ -12,12 +13,14 @@ import {
   IconActionsButton,
 } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import useServiceCapability from '@/hooks/useServiceCapability';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentDetailDeleteMutation } from '@generated/documentDetailDeleteMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
+import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -29,21 +32,17 @@ import { z } from 'zod';
 // Component interface
 interface DashboardUpdateProps {
   customDashboard: documentItem_fragment$data;
-  serviceInstanceId: string;
-  connectionId: string;
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  connectionId?: string;
   variant?: 'menu' | 'button';
-  userCanUpdate: boolean;
-  userCanDelete: boolean;
 }
 
 // Component
 const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   customDashboard,
-  serviceInstanceId,
+  serviceInstance,
   connectionId,
   variant = 'button',
-  userCanUpdate,
-  userCanDelete,
 }) => {
   const t = useTranslations();
   const router = useRouter();
@@ -62,6 +61,15 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
     DocumentUpdateMutation
   );
 
+  const userCanDelete = useServiceCapability(
+    ServiceCapabilityName.Delete,
+    serviceInstance
+  );
+  const userCanUpdate = useServiceCapability(
+    ServiceCapabilityName.Upload,
+    serviceInstance
+  );
+
   const updateDocument = (
     values: z.infer<typeof updateCustomDashboardSchema>
   ) => {
@@ -69,7 +77,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
     updateDocumentMutation({
       variables: {
         documentId: customDashboard.id,
-        serviceInstanceId: serviceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         input: {
           short_description: values.shortDescription,
           product_version: values.productVersion,
@@ -113,12 +121,12 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
       deleteDocumentMutation({
         variables: {
           documentId: customDashboard.id,
-          serviceInstanceId: serviceInstanceId,
+          serviceInstanceId: serviceInstance.id,
           connections: [connectionId],
           forceDelete: true,
         },
         onCompleted() {
-          router.push(`/service/custom_dashboards/${serviceInstanceId}`);
+          router.push(`/service/custom_dashboards/${serviceInstance.id}`);
         },
       });
       revalidatePathActions([`${PUBLIC_DASHBOARD_URL}`]);
@@ -127,12 +135,12 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
       deleteDetailDocumentationMutation({
         variables: {
           documentId: id ?? customDashboard.id,
-          serviceInstanceId: serviceInstanceId,
+          serviceInstanceId: serviceInstance.id,
           forceDelete: true,
         },
         onCompleted() {
           if (!id) {
-            router.push(`/service/custom_dashboards/${serviceInstanceId}`);
+            router.push(`/service/custom_dashboards/${serviceInstance.id}`);
           }
         },
       });
@@ -141,43 +149,45 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   };
 
   return (
-    <div
-      onClick={(event) => {
-        event.stopPropagation();
-      }}>
-      {variant === 'button' ? (
-        <Button
-          variant="outline"
-          onClick={() => {
-            setOpenSheet(true);
-          }}>
-          {t('MenuActions.Update')}
-        </Button>
-      ) : (
-        <IconActionsButton
-          className="normal-case"
-          onClick={() => {
-            setOpenSheet(true);
-          }}
-          aria-label={t('MenuActions.Update')}>
-          {t('MenuActions.Update')}
-        </IconActionsButton>
-      )}
+    (userCanDelete || userCanUpdate) && (
+      <div
+        onClick={(event) => {
+          event.stopPropagation();
+        }}>
+        {variant === 'button' ? (
+          <Button
+            variant="outline"
+            onClick={() => {
+              setOpenSheet(true);
+            }}>
+            {t('MenuActions.Update')}
+          </Button>
+        ) : (
+          <IconActionsButton
+            className="normal-case"
+            onClick={() => {
+              setOpenSheet(true);
+            }}
+            aria-label={t('MenuActions.Update')}>
+            {t('MenuActions.Update')}
+          </IconActionsButton>
+        )}
 
-      <SheetWithPreventingDialog
-        open={openSheet}
-        setOpen={setOpenSheet}
-        title={t('Service.CustomDashboards.UpdateDashboard')}>
-        <CustomDashboardUpdateForm
-          customDashboard={customDashboard}
-          serviceInstanceId={serviceInstanceId}
-          handleSubmit={updateDocument}
-          onDelete={deleteDocument}
-          userCanDelete={userCanDelete}
-          userCanUpdate={userCanUpdate}
-        />
-      </SheetWithPreventingDialog>
-    </div>
+        <SheetWithPreventingDialog
+          open={openSheet}
+          setOpen={setOpenSheet}
+          title={t('Service.CustomDashboards.UpdateDashboard')}>
+          <CustomDashboardUpdateForm
+            customDashboard={customDashboard}
+            serviceInstanceId={serviceInstance.id}
+            handleSubmit={updateDocument}
+            onDelete={deleteDocument}
+            userCanDelete={userCanDelete}
+            userCanUpdate={userCanUpdate}
+          />
+        </SheetWithPreventingDialog>
+      </div>
+    )
   );
 };
 export default DashboardUpdate;

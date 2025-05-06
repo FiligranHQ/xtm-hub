@@ -24,7 +24,7 @@ import { ReactNode } from 'react';
 interface ShareableResourceSlugProps {
   documentData: csvFeedItem_fragment$data | documentItem_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
-  children: ReactNode;
+  children?: ReactNode;
   updateActions?: ReactNode;
 }
 
@@ -36,7 +36,7 @@ const ShareableResourceSlug: React.FunctionComponent<
   const { slug } = useDecodedParams();
 
   const [documentDownloadNumber, setDocumentDownloadNumber] = useState(
-    documentData?.download_number ?? 0
+    documentData.download_number
   );
 
   const incrementDownloadNumber = () => {
@@ -47,14 +47,12 @@ const ShareableResourceSlug: React.FunctionComponent<
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        <h1 className="whitespace-nowrap">{documentData?.name}</h1>
+        <h1 className="whitespace-nowrap">{documentData.name}</h1>
 
-        <BadgeOverflowCounter
-          badges={documentData?.labels as BadgeOverflow[]}
-        />
+        <BadgeOverflowCounter badges={documentData.labels as BadgeOverflow[]} />
 
         <ShareLinkButton
-          documentId={documentData?.id ?? ''}
+          documentId={documentData.id}
           url={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
 

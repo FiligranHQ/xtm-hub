@@ -5,8 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const roundToNearest = (num: number) => {
-  if (num === 0) {
+export const roundToNearest = (num: number | undefined) => {
+  if (num === 0 || !num) {
     return 0;
   }
   const power = Math.floor(Math.log10(num));

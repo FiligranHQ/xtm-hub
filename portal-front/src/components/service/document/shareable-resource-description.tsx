@@ -25,7 +25,7 @@ const ShareableResourceDescription: React.FunctionComponent<
       <section
         data-color-mode={theme}
         className="border rounded border-border-light bg-page-background">
-        <h2 className="p-l">{shortDescription}</h2>
+        <h3 className="p-l">{shortDescription}</h3>
         <MDEditor.Markdown
           className="p-l !bg-page-background"
           source={longDescription}

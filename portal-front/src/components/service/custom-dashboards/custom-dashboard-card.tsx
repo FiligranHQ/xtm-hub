@@ -66,9 +66,7 @@ const CustomDashboardCard = ({
               </>
             }>
             <DashboardUpdate
-              userCanUpdate={userCanUpdate}
-              userCanDelete={userCanDelete}
-              serviceInstanceId={serviceInstance?.id}
+              serviceInstance={serviceInstance}
               customDashboard={customDashboard}
               connectionId={connectionId!}
               variant="menu"

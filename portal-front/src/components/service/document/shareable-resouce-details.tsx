@@ -65,13 +65,13 @@ const ShareableResourceDetails: React.FunctionComponent<
         <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.Downloads')}
         </Label>
-        <span>{roundToNearest(downloadNumber ?? 0)}</span>
+        <span>{roundToNearest(downloadNumber)}</span>
       </div>
       <div>
         <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.Shares')}
         </Label>
-        <span>{roundToNearest(documentData.share_number ?? 0)}</span>
+        <span>{roundToNearest(documentData.share_number)}</span>
       </div>
     </div>
   );
