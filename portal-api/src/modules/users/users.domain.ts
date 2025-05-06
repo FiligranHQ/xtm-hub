@@ -26,7 +26,7 @@ import {
 } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
-import { getAuth0Client } from '../../thirdparty/auth0/factory';
+import { auth0Client } from '../../thirdparty/auth0/client';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
@@ -336,7 +336,6 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
 };
 
 export const resetPassword = async (context: PortalContext): Promise<void> => {
-  const auth0Client = getAuth0Client();
   await auth0Client.resetPassword(context.user.email);
 };
 
@@ -363,7 +362,6 @@ export const updateUser = async (
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }
 
-    const auth0Client = getAuth0Client();
     await auth0Client.updateUser({
       ...input,
       email: updatedUser.email,
