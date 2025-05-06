@@ -132,7 +132,7 @@ const CsvFeedsList = ({
               <ShareableResourceCard
                 key={csvFeed.id}
                 document={csvFeed as unknown as documentItem_fragment$data}
-                detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`} // Both will be modified
+                detailUrl={`/service/csv_feed/${serviceInstance.id}/${csvFeed.id}`}
                 shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
                 <DocumentBento
                   document={csvFeed}
@@ -152,7 +152,7 @@ const CsvFeedsList = ({
           <ShareableResourceCard
             key={csvFeed.id}
             document={csvFeed as unknown as documentItem_fragment$data}
-            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${csvFeed.id}`}
+            detailUrl={`/service/csv_feed/${serviceInstance.id}/${csvFeed.id}`}
             shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
             <DocumentBento
               document={csvFeed}

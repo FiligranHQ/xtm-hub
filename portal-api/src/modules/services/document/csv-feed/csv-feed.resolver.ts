@@ -1,6 +1,9 @@
 import { dbTx } from '../../../../../knexfile';
 import { Resolvers } from '../../../../__generated__/resolvers-types';
-import { DocumentMutator } from '../../../../model/kanel/public/Document';
+import {
+  DocumentId,
+  DocumentMutator,
+} from '../../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../../../utils/app-logger.util';
 import { UnknownError } from '../../../../utils/error.util';
@@ -13,7 +16,7 @@ import {
   getUploaderOrganization,
 } from '../document.domain';
 import { createFileInMinIO, normalizeDocumentName } from '../document.helper';
-import { loadCsvFeeds } from './csv-feed.domain';
+import { loadCsvFeeds, loadCsvFeedsBy } from './csv-feed.domain';
 import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
@@ -99,6 +102,12 @@ const resolvers: Resolvers = {
         logApp.error('Error while fetching csvFeeds:', error);
         throw error;
       }
+    },
+    csvFeed: async (_, { documentId }, context) => {
+      const [parentDocument] = await loadCsvFeedsBy(context, {
+        'Document.id': extractId<DocumentId>(documentId),
+      } as DocumentMutator);
+      return parentDocument;
     },
   },
 };

@@ -6,17 +6,18 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { Avatar, Label } from 'filigran-ui/clients';
 
 import { roundToNearest } from '@/lib/utils';
+import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 
 // Component interface
-interface DashboardDetailsProps {
-  documentData: documentItem_fragment$data;
+interface ShareableResourceDetailsProps {
+  documentData: documentItem_fragment$data | csvFeedItem_fragment$data;
   downloadNumber?: number;
 }
 
-const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
-  documentData,
-}) => {
+const ShareableResourceDetails: React.FunctionComponent<
+  ShareableResourceDetailsProps
+> = ({ documentData, downloadNumber }) => {
   const t = useTranslations();
   return (
     <div className="space-y-xl">
@@ -59,26 +60,21 @@ const DashboardDetails: React.FunctionComponent<DashboardDetailsProps> = ({
           )}
         </span>
       </div>
-      <div>
-        <Label className="block pb-s">
-          {t('Service.CustomDashboards.Details.OpenCTIVersion')}
-        </Label>
-        <span>{documentData.product_version}</span>
-      </div>
+
       <div>
         <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.Downloads')}
         </Label>
-        <span>{roundToNearest(documentData.download_number ?? 0)}</span>
+        <span>{roundToNearest(downloadNumber)}</span>
       </div>
       <div>
         <Label className="block pb-s">
           {t('Service.CustomDashboards.Details.Shares')}
         </Label>
-        <span>{roundToNearest(documentData.share_number ?? 0)}</span>
+        <span>{roundToNearest(documentData.share_number)}</span>
       </div>
     </div>
   );
 };
 
-export default DashboardDetails;
+export default ShareableResourceDetails;

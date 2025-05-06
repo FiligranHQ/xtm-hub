@@ -86,6 +86,7 @@ type Query {
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
   seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
   csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedsConnection!
+  csvFeed(documentId: ID, serviceInstanceId: ID): CsvFeed
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
