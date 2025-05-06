@@ -12,6 +12,7 @@ import {
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
 import { createFileInMinIO, waitForUploads } from '../document/document.helper';
+import { getServiceInstance } from '../service-instance.domain';
 import { createCsvFeed } from './csv-feeds.domain';
 
 const resolvers: Resolvers = {
@@ -33,8 +34,9 @@ const resolvers: Resolvers = {
     uploader: ({ id }, _, context) => getUploader(context, id),
     uploader_organization: ({ id }, _, context) =>
       getUploaderOrganization(context, id),
-    subscription: ({ service_instance }, _, context) =>
-      loadSubscription(context, service_instance.id),
+    service_instance: ({ id }, _, context) => getServiceInstance(context, id),
+    subscription: ({ service_instance_id }, _, context) =>
+      loadSubscription(context, service_instance_id),
   },
   Query: {
     csvFeeds: async (_, input, context) => {

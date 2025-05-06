@@ -140,6 +140,7 @@ type CsvFeed implements Node {
   share_number: Int!
   slug: String
   labels: [Label!]!
+  service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [Document!]
@@ -214,6 +215,7 @@ type CustomDashboard implements Node {
   share_number: Int!
   slug: String!
   labels: [Label]
+  service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [CustomDashboardImage]

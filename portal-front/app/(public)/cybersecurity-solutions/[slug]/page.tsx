@@ -1,4 +1,4 @@
-import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
+import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
@@ -236,20 +236,17 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           <ul
             className={'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l'}>
             {customDashboards.map((customDashboard) => (
-              <CustomDashboardCard
-                serviceInstance={
-                  serviceInstance as unknown as NonNullable<
-                    serviceByIdQuery$data['serviceInstanceById']
-                  >
-                }
-                key={customDashboard.id}
-                customDashboard={
-                  customDashboard as unknown as documentItem_fragment$data
-                }
+              <ShareableResourceCard
+                key={doc.id}
+                document={customDashboard}
                 detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
                 shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
-              />
-            ))}
+                <DocumentBento
+                  document={doc}
+                  serviceInstanceId={serviceInstance.id}
+                />
+              </ShareableResourceCard>
+            )}
           </ul>
         )}
       </>
