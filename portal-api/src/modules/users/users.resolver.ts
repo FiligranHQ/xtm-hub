@@ -293,24 +293,18 @@ const resolvers: Resolvers = {
     },
 
     editMeUser: async (_, { input }, context) => {
-      const trx = await dbTx();
       try {
-        await updateMeUser(context.user.id, input);
+        await updateMeUser(context, input);
         const user = await loadUserDetails({
           'User.id': context.user.id,
         });
 
+        updateUserSession(user);
+
         await dispatch('User', 'edit', user);
-        context.req.session.user = {
-          ...context.user,
-          ...user,
-        };
-
-        await trx.commit();
-
+        await dispatch('MeUser', 'edit', user);
         return user;
       } catch (error) {
-        await trx.rollback();
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error,
         });

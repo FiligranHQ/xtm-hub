@@ -17,6 +17,7 @@ const TEST_SUBSCRIPTION = {
 
 export const GENERIC_CAPABILITY = {
   manageAccess: 'MANAGE_ACCESS',
+  access: 'ACCESS',
 };
 test.describe('Service Management', () => {
   let loginPage: LoginPage;
@@ -63,9 +64,7 @@ test.describe('Service Management', () => {
       await servicePage.editUsersRightsForService(
         TEST_SUBSCRIPTION.userInOrgaEmail
       );
-      await expect(
-        page.getByText(GENERIC_CAPABILITY.manageAccess)
-      ).toBeVisible();
+      await expect(page.getByText(GENERIC_CAPABILITY.access)).toBeVisible();
     });
 
     await test.step('Add user that is not in organization', async () => {

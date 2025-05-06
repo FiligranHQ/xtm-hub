@@ -1,10 +1,19 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { v4 as uuidv4 } from 'uuid';
-import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from 'vitest';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
+  DEFAULT_ADMIN_PASSWORD,
   SERVICE_VAULT_ID,
   SIMPLE_USER_FILIGRAN_ID,
   THALES_ORGA_ID,
@@ -15,6 +24,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import {
   deleteSubscriptionUnsecure,
@@ -86,7 +96,7 @@ describe('User mutation resolver', () => {
     // @ts-ignore
     const response = await usersResolver.Mutation.login(
       undefined,
-      { email: DEFAULT_ADMIN_EMAIL, password: 'admin' },
+      { email: DEFAULT_ADMIN_EMAIL, password: DEFAULT_ADMIN_PASSWORD },
       {
         req: {
           session: {
@@ -107,7 +117,7 @@ describe('User mutation resolver', () => {
           {
             input: {
               email: DEFAULT_ADMIN_EMAIL,
-              password: 'admin',
+              password: DEFAULT_ADMIN_PASSWORD,
             } as AddUserInput,
           },
           contextAdminUser
@@ -127,7 +137,7 @@ describe('User mutation resolver', () => {
         {
           input: {
             email: testMail,
-            password: 'admin',
+            password: DEFAULT_ADMIN_PASSWORD,
           } as AddUserInput,
         },
         contextAdminUser
@@ -156,7 +166,7 @@ describe('User mutation resolver', () => {
         {
           input: {
             email: testMail,
-            password: 'admin',
+            password: DEFAULT_ADMIN_PASSWORD,
             organization_capabilities: [
               {
                 organization_id: toGlobalId(
@@ -202,7 +212,7 @@ describe('User mutation resolver', () => {
           {
             input: {
               email: testMail,
-              password: 'admin',
+              password: DEFAULT_ADMIN_PASSWORD,
               organization_capabilities: [
                 {
                   organization_id: toGlobalId('Organization', THALES_ORGA_ID),
@@ -229,7 +239,7 @@ describe('User mutation resolver', () => {
       {
         input: {
           email: testMail,
-          password: 'admin',
+          password: DEFAULT_ADMIN_PASSWORD,
           organization_capabilities: [
             {
               organization_id: toGlobalId('Organization', THALES_ORGA_ID),
@@ -335,6 +345,60 @@ describe('User mutation resolver', () => {
           contextAdminUser
         );
       });
+    });
+  });
+
+  describe('EditMeUser Mutation', () => {
+    let adminUser: UserLoadUserBy;
+    beforeAll(async () => {
+      adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL });
+      if (!adminUser) {
+        throw new Error('admin user not found');
+      }
+    });
+
+    it('should edit me user', async () => {
+      const newFirstName = 'Roger';
+      const newLastName = 'Testeur';
+      const newCountry = 'France';
+      const newPicture = 'http://picture.com';
+
+      // @ts-expect-error editMeUser is not considered as callable
+      const response = await usersResolver.Mutation.editMeUser(
+        undefined,
+        {
+          input: {
+            first_name: newFirstName,
+            last_name: newLastName,
+            country: newCountry,
+            picture: newPicture,
+          },
+        },
+        contextAdminUser
+      );
+
+      expect(response).toBeTruthy();
+
+      expect(response.first_name).toEqual(newFirstName);
+      expect(response.last_name).toEqual(newLastName);
+      expect(response.country).toEqual(newCountry);
+      expect(response.picture).toEqual(newPicture);
+    });
+
+    afterAll(async () => {
+      // @ts-expect-error editMeUser is not considered as callable
+      await usersResolver.Mutation.editMeUser(
+        undefined,
+        {
+          input: {
+            first_name: adminUser.first_name,
+            last_name: adminUser.last_name,
+            country: adminUser.country,
+            picture: adminUser.picture,
+          },
+        },
+        contextAdminUser
+      );
     });
   });
 });

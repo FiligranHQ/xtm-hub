@@ -3,6 +3,7 @@ import {
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { UnknownError } from '../../../utils/error.util';
+import { loadSubscription } from '../../subcription/subscription.domain';
 import {
   getChildrenDocuments,
   getLabels,
@@ -42,6 +43,8 @@ const resolvers: Resolvers = {
       getUploaderOrganization(context, id, {
         unsecured: true,
       }),
+    subscription: ({ service_instance_id }, _, context) =>
+      loadSubscription(context, service_instance_id),
   },
   Query: {
     csvFeeds: async (_, input, context) => {

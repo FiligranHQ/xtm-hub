@@ -106,6 +106,7 @@ export type CsvFeed = Node & {
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['String']['output'];
   share_number: Scalars['Int']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
   slug?: Maybe<Scalars['String']['output']>;
@@ -232,8 +233,10 @@ export type EditLabelInput = {
 };
 
 export type EditMeUserInput = {
-  first_name: Scalars['String']['input'];
-  last_name: Scalars['String']['input'];
+  country?: InputMaybe<Scalars['String']['input']>;
+  first_name?: InputMaybe<Scalars['String']['input']>;
+  last_name?: InputMaybe<Scalars['String']['input']>;
+  picture?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditServiceCapabilityInput = {
@@ -1048,6 +1051,7 @@ export type TrackingSubscription = {
 export type User = Node & {
   __typename?: 'User';
   capabilities?: Maybe<Array<Capability>>;
+  country?: Maybe<Scalars['String']['output']>;
   disabled?: Maybe<Scalars['Boolean']['output']>;
   email: Scalars['String']['output'];
   first_name?: Maybe<Scalars['String']['output']>;
@@ -1076,6 +1080,7 @@ export type UserEdge = {
 };
 
 export enum UserOrdering {
+  Country = 'country',
   Disabled = 'disabled',
   Email = 'email',
   FirstName = 'first_name',
@@ -1446,6 +1451,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1906,6 +1912,7 @@ export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type UserResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   capabilities?: Resolver<Maybe<Array<ResolversTypes['Capability']>>, ParentType, ContextType>;
+  country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   disabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

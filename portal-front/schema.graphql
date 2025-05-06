@@ -141,6 +141,7 @@ type CsvFeed implements Node {
   slug: String
   labels: [Label!]!
   service_instance: ServiceInstance
+  service_instance_id: String!
   subscription: SubscriptionModel
   children_documents: [Document!]
 }
@@ -577,6 +578,7 @@ enum UserOrdering {
   first_name
   last_name
   disabled
+  country
 }
 
 type Capability implements Node {
@@ -596,6 +598,7 @@ type User implements Node {
   first_name: String
   last_name: String
   picture: String
+  country: String
   disabled: Boolean
   selected_organization_id: String
   organizations: [Organization!]
@@ -634,8 +637,10 @@ input EditUserInput {
 }
 
 input EditMeUserInput {
-  first_name: String!
-  last_name: String!
+  first_name: String
+  last_name: String
+  picture: String
+  country: String
 }
 
 input OrganizationCapabilitiesInput {
