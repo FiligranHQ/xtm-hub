@@ -102,15 +102,14 @@ export const createDocument = async <T extends DocumentModel>(
     Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
   > = []
 ): Promise<T> => {
-  const document = await db<DocumentModel>(context, 'Document')
+  const [document] = await db<DocumentModel>(context, 'Document')
     .insert({
       ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
       uploader_id: context.user.id,
       service_instance_id: context.serviceInstanceId as ServiceInstanceId,
       uploader_organization_id: context.user.selected_organization_id,
     })
-    .returning('*')
-    .first();
+    .returning('*');
 
   if (documentData.parent_document_id) {
     await db<DocumentChildren>(context, 'Document_Children').insert({
