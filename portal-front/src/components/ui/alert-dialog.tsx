@@ -12,7 +12,7 @@ import {
   buttonVariants,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, ReactNode } from 'react';
+import React, { FunctionComponent, ReactNode } from 'react';
 
 interface AlertDialogProps {
   triggerElement?: ReactNode;
@@ -23,7 +23,7 @@ interface AlertDialogProps {
   description?: string;
   actionButtonText?: string;
   children: ReactNode;
-  onClickContinue: () => void;
+  onClickContinue: (e: React.MouseEvent<HTMLButtonElement>) => void;
   variantName?:
     | 'default'
     | 'destructive'
@@ -93,7 +93,7 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
             <AlertDialogCancel>{t('Utils.Cancel')}</AlertDialogCancel>
           )}
           <AlertDialogAction
-            onClick={onClickContinue}
+            onClick={(e) => onClickContinue(e)}
             className={buttonVariants({ variant: variantName })}>
             {actionButtonText}
           </AlertDialogAction>

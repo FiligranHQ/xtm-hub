@@ -232,6 +232,9 @@
         "PublishedPlaceholder": "Le CSV Feed est-il publié?"
       },
       "AddCsvFeed": "Ajouter un CSV Feed",
+      "UpdateCsvFeed": "Editer le CSV Feed {name}",
+      "DeleteCsvFeed": "Supprimer le CSV Feed {name}",
+      "SureDeleteCsvFeed": "Etes-vous sûr de vouloir supprimer le CSV Feed {name}",
       "NonActive": "Brouillon",
       "Active": "Publié"
     },

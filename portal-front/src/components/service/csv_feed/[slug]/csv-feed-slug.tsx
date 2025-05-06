@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { CSVFeedUpdateSheet } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-update-sheet';
 import {
   csvFeedItem,
   CsvFeedQuery,
@@ -48,7 +49,12 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
       <ShareableResourceSlug
         breadcrumbValue={breadcrumbValue}
         documentData={documentData}
-      />
+        updateActions={
+          <CSVFeedUpdateSheet
+            csvFeed={documentData}
+            serviceInstance={serviceInstance}
+          />
+        }></ShareableResourceSlug>
     )
   );
 };

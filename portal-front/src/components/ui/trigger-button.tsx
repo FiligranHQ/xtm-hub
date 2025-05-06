@@ -4,6 +4,7 @@ import * as React from 'react';
 interface CreateButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
+  variant?: 'default' | 'outline' | 'ghost' | 'link' | 'destructive';
 }
 
 const TriggerButton = React.forwardRef<HTMLButtonElement, CreateButtonProps>(

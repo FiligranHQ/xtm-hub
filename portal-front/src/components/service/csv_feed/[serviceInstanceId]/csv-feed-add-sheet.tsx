@@ -1,9 +1,9 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import {
-  CsvFeedCreateForm,
   CsvFeedCreateFormValues,
-} from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-create-form';
+  CsvFeedForm,
+} from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-form';
 import { CsvFeedCreateMutation } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
 import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
@@ -130,7 +130,7 @@ export const CSVFeedAddSheet = ({
           setOpen={setOpenSheet}
           trigger={<TriggerButton label={t('Service.CsvFeed.AddCsvFeed')} />}
           title={t('Service.CsvFeed.AddCsvFeed')}>
-          <CsvFeedCreateForm handleSubmit={handleSubmit} />
+          <CsvFeedForm handleSubmit={handleSubmit} />
         </SheetWithPreventingDialog>
       )}
     </>

@@ -231,6 +231,9 @@
         "PublishedPlaceholder": "Is the CSV Feed published?"
       },
       "AddCsvFeed": "Add new CSV Feed",
+      "UpdateCsvFeed": "Update the CSV Feed {name}",
+      "DeleteCsvFeed": "Delete the CSV Feed {name}",
+      "SureDeleteCsvFeed": "Are you sure you want to delete the CSV Feed {name}?",
       "NonActive": "Draft",
       "Active": "Published"
     },

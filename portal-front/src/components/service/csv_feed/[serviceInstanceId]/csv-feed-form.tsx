@@ -1,6 +1,8 @@
 import { getLabels } from '@/components/admin/label/label.utils';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
 import {
   AutoForm,
   Button,
@@ -16,7 +18,7 @@ import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
-export const csvFeedCreateFormSchema = z.object({
+export const csvFeedFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   short_description: z.string().min(1, 'Required').max(250),
   description: z.string().min(1, 'Required'),
@@ -25,13 +27,21 @@ export const csvFeedCreateFormSchema = z.object({
   document: z.custom<FileList>(fileListCheck),
   illustration: z.custom<FileList>(fileListCheck),
 });
-export type CsvFeedCreateFormValues = z.infer<typeof csvFeedCreateFormSchema>;
+export type CsvFeedCreateFormValues = z.infer<typeof csvFeedFormSchema>;
 
-interface CsvFeedCreateFormProps {
-  handleSubmit: (values: z.infer<typeof csvFeedCreateFormSchema>) => void;
+interface CsvFeedFormProps {
+  userCanDelete?: boolean;
+  handleSubmit?: (values: z.infer<typeof csvFeedFormSchema>) => void;
+  onDelete?: () => void;
+  csvFeed?: csvFeedItem_fragment$data;
 }
 
-export const CsvFeedCreateForm = ({ handleSubmit }: CsvFeedCreateFormProps) => {
+export const CsvFeedForm = ({
+  userCanDelete,
+  handleSubmit,
+  onDelete,
+  csvFeed,
+}: CsvFeedFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet } = useDialogContext();
 
@@ -39,9 +49,10 @@ export const CsvFeedCreateForm = ({ handleSubmit }: CsvFeedCreateFormProps) => {
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
-          handleSubmit(values as z.infer<typeof csvFeedCreateFormSchema>);
+          handleSubmit?.(values as z.infer<typeof csvFeedFormSchema>);
         }}
-        formSchema={csvFeedCreateFormSchema}
+        // For #446 to update CSV Feed values={{ name: 'CSVFeedOne' }}
+        formSchema={csvFeedFormSchema}
         fieldConfig={{
           description: {
             fieldType: ({ field }) => (
@@ -94,7 +105,6 @@ export const CsvFeedCreateForm = ({ handleSubmit }: CsvFeedCreateFormProps) => {
               allowedTypes: 'image/jpeg, image/png',
             },
           },
-
           active: {
             label: t('Service.CsvFeed.Form.PublishedPlaceholder'),
           },
@@ -106,6 +116,32 @@ export const CsvFeedCreateForm = ({ handleSubmit }: CsvFeedCreateFormProps) => {
           },
         }}>
         <SheetFooter className="pt-2">
+          {userCanDelete && (
+            <AlertDialogComponent
+              actionButtonText={t('Utils.Delete')}
+              variantName={'destructive'}
+              AlertTitle={t('Service.CsvFeed.DeleteCsvFeed', {
+                name: csvFeed?.name,
+              })}
+              triggerElement={
+                <Button
+                  variant="outline-destructive"
+                  className=""
+                  aria-label={t('Service.CsvFeed.DeleteCsvFeed', {
+                    name: csvFeed?.name,
+                  })}>
+                  {t('Utils.Delete')}
+                </Button>
+              }
+              onClickContinue={(e: React.MouseEvent<HTMLButtonElement>) => {
+                onDelete?.();
+                handleCloseSheet(e);
+              }}>
+              {t('Service.CsvFeed.SureDeleteCsvFeed', {
+                name: csvFeed?.name,
+              })}
+            </AlertDialogComponent>
+          )}
           <div className="flex gap-s">
             <Button
               variant="outline"

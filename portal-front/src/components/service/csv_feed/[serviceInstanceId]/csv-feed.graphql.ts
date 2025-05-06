@@ -47,6 +47,24 @@ export const CsvFeedCreateMutation = graphql`
   }
 `;
 
+export const CsvFeedDeleteMutation = graphql`
+  mutation csvFeedDeleteMutation(
+    $documentId: ID
+    $connections: [ID!]!
+    $serviceInstanceId: String
+    $forceDelete: Boolean
+  ) {
+    deleteCsvFeed(
+      documentId: $documentId
+      service_instance_id: $serviceInstanceId
+      forceDelete: $forceDelete
+    ) {
+      id @deleteEdge(connections: $connections)
+      file_name
+    }
+  }
+`;
+
 export const csvFeedItem = graphql`
   fragment csvFeedItem_fragment on CsvFeed @inline {
     id

@@ -6,7 +6,6 @@ import {
 } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
 
 import { SearchInput } from '@/components/ui/search-input';
-import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { debounceHandleInput } from '@/utils/debounce';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
@@ -16,12 +15,11 @@ import {
 import { MultiSelectFormField } from 'filigran-ui';
 
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import CsvFeedCard from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-card';
 import CsvFeedButtons from '@/components/service/csv_feed/[serviceInstanceId]/csv-feeds-list-buttons';
-import DocumentBento from '@/components/ui/document-bento';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { csvFeedsList$key } from '@generated/csvFeedsList.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
@@ -129,16 +127,14 @@ const CsvFeedsList = ({
               'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
             }>
             {_nonActive.map((csvFeed) => (
-              <ShareableResourceCard
+              <CsvFeedCard
+                connectionId={data!.csvFeeds!.__id}
                 key={csvFeed.id}
-                document={csvFeed as unknown as documentItem_fragment$data}
+                csvFeed={csvFeed}
+                serviceInstance={serviceInstance}
                 detailUrl={`/service/csv_feed/${serviceInstance.id}/${csvFeed.id}`}
-                shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
-                <DocumentBento
-                  document={csvFeed}
-                  serviceInstanceId={serviceInstance.id}
-                />
-              </ShareableResourceCard>
+                shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
+              />
             ))}
           </ul>
           <div className="txt-category">{t('Service.CsvFeed.Active')}:</div>
@@ -149,16 +145,14 @@ const CsvFeedsList = ({
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
         }>
         {active.map((csvFeed) => (
-          <ShareableResourceCard
+          <CsvFeedCard
             key={csvFeed.id}
-            document={csvFeed as unknown as documentItem_fragment$data}
+            csvFeed={csvFeed}
+            connectionId={data!.csvFeeds!.__id}
+            serviceInstance={serviceInstance}
             detailUrl={`/service/csv_feed/${serviceInstance.id}/${csvFeed.id}`}
-            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}>
-            <DocumentBento
-              document={csvFeed}
-              serviceInstanceId={serviceInstance.id}
-            />
-          </ShareableResourceCard>
+            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
+          />
         ))}
       </ul>
     </div>
