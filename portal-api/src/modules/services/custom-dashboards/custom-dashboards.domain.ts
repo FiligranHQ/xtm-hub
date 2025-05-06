@@ -84,7 +84,6 @@ export const createCustomDashboard = async (
     },
     ['product_version']
   );
-  console.log('Dashboard created:', dashboard);
   if (files.length > 0) {
     await Promise.all(
       files.map((file) => {
