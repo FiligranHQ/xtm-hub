@@ -17,7 +17,6 @@ type CsvFeed implements Node {
   slug: String
   labels: [Label!]!
   service_instance: ServiceInstance
-  service_instance_id: String!
   subscription: SubscriptionModel
   children_documents: [Document!]
 }

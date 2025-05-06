@@ -27,24 +27,14 @@ const resolvers: Resolvers = {
     },
   },
   CsvFeed: {
-    labels: ({ id }, _, context) =>
-      getLabels(context, id, {
-        unsecured: true,
-      }),
+    labels: ({ id }, _, context) => getLabels(context, id),
     children_documents: ({ id }, _, context) =>
-      getChildrenDocuments(context, id, {
-        unsecured: true,
-      }),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, {
-        unsecured: true,
-      }),
+      getChildrenDocuments(context, id),
+    uploader: ({ id }, _, context) => getUploader(context, id),
     uploader_organization: ({ id }, _, context) =>
-      getUploaderOrganization(context, id, {
-        unsecured: true,
-      }),
-    subscription: ({ service_instance_id }, _, context) =>
-      loadSubscription(context, service_instance_id),
+      getUploaderOrganization(context, id),
+    subscription: ({ service_instance }, _, context) =>
+      loadSubscription(context, service_instance.id),
   },
   Query: {
     csvFeeds: async (_, input, context) => {

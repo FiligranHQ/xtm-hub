@@ -3,9 +3,11 @@ import {
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { UnknownError } from '../../../utils/error.util';
+import { loadSubscription } from '../../subcription/subscription.domain';
 import {
   getLabels,
   getUploader,
+  getUploaderOrganization,
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
 import {
@@ -33,15 +35,13 @@ const resolvers: Resolvers = {
       }),
   },
   CustomDashboard: {
+    labels: ({ id }, _, context) => getLabels(context, id),
     children_documents: ({ id }) => loadImagesByCustomDashboardId(id),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, {
-        unsecured: true,
-      }),
-    labels: ({ id }, _, context) =>
-      getLabels(context, id, {
-        unsecured: true,
-      }),
+    uploader: ({ id }, _, context) => getUploader(context, id),
+    uploader_organization: ({ id }, _, context) =>
+      getUploaderOrganization(context, id),
+    subscription: ({ service_instance }, _, context) =>
+      loadSubscription(context, service_instance.id),
   },
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
