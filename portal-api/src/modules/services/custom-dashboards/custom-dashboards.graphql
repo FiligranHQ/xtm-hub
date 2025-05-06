@@ -33,6 +33,7 @@ input CreateCustomDashboardInput {
 
 type CustomDashboard implements Node {
   id: ID!
+  type: String!
   uploader: User
   uploader_organization: Organization
   name: String

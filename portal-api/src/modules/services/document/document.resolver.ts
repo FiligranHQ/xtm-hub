@@ -1,6 +1,6 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { Document, Resolvers } from '../../../__generated__/resolvers-types';
-import {
+import { Resolvers } from '../../../__generated__/resolvers-types';
+import Document, {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
@@ -14,7 +14,6 @@ import { getServiceInstance } from '../service-instance.domain';
 import {
   deleteDocument,
   getChildrenDocuments,
-  getLabels,
   getUploader,
   getUploaderOrganization,
   incrementShareNumber,
@@ -111,10 +110,6 @@ const resolvers: Resolvers = {
       }),
     uploader_organization: ({ id }, _, context) =>
       getUploaderOrganization(context, id, {
-        unsecured: true,
-      }),
-    labels: ({ id }, _, context) =>
-      getLabels(context, id, {
         unsecured: true,
       }),
     service_instance: ({ service_instance_id }, _, context) => {

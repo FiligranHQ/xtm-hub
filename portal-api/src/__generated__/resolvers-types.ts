@@ -110,6 +110,7 @@ export type CsvFeed = Node & {
   short_description?: Maybe<Scalars['String']['output']>;
   slug?: Maybe<Scalars['String']['output']>;
   subscription?: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
@@ -147,6 +148,7 @@ export type CustomDashboard = Node & {
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
@@ -177,11 +179,9 @@ export type Document = Node & {
   children_documents?: Maybe<Array<Document>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  document_metadata?: Maybe<Array<Maybe<DocumentMetadata>>>;
   download_number: Scalars['Int']['output'];
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  labels: Array<Label>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
@@ -190,6 +190,7 @@ export type Document = Node & {
   short_description?: Maybe<Scalars['String']['output']>;
   slug?: Maybe<Scalars['String']['output']>;
   subscription?: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
@@ -209,13 +210,6 @@ export type DocumentEdge = {
   node: Document;
 };
 
-export type DocumentMetadata = {
-  __typename?: 'DocumentMetadata';
-  document_id: Scalars['ID']['output'];
-  key?: Maybe<Scalars['String']['output']>;
-  value?: Maybe<Scalars['String']['output']>;
-};
-
 export enum DocumentOrdering {
   CreatedAt = 'created_at',
   Description = 'description',
@@ -226,7 +220,6 @@ export enum DocumentOrdering {
 export type EditDocumentInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
@@ -364,7 +357,6 @@ export type MutationAddDocumentArgs = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   document?: InputMaybe<Scalars['Upload']['input']>;
-  labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
   parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
@@ -1258,7 +1250,6 @@ export type ResolversTypes = ResolversObject<{
   Document: ResolverTypeWrapper<Document>;
   DocumentConnection: ResolverTypeWrapper<DocumentConnection>;
   DocumentEdge: ResolverTypeWrapper<DocumentEdge>;
-  DocumentMetadata: ResolverTypeWrapper<DocumentMetadata>;
   DocumentOrdering: DocumentOrdering;
   EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
@@ -1354,7 +1345,6 @@ export type ResolversParentTypes = ResolversObject<{
   Document: Document;
   DocumentConnection: DocumentConnection;
   DocumentEdge: DocumentEdge;
-  DocumentMetadata: DocumentMetadata;
   EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
@@ -1460,6 +1450,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -1497,6 +1488,7 @@ export type CustomDashboardResolvers<ContextType = PortalContext, ParentType ext
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -1531,11 +1523,9 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   children_documents?: Resolver<Maybe<Array<ResolversTypes['Document']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  document_metadata?: Resolver<Maybe<Array<Maybe<ResolversTypes['DocumentMetadata']>>>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
@@ -1544,6 +1534,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -1561,13 +1552,6 @@ export type DocumentConnectionResolvers<ContextType = PortalContext, ParentType 
 export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DocumentEdge'] = ResolversParentTypes['DocumentEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Document'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type DocumentMetadataResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DocumentMetadata'] = ResolversParentTypes['DocumentMetadata']> = ResolversObject<{
-  document_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2011,7 +1995,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
-  DocumentMetadata?: DocumentMetadataResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Label?: LabelResolvers<ContextType>;

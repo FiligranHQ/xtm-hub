@@ -62,7 +62,6 @@ const CustomDashboardsList = ({
   );
 
   const [active, nonActive] = useMemo(() => {
-    console.log(data);
     return data?.customDashboards.edges.reduce<
       [
         customDashboardsItem_fragment$data[],

@@ -1,7 +1,7 @@
 'use client';
 
 import { customDashboardListLocalStorage } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-list-localstorage';
-import CustomDashbordDocumentList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
+import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
 import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboards.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -39,7 +39,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   return (
     <>
       {queryRef ? (
-        <CustomDashbordDocumentList
+        <CustomDashboardsList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           search={search}

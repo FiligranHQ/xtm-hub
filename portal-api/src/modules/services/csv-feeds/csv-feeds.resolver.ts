@@ -2,7 +2,6 @@ import {
   CsvFeedConnection,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
-import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
 import {
   getChildrenDocuments,
@@ -46,15 +45,10 @@ const resolvers: Resolvers = {
   },
   Query: {
     csvFeeds: async (_, input, context) => {
-      try {
-        return loadParentDocumentsByServiceInstance<CsvFeedConnection>(
-          context,
-          input
-        );
-      } catch (error) {
-        logApp.error('Error while fetching csvFeeds:', error);
-        throw error;
-      }
+      return loadParentDocumentsByServiceInstance<CsvFeedConnection>(
+        context,
+        input
+      );
     },
   },
 };

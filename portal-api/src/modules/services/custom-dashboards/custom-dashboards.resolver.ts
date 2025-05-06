@@ -32,6 +32,17 @@ const resolvers: Resolvers = {
         unsecured: true,
       }),
   },
+  CustomDashboard: {
+    children_documents: ({ id }) => loadImagesByCustomDashboardId(id),
+    uploader: ({ id }, _, context) =>
+      getUploader(context, id, {
+        unsecured: true,
+      }),
+    labels: ({ id }, _, context) =>
+      getLabels(context, id, {
+        unsecured: true,
+      }),
+  },
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
       const dashboards =

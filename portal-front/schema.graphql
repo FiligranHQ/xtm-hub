@@ -26,7 +26,7 @@ type Mutation {
   deleteOrganization(id: ID!): Organization
   createCsvFeed(input: CreateCsvFeedInput!, document: Upload!, serviceInstanceId: String!): CsvFeed
   createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard
-  addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean, slug: String, type: String!): Document!
+  addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
@@ -124,6 +124,7 @@ type RolePortal implements Node {
 
 type CsvFeed implements Node {
   id: ID!
+  type: String!
   uploader: User
   uploader_organization: Organization
   name: String
@@ -197,6 +198,7 @@ input CreateCustomDashboardInput {
 
 type CustomDashboard implements Node {
   id: ID!
+  type: String!
   uploader: User
   uploader_organization: Organization
   name: String
@@ -252,14 +254,9 @@ enum DocumentOrdering {
   download_number
 }
 
-type DocumentMetadata {
-  document_id: ID!
-  key: String
-  value: String
-}
-
 type Document implements Node {
   id: ID!
+  type: String!
   uploader: User
   uploader_organization: Organization
   service_instance_id: String!
@@ -275,8 +272,6 @@ type Document implements Node {
   download_number: Int!
   share_number: Int!
   children_documents: [Document!]
-  document_metadata: [DocumentMetadata]
-  labels: [Label!]!
   slug: String
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -284,7 +279,6 @@ type Document implements Node {
 
 input EditDocumentInput {
   short_description: String
-  labels: [String!]
   description: String
   uploader_organization_id: String
   name: String

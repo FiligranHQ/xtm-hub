@@ -1,9 +1,12 @@
-import {
-  CreateCsvFeedInput,
-  CsvFeed,
-} from '../../../__generated__/resolvers-types';
+import { CreateCsvFeedInput } from '../../../__generated__/resolvers-types';
 import { PortalContext } from '../../../model/portal-context';
-import { createDocument, MinioFile } from '../document/document.helper';
+import {
+  createDocument,
+  Document,
+  MinioFile,
+} from '../document/document.helper';
+
+export type CsvFeed = Document;
 
 export const createCsvFeed = async (
   inputData: CreateCsvFeedInput,
@@ -12,6 +15,7 @@ export const createCsvFeed = async (
 ) => {
   return createDocument<CsvFeed>(context, {
     ...inputData,
+    labels: inputData.labels,
     file_name: file.fileName,
     minio_name: file.minioName,
     mime_type: file.mimeType,

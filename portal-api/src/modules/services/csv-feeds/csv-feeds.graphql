@@ -1,5 +1,6 @@
 type CsvFeed implements Node {
   id: ID!
+  type: String!
   uploader: User
   uploader_organization: Organization
   name: String

@@ -332,7 +332,22 @@ export const getUploaderOrganization = async (
   return organization;
 };
 
-export const getLabels = (context, documentId, opts = {}): Promise<Label[]> =>
+export const getLabels = (
+  context: PortalContext,
+  documentId: string,
+  opts: Partial<QueryOpts> = {}
+): Promise<Label[]> =>
+  db<Label>(context, 'Label', opts)
+    .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
+    .where('ol.object_id', '=', documentId)
+    .returning('Label.*');
+
+export const getMetadata = (
+  context: PortalContext,
+  documentId: string,
+  metadataKeys: string[],
+  opts: Partial<QueryOpts> = {}
+): Promise<Label[]> =>
   db<Label>(context, 'Label', opts)
     .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
     .where('ol.object_id', '=', documentId)

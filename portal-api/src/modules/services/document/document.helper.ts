@@ -1,28 +1,26 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { db, dbUnsecure } from '../../../../knexfile';
-import {
-  CsvFeed,
-  CustomDashboard,
-  Document as DocumentResolverType,
-} from '../../../__generated__/resolvers-types';
+import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
 import {
   DocumentId,
+  default as DocumentModel,
   DocumentMutator,
-  default as DocumentType,
 } from '../../../model/kanel/public/Document';
 import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
-import DocumentMetadata from '../../../model/kanel/public/DocumentMetadata';
+import DocumentMetadata, {
+  DocumentMetadataKey,
+} from '../../../model/kanel/public/DocumentMetadata';
 import Label, { LabelId } from '../../../model/kanel/public/Label';
 import ObjectLabel, {
   ObjectLabelObjectId,
 } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
-import { extractId, pick } from '../../../utils/utils';
+import { extractId, omit } from '../../../utils/utils';
 import { sendFileToS3 } from './document.domain';
 
-export type Document = DocumentType & { labels: Label[] };
-export type FullDocumentMutator = DocumentMutator & {
+export type Document = DocumentModel & { labels: Label[] };
+export type FullDocumentMutator = Partial<DocumentModel> & {
   labels?: string[];
   parent_document_id?: DocumentId;
 };
@@ -94,52 +92,36 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const createDocument = async <
-  T extends DocumentResolverType | CustomDashboard | CsvFeed,
->(
+export const createDocument = async <T extends DocumentModel>(
   context: PortalContext,
-  { labels, parent_document_id, ...documentData }: FullDocumentMutator,
-  metadataKeys: Array<keyof T> = []
+  documentData: Omit<Partial<T>, 'labels'> & {
+    labels?: string[];
+    parent_document_id?: string;
+  },
+  metadataKeys: Array<
+    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+  > = []
 ): Promise<T> => {
-  const [document] = await db<DocumentType>(context, 'Document')
+  const document = await db<DocumentModel>(context, 'Document')
     .insert({
-      ...pick(documentData, [
-        'id',
-        'uploader_id',
-        'service_instance_id',
-        'description',
-        'file_name',
-        'minio_name',
-        'active',
-        'created_at',
-        'download_number',
-        'remover_id',
-        'mime_type',
-        'name',
-        'updated_at',
-        'updater_id',
-        'short_description',
-        'slug',
-        'share_number',
-        'uploader_organization_id',
-        'type',
-      ]),
+      ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
       uploader_id: context.user.id,
       service_instance_id: context.serviceInstanceId as ServiceInstanceId,
       uploader_organization_id: context.user.selected_organization_id,
     })
-    .returning('*');
+    .returning('*')
+    .first();
 
-  if (parent_document_id) {
+  if (documentData.parent_document_id) {
     await db<DocumentChildren>(context, 'Document_Children').insert({
-      parent_document_id: parent_document_id,
+      parent_document_id: documentData.parent_document_id as DocumentId,
       child_document_id: document.id,
     });
   }
 
-  if (labels?.length) {
+  if (documentData.labels?.length) {
     await db<ObjectLabel>(context, 'Object_Label').insert(
-      labels.map((id) => ({
+      documentData.labels.map((id: string) => ({
         object_id: document.id as unknown as ObjectLabelObjectId,
         label_id: extractId(id) as LabelId,
       }))
@@ -148,15 +130,24 @@ export const createDocument = async <
 
   if (metadataKeys.length) {
     await db<DocumentMetadata>(context, 'Document_Metadata').insert(
-      metadataKeys.map((key: any) => ({
+      metadataKeys.map((key) => ({
         document_id: document.id,
-        key,
-        value: documentData[key],
+        key: key as DocumentMetadataKey,
+        value: documentData[key] as string,
       }))
     );
+
+    const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+      .select(['Document_Metadata.*'])
+      .where('Document_Metadata.document_id', '=', document.id)
+      .andWhere('Document_Metadata.key', 'IN', metadataKeys);
+
+    for (const metadata of metadatas) {
+      document[metadata.key] = metadata.value;
+    }
   }
 
-  return document as unknown as T;
+  return document as T;
 };
 
 export const uploadNewFile = async (

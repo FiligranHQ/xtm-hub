@@ -5,14 +5,9 @@ enum DocumentOrdering {
   download_number
 }
 
-type DocumentMetadata {
-  document_id: ID!
-  key: String
-  value: String
-}
-
 type Document implements Node {
   id: ID!
+  type: String!
   uploader: User
   uploader_organization: Organization
   service_instance_id: String!
@@ -28,8 +23,6 @@ type Document implements Node {
   download_number: Int!
   share_number: Int!
   children_documents: [Document!]
-  document_metadata: [DocumentMetadata]
-  labels: [Label!]!
   slug: String
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -37,7 +30,6 @@ type Document implements Node {
 
 input EditDocumentInput {
   short_description: String
-  labels: [String!]
   description: String
   uploader_organization_id: String
   name: String
@@ -53,7 +45,6 @@ type Mutation {
     description: String
     service_instance_id: String
     parentDocumentId: ID
-    labels: [String!]
     active: Boolean
     slug: String
     type: String!

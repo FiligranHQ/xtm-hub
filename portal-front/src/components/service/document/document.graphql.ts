@@ -9,7 +9,6 @@ export const DocumentAddMutation = graphql`
     $serviceInstanceId: String
     $active: Boolean
     $parentDocumentId: ID
-    $labels: [String!]
     $slug: String
     $connections: [ID!]!
     $type: String!
@@ -17,7 +16,6 @@ export const DocumentAddMutation = graphql`
     addDocument(
       document: $document
       name: $name
-      labels: $labels
       short_description: $shortDescription
       description: $description
       service_instance_id: $serviceInstanceId
@@ -110,6 +108,7 @@ export const DocumentExistsQuery = graphql`
 export const documentItem = graphql`
   fragment documentItem_fragment on Document @inline {
     id
+    type
     file_name
     created_at
     name
@@ -119,11 +118,6 @@ export const documentItem = graphql`
     share_number
     active
     updated_at
-    labels {
-      id
-      name
-      color
-    }
     uploader {
       first_name
       last_name

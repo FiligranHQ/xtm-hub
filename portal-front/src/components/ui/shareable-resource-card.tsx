@@ -26,7 +26,7 @@ interface ShareableResourceCardProps {
 const isCustomDashboard = (
   document: ShareableResource
 ): document is customDashboardsItem_fragment$data => {
-  return 'customDashboard' in document;
+  return document.type === 'custom_dashboard';
 };
 
 const ShareableResourceCard = ({

@@ -13,36 +13,7 @@ export const CsvFeedsCreateMutation = graphql`
       serviceInstanceId: $serviceInstanceId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
-      id
-      name
-      file_name
-      created_at
-      active
-      short_description
-      uploader {
-        first_name
-        last_name
-        picture
-      }
-      labels {
-        id
-        name
-        color
-      }
-      children_documents {
-        id
-        file_name
-        created_at
-        name
-        description
-        download_number
-        active
-      }
-      uploader_organization {
-        id
-        name
-        personal_space
-      }
+      ...csvFeedsItem_fragment
     }
   }
 `;
@@ -50,6 +21,7 @@ export const CsvFeedsCreateMutation = graphql`
 export const csvFeedsItem = graphql`
   fragment csvFeedsItem_fragment on CsvFeed @inline {
     id
+    type
     file_name
     created_at
     name

@@ -1,12 +1,13 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { dbUnsecure } from '../../../../knexfile';
-import {
-  CreateCustomDashboardInput,
-  CustomDashboard,
-} from '../../../__generated__/resolvers-types';
+import { CreateCustomDashboardInput } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
 import { createDocument, MinioFile } from '../document/document.helper';
+
+export type CustomDashboard = Document & {
+  product_version: string;
+};
 
 export const loadSeoCustomDashboardsByServiceSlug = async (
   serviceSlug: string

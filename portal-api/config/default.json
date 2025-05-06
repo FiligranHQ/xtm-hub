@@ -20,8 +20,8 @@
     "issuer": "http://localhost:8080/realms/keycloak-express",
     "client_id": "keycloak-express",
     "client_secret": "long_secret-here",
-    "redirect_uris": ["http://localhost:3001/auth/oidc/callback"],
-    "logout_callback_url": ["http://localhost:3001/oidc/callback"],
+    "redirect_uris": ["http://localhost:3002/auth/oidc/callback"],
+    "logout_callback_url": ["http://localhost:3002/oidc/callback"],
     "response_types": ["code"]
   },
   "minio": {

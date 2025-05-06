@@ -25,6 +25,7 @@ export const CustomDashboardsCreateMutation = graphql`
 export const customDashboardsItem = graphql`
   fragment customDashboardsItem_fragment on CustomDashboard @inline {
     id
+    type
     file_name
     created_at
     name
