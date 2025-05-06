@@ -114,7 +114,7 @@ type Mutation {
   changeSelectedOrganization(organization_id: ID!): User @auth
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
     @auth(requires: [MANAGE_ACCESS])
-  resetPassword: Boolean @auth
+  resetPassword: Success! @auth
 
   # Login
   login(email: String!, password: String): User

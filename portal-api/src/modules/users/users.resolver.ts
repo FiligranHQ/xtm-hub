@@ -314,7 +314,7 @@ const resolvers: Resolvers = {
     },
     resetPassword: async (_, __, context) => {
       await resetPassword(context);
-      return true;
+      return { success: true };
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateUser(context, context.user.id, {
