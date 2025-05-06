@@ -72,7 +72,9 @@ const addBasicMetaInformation = (
   error: Error,
   meta: Record<string, unknown>
 ) => {
-  const logMeta = { ...meta };
+  const logMeta = {
+    ...omit(meta, process.env.LOCAL_DEV === 'true' ? ['user'] : []),
+  };
   if (error) logMeta.errors = buildMetaErrors(error);
   return { category, version: pjson.version, ...logMeta };
 };
@@ -97,14 +99,19 @@ export const logApp = {
     meta: Record<string, unknown> = {},
     category: AppLogsCategory = AppLogsCategory.BACKEND
   ) => {
-    appLogger.log(
-      level,
-      message,
-      addBasicMetaInformation(category, error, {
-        ...meta,
-        source: 'backend',
-      })
-    );
+    if (process.env.LOCAL_DEV === 'true' && meta.codeStack) {
+      console.error('Original error:');
+      console.error(meta.codeStack);
+    } else {
+      appLogger.log(
+        level,
+        message,
+        addBasicMetaInformation(category, error, {
+          ...meta,
+          source: 'backend',
+        })
+      );
+    }
   },
   _logWithError: (
     level: AppLogsLevel,

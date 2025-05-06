@@ -4,6 +4,7 @@ import { Filter, FilterKey } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
 import { applyDbSecurity } from './src/security/access';
+import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 
 declare module 'knex' {
@@ -59,6 +60,7 @@ interface Pagination {
 const knex = pkg;
 
 const config: Knex.Config = {
+  asyncStackTraces: process.env.LOCAL_DEV === 'true',
   client: 'pg',
   connection: {
     host: portalConfig.database.host,
@@ -86,6 +88,11 @@ const config: Knex.Config = {
     }
     // Nothing found
     return undefined;
+  },
+  log: {
+    warn: logApp.warn,
+    error: logApp.error,
+    debug: logApp.debug,
   },
 };
 
