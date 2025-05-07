@@ -227,9 +227,13 @@
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le CSV Feed.",
         "LabelsLabel": "Labels",
+        "CsvFeedFile": "Fichier Csv Feed",
+        "CsvFeedIllustration": "Illustration",
         "PublishedPlaceholder": "Le CSV Feed est-il publié?"
       },
-      "AddCsvFeed": "Ajouter un CSV Feed"
+      "AddCsvFeed": "Ajouter un CSV Feed",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
     },
     "CustomDashboards": {
       "Actions": {
@@ -384,7 +388,7 @@
     "Disable": "Désactiver",
     "Enable": "Activer",
     "RemoveUser": "Retirer l'utilisateur",
-    "SearchUserWithEmail": "Rechercher l'utilisateur par email...",
+    "SearchUser": "Rechercher l'utilisateur...",
     "UpdateUser": "Mettre à jour l'utilisateur",
     "UserCreated": "L'utilisateur {email} a été créé",
     "UserDeleted": "L'utilisateur {email} a été supprimé",
@@ -413,6 +417,7 @@
     "FirstName": "Prénom",
     "LastLogin": "Dernière connexion",
     "LastName": "Nom de famille",
+    "Country": "Pays",
     "Never": "Jamais",
     "Organizations": "Organisations",
     "Roles": "Rôles",

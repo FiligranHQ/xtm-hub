@@ -27,6 +27,8 @@ export default interface User {
   disabled: boolean | null;
 
   last_login: Date | null;
+
+  country: string | null;
 }
 
 /** Represents the initializer for the table public.User */
@@ -50,6 +52,8 @@ export interface UserInitializer {
   disabled?: boolean | null;
 
   last_login?: Date | null;
+
+  country?: string | null;
 }
 
 /** Represents the mutator for the table public.User */
@@ -73,4 +77,6 @@ export interface UserMutator {
   disabled?: boolean | null;
 
   last_login?: Date | null;
+
+  country?: string | null;
 }

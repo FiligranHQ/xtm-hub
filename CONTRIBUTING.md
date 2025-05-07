@@ -1,16 +1,16 @@
 # Contributing to XTM Hub
 
-Thank you for reading this documentation and considering making your contribution to the project. Any contribution that helps us improve the platform is valuable and much appreciated. 
+Thank you for reading this documentation and considering making your contribution to the project. Any contribution that helps us improve the platform is valuable and much appreciated.
 
 In order to help you understand the project, where we are heading and how you can contribute, below are several resources and answers.
 
-Do not hesitate to shoot us an [email](mailto:contact@filigran.io) or join us on our [Slack channel](https://community.filigran.io). Most of the articles below are an introduction for our [detailed documentation](https://docs.xtmhub.filigran.io/latest/).
+Do not hesitate to shoot us an [email](mailto:contact@filigran.io) or join us on our [Slack channel](https://community.filigran.io). Most of the articles below are an introduction for our [detailed documentation](https://docs.hub.filigran.io/latest/).
 
 
 ## Why contribute?
 
 [XTM Hub](https://filigran.io/solutions/xtm-hub/) is the **unified entry point** for Filigran's ecosystem.
-It allows community members, prospects and customers to easily discover our offerings, access resources, and engage with one another (if you want to know more about XTM Hub, you can read the [detailed documentation](https://docs.xtmhub.filigran.io/latest/)).
+It allows community members, prospects and customers to easily discover our offerings, access resources, and engage with one another (if you want to know more about XTM Hub, you can read the [detailed documentation](https://docs.hub.filigran.io/latest/)).
 
 Whether you are an organisation or an individual working or studying in the field of cybersecurity and cyberdefense, or simply as an individual looking for a technical challenge, contributing to the XTM Hub project may represent a great opportunity for you.
 
@@ -34,7 +34,7 @@ For general suggestions or questions about the project or the documentation, you
 
 * You can look through opened issues and help triage them (ask for more information, suggest workarounds, suggest label, flag issues etc.)
 
-* If you are interested in contributing to the development of XTM Hub, please refer to the [detailed documentation](https://docs.xtmhub.filigran.io/latest/). You can either fix an issue that is meaningful to you or develop a feature requested by others.
+* If you are interested in contributing to the development of XTM Hub, please refer to the [detailed documentation](https://docs.hub.filigran.io/latest/). You can either fix an issue that is meaningful to you or develop a feature requested by others.
 
 * All commits messages must be formatted as: `[package] <type>(<scope>): Message (#issueNumber)`.
 

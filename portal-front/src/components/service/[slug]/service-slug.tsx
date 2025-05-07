@@ -1,4 +1,5 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 
 import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/service-slug-add-orga-form';
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
@@ -15,7 +16,6 @@ import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing
 import useAdminPath from '@/hooks/useAdminPath';
 import { i18nKey } from '@/utils/datatable';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
@@ -30,7 +30,6 @@ import {
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
-
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
   serviceId: string;

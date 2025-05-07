@@ -169,9 +169,9 @@ const resolvers: Resolvers = {
         // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
         const chosenOrganization: OrganizationId | undefined = input
           .organization_capabilities?.[0]
-          ? (extractId(
+          ? extractId<OrganizationId>(
               input.organization_capabilities?.[0].organization_id
-            ) as OrganizationId)
+            )
           : undefined;
 
         // The admin orga should only allow to add users in the same organization and with the same domain.
@@ -293,24 +293,18 @@ const resolvers: Resolvers = {
     },
 
     editMeUser: async (_, { input }, context) => {
-      const trx = await dbTx();
       try {
-        await updateMeUser(context.user.id, input);
+        await updateMeUser(context, input);
         const user = await loadUserDetails({
           'User.id': context.user.id,
         });
 
+        updateUserSession(user);
+
         await dispatch('User', 'edit', user);
-        context.req.session.user = {
-          ...context.user,
-          ...user,
-        };
-
-        await trx.commit();
-
+        await dispatch('MeUser', 'edit', user);
         return user;
       } catch (error) {
-        await trx.rollback();
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error,
         });

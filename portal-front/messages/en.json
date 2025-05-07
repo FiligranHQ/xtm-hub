@@ -223,12 +223,16 @@
       "Form": {
         "NameLabel": "Name",
         "ShortDescriptionLabel": "Short Description",
-        "DescriptionLabel": "description",
+        "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the CSV Feed.",
         "LabelsLabel": "Labels",
+        "CsvFeedFile": "Csv Feed file",
+        "CsvFeedIllustration": "Illustration",
         "PublishedPlaceholder": "Is the CSV Feed published?"
       },
-      "AddCsvFeed": "Add new CSV Feed"
+      "AddCsvFeed": "Add new CSV Feed",
+      "NonActive": "Draft",
+      "Active": "Published"
     },
     "CustomDashboards": {
       "Actions": {
@@ -383,7 +387,7 @@
     "Disable": "Disable",
     "Enable": "Enable",
     "RemoveUser": "Remove user",
-    "SearchUserWithEmail": "Search user with email...",
+    "SearchUser": "Search user...",
     "UpdateUser": "Update user - {email}",
     "UserCreated": "User {email} has been created",
     "UserDeleted": "User {email} has been deleted",
@@ -412,6 +416,7 @@
     "FirstName": "First name",
     "LastLogin": "Last login",
     "LastName": "Last name",
+    "Country": "Country",
     "Never": "Never",
     "Organizations": "Organizations",
     "Roles": "Roles",

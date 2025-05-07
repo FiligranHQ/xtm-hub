@@ -21,7 +21,7 @@ export function TestEnvCallout() {
             environnement: settings?.environment,
           })}
           <Link
-            href="https://xtmhub.filigran.io/"
+            href="https://hub.filigran.io/"
             className="ml-xs underline">
             {t('GoToProd')}
           </Link>
