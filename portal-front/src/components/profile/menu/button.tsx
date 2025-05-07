@@ -13,10 +13,12 @@ export const ProfileMenuButton: React.FC<ProfileButtonProps> = ({
   const t = useTranslations();
 
   return (
-    <Button
-      variant="ghost"
-      className={className}>
-      <Link href="/profile">{t('MenuUser.Profile')}</Link>
-    </Button>
+    <Link href="/profile">
+      <Button
+        variant="ghost"
+        className={className}>
+        {t('MenuUser.Profile')}
+      </Button>
+    </Link>
   );
 };
