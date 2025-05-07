@@ -1,6 +1,7 @@
 'use client';
 
 import { PortalContext } from '@/components/me/app-portal-context';
+import { CountryCombobox } from '@/components/ui/country/combobox';
 import {
   AutoForm,
   Button,
@@ -8,6 +9,10 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
@@ -55,7 +60,18 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
               label: t('UserForm.LastName'),
             },
             country: {
-              label: t('UserForm.Country'),
+              fieldType: ({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('UserForm.Country')}</FormLabel>
+                  <FormControl>
+                    <CountryCombobox
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              ),
             },
             picture: {
               label: t('UserForm.Picture'),

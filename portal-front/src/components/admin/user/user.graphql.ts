@@ -17,14 +17,6 @@ export const UserSlugEditMutation = graphql`
   }
 `;
 
-export const UserMeEditMutation = graphql`
-  mutation userMeEditMutation($input: EditMeUserInput!) {
-    editMeUser(input: $input) {
-      ...userList_fragment
-    }
-  }
-`;
-
 export const userSlugFragment = graphql`
   fragment userSlug_fragment on User {
     id
