@@ -52,7 +52,7 @@ export const CSVFeedUpdateSheet = ({
         documentId: csvFeed.id,
         serviceInstanceId: serviceInstance.id,
         connections: [connectionId ?? ''],
-        forceDelete: false,
+        forceDelete: true,
       },
       onCompleted() {
         onDelete?.();

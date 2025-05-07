@@ -19,7 +19,9 @@ export default class OrganizationPage {
     organizationName: string,
     organizationDomain: string
   ) {
-    await this.page.getByLabel('Create Organization').click();
+    await this.page
+      .getByRole('button', { name: 'Create Organization' })
+      .click();
     await this.page.getByPlaceholder('Name').fill(organizationName);
     await this.page.getByPlaceholder('Add a domain').click();
     await this.page.getByPlaceholder('Add a domain').fill(organizationDomain);

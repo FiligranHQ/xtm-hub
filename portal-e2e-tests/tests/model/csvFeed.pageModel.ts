@@ -44,7 +44,7 @@ export default class CsvFeedPage {
     shortDescription: string;
     description: string;
   }) {
-    await this.page.getByLabel('Add new CSV Feed').click();
+    await this.page.getByRole('button', { name: 'Add new CSV Feed' }).click();
     await this.page.getByRole('textbox', { name: 'Name *' }).fill(name);
     await this.page
       .getByRole('textbox', { name: 'Short Description *' })

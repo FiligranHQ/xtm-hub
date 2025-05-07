@@ -45,7 +45,7 @@ export default class DashboardPage {
     version: string;
     description: string;
   }) {
-    await this.page.getByLabel('Add new dashboard').click();
+    await this.page.getByRole('button', { name: 'Add new dashboard' }).click();
     await this.page.getByPlaceholder('Dashboard name').fill(name);
     await this.page
       .getByPlaceholder('This is some catchphrases to')

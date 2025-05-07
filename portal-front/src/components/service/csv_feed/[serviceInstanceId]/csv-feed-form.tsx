@@ -1,5 +1,5 @@
 import { getLabels } from '@/components/admin/label/label.utils';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { CsvFeedDelete } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-delete';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
@@ -116,32 +116,37 @@ export const CsvFeedForm = ({
           },
         }}>
         <SheetFooter className="pt-2">
-          {userCanDelete && (
-            <AlertDialogComponent
-              actionButtonText={t('Utils.Delete')}
-              variantName={'destructive'}
-              AlertTitle={t('Service.CsvFeed.DeleteCsvFeed', {
-                name: csvFeed?.name,
-              })}
-              triggerElement={
-                <Button
-                  variant="outline-destructive"
-                  className=""
-                  aria-label={t('Service.CsvFeed.DeleteCsvFeed', {
-                    name: csvFeed?.name,
-                  })}>
-                  {t('Utils.Delete')}
-                </Button>
-              }
-              onClickContinue={(e: React.MouseEvent<HTMLButtonElement>) => {
-                onDelete?.();
-                handleCloseSheet(e);
-              }}>
-              {t('Service.CsvFeed.SureDeleteCsvFeed', {
-                name: csvFeed?.name,
-              })}
-            </AlertDialogComponent>
-          )}
+          {/*{userCanDelete && (*/}
+          {/*  <AlertDialogComponent*/}
+          {/*    actionButtonText={t('Utils.Delete')}*/}
+          {/*    variantName={'destructive'}*/}
+          {/*    AlertTitle={t('Service.CsvFeed.DeleteCsvFeed', {*/}
+          {/*      name: csvFeed?.name,*/}
+          {/*    })}*/}
+          {/*    triggerElement={*/}
+          {/*      <Button*/}
+          {/*        variant="outline-destructive"*/}
+          {/*        className=""*/}
+          {/*        aria-label={t('Service.CsvFeed.DeleteCsvFeed', {*/}
+          {/*          name: csvFeed?.name,*/}
+          {/*        })}>*/}
+          {/*        {t('Utils.Delete')}*/}
+          {/*      </Button>*/}
+          {/*    }*/}
+          {/*    onClickContinue={(e: React.MouseEvent<HTMLButtonElement>) => {*/}
+          {/*      onDelete?.();*/}
+          {/*      handleCloseSheet(e);*/}
+          {/*    }}>*/}
+          {/*    {t('Service.CsvFeed.SureDeleteCsvFeed', {*/}
+          {/*      name: csvFeed?.name,*/}
+          {/*    })}*/}
+          {/*  </AlertDialogComponent>*/}
+          {/*)}*/}
+          <CsvFeedDelete
+            userCanDelete={userCanDelete}
+            onDelete={onDelete}
+            csvFeed={csvFeed}
+          />
           <div className="flex gap-s">
             <Button
               variant="outline"
