@@ -20,8 +20,8 @@
     "enabled": false,
     "config": {
       "domain": "changeme",
-      "client_id": "changeme",
-      "client_secret": "changeme"
+      "clientId": "changeme",
+      "clientSecret": "changeme"
     }
   },
   "oidc_provider": {
