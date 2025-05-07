@@ -4,10 +4,11 @@ import {
   CsvFeedCreateFormValues,
   CsvFeedForm,
 } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed-form';
+import { Button } from 'filigran-ui';
+
 import { CsvFeedCreateMutation } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
 import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
@@ -128,7 +129,7 @@ export const CSVFeedAddSheet = ({
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
-          trigger={<TriggerButton label={t('Service.CsvFeed.AddCsvFeed')} />}
+          trigger={<Button>{t('Service.CsvFeed.AddCsvFeed')} </Button>}
           title={t('Service.CsvFeed.AddCsvFeed')}>
           <CsvFeedForm handleSubmit={handleSubmit} />
         </SheetWithPreventingDialog>

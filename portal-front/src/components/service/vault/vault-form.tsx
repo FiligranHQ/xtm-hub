@@ -4,13 +4,12 @@ import {
   newDocumentSchema,
   VaultNewFileForm,
 } from '@/components/service/vault/vault-new-file-form';
-import { useToast } from 'filigran-ui';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';
 
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { useMutation } from 'react-relay';
@@ -65,9 +64,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
-          trigger={
-            <TriggerButton label={t('Service.Vault.FileForm.AddFile')} />
-          }
+          trigger={<Button>{t('Service.Vault.FileForm.AddFile')}</Button>}
           title={t('Service.Vault.FileForm.AddFile')}>
           <VaultNewFileForm handleSubmit={sendDocument} />
         </SheetWithPreventingDialog>

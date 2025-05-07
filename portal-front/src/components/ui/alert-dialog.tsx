@@ -93,7 +93,7 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
             <AlertDialogCancel>{t('Utils.Cancel')}</AlertDialogCancel>
           )}
           <AlertDialogAction
-            onClick={(e) => onClickContinue(e)}
+            onClick={onClickContinue}
             className={buttonVariants({ variant: variantName })}>
             {actionButtonText}
           </AlertDialogAction>

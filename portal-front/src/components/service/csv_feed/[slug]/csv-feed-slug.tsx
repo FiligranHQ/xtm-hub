@@ -9,6 +9,7 @@ import ShareableResourceSlug from '@/components/service/document/shareable-resou
 import { csvFeedItem_fragment$key } from '@generated/csvFeedItem_fragment.graphql';
 import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { useRouter } from 'next/navigation';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
@@ -23,6 +24,8 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   serviceInstance,
 }) => {
   const data = usePreloadedQuery<csvFeedQuery>(CsvFeedQuery, queryRef);
+  const router = useRouter();
+
   const documentData = readInlineData<csvFeedItem_fragment$key>(
     csvFeedItem,
     data.csvFeed
@@ -44,6 +47,10 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
     },
   ];
 
+  const onDelete = () => {
+    router.push(`/service/csv_feed/${serviceInstance.id}`);
+  };
+
   return (
     documentData && (
       <ShareableResourceSlug
@@ -51,6 +58,7 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
         documentData={documentData}
         updateActions={
           <CSVFeedUpdateSheet
+            onDelete={onDelete}
             csvFeed={documentData}
             serviceInstance={serviceInstance}
           />

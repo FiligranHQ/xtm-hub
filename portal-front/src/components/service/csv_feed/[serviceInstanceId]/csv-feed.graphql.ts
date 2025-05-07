@@ -49,9 +49,9 @@ export const CsvFeedCreateMutation = graphql`
 
 export const CsvFeedDeleteMutation = graphql`
   mutation csvFeedDeleteMutation(
-    $documentId: ID
+    $documentId: ID!
     $connections: [ID!]!
-    $serviceInstanceId: String
+    $serviceInstanceId: String!
     $forceDelete: Boolean
   ) {
     deleteCsvFeed(

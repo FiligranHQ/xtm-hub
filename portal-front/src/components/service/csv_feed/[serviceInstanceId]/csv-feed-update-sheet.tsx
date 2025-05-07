@@ -4,13 +4,12 @@ import { CsvFeedForm } from '@/components/service/csv_feed/[serviceInstanceId]/c
 import { CsvFeedDeleteMutation } from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
 import { IconActionsButton } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
 import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 
@@ -18,6 +17,7 @@ interface CSVFeedUpdateSheetProps {
   connectionId?: string;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
   csvFeed: csvFeedItem_fragment$data;
+  onDelete?: () => void;
   variant?: 'menu' | 'button';
 }
 
@@ -25,10 +25,10 @@ export const CSVFeedUpdateSheet = ({
   serviceInstance,
   connectionId,
   csvFeed,
+  onDelete,
   variant = 'button',
 }: CSVFeedUpdateSheetProps) => {
   const t = useTranslations();
-  const currentPath = usePathname();
 
   const [openSheet, setOpenSheet] = useState<boolean>(false);
 
@@ -45,7 +45,6 @@ export const CSVFeedUpdateSheet = ({
   const [deleteCsvFeedMutation] = useMutation<csvFeedDeleteMutation>(
     CsvFeedDeleteMutation
   );
-  const router = useRouter();
 
   const deleteDocument = () => {
     deleteCsvFeedMutation({
@@ -53,15 +52,10 @@ export const CSVFeedUpdateSheet = ({
         documentId: csvFeed.id,
         serviceInstanceId: serviceInstance.id,
         connections: [connectionId ?? ''],
-        forceDelete: true,
+        forceDelete: false,
       },
       onCompleted() {
-        const isInCSVFeedSlug = currentPath.match(
-          /^\/service\/csv_feed\/([^/]+)\/([^/]+)$/
-        );
-        if (isInCSVFeedSlug) {
-          router.push(`/service/csv_feed/${serviceInstance.id}`);
-        }
+        onDelete?.();
       },
     });
     // TODO in the public page feature
@@ -76,10 +70,7 @@ export const CSVFeedUpdateSheet = ({
           setOpen={setOpenSheet}
           trigger={
             variant === 'button' ? (
-              <TriggerButton
-                variant="outline"
-                label={t('Utils.Update')}
-              />
+              <Button variant="outline">{t('Utils.Update')}</Button>
             ) : (
               <IconActionsButton
                 className="normal-case"

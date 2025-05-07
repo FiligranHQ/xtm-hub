@@ -25,7 +25,7 @@ type Mutation {
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
   createCsvFeed(input: CsvFeedCreateInput!, document: Upload, serviceInstanceId: String): CsvFeed
-  deleteCsvFeed(documentId: ID, service_instance_id: String, forceDelete: Boolean): CsvFeed!
+  deleteCsvFeed(documentId: ID!, service_instance_id: String!, forceDelete: Boolean): CsvFeed!
   addDocument(document: Upload, name: String, short_description: String, product_version: String, description: String, service_instance_id: String, parentDocumentId: ID, labels: [String!], active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!

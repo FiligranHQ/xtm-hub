@@ -36,7 +36,6 @@ import {
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
@@ -284,9 +283,9 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
             }, 500); // Drawer animation time
           }}
           trigger={
-            <TriggerButton
-              label={t('Service.Management.InviteUser.TitleInviteUser')}
-            />
+            <Button>
+              {t('Service.Management.InviteUser.TitleInviteUser')}
+            </Button>
           }
           title={t('InviteUserServiceForm.Title', {
             serviceName:

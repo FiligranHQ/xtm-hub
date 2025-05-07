@@ -62,7 +62,7 @@ const CsvFeedsList = ({
     serviceInstance
   );
 
-  const [active, _nonActive] = useMemo(() => {
+  const [active, draft] = useMemo(() => {
     return data?.csvFeeds.edges.reduce<
       [csvFeedItem_fragment$data[], csvFeedItem_fragment$data[]]
     >(
@@ -83,7 +83,7 @@ const CsvFeedsList = ({
     );
   }, [data]);
 
-  const firstCsvFeed = _nonActive.length > 0 ? _nonActive[0] : active[0];
+  const firstCsvFeed = draft.length > 0 ? draft[0] : active[0];
 
   const labelOptions = getLabels().map(({ name, id }) => ({
     label: name.toUpperCase(),
@@ -115,7 +115,7 @@ const CsvFeedsList = ({
           <CsvFeedButtons
             serviceInstance={serviceInstance}
             firstCsvFeedSubscriptionId={firstCsvFeed?.subscription?.id ?? ''}
-            connectionId={data!.csvFeeds!.__id}
+            connectionId={data.csvFeeds!.__id}
           />
         </div>
       </div>
@@ -126,9 +126,9 @@ const CsvFeedsList = ({
             className={
               'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
             }>
-            {_nonActive.map((csvFeed) => (
+            {draft.map((csvFeed) => (
               <CsvFeedCard
-                connectionId={data!.csvFeeds!.__id}
+                connectionId={data.csvFeeds!.__id}
                 key={csvFeed.id}
                 csvFeed={csvFeed}
                 serviceInstance={serviceInstance}
@@ -148,7 +148,7 @@ const CsvFeedsList = ({
           <CsvFeedCard
             key={csvFeed.id}
             csvFeed={csvFeed}
-            connectionId={data!.csvFeeds!.__id}
+            connectionId={data.csvFeeds!.__id}
             serviceInstance={serviceInstance}
             detailUrl={`/service/csv_feed/${serviceInstance.id}/${csvFeed.id}`}
             shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
