@@ -1,7 +1,10 @@
 import { test, expect } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import CsvFeedPage from '../model/csvFeed.pageModel';
-import { removeSubscription } from '../db-utils/subscription.helper';
+import {
+  removeSubscription,
+  removeSubscriptionFromService,
+} from '../db-utils/subscription.helper';
 import { removeDocument } from '../db-utils/document.helper';
 import { PLATFORM_ORGANIZATION_UUID } from '../db-utils/const';
 import { waitForDrawerToClose, waitForToasterToHide } from '../model/common';
@@ -50,7 +53,10 @@ test.describe('CSV Feeds', () => {
   });
 
   test.afterEach(async () => {
-    await removeSubscription(PLATFORM_ORGANIZATION_UUID);
+    await removeSubscriptionFromService(
+      PLATFORM_ORGANIZATION_UUID,
+      '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc'
+    );
     await removeDocument('test.png');
     await removeDocument('octi_csv_feed.json');
   });
