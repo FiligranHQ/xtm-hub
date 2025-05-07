@@ -4,11 +4,13 @@ import { Auth0Client, Auth0UpdateUser } from './client';
 
 const CONNECTION_TYPE = 'Username-Password-Authentication';
 
-const clientConfiguration = {
-  domain: config.get<string>('auth0.domain') ?? '',
-  clientId: config.get<string>('auth0.client_id') ?? '',
-  clientSecret: config.get<string>('auth0.client_secret') ?? '',
-};
+interface ClientConfiguration {
+  domain: string;
+  clientId: string;
+  clientSecret: string;
+}
+
+const clientConfiguration = config.get<ClientConfiguration>('auth0.config');
 
 const managementClient = new ManagementClient(clientConfiguration);
 const authenticationClient = new AuthenticationClient(clientConfiguration);

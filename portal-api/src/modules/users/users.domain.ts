@@ -347,7 +347,7 @@ export const updateUser = async (
   if (isEmpty(input)) {
     return;
   }
-  const tx = await dbTx();
+  const trx = await dbTx();
   try {
     const [updatedUser] = await db<User>(context, 'User', {
       queryType: 'update',
@@ -355,7 +355,7 @@ export const updateUser = async (
       .where({ id })
       .update(input)
       .returning('*')
-      .transacting(tx);
+      .transacting(trx);
 
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
@@ -367,10 +367,10 @@ export const updateUser = async (
       email: updatedUser.email,
     });
 
-    await tx.commit();
+    await trx.commit();
     return updatedUser;
   } catch (err) {
-    await tx.rollback();
+    await trx.rollback();
     throw err;
   }
 };
