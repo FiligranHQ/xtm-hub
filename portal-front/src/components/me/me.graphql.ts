@@ -26,7 +26,9 @@ export const MeContextFragment = graphql`
 
 export const MeResetPasswordMutation = graphql`
   mutation meResetPasswordMutation {
-    resetPassword
+    resetPassword {
+      success
+    }
   }
 `;
 

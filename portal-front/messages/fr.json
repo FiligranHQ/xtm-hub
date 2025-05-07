@@ -11,6 +11,9 @@
     "Enabled": "Activé",
     "Published": "Publié"
   },
+  "CountryComboBox": {
+    "Country": "Pays"
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Colonnes",
