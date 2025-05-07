@@ -17,7 +17,14 @@ export const ProfileFormResetPassword: React.FC<Props> = ({ onSubmit }) => {
         <CardTitle>{t('UserForm.Password')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button onClick={onSubmit}>{t('UserForm.Reset')}</Button>
+        <div className="flex flex-col gap-s items-start">
+          {t('UserForm.ResetPassword.Sentence')}
+          <Button
+            aria-label={t('UserForm.ResetPassword.Action')}
+            onClick={onSubmit}>
+            {t('UserForm.ResetPassword.Action')}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
