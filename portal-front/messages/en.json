@@ -418,7 +418,11 @@
     "OrganizationsPlaceholder": "Select an organization",
     "Password": "Password",
     "Picture": "Picture",
-    "Reset": "Reset",
+    "ResetPassword": {
+      "Action": "Reset password",
+      "Sentence": "We will send you an email to reset your password.",
+      "Success": "Reset password email successfully sent."
+    },
     "WhoAreYou": "Who are you?",
     "WhoAreYouDescription": "Let us know you first name and last name",
     "AddOrganization": "Add organization"
@@ -442,7 +446,11 @@
     }
   },
   "ProfilePage": {
-    "Title": "Profile"
+    "Title": "Profile",
+    "UpdateProfile": "Update profile",
+    "InstancesEditionDialog": {
+      "ConfirmSentence": "Your first name and your last name will be also updated in our OCTI and OBAS instance."
+    }
   },
   "Utils": {
     "Cancel": "Cancel",

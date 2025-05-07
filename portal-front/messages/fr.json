@@ -75,7 +75,6 @@
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
       "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed."
-
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -419,7 +418,11 @@
     "OrganizationsPlaceholder": "Sélectionner une organisation",
     "Password": "Mot de passe",
     "Picture": "Photo",
-    "Reset": "Réinitialiser",
+    "ResetPassword": {
+      "Action": "Réinitialiser",
+      "Sentence": "Nous vous enverrons un e-mail pour réinitialiser votre mot de passe.",
+      "Success": "L'email de réinitialisation du mot de passe a été envoyé avec succès."
+    },
     "WhoAreYou": "Qui êtes-vous ?",
     "WhoAreYouDescription": "Dites-nous votre prénom et votre nom",
     "AddOrganization": "Ajouter une organisation"
@@ -443,7 +446,11 @@
     }
   },
   "ProfilePage": {
-    "Title": "Profile"
+    "Title": "Profile",
+    "UpdateProfile": "Mise à jour du profil",
+    "InstancesEditionDialog": {
+      "ConfirmSentence": "Votre prénom et votre nom seront également mis à jour dans nos instances OCTI et OBAS."
+    }
   },
   "Utils": {
     "Cancel": "Annuler",

@@ -77,7 +77,9 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
               label: t('UserForm.Picture'),
             },
           }}>
-          <Button>{t('Utils.Update')}</Button>
+          <Button aria-label={t('ProfilePage.UpdateProfile')}>
+            {t('Utils.Update')}
+          </Button>
         </AutoForm>
       </CardContent>
     </Card>
