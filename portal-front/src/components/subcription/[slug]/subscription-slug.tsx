@@ -156,12 +156,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
         accessorKey: 'user.email',
         id: 'email',
         header: 'Email',
+        size: -1,
       },
       {
-        accessorKey: 'name',
-        id: 'name',
+        id: 'capabilities',
+        size: 350,
         header: t('Service.Capabilities.CapabilitiesTitle'),
-        size: -1,
         enableSorting: false,
         cell: ({ row }) => {
           const capabilities = row.original?.user_service_capability ?? [];
@@ -195,6 +195,9 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       },
       {
         id: 'actions',
+        enableHiding: false,
+        enableSorting: false,
+        enableResizing: false,
         size: 40,
         cell: ({ row }) => {
           return (
