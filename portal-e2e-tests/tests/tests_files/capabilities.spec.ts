@@ -10,7 +10,7 @@ import {
   addDocumentInVault,
   removeDocument,
 } from '../db-utils/document.helper';
-import { removeSubscription } from '../db-utils/subscription.helper';
+import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
 import { clickRowAction } from '../model/common.js';
 
 const TEST_FILE = {
@@ -28,6 +28,7 @@ const SERVICE_CAPABILITY = {
 
 const TEST_CAPABILITY = {
   vaultServiceDefId: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+  vaultServiceInstanceId: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
   adminThalesEmail: 'admin@thales.com',
   userThalesEmail: 'user@thales.com',
   thalesOrgaId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
@@ -136,7 +137,10 @@ test.describe('Capabilities', () => {
     });
   });
   test.afterEach(async () => {
-    await removeSubscription(TEST_CAPABILITY.thalesOrgaId);
+    await removeSubscriptionFromService({
+      organizationId: TEST_CAPABILITY.thalesOrgaId,
+      serviceInstanceId: TEST_CAPABILITY.vaultServiceInstanceId,
+    });
     await deleteServiceCapability(SERVICE_CAPABILITY.idDelete);
     await deleteServiceCapability(SERVICE_CAPABILITY.idUpload);
     await removeDocument(TEST_FILE.name);

@@ -1,9 +1,5 @@
 import { Page } from '@playwright/test';
-import {
-  clickRowAction,
-  forceCloseAllDropdowns,
-  waitForDrawerToClose,
-} from './common';
+import { clickRowAction, waitForDrawerToClose } from './common';
 
 export default class ServicePage {
   constructor(private page: Page) {}

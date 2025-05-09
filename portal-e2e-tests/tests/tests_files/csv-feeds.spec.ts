@@ -1,10 +1,7 @@
 import { test, expect } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import CsvFeedPage from '../model/csvFeed.pageModel';
-import {
-  removeSubscription,
-  removeSubscriptionFromService,
-} from '../db-utils/subscription.helper';
+import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
 import { removeDocument } from '../db-utils/document.helper';
 import { PLATFORM_ORGANIZATION_UUID } from '../db-utils/const';
 import { waitForDrawerToClose, waitForToasterToHide } from '../model/common';
@@ -13,6 +10,7 @@ const CSV_FEED_TEST = {
   name: 'e2e CSV Feed name',
   shortDescription: 'This is a short description',
   description: 'This is a CSV description markdown',
+  csvFeedsServiceInstanceId: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
 };
 
 test.describe('CSV Feeds', () => {
@@ -53,10 +51,10 @@ test.describe('CSV Feeds', () => {
   });
 
   test.afterEach(async () => {
-    await removeSubscriptionFromService(
-      PLATFORM_ORGANIZATION_UUID,
-      '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc'
-    );
+    await removeSubscriptionFromService({
+      organizationId: PLATFORM_ORGANIZATION_UUID,
+      serviceInstanceId: CSV_FEED_TEST.csvFeedsServiceInstanceId,
+    });
     await removeDocument('test.png');
     await removeDocument('octi_csv_feed.json');
   });
