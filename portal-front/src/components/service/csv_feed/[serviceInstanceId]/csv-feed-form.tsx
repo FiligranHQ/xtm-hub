@@ -31,7 +31,7 @@ export type CsvFeedCreateFormValues = z.infer<typeof csvFeedFormSchema>;
 
 interface CsvFeedFormProps {
   userCanDelete?: boolean;
-  handleSubmit?: (values: z.infer<typeof csvFeedFormSchema>) => void;
+  handleSubmit?: (values: CsvFeedCreateFormValues) => void;
   onDelete?: () => void;
   csvFeed?: csvFeedItem_fragment$data;
 }
@@ -49,7 +49,7 @@ export const CsvFeedForm = ({
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
-          handleSubmit?.(values as z.infer<typeof csvFeedFormSchema>);
+          handleSubmit?.(values as CsvFeedCreateFormValues);
         }}
         // For #446 to update CSV Feed values={{ name: 'CSVFeedOne' }}
         formSchema={csvFeedFormSchema}

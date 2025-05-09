@@ -40,7 +40,7 @@ type Mutation {
     documentId: ID!
     service_instance_id: String!
     forceDelete: Boolean
-  ): CsvFeed! @auth @service_capa(requires: [UPLOAD, DELETE])
+  ): CsvFeed! @auth @service_capa(requires: [DELETE])
 }
 
 type CsvFeedsEdge {

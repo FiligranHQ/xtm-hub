@@ -110,21 +110,20 @@ export const deleteCsvFeed = async (
       .returning('Document.*')
       .transacting(trx);
     return parent;
-  } else {
-    const children = await db<DocumentChildren[]>(context, 'Document_Children')
-      .where('parent_document_id', '=', documentId)
-      .select('Document_Children.*');
-    const childIds = children.map((c) => c.child_document_id);
-    await db<Document>(context, 'Document')
-      .whereIn('Document.id', childIds)
-      .update({ active: false, remover_id: context.user.id })
-      .transacting(trx);
-
-    const [parent] = await db<CsvFeed>(context, 'Document')
-      .where('Document.id', '=', documentId)
-      .update({ active: false, remover_id: context.user.id })
-      .returning('Document.*')
-      .transacting(trx);
-    return parent;
   }
+  const children = await db<DocumentChildren[]>(context, 'Document_Children')
+    .where('parent_document_id', '=', documentId)
+    .select('Document_Children.*');
+  const childIds = children.map((c) => c.child_document_id);
+  await db<Document>(context, 'Document')
+    .whereIn('Document.id', childIds)
+    .update({ active: false, remover_id: context.user.id })
+    .transacting(trx);
+
+  const [parent] = await db<CsvFeed>(context, 'Document')
+    .where('Document.id', '=', documentId)
+    .update({ active: false, remover_id: context.user.id })
+    .returning('Document.*')
+    .transacting(trx);
+  return parent;
 };

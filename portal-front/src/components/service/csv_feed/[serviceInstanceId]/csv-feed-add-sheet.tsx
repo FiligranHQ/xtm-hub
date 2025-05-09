@@ -129,7 +129,7 @@ export const CSVFeedAddSheet = ({
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
-          trigger={<Button>{t('Service.CsvFeed.AddCsvFeed')} </Button>}
+          trigger={<Button>{t('Service.CsvFeed.AddCsvFeed')}</Button>}
           title={t('Service.CsvFeed.AddCsvFeed')}>
           <CsvFeedForm handleSubmit={handleSubmit} />
         </SheetWithPreventingDialog>
