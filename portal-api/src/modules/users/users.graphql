@@ -4,6 +4,7 @@ enum UserOrdering {
   last_name
   disabled
   country
+  last_login
 }
 
 type Capability implements Node {
