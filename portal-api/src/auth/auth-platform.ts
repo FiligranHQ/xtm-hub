@@ -46,7 +46,7 @@ export const initAuthPlatform = async (app) => {
           )(req, res, next);
         });
 
-        await authenticateUser(req, user);
+        await authenticateUser(req, res, user);
       } catch (err) {
         logApp.error(err, { provider });
         if (err.message === 'User not provided') {

@@ -12,3 +12,7 @@ input Filter {
   key: FilterKey
   value: [String!]!
 }
+
+type Success {
+  success: Boolean!
+}

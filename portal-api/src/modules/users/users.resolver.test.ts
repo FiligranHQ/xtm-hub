@@ -1,3 +1,4 @@
+import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -26,11 +27,12 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
+import { auth0ClientMock } from '../../thirdparty/auth0/mock';
 import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
 } from '../subcription/subscription.helper';
-import { deleteUserById, loadUserBy } from './users.domain';
+import { deleteUserById, loadUnsecureUserBy, loadUserBy } from './users.domain';
 import usersResolver from './users.resolver';
 
 const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
@@ -350,14 +352,17 @@ describe('User mutation resolver', () => {
 
   describe('EditMeUser Mutation', () => {
     let adminUser: UserLoadUserBy;
+    let auth0Spy: MockInstance;
     beforeAll(async () => {
       adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL });
       if (!adminUser) {
         throw new Error('admin user not found');
       }
+
+      auth0Spy = vi.spyOn(auth0ClientMock, 'updateUser');
     });
 
-    it('should edit me user', async () => {
+    it('should edit user profile information on auth0 and locally', async () => {
       const newFirstName = 'Roger';
       const newLastName = 'Testeur';
       const newCountry = 'France';
@@ -377,12 +382,30 @@ describe('User mutation resolver', () => {
         contextAdminUser
       );
 
+      // assert response
       expect(response).toBeTruthy();
 
       expect(response.first_name).toEqual(newFirstName);
       expect(response.last_name).toEqual(newLastName);
       expect(response.country).toEqual(newCountry);
       expect(response.picture).toEqual(newPicture);
+
+      // assert database
+      const [dbUser] = await loadUnsecureUserBy({ email: DEFAULT_ADMIN_EMAIL });
+      expect(dbUser).toBeDefined();
+      expect(dbUser.first_name).toEqual(newFirstName);
+      expect(dbUser.last_name).toEqual(newLastName);
+      expect(dbUser.country).toEqual(newCountry);
+      expect(dbUser.picture).toEqual(newPicture);
+
+      // assert auth0 call
+      expect(auth0Spy).toBeCalledWith({
+        email: DEFAULT_ADMIN_EMAIL,
+        first_name: newFirstName,
+        last_name: newLastName,
+        country: newCountry,
+        picture: newPicture,
+      });
     });
 
     afterAll(async () => {
@@ -399,6 +422,32 @@ describe('User mutation resolver', () => {
         },
         contextAdminUser
       );
+
+      auth0Spy.mockReset();
+    });
+  });
+
+  describe('ResetPassword Mutation', () => {
+    let auth0Spy: MockInstance;
+    beforeAll(() => {
+      auth0Spy = vi.spyOn(auth0ClientMock, 'resetPassword');
+    });
+
+    it('should call auth0 to reset password', async () => {
+      // @ts-expect-error resetPassword is not considered as callable
+      const response = await usersResolver.Mutation.resetPassword(
+        undefined,
+        {},
+        contextAdminUser
+      );
+
+      expect(response).toBeTruthy();
+      expect(response.success).toBeTruthy();
+      expect(auth0Spy).toBeCalledWith(DEFAULT_ADMIN_EMAIL);
+    });
+
+    afterAll(() => {
+      auth0Spy.mockReset();
     });
   });
 });

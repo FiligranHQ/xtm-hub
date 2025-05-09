@@ -19,6 +19,10 @@ input Filter {
   value: [String!]!
 }
 
+type Success {
+  success: Boolean!
+}
+
 type Mutation {
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   addOrganization(input: OrganizationInput!): Organization
@@ -51,6 +55,7 @@ type Mutation {
   editMeUser(input: EditMeUserInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  resetPassword: Success!
   login(email: String!, password: String): User
   logout: ID!
 }

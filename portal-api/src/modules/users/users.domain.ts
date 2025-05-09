@@ -1,8 +1,12 @@
-import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
 import {
-  AddUserInput,
-  EditMeUserInput,
-  EditUserInput,
+  db,
+  dbRaw,
+  dbTx,
+  dbUnsecure,
+  paginate,
+  QueryOpts,
+} from '../../../knexfile';
+import {
   Filter,
   FilterKey,
   Organization,
@@ -12,11 +16,7 @@ import {
   User as UserGenerated,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import User, {
-  UserId,
-  UserInitializer,
-  UserMutator,
-} from '../../model/kanel/public/User';
+import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import {
@@ -26,8 +26,8 @@ import {
 } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
+import { auth0Client } from '../../thirdparty/auth0/client';
 import { ForbiddenAccess } from '../../utils/error.util';
-import { hashPassword } from '../../utils/hash-password.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { isEmpty } from '../../utils/utils';
@@ -335,37 +335,43 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
   return dbUnsecure<User>('User').where(field);
 };
 
-export const updateUnsecureUser = async (id: UserId, fields: UserMutator) => {
-  const [updatedUser] = await dbUnsecure<User>('User')
-    .where({ id })
-    .update(fields)
-    .returning('*');
-  return updatedUser;
-};
-
-export const updateMeUser = async (
-  context: PortalContext,
-  input: EditMeUserInput
-): Promise<void> => {
-  await updateUser(context, context.user.id, input);
+export const resetPassword = async (context: PortalContext): Promise<void> => {
+  await auth0Client.resetPassword(context.user.email);
 };
 
 export const updateUser = async (
   context: PortalContext,
   id: UserId,
-  input: Omit<EditUserInput, 'organization_capabilities'>
-) => {
-  if (!isEmpty(input)) {
+  input: UserMutator
+): Promise<User> => {
+  if (isEmpty(input)) {
+    return;
+  }
+  const trx = await dbTx();
+  try {
     const [updatedUser] = await db<User>(context, 'User', {
       queryType: 'update',
     })
       .where({ id })
       .update(input)
-      .returning('*');
+      .returning('*')
+      .transacting(trx);
+
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }
+
+    await auth0Client.updateUser({
+      ...input,
+      email: updatedUser.email,
+    });
+
+    await trx.commit();
+    return updatedUser;
+  } catch (err) {
+    await trx.rollback();
+    throw err;
   }
 };
 
@@ -387,32 +393,6 @@ export const loadUserCapacityByOrganization = async (
       dbRaw('json_agg("UserOrganization_Capability".name) as capabilities'),
     ])
     .first();
-};
-
-export const addNewUser = async (
-  context: PortalContext,
-  {
-    input,
-    userId,
-    selected_organization_id,
-  }: {
-    input: AddUserInput;
-    userId: string;
-    selected_organization_id: OrganizationId;
-  }
-) => {
-  const { salt, hash } = hashPassword(input.password ?? '');
-  const data: UserInitializer = {
-    id: userId as UserId,
-    email: input.email,
-    salt,
-    password: hash,
-    selected_organization_id,
-  };
-  const [addedUser] = await db<User>(context, 'User')
-    .insert(data)
-    .returning('*');
-  return addedUser;
 };
 
 export const loadUserDetails = async (
@@ -442,6 +422,18 @@ export const loadUserDetails = async (
     .where(field)
     .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
     .leftJoin('Organization as org', 'UserOrg.organization_id', '=', 'org.id')
+    .leftJoin(
+      'User_RolePortal as user_RolePortal',
+      'User.id',
+      '=',
+      'user_RolePortal.user_id'
+    )
+    .leftJoin(
+      'RolePortal as rolePortal',
+      'user_RolePortal.role_portal_id',
+      '=',
+      'rolePortal.id'
+    )
     .select([
       'User.*',
       dbRaw(
@@ -454,6 +446,13 @@ export const loadUserDetails = async (
           ) )
             FILTER (WHERE "org".id IS NOT NULL), '[]'
         )::json AS organization_capabilities`
+      ),
+      dbRaw(
+        formatRawAggObject({
+          columnName: 'rolePortal',
+          typename: 'RolePortal',
+          as: 'roles_portal',
+        })
       ),
     ])
     .groupBy(['User.id'])
@@ -478,6 +477,7 @@ export const userHasOrganizationWithSubscription = async (
  * #185: If the user has only ONE organization, land him on it rather than its personal space
  */
 export const updateUserAtLogin = async <T extends UserWithOrganizations>(
+  context: PortalContext,
   user: T
 ): Promise<T> => {
   const organizations = user.organizations.filter((o) => !o.personal_space);
@@ -487,7 +487,7 @@ export const updateUserAtLogin = async <T extends UserWithOrganizations>(
   if (organizations.length === 1) {
     fields.selected_organization_id = organizations[0].id;
   }
-  const updatedUser = await updateUnsecureUser(user.id, fields);
+  const updatedUser = await updateUser(context, user.id, fields);
   return {
     ...user,
     selected_organization_id: updatedUser.selected_organization_id,

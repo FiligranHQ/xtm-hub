@@ -308,6 +308,7 @@ export type Mutation = {
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
   removeUserFromOrganization?: Maybe<User>;
+  resetPassword: Success;
   selfJoinServiceInstance?: Maybe<ServiceInstance>;
 };
 
@@ -992,6 +993,11 @@ export type SubscriptionWithService = Node & {
   subscription_capability?: Maybe<Array<Maybe<SubscriptionCapability>>>;
 };
 
+export type Success = {
+  __typename?: 'Success';
+  success: Scalars['Boolean']['output'];
+};
+
 export type TrackingSubscription = {
   __typename?: 'TrackingSubscription';
   add?: Maybe<ActionTracking>;
@@ -1258,6 +1264,7 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionModel: ResolverTypeWrapper<SubscriptionModel>;
   SubscriptionOrdering: SubscriptionOrdering;
   SubscriptionWithService: ResolverTypeWrapper<SubscriptionWithService>;
+  Success: ResolverTypeWrapper<Success>;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
@@ -1340,6 +1347,7 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionEdge: SubscriptionEdge;
   SubscriptionModel: SubscriptionModel;
   SubscriptionWithService: SubscriptionWithService;
+  Success: Success;
   TrackingSubscription: TrackingSubscription;
   Upload: Scalars['Upload']['output'];
   User: User;
@@ -1557,6 +1565,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
+  resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
 }>;
 
@@ -1813,6 +1822,11 @@ export type SubscriptionWithServiceResolvers<ContextType = PortalContext, Parent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SuccessResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Success'] = ResolversParentTypes['Success']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TrackingSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TrackingSubscription'] = ResolversParentTypes['TrackingSubscription']> = ResolversObject<{
   add?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
   delete?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
@@ -1948,6 +1962,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
   SubscriptionModel?: SubscriptionModelResolvers<ContextType>;
   SubscriptionWithService?: SubscriptionWithServiceResolvers<ContextType>;
+  Success?: SuccessResolvers<ContextType>;
   TrackingSubscription?: TrackingSubscriptionResolvers<ContextType>;
   Upload?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
