@@ -1,12 +1,10 @@
-import * as React from 'react';
-
 import {
-  csvFeedItem,
   CsvFeedQuery,
-} from '@/components/service/csv_feed/[serviceInstanceId]/csv-feed.graphql';
+  csvFeedsItem,
+} from '@/components/service/csv-feeds/csv-feed.graphql';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
-import { csvFeedItem_fragment$key } from '@generated/csvFeedItem_fragment.graphql';
 import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
+import { csvFeedsItem_fragment$key } from '@generated/csvFeedsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
@@ -22,8 +20,8 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   serviceInstance,
 }) => {
   const data = usePreloadedQuery<csvFeedQuery>(CsvFeedQuery, queryRef);
-  const documentData = readInlineData<csvFeedItem_fragment$key>(
-    csvFeedItem,
+  const documentData = readInlineData<csvFeedsItem_fragment$key>(
+    csvFeedsItem,
     data.csvFeed
   );
 
