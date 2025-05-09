@@ -1,9 +1,9 @@
-import ShareableResourceCard from '@/components/ui/shareable-resource-card';
+import CustomDashboardCard from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-card';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import SeoCustomDashboardsByServiceSlugQuery, {
   seoCustomDashboardsByServiceSlugQuery,
 } from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
@@ -236,17 +236,20 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           <ul
             className={'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l'}>
             {customDashboards.map((customDashboard) => (
-              <ShareableResourceCard
-                key={doc.id}
-                document={customDashboard}
+              <CustomDashboardCard
+                key={customDashboard.id}
+                customDashboard={
+                  customDashboard as unknown as customDashboardsItem_fragment$data
+                }
+                serviceInstance={
+                  serviceInstance as unknown as NonNullable<
+                    serviceByIdQuery$data['serviceInstanceById']
+                  >
+                }
                 detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
                 shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
-                <DocumentBento
-                  document={doc}
-                  serviceInstanceId={serviceInstance.id}
-                />
-              </ShareableResourceCard>
-            )}
+              />
+            ))}
           </ul>
         )}
       </>
