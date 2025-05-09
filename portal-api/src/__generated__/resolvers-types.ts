@@ -1041,6 +1041,7 @@ export enum UserOrdering {
   Disabled = 'disabled',
   Email = 'email',
   FirstName = 'first_name',
+  LastLogin = 'last_login',
   LastName = 'last_name'
 }
 
