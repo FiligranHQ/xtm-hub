@@ -1,7 +1,7 @@
 'use client';
 
 import Loader from '@/components/loader';
-import DashboardSlug from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
+import DashboardSlug from '@/components/service/custom-dashboards/[documentId]/custom-dashboard-details';
 import { DocumentQuery } from '@/components/service/document/document.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { documentQuery } from '@generated/documentQuery.graphql';
