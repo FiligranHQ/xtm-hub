@@ -1,12 +1,7 @@
-import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import SeoCustomDashboardsByServiceSlugQuery, {
-  seoCustomDashboardsByServiceSlugQuery,
-} from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -16,6 +11,8 @@ import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+import { queryMap } from './query-map';
+import { rendererMap } from './shareable-resources-renderer';
 
 export interface SeoCustomDashboard {
   description: string;
@@ -67,17 +64,18 @@ const getPageData = cache(async (slug: string) => {
     notFound();
   }
 
-  const customDashboardsResponse =
-    await serverFetchGraphQL<seoCustomDashboardsByServiceSlugQuery>(
-      SeoCustomDashboardsByServiceSlugQuery,
-      { serviceSlug: slug },
-      { cache: 'force-cache' }
-    );
+  const config = queryMap[serviceInstance.slug] ?? queryMap.default;
 
-  const customDashboards = customDashboardsResponse.data
-    .seoCustomDashboardsByServiceSlug as unknown as SeoCustomDashboard[];
+  const response = await serverFetchGraphQL(
+    config.query,
+    { serviceSlug: serviceInstance.slug },
+    {
+      cache: 'force-cache',
+    }
+  );
 
-  return { baseUrl, serviceInstance, customDashboards };
+  const documents = config.cast(response.data);
+  return { baseUrl, serviceInstance, documents };
 });
 
 /**
@@ -138,7 +136,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const awaitedParams = await params;
 
   try {
-    const { baseUrl, serviceInstance, customDashboards } = await getPageData(
+    const { baseUrl, serviceInstance, documents } = await getPageData(
       awaitedParams.slug
     );
 
@@ -152,7 +150,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.8',
-        ratingCount: customDashboards.length * 10,
+        ratingCount: documents.length * 10,
         bestRating: '5',
         worstRating: '2',
       },
@@ -163,7 +161,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         name: 'Filigran',
         url: 'https://filigran.io',
       },
-      keywords: customDashboards
+      keywords: documents
         .flatMap(
           (dashboard) => dashboard.labels?.map((label) => label.name) || []
         )
@@ -172,27 +170,27 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         '@type': 'WebPage',
         '@id': `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
       },
-      hasPart: customDashboards.map((dashboard) => {
+      hasPart: documents.map((document) => {
         const dashboardJsonLd: Record<string, unknown> = {
           '@type': 'TechArticle',
-          headline: dashboard.name,
-          description: dashboard.short_description,
-          datePublished: dashboard.created_at,
-          dateModified: dashboard.updated_at,
-          author: dashboard.uploader
+          headline: document.name,
+          description: document.short_description,
+          datePublished: document.created_at,
+          dateModified: document.updated_at,
+          author: document.uploader
             ? {
                 '@type': 'Person',
-                name: `${dashboard.uploader.first_name} ${dashboard.uploader.last_name}`,
+                name: `${document.uploader.first_name} ${document.uploader.last_name}`,
               }
             : undefined,
           about: {
             '@type': 'Thing',
             name: 'Cybersecurity',
           },
-          keywords: dashboard.labels?.map((label) => label.name).join(', '),
+          keywords: document.labels?.map((label) => label.name).join(', '),
         };
-        if (dashboard.children_documents.length > 0) {
-          dashboardJsonLd.image = dashboard.children_documents.map(
+        if (document.children_documents.length > 0) {
+          dashboardJsonLd.image = document.children_documents.map(
             (image) =>
               `${baseUrl}/document/images/${serviceInstance.id}/${image.id}`
           );
@@ -230,27 +228,38 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           {serviceInstance.name}
         </h1>
 
-        {(customDashboards.length === 0 && (
+        {(documents.length === 0 && (
           <div className="my-4 text-center">No custom dashboards found</div>
         )) || (
-          <ul
-            className={'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l'}>
-            {customDashboards.map((customDashboard) => (
-              <CustomDashboardCard
-                serviceInstance={
-                  serviceInstance as unknown as NonNullable<
-                    serviceByIdQuery$data['serviceInstanceById']
-                  >
-                }
-                key={customDashboard.id}
-                customDashboard={
-                  customDashboard as unknown as documentItem_fragment$data
-                }
-                detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
-                shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
-              />
-            ))}
+          <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
+            {documents.map((document) => {
+              const renderCard =
+                rendererMap[serviceInstance.slug] ?? rendererMap.default;
+
+              return renderCard({
+                document: document,
+                serviceInstance: serviceInstance as NonNullable<
+                  serviceByIdQuery$data['serviceInstanceById']
+                >,
+                baseUrl,
+              });
+            })}
           </ul>
+          // <CustomDashboardCard
+          //   serviceInstance={
+          //     serviceInstance as unknown as NonNullable<
+          //       serviceByIdQuery$data['serviceInstanceById']
+          //     >
+          //   }
+          //   key={customDashboard.id}
+          //   customDashboard={
+          //     customDashboard as unknown as documentItem_fragment$data
+          //   }
+          //   detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
+          //   shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
+          // />
+          //   ))}
+          // </ul>
         )}
       </>
     );

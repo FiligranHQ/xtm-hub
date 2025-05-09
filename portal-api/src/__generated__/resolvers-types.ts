@@ -597,6 +597,7 @@ export type Query = {
   publicServiceInstances: ServiceConnection;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
+  seoCsvFeedsByServiceSlug?: Maybe<Array<Maybe<CsvFeed>>>;
   seoCustomDashboardBySlug?: Maybe<SeoCustomDashboard>;
   seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<SeoCustomDashboard>>>;
   seoServiceInstance: SeoServiceInstance;
@@ -700,6 +701,11 @@ export type QueryPublicServiceInstancesArgs = {
 
 export type QueryRolePortalArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QuerySeoCsvFeedsByServiceSlugArgs = {
+  serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1645,6 +1651,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
+  seoCsvFeedsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CsvFeed']>>>, ParentType, ContextType, Partial<QuerySeoCsvFeedsByServiceSlugArgs>>;
   seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['SeoCustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
   seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;

@@ -65,4 +65,5 @@ type Query {
     serviceInstanceId: String
   ): CsvFeedsConnection! @auth
   csvFeed(documentId: ID, serviceInstanceId: ID): CsvFeed
+  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
 }

@@ -16,7 +16,7 @@ import {
   getUploaderOrganization,
 } from '../document.domain';
 import { createFileInMinIO, normalizeDocumentName } from '../document.helper';
-import { deleteCsvFeed, loadCsvFeeds, loadCsvFeedsBy } from './csv-feed.domain';
+import { deleteCsvFeed, loadCsvFeeds, loadCsvFeedsBy, loadSeoCsvFeedsByServiceSlug } from './csv-feed.domain';
 import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
@@ -125,6 +125,23 @@ const resolvers: Resolvers = {
         'Document.id': extractId<DocumentId>(documentId),
       } as DocumentMutator);
       return parentDocument;
+    },
+    seoCsvFeedsByServiceSlug: async (_, { serviceSlug }, context) => {
+      console.log('AVANT OTUT');
+      const csvFeeds = await loadSeoCsvFeedsByServiceSlug(serviceSlug);
+      for (const csvFeed of csvFeeds) {
+        // csvFeed.children_documents = await loadImagesByCustomDashboardId(
+        //   csvFeed.id
+        // );
+        // csvFeed.uploader = await getUploader(context, csvFeed.id, {
+        //   unsecured: true,
+        // });
+        csvFeed.labels = await getLabels(context, csvFeed.id, {
+          unsecured: true,
+        });
+      }
+      console.log('csvFeeds', csvFeeds);
+      return csvFeeds;
     },
   },
 };
