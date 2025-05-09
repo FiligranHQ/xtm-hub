@@ -2,9 +2,8 @@ import { UserForm } from '@/components/admin/user/user-form';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import { userListCreateMutation } from '@generated/userListCreateMutation.graphql';
-import { useToast } from 'filigran-ui';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -55,7 +54,7 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
       title={t('UserActions.AddUser')}
       setOpen={setOpenSheet}
       open={openSheet}
-      trigger={<TriggerButton label={t('UserActions.AddUser')} />}>
+      trigger={<Button>{t('UserActions.AddUser')}</Button>}>
       <UserForm
         handleSubmit={handleSubmit}
         validationSchema={userFormSchema}

@@ -15,7 +15,7 @@ export type MailTemplates = {
   welcome: WelcomeMailModel;
   vault: GenericServiceMailModel;
   custom_dashboards: GenericServiceMailModel;
-  csv_feed: GenericServiceMailModel;
+  csv_feeds: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
 };
 
@@ -27,7 +27,7 @@ export const templateSubjects: {
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   custom_dashboards: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
-  csv_feed: (params: GenericServiceMailModel) =>
+  csv_feeds: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   new_user_organization: (params: NewUserOrganizationMailModel) =>
     `XTM Hub - You've been added to the ${params.organizationName} organization`,

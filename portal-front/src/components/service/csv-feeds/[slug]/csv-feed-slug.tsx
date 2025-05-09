@@ -1,3 +1,4 @@
+import { CSVFeedUpdateSheet } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-update-sheet';
 import {
   CsvFeedQuery,
   csvFeedsItem,
@@ -6,6 +7,7 @@ import ShareableResourceSlug from '@/components/service/document/shareable-resou
 import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
 import { csvFeedsItem_fragment$key } from '@generated/csvFeedsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { useRouter } from 'next/navigation';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
@@ -20,6 +22,8 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   serviceInstance,
 }) => {
   const data = usePreloadedQuery<csvFeedQuery>(CsvFeedQuery, queryRef);
+  const router = useRouter();
+
   const documentData = readInlineData<csvFeedsItem_fragment$key>(
     csvFeedsItem,
     data.csvFeed
@@ -32,7 +36,7 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
     },
     {
       label: serviceInstance?.name,
-      href: `/service/csv_feed/${serviceInstance?.id}`,
+      href: `/service/csv_feeds/${serviceInstance?.id}`,
       original: true,
     },
     {
@@ -41,12 +45,22 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
     },
   ];
 
+  const onDelete = () => {
+    router.push(`/service/csv_feeds/${serviceInstance.id}`);
+  };
+
   return (
     documentData && (
       <ShareableResourceSlug
         breadcrumbValue={breadcrumbValue}
         documentData={documentData}
-      />
+        updateActions={
+          <CSVFeedUpdateSheet
+            onDelete={onDelete}
+            csvFeed={documentData}
+            serviceInstance={serviceInstance}
+          />
+        }></ShareableResourceSlug>
     )
   );
 };

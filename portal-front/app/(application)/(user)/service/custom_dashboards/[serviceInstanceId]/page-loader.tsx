@@ -2,7 +2,7 @@
 
 import { customDashboardListLocalStorage } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-list-localstorage';
 import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
-import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboards.graphql';
+import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Skeleton } from 'filigran-ui';

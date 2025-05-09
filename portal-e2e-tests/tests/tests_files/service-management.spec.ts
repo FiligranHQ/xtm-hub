@@ -1,6 +1,6 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import { removeSubscription } from '../db-utils/subscription.helper';
+import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
 import ServicePage from '../model/service.pageModel';
 import {
   clickRowAction,
@@ -13,6 +13,7 @@ const TEST_SUBSCRIPTION = {
   organizationId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
   adminOrgaEmail: 'admin@thales.com',
   userInOrgaEmail: 'user@thales.com',
+  vaultServiceInstanceId: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
 };
 
 export const GENERIC_CAPABILITY = {
@@ -24,8 +25,6 @@ test.describe('Service Management', () => {
   let servicePage: ServicePage;
 
   test.beforeEach(async ({ page }) => {
-    await removeSubscription(TEST_SUBSCRIPTION.organizationId);
-
     loginPage = new LoginPage(page);
     servicePage = new ServicePage(page);
 
@@ -91,6 +90,9 @@ test.describe('Service Management', () => {
   });
 
   test.afterEach(async ({}) => {
-    await removeSubscription(TEST_SUBSCRIPTION.organizationId);
+    await removeSubscriptionFromService({
+      organizationId: TEST_SUBSCRIPTION.organizationId,
+      serviceInstanceId: TEST_SUBSCRIPTION.vaultServiceInstanceId,
+    });
   });
 });

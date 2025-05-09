@@ -1,9 +1,8 @@
 import { UserAdminForm } from '@/components/admin/user/user-admin-form';
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import { adminAddUserMutation } from '@generated/adminAddUserMutation.graphql';
-import { useToast } from 'filigran-ui';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
@@ -65,7 +64,7 @@ export const AdminAddUser: FunctionComponent<AdminAddUserProps> = ({
       title={t('UserActions.AddUser')}
       setOpen={setOpenSheet}
       open={openSheet}
-      trigger={<TriggerButton label={t('UserActions.AddUser')} />}>
+      trigger={<Button>{t('UserActions.AddUser')}</Button>}>
       <UserAdminForm handleSubmit={handleSubmit} />
     </SheetWithPreventingDialog>
   );

@@ -2,7 +2,7 @@ enum ServiceDefinitionIdentifier {
   vault
   link
   custom_dashboards
-  csv_feed
+  csv_feeds
 }
 type ServiceDefinition implements Node {
   id: ID!

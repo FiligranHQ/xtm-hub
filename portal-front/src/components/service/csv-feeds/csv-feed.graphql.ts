@@ -13,7 +13,21 @@ export const CsvFeedsCreateMutation = graphql`
       serviceInstanceId: $serviceInstanceId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
+      name
       ...csvFeedsItem_fragment
+    }
+  }
+`;
+
+export const CsvFeedDeleteMutation = graphql`
+  mutation csvFeedDeleteMutation(
+    $documentId: ID!
+    $connections: [ID!]!
+    $serviceInstanceId: String!
+  ) {
+    deleteCsvFeed(id: $documentId, service_instance_id: $serviceInstanceId) {
+      id @deleteEdge(connections: $connections)
+      success
     }
   }
 `;

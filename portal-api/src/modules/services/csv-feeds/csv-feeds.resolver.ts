@@ -1,12 +1,15 @@
+import { dbTx } from '../../../../knexfile';
 import {
   CsvFeedConnection,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
+  deleteDocument,
   getChildrenDocuments,
   getLabels,
   getUploader,
@@ -16,6 +19,7 @@ import {
 import {
   createFileInMinIO,
   loadDocumentById,
+  Upload,
   waitForUploads,
 } from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
@@ -23,13 +27,33 @@ import { createCsvFeed } from './csv-feeds.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
-    createCsvFeed: async (_, input, context) => {
+    createCsvFeed: async (_, { input, document }, context) => {
       try {
-        await waitForUploads(input.document);
-        const document = await createFileInMinIO(input.document, context);
-        return createCsvFeed(input.input, document, context);
+        await waitForUploads(document);
+        const files = await Promise.all(
+          document.map((doc: Upload) => createFileInMinIO(doc, context))
+        );
+        return createCsvFeed(input, files, context);
       } catch (error) {
         throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
+      }
+    },
+    deleteCsvFeed: async (_, { id }, context) => {
+      const trx = await dbTx();
+      try {
+        await deleteDocument(
+          context,
+          extractId<DocumentId>(id),
+          context.serviceInstanceId as ServiceInstanceId,
+          true,
+          trx
+        );
+        await trx.commit();
+        return { success: true, id };
+      } catch (error) {
+        await trx.rollback();
+
+        throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }
     },
   },

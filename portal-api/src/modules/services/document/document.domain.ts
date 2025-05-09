@@ -1,4 +1,5 @@
 import config from 'config';
+import { Knex } from 'knex';
 import {
   db,
   dbRaw,
@@ -17,6 +18,7 @@ import {
   DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
+import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
 import Label, { LabelId } from '../../../model/kanel/public/Label';
 import ObjectLabel, {
   ObjectLabelObjectId,
@@ -140,50 +142,63 @@ export const deleteDocument = async (
   context: PortalContext,
   documentId: DocumentId,
   serviceInstanceId: ServiceInstanceId,
-  forceDelete: boolean
-): Promise<Document> => {
+  hardDelete: boolean,
+  trx: Knex.Transaction
+): Promise<boolean> => {
   const [documentFromDb] = await loadDocumentBy(context, {
     'Document.id': documentId,
     'Document.service_instance_id': serviceInstanceId,
   });
-  await db<ObjectLabel>(context, 'Object_Label')
-    .where('object_id', '=', documentId)
-    .delete('*');
-  if (forceDelete) {
+
+  if (!documentFromDb) {
+    throw new Error('Document not found');
+  }
+
+  const children = await db<DocumentChildren>(context, 'Document_Children')
+    .where('parent_document_id', '=', documentId)
+    .select('child_document_id');
+  const childIds = children.map((c) => c.child_document_id);
+
+  if (hardDelete) {
+    // Children
+    await db<DocumentChildren>(context, 'Document_Children')
+      .where('parent_document_id', '=', documentId)
+      .delete('Document_Children.*')
+      .transacting(trx);
+
     await db<Document>(context, 'Document')
-      .where('Document.id', '=', documentFromDb.id)
-      .delete();
-  } else {
-    await passDocumentToInactive(context, documentFromDb);
+      .whereIn('Document.id', childIds)
+      .delete('Document.*')
+      .transacting(trx);
+
+    // Labels
+    await db<ObjectLabel>(context, 'Object_Label')
+      .where('object_id', '=', documentId)
+      .delete('*')
+      .transacting(trx);
+
+    // Parent doc
+    await db<Document>(context, 'Document')
+      .where('Document.id', '=', documentId)
+      .delete()
+      .transacting(trx);
+
+    return true;
   }
 
-  // Check if this document has a parent
-  let parentDocument = documentFromDb;
-  const parentDocuments = await db(context, 'Document_Children')
-    .select('parent_document_id')
-    .where('child_document_id', documentFromDb.id)
-    .limit(1);
+  // Soft delete => desactivate the document
+  await passDocumentToInactive(context, [documentId, ...childIds]);
 
-  if (parentDocuments.length > 0) {
-    const parents = await loadDocumentBy(context, {
-      'Document.id': parentDocuments[0].parent_document_id,
-      'Document.service_instance_id': serviceInstanceId,
-    });
-
-    if (parents.length > 0) {
-      parentDocument = parents[0];
-    }
-  }
-
-  return parentDocument;
+  return true;
 };
 
 export const passDocumentToInactive = async (
   context: PortalContext,
-  document: Document
+  documentId: DocumentId | DocumentId[]
 ) => {
+  documentId = Array.isArray(documentId) ? documentId : [documentId];
   await db<Document>(context, 'Document')
-    .where('Document.id', '=', document.id)
+    .whereIn('Document.id', documentId)
     .update({ active: false, remover_id: context.user.id });
 };
 

@@ -1,7 +1,6 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
@@ -9,11 +8,11 @@ import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
 import { customDashboardsCreateMutation } from '@generated/customDashboardsCreateMutation.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import { toast } from 'filigran-ui';
+import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
-import { CustomDashboardsCreateMutation } from '../custom-dashboards.graphql';
+import { CustomDashboardsCreateMutation } from '../custom-dashboard.graphql';
 import {
   CustomDashboardForm,
   CustomDashboardFormValues,
@@ -38,7 +37,6 @@ export const CustomDashboardSheet = ({
     values: CustomDashboardFormValues,
     callback: () => void
   ) => {
-    console.log('handleSubmit', values);
     const input = omit(values, ['document', 'images', 'documentId']);
     const documents = [
       ...Array.from(values.document),
@@ -94,7 +92,7 @@ export const CustomDashboardSheet = ({
           open={openSheet}
           setOpen={setOpenSheet}
           trigger={
-            <TriggerButton label={t('Service.CustomDashboards.AddDashboard')} />
+            <Button>{t('Service.CustomDashboards.AddDashboard')}</Button>
           }
           title={t('Service.CustomDashboards.AddDashboard')}>
           <CustomDashboardForm handleSubmit={handleSubmit} />

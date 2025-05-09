@@ -1,9 +1,6 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import DocumentBento from '@/components/ui/document-bento';
-import { IconActions } from '@/components/ui/icon-actions';
 import { SearchInput } from '@/components/ui/search-input';
-import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { debounceHandleInput } from '@/utils/debounce';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -14,7 +11,6 @@ import {
 import { customDashboardsList$key } from '@generated/customDashboardsList.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import { MoreVertIcon } from 'filigran-icon';
 import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
@@ -29,7 +25,7 @@ import {
   customDashboardsItem,
   CustomDashboardsListQuery,
 } from '../custom-dashboard.graphql';
-import DashboardUpdate from './custom-dashboard-update';
+import CustomDashboardCard from './custom-dashboard-card';
 import CustomDashboardsListButtons from './custom-dashboards-list-buttons';
 
 interface CustomDashboardsListProps {
@@ -61,10 +57,6 @@ const CustomDashboardsList = ({
   >(customDashboardsFragment, queryData);
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
-    serviceInstance
-  );
-  const userCanDelete = useServiceCapability(
-    ServiceCapabilityName.Delete,
     serviceInstance
   );
 
@@ -100,37 +92,6 @@ const CustomDashboardsList = ({
     value: id,
   }));
 
-  const Card = ({ doc }: { doc: customDashboardsItem_fragment$data }) => (
-    <ShareableResourceCard
-      document={doc}
-      detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
-      shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
-      extraContent={
-        (userCanUpdate || userCanDelete) && (
-          <IconActions
-            className={'z-[2]'}
-            icon={
-              <>
-                <MoreVertIcon className="h-4 w-4 text-primary" />
-                <span className="sr-only">{t('Utils.OpenMenu')}</span>
-              </>
-            }>
-            <DashboardUpdate
-              serviceInstance={serviceInstance}
-              customDashboard={doc}
-              connectionId={data!.customDashboards!.__id}
-              variant="menu"
-            />
-          </IconActions>
-        )
-      }>
-      <DocumentBento
-        document={doc}
-        serviceInstanceId={serviceInstance.id}
-      />
-    </ShareableResourceCard>
-  );
-
   return (
     <div className="flex flex-col gap-xl">
       <h1>{serviceInstance.name}</h1>
@@ -161,7 +122,7 @@ const CustomDashboardsList = ({
           />
         </div>
       </div>
-      {userCanUpdate && (
+      {userCanUpdate && nonActive.length > 0 && (
         <>
           <div className="txt-category">{t('Service.CsvFeed.NonActive')}:</div>
           <ul
@@ -169,13 +130,19 @@ const CustomDashboardsList = ({
               'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
             }>
             {nonActive.map((doc) => (
-              <Card
+              <CustomDashboardCard
+                connectionId={data.customDashboards!.__id}
                 key={doc.id}
-                doc={doc}
+                customDashboard={doc}
+                serviceInstance={serviceInstance}
+                detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
+                shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
               />
             ))}
           </ul>
-          <div className="txt-category">{t('Service.CsvFeed.Active')}:</div>
+          {active.length > 0 && (
+            <div className="txt-category">{t('Service.CsvFeed.Active')}:</div>
+          )}
         </>
       )}
       <ul
@@ -183,9 +150,13 @@ const CustomDashboardsList = ({
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
         }>
         {active.map((doc) => (
-          <Card
+          <CustomDashboardCard
+            connectionId={data.customDashboards!.__id}
             key={doc.id}
-            doc={doc}
+            customDashboard={doc}
+            serviceInstance={serviceInstance}
+            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
+            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
           />
         ))}
       </ul>

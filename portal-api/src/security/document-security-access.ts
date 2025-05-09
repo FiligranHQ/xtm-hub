@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { dbRaw } from '../../knexfile';
 import { ServiceRestriction } from '../__generated__/resolvers-types';
 import { PortalContext } from '../model/portal-context';
 import { getServiceDefinition } from '../modules/services/service-instance.domain';
@@ -17,7 +18,7 @@ export const setQueryForDocument = <T>(
       (serviceDef) => {
         if (
           !capabilities?.includes(ServiceRestriction.Upload) &&
-          serviceDef.identifier === 'custom_dashboards'
+          ['custom_dashboards', 'csv_feeds'].includes(serviceDef.identifier)
         ) {
           queryContext.where('Document.active', '=', 'true');
         }
@@ -38,10 +39,10 @@ export const setQueryForDocument = <T>(
         'securitySubscription.service_instance_id',
         '=',
         'securityServiceInstance.id'
-      ).andOnVal(
+      ).andOn(
         'securitySubscription.organization_id',
         '=',
-        context?.user?.selected_organization_id
+        dbRaw('?', [context?.user?.selected_organization_id])
       );
     })
     .leftJoin('User_Service as securityUserService', function () {
@@ -49,7 +50,11 @@ export const setQueryForDocument = <T>(
         'securityUserService.subscription_id',
         '=',
         'securitySubscription.id'
-      ).andOnVal('securityUserService.user_id', '=', context?.user?.id);
+      ).andOn(
+        'securityUserService.user_id',
+        '=',
+        dbRaw('?', [context?.user?.id])
+      );
     });
 
   return queryContext;

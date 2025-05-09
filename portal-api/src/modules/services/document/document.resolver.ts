@@ -1,4 +1,5 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import Document, {
   DocumentId,
@@ -77,14 +78,19 @@ const resolvers: Resolvers = {
       }
     },
     deleteDocument: async (_, { documentId, forceDelete }, context) => {
+      const trx = await dbTx();
       try {
-        return deleteDocument(
+        await deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId,
-          forceDelete
+          forceDelete,
+          trx
         );
+        await trx.commit();
+        return { success: true };
       } catch (error) {
+        await trx.rollback();
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }
     },

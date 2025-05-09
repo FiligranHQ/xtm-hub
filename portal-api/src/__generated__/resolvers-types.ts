@@ -105,6 +105,7 @@ export type CsvFeed = Node & {
   labels: Array<Label>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
   share_number: Scalars['Int']['output'];
@@ -334,7 +335,8 @@ export type Mutation = {
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed?: Maybe<CsvFeed>;
   createCustomDashboard?: Maybe<CustomDashboard>;
-  deleteDocument: Document;
+  deleteCsvFeed: Success;
+  deleteDocument: Success;
   deleteLabel: Label;
   deleteOrganization?: Maybe<Organization>;
   deleteServiceInstance?: Maybe<ServiceInstance>;
@@ -444,6 +446,12 @@ export type MutationCreateCustomDashboardArgs = {
   document: Array<Scalars['Upload']['input']>;
   input: CreateCustomDashboardInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationDeleteCsvFeedArgs = {
+  id: Scalars['ID']['input'];
+  service_instance_id: Scalars['String']['input'];
 };
 
 
@@ -916,7 +924,7 @@ export type ServiceDefinition = Node & {
 };
 
 export enum ServiceDefinitionIdentifier {
-  CsvFeed = 'csv_feed',
+  CsvFeeds = 'csv_feeds',
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
   Vault = 'vault'
@@ -1052,6 +1060,7 @@ export type SubscriptionWithService = Node & {
 
 export type Success = {
   __typename?: 'Success';
+  id?: Maybe<Scalars['ID']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -1098,6 +1107,7 @@ export enum UserOrdering {
   Disabled = 'disabled',
   Email = 'email',
   FirstName = 'first_name',
+  LastLogin = 'last_login',
   LastName = 'last_name'
 }
 
@@ -1466,6 +1476,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1646,7 +1657,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'document' | 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
-  deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
+  deleteCsvFeed?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'id' | 'service_instance_id'>>;
+  deleteDocument?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
@@ -1919,6 +1931,7 @@ export type SubscriptionWithServiceResolvers<ContextType = PortalContext, Parent
 }>;
 
 export type SuccessResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Success'] = ResolversParentTypes['Success']> = ResolversObject<{
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

@@ -20,6 +20,7 @@ type CsvFeed implements Node {
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [Document!]
+  remover_id: ID
 }
 
 input CreateCsvFeedInput {
@@ -36,6 +37,9 @@ type Mutation {
     document: Upload!
     serviceInstanceId: String!
   ): CsvFeed @auth @service_capa(requires: [UPLOAD])
+  deleteCsvFeed(id: ID!, service_instance_id: String!): Success!
+    @auth
+    @service_capa(requires: [DELETE])
 }
 
 type CsvFeedEdge {

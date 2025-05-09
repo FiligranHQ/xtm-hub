@@ -2,7 +2,7 @@
 
 import CsvFeedsList from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feeds-list';
 import { csvFeedListLocalStorage } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feeds-list-localstorage';
-import { CsvFeedsListQuery } from '@/components/service/csv-feeds/csv-feeds.graphql';
+import { CsvFeedsListQuery } from '@/components/service/csv-feeds/csv-feed.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Skeleton } from 'filigran-ui';

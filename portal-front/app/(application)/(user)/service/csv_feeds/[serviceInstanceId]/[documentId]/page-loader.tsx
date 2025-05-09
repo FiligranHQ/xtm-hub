@@ -1,8 +1,8 @@
 'use client';
 
 import Loader from '@/components/loader';
+import CsvFeedSlug from '@/components/service/csv-feeds/[slug]/csv-feed-slug';
 import { CsvFeedQuery } from '@/components/service/csv-feeds/csv-feed.graphql';
-import CsvFeedSlug from '@/components/service/csv_feed/[slug]/csv-feed-slug';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';

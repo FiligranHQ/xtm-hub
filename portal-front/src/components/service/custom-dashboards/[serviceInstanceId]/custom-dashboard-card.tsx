@@ -1,11 +1,11 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import DashboardUpdate from '@/components/service/custom-dashboards/custom-dashboard-update';
+import DashboardUpdate from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-update';
 import DocumentBento from '@/components/ui/document-bento';
 import { IconActions } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MoreVertIcon } from 'filigran-icon';
 import { Carousel } from 'filigran-ui';
@@ -15,7 +15,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface CustomDashboardCardProps {
-  customDashboard: documentItem_fragment$data;
+  customDashboard: customDashboardsItem_fragment$data;
   connectionId?: string;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
   detailUrl: string;
@@ -43,7 +43,9 @@ const CustomDashboardCard = ({
   );
   const router = useRouter();
 
-  const handleClickCarousel = (customDashboard: documentItem_fragment$data) => {
+  const handleClickCarousel = (
+    customDashboard: customDashboardsItem_fragment$data
+  ) => {
     router.push(
       `/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`
     );

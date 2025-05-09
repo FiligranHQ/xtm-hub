@@ -23,7 +23,6 @@ import {
 } from 'react-relay';
 
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
-import TriggerButton from '@/components/ui/trigger-button';
 import { useConnectionId } from '@/hooks/useConnectionId';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { userSlugQuery } from '@generated/userSlugQuery.graphql';
@@ -132,7 +131,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
             )}
             <EditUser
               user={user!}
-              trigger={<TriggerButton label={t('Utils.Update')} />}
+              trigger={<Button>{t('Utils.Update')} </Button>}
             />
           </div>
         </div>

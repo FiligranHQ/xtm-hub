@@ -1,16 +1,18 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import {
-  CsvFeedCreateForm,
   CsvFeedCreateFormValues,
-} from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-create-form';
-import { CsvFeedCreateMutation } from '@/components/service/csv-feeds/csv-feeds.graphql';
+  CsvFeedForm,
+} from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
+import { Button } from 'filigran-ui';
+
+import { CsvFeedsCreateMutation } from '@/components/service/csv-feeds/csv-feed.graphql';
 import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import useServiceCapability from '@/hooks/useServiceCapability';
+import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
-import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
+import { csvFeedsCreateMutation } from '@generated/csvFeedsCreateMutation.graphql';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -30,8 +32,8 @@ export const CSVFeedAddSheet = ({
 }: CSVFeedAddSheetProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
-  const [createCsvFeed] = useMutation<csvFeedCreateMutation>(
-    CsvFeedCreateMutation
+  const [createCsvFeed] = useMutation<csvFeedsCreateMutation>(
+    CsvFeedsCreateMutation
   );
 
   const userCanUpdate = useServiceCapability(
@@ -82,28 +84,35 @@ export const CSVFeedAddSheet = ({
     });
   };
   const handleSubmit = async (values: CsvFeedCreateFormValues) => {
+    const input = omit(values, ['document', 'illustration']);
+    const documents = [
+      ...Array.from(values.document),
+      ...Array.from(values.illustration),
+    ];
+
     createCsvFeed({
       variables: {
         input: {
-          name: values.name,
-          short_description: values.short_description,
-          description: values.description,
-          active: values.active ?? false,
-          labels: values.labels,
+          ...input,
+          active: input.active ?? false,
         },
         serviceInstanceId: serviceInstance.id,
         connections: [connectionId],
+        document: documents,
       },
-      uploadables: fileListToUploadableMap(values.document),
+      uploadables: fileListToUploadableMap(documents),
 
       onCompleted: (response) => {
-        setOpenSheet(false);
+        if (!response.createCsvFeed) {
+          toast({
+            variant: 'destructive',
+            title: t('Utils.Error'),
+            description: t('Error.AnErrorOccured'),
+          });
+          return;
+        }
 
-        addIllustrationDocument(
-          values.illustration,
-          response.createCsvFeed?.name ?? '',
-          response.createCsvFeed?.id ?? ''
-        );
+        setOpenSheet(false);
 
         toast({
           title: t('Utils.Success'),
@@ -128,9 +137,9 @@ export const CSVFeedAddSheet = ({
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
-          trigger={<TriggerButton label={t('Service.CsvFeed.AddCsvFeed')} />}
+          trigger={<Button>{t('Service.CsvFeed.AddCsvFeed')}</Button>}
           title={t('Service.CsvFeed.AddCsvFeed')}>
-          <CsvFeedCreateForm handleSubmit={handleSubmit} />
+          <CsvFeedForm handleSubmit={handleSubmit} />
         </SheetWithPreventingDialog>
       )}
     </>
