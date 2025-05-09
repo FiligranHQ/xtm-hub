@@ -89,42 +89,41 @@ export const deleteCsvFeed = async (
     // Children
     const children = await db<DocumentChildren>(context, 'Document_Children')
       .where('parent_document_id', '=', documentId)
-      .delete()
-      .returning('*')
+      .delete('Document_Children.*')
       .transacting(trx);
-    for (const child of children) {
-      await db<Document>(context, 'Document')
-        .where('Document.id', '=', child.child_document_id)
-        .delete()
-        .transacting(trx);
-    }
+    const childIds = children.map((c) => c.child_document_id);
+    await db<Document>(context, 'Document')
+      .whereIn('Document.id', childIds)
+      .delete('Document.*')
+      .transacting(trx);
+
     // Metadata
     await db<DocumentMetadata>(context, 'Document_Metadata')
       .where('document_id', '=', documentId)
-      .delete()
+      .delete('Document_Metadata.*')
       .transacting(trx);
 
     // Delete parent
     const [parent] = await db<CsvFeed>(context, 'Document')
       .where('Document.id', '=', documentId)
-      .delete()
-      .returning('*')
+      .delete('Document.*')
+      .returning('Document.*')
       .transacting(trx);
     return parent;
   } else {
     const children = await db<DocumentChildren[]>(context, 'Document_Children')
       .where('parent_document_id', '=', documentId)
-      .select('*');
-    for (const child of children) {
-      await db<Document>(context, 'Document')
-        .where('Document.id', '=', child.child_document_id)
-        .update({ active: false, remover_id: context.user.id })
-        .transacting(trx);
-    }
+      .select('Document_Children.*');
+    const childIds = children.map((c) => c.child_document_id);
+    await db<Document>(context, 'Document')
+      .whereIn('Document.id', childIds)
+      .update({ active: false, remover_id: context.user.id })
+      .transacting(trx);
+
     const [parent] = await db<CsvFeed>(context, 'Document')
       .where('Document.id', '=', documentId)
       .update({ active: false, remover_id: context.user.id })
-      .returning('*')
+      .returning('Document.*')
       .transacting(trx);
     return parent;
   }

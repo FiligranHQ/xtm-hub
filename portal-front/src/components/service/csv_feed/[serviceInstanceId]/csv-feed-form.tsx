@@ -116,32 +116,6 @@ export const CsvFeedForm = ({
           },
         }}>
         <SheetFooter className="pt-2">
-          {/*{userCanDelete && (*/}
-          {/*  <AlertDialogComponent*/}
-          {/*    actionButtonText={t('Utils.Delete')}*/}
-          {/*    variantName={'destructive'}*/}
-          {/*    AlertTitle={t('Service.CsvFeed.DeleteCsvFeed', {*/}
-          {/*      name: csvFeed?.name,*/}
-          {/*    })}*/}
-          {/*    triggerElement={*/}
-          {/*      <Button*/}
-          {/*        variant="outline-destructive"*/}
-          {/*        className=""*/}
-          {/*        aria-label={t('Service.CsvFeed.DeleteCsvFeed', {*/}
-          {/*          name: csvFeed?.name,*/}
-          {/*        })}>*/}
-          {/*        {t('Utils.Delete')}*/}
-          {/*      </Button>*/}
-          {/*    }*/}
-          {/*    onClickContinue={(e: React.MouseEvent<HTMLButtonElement>) => {*/}
-          {/*      onDelete?.();*/}
-          {/*      handleCloseSheet(e);*/}
-          {/*    }}>*/}
-          {/*    {t('Service.CsvFeed.SureDeleteCsvFeed', {*/}
-          {/*      name: csvFeed?.name,*/}
-          {/*    })}*/}
-          {/*  </AlertDialogComponent>*/}
-          {/*)}*/}
           <CsvFeedDelete
             userCanDelete={userCanDelete}
             onDelete={onDelete}
