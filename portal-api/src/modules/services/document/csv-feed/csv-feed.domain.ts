@@ -4,7 +4,13 @@ import {
   CsvFeedsConnection,
   QueryDocumentsArgs,
 } from '../../../../__generated__/resolvers-types';
-import { DocumentMutator } from '../../../../model/kanel/public/Document';
+import {
+  DocumentId,
+  DocumentMutator,
+} from '../../../../model/kanel/public/Document';
+import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
+import DocumentMetadata from '../../../../model/kanel/public/DocumentMetadata';
+import ObjectLabel from '../../../../model/kanel/public/ObjectLabel';
 import { PortalContext } from '../../../../model/portal-context';
 import { addPrefixToObject } from '../../../../utils/typescript';
 import { Document } from '../document.helper';
@@ -66,4 +72,58 @@ export const loadCsvFeedsBy = async (
   return db<CsvFeed>(context, 'Document', opts)
     .where(field)
     .select('Document.*');
+};
+
+export const deleteCsvFeed = async (
+  context: PortalContext,
+  documentId: DocumentId,
+  forceDelete: boolean,
+  trx
+): Promise<CsvFeed> => {
+  await db<ObjectLabel>(context, 'Object_Label')
+    .where('object_id', '=', documentId)
+    .delete()
+    .transacting(trx);
+
+  if (forceDelete) {
+    // Children
+    const children = await db<DocumentChildren>(context, 'Document_Children')
+      .where('parent_document_id', '=', documentId)
+      .delete('Document_Children.*')
+      .transacting(trx);
+    const childIds = children.map((c) => c.child_document_id);
+    await db<Document>(context, 'Document')
+      .whereIn('Document.id', childIds)
+      .delete('Document.*')
+      .transacting(trx);
+
+    // Metadata
+    await db<DocumentMetadata>(context, 'Document_Metadata')
+      .where('document_id', '=', documentId)
+      .delete('Document_Metadata.*')
+      .transacting(trx);
+
+    // Delete parent
+    const [parent] = await db<CsvFeed>(context, 'Document')
+      .where('Document.id', '=', documentId)
+      .delete('Document.*')
+      .returning('Document.*')
+      .transacting(trx);
+    return parent;
+  }
+  const children = await db<DocumentChildren[]>(context, 'Document_Children')
+    .where('parent_document_id', '=', documentId)
+    .select('Document_Children.*');
+  const childIds = children.map((c) => c.child_document_id);
+  await db<Document>(context, 'Document')
+    .whereIn('Document.id', childIds)
+    .update({ active: false, remover_id: context.user.id })
+    .transacting(trx);
+
+  const [parent] = await db<CsvFeed>(context, 'Document')
+    .where('Document.id', '=', documentId)
+    .update({ active: false, remover_id: context.user.id })
+    .returning('Document.*')
+    .transacting(trx);
+  return parent;
 };

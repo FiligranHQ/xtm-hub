@@ -16,7 +16,7 @@ import {
   getUploaderOrganization,
 } from '../document.domain';
 import { createFileInMinIO, normalizeDocumentName } from '../document.helper';
-import { loadCsvFeeds, loadCsvFeedsBy } from './csv-feed.domain';
+import { deleteCsvFeed, loadCsvFeeds, loadCsvFeedsBy } from './csv-feed.domain';
 import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
@@ -43,6 +43,23 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
+      }
+    },
+    deleteCsvFeed: async (_, { documentId, forceDelete }, context) => {
+      const trx = await dbTx();
+      try {
+        const deletedCsvFeed = await deleteCsvFeed(
+          context,
+          extractId<DocumentId>(documentId),
+          forceDelete,
+          trx
+        );
+        await trx.commit();
+        return deletedCsvFeed;
+      } catch (error) {
+        await trx.rollback();
+
+        throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }
     },
   },

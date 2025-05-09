@@ -114,17 +114,6 @@ export async function seed(knex) {
         service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
       {
-        id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
-        name: 'OpenFeed',
-        description:
-          'This is a short description to describe the OpenFeed app, how to use it, etc.',
-        creation_status: 'READY',
-        public: true,
-        join_type: 'JOIN_AUTO',
-        tags: '{others}',
-        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-      },
-      {
         id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
         name: 'Malware analysis',
         description:
@@ -132,6 +121,16 @@ export async function seed(knex) {
         creation_status: 'READY',
         public: true,
         join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+      },
+      {
+        id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        name: 'Vault',
+        description: 'short description for Vault',
+        creation_status: 'READY',
+        public: false,
+        join_type: 'JOIN_INVITE',
         tags: '{others}',
         service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
       },
@@ -148,16 +147,16 @@ export async function seed(knex) {
         name: 'CyberWeatherApp',
       },
       {
-        id: 'b0e5df84-512a-4ced-8968-7bb4916edd33',
-        service_instance_id: 'd6343883-f609-5a3f-ace1-a24f8cb11454',
-        url: 'https://opencti-test2.non-prod.scredplatform.io/',
-        name: 'OpenFeed',
-      },
-      {
         id: 'b3c1664d-2337-46f5-a3ce-c3b72460e71a',
         service_instance_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
         url: '/service/malware-analysis',
         name: 'MalwareAnalysis',
+      },
+      {
+        id: '2baba29b-62f5-4d50-8d68-eb8a25887d9c',
+        service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+        url: '/service/vault',
+        name: 'Vault',
       },
     ])
     .onConflict('id')
@@ -171,6 +170,13 @@ export async function seed(knex) {
         fee_type: 'YEARLY',
         start_date: null,
         price: 0,
+      },
+      {
+        id: '65ca846b-b4ff-42ec-bafa-cc604eea11f5',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+        fee_type: 'MONTHLY',
+        start_date: '2024-08-08',
+        price: 1000,
       },
     ])
     .onConflict('id')

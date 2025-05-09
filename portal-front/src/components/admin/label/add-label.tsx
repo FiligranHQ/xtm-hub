@@ -1,8 +1,7 @@
 import LabelForm from '@/components/admin/label/label-form';
 import { AddLabelMutation } from '@/components/admin/label/label.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
-import { toast } from 'filigran-ui';
+import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -17,7 +16,7 @@ const AddLabel = ({ connectionId }: { connectionId: string }) => {
       title={t('LabelActions.AddLabel')}
       setOpen={setOpenSheet}
       open={openSheet}
-      trigger={<TriggerButton label={t('LabelActions.AddLabel')} />}>
+      trigger={<Button>{t('LabelActions.AddLabel')}</Button>}>
       <LabelForm
         onClose={() => setOpenSheet(false)}
         handleSubmit={(input) =>

@@ -11,14 +11,13 @@ export default class DocumentPage {
 
   async navigateToVault() {
     await this.page.getByRole('link', { name: 'Vault' }).click();
-
     await expect(
       this.page.getByRole('heading', { name: 'Vault' })
     ).toBeVisible();
   }
 
   async uploadDocument(filePath: string, fileDescription: string) {
-    await this.page.getByLabel('Add new document').click();
+    await this.page.getByRole('button', { name: 'Add new document' }).click();
     await this.page
       .getByPlaceholder('This is a short paragraph to describe the document.')
       .fill(fileDescription);

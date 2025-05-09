@@ -2,9 +2,8 @@ import { OrganizationForm } from '@/components/organization/organization-form';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
 import { organizationCreateMutation } from '@generated/organizationCreateMutation.graphql';
-import { useToast } from 'filigran-ui';
+import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -62,10 +61,9 @@ export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
       open={openSheet}
       setOpen={setOpenSheet}
       trigger={
-        <TriggerButton
-          className="truncate inline-block "
-          label={t('OrganizationForm.CreateOrganization')}
-        />
+        <Button className="truncate inline-block ">
+          {t('OrganizationForm.CreateOrganization')}
+        </Button>
       }
       title={t('OrganizationForm.CreateOrganization')}>
       <OrganizationForm handleSubmit={handleSubmit} />

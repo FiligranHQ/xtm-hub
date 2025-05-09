@@ -23,7 +23,7 @@ export default class UserPage {
   }
 
   async addUser(userEmail: string, userOrganizationName: string) {
-    await this.page.getByLabel('Add user').click();
+    await this.page.getByRole('button', { name: 'Add user' }).click();
     await this.page.getByPlaceholder('Email', { exact: true }).fill(userEmail);
     await this.page.getByPlaceholder('Email', { exact: true }).press('Tab');
     await this.page.getByRole('combobox').click();

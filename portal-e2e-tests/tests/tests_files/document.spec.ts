@@ -18,6 +18,7 @@ test.describe('Document Management', () => {
     documentPage = new DocumentPage(page);
 
     await loginPage.login();
+
     await documentPage.navigateToVault();
   });
 

@@ -1,7 +1,8 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import TriggerButton from '@/components/ui/trigger-button';
+import { Button } from 'filigran-ui';
+
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
 import { isNil } from '@/lib/utils';
@@ -143,7 +144,7 @@ export const CustomDashboardSheet = ({
           open={openSheet}
           setOpen={setOpenSheet}
           trigger={
-            <TriggerButton label={t('Service.CustomDashboards.AddDashboard')} />
+            <Button>{t('Service.CustomDashboards.AddDashboard')}</Button>
           }
           title={t('Service.CustomDashboards.AddDashboard')}>
           <CustomDashboardForm handleSubmit={handleSubmit} />

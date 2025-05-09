@@ -1,9 +1,5 @@
 import { Page } from '@playwright/test';
-import {
-  clickRowAction,
-  forceCloseAllDropdowns,
-  waitForDrawerToClose,
-} from './common';
+import { clickRowAction, waitForDrawerToClose } from './common';
 
 export default class ServicePage {
   constructor(private page: Page) {}
@@ -43,7 +39,7 @@ export default class ServicePage {
   }
 
   async addUserIntoService(userEmail: string) {
-    await this.page.getByLabel('Invite user').click();
+    await this.page.getByRole('button', { name: 'Invite user' }).click();
     await this.page.getByPlaceholder('EMAIL').click();
     await this.page.getByPlaceholder('EMAIL').fill(userEmail);
     await this.page.getByText(userEmail).click();
@@ -57,7 +53,7 @@ export default class ServicePage {
     userEmail: string,
     capability: string
   ) {
-    await this.page.getByLabel('Invite user').click();
+    await this.page.getByRole('button', { name: 'Invite user' }).click();
     await this.page.getByPlaceholder('EMAIL').click();
     await this.page.getByPlaceholder('EMAIL').fill('use');
     await this.page.getByText(userEmail).click();

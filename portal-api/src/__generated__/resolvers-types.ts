@@ -87,6 +87,7 @@ export type CsvFeed = Node & {
   labels: Array<Label>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
   share_number: Scalars['Int']['output'];
@@ -289,6 +290,7 @@ export type Mutation = {
   adminEditUser: User;
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed?: Maybe<CsvFeed>;
+  deleteCsvFeed: CsvFeed;
   deleteDocument: Document;
   deleteLabel: Label;
   deleteOrganization?: Maybe<Organization>;
@@ -394,6 +396,13 @@ export type MutationCreateCsvFeedArgs = {
   document?: InputMaybe<Scalars['Upload']['input']>;
   input: CsvFeedCreateInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationDeleteCsvFeedArgs = {
+  documentId: Scalars['ID']['input'];
+  forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
+  service_instance_id: Scalars['String']['input'];
 };
 
 
@@ -1404,6 +1413,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1547,6 +1557,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input'>>;
+  deleteCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'documentId' | 'service_instance_id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
