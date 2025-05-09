@@ -1,4 +1,5 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { z } from 'zod';
 import { DatabaseType } from '../../knexfile';
 
 export const extractId = <T extends string>(id: string) => {
@@ -32,6 +33,25 @@ export const isNotEmptyField = (field: unknown): boolean => {
 };
 export const isEmptyField = (field: unknown): boolean => {
   return isEmpty(field) || isNil(field);
+};
+
+export const isImgUrl = async (url: string): Promise<boolean> => {
+  const schema = z.string().url();
+  try {
+    schema.parse(url);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_) {
+    return false;
+  }
+
+  const urlRegex = /\.(jpg|jpeg|png|webp|avif|gif)/;
+  if (!urlRegex.test(url)) {
+    return false;
+  }
+
+  const response = await fetch(url, { method: 'HEAD' });
+  const contentType = response.headers.get('Content-Type');
+  return contentType.startsWith('img') || contentType.startsWith('image');
 };
 
 export const now = () => new Date().getUTCDate();
