@@ -1,6 +1,9 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { dbUnsecure } from '../../../../knexfile';
-import { CreateCustomDashboardInput } from '../../../__generated__/resolvers-types';
+import {
+  CreateCustomDashboardInput,
+  Document as DocumentResolverType,
+} from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
 import { createDocument, MinioFile } from '../document/document.helper';
@@ -8,6 +11,13 @@ import { createDocument, MinioFile } from '../document/document.helper';
 export type CustomDashboard = Document & {
   product_version: string;
 };
+export type CustomDashboardMetadataKeys = Array<
+  Exclude<keyof Omit<CustomDashboard, 'labels'>, keyof DocumentResolverType>
+>;
+
+export const CUSTOM_DASHBOARD_METADATA: CustomDashboardMetadataKeys = [
+  'product_version',
+];
 
 export const loadSeoCustomDashboardsByServiceSlug = async (
   serviceSlug: string
@@ -82,7 +92,7 @@ export const createCustomDashboard = async (
       minio_name: dashboardFile.minioName,
       mime_type: dashboardFile.mimeType,
     },
-    ['product_version']
+    CUSTOM_DASHBOARD_METADATA
   );
   if (files.length > 0) {
     await Promise.all(

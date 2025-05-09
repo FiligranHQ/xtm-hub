@@ -229,7 +229,7 @@ export const loadDocuments = <
   T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
 >(
   context: PortalContext,
-  opts: QueryDocumentsArgs,
+  opts: Partial<QueryDocumentsArgs>,
   field: Record<string, unknown>,
   include_metadata?: string[]
 ): Promise<T> => {
@@ -373,4 +373,33 @@ export const incrementShareNumber = (documentId: DocumentId) => {
     .where('id', '=', documentId)
     .increment('share_number', 1)
     .returning('*');
+};
+
+export const loadDocumentById = async (
+  context: PortalContext,
+  id: string,
+  include_metadata: string[] = []
+): Promise<Document> => {
+  console.log('loadDocumentById', id);
+  console.trace();
+  const docQuery = db<Document>(context, 'Document')
+    .where('id', '=', id)
+    .select('Document.*')
+    .groupBy(['Document.id']);
+
+  if (Array.isArray(include_metadata)) {
+    include_metadata.forEach((metaKey, index) => {
+      const metaAlias = `meta${index}`;
+      docQuery
+        .select(`${metaAlias}.value as ${metaKey}`)
+        .leftJoin(
+          { [metaAlias]: 'Document_Metadata' },
+          `${metaAlias}.document_id`,
+          'Document.id'
+        )
+        .andWhere(`${metaAlias}.key`, '=', metaKey)
+        .groupBy([metaKey]);
+    });
+  }
+  return docQuery.first();
 };

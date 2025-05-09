@@ -102,3 +102,11 @@ export const CustomDashboardsListQuery = graphql`
     ...customDashboardsList
   }
 `;
+
+export const CustomDashboardQuery = graphql`
+  query customDashboardQuery($documentId: ID, $serviceInstanceId: ID) {
+    customDashboard(id: $documentId, serviceInstanceId: $serviceInstanceId) {
+      ...customDashboardsItem_fragment
+    }
+  }
+`;

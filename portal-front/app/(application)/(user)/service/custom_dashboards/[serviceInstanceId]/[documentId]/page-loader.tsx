@@ -2,11 +2,10 @@
 
 import Loader from '@/components/loader';
 import DashboardSlug from '@/components/service/custom-dashboards/[documentId]/custom-dashboard-details';
-import { DocumentQuery } from '@/components/service/document/document.graphql';
+import { CustomDashboardQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { documentQuery } from '@generated/documentQuery.graphql';
+import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 
 // Component interface
@@ -20,7 +19,8 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   documentId,
   service,
 }) => {
-  const [queryRef, loadQuery] = useQueryLoader<documentQuery>(DocumentQuery);
+  const [queryRef, loadQuery] =
+    useQueryLoader<customDashboardQuery>(CustomDashboardQuery);
   useMountingLoader(loadQuery, {
     documentId,
     serviceInstanceId: service?.id,

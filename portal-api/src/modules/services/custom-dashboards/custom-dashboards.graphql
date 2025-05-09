@@ -80,6 +80,7 @@ type Query {
     filters: [Filter!]
     serviceInstanceId: String
   ): CustomDashboardConnection! @auth
+  customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
 }
 
 type Mutation {

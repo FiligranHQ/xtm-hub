@@ -1,21 +1,18 @@
-import * as React from 'react';
-
-import {
-  documentItem,
-  DocumentQuery,
-} from '@/components/service/document/document.graphql';
-import { documentQuery } from '@generated/documentQuery.graphql';
-
 import DashboardCarousel from '@/components/service/custom-dashboards/[documentId]/custom-dashboard-carousel-view';
 import DashboardUpdate from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-update';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
+import { customDashboardsItem_fragment$key } from '@generated/customDashboardsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
+import {
+  CustomDashboardQuery,
+  customDashboardsItem,
+} from '../custom-dashboard.graphql';
 
 // Component interface
 interface DashboardSlugProps {
-  queryRef: PreloadedQuery<documentQuery>;
+  queryRef: PreloadedQuery<customDashboardQuery>;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 
@@ -24,10 +21,13 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
   queryRef,
   serviceInstance,
 }) => {
-  const data = usePreloadedQuery<documentQuery>(DocumentQuery, queryRef);
-  const documentData = readInlineData<customDashboardsItem_fragment$data>(
-    documentItem,
-    data.document
+  const data = usePreloadedQuery<customDashboardQuery>(
+    CustomDashboardQuery,
+    queryRef
+  );
+  const documentData = readInlineData<customDashboardsItem_fragment$key>(
+    customDashboardsItem,
+    data.customDashboard
   );
 
   const breadcrumbValue = [

@@ -2,12 +2,15 @@ import {
   CustomDashboardConnection,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import { UnknownError } from '../../../utils/error.util';
+import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
   getLabels,
   getUploader,
   getUploaderOrganization,
+  loadDocumentById,
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
 import {
@@ -18,6 +21,7 @@ import {
 import { getServiceInstance } from '../service-instance.domain';
 import {
   createCustomDashboard,
+  CUSTOM_DASHBOARD_METADATA,
   loadImagesByCustomDashboardId,
   loadSeoCustomDashboardBySlug,
   loadSeoCustomDashboardsByServiceSlug,
@@ -69,9 +73,15 @@ const resolvers: Resolvers = {
       return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
         context,
         input,
-        ['product_version']
+        CUSTOM_DASHBOARD_METADATA
       );
     },
+    customDashboard: async (_, { id }, context) =>
+      loadDocumentById(
+        context,
+        extractId<DocumentId>(id),
+        CUSTOM_DASHBOARD_METADATA
+      ),
   },
   Mutation: {
     createCustomDashboard: async (_, { input, document }, context) => {

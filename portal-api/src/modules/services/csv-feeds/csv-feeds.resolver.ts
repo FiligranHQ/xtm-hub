@@ -14,11 +14,11 @@ import {
   getLabels,
   getUploader,
   getUploaderOrganization,
+  loadDocumentById,
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
 import {
   createFileInMinIO,
-  loadDocumentById,
   Upload,
   waitForUploads,
 } from '../document/document.helper';

@@ -6,7 +6,6 @@ import { CsvFeedQuery } from '@/components/service/csv-feeds/csv-feed.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 
 // Component interface

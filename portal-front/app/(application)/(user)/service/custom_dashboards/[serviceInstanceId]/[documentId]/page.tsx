@@ -12,13 +12,13 @@ import ServiceSelfJoinMutation, {
 import PageLoader from './page-loader';
 
 interface ServiceCustomDashboardsPageProps {
-  params: Promise<{ slug: string; document: string }>;
+  params: Promise<{ serviceInstanceId: string; documentId: string }>;
 }
 
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
-  const { slug, document } = await params;
-  const service_instance_id = decodeURIComponent(slug);
-  const documentId = decodeURIComponent(document);
+  const { serviceInstanceId, documentId } = await params;
+  const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
+  const decodedDocumentId = decodeURIComponent(documentId);
 
   let serviceInstance:
     | serviceByIdQuery$data['serviceInstanceById']
@@ -28,7 +28,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
     const response = await serverFetchGraphQL<serviceByIdQuery>(
       ServiceByIdQuery,
       {
-        service_instance_id,
+        service_instance_id: decodedServiceInstanceId,
       }
     );
 
@@ -42,7 +42,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       const response = await serverMutateGraphQL<serviceSelfJoinMutation>(
         ServiceSelfJoinMutation,
         {
-          service_instance_id,
+          service_instance_id: decodedServiceInstanceId,
         }
       );
 
@@ -53,13 +53,11 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
 
   return (
     <>
-      {documentId && serviceInstance ? (
-        <>
-          <PageLoader
-            documentId={documentId}
-            service={serviceInstance}
-          />
-        </>
+      {decodedDocumentId && serviceInstance ? (
+        <PageLoader
+          documentId={decodedDocumentId}
+          service={serviceInstance}
+        />
       ) : (
         <h1>Document not found</h1>
       )}

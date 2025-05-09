@@ -1,8 +1,8 @@
 'use client';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { Carousel, CarouselItem, DialogContent } from 'filigran-ui/clients';
 import * as React from 'react';
 
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Dialog } from 'filigran-ui';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 // Component interface
 interface DashboardCarouselProps {
-  documentData: documentItem_fragment$data;
+  documentData: customDashboardsItem_fragment$data;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
 }
 

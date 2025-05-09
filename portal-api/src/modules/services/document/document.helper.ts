@@ -1,5 +1,5 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
-import { db, dbUnsecure, QueryOpts } from '../../../../knexfile';
+import { db, dbUnsecure } from '../../../../knexfile';
 import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
 import {
   DocumentId,
@@ -185,15 +185,4 @@ export const deleteDocuments = async () => {
 
 export const deleteDocumentBy = async (field: DocumentMutator) => {
   return dbUnsecure<Document>('Document').where(field).delete('*');
-};
-
-export const loadDocumentById = async (
-  context: PortalContext,
-  id: string,
-  opts: QueryOpts = {}
-): Promise<Document> => {
-  return db<Document>(context, 'Document', opts)
-    .where('id', '=', id)
-    .select('Document.*')
-    .first();
 };

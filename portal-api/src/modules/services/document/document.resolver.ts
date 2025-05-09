@@ -18,6 +18,7 @@ import {
   getUploader,
   getUploaderOrganization,
   incrementShareNumber,
+  loadDocumentById,
   loadDocuments,
   sendFileToS3,
   updateDocumentDescription,
@@ -25,7 +26,6 @@ import {
 import {
   checkDocumentExists,
   createDocument,
-  loadDocumentById,
   normalizeDocumentName,
 } from './document.helper';
 
