@@ -47,7 +47,7 @@ export const loadImagesByCustomDashboardId = async (
   customDashboardId: string
 ) => {
   const images = await dbUnsecure<Document>('Document')
-    .select('Document.id')
+    .select(['Document.id', 'Document.file_name'])
     .join(
       'Document_Children',
       'Document.id',

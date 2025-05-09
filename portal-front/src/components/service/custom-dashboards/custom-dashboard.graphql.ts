@@ -17,6 +17,7 @@ export const CustomDashboardsCreateMutation = graphql`
         edgeTypeName: "CustomDashboardEdge"
       ) {
       __id
+      name
       ...customDashboardsItem_fragment
     }
   }
@@ -53,6 +54,7 @@ export const customDashboardsItem = graphql`
     }
     children_documents {
       id
+      file_name
     }
     service_instance {
       id

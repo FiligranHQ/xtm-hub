@@ -94,12 +94,12 @@ export const CustomDashboardUpdateForm = ({
       description: customDashboard.description ?? '',
       uploader_organization_id: customDashboard.uploader_organization?.id ?? '',
       active: customDashboard.active ?? false,
-      labels: customDashboard.labels.map(({ id }) => id) ?? [],
+      labels: customDashboard.labels?.map((obj) => obj?.id) ?? [],
       slug: customDashboard.slug ?? '',
       images:
         (customDashboard.children_documents?.map((n) => ({
           ...n,
-          name: n.file_name,
+          name: n?.file_name,
         })) as unknown as FileList) ?? [],
     },
   });
@@ -111,7 +111,7 @@ export const CustomDashboardUpdateForm = ({
   };
 
   const [currentDashboard, setCurrentDashboard] = useState<
-    Partial<documentItem_fragment$data> | undefined
+    Partial<customDashboardsItem_fragment$data> | undefined
   >(customDashboard);
 
   const [openDelete, setOpenDelete] = useState<string>('');
@@ -433,11 +433,11 @@ export const CustomDashboardUpdateForm = ({
               />
               {(customDashboard?.children_documents?.length ?? 0) > 0 && (
                 <div className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl">
-                  {customDashboard.children_documents!.map(({ id }) => (
+                  {customDashboard.children_documents!.map((doc) => (
                     <div
-                      key={id}
+                      key={doc!.id}
                       style={{
-                        backgroundImage: `url(/document/visualize/${customDashboard!.id}/${id})`,
+                        backgroundImage: `url(/document/visualize/${customDashboard!.id}/${doc!.id})`,
                         backgroundSize: 'cover',
                       }}
                       className="min-h-[15rem] border rounded relative">
@@ -448,7 +448,7 @@ export const CustomDashboardUpdateForm = ({
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
-                          setOpenDelete(id);
+                          setOpenDelete(doc!.id);
                         }}>
                         <DeleteIcon className="size-4" />
                       </Button>
@@ -467,7 +467,7 @@ export const CustomDashboardUpdateForm = ({
                   const newDashboard = { ...currentDashboard };
                   newDashboard.children_documents =
                     currentDashboard!.children_documents!.filter(
-                      (c) => c.id !== openDelete
+                      (c) => c?.id !== openDelete
                     );
                   setCurrentDashboard(newDashboard);
                   form.setValue(

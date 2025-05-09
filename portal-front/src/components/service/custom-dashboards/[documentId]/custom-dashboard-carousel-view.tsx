@@ -20,8 +20,8 @@ const DashboardCarousel: React.FunctionComponent<DashboardCarouselProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [pictureIndex, setPictureIndex] = useState<number>(0);
-  const fileNames = (documentData.children_documents ?? [])?.map(
-    ({ id }) => id
+  const fileNames = (documentData.children_documents ?? []).map(
+    (doc) => doc?.id
   );
   const handleCarouselImageClick = (open: boolean, index: number) => {
     setOpen(open);

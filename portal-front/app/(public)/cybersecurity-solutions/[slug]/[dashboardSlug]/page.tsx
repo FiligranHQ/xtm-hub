@@ -8,6 +8,7 @@ import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { fromGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardBySlugQuery, {
   seoCustomDashboardBySlugQuery,
@@ -259,7 +260,7 @@ const Page = async ({
               >
             }
             documentData={
-              customDashboard as unknown as documentItem_fragment$data
+              customDashboard as unknown as customDashboardsItem_fragment$data
             }
           />
         )}

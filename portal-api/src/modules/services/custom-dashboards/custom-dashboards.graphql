@@ -1,5 +1,6 @@
 type CustomDashboardImage {
   id: ID!
+  file_name: String!
 }
 
 type SeoCustomDashboard {

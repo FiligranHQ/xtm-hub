@@ -30,8 +30,8 @@ const CustomDashboardCard = ({
   shareLinkUrl,
 }: CustomDashboardCardProps) => {
   const t = useTranslations();
-  const fileNames = (customDashboard.children_documents ?? [])?.map(
-    ({ id }) => id
+  const fileNames = (customDashboard.children_documents ?? []).map(
+    (doc) => doc?.id
   );
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,

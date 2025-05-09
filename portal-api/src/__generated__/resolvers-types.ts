@@ -173,6 +173,7 @@ export type CustomDashboardEdge = {
 
 export type CustomDashboardImage = {
   __typename?: 'CustomDashboardImage';
+  file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
 };
 
@@ -1551,6 +1552,7 @@ export type CustomDashboardEdgeResolvers<ContextType = PortalContext, ParentType
 }>;
 
 export type CustomDashboardImageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboardImage'] = ResolversParentTypes['CustomDashboardImage']> = ResolversObject<{
+  file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
