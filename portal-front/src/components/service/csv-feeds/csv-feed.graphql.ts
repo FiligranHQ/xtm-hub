@@ -104,3 +104,11 @@ export const CsvFeedsListQuery = graphql`
     ...csvFeedsList
   }
 `;
+
+export const CsvFeedQuery = graphql`
+  query csvFeedQuery($documentId: ID, $serviceInstanceId: ID) {
+    csvFeed(id: $documentId, serviceInstanceId: $serviceInstanceId) {
+      ...csvFeedsItem_fragment
+    }
+  }
+`;

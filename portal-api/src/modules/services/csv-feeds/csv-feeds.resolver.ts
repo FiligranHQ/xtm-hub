@@ -2,7 +2,9 @@ import {
   CsvFeedConnection,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import { UnknownError } from '../../../utils/error.util';
+import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
   getChildrenDocuments,
@@ -11,7 +13,11 @@ import {
   getUploaderOrganization,
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
-import { createFileInMinIO, waitForUploads } from '../document/document.helper';
+import {
+  createFileInMinIO,
+  loadDocumentById,
+  waitForUploads,
+} from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
 import { createCsvFeed } from './csv-feeds.domain';
 
@@ -45,6 +51,8 @@ const resolvers: Resolvers = {
         input
       );
     },
+    csvFeed: async (_, { id }, context) =>
+      loadDocumentById(context, extractId<DocumentId>(id)),
   },
 };
 

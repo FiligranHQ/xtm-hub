@@ -1,5 +1,5 @@
 import DashboardCarousel from '@/components/service/custom-dashboards/[details]/custom-dashboard-carousel-view';
-import DashboardDetails from '@/components/service/custom-dashboards/[details]/custom-dashboard-details';
+import DashboardDetails from '@/components/service/document/shareable-resouce-details';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';

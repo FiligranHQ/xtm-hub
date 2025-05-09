@@ -59,4 +59,5 @@ type Query {
     filters: [Filter!]
     serviceInstanceId: String
   ): CsvFeedConnection! @auth
+  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
 }

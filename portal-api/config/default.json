@@ -16,6 +16,14 @@
     "database": "test_database",
     "seeds": "tests/seeds"
   },
+  "auth0": {
+    "enabled": false,
+    "config": {
+      "domain": "changeme",
+      "clientId": "changeme",
+      "clientSecret": "changeme"
+    }
+  },
   "oidc_provider": {
     "issuer": "http://localhost:8080/realms/keycloak-express",
     "client_id": "keycloak-express",

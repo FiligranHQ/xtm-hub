@@ -4590,6 +4590,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"auth0@npm:4.22.0":
+  version: 4.22.0
+  resolution: "auth0@npm:4.22.0"
+  dependencies:
+    jose: ^4.13.2
+    undici-types: ^6.15.0
+    uuid: ^9.0.0
+  checksum: caa6f412c507d6a4040c0e4e9bcb3286012fc0377228409870a4f65be568dc34a803507ddc8cf14017e25f41034637ea1a978267bc95b037f2e81c24119caaeb
+  languageName: node
+  linkType: hard
+
 "auto-bind@npm:~4.0.0":
   version: 4.0.0
   resolution: "auto-bind@npm:4.0.0"
@@ -7391,7 +7402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.15.9":
+"jose@npm:^4.13.2, jose@npm:^4.15.9":
   version: 4.15.9
   resolution: "jose@npm:4.15.9"
   checksum: 41abe1c99baa3cf8a78ebbf93da8f8e50e417b7a26754c4afa21865d87527b8ac2baf66de2c5f6accc3f7d7158658dae7364043677236ea1d07895b040097f15
@@ -8910,6 +8921,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 8.20.0
     "@typescript-eslint/parser": 8.20.0
     apollo-errors: 1.9.0
+    auth0: 4.22.0
     body-parser: 1.20.3
     chokidar: 3.6.0
     concurrently: 9.0.1
@@ -10376,6 +10388,13 @@ __metadata:
   version: 1.12.1
   resolution: "underscore@npm:1.12.1"
   checksum: ec327603aa112b99fe9d74cd9bf3b3b7451465a9d2610ceab269a532e3f191650ab017903be34dc86fe406a11d04d8905a3b04dd4c129493e51bee09a3f3074c
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:^6.15.0":
+  version: 6.21.0
+  resolution: "undici-types@npm:6.21.0"
+  checksum: 46331c7d6016bf85b3e8f20c159d62f5ae471aba1eb3dc52fff35a0259d58dcc7d592d4cc4f00c5f9243fa738a11cfa48bd20203040d4a9e6bc25e807fab7ab3
   languageName: node
   linkType: hard
 

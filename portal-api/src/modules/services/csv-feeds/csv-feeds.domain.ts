@@ -1,3 +1,4 @@
+import { db } from '../../../../knexfile';
 import { CreateCsvFeedInput } from '../../../__generated__/resolvers-types';
 import { PortalContext } from '../../../model/portal-context';
 import {
@@ -21,4 +22,15 @@ export const createCsvFeed = async (
     mime_type: file.mimeType,
     type: 'csv_feed',
   });
+};
+
+export const loadCsvFeedsById = async (
+  context: PortalContext,
+  id: string,
+  opts = {}
+): Promise<Document> => {
+  return db<Document>(context, 'Document', opts)
+    .where('id', '=', id)
+    .select('Document.*')
+    .first();
 };

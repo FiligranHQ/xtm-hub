@@ -17,7 +17,6 @@ import {
   getUploader,
   getUploaderOrganization,
   incrementShareNumber,
-  loadDocumentBy,
   loadDocuments,
   sendFileToS3,
   updateDocumentDescription,
@@ -25,6 +24,7 @@ import {
 import {
   checkDocumentExists,
   createDocument,
+  loadDocumentById,
   normalizeDocumentName,
 } from './document.helper';
 
@@ -166,12 +166,8 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
-    document: async (_, { documentId }, context) => {
-      const [parentDocument] = await loadDocumentBy(context, {
-        'Document.id': fromGlobalId(documentId).id as DocumentId,
-      });
-      return parentDocument;
-    },
+    document: async (_, { documentId }, context) =>
+      loadDocumentById(context, extractId<DocumentId>(documentId)),
   },
 };
 

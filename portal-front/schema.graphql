@@ -19,6 +19,10 @@ input Filter {
   value: [String!]!
 }
 
+type Success {
+  success: Boolean!
+}
+
 type Mutation {
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   addOrganization(input: OrganizationInput!): Organization
@@ -52,6 +56,7 @@ type Mutation {
   editMeUser(input: EditMeUserInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  resetPassword: Success!
   login(email: String!, password: String): User
   logout: ID!
 }
@@ -85,6 +90,7 @@ type Query {
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
+  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
   seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
   customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
