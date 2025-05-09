@@ -290,8 +290,8 @@ export type Mutation = {
   adminEditUser: User;
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed?: Maybe<CsvFeed>;
-  deleteCsvFeed: CsvFeed;
-  deleteDocument: Document;
+  deleteCsvFeed: Success;
+  deleteDocument: Success;
   deleteLabel: Label;
   deleteOrganization?: Maybe<Organization>;
   deleteServiceInstance?: Maybe<ServiceInstance>;
@@ -1004,6 +1004,7 @@ export type SubscriptionWithService = Node & {
 
 export type Success = {
   __typename?: 'Success';
+  id?: Maybe<Scalars['ID']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -1557,8 +1558,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input'>>;
-  deleteCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'documentId' | 'service_instance_id'>>;
-  deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
+  deleteCsvFeed?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'documentId' | 'service_instance_id'>>;
+  deleteDocument?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
@@ -1835,6 +1836,7 @@ export type SubscriptionWithServiceResolvers<ContextType = PortalContext, Parent
 }>;
 
 export type SuccessResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Success'] = ResolversParentTypes['Success']> = ResolversObject<{
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

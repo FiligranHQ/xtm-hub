@@ -60,7 +60,7 @@ export const CsvFeedDeleteMutation = graphql`
       forceDelete: $forceDelete
     ) {
       id @deleteEdge(connections: $connections)
-      file_name
+      success
     }
   }
 `;

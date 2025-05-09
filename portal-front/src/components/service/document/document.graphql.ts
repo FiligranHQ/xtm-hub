@@ -70,7 +70,7 @@ export const DocumentDeleteMutation = graphql`
       forceDelete: $forceDelete
     ) {
       id @deleteEdge(connections: $connections)
-      file_name
+      success
     }
   }
 `;
@@ -87,16 +87,7 @@ export const DocumentDetailDeleteMutation = graphql`
       forceDelete: $forceDelete
     ) {
       id
-      file_name
-      children_documents {
-        id
-        file_name
-        created_at
-        name
-        description
-        download_number
-        active
-      }
+      success
     }
   }
 `;

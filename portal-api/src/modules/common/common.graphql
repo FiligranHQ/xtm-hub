@@ -15,4 +15,5 @@ input Filter {
 
 type Success {
   success: Boolean!
+  id: ID
 }

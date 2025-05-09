@@ -94,12 +94,13 @@ const resolvers: Resolvers = {
     },
     deleteDocument: async (_, { documentId, forceDelete }, context) => {
       try {
-        return deleteDocument(
+        await deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId,
           forceDelete
         );
+        return { success: true, id: documentId };
       } catch (error) {
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }

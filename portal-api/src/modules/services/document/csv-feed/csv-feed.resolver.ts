@@ -48,14 +48,14 @@ const resolvers: Resolvers = {
     deleteCsvFeed: async (_, { documentId, forceDelete }, context) => {
       const trx = await dbTx();
       try {
-        const deletedCsvFeed = await deleteCsvFeed(
+        await deleteCsvFeed(
           context,
           extractId<DocumentId>(documentId),
           forceDelete,
           trx
         );
         await trx.commit();
-        return deletedCsvFeed;
+        return { success: true, id: documentId };
       } catch (error) {
         await trx.rollback();
 
