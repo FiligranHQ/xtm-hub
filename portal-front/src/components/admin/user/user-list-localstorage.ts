@@ -36,6 +36,7 @@ export const useUserListLocalstorage = () => {
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrderBy,
     pageSize,
     setPageSize,
     columnOrder,

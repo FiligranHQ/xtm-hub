@@ -43,6 +43,7 @@ export const useOrganizationListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrderBy,
     pageSize,
     setPageSize,
     columnOrder,

@@ -1,4 +1,6 @@
+import { OrderingMode } from '@generated/OrganizationsPaginationQuery.graphql';
 import { ColumnSort } from '@tanstack/react-table';
+import { Dispatch, SetStateAction } from 'react';
 
 interface ColumnSortValue<T, U> extends ColumnSort {
   count: number;
@@ -6,6 +8,40 @@ interface ColumnSortValue<T, U> extends ColumnSort {
   orderBy: T;
   orderMode: U;
 }
+
+interface HandleSortingChangeParams<Ordering> {
+  handleRefetchData: (args: Record<string, unknown>) => void;
+  orderBy: string;
+  orderMode: OrderingMode;
+  removeOrderBy: () => void;
+  setOrderBy: Dispatch<SetStateAction<Ordering>>;
+  setOrderMode: (orderMode: OrderingMode) => void;
+  updater: unknown;
+}
+
+export const handleSortingChange = <Ordering>({
+  updater,
+  orderBy,
+  orderMode,
+  setOrderBy,
+  setOrderMode,
+  removeOrderBy,
+  handleRefetchData,
+}: HandleSortingChangeParams<Ordering>) => {
+  const sorting = mapToSortingTableValue(orderBy, orderMode);
+  const newSortingValue =
+    updater instanceof Function ? updater(sorting) : updater;
+  if (!newSortingValue[0]) {
+    removeOrderBy();
+  } else {
+    setOrderBy(newSortingValue[0].id);
+    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
+  }
+
+  handleRefetchData(
+    transformSortingValueToParams<Ordering, OrderingMode>(newSortingValue)
+  );
+};
 
 export const transformSortingValueToParams = <T, U>(
   sortingValue?: ColumnSort[]

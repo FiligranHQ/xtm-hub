@@ -45,6 +45,7 @@ export const documentListLocalStorage = (
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrderBy,
     pageSize,
     setPageSize,
     columnOrder,
