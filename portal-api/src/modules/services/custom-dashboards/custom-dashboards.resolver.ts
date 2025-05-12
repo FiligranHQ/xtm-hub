@@ -1,12 +1,15 @@
+import { dbTx } from '../../../../knexfile';
 import {
   CustomDashboardConnection,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
+  deleteDocument,
   getLabels,
   getUploader,
   getUploaderOrganization,
@@ -25,6 +28,7 @@ import {
   loadImagesByCustomDashboardId,
   loadSeoCustomDashboardBySlug,
   loadSeoCustomDashboardsByServiceSlug,
+  updateCustomDashboard,
 } from './custom-dashboards.domain';
 
 const resolvers: Resolvers = {
@@ -95,6 +99,41 @@ const resolvers: Resolvers = {
         throw UnknownError('CUSTOM_DASHBOARD_INSERTION_ERROR', {
           detail: error,
         });
+      }
+    },
+    updateCustomDashboard: async (
+      _,
+      { input, documentId, document },
+      context
+    ) => {
+      try {
+        await waitForUploads(document);
+        const files = await Promise.all(
+          document.map((doc: Upload) => createFileInMinIO(doc, context))
+        );
+        return updateCustomDashboard(documentId, input, files, context);
+      } catch (error) {
+        throw UnknownError('CUSTOM_DASHBOARD_INSERTION_ERROR', {
+          detail: error,
+        });
+      }
+    },
+    deleteCustomDashboard: async (_, { id }, context) => {
+      const trx = await dbTx();
+      try {
+        await deleteDocument(
+          context,
+          extractId<DocumentId>(id),
+          context.serviceInstanceId as ServiceInstanceId,
+          true,
+          trx
+        );
+        await trx.commit();
+        return { success: true, id };
+      } catch (error) {
+        await trx.rollback();
+
+        throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }
     },
   },

@@ -2,11 +2,8 @@ import { db } from '../../../../knexfile';
 import { CreateCsvFeedInput } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
-import {
-  createDocument,
-  Document,
-  MinioFile,
-} from '../document/document.helper';
+import { createDocument } from '../document/document.domain';
+import { Document, MinioFile } from '../document/document.helper';
 
 export type CsvFeed = Document;
 

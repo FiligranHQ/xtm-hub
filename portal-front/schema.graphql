@@ -30,8 +30,10 @@ type Mutation {
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
   createCsvFeed(input: CreateCsvFeedInput!, document: Upload!, serviceInstanceId: String!): CsvFeed
-  deleteCsvFeed(id: ID!, service_instance_id: String!): Success!
-  createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard
+  deleteCsvFeed(id: ID!, serviceInstanceId: String!): Success!
+  createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
+  updateCustomDashboard(documentId: ID, input: UpdateCustomDashboardInput!, document: [Upload!], serviceInstanceId: String): CustomDashboard!
+  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): Success!
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Success!
@@ -206,6 +208,16 @@ input CreateCustomDashboardInput {
   active: Boolean!
   labels: [String!]
   product_version: String!
+}
+
+input UpdateCustomDashboardInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  product_version: String
 }
 
 type CustomDashboard implements Node {

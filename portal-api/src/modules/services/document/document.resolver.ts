@@ -1,11 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import Document, {
-  DocumentId,
-  DocumentMutator,
-} from '../../../model/kanel/public/Document';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
@@ -13,6 +9,7 @@ import { extractId, omit } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
+  createDocument,
   deleteDocument,
   getChildrenDocuments,
   getUploader,
@@ -21,13 +18,9 @@ import {
   loadDocumentById,
   loadDocuments,
   sendFileToS3,
-  updateDocumentDescription,
+  updateDocument,
 } from './document.domain';
-import {
-  checkDocumentExists,
-  createDocument,
-  normalizeDocumentName,
-} from './document.helper';
+import { checkDocumentExists, normalizeDocumentName } from './document.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -59,18 +52,10 @@ const resolvers: Resolvers = {
     },
     editDocument: async (_, { documentId, input }, context) => {
       try {
-        const [document] = await updateDocumentDescription(
+        const document = await updateDocument(
           context,
-          input.uploader_organization_id
-            ? ({
-                ...input,
-                uploader_organization_id: extractId<OrganizationId>(
-                  input.uploader_organization_id
-                ),
-              } as DocumentMutator)
-            : input,
-          fromGlobalId(documentId).id as DocumentId,
-          context.serviceInstanceId as ServiceInstanceId
+          extractId<DocumentId>(documentId),
+          input
         );
         return document;
       } catch (error) {

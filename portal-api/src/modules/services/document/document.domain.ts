@@ -16,7 +16,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import {
   DocumentId,
-  DocumentMutator,
+  default as DocumentModel,
 } from '../../../model/kanel/public/Document';
 import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
 import Label, { LabelId } from '../../../model/kanel/public/Label';
@@ -26,16 +26,20 @@ import ObjectLabel, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
-import { extractId } from '../../../utils/utils';
+import { extractId, omit } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
-  createDocument,
   Document,
   FullDocumentMutator,
   getDocumentName,
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
 } from './document.helper';
+
+import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
+import DocumentMetadata, {
+  DocumentMetadataKey,
+} from '../../../model/kanel/public/DocumentMetadata';
 
 export const sendFileToS3 = async (
   file: UploadedFile,
@@ -85,57 +89,112 @@ export const insertDocument = async (
   return createDocument<Document>(context, documentData);
 };
 
-export const updateDocumentDescription = async (
+export const createDocument = async <T extends DocumentModel>(
   context: PortalContext,
-  updateData: DocumentMutator,
-  documentId: DocumentId,
-  serviceInstanceId: ServiceInstanceId
-): Promise<Document[]> => {
-  return updateDocument(context, updateData, {
-    id: documentId,
-    service_instance_id: serviceInstanceId,
-  });
+  documentData: Omit<Partial<T>, 'labels'> & {
+    labels?: string[];
+    parent_document_id?: string;
+  },
+  metadataKeys: Array<
+    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+  > = []
+): Promise<T> => {
+  const [document] = await db<DocumentModel>(context, 'Document')
+    .insert({
+      ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
+      uploader_id: context.user.id,
+      service_instance_id: context.serviceInstanceId as ServiceInstanceId,
+      uploader_organization_id: context.user.selected_organization_id,
+    })
+    .returning('*');
+
+  if (documentData.parent_document_id) {
+    await db<DocumentChildren>(context, 'Document_Children').insert({
+      parent_document_id: documentData.parent_document_id as DocumentId,
+      child_document_id: document.id,
+    });
+  }
+
+  if (documentData.labels?.length) {
+    await db<ObjectLabel>(context, 'Object_Label').insert(
+      documentData.labels.map((id: string) => ({
+        object_id: document.id as unknown as ObjectLabelObjectId,
+        label_id: extractId(id) as LabelId,
+      }))
+    );
+  }
+
+  if (metadataKeys.length) {
+    await db<DocumentMetadata>(context, 'Document_Metadata').insert(
+      metadataKeys.map((key) => ({
+        document_id: document.id,
+        key: key as DocumentMetadataKey,
+        value: documentData[key] as string,
+      }))
+    );
+
+    const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+      .select(['Document_Metadata.*'])
+      .where('Document_Metadata.document_id', '=', document.id)
+      .andWhere('Document_Metadata.key', 'IN', metadataKeys);
+
+    for (const metadata of metadatas) {
+      document[metadata.key] = metadata.value;
+    }
+  }
+
+  return document as T;
 };
 
-export const updateDocument = async (
+export const updateDocument = async <T extends DocumentModel>(
   context: PortalContext,
-  { labels, ...updateData }: DocumentMutator & { labels?: string[] },
-  field: DocumentMutator
-): Promise<Document[]> => {
+  documentId: string,
+  documentData: Omit<Partial<T>, 'labels'> & {
+    labels?: string[];
+  },
+  metadataKeys: Array<
+    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+  > = []
+): Promise<T> => {
   // IF label is null => that mean we want to update the field to empty
-  if (labels !== undefined) {
-    const { id: object_id } = field as { id: string };
+  if (documentData.labels !== undefined) {
     const existing = await db<ObjectLabel>(context, 'Object_Label')
-      .where('object_id', '=', object_id)
+      .where('object_id', '=', documentId)
       .select('*');
     if (existing) {
       await db<ObjectLabel>(context, 'Object_Label')
-        .where('object_id', '=', object_id)
+        .where('object_id', '=', documentId)
         .delete('*');
     }
-    if ((labels.length ?? 0) > 0) {
+    if ((documentData.labels.length ?? 0) > 0) {
       await db<ObjectLabel>(context, 'Object_Label').insert(
-        labels.map((id) => ({
-          object_id: object_id as unknown as ObjectLabelObjectId,
+        documentData.labels.map((id) => ({
+          object_id: documentId as unknown as ObjectLabelObjectId,
           label_id: extractId(id) as LabelId,
         }))
       );
     }
   }
-  return db<Document>(context, 'Document')
-    .where(field)
-    .update(updateData)
+
+  const [doc] = await db<DocumentModel>(context, 'Document')
+    .where('id', '=', documentId)
+    .update({
+      ...documentData,
+      updated_at: new Date().toISOString(),
+      updater_id: context.user.id,
+    })
     .returning('*');
+
+  return doc as T;
 };
 
 export const incrementDocumentsDownloads = async (
   context: PortalContext,
   document: Document
 ) => {
-  const data: DocumentMutator = {
+  await updateDocument(context, document.id, {
     download_number: document.download_number + 1,
-  };
-  await updateDocument(context, data, { id: document.id });
+  });
 };
 
 export const deleteDocument = async (

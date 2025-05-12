@@ -32,6 +32,17 @@ input CreateCustomDashboardInput {
   product_version: String!
 }
 
+input UpdateCustomDashboardInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  # Specific fields for custom dashboards
+  product_version: String
+}
+
 type CustomDashboard implements Node {
   id: ID!
   type: String!
@@ -89,5 +100,14 @@ type Mutation {
     input: CreateCustomDashboardInput!
     document: [Upload!]!
     serviceInstanceId: String
-  ): CustomDashboard @auth @service_capa(requires: [UPLOAD])
+  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
+  updateCustomDashboard(
+    documentId: ID
+    input: UpdateCustomDashboardInput!
+    document: [Upload!]
+    serviceInstanceId: String
+  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
+  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): Success!
+    @auth
+    @service_capa(requires: [DELETE])
 }
