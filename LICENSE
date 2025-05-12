@@ -1,24 +1,38 @@
-# Business Source License 1.1
+# Filigran Source-Available License v1.0
 
-## Parameters
+This software is not open source.
 
-Licensor: Filigran
-Licensed Work: XTM Hub
-Additional Use Grant: You may make non-production use of the Licensed Work.
-Change Date: 2028-05-16
-Change License: Apache-2.0
+We publish this code to ensure transparency, foster collaboration, and allow the community to explore how we build internal tools at Filigran. However, this software is not intended for public or commercial use outside of Filigran.
 
-## Terms
+## 1. Purpose
 
-The Licensor hereby grants you the right to copy, modify, create derivative works, redistribute, and make non-production use of the Licensed Work. “Non-production use” means use of the Licensed Work solely for internal development, testing, or evaluation purposes. This license does not grant you the right to use the Licensed Work in a production environment.
+The source code is made available **for transparency and learning purposes only**. It is part of an internal tool developed and used exclusively by Filigran.
 
-Effective on the Change Date, or the fourth anniversary of the first publicly available distribution of a specific version of the Licensed Work under this license, whichever comes first, the license granted hereunder will terminate, and you will be granted a license to the Licensed Work under the Change License, as specified above.
+## 2. License grant
 
-Any use of the Licensed Work other than as expressly permitted above (including, without limitation, in production environments) is prohibited. If you use the Licensed Work in violation of this license, you must purchase a commercial license from the Licensor, or you must refrain from using the Licensed Work.
+You are permitted to:
+- View and read the code,
+- Fork the repository for personal or educational purposes,
+- Submit pull requests and issues.
 
-This license does not grant you any trademark rights, and you may not use the Licensor’s name, logo, or trademarks without prior written permission.
+You are **not permitted** to:
+- Use this software in production or commercial environments,
+- Modify and redistribute the software outside the scope of non-commercial forks,
+- Offer this software as a service or integrate it into commercial platforms.
 
-Unless required by applicable law or agreed to in writing, the Licensor provides the Licensed Work “as-is” and makes no representations or warranties of any kind concerning the Licensed Work, express, implied, statutory, or otherwise, including without limitation warranties of title, merchantability, fitness for a particular purpose, non-infringement, or the absence of latent or other defects, accuracy, or the presence or absence of errors, whether or not discoverable.
+## 3. Intellectual property
 
-To the extent permitted by applicable law, in no event will the Licensor be liable to you on any legal theory (including, without limitation, negligence) or otherwise for any direct, special, indirect, incidental, consequential, punitive, exemplary, or other losses, costs, expenses, or damages arising out of this license or use of the Licensed Work.
+By submitting a pull request or contribution, you agree to assign all intellectual property rights of your contribution to Filigran.
+Filigran may use, modify, and incorporate the contribution into its proprietary products without obligation to the contributor.
 
+## 4. No warranty
+
+This software is provided “as is” without warranty of any kind. Use it at your own risk.
+
+## 5. Contact
+
+To request commercial use, licensing, or extended access, please contact us at [contact@filigran.io](mailto:contact@filigran.io).
+
+---
+
+© 2025 Filigran. All rights reserved.
