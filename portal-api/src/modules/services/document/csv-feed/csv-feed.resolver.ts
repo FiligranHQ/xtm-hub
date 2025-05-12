@@ -16,7 +16,8 @@ import {
   getUploaderOrganization,
 } from '../document.domain';
 import { createFileInMinIO, normalizeDocumentName } from '../document.helper';
-import { deleteCsvFeed, loadCsvFeeds, loadCsvFeedsBy, loadSeoCsvFeedsByServiceSlug } from './csv-feed.domain';
+import { deleteCsvFeed, loadCsvFeeds, loadCsvFeedsBy,
+  loadSeoCsvFeedBySlug, loadSeoCsvFeedsByServiceSlug } from './csv-feed.domain';
 import { createCsvFeed } from './csv-feed.helper';
 
 const resolvers: Resolvers = {
@@ -128,6 +129,9 @@ const resolvers: Resolvers = {
     },
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) => {
       return loadSeoCsvFeedsByServiceSlug(serviceSlug);
+    },
+    seoCsvFeedBySlug: async (_, { slug }) => {
+      return loadSeoCsvFeedBySlug(slug);
     },
   },
 };

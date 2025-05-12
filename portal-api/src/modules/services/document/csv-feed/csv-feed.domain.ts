@@ -151,3 +151,17 @@ export const loadSeoCsvFeedsByServiceSlug = async (
     ]);
   return csvFeeds;
 };
+
+export const loadSeoCsvFeedBySlug = async (slug: string) => {
+  const csvFeed = await dbUnsecure<Document>('Document')
+    .select('Document.*')
+    .where('Document.slug', '=', slug)
+    .where('Document.active', '=', true)
+    .whereNotExists(function () {
+      this.select('*')
+        .from('Document_Children')
+        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
+    })
+    .first();
+  return csvFeed;
+};

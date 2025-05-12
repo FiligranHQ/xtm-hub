@@ -35,11 +35,10 @@ export const SeoCsvFeedsByServiceSlugQuery = graphql`
     }
   }
 `;
-
-// export const SeoCsvFeedBySlugQuery = graphql`
-//   query seoCsvFeedBySlugQuery($slug: String!) {
-//     seoCsvFeedBySlug(slug: $slug) {
-//       ...seoCsvFeedFragment
-//     }
-//   }
-// `;
+export const SeoCsvFeedBySlugQuery = graphql`
+  query seoCsvFeedBySlugQuery($slug: String!) {
+    seoCsvFeedBySlug(slug: $slug) {
+      ...seoCsvFeedFragment
+    }
+  }
+`;
