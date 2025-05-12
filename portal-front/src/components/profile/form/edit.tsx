@@ -22,7 +22,7 @@ const formSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
   country: z.string().optional(),
-  picture: z.string().url().optional(),
+  picture: z.string().optional(),
 });
 
 export type ProfileFormEditSchema = z.infer<typeof formSchema>;
@@ -55,9 +55,15 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
           fieldConfig={{
             first_name: {
               label: t('UserForm.FirstName'),
+              inputProps: {
+                placeholder: t('UserForm.FirstName'),
+              },
             },
             last_name: {
               label: t('UserForm.LastName'),
+              inputProps: {
+                placeholder: t('UserForm.LastName'),
+              },
             },
             country: {
               fieldType: ({ field }) => (
@@ -75,6 +81,9 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
             },
             picture: {
               label: t('UserForm.Picture'),
+              inputProps: {
+                placeholder: t('UserForm.Picture'),
+              },
             },
           }}>
           <Button aria-label={t('ProfilePage.UpdateProfile')}>

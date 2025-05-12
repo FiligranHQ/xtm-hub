@@ -299,19 +299,21 @@ const resolvers: Resolvers = {
       }
 
       try {
-        await updateUser(context, context.user.id, input);
+        await updateUser(context, context.user.id, {
+          ...input,
+          picture: input.picture || null,
+        });
         const user = await loadUserDetails({
           'User.id': context.user.id,
         });
 
         updateUserSession(user);
 
-        await dispatch('User', 'edit', user);
+        const mappedUser = mapUserToGraphqlUser(user);
+        await dispatch('User', 'edit', mappedUser);
+        await dispatch('MeUser', 'edit', mappedUser, 'User');
 
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
-        return user;
+        return mappedUser;
       } catch (error) {
         throw UnknownError('EDIT_ME_USER_ERROR', {
           detail: error,
