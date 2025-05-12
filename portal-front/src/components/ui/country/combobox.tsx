@@ -20,14 +20,14 @@ export const CountryCombobox: React.FC<CountryComboboxProps> = ({
   return (
     <Combobox
       dataTab={dataTab}
-      placeholder={t('CountryComboBox.Country')}
-      order={t('CountryComboBox.Country')}
+      placeholder={t('CountryComboBox.Placeholder')}
+      order={t('CountryComboBox.Placeholder')}
       onValueChange={(value) => onValueChange(value?.name)}
       onInputChange={() => {}}
       emptyCommand={t('Utils.NotFound')}
       keyValue={'name'}
       keyLabel={'name'}
-      value={{ name: value }}
+      value={value ? { name: value } : undefined}
     />
   );
 };
