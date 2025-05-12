@@ -17,6 +17,22 @@ import {
 import { loadUserDetails, updateUser } from './users.domain';
 import { mapUserToGraphqlUser } from './users.helper';
 
+const dispatchUserDeleted = async (user: User): Promise<void> => {
+  await dispatch('User', 'delete', user);
+  await dispatch('MeUser', 'delete', user, 'User');
+};
+
+const dispatchUserUpdated = async (
+  user: UserWithOrganizationsAndRole
+): Promise<void> => {
+  updateUserSession(user);
+
+  await dispatch('User', 'edit', user);
+
+  const userMapped = mapUserToGraphqlUser(user);
+  await dispatch('MeUser', 'edit', userMapped, 'User');
+};
+
 export const usersEditionApp = {
   adminEdit: async (
     context: PortalContext,
@@ -26,7 +42,7 @@ export const usersEditionApp = {
     const trx = await dbTx();
     const { organization_capabilities, ...userInput } = input;
     try {
-      const updatedUser = await updateUser(context, id, userInput);
+      const updatedUser = await updateUser(context, id, userInput, trx);
       await updateMultipleUserOrgWithCapabilities(
         context,
         id,
@@ -39,14 +55,16 @@ export const usersEditionApp = {
           email: updatedUser.email,
         });
       }
+      await trx.commit();
 
       const user = await loadUserDetails({
         'User.id': id,
       });
-      await usersEditionApp.dispatchUserUpdated(user);
+
+      await dispatchUserUpdated(user);
 
       if (input.disabled) {
-        await usersEditionApp.dispatchUserDeleted(user);
+        await dispatchUserDeleted(user);
       }
 
       return user;
@@ -77,13 +95,15 @@ export const usersEditionApp = {
         });
       }
 
+      await trx.commit();
+
       const user = await loadUserDetails({
         'User.id': id,
       });
 
-      await usersEditionApp.dispatchUserUpdated(user);
+      await dispatchUserUpdated(user);
       if (input.disabled) {
-        await usersEditionApp.dispatchUserDeleted(user);
+        await dispatchUserDeleted(user);
       }
 
       return user;
@@ -112,30 +132,18 @@ export const usersEditionApp = {
         });
       }
 
+      await trx.commit();
+
       const user = await loadUserDetails({
         'User.id': context.user.id,
       });
 
-      await usersEditionApp.dispatchUserUpdated(user);
+      await dispatchUserUpdated(user);
 
       return user;
     } catch (err) {
       await trx.rollback();
       throw err;
     }
-  },
-  dispatchUserDeleted: async (user: User): Promise<void> => {
-    await dispatch('User', 'delete', user);
-    await dispatch('MeUser', 'delete', user, 'User');
-  },
-  dispatchUserUpdated: async (
-    user: UserWithOrganizationsAndRole
-  ): Promise<void> => {
-    updateUserSession(user);
-
-    await dispatch('User', 'edit', user);
-
-    const userMapped = mapUserToGraphqlUser(user);
-    await dispatch('MeUser', 'edit', userMapped, 'User');
   },
 };

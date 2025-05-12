@@ -354,7 +354,6 @@ export const updateUser = async (
   }
 
   const [updatedUser] = await updateQuery;
-
   return updatedUser;
 };
 
