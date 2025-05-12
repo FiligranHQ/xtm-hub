@@ -58,6 +58,18 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
   return { baseUrl, serviceInstance, document };
 };
 
+export const getMoreDescription = (serviceSlug) => {
+  switch (serviceSlug) {
+    case 'csv-feeds':
+      return '. Discover more CSV Feeds like this in our OpenCTI CSV Feeds Library, available for download on the XTM Hub.';
+
+    case 'custom-dashboards':
+      return '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.';
+
+    default:
+      return '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.';
+  }
+};
 /**
  * Generate the metadata for the page
  */
@@ -76,14 +88,14 @@ export async function generateMetadata({
   const metadata: Metadata = {
     title: `${document.name} | ${serviceInstance.name} | XTM Hub by Filigran`,
     description: document.short_description
-      ? `${document.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`
+      ? `${document.short_description}${getMoreDescription(serviceInstance.slug)}`
       : document.description?.substring(0, 160) ||
-        'Explore this cybersecurity dashboard for enhanced threat intelligence and monitoring.',
+        `Explore this cybersecurity ${serviceInstance.slug === 'custom-dashboards' ? 'dashboard' : 'CSV Feed'} for enhanced threat intelligence and monitoring.`,
     metadataBase: new URL(baseUrl),
     openGraph: {
       title: document.name,
       description: document.short_description
-        ? `${document.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`
+        ? `${document.short_description}${getMoreDescription(serviceInstance.slug)}`
         : document.description?.substring(0, 160),
       url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`,
       type: 'article',
@@ -99,7 +111,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: document.name,
       description: document.short_description
-        ? `${document.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`
+        ? `${document.short_description}${getMoreDescription(serviceInstance.slug)}`
         : document.description?.substring(0, 160),
       creator: '@FiligranHQ',
     },
@@ -111,7 +123,7 @@ export async function generateMetadata({
     metadata.openGraph!.images = [
       {
         url: imageUrl,
-        alt: `${document.name} - Dashboard Preview`,
+        alt: `${document.name} - Resource Preview`,
         width: 1200,
         height: 630,
         type: 'image/png',
@@ -145,7 +157,7 @@ const Page = async ({
       '@context': 'https://schema.org',
       '@type': 'TechArticle',
       headline: document.name,
-      description: `${document.short_description}. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.`,
+      description: `${document.short_description}${getMoreDescription(serviceInstance.slug)}`,
       articleBody: document.description,
       author: document.uploader
         ? {
@@ -206,6 +218,19 @@ const Page = async ({
     ];
     const render =
       slugRendererMap[serviceInstance.slug] ?? slugRendererMap.default;
+
+    const getDownloadLink = () => {
+      switch (serviceInstance.slug) {
+        case 'csv-feeds':
+          return `/redirect/csv_feeds?service_instance_id=${fromGlobalId(serviceInstance.id).id}&document_id=${document.id}`;
+
+        case 'custom-dashboards':
+          return `/redirect/custom_dashboards?service_instance_id=${fromGlobalId(serviceInstance.id).id}&document_id=${document.id}`;
+
+        default:
+          return `/redirect/custom_dashboards?service_instance_id=${fromGlobalId(serviceInstance.id).id}&document_id=${document.id}`;
+      }
+    };
     return (
       <>
         <script
@@ -235,10 +260,7 @@ const Page = async ({
             <Button
               asChild
               className="whitespace-nowrap">
-              <Link
-                href={`/redirect/custom_dashboards?service_instance_id=${fromGlobalId(serviceInstance.id).id}&custom_dashboard_id=${document.id}`}>
-                Download
-              </Link>
+              <Link href={getDownloadLink()}>Download</Link>
             </Button>
           </div>
         </div>

@@ -64,7 +64,7 @@ export async function GET(
   const identifier = awaitedParams.identifier;
   const octi_instance_id = searchParams.get('octi_instance_id');
   const service_instance_id = searchParams.get('service_instance_id');
-  const custom_dashboard_id = searchParams.get('custom_dashboard_id');
+  const document_id = searchParams.get('document_id');
 
   if (!isValidServiceDefinitionIdentifier(identifier)) {
     // Raise a bad request error
@@ -192,9 +192,7 @@ export async function GET(
           baseUrlFront,
           identifier,
           toGlobalId('ServiceInstance', service_instance_id!),
-          custom_dashboard_id
-            ? toGlobalId('Document', custom_dashboard_id)
-            : undefined
+          document_id ? toGlobalId('Document', document_id) : undefined
         )
       );
     }
