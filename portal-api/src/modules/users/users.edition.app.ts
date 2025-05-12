@@ -18,12 +18,12 @@ import { loadUserDetails, updateUser } from './users.domain';
 import { mapUserToGraphqlUser } from './users.helper';
 
 export const usersEditionApp = {
-  adminEditUser: async (
+  adminEdit: async (
     context: PortalContext,
     id: UserId,
     input: AdminEditUserInput
   ): Promise<UserWithOrganizationsAndRole> => {
-    const tx = await dbTx();
+    const trx = await dbTx();
     const { organization_capabilities, ...userInput } = input;
     try {
       const updatedUser = await updateUser(context, id, userInput);
@@ -39,24 +39,31 @@ export const usersEditionApp = {
           email: updatedUser.email,
         });
       }
+
+      const user = await loadUserDetails({
+        'User.id': id,
+      });
+      await usersEditionApp.dispatchUserUpdated(user);
+
+      if (input.disabled) {
+        await usersEditionApp.dispatchUserDeleted(user);
+      }
+
+      return user;
     } catch (err) {
-      await tx.rollback();
+      await trx.rollback();
       throw err;
     }
-
-    return loadUserDetails({
-      'User.id': id,
-    });
   },
-  editUser: async (
+  edit: async (
     context: PortalContext,
     id: UserId,
     input: EditUserInput
   ): Promise<UserWithOrganizationsAndRole> => {
-    const tx = await dbTx();
+    const trx = await dbTx();
     const { capabilities, ...userInput } = input;
     try {
-      const updatedUser = await updateUser(context, id, userInput, tx);
+      const updatedUser = await updateUser(context, id, userInput, trx);
       await updateUserOrgCapabilities(context, {
         user_id: id,
         organization_id: context.user.selected_organization_id,
@@ -69,22 +76,34 @@ export const usersEditionApp = {
           email: updatedUser.email,
         });
       }
+
+      const user = await loadUserDetails({
+        'User.id': id,
+      });
+
+      await usersEditionApp.dispatchUserUpdated(user);
+      if (input.disabled) {
+        await usersEditionApp.dispatchUserDeleted(user);
+      }
+
+      return user;
     } catch (err) {
-      await tx.rollback();
+      await trx.rollback();
       throw err;
     }
-
-    return loadUserDetails({
-      'User.id': id,
-    });
   },
-  editMeUser: async (
+  editMe: async (
     context: PortalContext,
     input: EditMeUserInput
   ): Promise<UserWithOrganizationsAndRole> => {
-    const tx = await dbTx();
+    const trx = await dbTx();
     try {
-      const updatedUser = await updateUser(context, context.user.id, input, tx);
+      const updatedUser = await updateUser(
+        context,
+        context.user.id,
+        input,
+        trx
+      );
 
       if (updatedUser) {
         await auth0Client.updateUser({
@@ -92,14 +111,18 @@ export const usersEditionApp = {
           email: updatedUser.email,
         });
       }
+
+      const user = await loadUserDetails({
+        'User.id': context.user.id,
+      });
+
+      await usersEditionApp.dispatchUserUpdated(user);
+
+      return user;
     } catch (err) {
-      await tx.rollback();
+      await trx.rollback();
       throw err;
     }
-
-    return loadUserDetails({
-      'User.id': context.user.id,
-    });
   },
   dispatchUserDeleted: async (user: User): Promise<void> => {
     await dispatch('User', 'delete', user);

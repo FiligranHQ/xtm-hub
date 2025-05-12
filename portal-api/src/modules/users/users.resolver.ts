@@ -232,15 +232,7 @@ const resolvers: Resolvers = {
     },
     editUser: async (_, { id, input }, context) => {
       try {
-        const user = await usersEditionApp.editUser(
-          context,
-          id as UserId,
-          input
-        );
-        await usersEditionApp.dispatchUserUpdated(user);
-        if (input.disabled) {
-          await usersEditionApp.dispatchUserDeleted(user);
-        }
+        const user = await usersEditionApp.edit(context, id as UserId, input);
         return user;
       } catch (error) {
         throw UnknownError('EDIT_USER_ERROR', {
@@ -250,15 +242,11 @@ const resolvers: Resolvers = {
     },
     adminEditUser: async (_, { id, input }, context) => {
       try {
-        const user = await usersEditionApp.adminEditUser(
+        const user = await usersEditionApp.adminEdit(
           context,
           id as UserId,
           input
         );
-        await usersEditionApp.dispatchUserUpdated(user);
-        if (input.disabled) {
-          await usersEditionApp.dispatchUserDeleted(user);
-        }
         return user;
       } catch (error) {
         throw UnknownError('EDIT_USER_ERROR', {
@@ -268,8 +256,7 @@ const resolvers: Resolvers = {
     },
     editMeUser: async (_, { input }, context) => {
       try {
-        const user = await usersEditionApp.editMeUser(context, input);
-        await usersEditionApp.dispatchUserUpdated(user);
+        const user = await usersEditionApp.editMe(context, input);
         return user;
       } catch (error) {
         throw UnknownError('EDIT_ME_USER_ERROR', {
