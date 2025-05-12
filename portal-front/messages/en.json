@@ -223,6 +223,7 @@
       "Form": {
         "NameLabel": "Name",
         "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the CSV Feed.",
         "LabelsLabel": "Labels",

@@ -24,6 +24,7 @@ type CsvFeed implements Node {
 
 input CsvFeedCreateInput {
   name: String
+  slug: String
   short_description: String
   description: String
   active: Boolean

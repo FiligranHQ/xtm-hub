@@ -229,7 +229,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         </h1>
 
         {(documents.length === 0 && (
-          <div className="my-4 text-center">No custom dashboards found</div>
+          <div className="my-4 text-center">No document found</div>
         )) || (
           <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
             {documents.map((document) => {
@@ -245,21 +245,6 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
               });
             })}
           </ul>
-          // <CustomDashboardCard
-          //   serviceInstance={
-          //     serviceInstance as unknown as NonNullable<
-          //       serviceByIdQuery$data['serviceInstanceById']
-          //     >
-          //   }
-          //   key={customDashboard.id}
-          //   customDashboard={
-          //     customDashboard as unknown as documentItem_fragment$data
-          //   }
-          //   detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
-          //   shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
-          // />
-          //   ))}
-          // </ul>
         )}
       </>
     );

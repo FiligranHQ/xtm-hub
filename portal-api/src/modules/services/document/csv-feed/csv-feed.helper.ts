@@ -50,6 +50,7 @@ export const addDocumentCsvFeed = async (
     uploader_id: context.user.id,
     service_instance_id: context.serviceInstanceId as ServiceInstanceId,
     description: inputData.description,
+    slug: inputData.slug,
     file_name: normalizeDocumentName(document.file.filename),
     minio_name: minioName,
     active: inputData.active,

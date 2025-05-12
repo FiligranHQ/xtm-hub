@@ -126,22 +126,8 @@ const resolvers: Resolvers = {
       } as DocumentMutator);
       return parentDocument;
     },
-    seoCsvFeedsByServiceSlug: async (_, { serviceSlug }, context) => {
-      console.log('AVANT OTUT');
-      const csvFeeds = await loadSeoCsvFeedsByServiceSlug(serviceSlug);
-      for (const csvFeed of csvFeeds) {
-        // csvFeed.children_documents = await loadImagesByCustomDashboardId(
-        //   csvFeed.id
-        // );
-        // csvFeed.uploader = await getUploader(context, csvFeed.id, {
-        //   unsecured: true,
-        // });
-        csvFeed.labels = await getLabels(context, csvFeed.id, {
-          unsecured: true,
-        });
-      }
-      console.log('csvFeeds', csvFeeds);
-      return csvFeeds;
+    seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) => {
+      return loadSeoCsvFeedsByServiceSlug(serviceSlug);
     },
   },
 };
