@@ -68,7 +68,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
           icon={
             <>
               <div className="my-auto size-10">
-                <Avatar src={me?.picture ?? ''} />
+                <Avatar src={me?.picture || undefined} />
               </div>
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
             </>
