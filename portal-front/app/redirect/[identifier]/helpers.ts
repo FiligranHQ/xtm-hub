@@ -6,6 +6,6 @@ export function isValidServiceDefinitionIdentifier(
 ): value is ServiceDefinitionIdentifier {
   return (
     typeof value === 'string' &&
-    ['custom_dashboards', 'link', 'vault'].includes(value)
+    ['custom_dashboards', 'link', 'vault', 'csv_feeds'].includes(value)
   );
 }
