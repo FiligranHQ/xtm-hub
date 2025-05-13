@@ -11,7 +11,7 @@ import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import { queryMap } from './query-map';
+import { QueryMap, queryMap } from './query-map';
 import { rendererMap } from './shareable-resources-renderer';
 
 export interface SeoCustomDashboard {
@@ -64,7 +64,7 @@ const getPageData = cache(async (slug: string) => {
     notFound();
   }
 
-  const config = queryMap[serviceInstance.slug] ?? queryMap.default;
+  const config = queryMap[serviceInstance.slug as keyof QueryMap];
 
   const response = await serverFetchGraphQL(
     config.query,
@@ -189,8 +189,8 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           },
           keywords: document.labels?.map((label) => label.name).join(', '),
         };
-        if (document.children_documents.length > 0) {
-          dashboardJsonLd.image = document.children_documents.map(
+        if (document.children_documents!.length > 0) {
+          dashboardJsonLd.image = document.children_documents!.map(
             (image) =>
               `${baseUrl}/document/images/${serviceInstance.id}/${image.id}`
           );
@@ -234,11 +234,11 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
             {documents.map((document) => {
               const renderCard =
-                rendererMap[serviceInstance.slug] ?? rendererMap.default;
+                rendererMap[serviceInstance.slug ?? ''] ?? rendererMap.default;
 
-              return renderCard({
+              return renderCard!({
                 document: document,
-                serviceInstance: serviceInstance as NonNullable<
+                serviceInstance: serviceInstance as unknown as NonNullable<
                   serviceByIdQuery$data['serviceInstanceById']
                 >,
                 baseUrl,

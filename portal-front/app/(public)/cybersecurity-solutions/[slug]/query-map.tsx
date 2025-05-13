@@ -1,32 +1,40 @@
-import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
-import { GraphQLTaggedNode } from 'relay-runtime';
+import SeoCustomDashboardsByServiceSlugQuery, {
+  seoCustomDashboardsByServiceSlugQuery$data,
+} from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
+import { ConcreteRequest } from 'relay-runtime';
 
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import SeoCsvFeedsByServiceSlugQuery from '@generated/seoCsvFeedsByServiceSlugQuery.graphql';
+import SeoCsvFeedsByServiceSlugQuery, {
+  seoCsvFeedsByServiceSlugQuery$data,
+} from '@generated/seoCsvFeedsByServiceSlugQuery.graphql';
 import { SeoCustomDashboard } from './page';
-type QueryMapEntry<TData, TReturn> = {
-  query: GraphQLTaggedNode;
-  cast: (data: TData) => TReturn[];
+type QueryMapEntry<TReturn> = {
+  query: ConcreteRequest;
+  cast: (data: unknown) => TReturn[];
 };
-type QueryMap = {
-  'csv-feeds': QueryMapEntry<
-    { seoCsvFeedsByServiceSlug: documentItem_fragment$data[] },
-    documentItem_fragment$data
-  >;
-  default: QueryMapEntry<
-    { seoCustomDashboardsByServiceSlug: SeoCustomDashboard[] },
-    SeoCustomDashboard
-  >;
+export type QueryMap = {
+  'csv-feeds': QueryMapEntry<documentItem_fragment$data>;
+
+  'custom-open-cti-dashboards': QueryMapEntry<SeoCustomDashboard>;
+  default: QueryMapEntry<SeoCustomDashboard>;
 };
 export const queryMap: QueryMap = {
   'csv-feeds': {
     query: SeoCsvFeedsByServiceSlugQuery,
-    cast: (data) =>
-      data.seoCsvFeedsByServiceSlug as documentItem_fragment$data[],
+    cast: (data: unknown) =>
+      (data as seoCsvFeedsByServiceSlugQuery$data)
+        .seoCsvFeedsByServiceSlug as unknown as documentItem_fragment$data[],
+  },
+  'custom-open-cti-dashboards': {
+    query: SeoCustomDashboardsByServiceSlugQuery,
+    cast: (data: unknown) =>
+      (data as seoCustomDashboardsByServiceSlugQuery$data)
+        .seoCustomDashboardsByServiceSlug as unknown as SeoCustomDashboard[],
   },
   default: {
     query: SeoCustomDashboardsByServiceSlugQuery,
-    cast: (data) =>
-      data.seoCustomDashboardsByServiceSlug as SeoCustomDashboard[],
+    cast: (data: unknown) =>
+      (data as seoCustomDashboardsByServiceSlugQuery$data)
+        .seoCustomDashboardsByServiceSlug as unknown as SeoCustomDashboard[],
   },
 };

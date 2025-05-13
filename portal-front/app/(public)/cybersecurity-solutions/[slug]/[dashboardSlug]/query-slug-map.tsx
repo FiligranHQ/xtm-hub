@@ -1,31 +1,39 @@
-import { GraphQLTaggedNode } from 'relay-runtime';
-
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import SeoCsvFeedBySlugQuery from '@generated/seoCsvFeedBySlugQuery.graphql';
-import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
+import SeoCsvFeedBySlugQuery, {
+  seoCsvFeedBySlugQuery$data,
+} from '@generated/seoCsvFeedBySlugQuery.graphql';
+import SeoCustomDashboardBySlugQuery, {
+  seoCustomDashboardBySlugQuery$data,
+} from '@generated/seoCustomDashboardBySlugQuery.graphql';
+import { ConcreteRequest } from 'relay-runtime';
 
 import { SeoCustomDashboard } from '../page';
-type QuerySlugMapEntry<TData, TReturn> = {
-  query: GraphQLTaggedNode;
-  cast: (data: TData) => TReturn;
+type QuerySlugMapEntry<TReturn> = {
+  query: ConcreteRequest;
+  cast: (data: unknown) => TReturn;
 };
-type QuerySlugMap = {
-  'csv-feeds': QuerySlugMapEntry<
-    { seoCsvFeedBySlug: documentItem_fragment$data },
-    documentItem_fragment$data
-  >;
-  default: QuerySlugMapEntry<
-    { seoCustomDashboardBySlug: SeoCustomDashboard },
-    SeoCustomDashboard
-  >;
+export type QuerySlugMap = {
+  'csv-feeds': QuerySlugMapEntry<documentItem_fragment$data>;
+  'custom-open-cti-dashboards': QuerySlugMapEntry<SeoCustomDashboard>;
+  default: QuerySlugMapEntry<SeoCustomDashboard>;
 };
 export const querySlugMap: QuerySlugMap = {
   'csv-feeds': {
     query: SeoCsvFeedBySlugQuery,
-    cast: (data) => data.seoCsvFeedBySlug as documentItem_fragment$data,
+    cast: (data: unknown) =>
+      (data as seoCsvFeedBySlugQuery$data)
+        .seoCsvFeedBySlug as unknown as documentItem_fragment$data,
+  },
+  'custom-open-cti-dashboards': {
+    query: SeoCustomDashboardBySlugQuery,
+    cast: (data: unknown) =>
+      (data as seoCustomDashboardBySlugQuery$data)
+        .seoCustomDashboardBySlug as unknown as SeoCustomDashboard,
   },
   default: {
     query: SeoCustomDashboardBySlugQuery,
-    cast: (data) => data.seoCustomDashboardBySlug as SeoCustomDashboard,
+    cast: (data: unknown) =>
+      (data as seoCustomDashboardBySlugQuery$data)
+        .seoCustomDashboardBySlug as unknown as SeoCustomDashboard,
   },
 };

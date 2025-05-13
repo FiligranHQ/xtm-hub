@@ -146,7 +146,7 @@ const CustomDashbordDocumentList = ({
             customDashboard={node}
             connectionId={data!.documents!.__id!}
             detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${node.id}`}
-            shareLinkUrl={`${settings.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${node.slug}`}
+            shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${node.slug}`}
             serviceInstance={serviceInstance}></CustomDashboardCard>
         ))}
       </ul>

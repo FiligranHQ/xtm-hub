@@ -54,7 +54,7 @@ const ShareableResourceSlug: React.FunctionComponent<
 
         <ShareLinkButton
           documentId={documentData.id}
-          url={`${settings.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
+          url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
 
         <div className="flex items-center gap-2 ml-auto">

@@ -19,11 +19,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
 import { slugRendererMap } from '../shareable-resources-renderer';
-import { querySlugMap } from './query-slug-map';
+import { querySlugMap, QuerySlugMap } from './query-slug-map';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
  */
+
 const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
   const settingsResponse = await serverFetchGraphQL<settingsQuery>(
     SettingsQuery,
@@ -44,26 +45,27 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
   if (!serviceInstance) {
     notFound();
   }
+  const config = querySlugMap[serviceInstance.slug as keyof QuerySlugMap];
 
-  const config = querySlugMap[serviceInstance.slug] ?? querySlugMap.default;
   const response = await serverFetchGraphQL(
     config.query,
-    { slug: dashboardSlug, serviceSlug: serviceSlug },
+    { slug: dashboardSlug },
     {
       cache: 'force-cache',
     }
   );
+
   const document = config.cast(response.data);
 
   return { baseUrl, serviceInstance, document };
 };
 
-export const getMoreDescription = (serviceSlug) => {
+const getMoreDescription = (serviceSlug?: string | null) => {
   switch (serviceSlug) {
     case 'csv-feeds':
       return '. Discover more CSV Feeds like this in our OpenCTI CSV Feeds Library, available for download on the XTM Hub.';
 
-    case 'custom-dashboards':
+    case 'custom-open-cti-dashboards':
       return '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.';
 
     default:
@@ -93,7 +95,7 @@ export async function generateMetadata({
         `Explore this cybersecurity ${serviceInstance.slug === 'custom-dashboards' ? 'dashboard' : 'CSV Feed'} for enhanced threat intelligence and monitoring.`,
     metadataBase: new URL(baseUrl),
     openGraph: {
-      title: document.name,
+      title: document!.name!,
       description: document.short_description
         ? `${document.short_description}${getMoreDescription(serviceInstance.slug)}`
         : document.description?.substring(0, 160),
@@ -109,7 +111,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: document.name,
+      title: document!.name!,
       description: document.short_description
         ? `${document.short_description}${getMoreDescription(serviceInstance.slug)}`
         : document.description?.substring(0, 160),
@@ -118,8 +120,8 @@ export async function generateMetadata({
   };
 
   // Ajouter l'image principale si disponible
-  if (document.children_documents.length > 0) {
-    const imageUrl = `${baseUrl}/document/images/${serviceInstance.id}/${document.children_documents[0]!.id}`;
+  if (document.children_documents!.length > 0) {
+    const imageUrl = `${baseUrl}/document/images/${serviceInstance.id}/${document.children_documents![0]!.id}`;
     metadata.openGraph!.images = [
       {
         url: imageUrl,
@@ -196,8 +198,8 @@ const Page = async ({
       },
     };
 
-    if (document.children_documents.length > 0) {
-      jsonLd.image = document.children_documents.map(
+    if (document.children_documents!.length > 0) {
+      jsonLd.image = document.children_documents!.map(
         (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
       );
     }
@@ -217,14 +219,14 @@ const Page = async ({
       },
     ];
     const render =
-      slugRendererMap[serviceInstance.slug] ?? slugRendererMap.default;
+      slugRendererMap[serviceInstance.slug ?? ''] ?? slugRendererMap.default;
 
     const getDownloadLink = () => {
       switch (serviceInstance.slug) {
         case 'csv-feeds':
           return `/redirect/csv_feeds?service_instance_id=${fromGlobalId(serviceInstance.id).id}&document_id=${document.id}`;
 
-        case 'custom-dashboards':
+        case 'custom-open-cti-dashboards':
           return `/redirect/custom_dashboards?service_instance_id=${fromGlobalId(serviceInstance.id).id}&document_id=${document.id}`;
 
         default:
@@ -265,7 +267,7 @@ const Page = async ({
           </div>
         </div>
 
-        {render({
+        {render!({
           document,
           serviceInstance,
         })}

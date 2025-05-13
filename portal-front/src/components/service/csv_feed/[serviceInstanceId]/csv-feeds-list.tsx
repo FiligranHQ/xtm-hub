@@ -136,7 +136,7 @@ const CsvFeedsList = ({
                 csvFeed={csvFeed}
                 serviceInstance={serviceInstance}
                 detailUrl={`/service/csv_feed/${serviceInstance.id}/${csvFeed.id}`}
-                shareLinkUrl={`${settings.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
+                shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
               />
             ))}
           </ul>
@@ -154,7 +154,7 @@ const CsvFeedsList = ({
             connectionId={data.csvFeeds!.__id}
             serviceInstance={serviceInstance}
             detailUrl={`/service/csv_feed/${serviceInstance.id}/${csvFeed.id}`}
-            shareLinkUrl={`${settings.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
+            shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
           />
         ))}
       </ul>

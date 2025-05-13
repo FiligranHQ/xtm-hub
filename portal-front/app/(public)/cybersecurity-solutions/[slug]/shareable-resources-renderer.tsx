@@ -7,11 +7,12 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import Image from 'next/image';
-
+import { JSX } from 'react';
+import { SeoCustomDashboard } from './page';
 export const rendererMap: Record<
   string,
   (params: {
-    document: documentItem_fragment$data;
+    document: documentItem_fragment$data | SeoCustomDashboard;
     serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
     baseUrl: string;
   }) => JSX.Element
@@ -19,12 +20,11 @@ export const rendererMap: Record<
   'csv-feeds': ({ document, serviceInstance, baseUrl }) => (
     <ShareableResourceCard
       key={document?.id}
-      serviceInstance={serviceInstance}
-      document={document}
+      document={document as documentItem_fragment$data}
       detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
       shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}>
       <DocumentBento
-        document={document}
+        document={document as documentItem_fragment$data}
         serviceInstanceId={serviceInstance.id}
       />
     </ShareableResourceCard>
@@ -33,7 +33,7 @@ export const rendererMap: Record<
     <CustomDashboardCard
       key={document.id}
       serviceInstance={serviceInstance}
-      customDashboard={document}
+      customDashboard={document as documentItem_fragment$data}
       detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
       shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
     />
@@ -43,7 +43,7 @@ export const rendererMap: Record<
 export const slugRendererMap: Record<
   string,
   (params: {
-    document: documentItem_fragment$data;
+    document: documentItem_fragment$data | SeoCustomDashboard;
     serviceInstance: seoServiceInstanceFragment$data;
   }) => JSX.Element
 > = {
@@ -52,7 +52,7 @@ export const slugRendererMap: Record<
       <Image
         fill
         className="object-cover object-top  rounded-lg"
-        src={`/document/images/${serviceInstance.id}/${document.children_documents[0].id}`}
+        src={`/document/images/${serviceInstance.id}/${document.children_documents![0]!.id}`}
         alt={`A picture of ${document.name}`}
       />
     </div>
@@ -64,7 +64,7 @@ export const slugRendererMap: Record<
           serviceByIdQuery$data['serviceInstanceById']
         >
       }
-      documentData={document}
+      documentData={document as documentItem_fragment$data}
     />
   ),
 };
