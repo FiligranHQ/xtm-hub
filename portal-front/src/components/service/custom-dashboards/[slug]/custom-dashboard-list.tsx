@@ -16,13 +16,14 @@ import {
 } from '@generated/documentItem_fragment.graphql';
 
 import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { documentsList$key } from '@generated/documentsList.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button, MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
@@ -49,6 +50,8 @@ const CustomDashbordDocumentList = ({
   labels,
 }: CustomDashbordDocumentListProps) => {
   const t = useTranslations();
+  const { settings } = useContext(SettingsContext);
+
   const queryData = usePreloadedQuery<documentsQuery>(
     DocumentsListQuery,
     queryRef
@@ -143,7 +146,7 @@ const CustomDashbordDocumentList = ({
             customDashboard={node}
             connectionId={data!.documents!.__id!}
             detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${node.id}`}
-            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${node.slug}`}
+            shareLinkUrl={`${settings.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${node.slug}`}
             serviceInstance={serviceInstance}></CustomDashboardCard>
         ))}
       </ul>
