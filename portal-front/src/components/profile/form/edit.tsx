@@ -21,8 +21,14 @@ import { z } from 'zod';
 const formSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
-  country: z.string().optional(),
-  picture: z.string().optional(),
+  country: z
+    .string()
+    .transform((val) => val || null)
+    .nullish(),
+  picture: z
+    .string()
+    .transform((val) => val || null)
+    .nullish(),
 });
 
 export type ProfileFormEditSchema = z.infer<typeof formSchema>;
@@ -71,8 +77,8 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
                   <FormLabel>{t('UserForm.Country')}</FormLabel>
                   <FormControl>
                     <CountryCombobox
-                      value={field.value}
-                      onValueChange={field.onChange}
+                      value={field.value ? { name: field.value } : undefined}
+                      onValueChange={(value) => field.onChange(value?.name)}
                     />
                   </FormControl>
                   <FormMessage />
