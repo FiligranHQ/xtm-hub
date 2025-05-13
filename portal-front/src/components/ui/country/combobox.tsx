@@ -4,8 +4,8 @@ import React, { useMemo } from 'react';
 import * as countryData from './data.json';
 
 interface CountryComboboxProps {
-  value?: string;
-  onValueChange: (value: string | undefined) => void;
+  value?: { name: string } | undefined;
+  onValueChange: (value: { name: string } | undefined) => void;
 }
 
 export const CountryCombobox: React.FC<CountryComboboxProps> = ({
@@ -22,12 +22,12 @@ export const CountryCombobox: React.FC<CountryComboboxProps> = ({
       dataTab={dataTab}
       placeholder={t('CountryComboBox.Placeholder')}
       order={t('CountryComboBox.Placeholder')}
-      onValueChange={(value) => onValueChange(value?.name)}
+      onValueChange={onValueChange}
       onInputChange={() => {}}
       emptyCommand={t('Utils.NotFound')}
       keyValue={'name'}
       keyLabel={'name'}
-      value={value ? { name: value } : undefined}
+      value={value}
     />
   );
 };
