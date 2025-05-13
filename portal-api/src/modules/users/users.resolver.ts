@@ -299,10 +299,7 @@ const resolvers: Resolvers = {
       }
 
       try {
-        await updateUser(context, context.user.id, {
-          ...input,
-          picture: input.picture || null,
-        });
+        await updateUser(context, context.user.id, input);
         const user = await loadUserDetails({
           'User.id': context.user.id,
         });
