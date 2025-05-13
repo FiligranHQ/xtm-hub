@@ -1,19 +1,18 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import ProfilePage from '../model/profile.pageModel';
-import { getUser, updateUser } from '../db-utils/user.helper';
+import { generateUser } from '../db-utils/user.helper';
 
 test.describe('Profile edition', () => {
   let loginPage: LoginPage;
   let profilePage: ProfilePage;
-  let backupAdminUser;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
     profilePage = new ProfilePage(page);
-    backupAdminUser = await getUser('admin@filigran.io');
+    const { email, password } = await generateUser();
 
-    await loginPage.login();
+    await loginPage.login(email, password);
     await profilePage.navigateTo();
   });
 
@@ -68,16 +67,6 @@ test.describe('Profile edition', () => {
       await expect(
         profilePage.getAdminEditionWarningMessage()
       ).not.toBeVisible();
-    });
-  });
-
-  test.afterEach(async () => {
-    const { first_name, last_name, picture, country } = backupAdminUser;
-    await updateUser(backupAdminUser.id, {
-      first_name,
-      last_name,
-      picture,
-      country,
     });
   });
 });
