@@ -1,5 +1,4 @@
 import { Page } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
 
 export default class LoginPage {
   constructor(private page: Page) {}
@@ -26,10 +25,10 @@ export default class LoginPage {
     return this.page.getByRole('button', { name: 'Sign in' });
   }
 
-  async login(userEmail = 'admin@filigran.io') {
+  async login(userEmail = 'admin@filigran.io', password = 'admin') {
     await this.page.goto('/');
     await this.fillLoginInput(userEmail);
-    await this.fillPasswordInput('admin');
+    await this.fillPasswordInput(password);
     return this.getSignInButton().click();
   }
 

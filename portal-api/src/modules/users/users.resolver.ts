@@ -313,7 +313,6 @@ const resolvers: Resolvers = {
 
         const mappedUser = mapUserToGraphqlUser(user);
         await dispatch('User', 'edit', mappedUser);
-        await dispatch('MeUser', 'edit', mappedUser, 'User');
 
         return mappedUser;
       } catch (error) {
