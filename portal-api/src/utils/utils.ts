@@ -1,6 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { z } from 'zod';
 import { DatabaseType } from '../../knexfile';
+import { logApp } from './app-logger.util';
 
 export const extractId = <T extends string>(id: string) => {
   const { id: databaseId } = fromGlobalId(id) as {
@@ -36,22 +37,27 @@ export const isEmptyField = (field: unknown): boolean => {
 };
 
 export const isImgUrl = async (url: string): Promise<boolean> => {
-  const schema = z.string().url();
+  const schema = z
+    .string()
+    .url()
+    .refine((val) => {
+      const urlRegex = /\.(jpg|jpeg|png|webp|avif|gif)/;
+      return urlRegex.test(val);
+    });
+
+  const parseResult = schema.safeParse(url);
+  if (!parseResult.success) {
+    return false;
+  }
+
   try {
-    schema.parse(url);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (_) {
+    const response = await fetch(url, { method: 'HEAD' });
+    const contentType = response.headers.get('Content-Type');
+    return contentType.startsWith('img') || contentType.startsWith('image');
+  } catch (err) {
+    logApp.debug(err.message);
     return false;
   }
-
-  const urlRegex = /\.(jpg|jpeg|png|webp|avif|gif)/;
-  if (!urlRegex.test(url)) {
-    return false;
-  }
-
-  const response = await fetch(url, { method: 'HEAD' });
-  const contentType = response.headers.get('Content-Type');
-  return contentType.startsWith('img') || contentType.startsWith('image');
 };
 
 export const now = () => new Date().getUTCDate();
