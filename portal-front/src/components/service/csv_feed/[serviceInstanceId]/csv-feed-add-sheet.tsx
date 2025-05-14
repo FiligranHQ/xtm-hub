@@ -87,6 +87,7 @@ export const CSVFeedAddSheet = ({
       variables: {
         input: {
           name: values.name,
+          slug: values.slug,
           short_description: values.short_description,
           description: values.description,
           active: values.active ?? false,

@@ -37,6 +37,7 @@
         "description": "Explore a range of CSV Feeds shared by the Filigran team.",
         "service_definition_id": "42007953-4dbc-480a-8693-8c05f1123460",
         "public": true,
+        "slug": "csv_feeds",
         "join_type": "JOIN_AUTO"
       },
       "link": {

@@ -5,6 +5,8 @@ import { CsvFeedDeleteMutation } from '@/components/service/csv_feed/[serviceIns
 import { IconActionsButton } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useServiceCapability from '@/hooks/useServiceCapability';
+import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
 import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -46,7 +48,7 @@ export const CSVFeedUpdateSheet = ({
     CsvFeedDeleteMutation
   );
 
-  const deleteDocument = () => {
+  const deleteDocument = async () => {
     deleteCsvFeedMutation({
       variables: {
         documentId: csvFeed.id,
@@ -58,8 +60,9 @@ export const CSVFeedUpdateSheet = ({
         onDelete?.();
       },
     });
-    // TODO in the public page feature
-    // revalidatePathActions([`${PUBLIC_DASHBOARD_URL}`]);
+    await revalidatePathActions([
+      `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+    ]);
   };
 
   return (

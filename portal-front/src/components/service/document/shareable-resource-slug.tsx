@@ -10,6 +10,7 @@ import { useState } from 'react';
 
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -18,8 +19,7 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { ReactNode } from 'react';
-
+import { ReactNode, useContext } from 'react';
 // Component interface
 interface ShareableResourceSlugProps {
   documentData: csvFeedItem_fragment$data | documentItem_fragment$data;
@@ -34,6 +34,7 @@ const ShareableResourceSlug: React.FunctionComponent<
 > = ({ documentData, breadcrumbValue, children, updateActions }) => {
   const t = useTranslations();
   const { slug } = useDecodedParams();
+  const { settings } = useContext(SettingsContext);
 
   const [documentDownloadNumber, setDocumentDownloadNumber] = useState(
     documentData.download_number
@@ -53,7 +54,7 @@ const ShareableResourceSlug: React.FunctionComponent<
 
         <ShareLinkButton
           documentId={documentData.id}
-          url={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
+          url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
 
         <div className="flex items-center gap-2 ml-auto">

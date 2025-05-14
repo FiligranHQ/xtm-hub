@@ -93,6 +93,8 @@ type Query {
   seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
   csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedsConnection!
   csvFeed(documentId: ID, serviceInstanceId: ID): CsvFeed
+  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
+  seoCsvFeedBySlug(slug: String): CsvFeed
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
@@ -135,7 +137,7 @@ type SeoCustomDashboard {
   id: ID!
   uploader: User
   name: String
-  slug: String
+  slug: String!
   short_description: String
   description: String
   created_at: Date!
@@ -144,7 +146,7 @@ type SeoCustomDashboard {
   download_number: Int
   share_number: Int
   product_version: String
-  children_documents: [SeoCustomDashboardImage]
+  children_documents: [SeoCustomDashboardImage]!
   labels: [Label]
   active: Boolean!
 }
@@ -191,6 +193,7 @@ type CsvFeed implements Node {
 
 input CsvFeedCreateInput {
   name: String
+  slug: String
   short_description: String
   description: String
   active: Boolean
@@ -313,10 +316,15 @@ type ServiceConnection {
   pageInfo: PageInfo!
 }
 
+enum ServiceSlug {
+  custom_open_cti_dashboards
+  csv_feeds
+}
+
 type SeoServiceInstance implements Node {
   id: ID!
   name: String!
-  slug: String
+  slug: ServiceSlug
   description: String
   links: [ServiceLink]
   tags: [String]

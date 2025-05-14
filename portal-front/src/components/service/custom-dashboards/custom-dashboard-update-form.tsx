@@ -7,9 +7,10 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
-import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { documentAddMutation } from '@generated/documentAddMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
 import {
   Button,
@@ -57,7 +58,7 @@ export const updateCustomDashboardSchema = z.object({
 
 interface CustomDashboardFormProps {
   customDashboard: documentItem_fragment$data;
-  serviceInstanceId: string;
+  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
   handleSubmit: (
     values: z.infer<typeof updateCustomDashboardSchema>,
     callback: () => void
@@ -73,7 +74,7 @@ type CustomDashboardUpdateFormValues = z.infer<
 
 export const CustomDashboardUpdateForm = ({
   customDashboard,
-  serviceInstanceId,
+  serviceInstance,
   handleSubmit,
   onDelete,
   userCanDelete,
@@ -117,13 +118,15 @@ export const CustomDashboardUpdateForm = ({
   const [addDocument] = useMutation<documentAddMutation>(DocumentAddMutation);
 
   const uploadNewImage = (image: File) => {
-    revalidatePathActions([`${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`]);
+    revalidatePathActions([
+      `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`,
+    ]);
     return addDocument({
       variables: {
         name: customDashboard.name,
         document: { 0: image },
         parentDocumentId: customDashboard.id,
-        serviceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         connections: [],
         type: 'custom_dashboard',
       },
