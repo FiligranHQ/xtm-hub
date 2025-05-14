@@ -85,7 +85,7 @@ export const Profile: React.FC = () => {
 
   return (
     <>
-      <section className="flex flex-col gap-m">
+      <section className="flex flex-col gap-xl w-8/12 m-auto">
         <ProfileFormEdit onSubmit={handleSubmit} />
         <ProfileFormResetPassword onSubmit={handleResetPassword} />
       </section>
