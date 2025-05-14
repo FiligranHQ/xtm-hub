@@ -8,7 +8,7 @@ import { omit } from '@/lib/omit';
 import { isNil } from '@/lib/utils';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
-import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { customDashboardSheet_update_childs$key } from '@generated/customDashboardSheet_update_childs.graphql';
 import {
   documentAddMutation,
@@ -116,7 +116,9 @@ export const CustomDashboardSheet = ({
 
       setOpenSheet(false);
       callback();
-      await revalidatePathActions([`${PUBLIC_DASHBOARD_URL}`]);
+      await revalidatePathActions([
+        `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+      ]);
       toast({
         title: t('Utils.Success'),
         description: t('Service.CustomDashboards.Actions.Added', {

@@ -6,7 +6,7 @@ type SeoCustomDashboard {
   id: ID!
   uploader: User
   name: String
-  slug: String
+  slug: String!
   short_description: String
   description: String
   created_at: Date!
@@ -15,7 +15,7 @@ type SeoCustomDashboard {
   download_number: Int
   share_number: Int
   product_version: String
-  children_documents: [SeoCustomDashboardImage]
+  children_documents: [SeoCustomDashboardImage]!
   labels: [Label]
   active: Boolean!
 }

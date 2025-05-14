@@ -5,8 +5,11 @@ import BadgeOverflowCounter, {
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { fromGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import {
+  fetchSingleDocument,
+  getServiceInfo,
+} from '@/utils/shareable-resources/shareable-resources.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -18,8 +21,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
-import { slugRendererMap } from '../shareable-resources-renderer';
-import { querySlugMap, QuerySlugMap } from './query-slug-map';
+import SlugDocument from './slug-document';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -45,33 +47,15 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
   if (!serviceInstance) {
     notFound();
   }
-  const config = querySlugMap[serviceInstance.slug as keyof QuerySlugMap];
 
-  const response = await serverFetchGraphQL(
-    config.query,
-    { slug: dashboardSlug },
-    {
-      cache: 'force-cache',
-    }
+  const document = await fetchSingleDocument(
+    serviceInstance.slug ?? 'custom_open_cti_dashboards',
+    dashboardSlug
   );
-
-  const document = config.cast(response.data);
 
   return { baseUrl, serviceInstance, document };
 };
 
-const getMoreDescription = (serviceSlug?: string | null) => {
-  switch (serviceSlug) {
-    case 'csv-feeds':
-      return '. Discover more CSV Feeds like this in our OpenCTI CSV Feeds Library, available for download on the XTM Hub.';
-
-    case 'custom-open-cti-dashboards':
-      return '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.';
-
-    default:
-      return '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.';
-  }
-};
 /**
  * Generate the metadata for the page
  */
@@ -86,18 +70,25 @@ export async function generateMetadata({
     awaitedParams.slug,
     awaitedParams.dashboardSlug
   );
+  const serviceInformation = getServiceInfo(
+    {
+      id: serviceInstance.id,
+      slug: serviceInstance.slug ?? 'custom_open_cti_dashboards',
+    },
+    document.id
+  );
 
   const metadata: Metadata = {
     title: `${document.name} | ${serviceInstance.name} | XTM Hub by Filigran`,
     description: document.short_description
-      ? `${document.short_description}${getMoreDescription(serviceInstance.slug)}`
+      ? `${document.short_description}${serviceInformation?.description}`
       : document.description?.substring(0, 160) ||
-        `Explore this cybersecurity ${serviceInstance.slug === 'custom-dashboards' ? 'dashboard' : 'CSV Feed'} for enhanced threat intelligence and monitoring.`,
+        `Explore this cybersecurity ${serviceInstance.slug === 'custom_open_cti_dashboards' ? 'dashboard' : 'CSV Feed'} for enhanced threat intelligence and monitoring.`,
     metadataBase: new URL(baseUrl),
     openGraph: {
       title: document!.name!,
       description: document.short_description
-        ? `${document.short_description}${getMoreDescription(serviceInstance.slug)}`
+        ? `${document.short_description}${serviceInformation?.description}`
         : document.description?.substring(0, 160),
       url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`,
       type: 'article',
@@ -113,7 +104,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: document!.name!,
       description: document.short_description
-        ? `${document.short_description}${getMoreDescription(serviceInstance.slug)}`
+        ? `${document.short_description}${serviceInformation?.description}`
         : document.description?.substring(0, 160),
       creator: '@FiligranHQ',
     },
@@ -152,6 +143,13 @@ const Page = async ({
       awaitedParams.slug,
       awaitedParams.dashboardSlug
     );
+    const serviceInformation = getServiceInfo(
+      {
+        id: serviceInstance.id,
+        slug: serviceInstance.slug ?? 'custom_open_cti_dashboards',
+      },
+      document.id
+    );
 
     const pageUrl = `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`;
 
@@ -159,7 +157,7 @@ const Page = async ({
       '@context': 'https://schema.org',
       '@type': 'TechArticle',
       headline: document.name,
-      description: `${document.short_description}${getMoreDescription(serviceInstance.slug)}`,
+      description: `${document.short_description}${serviceInformation?.description}`,
       articleBody: document.description,
       author: document.uploader
         ? {
@@ -218,21 +216,7 @@ const Page = async ({
         original: true,
       },
     ];
-    const render =
-      slugRendererMap[serviceInstance.slug ?? ''] ?? slugRendererMap.default;
 
-    const getDownloadLink = () => {
-      switch (serviceInstance.slug) {
-        case 'csv-feeds':
-          return `/redirect/csv_feeds?service_instance_id=${fromGlobalId(serviceInstance.id).id}&document_id=${document.id}`;
-
-        case 'custom-open-cti-dashboards':
-          return `/redirect/custom_dashboards?service_instance_id=${fromGlobalId(serviceInstance.id).id}&document_id=${document.id}`;
-
-        default:
-          return `/redirect/custom_dashboards?service_instance_id=${fromGlobalId(serviceInstance.id).id}&document_id=${document.id}`;
-      }
-    };
     return (
       <>
         <script
@@ -262,15 +246,15 @@ const Page = async ({
             <Button
               asChild
               className="whitespace-nowrap">
-              <Link href={getDownloadLink()}>Download</Link>
+              <Link href={serviceInformation?.link ?? ''}>Download</Link>
             </Button>
           </div>
         </div>
 
-        {render!({
-          document,
-          serviceInstance,
-        })}
+        <SlugDocument
+          serviceInstance={serviceInstance}
+          document={document as documentItem_fragment$data}
+        />
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
           <div className="flex-[3_3_0%]">
             <h3 className="py-s txt-container-title truncate text-muted-foreground">

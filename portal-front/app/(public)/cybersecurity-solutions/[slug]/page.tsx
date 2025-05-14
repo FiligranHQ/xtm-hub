@@ -2,17 +2,17 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { fetchAllDocuments } from '@/utils/shareable-resources/shareable-resources.utils';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import { QueryMap, queryMap } from './query-map';
-import { rendererMap } from './shareable-resources-renderer';
+import ParentDocumentCard from './parent-document-card';
 
 export interface SeoCustomDashboard {
   description: string;
@@ -64,17 +64,9 @@ const getPageData = cache(async (slug: string) => {
     notFound();
   }
 
-  const config = queryMap[serviceInstance.slug as keyof QueryMap];
-
-  const response = await serverFetchGraphQL(
-    config.query,
-    { serviceSlug: serviceInstance.slug },
-    {
-      cache: 'force-cache',
-    }
+  const documents = await fetchAllDocuments(
+    serviceInstance.slug ?? 'custom_open_cti_dashboards'
   );
-
-  const documents = config.cast(response.data);
   return { baseUrl, serviceInstance, documents };
 });
 
@@ -163,7 +155,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
       },
       keywords: documents
         .flatMap(
-          (dashboard) => dashboard.labels?.map((label) => label.name) || []
+          (document) => document.labels?.map((label) => label.name) || []
         )
         .join(', '),
       mainEntityOfPage: {
@@ -233,16 +225,14 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         )) || (
           <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
             {documents.map((document) => {
-              const renderCard =
-                rendererMap[serviceInstance.slug ?? ''] ?? rendererMap.default;
-
-              return renderCard!({
-                document: document,
-                serviceInstance: serviceInstance as unknown as NonNullable<
-                  serviceByIdQuery$data['serviceInstanceById']
-                >,
-                baseUrl,
-              });
+              return (
+                <ParentDocumentCard
+                  key={document.id}
+                  serviceInstance={serviceInstance}
+                  document={document as documentItem_fragment$data}
+                  baseUrl={baseUrl}
+                />
+              );
             })}
           </ul>
         )}

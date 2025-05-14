@@ -15,7 +15,7 @@ import {
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
-import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentDetailDeleteMutation } from '@generated/documentDetailDeleteMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -93,8 +93,8 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         // If the service has changed, we need to revalidate the path
         // If the slug has changed, it's necessary to revalidate the previous path, as the new one may not yet be cached.
         revalidatePathActions([
-          `${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`,
-          `${PUBLIC_DASHBOARD_URL}`,
+          `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`,
+          `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
         ]);
         setOpenSheet(false);
         toast({
@@ -129,7 +129,9 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           router.push(`/service/custom_dashboards/${serviceInstance.id}`);
         },
       });
-      revalidatePathActions([`${PUBLIC_DASHBOARD_URL}`]);
+      revalidatePathActions([
+        `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+      ]);
     } else {
       // In case we are delete image or we are deleting document from the detail page
       deleteDetailDocumentationMutation({
@@ -145,7 +147,9 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         },
       });
     }
-    revalidatePathActions([`${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`]);
+    revalidatePathActions([
+      `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`,
+    ]);
   };
 
   return (
@@ -179,7 +183,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           title={t('Service.CustomDashboards.UpdateDashboard')}>
           <CustomDashboardUpdateForm
             customDashboard={customDashboard}
-            serviceInstanceId={serviceInstance.id}
+            serviceInstance={serviceInstance}
             handleSubmit={updateDocument}
             onDelete={deleteDocument}
             userCanDelete={userCanDelete}

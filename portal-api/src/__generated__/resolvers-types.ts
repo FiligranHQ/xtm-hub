@@ -821,7 +821,7 @@ export type RolePortal = Node & {
 export type SeoCustomDashboard = {
   __typename?: 'SeoCustomDashboard';
   active: Scalars['Boolean']['output'];
-  children_documents?: Maybe<Array<Maybe<SeoCustomDashboardImage>>>;
+  children_documents: Array<Maybe<SeoCustomDashboardImage>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
@@ -831,7 +831,7 @@ export type SeoCustomDashboard = {
   product_version?: Maybe<Scalars['String']['output']>;
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
-  slug?: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
@@ -851,7 +851,7 @@ export type SeoServiceInstance = Node & {
   logo_document_id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
   service_definition: ServiceDefinition;
-  slug?: Maybe<Scalars['String']['output']>;
+  slug?: Maybe<ServiceSlug>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
 };
 
@@ -941,6 +941,11 @@ export enum ServiceRestriction {
   Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
   Upload = 'UPLOAD'
+}
+
+export enum ServiceSlug {
+  CsvFeeds = 'csv_feeds',
+  CustomOpenCtiDashboards = 'custom_open_cti_dashboards'
 }
 
 export type Settings = {
@@ -1278,6 +1283,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
   ServiceRestriction: ServiceRestriction;
+  ServiceSlug: ServiceSlug;
   Settings: ResolverTypeWrapper<Settings>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   SubscribedServiceInstance: ResolverTypeWrapper<SubscribedServiceInstance>;
@@ -1686,7 +1692,7 @@ export type RolePortalResolvers<ContextType = PortalContext, ParentType extends 
 
 export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboard'] = ResolversParentTypes['SeoCustomDashboard']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  children_documents?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboardImage']>>>, ParentType, ContextType>;
+  children_documents?: Resolver<Array<Maybe<ResolversTypes['SeoCustomDashboardImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1696,7 +1702,7 @@ export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType 
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -1716,7 +1722,7 @@ export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType 
   logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_definition?: Resolver<ResolversTypes['ServiceDefinition'], ParentType, ContextType>;
-  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<Maybe<ResolversTypes['ServiceSlug']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
