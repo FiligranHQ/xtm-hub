@@ -77,7 +77,7 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
                   <FormLabel>{t('UserForm.Country')}</FormLabel>
                   <FormControl>
                     <CountryCombobox
-                      value={field.value ? { name: field.value } : undefined}
+                      value={field.value && { name: field.value }}
                       onValueChange={(value) => field.onChange(value?.name)}
                     />
                   </FormControl>
