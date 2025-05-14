@@ -1,18 +1,17 @@
 import { db } from './db-connection';
-import crypto from 'node:crypto';
 import { faker } from '@faker-js/faker';
+import { ADMIN_PASSWORD_HASH, ADMIN_PASSWORD_SALT } from './const';
 
-export const generateUser = async (): Promise<{
+export const generateUser = async ({
+  firstName,
+  lastName,
+}: {
+  firstName: string;
+  lastName: string;
+}): Promise<{
   email: string;
-  password: string;
 }> => {
   const email = faker.internet.email();
-  const password = faker.internet.password();
-  const salt = crypto.randomBytes(16).toString('hex');
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 1000, 64, `sha512`)
-    .toString(`hex`);
-
   const userId = faker.string.uuid();
   const organizationId = faker.string.uuid();
 
@@ -32,10 +31,10 @@ export const generateUser = async (): Promise<{
       {
         id: userId,
         email,
-        salt,
-        password: hash,
-        first_name: faker.person.firstName(),
-        last_name: faker.person.lastName(),
+        salt: ADMIN_PASSWORD_SALT,
+        password: ADMIN_PASSWORD_HASH,
+        first_name: firstName,
+        last_name: lastName,
         selected_organization_id: organizationId,
       },
     ])
@@ -54,7 +53,6 @@ export const generateUser = async (): Promise<{
 
   return {
     email,
-    password,
   };
 };
 

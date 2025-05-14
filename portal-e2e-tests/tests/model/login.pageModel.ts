@@ -25,10 +25,10 @@ export default class LoginPage {
     return this.page.getByRole('button', { name: 'Sign in' });
   }
 
-  async login(userEmail = 'admin@filigran.io', password = 'admin') {
+  async login(userEmail = 'admin@filigran.io') {
     await this.page.goto('/');
     await this.fillLoginInput(userEmail);
-    await this.fillPasswordInput(password);
+    await this.fillPasswordInput('admin');
     return this.getSignInButton().click();
   }
 
