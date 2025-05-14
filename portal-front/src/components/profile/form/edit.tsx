@@ -92,9 +92,11 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
               },
             },
           }}>
-          <Button aria-label={t('ProfilePage.UpdateProfile')}>
-            {t('Utils.Update')}
-          </Button>
+          <div className="flex justify-end">
+            <Button aria-label={t('ProfilePage.UpdateProfile')}>
+              {t('Utils.Update')}
+            </Button>
+          </div>
         </AutoForm>
       </CardContent>
     </Card>
