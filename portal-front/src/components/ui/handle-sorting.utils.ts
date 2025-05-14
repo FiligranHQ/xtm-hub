@@ -19,7 +19,7 @@ interface HandleSortingChangeParams<Ordering> {
   updater: unknown;
 }
 
-export const handleSortingChange = <Ordering>({
+export const handleSortingChange = <O>({
   updater,
   orderBy,
   orderMode,
@@ -27,7 +27,7 @@ export const handleSortingChange = <Ordering>({
   setOrderMode,
   removeOrderBy,
   handleRefetchData,
-}: HandleSortingChangeParams<Ordering>) => {
+}: HandleSortingChangeParams<O>) => {
   const sorting = mapToSortingTableValue(orderBy, orderMode);
   const newSortingValue =
     updater instanceof Function ? updater(sorting) : updater;
@@ -39,7 +39,7 @@ export const handleSortingChange = <Ordering>({
   }
 
   handleRefetchData(
-    transformSortingValueToParams<Ordering, OrderingMode>(newSortingValue)
+    transformSortingValueToParams<O, OrderingMode>(newSortingValue)
   );
 };
 
