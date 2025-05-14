@@ -1,6 +1,12 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from 'filigran-ui';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import React from 'react';
@@ -16,16 +22,14 @@ export const ProfileFormResetPassword: React.FC<Props> = ({ onSubmit }) => {
       <CardHeader>
         <CardTitle>{t('UserForm.Password')}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-s items-start">
-          {t('UserForm.ResetPassword.Sentence')}
-          <Button
-            aria-label={t('UserForm.ResetPassword.Action')}
-            onClick={onSubmit}>
-            {t('UserForm.ResetPassword.Action')}
-          </Button>
-        </div>
-      </CardContent>
+      <CardContent>{t('UserForm.ResetPassword.Sentence')}</CardContent>
+      <CardFooter className="flex justify-end">
+        <Button
+          aria-label={t('UserForm.ResetPassword.Action')}
+          onClick={onSubmit}>
+          {t('UserForm.ResetPassword.Action')}
+        </Button>
+      </CardFooter>
     </Card>
   );
 };
