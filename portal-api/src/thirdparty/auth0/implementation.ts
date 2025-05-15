@@ -10,7 +10,11 @@ interface ClientConfiguration {
   clientSecret: string;
 }
 
-const clientConfiguration = config.get<ClientConfiguration>('auth0.config');
+const clientConfiguration: ClientConfiguration = {
+  domain: config.get('auth0.config.domain'),
+  clientId: config.get('oidc_provider.client_id'),
+  clientSecret: config.get('oidc_provider.client_secret'),
+};
 
 const managementClient = new ManagementClient(clientConfiguration);
 const authenticationClient = new AuthenticationClient(clientConfiguration);
