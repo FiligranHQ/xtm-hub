@@ -4,10 +4,16 @@ type PlatformProvider {
   provider: String!
 }
 
+type FeatureFlag {
+  id: String!
+  enabled: Boolean!
+}
+
 type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
+  feature_flags: [FeatureFlag]!
 }
 
 type Query {

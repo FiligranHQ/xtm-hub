@@ -12,6 +12,12 @@
       "provider": "oidc"
     }
   ],
+  "feature_flags": [
+    {
+      "id": "reset-password",
+      "enabled": true
+    }
+  ],
   "init_service_definitions": [
     {
       "serviceDefinition": {

@@ -17,6 +17,7 @@ import {
   ForbiddenAccess,
   UnknownError,
 } from '../../utils/error.util';
+import { FeatureFlagId, isFeatureEnabled } from '../../utils/feature-flag';
 import { extractId, isImgUrl } from '../../utils/utils';
 import {
   createUserOrgCapabilities,
@@ -319,6 +320,12 @@ const resolvers: Resolvers = {
       }
     },
     resetPassword: async (_, __, context) => {
+      if (!isFeatureEnabled(FeatureFlagId.RESET_PASSWORD)) {
+        throw ForbiddenAccess('FEATURE_DISABLED_ERROR', {
+          detail: FeatureFlagId.RESET_PASSWORD,
+        });
+      }
+
       await resetPassword(context);
       return { success: true };
     },

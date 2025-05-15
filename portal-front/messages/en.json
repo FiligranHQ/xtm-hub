@@ -65,6 +65,7 @@
       "EDIT_USER_ERROR": "Error while editing user",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Error while deleting the subscription: you are not allowed to delete a subscription with billing",
+      "FEATURE_DISABLED_ERROR": "This feature is disabled",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
       "INVALID_IMAGE_URL": "The image URL is not valid",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",

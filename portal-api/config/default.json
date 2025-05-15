@@ -17,13 +17,20 @@
     "seeds": "tests/seeds"
   },
   "auth0": {
-    "enabled": false,
-    "config": {
-      "domain": "changeme",
-      "clientId": "changeme",
-      "clientSecret": "changeme"
-    }
+    "domain": "changeme",
+    "clientId": "changeme",
+    "clientSecret": "changeme"
   },
+  "feature_flags": [
+    {
+      "id": "reset-password",
+      "enabled": false
+    },
+    {
+      "id": "auth0-client",
+      "enabled": false
+    }
+  ],
   "oidc_provider": {
     "issuer": "http://localhost:8080/realms/keycloak-express",
     "client_id": "keycloak-express",

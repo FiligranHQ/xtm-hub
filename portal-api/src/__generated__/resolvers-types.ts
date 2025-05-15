@@ -210,6 +210,12 @@ export type EditUserInput = {
   last_name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type FeatureFlag = {
+  __typename?: 'FeatureFlag';
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+};
+
 export type Filter = {
   key?: InputMaybe<FilterKey>;
   value: Array<Scalars['String']['input']>;
@@ -934,6 +940,7 @@ export type Settings = {
   __typename?: 'Settings';
   base_url_front: Scalars['String']['output'];
   environment: Scalars['String']['output'];
+  feature_flags: Array<Maybe<FeatureFlag>>;
   platform_providers: Array<PlatformProvider>;
 };
 
@@ -1224,6 +1231,7 @@ export type ResolversTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
+  FeatureFlag: ResolverTypeWrapper<FeatureFlag>;
   Filter: Filter;
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
@@ -1316,6 +1324,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserInput: EditUserInput;
+  FeatureFlag: FeatureFlag;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -1487,6 +1496,12 @@ export type DocumentMetadataResolvers<ContextType = PortalContext, ParentType ex
   document_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type FeatureFlagResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['FeatureFlag'] = ResolversParentTypes['FeatureFlag']> = ResolversObject<{
+  enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1777,6 +1792,7 @@ export type ServiceLinkResolvers<ContextType = PortalContext, ParentType extends
 export type SettingsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Settings'] = ResolversParentTypes['Settings']> = ResolversObject<{
   base_url_front?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   environment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feature_flags?: Resolver<Array<Maybe<ResolversTypes['FeatureFlag']>>, ParentType, ContextType>;
   platform_providers?: Resolver<Array<ResolversTypes['PlatformProvider']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1939,6 +1955,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
   DocumentMetadata?: DocumentMetadataResolvers<ContextType>;
+  FeatureFlag?: FeatureFlagResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Label?: LabelResolvers<ContextType>;

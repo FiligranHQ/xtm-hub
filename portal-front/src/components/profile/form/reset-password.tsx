@@ -1,5 +1,6 @@
 'use client';
 
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import {
   Card,
   CardContent,
@@ -17,6 +18,11 @@ interface Props {
 
 export const ProfileFormResetPassword: React.FC<Props> = ({ onSubmit }) => {
   const t = useTranslations();
+  const isFeatureEnabled = useIsFeatureEnabled('reset-password');
+  if (!isFeatureEnabled) {
+    return null;
+  }
+
   return (
     <Card>
       <CardHeader>

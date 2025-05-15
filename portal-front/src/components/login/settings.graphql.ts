@@ -6,20 +6,12 @@ export const SettingsContext_fragment = graphql`
       provider
       type
     }
+    feature_flags {
+      id
+      enabled
+    }
     environment
     base_url_front
-  }
-`;
-export const SettingsQuery = graphql`
-  query settingsQuery {
-    settings {
-      platform_providers {
-        name
-        provider
-        type
-      }
-      base_url_front
-    }
   }
 `;
 

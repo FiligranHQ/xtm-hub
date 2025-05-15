@@ -65,6 +65,7 @@
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
+      "FEATURE_DISABLED_ERROR": "Cette fonction est désactivée",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
