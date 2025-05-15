@@ -13,7 +13,7 @@ type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
-  feature_flags: [FeatureFlag]!
+  feature_flags: [FeatureFlag!]!
 }
 
 type Query {
