@@ -3,6 +3,7 @@ import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import useAdminPath from '@/hooks/useAdminPath';
 import { isEmpty } from '@/lib/utils';
 import { ORGANIZATION_CAPACITY } from '@/utils/constant';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
@@ -38,6 +39,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const { me } = useContext(PortalContext);
   const t = useTranslations();
+  const isAdminPath = useAdminPath();
 
   const organizationCapabilitiesData = [
     ORGANIZATION_CAPACITY.MANAGE_ACCESS,
@@ -97,38 +99,42 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full space-y-xl">
-        <FormField
-          control={form.control}
-          name="first_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('UserForm.FirstName')}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('UserForm.FirstName')}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="last_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('UserForm.LastName')}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('UserForm.LastName')}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {isAdminPath && (
+          <>
+            <FormField
+              control={form.control}
+              name="first_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('UserForm.FirstName')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('UserForm.FirstName')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="last_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('UserForm.LastName')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('UserForm.LastName')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
         <FormField
           control={form.control}
           name="capabilities"
