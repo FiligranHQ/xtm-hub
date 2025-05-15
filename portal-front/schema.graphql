@@ -1,0 +1,752 @@
+directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+
+directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+
+scalar JSON
+
+scalar Date
+
+scalar Upload
+
+enum FilterKey {
+  label
+  organization_id
+  personal_space
+}
+
+input Filter {
+  key: FilterKey
+  value: [String!]!
+}
+
+type Success {
+  success: Boolean!
+}
+
+type Mutation {
+  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  addOrganization(input: OrganizationInput!): Organization
+  editOrganization(id: ID!, input: OrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+  createCsvFeed(input: CreateCsvFeedInput!, document: Upload!, serviceInstanceId: String!): CsvFeed
+  deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
+  createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
+  updateCustomDashboard(documentId: ID, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
+  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
+  addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
+  editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
+  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
+  incrementShareNumberDocument(documentId: ID): Document!
+  editServiceInstance(id: ID!, name: String!): ServiceInstance
+  addServiceInstance(input: AddServiceInput): SubscriptionModel
+  deleteServiceInstance(id: ID!): ServiceInstance
+  addServicePicture(serviceId: ID, document: Upload, isLogo: Boolean): ServiceInstance
+  addLabel(input: AddLabelInput!): Label!
+  editLabel(id: ID!, input: EditLabelInput!): Label!
+  deleteLabel(id: ID!): Label!
+  addSubscription(service_instance_id: String): ServiceInstance
+  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
+  deleteSubscription(subscription_id: ID!): ServiceInstance
+  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
+  addUserService(input: UserServiceAddInput!): [UserService]
+  deleteUserService(input: UserServiceDeleteInput!): UserService
+  selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
+  adminAddUser(input: AdminAddUserInput!): User
+  adminEditUser(id: ID!, input: AdminEditUserInput!): User!
+  editUser(id: ID!, input: EditUserInput!): User!
+  editMeUser(input: EditMeUserInput!): User!
+  changeSelectedOrganization(organization_id: ID!): User
+  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  resetPassword: Success!
+  login(email: String!, password: String): User
+  logout: ID!
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+  domains: [String!]
+  personal_space: Boolean!
+  capabilityUser: [Capability]
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Query {
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
+  rolePortal(id: ID!): RolePortal
+  rolesPortal: [RolePortal!]!
+  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
+  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
+  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
+  seoCsvFeedBySlug(slug: String): CsvFeed
+  seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
+  seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
+  customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
+  customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
+  documentExists(documentName: String, service_instance_id: String): Boolean
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  document(documentId: ID, serviceInstanceId: ID): Document
+  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstanceById(service_instance_id: ID): ServiceInstance
+  serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
+  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
+  seoServiceInstances: [SeoServiceInstance!]!
+  seoServiceInstance(slug: String!): SeoServiceInstance!
+  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
+  label(id: ID!): Label
+  settings: Settings!
+  subscriptionById(subscription_id: ID): SubscriptionWithService
+  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
+  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
+  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
+  me: User
+  user(id: ID!): User
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  userHasOrganizationWithSubscription: Boolean!
+  node(id: ID!): Node
+}
+
+input OrganizationInput {
+  name: String!
+  domains: [String!]
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type CsvFeed implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  slug: String
+  labels: [Label!]!
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [Document!]
+  remover_id: ID
+}
+
+input CreateCsvFeedInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+}
+
+type CsvFeedEdge {
+  cursor: String!
+  node: CsvFeed!
+}
+
+type CsvFeedConnection {
+  totalCount: Int!
+  edges: [CsvFeedEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CustomDashboardImage {
+  id: ID!
+  file_name: String!
+}
+
+type SeoCustomDashboard {
+  id: ID!
+  uploader: User
+  name: String
+  slug: String!
+  short_description: String
+  description: String
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  product_version: String
+  children_documents: [CustomDashboardImage]!
+  labels: [Label]
+  active: Boolean!
+}
+
+input CreateCustomDashboardInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+  product_version: String!
+}
+
+input UpdateCustomDashboardInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  uploader_organization_id: String
+  product_version: String
+}
+
+type CustomDashboard implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  slug: String!
+  labels: [Label]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [CustomDashboardImage]
+  product_version: String
+}
+
+type CustomDashboardEdge {
+  cursor: String!
+  node: CustomDashboard!
+}
+
+type CustomDashboardConnection {
+  totalCount: Int!
+  edges: [CustomDashboardEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum ServiceDefinitionIdentifier {
+  vault
+  link
+  custom_dashboards
+  csv_feeds
+}
+
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  identifier: ServiceDefinitionIdentifier!
+  service_capability: [ServiceCapability]
+}
+
+enum DocumentOrdering {
+  file_name
+  description
+  created_at
+  download_number
+}
+
+type Document implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  service_instance_id: String!
+  name: String
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  children_documents: [Document!]
+  slug: String
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+}
+
+input EditDocumentInput {
+  short_description: String
+  description: String
+  uploader_organization_id: String
+  name: String
+  active: Boolean
+  slug: String
+}
+
+type DocumentEdge {
+  cursor: String!
+  node: Document!
+}
+
+type DocumentConnection {
+  totalCount: Int!
+  edges: [DocumentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ServiceLink implements Node {
+  id: ID!
+  service_instance_id: ID
+  url: String
+  name: String
+}
+
+enum ServiceInstanceOrdering {
+  name
+  description
+  ordering
+}
+
+type ServiceInstance implements Node {
+  id: ID!
+  name: String!
+  description: String
+  slug: String
+  creation_status: String
+  organization_subscribed: Boolean
+  user_joined: Boolean
+  links: [ServiceLink]
+  organization: [Organization]
+  subscriptions: [SubscriptionModel]
+  capabilities: [String]!
+  public: Boolean
+  join_type: String
+  tags: [String]
+  service_definition: ServiceDefinition
+  logo_document_id: ID
+  illustration_document_id: ID
+  ordering: Int!
+}
+
+type ServiceInstanceEdge {
+  cursor: String!
+  node: ServiceInstance!
+}
+
+type ServiceConnection {
+  totalCount: Int!
+  edges: [ServiceInstanceEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum ServiceSlug {
+  custom_open_cti_dashboards
+  csv_feeds
+}
+
+type SeoServiceInstance implements Node {
+  id: ID!
+  name: String!
+  slug: ServiceSlug
+  description: String
+  links: [ServiceLink]
+  tags: [String]
+  service_definition: ServiceDefinition!
+  logo_document_id: ID
+  illustration_document_id: ID
+}
+
+input AddServiceInput {
+  service_instance_name: String
+  service_instance_description: String
+  fee_type: String
+  price: Int
+  organization_id: String
+  url: String
+}
+
+type SubscribedServiceInstance {
+  service_instance_id: ID!
+  organization_id: ID!
+  is_personal_space: Boolean!
+  links: [ServiceLink]
+}
+
+type ServiceInstanceSubscription {
+  add: ServiceInstance
+  edit: ServiceInstance
+  delete: ServiceInstance
+}
+
+type Subscription {
+  ServiceInstance: ServiceInstanceSubscription
+  ActionTracking: TrackingSubscription
+  User: UserSubscription
+  MeUser: MeUserSubscription
+}
+
+type Label implements Node {
+  id: ID!
+  name: String!
+  color: String!
+}
+
+enum LabelOrdering {
+  name
+  color
+}
+
+type LabelEdge {
+  cursor: String!
+  node: Label!
+}
+
+type LabelConnection {
+  totalCount: Int!
+  edges: [LabelEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddLabelInput {
+  name: String!
+  color: String!
+}
+
+input EditLabelInput {
+  name: String
+  color: String
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_providers: [PlatformProvider!]!
+  base_url_front: String!
+  environment: String!
+}
+
+enum SubscriptionOrdering {
+  organization_name
+  start_date
+  end_date
+  status
+  service_name
+  service_provider
+  service_type
+  service_description
+}
+
+type SubscriptionModel implements Node {
+  id: ID!
+  organization_id: ID!
+  service_instance_id: ID!
+  start_date: Date
+  end_date: Date
+  status: String
+  organization: Organization!
+  service_url: String!
+  service_instance: ServiceInstance
+  subscription_capability: [SubscriptionCapability]
+  user_service: [UserService]!
+}
+
+type SubscriptionWithService implements Node {
+  id: ID!
+  start_date: Date
+  end_date: Date
+  status: String
+  organization: Organization!
+  service_instance: ServiceInstance
+  subscription_capability: [SubscriptionCapability]
+}
+
+type SubscriptionEdge {
+  cursor: String!
+  node: SubscriptionModel!
+}
+
+type ActionTracking implements Node {
+  id: ID!
+  contextual_id: String!
+  status: String
+  created_at: Date!
+  ended_at: Date
+  type: String!
+  message_tracking: [MessageTracking!]!
+}
+
+type MessageTracking implements Node {
+  id: ID!
+  tracking_id: ID
+  created_at: Date!
+  technical: Boolean
+  type: String!
+  tracking_info: JSON
+}
+
+type TrackingSubscription {
+  add: ActionTracking
+  edit: ActionTracking
+  delete: ActionTracking
+}
+
+type GenericServiceCapability implements Node {
+  id: ID!
+  name: String
+}
+
+input EditServiceCapabilityInput {
+  user_service_id: String
+  capabilities: [String]!
+}
+
+type UserServiceCapability implements Node {
+  id: ID!
+  user_service_id: ID!
+  generic_service_capability: GenericServiceCapability
+  subscription_capability: SubscriptionCapability
+}
+
+type SubscriptionCapability implements Node {
+  id: ID!
+  service_capability: ServiceCapability
+}
+
+type ServiceCapability implements Node {
+  id: ID!
+  name: String
+  description: String
+  service_definition_id: ID
+}
+
+enum UserServiceOrdering {
+  first_name
+  last_name
+  email
+  service_name
+  service_provider
+  service_type
+  service_description
+  subscription_status
+  ordering
+}
+
+input UserServiceAddInput {
+  email: [String!]!
+  capabilities: [String]
+  subscriptionId: ID!
+}
+
+input UserServiceDeleteInput {
+  email: String!
+  capabilities: [String]
+  subscriptionId: String!
+}
+
+type UserServiceConnection {
+  totalCount: Int!
+  edges: [UserServiceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserServiceEdge {
+  cursor: String!
+  node: UserService
+}
+
+type UserService implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
+  user: User
+  subscription: SubscriptionModel
+  user_service_capability: [UserServiceCapability]
+  ordering: Int
+}
+
+type UserServiceDeleted implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
+}
+
+enum UserOrdering {
+  email
+  first_name
+  last_name
+  disabled
+  country
+  last_login
+}
+
+type Capability implements Node {
+  id: ID!
+  name: Restriction!
+}
+
+type OrganizationCapabilities implements Node {
+  id: ID!
+  organization: Organization!
+  capabilities: [String!]
+}
+
+type User implements Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  picture: String
+  country: String
+  disabled: Boolean
+  selected_organization_id: String
+  organizations: [Organization!]
+  organization_capabilities: [OrganizationCapabilities!]
+  capabilities: [Capability!]
+  roles_portal: [RolePortal!]
+  selected_org_capabilities: [String!]
+  last_login: Date
+}
+
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+type UserConnection {
+  totalCount: Int!
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AdminEditUserInput {
+  disabled: Boolean
+  first_name: String
+  last_name: String
+  email: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+input EditUserInput {
+  disabled: Boolean
+  first_name: String
+  last_name: String
+  email: String
+  capabilities: [String!]
+}
+
+input EditMeUserInput {
+  first_name: String
+  last_name: String
+  picture: String
+  country: String
+}
+
+input OrganizationCapabilitiesInput {
+  organization_id: ID!
+  capabilities: [String!]
+}
+
+input AddUserInput {
+  email: String!
+  first_name: String
+  last_name: String
+  password: String
+  capabilities: [String!]
+}
+
+input AdminAddUserInput {
+  email: String!
+  first_name: String
+  last_name: String
+  password: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+type UserSubscription {
+  add: User
+  edit: User
+  delete: User
+  merge: MergeEvent
+}
+
+type MeUserSubscription {
+  edit: User
+  delete: User
+}
+
+enum Restriction {
+  BYPASS
+  MANAGE_ACCESS
+  MANAGE_SUBSCRIPTION
+  BCK_MANAGE_SERVICES
+  BCK_MANAGE_COMMUNITIES
+  FRT_SERVICE_SUBSCRIBER
+  FRT_MANAGE_SETTINGS
+  FRT_ACCESS_BILLING
+  FRT_MANAGE_USER
+  FRT_ACCESS_SERVICES
+}
+
+enum ServiceRestriction {
+  ACCESS_USER
+  MANAGE_ACCESS
+  UPLOAD
+  DELETE
+}
+
+interface Node {
+  id: ID!
+}
+
+enum OrderingMode {
+  asc
+  desc
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type MergeEvent implements Node {
+  id: ID!
+  from: ID!
+  target: ID!
+}
