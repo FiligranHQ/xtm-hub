@@ -9,6 +9,7 @@ import { logApp } from '../../../../utils/app-logger.util';
 import { UnknownError } from '../../../../utils/error.util';
 import { extractId } from '../../../../utils/utils';
 import { loadSubscription } from '../../../subcription/subscription.domain';
+import { getServiceInstance } from '../../service-instance.domain';
 import {
   getChildrenDocuments,
   getLabels,
@@ -74,6 +75,9 @@ const resolvers: Resolvers = {
       getLabels(context, id, {
         unsecured: true,
       }),
+    service_instance: ({ service_instance_id }, _, context) => {
+      return getServiceInstance(context, service_instance_id);
+    },
     children_documents: ({ id }, _, context) =>
       getChildrenDocuments(context, id, {
         unsecured: true,
