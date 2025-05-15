@@ -11,7 +11,7 @@ interface ClientConfiguration {
 }
 
 const clientConfiguration: ClientConfiguration = {
-  domain: config.get('auth0.config.domain'),
+  domain: config.get('auth0.domain'),
   clientId: config.get('oidc_provider.client_id'),
   clientSecret: config.get('oidc_provider.client_secret'),
 };
