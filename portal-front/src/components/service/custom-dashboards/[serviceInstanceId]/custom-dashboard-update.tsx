@@ -4,22 +4,18 @@ import {
   updateCustomDashboardSchema,
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-update-form';
 import {
-  DocumentDeleteMutation,
-  DocumentDetailDeleteMutation,
-  DocumentUpdateMutation,
-} from '@/components/service/document/document.graphql';
-import {
   IconActionContext,
   IconActionsButton,
 } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useServiceCapability from '@/hooks/useServiceCapability';
+import { omit } from '@/lib/omit';
+import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
-import { documentDetailDeleteMutation } from '@generated/documentDetailDeleteMutation.graphql';
-import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
+import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -28,6 +24,10 @@ import * as React from 'react';
 import { useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
+import {
+  CustomDashboardDeleteMutation,
+  CustomDashboardsUpdateMutation,
+} from '../custom-dashboard.graphql';
 
 // Component interface
 interface DashboardUpdateProps {
@@ -50,17 +50,6 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   const [openSheet, setOpenSheet] = useState(false);
   const { setMenuOpen } = useContext(IconActionContext);
 
-  const [deleteDetailDocumentationMutation] =
-    useMutation<documentDetailDeleteMutation>(DocumentDetailDeleteMutation);
-
-  const [deleteDocumentMutation] = useMutation<documentDeleteMutation>(
-    DocumentDeleteMutation
-  );
-
-  const [updateDocumentMutation] = useMutation<documentUpdateMutation>(
-    DocumentUpdateMutation
-  );
-
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,
     serviceInstance
@@ -70,26 +59,49 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
     serviceInstance
   );
 
+  const [deleteCustomDashboardMutation] =
+    useMutation<customDashboardDeleteMutation>(CustomDashboardDeleteMutation);
+
+  const [updateCustomDashboardMutation] =
+    useMutation<customDashboardsUpdateMutation>(CustomDashboardsUpdateMutation);
+
   const updateDocument = (
     values: z.infer<typeof updateCustomDashboardSchema>
   ) => {
-    setMenuOpen(false);
-    updateDocumentMutation({
-      variables: {
-        documentId: customDashboard.id,
-        serviceInstanceId: serviceInstance.id,
-        input: {
-          short_description: values.shortDescription,
-          product_version: values.productVersion,
-          description: values.description,
-          name: values.name,
-          labels: values.labels,
-          active: values.active,
-          slug: values.slug,
-          uploader_organization_id: values.uploader_organization_id,
-        },
+    const input = omit(values, ['document', 'images']);
+    console.log('values.images', values.images);
+    // Split images between existing and new ones
+    const [existingImages, newImages] = Array.from(values.images ?? []).reduce(
+      ([existing, newImages], image) => {
+        console.log(image);
+        return image.id
+          ? [existing.concat(image.id), newImages]
+          : [existing, newImages.concat(image)];
       },
-      onCompleted: (response) => {
+      [[], []]
+    );
+    const documentsToUpload = [
+      ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
+      ...newImages,
+    ];
+    console.log(
+      'existingImages',
+      existingImages,
+      'documentsToUpload',
+      documentsToUpload
+    );
+
+    updateCustomDashboardMutation({
+      variables: {
+        input,
+        serviceInstanceId: serviceInstance.id,
+        document: documentsToUpload,
+        documentId: customDashboard.id,
+        updateDocument: values.document !== undefined,
+        images: existingImages,
+      },
+      uploadables: fileListToUploadableMap(documentsToUpload),
+      onCompleted: () => {
         // If the service has changed, we need to revalidate the path
         // If the slug has changed, it's necessary to revalidate the previous path, as the new one may not yet be cached.
         revalidatePathActions([
@@ -100,7 +112,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         toast({
           title: t('Utils.Success'),
           description: t('VaultActions.DocumentUpdated', {
-            file_name: response.editDocument.name,
+            file_name: values.name,
           }),
         });
       },
@@ -114,38 +126,30 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
     });
   };
 
-  const deleteDocument = (id?: string) => {
-    if (!id && connectionId) {
-      // In case we are in the list and we want to delete a dashboard
-      setMenuOpen(false);
-      deleteDocumentMutation({
-        variables: {
-          documentId: customDashboard.id,
-          serviceInstanceId: serviceInstance.id,
-          connections: [connectionId],
-          forceDelete: true,
-        },
-        onCompleted() {
-          router.push(`/service/custom_dashboards/${serviceInstance.id}`);
-        },
-      });
-      revalidatePathActions([`${PUBLIC_DASHBOARD_URL}`]);
-    } else {
-      // In case we are delete image or we are deleting document from the detail page
-      deleteDetailDocumentationMutation({
-        variables: {
-          documentId: id ?? customDashboard.id,
-          serviceInstanceId: serviceInstance.id,
-          forceDelete: true,
-        },
-        onCompleted() {
-          if (!id) {
-            router.push(`/service/custom_dashboards/${serviceInstance.id}`);
-          }
-        },
-      });
-    }
-    revalidatePathActions([`${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`]);
+  const deleteDocument = () => {
+    deleteCustomDashboardMutation({
+      variables: {
+        documentId: customDashboard.id,
+        serviceInstanceId: serviceInstance.id,
+        connections: [connectionId ?? ''],
+      },
+      onCompleted() {
+        revalidatePathActions([
+          `${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`,
+          `${PUBLIC_DASHBOARD_URL}`,
+        ]);
+        setOpenSheet(false);
+        toast({
+          title: t('Utils.Success'),
+          description: t('VaultActions.DocumentUpdated', {
+            file_name: customDashboard.name,
+          }),
+        });
+        router.push(`/service/custom_dashboards/${serviceInstance.id}`);
+      },
+    });
+    // TODO in the public page feature
+    // revalidatePathActions([`${PUBLIC_DASHBOARD_URL}`]);
   };
 
   return (

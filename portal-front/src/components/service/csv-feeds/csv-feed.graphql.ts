@@ -25,9 +25,8 @@ export const CsvFeedDeleteMutation = graphql`
     $connections: [ID!]!
     $serviceInstanceId: String!
   ) {
-    deleteCsvFeed(id: $documentId, service_instance_id: $serviceInstanceId) {
+    deleteCsvFeed(id: $documentId, serviceInstanceId: $serviceInstanceId) {
       id @deleteEdge(connections: $connections)
-      success
     }
   }
 `;

@@ -39,6 +39,12 @@ export interface MinioFile {
   mimeType: string;
 }
 
+export interface ExistingFile {
+  id: string;
+  file_name: string;
+  name: string;
+}
+
 export interface Upload {
   file: FileUpload;
   promise: Promise<FileUpload>;

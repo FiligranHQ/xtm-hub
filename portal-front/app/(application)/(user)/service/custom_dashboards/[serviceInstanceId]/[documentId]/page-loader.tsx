@@ -1,7 +1,7 @@
 'use client';
 
 import Loader from '@/components/loader';
-import DashboardSlug from '@/components/service/custom-dashboards/[documentId]/custom-dashboard-details';
+import DashboardDetails from '@/components/service/custom-dashboards/[documentId]/custom-dashboard-details';
 import { CustomDashboardQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
@@ -27,7 +27,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   });
 
   return queryRef && service ? (
-    <DashboardSlug
+    <DashboardDetails
       serviceInstance={service}
       queryRef={queryRef}
     />

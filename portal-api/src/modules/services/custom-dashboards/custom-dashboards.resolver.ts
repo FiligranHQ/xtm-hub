@@ -18,6 +18,7 @@ import {
 } from '../document/document.domain';
 import {
   createFileInMinIO,
+  MinioFile,
   Upload,
   waitForUploads,
 } from '../document/document.helper';
@@ -25,6 +26,7 @@ import { getServiceInstance } from '../service-instance.domain';
 import {
   createCustomDashboard,
   CUSTOM_DASHBOARD_METADATA,
+  CustomDashboard,
   loadImagesByCustomDashboardId,
   loadSeoCustomDashboardBySlug,
   loadSeoCustomDashboardsByServiceSlug,
@@ -103,17 +105,34 @@ const resolvers: Resolvers = {
     },
     updateCustomDashboard: async (
       _,
-      { input, documentId, document },
+      { input, documentId, document, updateDocument, images },
       context
     ) => {
       try {
-        await waitForUploads(document);
-        const files = await Promise.all(
-          document.map((doc: Upload) => createFileInMinIO(doc, context))
+        let file: MinioFile | undefined;
+        let imageFiles: MinioFile[] = [];
+        console.log('\n\ndocument\n', document);
+        console.log('\n\ninput\n', input);
+        if (document && document.length > 0) {
+          await waitForUploads(document);
+          const files = await Promise.all(
+            document.map((doc: Upload) => createFileInMinIO(doc, context))
+          );
+          if (updateDocument) {
+            file = files.shift();
+          }
+          imageFiles = files;
+        }
+        return updateCustomDashboard(
+          documentId,
+          input,
+          file,
+          imageFiles,
+          images,
+          context
         );
-        return updateCustomDashboard(documentId, input, files, context);
       } catch (error) {
-        throw UnknownError('CUSTOM_DASHBOARD_INSERTION_ERROR', {
+        throw UnknownError('CUSTOM_DASHBOARD_UPDATE_ERROR', {
           detail: error,
         });
       }
@@ -121,7 +140,7 @@ const resolvers: Resolvers = {
     deleteCustomDashboard: async (_, { id }, context) => {
       const trx = await dbTx();
       try {
-        await deleteDocument(
+        const doc = await deleteDocument<CustomDashboard>(
           context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
@@ -129,7 +148,7 @@ const resolvers: Resolvers = {
           trx
         );
         await trx.commit();
-        return { success: true, id };
+        return doc;
       } catch (error) {
         await trx.rollback();
 

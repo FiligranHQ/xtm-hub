@@ -65,12 +65,14 @@
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
       "SERVICE_NOT_FOUND_ERROR": "The service does not exist",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
-      "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exists",
+      "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exist",
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
-      "CSV_FEED_INSERTION_ERROR": "An error occured while creating the CSV Feed."
+      "CSV_FEED_INSERTION_ERROR": "An error occurred while creating the CSV Feed.",
+      "CUSTOM_DASHBOARD_INSERTION_ERROR": "An error occurred while creating the custom dashboard.",
+      "CUSTOM_DASHBOARD_UPDATE_ERROR": "An error occurred while updating the custom dashboard."
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -258,6 +260,7 @@
         "DescriptionPlaceholder": "This is a paragraph to describe the document.",
         "ImageLabel": "Images",
         "JSONFile": "JSON file",
+        "ExistingJSONFile": "Existing JSON file: ",
         "LabelsLabel": "Labels",
         "LabelsPlaceholder": "Add labels",
         "NameLabel": "Name",
@@ -268,6 +271,7 @@
         "PublishedPlaceholder": "Is the dashboard published?",
         "SelectImage": "Select image(s)",
         "SelectJSONFile": "Select JSON file",
+        "UpdateJSONFile": "Update JSON file",
         "ShortDescriptionLabel": "Short Description",
         "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
         "SlugLabel": "Slug (url)",

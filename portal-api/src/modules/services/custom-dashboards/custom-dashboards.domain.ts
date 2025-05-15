@@ -1,11 +1,12 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { dbUnsecure } from '../../../../knexfile';
+import { db, dbUnsecure } from '../../../../knexfile';
 import {
   CreateCustomDashboardInput,
   Document as DocumentResolverType,
   UpdateCustomDashboardInput,
 } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
+import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
 import { PortalContext } from '../../../model/portal-context';
 import { createDocument, updateDocument } from '../document/document.domain';
 import { MinioFile } from '../document/document.helper';
@@ -115,7 +116,9 @@ export const createCustomDashboard = async (
 export const updateCustomDashboard = async (
   id: string,
   input: UpdateCustomDashboardInput,
-  files: MinioFile[],
+  document: MinioFile,
+  newImages: MinioFile[],
+  existingImages: string[],
   context: PortalContext
 ) => {
   const data = {
@@ -123,40 +126,14 @@ export const updateCustomDashboard = async (
     type: 'custom_dashboard',
   };
 
-  if (files.length > 0) {
+  // We are updating the base document
+  if (document) {
     Object.assign(data, {
-      file_name: files[0].fileName,
-      minio_name: files[0].minioName,
-      mime_type: files[0].mimeType,
+      file_name: document.fileName,
+      minio_name: document.minioName,
+      mime_type: document.mimeType,
     });
   }
-
-  /*const dashboardFile = files.shift();
-  const dashboard = await createDocument<CustomDashboard>(
-    context,
-    {
-      ...input,
-      type: 'custom_dashboard',
-      file_name: dashboardFile.fileName,
-      minio_name: dashboardFile.minioName,
-      mime_type: dashboardFile.mimeType,
-    },
-    CUSTOM_DASHBOARD_METADATA
-  );
-  if (files.length > 0) {
-    await Promise.all(
-      files.map((file) => {
-        createDocument(context, {
-          type: 'image',
-          parent_document_id: dashboard.id as DocumentId,
-          file_name: file.fileName,
-          minio_name: file.minioName,
-          mime_type: file.mimeType,
-        });
-      })
-    );
-    }
-    */
 
   const dashboard = await updateDocument<CustomDashboard>(
     context,
@@ -164,6 +141,27 @@ export const updateCustomDashboard = async (
     data,
     CUSTOM_DASHBOARD_METADATA
   );
+
+  // Delete the images that are not in the existingImages array
+  await db<DocumentChildren>(context, 'Document_Children')
+    .where('parent_document_id', '=', id)
+    .whereNotIn('child_document_id', existingImages)
+    .delete();
+
+  // Create new images
+  if (newImages.length > 0) {
+    await Promise.all(
+      newImages.map((image) => {
+        createDocument(context, {
+          type: 'image',
+          parent_document_id: dashboard.id as DocumentId,
+          file_name: image.fileName,
+          minio_name: image.minioName,
+          mime_type: image.mimeType,
+        });
+      })
+    );
+  }
 
   return dashboard;
 };

@@ -65,7 +65,6 @@ export const DocumentDeleteMutation = graphql`
       forceDelete: $forceDelete
     ) {
       id @deleteEdge(connections: $connections)
-      success
     }
   }
 `;
@@ -81,7 +80,7 @@ export const DocumentDetailDeleteMutation = graphql`
       service_instance_id: $serviceInstanceId
       forceDelete: $forceDelete
     ) {
-      success
+      id
     }
   }
 `;

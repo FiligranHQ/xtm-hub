@@ -336,9 +336,9 @@ export type Mutation = {
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed?: Maybe<CsvFeed>;
   createCustomDashboard: CustomDashboard;
-  deleteCsvFeed: Success;
-  deleteCustomDashboard: Success;
-  deleteDocument: Success;
+  deleteCsvFeed: CsvFeed;
+  deleteCustomDashboard: CustomDashboard;
+  deleteDocument: Document;
   deleteLabel: Label;
   deleteOrganization?: Maybe<Organization>;
   deleteServiceInstance?: Maybe<ServiceInstance>;
@@ -576,8 +576,10 @@ export type MutationSelfJoinServiceInstanceArgs = {
 export type MutationUpdateCustomDashboardArgs = {
   document?: InputMaybe<Array<Scalars['Upload']['input']>>;
   documentId?: InputMaybe<Scalars['ID']['input']>;
+  images?: InputMaybe<Array<Scalars['String']['input']>>;
   input: UpdateCustomDashboardInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  updateDocument: Scalars['Boolean']['input'];
 };
 
 export type Node = {
@@ -1084,7 +1086,6 @@ export type SubscriptionWithService = Node & {
 
 export type Success = {
   __typename?: 'Success';
-  id?: Maybe<Scalars['ID']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -1103,6 +1104,7 @@ export type UpdateCustomDashboardInput = {
   product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = Node & {
@@ -1694,9 +1696,9 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'document' | 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
-  deleteCsvFeed?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'id' | 'serviceInstanceId'>>;
-  deleteCustomDashboard?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationDeleteCustomDashboardArgs, 'id' | 'serviceInstanceId'>>;
-  deleteDocument?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
+  deleteCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'id' | 'serviceInstanceId'>>;
+  deleteCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationDeleteCustomDashboardArgs, 'id' | 'serviceInstanceId'>>;
+  deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
@@ -1717,7 +1719,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
-  updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'input'>>;
+  updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'input' | 'updateDocument'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
@@ -1971,7 +1973,6 @@ export type SubscriptionWithServiceResolvers<ContextType = PortalContext, Parent
 }>;
 
 export type SuccessResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Success'] = ResolversParentTypes['Success']> = ResolversObject<{
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

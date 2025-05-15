@@ -37,7 +37,7 @@ type Mutation {
     document: Upload!
     serviceInstanceId: String!
   ): CsvFeed @auth @service_capa(requires: [UPLOAD])
-  deleteCsvFeed(id: ID!, serviceInstanceId: String!): Success!
+  deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
     @auth
     @service_capa(requires: [DELETE])
 }

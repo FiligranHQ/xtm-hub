@@ -58,7 +58,7 @@ type Mutation {
     documentId: ID
     service_instance_id: String
     forceDelete: Boolean
-  ): Success! @auth @service_capa(requires: [UPLOAD, DELETE])
+  ): Document! @auth @service_capa(requires: [DELETE])
   incrementShareNumberDocument(documentId: ID): Document!
 }
 

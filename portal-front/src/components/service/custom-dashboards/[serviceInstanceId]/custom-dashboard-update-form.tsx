@@ -2,15 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { DocumentAddMutation } from '@/components/service/document/document.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
-import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { fileToBase64 } from '@/lib/utils';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { documentAddMutation } from '@generated/documentAddMutation.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
 import {
   Button,
@@ -31,12 +27,10 @@ import {
   SelectValue,
   SheetFooter,
   Textarea,
-  toast,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-relay';
 import slugify from 'slugify';
 import { z } from 'zod';
 
@@ -44,14 +38,15 @@ const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 export const updateCustomDashboardSchema = z.object({
   name: z.string().min(1, 'Required'),
-  shortDescription: z.string().max(255).min(1, 'Required'),
-  productVersion: z.string().regex(/^\d+\.\d+\.\d+$/, {
+  short_description: z.string().max(255).min(1, 'Required'),
+  product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
     message: 'Product version must be X.Y.Z',
   }),
   description: z.string().min(1, 'Required'),
   uploader_organization_id: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
+  document: z.custom<FileList>(fileListCheck).optional(),
   images: z.custom<FileList>(fileListCheck).optional(),
   slug: z.string().min(1, 'Required'),
 });
@@ -63,7 +58,7 @@ interface CustomDashboardFormProps {
     values: z.infer<typeof updateCustomDashboardSchema>,
     callback: () => void
   ) => void;
-  onDelete?: (id?: string) => void;
+  onDelete: () => void;
   userCanDelete: boolean;
   userCanUpdate: boolean;
 }
@@ -74,11 +69,10 @@ type CustomDashboardUpdateFormValues = z.infer<
 
 export const CustomDashboardUpdateForm = ({
   customDashboard,
-  serviceInstanceId,
   handleSubmit,
-  onDelete,
   userCanDelete,
   userCanUpdate,
+  onDelete,
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
@@ -89,8 +83,8 @@ export const CustomDashboardUpdateForm = ({
     resolver: zodResolver(updateCustomDashboardSchema),
     defaultValues: {
       name: customDashboard.name ?? '',
-      shortDescription: customDashboard.short_description ?? '',
-      productVersion: customDashboard.product_version ?? '',
+      short_description: customDashboard.short_description ?? '',
+      product_version: customDashboard.product_version ?? '',
       description: customDashboard.description ?? '',
       uploader_organization_id: customDashboard.uploader_organization?.id ?? '',
       active: customDashboard.active ?? false,
@@ -105,56 +99,27 @@ export const CustomDashboardUpdateForm = ({
   });
 
   useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
+  form.watch(['images', 'document']);
 
   const onSubmit = (values: z.infer<typeof updateCustomDashboardSchema>) => {
     handleSubmit(values, () => form.reset());
   };
 
-  const [currentDashboard, setCurrentDashboard] = useState<
-    Partial<customDashboardsItem_fragment$data> | undefined
-  >(customDashboard);
+  const [currentDashboard, setCurrentDashboard] =
+    useState<customDashboardsItem_fragment$data>(customDashboard);
 
-  const [openDelete, setOpenDelete] = useState<string>('');
-  const [addDocument] = useMutation<documentAddMutation>(DocumentAddMutation);
-
-  const uploadNewImage = (image: File) => {
-    revalidatePathActions([`${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`]);
-    return addDocument({
-      variables: {
-        name: customDashboard.name,
-        document: { 0: image },
-        parentDocumentId: customDashboard.id,
-        serviceInstanceId,
-        connections: [],
-        type: 'custom_dashboard',
-      },
-      uploadables: { 0: image },
-      updater: (store, response) => {
-        if (response?.addDocument?.id) {
-          const newNode = store.get(response!.addDocument!.id);
-          if (!newNode) {
-            return;
-          }
-          const items = store
-            .get<documentItem_fragment$data>(customDashboard.id)
-            ?.getLinkedRecords<'children_documents'>('children_documents');
-          store
-            .get(customDashboard.id)
-            ?.setLinkedRecords(
-              [...(items ?? []), newNode],
-              'children_documents'
-            );
-        }
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-    });
+  interface ExistingFile {
+    file_name: string;
+    id: string;
+  }
+  const docIsExistingFile = (value: unknown): value is ExistingFile => {
+    return typeof value === 'object' && value !== null && 'file_name' in value;
   };
+  const [images, setImages] = useState<
+    Array<ExistingFile | { preview: string }>
+  >(customDashboard.children_documents as ExistingFile[]);
+
+  const [openDelete, setOpenDelete] = useState<number>(-1);
 
   const handleNameChange = (value: string) => {
     const slug = form.getValues('slug');
@@ -222,7 +187,7 @@ export const CustomDashboardUpdateForm = ({
               />
               <FormField
                 control={form.control}
-                name="shortDescription"
+                name="short_description"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
@@ -243,7 +208,7 @@ export const CustomDashboardUpdateForm = ({
               />
               <FormField
                 control={form.control}
-                name="productVersion"
+                name="product_version"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
@@ -377,7 +342,39 @@ export const CustomDashboardUpdateForm = ({
               />
               <FormField
                 control={form.control}
-                name={'images'}
+                name="document"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>
+                        {t('Service.CustomDashboards.Form.ExistingJSONFile')}
+                        {currentDashboard?.file_name}
+                      </FormLabel>
+                      <FormControl>
+                        <FileInput
+                          {...field}
+                          texts={{
+                            selectFile: t(
+                              'Service.CustomDashboards.Form.UpdateJSONFile'
+                            ),
+                            noFile: t(
+                              'Service.CustomDashboards.Form.NoJSONFile'
+                            ),
+                            dropFiles: t(
+                              'Service.Vault.FileForm.DropDocuments'
+                            ),
+                          }}
+                          allowedTypes={'application/json'}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="images"
                 render={({ field: { value, ref } }) => {
                   const inputRef = useRef<HTMLInputElement | null>(null);
                   return (
@@ -398,16 +395,19 @@ export const CustomDashboardUpdateForm = ({
                         <FileInput
                           multiple
                           hidden
-                          name={'images'}
-                          onChangeCapture={(
+                          name="images"
+                          onChangeCapture={async (
                             e: ChangeEvent<HTMLInputElement>
                           ) => {
+                            const localImages = [...images];
                             if (e.target?.files) {
-                              for (let i = 0; i < e.target.files.length; i++) {
-                                const image = e.target.files.item(i);
-                                uploadNewImage(image!);
+                              for (const image of Array.from(e.target.files)) {
+                                localImages.push({
+                                  preview: await fileToBase64(image),
+                                });
                               }
                             }
+                            setImages(localImages);
                           }}
                           texts={{
                             selectFile: t(
@@ -431,13 +431,15 @@ export const CustomDashboardUpdateForm = ({
                   );
                 }}
               />
-              {(customDashboard?.children_documents?.length ?? 0) > 0 && (
+              {images.length > 0 && (
                 <div className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl">
-                  {customDashboard.children_documents!.map((doc) => (
+                  {images.map((doc, index) => (
                     <div
-                      key={doc!.id}
+                      key={index}
                       style={{
-                        backgroundImage: `url(/document/visualize/${customDashboard!.id}/${doc!.id})`,
+                        backgroundImage: docIsExistingFile(doc)
+                          ? `url(/document/visualize/${customDashboard!.id}/${doc!.id})`
+                          : `url(${doc.preview})`,
                         backgroundSize: 'cover',
                       }}
                       className="min-h-[15rem] border rounded relative">
@@ -448,7 +450,7 @@ export const CustomDashboardUpdateForm = ({
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
-                          setOpenDelete(doc!.id);
+                          setOpenDelete(index);
                         }}>
                         <DeleteIcon className="size-4" />
                       </Button>
@@ -460,24 +462,25 @@ export const CustomDashboardUpdateForm = ({
                 AlertTitle={t('DialogActions.ContinueTitle')}
                 actionButtonText={t('MenuActions.Continue')}
                 variantName={'destructive'}
-                isOpen={!!openDelete}
-                onOpenChange={() => setOpenDelete('')}
+                isOpen={openDelete !== -1}
+                onOpenChange={() => setOpenDelete(-1)}
                 onClickContinue={() => {
-                  onDelete!(openDelete);
-                  const newDashboard = { ...currentDashboard };
-                  newDashboard.children_documents =
-                    currentDashboard!.children_documents!.filter(
-                      (c) => c?.id !== openDelete
-                    );
-                  setCurrentDashboard(newDashboard);
+                  setCurrentDashboard({
+                    ...currentDashboard,
+                    children_documents:
+                      currentDashboard!.children_documents!.filter(
+                        (_, index) => index !== openDelete
+                      ),
+                  });
+                  setImages(images.filter((_, index) => index !== openDelete));
                   form.setValue(
                     'images',
                     [].filter.call(
                       form.getValues('images'),
-                      ({ id }) => id !== openDelete
+                      (_, index) => index !== openDelete
                     ) as unknown as FileList
                   );
-                  setOpenDelete('');
+                  setOpenDelete(-1);
                 }}>
                 {t('DialogActions.DeleteSentence')}
               </AlertDialogComponent>{' '}
@@ -490,7 +493,7 @@ export const CustomDashboardUpdateForm = ({
                 variant="outline-destructive"
                 type="button"
                 onClick={(e) => {
-                  onDelete?.();
+                  onDelete();
                   handleCloseSheet(e);
                 }}>
                 {t('Utils.Delete')}

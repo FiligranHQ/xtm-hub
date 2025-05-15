@@ -65,7 +65,7 @@ const resolvers: Resolvers = {
     deleteDocument: async (_, { documentId, forceDelete }, context) => {
       const trx = await dbTx();
       try {
-        await deleteDocument(
+        const doc = await deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId,
@@ -73,7 +73,7 @@ const resolvers: Resolvers = {
           trx
         );
         await trx.commit();
-        return { success: true };
+        return doc;
       } catch (error) {
         await trx.rollback();
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });

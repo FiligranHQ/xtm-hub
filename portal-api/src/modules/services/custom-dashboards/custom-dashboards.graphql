@@ -39,6 +39,7 @@ input UpdateCustomDashboardInput {
   description: String
   active: Boolean
   labels: [String!]
+  uploader_organization_id: String
   # Specific fields for custom dashboards
   product_version: String
 }
@@ -105,9 +106,11 @@ type Mutation {
     documentId: ID
     input: UpdateCustomDashboardInput!
     document: [Upload!]
+    updateDocument: Boolean!
+    images: [String!]
     serviceInstanceId: String
   ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
-  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): Success!
+  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
     @auth
     @service_capa(requires: [DELETE])
 }

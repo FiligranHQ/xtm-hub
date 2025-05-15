@@ -23,6 +23,44 @@ export const CustomDashboardsCreateMutation = graphql`
   }
 `;
 
+export const CustomDashboardsUpdateMutation = graphql`
+  mutation customDashboardsUpdateMutation(
+    $documentId: ID!
+    $input: UpdateCustomDashboardInput!
+    $document: [Upload!]
+    $updateDocument: Boolean!
+    $images: [String!]
+    $serviceInstanceId: String!
+  ) {
+    updateCustomDashboard(
+      documentId: $documentId
+      input: $input
+      document: $document
+      updateDocument: $updateDocument
+      images: $images
+      serviceInstanceId: $serviceInstanceId
+    ) {
+      __id
+      ...customDashboardsItem_fragment
+    }
+  }
+`;
+
+export const CustomDashboardDeleteMutation = graphql`
+  mutation customDashboardDeleteMutation(
+    $documentId: ID!
+    $connections: [ID!]!
+    $serviceInstanceId: String!
+  ) {
+    deleteCustomDashboard(
+      id: $documentId
+      serviceInstanceId: $serviceInstanceId
+    ) {
+      id @deleteEdge(connections: $connections)
+    }
+  }
+`;
+
 export const customDashboardsItem = graphql`
   fragment customDashboardsItem_fragment on CustomDashboard @inline {
     id

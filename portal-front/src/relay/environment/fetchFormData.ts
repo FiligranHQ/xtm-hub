@@ -2,9 +2,14 @@ import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
 
 export const fileListToUploadableMap = (
-  files: FileList | File[]
+  files: FileList | (File | null)[]
 ): UploadableMap =>
-  Array.from(files).reduce((acc, file) => ({ ...acc, [file.name]: file }), {});
+  Array.from(files).reduce((acc, file) => {
+    if (file) {
+      acc[file.name] = file;
+    }
+    return acc;
+  }, {} as UploadableMap);
 
 export const fetchFormData = async (
   apiUri: string,
@@ -26,6 +31,7 @@ export const fetchFormData = async (
     'operations',
     JSON.stringify({ query: request.text, variables })
   );
+  console.log(variables, uploadables);
   const uploadablesArray = Object.values(uploadables);
   const map = uploadablesArray.reduce<{ [key: number]: string[] }>(
     (acc, _, index) => {

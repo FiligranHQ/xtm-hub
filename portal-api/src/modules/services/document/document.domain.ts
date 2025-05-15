@@ -125,18 +125,15 @@ export const createDocument = async <T extends DocumentModel>(
   }
 
   if (metadataKeys.length) {
-    await db<DocumentMetadata>(context, 'Document_Metadata').insert(
-      metadataKeys.map((key) => ({
-        document_id: document.id,
-        key: key as DocumentMetadataKey,
-        value: documentData[key] as string,
-      }))
-    );
-
     const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
-      .select(['Document_Metadata.*'])
-      .where('Document_Metadata.document_id', '=', document.id)
-      .andWhere('Document_Metadata.key', 'IN', metadataKeys);
+      .insert(
+        metadataKeys.map((key) => ({
+          document_id: document.id,
+          key: key as DocumentMetadataKey,
+          value: documentData[key] as string,
+        }))
+      )
+      .returning('*');
 
     for (const metadata of metadatas) {
       document[metadata.key] = metadata.value;
@@ -156,17 +153,21 @@ export const updateDocument = async <T extends DocumentModel>(
     Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
   > = []
 ): Promise<T> => {
-  // IF label is null => that mean we want to update the field to empty
+  const [document] = await db<DocumentModel>(context, 'Document')
+    .where('id', '=', documentId)
+    .update({
+      ...documentData,
+      updated_at: new Date().toISOString(),
+      updater_id: context.user.id,
+    })
+    .returning('*');
+
+  // If label is null => that mean we want to update the field to empty
   if (documentData.labels !== undefined) {
-    const existing = await db<ObjectLabel>(context, 'Object_Label')
+    await db<ObjectLabel>(context, 'Object_Label')
       .where('object_id', '=', documentId)
-      .select('*');
-    if (existing) {
-      await db<ObjectLabel>(context, 'Object_Label')
-        .where('object_id', '=', documentId)
-        .delete('*');
-    }
-    if ((documentData.labels.length ?? 0) > 0) {
+      .delete();
+    if (documentData.labels?.length > 0) {
       await db<ObjectLabel>(context, 'Object_Label').insert(
         documentData.labels.map((id) => ({
           object_id: documentId as unknown as ObjectLabelObjectId,
@@ -176,34 +177,45 @@ export const updateDocument = async <T extends DocumentModel>(
     }
   }
 
-  const [doc] = await db<DocumentModel>(context, 'Document')
-    .where('id', '=', documentId)
-    .update({
-      ...documentData,
-      updated_at: new Date().toISOString(),
-      updater_id: context.user.id,
-    })
-    .returning('*');
+  if (metadataKeys.length) {
+    await db<DocumentMetadata>(context, 'Document_Metadata')
+      .where('document_id', '=', documentId)
+      .delete();
 
-  return doc as T;
+    const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+      .insert(
+        metadataKeys.map((key) => ({
+          document_id: documentId as DocumentId,
+          key: key as DocumentMetadataKey,
+          value: documentData[key] as string,
+        }))
+      )
+      .returning('*');
+
+    for (const metadata of metadatas) {
+      document[metadata.key] = metadata.value;
+    }
+  }
+
+  return document as T;
 };
 
 export const incrementDocumentsDownloads = async (
   context: PortalContext,
-  document: Document
+  document: DocumentModel
 ) => {
   await updateDocument(context, document.id, {
     download_number: document.download_number + 1,
   });
 };
 
-export const deleteDocument = async (
+export const deleteDocument = async <T extends DocumentModel>(
   context: PortalContext,
   documentId: DocumentId,
   serviceInstanceId: ServiceInstanceId,
   hardDelete: boolean,
   trx: Knex.Transaction
-): Promise<boolean> => {
+): Promise<T> => {
   const [documentFromDb] = await loadDocumentBy(context, {
     'Document.id': documentId,
     'Document.service_instance_id': serviceInstanceId,
@@ -242,13 +254,13 @@ export const deleteDocument = async (
       .delete()
       .transacting(trx);
 
-    return true;
+    return documentFromDb as T;
   }
 
   // Soft delete => desactivate the document
   await passDocumentToInactive(context, [documentId, ...childIds]);
 
-  return true;
+  return documentFromDb as T;
 };
 
 export const passDocumentToInactive = async (
@@ -356,8 +368,8 @@ export const loadDocumentBy = async (
   context: PortalContext,
   field: Record<string, unknown>,
   opts = {}
-) => {
-  return db<Document>(context, 'Document', opts)
+): Promise<DocumentModel[]> => {
+  return db<DocumentModel>(context, 'Document', opts)
     .where(field)
     .select('Document.*');
 };

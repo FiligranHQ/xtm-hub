@@ -23,7 +23,7 @@ import {
   waitForUploads,
 } from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
-import { createCsvFeed } from './csv-feeds.domain';
+import { createCsvFeed, CsvFeed } from './csv-feeds.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -41,7 +41,7 @@ const resolvers: Resolvers = {
     deleteCsvFeed: async (_, { id }, context) => {
       const trx = await dbTx();
       try {
-        await deleteDocument(
+        const deletedDoc = await deleteDocument<CsvFeed>(
           context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
@@ -49,11 +49,11 @@ const resolvers: Resolvers = {
           trx
         );
         await trx.commit();
-        return { success: true, id };
+        return deletedDoc;
       } catch (error) {
         await trx.rollback();
 
-        throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
+        throw UnknownError('CSV_FEED_DELETION_ERROR', { detail: error });
       }
     },
   },

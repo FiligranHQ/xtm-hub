@@ -21,7 +21,6 @@ input Filter {
 
 type Success {
   success: Boolean!
-  id: ID
 }
 
 type Mutation {
@@ -30,13 +29,13 @@ type Mutation {
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
   createCsvFeed(input: CreateCsvFeedInput!, document: Upload!, serviceInstanceId: String!): CsvFeed
-  deleteCsvFeed(id: ID!, serviceInstanceId: String!): Success!
+  deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
   createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
-  updateCustomDashboard(documentId: ID, input: UpdateCustomDashboardInput!, document: [Upload!], serviceInstanceId: String): CustomDashboard!
-  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): Success!
+  updateCustomDashboard(documentId: ID, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
+  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
-  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Success!
+  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
@@ -217,6 +216,7 @@ input UpdateCustomDashboardInput {
   description: String
   active: Boolean
   labels: [String!]
+  uploader_organization_id: String
   product_version: String
 }
 

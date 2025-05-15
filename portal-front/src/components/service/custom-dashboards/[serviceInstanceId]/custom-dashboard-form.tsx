@@ -33,7 +33,6 @@ export const newCustomDashboardSchema = z.object({
     message: 'Product version must be X.Y.Z',
   }),
   documentId: z.string().optional(),
-  parentDocumentId: z.string().optional(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck),
   active: z.boolean(),
@@ -79,12 +78,7 @@ export const CustomDashboardForm = ({
   form.watch(['images', 'document']);
 
   const onSubmit = (values: z.infer<typeof newCustomDashboardSchema>) => {
-    handleSubmit(
-      {
-        ...values,
-      },
-      () => form.reset()
-    );
+    handleSubmit(values, () => form.reset());
   };
 
   const handleNameChange = (value: string) => {
