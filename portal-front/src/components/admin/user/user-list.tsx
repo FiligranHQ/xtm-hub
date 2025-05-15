@@ -114,12 +114,12 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     setOrderMode,
     orderBy,
     setOrderBy,
-    removeOrderBy,
     columnOrder,
     setColumnOrder,
     columnVisibility,
     setColumnVisibility,
     resetAll,
+    removeOrder,
   } = useUserListLocalstorage();
 
   const isAdminPath = useAdminPath();
@@ -267,7 +267,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   const onSortingChange = (updater: unknown) => {
     handleSortingChange({
       updater,
-      removeOrderBy,
+      removeOrder,
       setOrderBy,
       setOrderMode,
       orderBy,

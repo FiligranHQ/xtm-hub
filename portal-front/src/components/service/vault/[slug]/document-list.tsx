@@ -189,7 +189,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     setOrderMode,
     orderBy,
     setOrderBy,
-    removeOrderBy,
+    removeOrder,
     columnOrder,
     setColumnOrder,
     columnVisibility,
@@ -222,7 +222,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       orderBy,
       setOrderBy,
       handleRefetchData,
-      removeOrderBy,
+      removeOrder,
     });
   };
 

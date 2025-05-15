@@ -85,7 +85,7 @@ const OrganizationList: FunctionComponent = () => {
     setOrderMode,
     orderBy,
     setOrderBy,
-    removeOrderBy,
+    removeOrder,
     columnOrder,
     setColumnOrder,
     columnVisibility,
@@ -129,7 +129,7 @@ const OrganizationList: FunctionComponent = () => {
       orderMode,
       setOrderMode,
       setOrderBy,
-      removeOrderBy,
+      removeOrder,
       handleRefetchData,
     });
   };

@@ -29,6 +29,11 @@ export const useUserListLocalstorage = () => {
     removeColumnVisibility();
   };
 
+  const removeOrder = () => {
+    removeOrderBy();
+    removeOrderMode();
+  };
+
   return {
     count,
     setCount,
@@ -44,5 +49,6 @@ export const useUserListLocalstorage = () => {
     columnVisibility,
     setColumnVisibility,
     resetAll,
+    removeOrder,
   };
 };
