@@ -17,12 +17,13 @@ import { MultiSelectFormField } from 'filigran-ui';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import CsvFeedCard from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-card';
 import CsvFeedButtons from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feeds-list-buttons';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { csvFeedsList$key } from '@generated/csvFeedsList.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
@@ -48,6 +49,8 @@ const CsvFeedsList = ({
   labels,
 }: CsvFeedsListProps) => {
   const t = useTranslations();
+  const { settings } = useContext(SettingsContext);
+
   const queryData = usePreloadedQuery<csvFeedsQuery>(
     CsvFeedsListQuery,
     queryRef
@@ -133,7 +136,7 @@ const CsvFeedsList = ({
                 csvFeed={csvFeed}
                 serviceInstance={serviceInstance}
                 detailUrl={`/service/csv_feeds/${serviceInstance.id}/${csvFeed.id}`}
-                shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
+                shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
               />
             ))}
           </ul>
@@ -153,7 +156,7 @@ const CsvFeedsList = ({
             connectionId={data.csvFeeds!.__id}
             serviceInstance={serviceInstance}
             detailUrl={`/service/csv_feeds/${serviceInstance.id}/${csvFeed.id}`}
-            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
+            shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
           />
         ))}
       </ul>

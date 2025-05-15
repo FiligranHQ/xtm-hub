@@ -12,7 +12,7 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
-import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
@@ -105,8 +105,8 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         // If the service has changed, we need to revalidate the path
         // If the slug has changed, it's necessary to revalidate the previous path, as the new one may not yet be cached.
         revalidatePathActions([
-          `${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`,
-          `${PUBLIC_DASHBOARD_URL}`,
+          `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`,
+          `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
         ]);
         setOpenSheet(false);
         toast({
@@ -135,8 +135,8 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
       },
       onCompleted() {
         revalidatePathActions([
-          `${PUBLIC_DASHBOARD_URL}/${customDashboard.slug}`,
-          `${PUBLIC_DASHBOARD_URL}`,
+          `${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${customDashboard.slug}`,
+          `${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`,
         ]);
         setOpenSheet(false);
         toast({
@@ -183,7 +183,6 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           title={t('Service.CustomDashboards.UpdateDashboard')}>
           <CustomDashboardUpdateForm
             customDashboard={customDashboard}
-            serviceInstanceId={serviceInstance.id}
             handleSubmit={updateDocument}
             onDelete={deleteDocument}
             userCanDelete={userCanDelete}

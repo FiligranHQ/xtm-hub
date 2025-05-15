@@ -5,7 +5,7 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
-import { PUBLIC_DASHBOARD_URL } from '@/utils/path/constant';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { customDashboardsCreateMutation } from '@generated/customDashboardsCreateMutation.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button, toast } from 'filigran-ui';
@@ -61,7 +61,7 @@ export const CustomDashboardSheet = ({
           return;
         }
         setOpenSheet(false);
-        revalidatePathActions([PUBLIC_DASHBOARD_URL]);
+        revalidatePathActions([PUBLIC_CYBERSECURITY_SOLUTIONS_PATH]);
         callback();
         toast({
           title: t('Utils.Success'),

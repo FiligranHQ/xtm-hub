@@ -14,12 +14,14 @@ import {
   SheetFooter,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import slugify from 'slugify';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 export const csvFeedFormSchema = z.object({
   name: z.string().min(1, 'Required'),
+  slug: z.string().min(1, 'Required'),
   short_description: z.string().min(1, 'Required').max(250),
   description: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
@@ -44,12 +46,23 @@ export const CsvFeedForm = ({
 }: CsvFeedFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet } = useDialogContext();
-
   return (
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
           handleSubmit?.(values as CsvFeedCreateFormValues);
+        }}
+        onValuesChange={(values, form) => {
+          if (values.name) {
+            const generatedSlug = slugify(values.name, {
+              lower: true,
+              strict: true,
+            });
+            const currentSlug = form.getValues('slug');
+            if (currentSlug !== generatedSlug) {
+              form.setValue('slug', generatedSlug, { shouldDirty: false });
+            }
+          }
         }}
         // For #446 to update CSV Feed values={{ name: 'CSVFeedOne' }}
         formSchema={csvFeedFormSchema}
@@ -110,6 +123,9 @@ export const CsvFeedForm = ({
           },
           short_description: {
             label: t('Service.CsvFeed.Form.ShortDescriptionLabel'),
+          },
+          slug: {
+            label: t('Service.CsvFeed.Form.SlugLabel'),
           },
           name: {
             label: t('Service.CsvFeed.Form.NameLabel'),

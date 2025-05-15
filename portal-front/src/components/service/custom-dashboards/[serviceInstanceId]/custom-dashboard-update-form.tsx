@@ -53,7 +53,6 @@ export const updateCustomDashboardSchema = z.object({
 
 interface CustomDashboardFormProps {
   customDashboard: customDashboardsItem_fragment$data;
-  serviceInstanceId: string;
   handleSubmit: (
     values: z.infer<typeof updateCustomDashboardSchema>,
     callback: () => void

@@ -25,6 +25,7 @@ type CsvFeed implements Node {
 
 input CreateCsvFeedInput {
   name: String!
+  slug: String!
   short_description: String!
   description: String!
   active: Boolean!
@@ -64,4 +65,6 @@ type Query {
     serviceInstanceId: String
   ): CsvFeedConnection! @auth
   csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
+  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
+  seoCsvFeedBySlug(slug: String): CsvFeed
 }

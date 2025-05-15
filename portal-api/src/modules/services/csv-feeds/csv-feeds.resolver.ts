@@ -23,7 +23,12 @@ import {
   waitForUploads,
 } from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
-import { createCsvFeed, CsvFeed } from './csv-feeds.domain';
+import {
+  createCsvFeed,
+  CsvFeed,
+  loadSeoCsvFeedBySlug,
+  loadSeoCsvFeedsByServiceSlug,
+} from './csv-feeds.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -77,6 +82,9 @@ const resolvers: Resolvers = {
     },
     csvFeed: async (_, { id }, context) =>
       loadDocumentById(context, extractId<DocumentId>(id)),
+    seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
+      loadSeoCsvFeedsByServiceSlug(serviceSlug),
+    seoCsvFeedBySlug: async (_, { slug }) => loadSeoCsvFeedBySlug(slug),
   },
 };
 
