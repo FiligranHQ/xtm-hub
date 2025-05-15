@@ -67,10 +67,13 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
   const [updateUserMutation] = useMutation(UserSlugEditMutation);
 
   const updateUser = (values: z.infer<typeof userEditFormSchema>) => {
+    const variables = isAdminPath
+      ? values
+      : { capabilities: values.capabilities };
     updateUserMutation({
       variables: {
         input: {
-          ...values,
+          ...variables,
         },
         id: user.id,
       },

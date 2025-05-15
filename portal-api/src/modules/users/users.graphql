@@ -70,8 +70,6 @@ input AdminEditUserInput {
 
 input EditUserInput {
   disabled: Boolean
-  first_name: String
-  last_name: String
   email: String
   capabilities: [String!]
 }
@@ -89,8 +87,6 @@ input OrganizationCapabilitiesInput {
 }
 input AddUserInput {
   email: String!
-  first_name: String
-  last_name: String
   password: String
   capabilities: [String!]
 }
