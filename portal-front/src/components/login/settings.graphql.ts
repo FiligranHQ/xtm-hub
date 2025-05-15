@@ -14,6 +14,18 @@ export const SettingsContext_fragment = graphql`
     base_url_front
   }
 `;
+export const SettingsQuery = graphql`
+  query settingsQuery {
+    settings {
+      platform_providers {
+        name
+        provider
+        type
+      }
+      base_url_front
+    }
+  }
+`;
 
 export const SettingsContextQuery = graphql`
   query settingsContextQuery {
