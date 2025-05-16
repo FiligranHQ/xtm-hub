@@ -33,10 +33,10 @@ import {
 } from '@generated/documentItem_fragment.graphql';
 import { documentsList$key } from '@generated/documentsList.graphql';
 import {
-  DocumentOrdering,
   documentsQuery,
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
+import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import {
   serviceByIdQuery,
   serviceByIdQuery$data,
@@ -215,7 +215,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
   };
 
   const onSortingChange = (updater: unknown) => {
-    handleSortingChange<DocumentOrdering>({
+    handleSortingChange<DocumentOrderingEnum>({
       updater,
       orderMode,
       setOrderMode,

@@ -3,19 +3,20 @@
   "version": "1.4.6",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"relay-compiler\" \"next dev  --turbopack -p 3002\"",
-    "build": "relay-compiler && next build",
+    "dev": "concurrently \"relay-compiler && tsx scripts/generate-enum.ts\" \"next dev  --turbopack -p 3002\"",
+    "build": "relay-compiler && tsx scripts/generate-enum.ts && next build",
     "check-ts": "tsc --noEmit",
     "check-ts-test": "tsc --project tsconfig.test.json",
     "start": "next start -p 3002",
     "lint": "next lint",
-    "relay": "relay-compiler",
+    "relay": "relay-compiler && tsx scripts/generate-enum.ts",
     "format": "prettier . --write",
     "test": "vitest run",
     "test:w": "vitest",
     "test:ci": "yarn test && yarn lint",
     "prepare": "cd .. && husky ./.husky",
-    "auto-translation": "i18n-auto-translation -a deepl-free -p ./messages/en.json -t fr -k $SUBSCRIPTION_KEY"
+    "auto-translation": "i18n-auto-translation -a deepl-free -p ./messages/en.json -t fr -k $SUBSCRIPTION_KEY",
+    "generate:ordering-enum": "tsx scripts/generate-enum.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "3.10.0",
@@ -43,6 +44,7 @@
     "tailwind-merge": "2.6.0",
     "tailwindcss": "3.4.17",
     "tailwindcss-animate": "1.0.7",
+    "tsx": "4.19.4",
     "usehooks-ts": "3.1.0",
     "zod": "3.24.2"
   },
