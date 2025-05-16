@@ -20,8 +20,7 @@ import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import * as React from 'react';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import {
@@ -49,6 +48,10 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
 
   const [openSheet, setOpenSheet] = useState(false);
   const { setMenuOpen } = useContext(IconActionContext);
+
+  useEffect(() => {
+    if (!openSheet && openSheet !== null) setMenuOpen(false);
+  }, [openSheet]);
 
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,
