@@ -176,7 +176,7 @@ describe('getFileName', () => {
 describe('should normalize filename', () => {
   it('should send a normalized fileName', () => {
     const result = normalizeDocumentName('Naîà-méE&mo!');
-    expect(result).toStrictEqual('naia-mee-mo-');
+    expect(result).toStrictEqual('naia-mee-mo');
   });
 });
 
