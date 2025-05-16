@@ -1,14 +1,13 @@
 import { formatDate } from '@/utils/date';
-import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
+import { ShareableResource } from './shareable-resource-card';
 
 const DocumentBento = ({
   document,
   serviceInstanceId,
 }: {
-  document: documentItem_fragment$data | csvFeedItem_fragment$data;
+  document: ShareableResource;
   serviceInstanceId: string;
 }) => {
   return (

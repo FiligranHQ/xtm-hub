@@ -1,5 +1,9 @@
 import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import {
+  SeoCsvFeed,
+  SeoCustomDashboard,
+} from '@/utils/shareable-resources/shareable-resources.utils';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import Image from 'next/image';
@@ -9,7 +13,7 @@ const SlugDocument = async ({
   document,
 }: {
   serviceInstance: seoServiceInstanceFragment$data;
-  document: documentItem_fragment$data;
+  document: SeoCsvFeed | SeoCustomDashboard;
 }) => {
   switch (serviceInstance.slug) {
     case 'csv_feeds':
@@ -32,7 +36,9 @@ const SlugDocument = async ({
               serviceByIdQuery$data['serviceInstanceById']
             >
           }
-          documentData={document as documentItem_fragment$data}
+          documentData={
+            document as unknown as customDashboardsItem_fragment$data
+          }
         />
       );
   }

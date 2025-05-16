@@ -27,7 +27,7 @@ import SlugDocument from './slug-document';
  * Fetch the data for the page with caching to avoid multiple requests
  */
 
-const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
+const getPageData = async (serviceSlug: string, docSlug: string) => {
   const settingsResponse = await serverFetchGraphQL<settingsQuery>(
     SettingsQuery,
     {},
@@ -50,7 +50,7 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
 
   const document = await fetchSingleDocument(
     serviceInstance.slug ?? 'custom_open_cti_dashboards',
-    dashboardSlug
+    docSlug
   );
 
   return { baseUrl, serviceInstance, document };
@@ -62,13 +62,13 @@ const getPageData = async (serviceSlug: string, dashboardSlug: string) => {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string; dashboardSlug: string }>;
+  params: Promise<{ slug: string; docSlug: string }>;
 }): Promise<Metadata> {
   const awaitedParams = await params;
 
   const { baseUrl, serviceInstance, document } = await getPageData(
     awaitedParams.slug,
-    awaitedParams.dashboardSlug
+    awaitedParams.docSlug
   );
   const serviceInformation = getServiceInfo(
     {
@@ -252,7 +252,7 @@ const Page = async ({
         </div>
         <SlugDocument
           serviceInstance={serviceInstance}
-          document={document as documentItem_fragment$data}
+          document={document}
         />
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
           <div className="flex-[3_3_0%]">

@@ -73,14 +73,19 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   ) => {
     const input = omit(values, ['document', 'images']);
 
+    const isFile = (file: unknown): file is File => {
+      return file instanceof File;
+    };
+
     // Split images between existing and new ones
-    const [existingImages, newImages] = Array.from(values.images ?? []).reduce(
+    const images = Array.from(values.images ?? []) as (File | { id: string })[];
+    const [existingImages, newImages] = images.reduce(
       ([existing, newImages], image) => {
-        return image.id
-          ? [existing.concat(image.id), newImages]
-          : [existing, newImages.concat(image)];
+        return isFile(image)
+          ? [existing, newImages.concat(image)]
+          : [existing.concat(image.id), newImages];
       },
-      [[], []]
+      [[] as string[], [] as File[]]
     );
     const documentsToUpload = [
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document

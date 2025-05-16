@@ -3,7 +3,6 @@ import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { fetchAllDocuments } from '@/utils/shareable-resources/shareable-resources.utils';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -13,32 +12,6 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import ParentDocumentCard from './parent-document-card';
-
-export interface SeoCustomDashboard {
-  description: string;
-  id: string;
-  children_documents: {
-    id: string;
-  }[];
-  created_at: string;
-  updated_at: string;
-  labels: {
-    color: string;
-    id: string;
-    name: string;
-  }[];
-  name: string;
-  slug: string;
-  short_description: string;
-  product_version: string;
-  download_number: number;
-  uploader: {
-    first_name: string;
-    last_name: string;
-    picture: string;
-  };
-  active: boolean;
-}
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -229,7 +202,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                 <ParentDocumentCard
                   key={document.id}
                   serviceInstance={serviceInstance}
-                  document={document as documentItem_fragment$data}
+                  document={document}
                   baseUrl={baseUrl}
                 />
               );
