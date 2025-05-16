@@ -1,11 +1,5 @@
-import {
-  db,
-  dbRaw,
-  dbTx,
-  dbUnsecure,
-  paginate,
-  QueryOpts,
-} from '../../../knexfile';
+import { Knex } from 'knex';
+import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
 import {
   Filter,
   FilterKey,
@@ -25,7 +19,6 @@ import {
   UserWithOrganizationsAndRole,
 } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
-import { dispatch } from '../../pub';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
@@ -342,37 +335,26 @@ export const resetPassword = async (context: PortalContext): Promise<void> => {
 export const updateUser = async (
   context: PortalContext,
   id: UserId,
-  input: UserMutator
-): Promise<User> => {
+  input: UserMutator,
+  trx?: Knex.Transaction
+): Promise<User | undefined> => {
   if (isEmpty(input)) {
     return;
   }
-  const trx = await dbTx();
-  try {
-    const [updatedUser] = await db<User>(context, 'User', {
-      queryType: 'update',
-    })
-      .where({ id })
-      .update(input)
-      .returning('*')
-      .transacting(trx);
 
-    if (input.disabled) {
-      await dispatch('User', 'delete', updatedUser);
-      await dispatch('MeUser', 'delete', updatedUser, 'User');
-    }
+  const updateQuery = db<User>(context, 'User', {
+    queryType: 'update',
+  })
+    .where({ id })
+    .update(input)
+    .returning('*');
 
-    await auth0Client.updateUser({
-      ...input,
-      email: updatedUser.email,
-    });
-
-    await trx.commit();
-    return updatedUser;
-  } catch (err) {
-    await trx.rollback();
-    throw err;
+  if (trx) {
+    updateQuery.transacting(trx);
   }
+
+  const [updatedUser] = await updateQuery;
+  return updatedUser;
 };
 
 export const deleteUserById = async (userId: UserId) => {

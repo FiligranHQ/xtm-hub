@@ -10,7 +10,6 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
-import { updateUserSession } from '../../sessionStoreManager';
 import {
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
@@ -21,7 +20,6 @@ import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
   updateMultipleUserOrgWithCapabilities,
-  updateUserOrgCapabilities,
 } from '../common/user-organization.domain';
 import {
   loadOrganizationBy,
@@ -40,6 +38,7 @@ import {
   updateUserAtLogin,
   userHasOrganizationWithSubscription,
 } from './users.domain';
+import { usersEditionApp } from './users.edition.app';
 import {
   createUserWithPersonalSpace,
   mapUserToGraphqlUser,
@@ -230,79 +229,32 @@ const resolvers: Resolvers = {
       }
     },
     editUser: async (_, { id, input }, context) => {
-      const trx = await dbTx();
       try {
-        const { capabilities, ...userInput } = input;
-        await updateUser(context, id as UserId, userInput);
-        await updateUserOrgCapabilities(context, {
-          user_id: id as UserId,
-          organization_id: context.user.selected_organization_id,
-          orgCapabilities: capabilities,
-        });
-        const user = await loadUserDetails({
-          'User.id': id as UserId,
-        });
-
-        updateUserSession(user);
-
-        await dispatch('User', 'edit', user);
-
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
-        await trx.commit();
+        const user = await usersEditionApp.edit(context, id as UserId, input);
         return user;
       } catch (error) {
-        await trx.rollback();
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
         });
       }
     },
     adminEditUser: async (_, { id, input }, context) => {
-      const trx = await dbTx();
       try {
-        const { organization_capabilities, ...userInput } = input;
-        await updateUser(context, id as UserId, userInput);
-        await updateMultipleUserOrgWithCapabilities(
+        const user = await usersEditionApp.adminEdit(
           context,
           id as UserId,
-          organization_capabilities
+          input
         );
-        const user = await loadUserDetails({
-          'User.id': id as UserId,
-        });
-        updateUserSession(user);
-
-        await dispatch('User', 'edit', user);
-
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
-        await trx.commit();
         return user;
       } catch (error) {
-        await trx.rollback();
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
         });
       }
     },
-
     editMeUser: async (_, { input }, context) => {
       try {
-        await updateUser(context, context.user.id, input);
-        const user = await loadUserDetails({
-          'User.id': context.user.id,
-        });
-
-        updateUserSession(user);
-
-        await dispatch('User', 'edit', user);
-
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
+        const user = await usersEditionApp.editMe(context, input);
         return user;
       } catch (error) {
         throw UnknownError('EDIT_ME_USER_ERROR', {
