@@ -10,7 +10,6 @@ import {
   fetchSingleDocument,
   getServiceInfo,
 } from '@/utils/shareable-resources/shareable-resources.utils';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -271,13 +270,7 @@ const Page = async ({
               Basic Information
             </h3>
             <section className="border rounded border-border-light bg-page-background flex space-y-xl p-l">
-              {document && (
-                <DashboardDetails
-                  documentData={
-                    document as unknown as documentItem_fragment$data
-                  }
-                />
-              )}
+              {document && <DashboardDetails documentData={document} />}
             </section>
           </div>
         </div>

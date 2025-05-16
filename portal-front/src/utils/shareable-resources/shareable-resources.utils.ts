@@ -5,11 +5,20 @@ import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQu
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
 
 import { fromGlobalId } from '@/utils/globalId';
+import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
+
+export type ShareableResource =
+  | customDashboardsItem_fragment$data
+  | csvFeedsItem_fragment$data
+  | SeoCsvFeed
+  | SeoCustomDashboard;
 
 export interface SeoCustomDashboard {
   description: string;
   id: string;
+  type: 'custom_dashboard';
   children_documents: {
     id: string;
   }[];
@@ -32,11 +41,21 @@ export interface SeoCustomDashboard {
     picture: string;
   };
   active: boolean;
+  service_instance: {
+    id: string;
+    slug: string;
+  };
+  uploader_organization: {
+    id: string;
+    name: string;
+    personal_space: boolean;
+  };
 }
 
 export interface SeoCsvFeed {
   description: string;
   id: string;
+  type: 'csv_feed';
   children_documents: {
     id: string;
   }[];
@@ -58,6 +77,15 @@ export interface SeoCsvFeed {
     picture: string;
   };
   active: boolean;
+  service_instance: {
+    id: string;
+    slug: string;
+  };
+  uploader_organization: {
+    id: string;
+    name: string;
+    personal_space: boolean;
+  };
 }
 
 type QueryMapEntry<TReturn> = {

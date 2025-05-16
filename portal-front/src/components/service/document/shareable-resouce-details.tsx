@@ -2,16 +2,15 @@ import { formatDate } from '@/utils/date';
 import { LogoFiligranIcon } from 'filigran-icon';
 import * as React from 'react';
 
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { Avatar, Label } from 'filigran-ui/clients';
 
 import { roundToNearest } from '@/lib/utils';
-import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
 import { useTranslations } from 'next-intl';
 
 // Component interface
 interface ShareableResourceDetailsProps {
-  documentData: documentItem_fragment$data | csvFeedItem_fragment$data;
+  documentData: ShareableResource;
   downloadNumber?: number;
 }
 

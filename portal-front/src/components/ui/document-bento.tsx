@@ -1,7 +1,7 @@
 import { formatDate } from '@/utils/date';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
-import { ShareableResource } from './shareable-resource-card';
 
 const DocumentBento = ({
   document,

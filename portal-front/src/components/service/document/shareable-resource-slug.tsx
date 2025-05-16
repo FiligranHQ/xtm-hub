@@ -17,12 +17,11 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { csvFeedItem_fragment$data } from '@generated/csvFeedItem_fragment.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
 import { ReactNode, useContext } from 'react';
 // Component interface
 interface ShareableResourceSlugProps {
-  documentData: csvFeedItem_fragment$data | documentItem_fragment$data;
+  documentData: ShareableResource;
   breadcrumbValue: BreadcrumbNavLink[];
   children?: ReactNode;
   updateActions?: ReactNode;

@@ -2,12 +2,8 @@ import CustomDashboardCard from '@/components/service/custom-dashboards/[service
 import DocumentBento from '@/components/ui/document-bento';
 import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import {
-  SeoCsvFeed,
-  SeoCustomDashboard,
-} from '@/utils/shareable-resources/shareable-resources.utils';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 
@@ -17,7 +13,7 @@ const ParentDocumentCard = async ({
   baseUrl,
 }: {
   serviceInstance: seoServiceInstanceFragment$data;
-  document: SeoCsvFeed | SeoCustomDashboard;
+  document: ShareableResource;
   baseUrl: string;
 }) => {
   switch (serviceInstance.slug) {
@@ -25,11 +21,11 @@ const ParentDocumentCard = async ({
       return (
         <ShareableResourceCard
           key={document?.id}
-          document={document as unknown as documentItem_fragment$data}
+          document={document}
           detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
           shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}>
           <DocumentBento
-            document={document as unknown as documentItem_fragment$data}
+            document={document}
             serviceInstanceId={serviceInstance.id}
           />
         </ShareableResourceCard>

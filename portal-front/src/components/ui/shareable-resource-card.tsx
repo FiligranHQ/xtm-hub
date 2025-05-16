@@ -1,19 +1,15 @@
 'use client';
-import BadgeOverflowCounter from '@/components/ui/badge-overflow-counter';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { Badge } from 'filigran-ui';
 import { AspectRatio } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ReactNode } from 'react';
-
-export type ShareableResource =
-  | documentItem_fragment$data
-  | customDashboardsItem_fragment$data
-  | csvFeedsItem_fragment$data;
 
 interface ShareableResourceCardProps {
   document: ShareableResource;
@@ -51,7 +47,7 @@ const ShareableResourceCard = ({
         <div className="flex items-center justify-between">
           {document?.labels && (
             <BadgeOverflowCounter
-              badges={document?.labels}
+              badges={document?.labels as BadgeOverflow[]}
               className="z-[2]"
             />
           )}
