@@ -31,7 +31,7 @@ export const fetchFormData = async (
     'operations',
     JSON.stringify({ query: request.text, variables })
   );
-  console.log(variables, uploadables);
+
   const uploadablesArray = Object.values(uploadables);
   const map = uploadablesArray.reduce<{ [key: number]: string[] }>(
     (acc, _, index) => {

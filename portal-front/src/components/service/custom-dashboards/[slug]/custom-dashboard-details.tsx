@@ -1,5 +1,5 @@
-import DashboardCarousel from '@/components/service/custom-dashboards/[documentId]/custom-dashboard-carousel-view';
 import DashboardUpdate from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-update';
+import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
 import { customDashboardsItem_fragment$key } from '@generated/customDashboardsItem_fragment.graphql';

@@ -1,4 +1,4 @@
-import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
+import CustomDashboardCard from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-card';
 import DocumentBento from '@/components/ui/document-bento';
 import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';

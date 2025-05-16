@@ -1,4 +1,4 @@
-import DashboardCarousel from '@/components/service/custom-dashboards/[details]/custom-dashboard-carousel-view';
+import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';

@@ -69,11 +69,10 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
     values: z.infer<typeof updateCustomDashboardSchema>
   ) => {
     const input = omit(values, ['document', 'images']);
-    console.log('values.images', values.images);
+
     // Split images between existing and new ones
     const [existingImages, newImages] = Array.from(values.images ?? []).reduce(
       ([existing, newImages], image) => {
-        console.log(image);
         return image.id
           ? [existing.concat(image.id), newImages]
           : [existing, newImages.concat(image)];
@@ -84,12 +83,6 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
-    console.log(
-      'existingImages',
-      existingImages,
-      'documentsToUpload',
-      documentsToUpload
-    );
 
     updateCustomDashboardMutation({
       variables: {
