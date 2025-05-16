@@ -48,7 +48,7 @@ services:
       - DATABASE_HOST=portal-postgres
       - DATABASE_PORT=5432
       - DATABASE_USER=portal
-      - DATABASE_BASE=test_database
+      - DATABASE_BASE=cloud-portal
       - DATABASE_PASSWORD=portal-password
       - ADMIN_EMAIL=admin@filigran.io
       - ADMIN_PASSWORD=admin
@@ -103,11 +103,11 @@ services:
     environment:
       - POSTGRES_USER=portal
       - POSTGRES_PASSWORD=portal-password
-      - POSTGRES_DB=test_database
+      - POSTGRES_DB=cloud-portal
       - PGDATA=/data/postgres
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "test_database"]
+      test: ["CMD-SHELL", "pg_isready", "-d", "cloud-portal"]
       interval: 10s
       timeout: 5s
       retries: 10
