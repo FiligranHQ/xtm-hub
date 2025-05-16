@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   portal-front:
     container_name: portal-front
@@ -49,7 +48,7 @@ services:
       - DATABASE_HOST=portal-postgres
       - DATABASE_PORT=5432
       - DATABASE_USER=portal
-      - DATABASE_BASE=cloud-portal
+      - DATABASE_BASE=test_database
       - DATABASE_PASSWORD=portal-password
       - ADMIN_EMAIL=admin@filigran.io
       - ADMIN_PASSWORD=admin
@@ -83,7 +82,7 @@ services:
       - DATABASE_HOST=portal-postgres
       - DATABASE_PORT=5432
       - DATABASE_USER=portal
-      - DATABASE_BASE=cloud-portal
+      - DATABASE_BASE=test_database
       - DATABASE_PASSWORD=portal-password
       - ADMIN_EMAIL=admin@filigran.io
       - ADMIN_PASSWORD=admin
@@ -96,6 +95,7 @@ services:
       - MINIO_USE_SSL=false
       - NODE_ENV=development
       - VITEST_MODE=true
+      - START_DEV_SERVER=true
 
   portal-postgres:
     container_name: portal-postgres
@@ -103,11 +103,11 @@ services:
     environment:
       - POSTGRES_USER=portal
       - POSTGRES_PASSWORD=portal-password
-      - POSTGRES_DB=cloud-portal
+      - POSTGRES_DB=test_database
       - PGDATA=/data/postgres
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "cloud-portal"]
+      test: ["CMD-SHELL", "pg_isready", "-d", "test_database"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -145,7 +145,7 @@ services:
       - E2E_BASE_URL=http://portal-front:3000
       - POSTGRES_USER=portal
       - DATABASE_HOST=portal-postgres
-      - POSTGRES_DB=cloud-portal
+      - POSTGRES_DB=test_database
       - POSTGRES_PASSWORD=portal-password
       - DATABASE_PORT=5432
       - TEAMS_WEBHOOK_E2E=${TEAMS_WEBHOOK_E2E}
