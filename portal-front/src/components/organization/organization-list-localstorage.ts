@@ -36,6 +36,11 @@ export const useOrganizationListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
     removeColumnVisibility();
   };
 
+  const removeOrder = () => {
+    removeOrderBy();
+    removeOrderMode();
+  };
+
   return {
     count,
     setCount,
@@ -43,6 +48,7 @@ export const useOrganizationListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrder,
     pageSize,
     setPageSize,
     columnOrder,
