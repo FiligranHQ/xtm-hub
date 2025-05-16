@@ -9,12 +9,12 @@ interface ColumnSortValue<T, U> extends ColumnSort {
   orderMode: U;
 }
 
-interface HandleSortingChangeParams<Ordering> {
+interface HandleSortingChangeParams<O> {
   handleRefetchData: (args: Record<string, unknown>) => void;
   orderBy: string;
   orderMode: OrderingMode;
   removeOrder: () => void;
-  setOrderBy: Dispatch<SetStateAction<Ordering>>;
+  setOrderBy: Dispatch<SetStateAction<O>>;
   setOrderMode: (orderMode: OrderingMode) => void;
   updater: unknown;
 }
