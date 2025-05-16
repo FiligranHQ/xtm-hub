@@ -10,10 +10,13 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import * as FileStorage from './document-storage';
-import { insertDocument, sendFileToS3 } from './document.domain';
+import {
+  createDocument,
+  insertDocument,
+  sendFileToS3,
+} from './document.domain';
 import {
   checkDocumentExists,
-  createDocument,
   deleteDocumentBy,
   deleteDocuments,
   getDocumentName,
@@ -85,7 +88,7 @@ describe('should add new file', () => {
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
       type: 'vault',
     };
-    await insertDocument(data);
+    await insertDocument(contextAdminUser, data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
     expect(inDb).toBeTruthy();
     expect(inDb[0].file_name).toEqual('filename2');
@@ -101,7 +104,7 @@ describe('should add new file', () => {
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
       type: 'vault',
     };
-    await insertDocument(data);
+    await insertDocument(contextAdminUser, data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
     expect(inDb).toBeTruthy();
     expect(inDb.length).toEqual(2);
