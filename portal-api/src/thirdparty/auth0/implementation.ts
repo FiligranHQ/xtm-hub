@@ -1,5 +1,6 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
+import { logApp } from '../../utils/app-logger.util';
 import { Auth0Client, Auth0UpdateUser } from './client';
 
 const CONNECTION_TYPE = 'Username-Password-Authentication';
@@ -26,20 +27,24 @@ export const auth0ClientImplementation: Auth0Client = {
     });
     const auth0_user = users_response.data[0];
     if (!auth0_user) {
+      logApp.error('auth0 user not found');
       throw new Error('AUTH0_USER_NOT_FOUND_ERROR');
     }
-
-    await managementClient.users.update(
-      { id: auth0_user.user_id },
-      {
-        given_name: user.first_name,
-        family_name: user.last_name,
-        user_metadata: {
-          country: user.country,
-        },
-        picture: user.picture,
-      }
-    );
+    try {
+      await managementClient.users.update(
+        { id: auth0_user.user_id },
+        {
+          given_name: user.first_name,
+          family_name: user.last_name,
+          user_metadata: {
+            country: user.country,
+          },
+          picture: user.picture,
+        }
+      );
+    } catch (err) {
+      logApp.error(err.message);
+    }
   },
   resetPassword: async (email: string): Promise<void> => {
     await authenticationClient.database.changePassword({
