@@ -95,6 +95,7 @@ services:
       - MINIO_SECRET_KEY=changeme
       - MINIO_USE_SSL=false
       - NODE_ENV=development
+      - VITEST_MODE=true
 
   portal-postgres:
     container_name: portal-postgres
