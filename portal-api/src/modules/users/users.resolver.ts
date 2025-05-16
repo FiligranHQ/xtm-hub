@@ -126,8 +126,6 @@ const resolvers: Resolvers = {
           : await createUserWithPersonalSpace({
               email: input.email,
               password: input.password,
-              first_name: input.first_name,
-              last_name: input.last_name,
               selected_organization_id: chosenOrganization.id,
             });
 

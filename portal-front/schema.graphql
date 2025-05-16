@@ -608,7 +608,6 @@ input AdminEditUserInput {
 }
 
 input EditUserInput {
-  disabled: Boolean
   email: String
   capabilities: [String!]
 }

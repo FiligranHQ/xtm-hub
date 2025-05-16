@@ -203,7 +203,6 @@ export type EditServiceCapabilityInput = {
 
 export type EditUserInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
-  disabled?: InputMaybe<Scalars['Boolean']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
 };
 
