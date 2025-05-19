@@ -92,6 +92,7 @@ export function pick<U, T extends keyof U>(
     input: U,
     props: T[]
   ): { [K in T]: U[K] } => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const output: any = {};
     for (const prop of props) {
       output[prop] = input[prop];
