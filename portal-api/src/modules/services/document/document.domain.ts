@@ -102,6 +102,7 @@ export const createDocument = async <T extends DocumentModel>(
   const [document] = await db<DocumentModel>(context, 'Document')
     .insert({
       ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
+      active: documentData.active ?? true,
       uploader_id: context.user.id,
       service_instance_id: context.serviceInstanceId as ServiceInstanceId,
       uploader_organization_id: context.user.selected_organization_id,

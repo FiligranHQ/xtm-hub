@@ -17,33 +17,39 @@ import {
   incrementShareNumber,
   loadDocumentById,
   loadDocuments,
-  sendFileToS3,
   updateDocument,
 } from './document.domain';
-import { checkDocumentExists, normalizeDocumentName } from './document.helper';
+import {
+  checkDocumentExists,
+  createFileInMinIO,
+  normalizeDocumentName,
+  waitForUploads,
+} from './document.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
-    addDocument: async (_, payload, context) => {
+    addDocument: async (
+      _,
+      { document, parentDocumentId, ...payload },
+      context
+    ) => {
       try {
-        const file_name = normalizeDocumentName(payload.document.file.filename);
-        const parent_document_id = payload.parentDocumentId
-          ? (extractId(payload.parentDocumentId) as DocumentId)
-          : null;
-        const minioName = await sendFileToS3(
-          payload.document.file,
-          file_name,
-          context.user.id,
-          context.serviceInstanceId as ServiceInstanceId
+        await waitForUploads(document);
+        const { minioName, fileName, mimeType } = await createFileInMinIO(
+          document,
+          context
         );
 
         const addedDocument = await createDocument<Document>(context, {
           ...omit(payload, ['service_instance_id']),
           minio_name: minioName,
-          file_name,
-          mime_type: payload.document.file.mimetype,
-          parent_document_id,
+          file_name: fileName,
+          mime_type: mimeType,
+          parent_document_id: parentDocumentId
+            ? extractId<DocumentId>(parentDocumentId)
+            : null,
         });
+        console.log(addedDocument);
         return addedDocument;
       } catch (error) {
         console.error('Error while adding document:', error);
