@@ -1,6 +1,6 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
-import { logApp } from '../../utils/app-logger.util';
+import { getOidcConfig } from '../../auth/providers/oidc';
 import { Auth0Client, Auth0UpdateUser } from './client';
 
 const CONNECTION_TYPE = 'Username-Password-Authentication';
@@ -11,10 +11,12 @@ interface ClientConfiguration {
   clientSecret: string;
 }
 
+const oidcConfig = getOidcConfig();
+
 const clientConfiguration: ClientConfiguration = {
   domain: config.get('auth0.domain'),
-  clientId: config.get('oidc_provider.client_id'),
-  clientSecret: config.get('oidc_provider.client_secret'),
+  clientId: oidcConfig.client_id,
+  clientSecret: oidcConfig.client_secret,
 };
 
 const managementClient = new ManagementClient(clientConfiguration);
@@ -27,24 +29,20 @@ export const auth0ClientImplementation: Auth0Client = {
     });
     const auth0_user = users_response.data[0];
     if (!auth0_user) {
-      logApp.error('auth0 user not found');
       throw new Error('AUTH0_USER_NOT_FOUND_ERROR');
     }
-    try {
-      await managementClient.users.update(
-        { id: auth0_user.user_id },
-        {
-          given_name: user.first_name,
-          family_name: user.last_name,
-          user_metadata: {
-            country: user.country,
-          },
-          picture: user.picture,
-        }
-      );
-    } catch (err) {
-      logApp.error(err.message);
-    }
+
+    await managementClient.users.update(
+      { id: auth0_user.user_id },
+      {
+        given_name: user.first_name,
+        family_name: user.last_name,
+        user_metadata: {
+          country: user.country,
+        },
+        picture: user.picture,
+      }
+    );
   },
   resetPassword: async (email: string): Promise<void> => {
     await authenticationClient.database.changePassword({

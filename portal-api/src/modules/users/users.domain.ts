@@ -369,7 +369,7 @@ export const updateUser = async (
         email: updatedUser.email,
       });
     } catch (err) {
-      logApp.error(err.message);
+      logApp.error(err);
     }
 
     await trx.commit();
