@@ -179,6 +179,10 @@ documentVisualizeEndpoint(app);
 awxEndpoint(app);
 healthEndpoint(app);
 
+logApp.warn(
+  `VITEST_MODE:${process.env.VITEST_MODE}, START_DEV_SERVER=${process.env.START_DEV_SERVER}`
+);
+
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema

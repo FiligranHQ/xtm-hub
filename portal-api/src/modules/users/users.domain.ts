@@ -27,6 +27,7 @@ import {
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
 import { auth0Client } from '../../thirdparty/auth0/client';
+import { logApp } from '../../utils/app-logger.util';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
