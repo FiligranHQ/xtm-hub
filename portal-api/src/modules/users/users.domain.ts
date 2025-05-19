@@ -362,10 +362,14 @@ export const updateUser = async (
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }
 
-    await auth0Client.updateUser({
-      ...input,
-      email: updatedUser.email,
-    });
+    try {
+      await auth0Client.updateUser({
+        ...input,
+        email: updatedUser.email,
+      });
+    } catch (err) {
+      logApp.error(err.message);
+    }
 
     await trx.commit();
     return updatedUser;
