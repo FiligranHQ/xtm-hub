@@ -1,6 +1,5 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
-import { getOidcConfig } from '../../auth/providers/oidc';
 import { Auth0Client, Auth0UpdateUser } from './client';
 
 const CONNECTION_TYPE = 'Username-Password-Authentication';
@@ -11,13 +10,7 @@ interface ClientConfiguration {
   clientSecret: string;
 }
 
-const oidcConfig = getOidcConfig();
-
-const clientConfiguration: ClientConfiguration = {
-  domain: config.get('auth0.domain'),
-  clientId: oidcConfig.client_id,
-  clientSecret: oidcConfig.client_secret,
-};
+const clientConfiguration: ClientConfiguration = config.get('auth0');
 
 const managementClient = new ManagementClient(clientConfiguration);
 const authenticationClient = new AuthenticationClient(clientConfiguration);
