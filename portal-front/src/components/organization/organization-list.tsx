@@ -6,6 +6,7 @@ import { EditOrganization } from '@/components/organization/edit-organization';
 import { useOrganizationListLocalstorage } from '@/components/organization/organization-list-localstorage';
 import { getOrganizations } from '@/components/organization/organization.service';
 import {
+  handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
@@ -13,10 +14,7 @@ import { IconActions } from '@/components/ui/icon-actions';
 import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
-import {
-  OrderingMode,
-  OrganizationsPaginationQuery$variables,
-} from '@generated/OrganizationsPaginationQuery.graphql';
+import { OrganizationsPaginationQuery$variables } from '@generated/OrganizationsPaginationQuery.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { OrganizationOrdering } from '@generated/organizationSelectQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
@@ -87,6 +85,7 @@ const OrganizationList: FunctionComponent = () => {
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrder,
     columnOrder,
     setColumnOrder,
     columnVisibility,
@@ -124,16 +123,15 @@ const OrganizationList: FunctionComponent = () => {
   };
 
   const onSortingChange = (updater: unknown) => {
-    const sorting = mapToSortingTableValue(orderBy, orderMode);
-    const newSortingValue =
-      updater instanceof Function ? updater(sorting) : updater;
-    setOrderBy(newSortingValue[0].id);
-    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
-    handleRefetchData(
-      transformSortingValueToParams<OrganizationOrdering, OrderingMode>(
-        newSortingValue
-      )
-    );
+    handleSortingChange<OrganizationOrdering>({
+      updater,
+      orderBy,
+      orderMode,
+      setOrderMode,
+      setOrderBy,
+      removeOrder,
+      handleRefetchData,
+    });
   };
 
   const onPaginationChange = (updater: unknown) => {

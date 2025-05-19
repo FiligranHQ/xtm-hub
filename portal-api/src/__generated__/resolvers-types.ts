@@ -48,8 +48,6 @@ export type AddServiceInput = {
 export type AddUserInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
   email: Scalars['String']['input'];
-  first_name?: InputMaybe<Scalars['String']['input']>;
-  last_name?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -250,10 +248,7 @@ export type EditServiceCapabilityInput = {
 
 export type EditUserInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
-  disabled?: InputMaybe<Scalars['Boolean']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
-  first_name?: InputMaybe<Scalars['String']['input']>;
-  last_name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Filter = {

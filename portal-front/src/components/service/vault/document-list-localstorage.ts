@@ -38,6 +38,11 @@ export const documentListLocalStorage = (
     removeColumnVisibility();
   };
 
+  const removeOrder = () => {
+    removeOrderBy();
+    removeOrderMode();
+  };
+
   return {
     count,
     setCount,
@@ -45,6 +50,7 @@ export const documentListLocalStorage = (
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrder,
     pageSize,
     setPageSize,
     columnOrder,
