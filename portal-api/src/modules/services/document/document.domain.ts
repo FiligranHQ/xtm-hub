@@ -315,19 +315,19 @@ export const loadDocuments = <
         .from('Document_Children')
         .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
     });
-
-    loadDocumentQuery
-      .leftJoin(
-        'Document_Children',
-        'Document.id',
-        'Document_Children.parent_document_id'
-      )
-      .leftJoin(
-        'Document as children_documents',
-        'Document_Children.child_document_id',
-        'children_documents.id'
-      );
   }
+
+  loadDocumentQuery
+    .leftJoin(
+      'Document_Children',
+      'Document.id',
+      'Document_Children.parent_document_id'
+    )
+    .leftJoin(
+      'Document as children_documents',
+      'Document_Children.child_document_id',
+      'children_documents.id'
+    );
 
   loadDocumentQuery.select(
     dbRaw(
