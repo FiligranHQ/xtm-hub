@@ -49,7 +49,6 @@ const resolvers: Resolvers = {
             ? extractId<DocumentId>(parentDocumentId)
             : null,
         });
-        console.log(addedDocument);
         return addedDocument;
       } catch (error) {
         console.error('Error while adding document:', error);

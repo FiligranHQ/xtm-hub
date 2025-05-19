@@ -135,6 +135,11 @@ export const updateCustomDashboard = async (
     });
   }
 
+  console.log('\n\ndata', data);
+  console.log('document', document);
+  console.log('newImages', newImages);
+  console.log('existingImages', existingImages);
+
   const dashboard = await updateDocument<CustomDashboard>(
     context,
     id,
@@ -154,7 +159,7 @@ export const updateCustomDashboard = async (
       newImages.map((image) => {
         createDocument(context, {
           type: 'image',
-          parent_document_id: dashboard.id as DocumentId,
+          parent_document_id: id,
           file_name: image.fileName,
           minio_name: image.minioName,
           mime_type: image.mimeType,

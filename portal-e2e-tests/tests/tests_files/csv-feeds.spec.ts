@@ -4,7 +4,6 @@ import CsvFeedPage from '../model/csvFeed.pageModel';
 import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
 import { removeDocument } from '../db-utils/document.helper';
 import { PLATFORM_ORGANIZATION_UUID } from '../db-utils/const';
-import { waitForDrawerToClose, waitForToasterToHide } from '../model/common';
 
 const CSV_FEED_TEST = {
   name: 'e2e CSV Feed name',

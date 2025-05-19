@@ -109,8 +109,8 @@ const resolvers: Resolvers = {
       context
     ) => {
       try {
-        let file: MinioFile | undefined;
-        let imageFiles: MinioFile[] = [];
+        let documentFile: MinioFile | undefined;
+        let newImages: MinioFile[] = [];
         console.log('\n\ndocument\n', document);
         console.log('\n\ninput\n', input);
         if (document && document.length > 0) {
@@ -119,16 +119,17 @@ const resolvers: Resolvers = {
             document.map((doc: Upload) => createFileInMinIO(doc, context))
           );
           if (updateDocument) {
-            file = files.shift();
+            documentFile = files.shift();
           }
-          imageFiles = files;
+          newImages = files;
         }
+
         return updateCustomDashboard(
-          documentId,
+          extractId<DocumentId>(documentId),
           input,
-          file,
-          imageFiles,
-          images,
+          documentFile,
+          newImages,
+          images.map((imageId) => extractId<DocumentId>(imageId)),
           context
         );
       } catch (error) {

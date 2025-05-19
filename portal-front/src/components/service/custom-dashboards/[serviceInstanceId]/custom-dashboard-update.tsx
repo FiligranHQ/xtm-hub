@@ -3,10 +3,7 @@ import {
   CustomDashboardUpdateForm,
   updateCustomDashboardSchema,
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-update-form';
-import {
-  IconActionContext,
-  IconActionsButton,
-} from '@/components/ui/icon-actions';
+import { IconActionsButton } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
@@ -20,7 +17,7 @@ import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import {
@@ -47,11 +44,6 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   const router = useRouter();
 
   const [openSheet, setOpenSheet] = useState(false);
-  const { setMenuOpen } = useContext(IconActionContext);
-
-  useEffect(() => {
-    if (!openSheet && openSheet !== null) setMenuOpen(false);
-  }, [openSheet]);
 
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,
@@ -81,9 +73,13 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
     const images = Array.from(values.images ?? []) as (File | { id: string })[];
     const [existingImages, newImages] = images.reduce(
       ([existing, newImages], image) => {
-        return isFile(image)
-          ? [existing, newImages.concat(image)]
-          : [existing.concat(image.id), newImages];
+        if (isFile(image)) {
+          // Don't pass the big base64 encoded image to the server
+          delete (image as File & { preview?: string }).preview;
+          return [existing, newImages.concat(image)];
+        } else {
+          return [existing.concat(image.id), newImages];
+        }
       },
       [[] as string[], [] as File[]]
     );
@@ -149,8 +145,6 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         router.push(`/service/custom_dashboards/${serviceInstance.id}`);
       },
     });
-    // TODO in the public page feature
-    // revalidatePathActions([`${PUBLIC_DASHBOARD_URL}`]);
   };
 
   return (

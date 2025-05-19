@@ -115,7 +115,7 @@ export const CustomDashboardUpdateForm = ({
     return typeof value === 'object' && value !== null && 'file_name' in value;
   };
   const [images, setImages] = useState<
-    Array<ExistingFile | { preview: string }>
+    Array<ExistingFile | (File & { preview: string })>
   >(customDashboard.children_documents as ExistingFile[]);
 
   const [openDelete, setOpenDelete] = useState<number>(-1);
@@ -401,12 +401,19 @@ export const CustomDashboardUpdateForm = ({
                             const localImages = [...images];
                             if (e.target?.files) {
                               for (const image of Array.from(e.target.files)) {
-                                localImages.push({
-                                  preview: await fileToBase64(image),
-                                });
+                                //@ts-expect-error Preview hack
+                                image.preview = await fileToBase64(image);
+                                localImages.push(
+                                  image as File & { preview: string }
+                                );
                               }
                             }
                             setImages(localImages);
+                            form.setValue(
+                              'images',
+                              localImages as unknown as FileList
+                            );
+                            return false;
                           }}
                           texts={{
                             selectFile: t(

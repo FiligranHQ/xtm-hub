@@ -55,7 +55,6 @@ const ShareableResourceCard = ({
             documentId={document.id}
             url={shareLinkUrl}
           />
-
           {extraContent}
         </div>
         <Link

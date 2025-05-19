@@ -145,10 +145,7 @@ const CustomDashboardsList = ({
           )}
         </>
       )}
-      <ul
-        className={
-          'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
-        }>
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l">
         {active.map((doc) => (
           <CustomDashboardCard
             connectionId={data.customDashboards!.__id}

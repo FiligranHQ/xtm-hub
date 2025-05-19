@@ -60,7 +60,7 @@ const CustomDashboardCard = ({
       extraContent={
         (userCanUpdate || userCanDelete) && (
           <IconActions
-            className={'z-[2]'}
+            className="z-[2]"
             icon={
               <>
                 <MoreVertIcon className="h-4 w-4 text-primary" />
@@ -81,7 +81,7 @@ const CustomDashboardCard = ({
         dotButton="hover"
         className="h-full p-s">
         <CarouselItem
-          className={'cursor-pointer'}
+          className="cursor-pointer"
           onClick={() => handleClickCarousel(customDashboard)}>
           <DocumentBento
             document={customDashboard}
@@ -91,7 +91,7 @@ const CustomDashboardCard = ({
         {fileNames.map((name) => (
           <CarouselItem
             key={name}
-            className={'cursor-pointer'}
+            className="cursor-pointer"
             onClick={() => handleClickCarousel(customDashboard)}>
             <Image
               fill

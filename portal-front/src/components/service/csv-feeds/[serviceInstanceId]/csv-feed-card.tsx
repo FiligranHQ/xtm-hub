@@ -45,7 +45,7 @@ const CsvFeedCard = ({
       extraContent={
         (userCanUpdate || userCanDelete) && (
           <IconActions
-            className={'z-[2]'}
+            className="z-[2]"
             icon={
               <>
                 <MoreVertIcon className="h-4 w-4 text-primary" />
@@ -54,7 +54,7 @@ const CsvFeedCard = ({
             }>
             <CSVFeedUpdateSheet
               connectionId={connectionId}
-              variant={'menu'}
+              variant="menu"
               csvFeed={csvFeed}
               serviceInstance={serviceInstance}
             />

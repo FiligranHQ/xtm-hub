@@ -40,6 +40,7 @@ import { Document as DocumentResolverType } from '../../../__generated__/resolve
 import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 
 export const sendFileToS3 = async (
   file: UploadedFile,
@@ -154,11 +155,16 @@ export const updateDocument = async <T extends DocumentModel>(
     Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
   > = []
 ): Promise<T> => {
+  const uploader_organization_id = documentData.uploader_organization_id
+    ? extractId<OrganizationId>(documentData.uploader_organization_id)
+    : null;
+
   const [document] = await db<DocumentModel>(context, 'Document')
     .where('id', '=', documentId)
     .update({
-      ...documentData,
-      updated_at: new Date().toISOString(),
+      ...omit(documentData, ['labels', ...metadataKeys]),
+      uploader_organization_id,
+      updated_at: new Date(),
       updater_id: context.user.id,
     })
     .returning('*');
@@ -452,8 +458,6 @@ export const loadDocumentById = async (
   id: string,
   include_metadata: string[] = []
 ): Promise<Document> => {
-  console.log('loadDocumentById', id);
-  console.trace();
   const docQuery = db<Document>(context, 'Document')
     .where('id', '=', id)
     .select('Document.*')
