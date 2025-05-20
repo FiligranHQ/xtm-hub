@@ -1,5 +1,4 @@
 import { Page } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
 
 export default class LoginPage {
   constructor(private page: Page) {}

@@ -27,6 +27,7 @@ import {
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
 import { auth0Client } from '../../thirdparty/auth0/client';
+import { logApp } from '../../utils/app-logger.util';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
@@ -362,10 +363,14 @@ export const updateUser = async (
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }
 
-    await auth0Client.updateUser({
-      ...input,
-      email: updatedUser.email,
-    });
+    try {
+      await auth0Client.updateUser({
+        ...input,
+        email: updatedUser.email,
+      });
+    } catch (err) {
+      logApp.error(err);
+    }
 
     await trx.commit();
     return updatedUser;

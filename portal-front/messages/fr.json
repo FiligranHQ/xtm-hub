@@ -11,6 +11,9 @@
     "Enabled": "Activé",
     "Published": "Publié"
   },
+  "CountryComboBox": {
+    "Placeholder": "Choisir un pays"
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Colonnes",
@@ -46,6 +49,7 @@
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
       "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation est déjà abonnée à ce service",
+      "AUTH0_USER_NOT_FOUND_ERROR": "Votre profile utilisateur est introuvable",
       "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
       "CANT_EDIT_YOURSELF_ERROR": "Vous ne pouvez pas vous modifier vous-même",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
@@ -57,10 +61,12 @@
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
       "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
+      "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
+      "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
       "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas",
@@ -144,6 +150,7 @@
     "Labels": "Étiquettes",
     "Organizations": "Organisations",
     "Parameters": "Paramètres",
+    "Profile": "Profile",
     "Security": "Sécurité",
     "Services": "Services",
     "Settings": "Réglages",
@@ -151,6 +158,7 @@
     "Users": "Utilisateurs"
   },
   "MenuUser": {
+    "Profile": "Profile",
     "ToggleUser": "Ouvrir menu utilisateur"
   },
   "OrganizationActions": {
@@ -401,6 +409,7 @@
     "UserUpdated": "L'utilisateur {email} a été modifié"
   },
   "UserForm": {
+    "Country": "Pays",
     "Email": "Courriel",
     "Error": {
       "FirstName": "Le prénom est requis",
@@ -413,6 +422,12 @@
     "OrganizationsCapabilitiesPlaceholder": "Capacités supplémentaires",
     "OrganizationsPlaceholder": "Sélectionner une organisation",
     "Password": "Mot de passe",
+    "Picture": "Photo",
+    "ResetPassword": {
+      "Action": "Réinitialiser",
+      "Sentence": "Nous vous enverrons un e-mail pour réinitialiser votre mot de passe.",
+      "Success": "L'email de réinitialisation du mot de passe a été envoyé avec succès."
+    },
     "WhoAreYou": "Qui êtes-vous ?",
     "WhoAreYouDescription": "Dites-nous votre prénom et votre nom",
     "AddOrganization": "Ajouter une organisation"
@@ -433,6 +448,13 @@
       "Password": "Mot de passe",
       "SelectOrganization": "Sélectionner une organisation",
       "SelectRoles": "Sélectionner rôles"
+    }
+  },
+  "ProfilePage": {
+    "Title": "Profile",
+    "UpdateProfile": "Mise à jour du profil",
+    "InstancesEditionDialog": {
+      "ConfirmSentence": "Votre prénom et votre nom seront également mis à jour dans vos instances OCTI et OBAS."
     }
   },
   "Utils": {

@@ -1,7 +1,5 @@
-import {
-  OrderingMode,
-  OrganizationOrdering,
-} from '@generated/organizationSelectQuery.graphql';
+import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
+import { OrderingMode } from '@generated/organizationSelectQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -13,7 +11,14 @@ export const useOrganizationListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>('orderModeOrganizationList', 'asc');
   const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<OrganizationOrdering>('orderByOrganizationList', 'name');
+    useLocalStorage<OrganizationOrderingEnum>(
+      'orderByOrganizationList',
+      OrganizationOrderingEnum.NAME
+    );
+  const organizationOrderingValues = Object.values(OrganizationOrderingEnum);
+  if (!organizationOrderingValues.includes(orderBy)) {
+    setOrderBy(OrganizationOrderingEnum.NAME);
+  }
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countOrganizationList',
     50

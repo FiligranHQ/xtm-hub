@@ -11,6 +11,9 @@
     "Enabled": "Enabled",
     "Published": "Published"
   },
+  "CountryComboBox": {
+    "Placeholder": "Choose a country"
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Columns",
@@ -46,6 +49,7 @@
       "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
       "ALREADY_SUBSCRIBED": "You have already subscribed to this service",
       "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "You have already subscribed this organization to this service",
+      "AUTH0_USER_NOT_FOUND_ERROR": "Your user profile was not found",
       "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
       "CANT_EDIT_YOURSELF_ERROR": "You cannot edit yourself",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
@@ -57,10 +61,12 @@
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
+      "EDIT_ME_USER_ERROR": "Error while editing your profile",
       "EDIT_USER_ERROR": "Error while editing user",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Error while deleting the subscription: you are not allowed to delete a subscription with billing",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
+      "INVALID_IMAGE_URL": "The image URL is not valid",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
       "SERVICE_NOT_FOUND_ERROR": "The service does not exist",
@@ -144,6 +150,7 @@
     "Labels": "Labels",
     "Organizations": "Organizations",
     "Parameters": "Parameters",
+    "Profile": "Profile",
     "Security": "Security",
     "Services": "Services",
     "Settings": "Settings",
@@ -151,6 +158,7 @@
     "Users": "Users"
   },
   "MenuUser": {
+    "Profile": "Profile",
     "ToggleUser": "Open menu user"
   },
   "OrganizationActions": {
@@ -403,6 +411,7 @@
     "UserUpdated": "User {email} has been modified"
   },
   "UserForm": {
+    "Country": "Country",
     "Email": "Email",
     "Error": {
       "FirstName": "First_name is required",
@@ -415,6 +424,12 @@
     "OrganizationsCapabilitiesPlaceholder": "Additional capabilities",
     "OrganizationsPlaceholder": "Select an organization",
     "Password": "Password",
+    "Picture": "Picture",
+    "ResetPassword": {
+      "Action": "Reset password",
+      "Sentence": "We will send you an email to reset your password.",
+      "Success": "Reset password email successfully sent."
+    },
     "WhoAreYou": "Who are you?",
     "WhoAreYouDescription": "Let us know you first name and last name",
     "AddOrganization": "Add organization"
@@ -435,6 +450,13 @@
       "Password": "Password",
       "SelectOrganization": "Select an organization",
       "SelectRoles": "Select roles"
+    }
+  },
+  "ProfilePage": {
+    "Title": "Profile",
+    "UpdateProfile": "Update profile",
+    "InstancesEditionDialog": {
+      "ConfirmSentence": "Your first name and your last name will be also updated in your OCTI and OBAS instances."
     }
   },
   "Utils": {

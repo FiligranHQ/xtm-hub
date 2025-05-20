@@ -15,8 +15,8 @@ import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { OrganizationsPaginationQuery$variables } from '@generated/OrganizationsPaginationQuery.graphql';
+import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
-import { OrganizationOrdering } from '@generated/organizationSelectQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
@@ -123,7 +123,7 @@ const OrganizationList: FunctionComponent = () => {
   };
 
   const onSortingChange = (updater: unknown) => {
-    handleSortingChange<OrganizationOrdering>({
+    handleSortingChange<OrganizationOrderingEnum>({
       updater,
       orderBy,
       orderMode,

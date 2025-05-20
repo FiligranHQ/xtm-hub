@@ -13,6 +13,7 @@ enum ErrorCategory {
 }
 
 export enum ErrorType {
+  BadRequest = 'BAD_REQUEST',
   ForbiddenAccess = 'FORBIDDEN_ACCESS',
   UnknownError = 'UNKNOWN_ERROR',
   StillReference = 'STILL_REFERENCED',
@@ -36,6 +37,7 @@ const errorUtil = (
   }
   return new Exception();
 };
+export const BAD_REQUEST = 'BAD_REQUEST';
 export const FORBIDDEN_ACCESS = 'FORBIDDEN_ACCESS';
 export const UNKNOWN_ERROR = 'UNKNOWN_ERROR';
 export const STILL_REFERENCED = 'STILL_REFERENCED';
@@ -53,6 +55,23 @@ export const ForbiddenAccess = (
       genre: ErrorCategory.Technical,
       ...data,
     }
+  );
+};
+
+export const BadRequestError = (
+  message: string,
+  information?: Information,
+  data?: Record<string, unknown>
+) => {
+  return errorUtil(
+    ErrorType.BadRequest,
+    message || 'Request is invalid',
+    {
+      http_status: 400,
+      genre: ErrorCategory.BadRequest,
+      ...data,
+    },
+    information
   );
 };
 
