@@ -2,24 +2,24 @@ import {
   organizationFetch,
   organizationsFragment,
 } from '@/components/organization/organization.graphql';
+import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
 import { organizationList_organizations$key } from '@generated/organizationList_organizations.graphql';
 import {
   OrderingMode,
-  OrganizationOrdering,
   organizationSelectQuery,
 } from '@generated/organizationSelectQuery.graphql';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
 interface OrganizationParamsQuery {
   count: number;
-  orderBy: OrganizationOrdering;
+  orderBy: OrganizationOrderingEnum;
   orderMode: OrderingMode;
   searchTerm?: string;
 }
 export const getOrganizations = ({
   searchTerm = '',
   count = 50,
-  orderBy = 'name',
+  orderBy = OrganizationOrderingEnum.NAME,
   orderMode = 'asc',
 }: Partial<OrganizationParamsQuery> = {}) => {
   const organizationData = useLazyLoadQuery<organizationSelectQuery>(
