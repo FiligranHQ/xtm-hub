@@ -2,6 +2,7 @@ import config from 'config';
 import { GraphQLError } from 'graphql';
 import { createLogger, format, QueryOptions, transports } from 'winston';
 import pjson from '../../package.json';
+import User from '../model/kanel/public/User';
 import { UnknownError } from './error.util';
 import { omit } from './utils';
 
@@ -70,10 +71,11 @@ const buildMetaErrors = (error: Error) => {
 const addBasicMetaInformation = (
   category: AppLogsCategory,
   error: Error,
-  meta: Record<string, unknown>
+  meta: Record<string, unknown> & { user?: User }
 ) => {
-  const logMeta = {
-    ...omit(meta, process.env.LOCAL_DEV === 'true' ? ['user'] : []),
+  const logMeta: Record<string, unknown> = {
+    ...omit(meta, ['user']),
+    userId: meta.user?.id,
   };
   if (error) logMeta.errors = buildMetaErrors(error);
   return { category, version: pjson.version, ...logMeta };
