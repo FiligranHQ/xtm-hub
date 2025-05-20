@@ -60,7 +60,7 @@ interface Pagination {
 const knex = pkg;
 
 const config: Knex.Config = {
-  asyncStackTraces: process.env.LOCAL_DEV === 'true',
+  asyncStackTraces: ['development', 'test'].includes(process.env.NODE_ENV),
   client: 'pg',
   connection: {
     host: portalConfig.database.host,
