@@ -20,10 +20,17 @@ jobs:
     steps:
       - name: Install AWX cli
         run: pip install awxkit
+      - name: Define NODE_ENV based on branch name
+        run: |
+          if [[ ${{ env.GITHUB_REF }} =~ refs/hotfix/.* ]]; then
+              echo "NODE_ENV=production" >> "$GITHUB_ENV"
+          else
+              echo "NODE_ENV=development" >> "$GITHUB_ENV"
+          fi
       - name: Deploy feature environment
         run: |
           awx --conf.host https://awx.filigran.io \
             --conf.token ${{ secrets.AWX_TOKEN }} \
             -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
             --inventory eu-west-staging \
-            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"${{ inputs.pr_number }}\"}"
+            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"${{ inputs.pr_number }}\",\"xtmhub_node_env\":\"${{ env.NODE_ENV }}\"}"
