@@ -56,7 +56,11 @@ export async function networkFetch({
     credentials: 'same-origin',
     headers,
     cache,
-    body: JSON.stringify({ query: request.text, variables }),
+    body: JSON.stringify({
+      query: request.text,
+      variables,
+      operationName: request.name,
+    }),
     ...options,
   });
   const json = await resp.json();
