@@ -16,7 +16,7 @@ type SeoCustomDashboard {
   download_number: Int
   share_number: Int
   product_version: String
-  children_documents: [CustomDashboardImage]!
+  children_documents: [CustomDashboardImage!]!
   labels: [Label]
   active: Boolean!
 }
