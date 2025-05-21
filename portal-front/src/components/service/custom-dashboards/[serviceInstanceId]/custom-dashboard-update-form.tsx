@@ -438,7 +438,7 @@ export const CustomDashboardUpdateForm = ({
                 }}
               />
               {images.length > 0 && (
-                <div className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl">
+                <div className="images-grid grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl">
                   {images.map((doc, index) => (
                     <div
                       key={index}
@@ -452,7 +452,7 @@ export const CustomDashboardUpdateForm = ({
                       <Button
                         variant="outline-destructive"
                         size="icon"
-                        className="absolute right-2 top-2"
+                        className="btn-delete absolute right-2 top-2"
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
