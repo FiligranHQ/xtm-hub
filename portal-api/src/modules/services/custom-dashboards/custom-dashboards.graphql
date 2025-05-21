@@ -61,7 +61,7 @@ type CustomDashboard implements Node {
   download_number: Int!
   share_number: Int!
   slug: String!
-  labels: [Label]
+  labels: [Label!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
