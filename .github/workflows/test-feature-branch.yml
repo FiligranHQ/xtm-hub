@@ -1,12 +1,11 @@
 ---
-
 name: Deploy an ephemeral environment to test a specific pull request
 
 on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'Pull Request Number'
+        description: "Pull Request Number"
         type: string
         required: true
 
@@ -22,7 +21,7 @@ jobs:
         run: pip install awxkit
       - name: Define NODE_ENV based on branch name
         run: |
-          if [[ ${{ env.GITHUB_REF }} =~ refs/hotfix/.* ]]; then
+          if [[ ${{ github.ref }} =~ refs/hotfix/.* ]]; then
               echo "NODE_ENV=production" >> "$GITHUB_ENV"
           else
               echo "NODE_ENV=development" >> "$GITHUB_ENV"
