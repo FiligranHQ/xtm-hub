@@ -269,6 +269,7 @@
         "DescriptionPlaceholder": "Description du tableau de bord",
         "ImageLabel": "Images",
         "JSONFile": "Fichier JSON",
+        "ExistingJSONFile": "Fichier JSON existant: ",
         "LabelsLabel": "Étiquettes",
         "LabelsPlaceholder": "Ajouter des étiquettes",
         "NameLabel": "Nom",
