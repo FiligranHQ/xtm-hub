@@ -97,19 +97,19 @@ export const createCustomDashboard = async (
     },
     CUSTOM_DASHBOARD_METADATA
   );
-  if (files.length > 0) {
-    await Promise.all(
-      files.map((file) => {
-        createDocument(context, {
-          type: 'image',
-          parent_document_id: dashboard.id as DocumentId,
-          file_name: file.fileName,
-          minio_name: file.minioName,
-          mime_type: file.mimeType,
-        });
-      })
-    );
-  }
+
+  await Promise.all(
+    files.map((file) => {
+      createDocument(context, {
+        type: 'image',
+        parent_document_id: dashboard.id as DocumentId,
+        file_name: file.fileName,
+        minio_name: file.minioName,
+        mime_type: file.mimeType,
+      });
+    })
+  );
+
   return dashboard;
 };
 
@@ -134,7 +134,6 @@ export const updateCustomDashboard = async (
       mime_type: document.mimeType,
     });
   }
-
 
   const dashboard = await updateDocument<CustomDashboard>(
     context,
