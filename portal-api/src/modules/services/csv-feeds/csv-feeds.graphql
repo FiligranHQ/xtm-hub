@@ -64,7 +64,7 @@ type Query {
     filters: [Filter!]
     serviceInstanceId: String
   ): CsvFeedConnection! @auth
-  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
+  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed @auth
   seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
   seoCsvFeedBySlug(slug: String): CsvFeed
 }
