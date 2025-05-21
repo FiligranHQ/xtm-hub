@@ -113,25 +113,30 @@ export const createCustomDashboard = async (
   return dashboard;
 };
 
+interface UpdateCustomDashboardDocuments {
+  documentFile: MinioFile | undefined;
+  newImages: MinioFile[];
+  existingImages: string[];
+}
+
 export const updateCustomDashboard = async (
   id: string,
   input: UpdateCustomDashboardInput,
-  document: MinioFile,
-  newImages: MinioFile[],
-  existingImages: string[],
+  documents: UpdateCustomDashboardDocuments,
   context: PortalContext
 ) => {
+  const { documentFile, newImages, existingImages } = documents;
   const data = {
     ...input,
     type: 'custom_dashboard',
   };
 
   // We are updating the base document
-  if (document) {
+  if (documentFile) {
     Object.assign(data, {
-      file_name: document.fileName,
-      minio_name: document.minioName,
-      mime_type: document.mimeType,
+      file_name: documentFile.fileName,
+      minio_name: documentFile.minioName,
+      mime_type: documentFile.mimeType,
     });
   }
 
@@ -149,19 +154,17 @@ export const updateCustomDashboard = async (
     .delete();
 
   // Create new images
-  if (newImages.length > 0) {
-    await Promise.all(
-      newImages.map((image) => {
-        createDocument(context, {
-          type: 'image',
-          parent_document_id: id,
-          file_name: image.fileName,
-          minio_name: image.minioName,
-          mime_type: image.mimeType,
-        });
-      })
-    );
-  }
+  await Promise.all(
+    newImages.map((image) => {
+      createDocument(context, {
+        type: 'image',
+        parent_document_id: id,
+        file_name: image.fileName,
+        minio_name: image.minioName,
+        mime_type: image.mimeType,
+      });
+    })
+  );
 
   return dashboard;
 };

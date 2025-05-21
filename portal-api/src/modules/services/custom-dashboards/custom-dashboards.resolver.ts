@@ -125,9 +125,13 @@ const resolvers: Resolvers = {
         return updateCustomDashboard(
           extractId<DocumentId>(documentId),
           input,
-          documentFile,
-          newImages,
-          images.map((imageId) => extractId<DocumentId>(imageId)),
+          {
+            documentFile,
+            newImages,
+            existingImages: images.map((imageId) =>
+              extractId<DocumentId>(imageId)
+            ),
+          },
           context
         );
       } catch (error) {
