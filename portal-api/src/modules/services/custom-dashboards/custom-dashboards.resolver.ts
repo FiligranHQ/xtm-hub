@@ -111,8 +111,6 @@ const resolvers: Resolvers = {
       try {
         let documentFile: MinioFile | undefined;
         let newImages: MinioFile[] = [];
-        console.log('\n\ndocument\n', document);
-        console.log('\n\ninput\n', input);
         if (document && document.length > 0) {
           await waitForUploads(document);
           const files = await Promise.all(
