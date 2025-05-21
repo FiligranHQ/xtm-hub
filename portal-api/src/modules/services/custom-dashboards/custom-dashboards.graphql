@@ -65,7 +65,7 @@ type CustomDashboard implements Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [CustomDashboardImage]
+  children_documents: [CustomDashboardImage!]
   # Specific fields for custom dashboards
   product_version: String
 }
