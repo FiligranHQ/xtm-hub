@@ -20,19 +20,19 @@ export const createCsvFeed = async (
     minio_name: csvFeedFile.minioName,
     mime_type: csvFeedFile.mimeType,
   });
-  if (files.length > 0) {
-    await Promise.all(
-      files.map((file) => {
-        createDocument(context, {
-          type: 'image',
-          parent_document_id: csvFeed.id as DocumentId,
-          file_name: file.fileName,
-          minio_name: file.minioName,
-          mime_type: file.mimeType,
-        });
-      })
-    );
-  }
+
+  await Promise.all(
+    files.map((file) => {
+      createDocument(context, {
+        type: 'image',
+        parent_document_id: csvFeed.id as DocumentId,
+        file_name: file.fileName,
+        minio_name: file.minioName,
+        mime_type: file.mimeType,
+      });
+    })
+  );
+
   return csvFeed;
 };
 
