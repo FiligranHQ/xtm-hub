@@ -47,11 +47,11 @@ Read our [contributing guide](CONTRIBUTING.md) to learn about our development pr
 
 ### Beginner friendly issues
 
-To help you get you familiar with our contribution process, we have a list of [beginner friendly issues](https://github.com/OpenCTI-Platform/opencti/labels/beginner%20friendly%20issue) which are fairly easy to implement. This is a great place to get started.
+To help you get you familiar with our contribution process, we have a list of [beginner friendly issues](https://github.com/FiligranHQ/xtm-hub/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22) which are fairly easy to implement. This is a great place to get started.
 
 ### Development
 
-If you want to actively help OpenCTI, we created a [dedicated documentation](https://docs.opencti.io/latest/development/environment_ubuntu/) about the deployment of a development environment and how to start the source code modification.
+If you want to actively help XTM Hub, we created a [dedicated documentation](https://docs.hub.filigran.io/) about the deployment of a development environment and how to start the source code modification.
 
 ## Community
 
