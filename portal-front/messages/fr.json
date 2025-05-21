@@ -280,6 +280,7 @@
         "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
         "SelectImage": "Selectionnez une/des image(s)",
         "SelectJSONFile": "Selectionnez un fichier JSON",
+        "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "ShortDescriptionLabel": "Brève description",
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",
