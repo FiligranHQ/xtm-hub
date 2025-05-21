@@ -59,7 +59,6 @@ interface Pagination {
 const knex = pkg;
 
 const config: Knex.Config = {
-  asyncStackTraces: true,
   client: 'pg',
   connection: {
     host: portalConfig.database.host,
