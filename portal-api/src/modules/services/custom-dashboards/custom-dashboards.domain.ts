@@ -135,10 +135,6 @@ export const updateCustomDashboard = async (
     });
   }
 
-  console.log('\n\ndata', data);
-  console.log('document', document);
-  console.log('newImages', newImages);
-  console.log('existingImages', existingImages);
 
   const dashboard = await updateDocument<CustomDashboard>(
     context,
