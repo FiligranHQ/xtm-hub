@@ -82,97 +82,152 @@ test.describe('Custom dashboards', () => {
 
     await openUpdateDrawer();
 
-    // 1. Update only texts
-    let test = 1;
-    await page
-      .getByPlaceholder('Dashboard name')
-      .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test}`);
-    await page
-      .getByPlaceholder('This is some catchphrases to')
-      .fill(UPDATED_DASHBOARD_TEST.shortDescription);
-    await page
-      .getByRole('textbox', { name: 'OpenCTI version' })
-      .fill(UPDATED_DASHBOARD_TEST.version);
-    await page
-      .getByRole('textbox', { name: 'This is a paragraph to' })
-      .fill(UPDATED_DASHBOARD_TEST.description);
-    await page.getByLabel('Publish').click();
-    await page.getByRole('button', { name: 'Validate' }).click();
-    await waitForDrawerToClose(page);
-    await expect(
-      page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test}`, {
-        exact: true,
-      })
-    ).toBeVisible();
+    let test_step = 0;
+    test.step('Update only texts', async () => {
+      test_step++;
+      await page
+        .getByPlaceholder('Dashboard name')
+        .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
+      await page
+        .getByPlaceholder('This is some catchphrases to')
+        .fill(UPDATED_DASHBOARD_TEST.shortDescription);
+      await page
+        .getByRole('textbox', { name: 'OpenCTI version' })
+        .fill(UPDATED_DASHBOARD_TEST.version);
+      await page
+        .getByRole('textbox', { name: 'This is a paragraph to' })
+        .fill(UPDATED_DASHBOARD_TEST.description);
+      await page.getByLabel('Publish').click();
+      await page.getByRole('button', { name: 'Validate' }).click();
+      await waitForDrawerToClose(page);
+      await expect(
+        page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`, {
+          exact: true,
+        })
+      ).toBeVisible();
+    });
 
-    // 2. Add a new one image
-    test++;
-    await openUpdateDrawer();
-    await page
-      .getByPlaceholder('Dashboard name')
-      .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test}`);
-    await dashboardPage.uploadImageDocument(TEST_2_IMAGE_FILE.path);
-    await page.getByRole('button', { name: 'Validate' }).click();
-    await waitForDrawerToClose(page);
-    await expect(
-      page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test}`, {
-        exact: true,
-      })
-    ).toBeVisible();
-    await expect(
-      page.locator('[aria-roledescription="carousel"] div button')
-    ).toHaveCount(3);
+    test.step('Add a new one image', async () => {
+      test_step++;
+      await openUpdateDrawer();
+      await page
+        .getByPlaceholder('Dashboard name')
+        .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
+      await dashboardPage.uploadImageDocument(TEST_2_IMAGE_FILE.path);
+      await page.getByRole('button', { name: 'Validate' }).click();
+      await waitForDrawerToClose(page);
+      await expect(
+        page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`, {
+          exact: true,
+        })
+      ).toBeVisible();
+      await expect(
+        page.locator('[aria-roledescription="carousel"] div button')
+      ).toHaveCount(3);
+    });
 
-    // 2. Delete the old image and add a new one
-    test++;
-    await openUpdateDrawer();
-    await page
-      .getByPlaceholder('Dashboard name')
-      .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test}`);
-    await page.locator('.images-grid .btn-delete').first().click();
-    await page
-      .getByRole('alertdialog', { name: 'Do you want to continue?' })
-      .waitFor();
-    await page.getByRole('button', { name: 'Continue' }).click();
-    await dashboardPage.uploadImageDocument(TEST_3_IMAGE_FILE.path);
+    test.step('Delete the old image and add a new one', async () => {
+      test_step++;
+      await openUpdateDrawer();
+      await page
+        .getByPlaceholder('Dashboard name')
+        .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
+      await page.locator('.images-grid .btn-delete').first().click();
+      await page
+        .getByRole('alertdialog', { name: 'Do you want to continue?' })
+        .waitFor();
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await dashboardPage.uploadImageDocument(TEST_3_IMAGE_FILE.path);
 
-    await page.getByRole('button', { name: 'Validate' }).click();
-    await waitForDrawerToClose(page);
-    await expect(
-      page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test}`, {
-        exact: true,
-      })
-    ).toBeVisible();
-    await expect(
-      page.locator('[aria-roledescription="carousel"] div button')
-    ).toHaveCount(3);
+      await page.getByRole('button', { name: 'Validate' }).click();
+      await waitForDrawerToClose(page);
+      await expect(
+        page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`, {
+          exact: true,
+        })
+      ).toBeVisible();
+      await expect(
+        page.locator('[aria-roledescription="carousel"] div button')
+      ).toHaveCount(3);
+    });
 
-    // 3. Update the dashboard
-    test++;
-    await openUpdateDrawer();
-    await page
-      .getByPlaceholder('Dashboard name')
-      .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test}`);
+    test.step('Delete the old image and add a new one', async () => {
+      test_step++;
+      await openUpdateDrawer();
+      await page
+        .getByPlaceholder('Dashboard name')
+        .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
+      await page.locator('.images-grid .btn-delete').first().click();
+      await page
+        .getByRole('alertdialog', { name: 'Do you want to continue?' })
+        .waitFor();
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await dashboardPage.uploadImageDocument(TEST_3_IMAGE_FILE.path);
 
-    await page
-      .getByText(`Existing JSON file: ${TEST_JSON_FILE.name}`)
-      .waitFor();
+      await page.getByRole('button', { name: 'Validate' }).click();
+      await waitForDrawerToClose(page);
+      await expect(
+        page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`, {
+          exact: true,
+        })
+      ).toBeVisible();
+      await expect(
+        page.locator('[aria-roledescription="carousel"] div button')
+      ).toHaveCount(3);
+    });
 
-    await dashboardPage.uploadJsonDocument(TEST_2_JSON_FILE.path);
+    test.step('Delete the old image and add a new one', async () => {
+      test_step++;
+      await openUpdateDrawer();
+      await page
+        .getByPlaceholder('Dashboard name')
+        .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
+      await page.locator('.images-grid .btn-delete').first().click();
+      await page
+        .getByRole('alertdialog', { name: 'Do you want to continue?' })
+        .waitFor();
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await dashboardPage.uploadImageDocument(TEST_3_IMAGE_FILE.path);
 
-    await page.getByRole('button', { name: 'Validate' }).click();
-    await waitForDrawerToClose(page);
-    await expect(
-      page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test}`, {
-        exact: true,
-      })
-    ).toBeVisible();
-    await expect(
-      page.locator('[aria-roledescription="carousel"] div button')
-    ).toHaveCount(3);
-    await openUpdateDrawer();
-    await page
-      .getByText(`Existing JSON file: ${TEST_2_JSON_FILE.name}`)
-      .waitFor();
+      await page.getByRole('button', { name: 'Validate' }).click();
+      await waitForDrawerToClose(page);
+      await expect(
+        page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`, {
+          exact: true,
+        })
+      ).toBeVisible();
+      await expect(
+        page.locator('[aria-roledescription="carousel"] div button')
+      ).toHaveCount(3);
+    });
+
+    test.step('Update the dashboard', async () => {
+      test_step++;
+      await openUpdateDrawer();
+      await page
+        .getByPlaceholder('Dashboard name')
+        .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
+
+      await page
+        .getByText(`Existing JSON file: ${TEST_JSON_FILE.name}`)
+        .waitFor();
+
+      await dashboardPage.uploadJsonDocument(TEST_2_JSON_FILE.path);
+
+      await page.getByRole('button', { name: 'Validate' }).click();
+      await waitForDrawerToClose(page);
+      await expect(
+        page.getByText(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`, {
+          exact: true,
+        })
+      ).toBeVisible();
+      await expect(
+        page.locator('[aria-roledescription="carousel"] div button')
+      ).toHaveCount(3);
+      await openUpdateDrawer();
+      await page
+        .getByText(`Existing JSON file: ${TEST_2_JSON_FILE.name}`)
+        .waitFor();
+    });
   });
 });
