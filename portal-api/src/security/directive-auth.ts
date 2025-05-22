@@ -68,6 +68,7 @@ const getSchemaTransformer = (
             // Check if the field requires authentication
             if (authDirective && !isAuthenticatedFn(user)) {
               logApp.warn('Not authenticated.');
+              return;
             }
             // Get the required authorization role for the requested field
             if (authDirective && !hasCapabilityFn(user, capabilitiesRequired)) {
