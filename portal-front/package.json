@@ -1,6 +1,6 @@
 {
   "name": "portal-front",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "private": true,
   "scripts": {
     "dev": "concurrently \"relay-compiler && tsx scripts/generate-enum.ts\" \"next dev  --turbopack -p 3002\"",
