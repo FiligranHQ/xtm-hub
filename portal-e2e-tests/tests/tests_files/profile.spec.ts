@@ -1,23 +1,16 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import ProfilePage from '../model/profile.pageModel';
-import { generateUser } from '../db-utils/user.helper';
 
 test.describe('Profile edition', () => {
-  const originalFirstName = 'Original first name';
-  const originalLastName = 'Original last name';
   let loginPage: LoginPage;
   let profilePage: ProfilePage;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
     profilePage = new ProfilePage(page);
-    const { email } = await generateUser({
-      firstName: originalFirstName,
-      lastName: originalLastName,
-    });
 
-    await loginPage.login(email);
+    await loginPage.login();
     await profilePage.navigateTo();
   });
 

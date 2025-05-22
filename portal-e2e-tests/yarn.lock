@@ -5,13 +5,6 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@faker-js/faker@npm:9.7.0":
-  version: 9.7.0
-  resolution: "@faker-js/faker@npm:9.7.0"
-  checksum: 3b452be4cc3227728947ca9b1d733a2b0b971ab68e7e92275aea6906ac2d3826bac2494b334ee65a19751ee9f0c0d210f8cbfb310d4cd586c3b5c5f327c3207c
-  languageName: node
-  linkType: hard
-
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -1710,7 +1703,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "test_e2e@workspace:."
   dependencies:
-    "@faker-js/faker": 9.7.0
     "@playwright/test": 1.52.0
     "@types/node": 22.13.14
     knex: 3.1.0
