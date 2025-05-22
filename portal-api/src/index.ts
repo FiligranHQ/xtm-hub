@@ -187,7 +187,7 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
     await dbMigration.seed();
   }
   await platformInit();
-  logApp.debug(
+  logApp.info(
     '[Migration] Database version is now ' + (await dbMigration.version())
   );
   await minioInit();

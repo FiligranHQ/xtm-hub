@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   getNestedPropertyValue,
   isEmptyField,
+  isImgUrl,
   isNil,
   isNotEmptyField,
   parseKeyValueArrayToObject,
@@ -188,6 +189,30 @@ describe('utils', () => {
       const input = ['a:1', 'b:2', 'c:1'];
       const expectedOutput = { '1': 'c', '2': 'b' };
       expect(parseKeyValueArrayToObjectReverse(input)).toEqual(expectedOutput);
+    });
+  });
+
+  describe('isImgUrl', () => {
+    it('should return false when input is not an URL', async () => {
+      const result = await isImgUrl('hello');
+      expect(result).toBeFalsy();
+    });
+
+    it('should return false when input does not contain an image extension', async () => {
+      const result = await isImgUrl('http://localhost:1000');
+      expect(result).toBeFalsy();
+    });
+
+    it('should return false when input does not lead to an existing image', async () => {
+      const result = await isImgUrl('http://localhost:1000/image.png');
+      expect(result).toBeFalsy();
+    });
+
+    it('should return true when input is a valid image URL', async () => {
+      const result = await isImgUrl(
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/88_Pisum_sativum_L.jpg/250px-88_Pisum_sativum_L.jpg'
+      );
+      expect(result).toBeTruthy();
     });
   });
 });

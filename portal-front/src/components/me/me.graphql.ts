@@ -6,6 +6,7 @@ export const MeContextFragment = graphql`
     email
     first_name
     last_name
+    country
     picture
     selected_organization_id @required(action: THROW)
     capabilities @required(action: THROW) {
@@ -20,6 +21,34 @@ export const MeContextFragment = graphql`
       personal_space
     }
     selected_org_capabilities
+  }
+`;
+
+export const MeResetPasswordMutation = graphql`
+  mutation meResetPasswordMutation {
+    resetPassword {
+      success
+    }
+  }
+`;
+
+export const MeEditUserMutation = graphql`
+  mutation meEditUserMutation(
+    $first_name: String
+    $last_name: String
+    $country: String
+    $picture: String
+  ) {
+    editMeUser(
+      input: {
+        first_name: $first_name
+        last_name: $last_name
+        country: $country
+        picture: $picture
+      }
+    ) {
+      ...meContext_fragment
+    }
   }
 `;
 

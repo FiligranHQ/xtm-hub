@@ -1,8 +1,6 @@
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import {
-  DocumentOrdering,
-  OrderingMode,
-} from '@generated/documentsQuery.graphql';
+import { OrderingMode } from '@generated/documentsQuery.graphql';
+import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { ColumnDef } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -16,7 +14,14 @@ export const documentListLocalStorage = (
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>('orderModeDocumentList', 'desc');
   const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<DocumentOrdering>('orderByDocumentList', 'created_at');
+    useLocalStorage<DocumentOrderingEnum>(
+      'orderByDocumentList',
+      DocumentOrderingEnum.CREATED_AT
+    );
+  const documentOrderingValues = Object.values(DocumentOrderingEnum);
+  if (!documentOrderingValues.includes(orderBy)) {
+    setOrderBy(DocumentOrderingEnum.CREATED_AT);
+  }
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countDocumentList',
     50
@@ -38,6 +43,11 @@ export const documentListLocalStorage = (
     removeColumnVisibility();
   };
 
+  const removeOrder = () => {
+    removeOrderBy();
+    removeOrderMode();
+  };
+
   return {
     count,
     setCount,
@@ -45,6 +55,7 @@ export const documentListLocalStorage = (
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrder,
     pageSize,
     setPageSize,
     columnOrder,

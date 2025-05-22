@@ -11,6 +11,10 @@
     "password": "DATABASE_PASSWORD",
     "database": "DATABASE_BASE"
   },
+  "auth0": {
+    "clientId": "OIDC_CLIENT_ID",
+    "clientSecret": "OIDC_CLIENT_SECRET"
+  },
   "minio": {
     "bucketName": "MINIO_BUCKET_NAME",
     "region": "MINIO_REGION",

@@ -17,6 +17,7 @@ import { VaultForm } from '@/components/service/vault/vault-form';
 import VisualizeDocument from '@/components/service/vault/visualize-document';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import {
+  handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
@@ -32,11 +33,10 @@ import {
 } from '@generated/documentItem_fragment.graphql';
 import { documentsList$key } from '@generated/documentsList.graphql';
 import {
-  DocumentOrdering,
-  OrderingMode,
   documentsQuery,
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
+import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import {
   serviceByIdQuery,
   serviceByIdQuery$data,
@@ -189,6 +189,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrder,
     columnOrder,
     setColumnOrder,
     columnVisibility,
@@ -214,16 +215,15 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
   };
 
   const onSortingChange = (updater: unknown) => {
-    const sorting = mapToSortingTableValue(orderBy, orderMode);
-    const newSortingValue =
-      updater instanceof Function ? updater(sorting) : updater;
-    setOrderBy(newSortingValue[0].id);
-    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
-    handleRefetchData(
-      transformSortingValueToParams<DocumentOrdering, OrderingMode>(
-        newSortingValue
-      )
-    );
+    handleSortingChange<DocumentOrderingEnum>({
+      updater,
+      orderMode,
+      setOrderMode,
+      orderBy,
+      setOrderBy,
+      handleRefetchData,
+      removeOrder,
+    });
   };
 
   const onPaginationChange = (updater: unknown) => {

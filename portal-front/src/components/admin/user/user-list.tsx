@@ -4,6 +4,7 @@ import { AdminAddUser } from '@/components/admin/user/admin-add-user';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { PortalContext } from '@/components/me/app-portal-context';
 import {
+  handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
@@ -19,10 +20,8 @@ import {
 } from '@generated/userList_fragment.graphql';
 import { userList_users$key } from '@generated/userList_users.graphql';
 import {
-  OrderingMode,
   userListQuery,
   userListQuery$variables,
-  UserOrdering,
 } from '@generated/userListQuery.graphql';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
@@ -120,6 +119,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     columnVisibility,
     setColumnVisibility,
     resetAll,
+    removeOrder,
   } = useUserListLocalstorage();
 
   const isAdminPath = useAdminPath();
@@ -265,14 +265,15 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     });
   };
   const onSortingChange = (updater: unknown) => {
-    const sorting = mapToSortingTableValue(orderBy, orderMode);
-    const newSortingValue =
-      updater instanceof Function ? updater(sorting) : updater;
-    setOrderBy(newSortingValue[0].id);
-    setOrderMode(newSortingValue[0].desc ? 'desc' : 'asc');
-    handleRefetchData(
-      transformSortingValueToParams<UserOrdering, OrderingMode>(newSortingValue)
-    );
+    handleSortingChange({
+      updater,
+      removeOrder,
+      setOrderBy,
+      setOrderMode,
+      orderBy,
+      orderMode,
+      handleRefetchData,
+    });
   };
 
   const onPaginationChange = (updater: unknown) => {

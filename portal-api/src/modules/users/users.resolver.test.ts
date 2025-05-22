@@ -366,7 +366,8 @@ describe('User mutation resolver', () => {
       const newFirstName = 'Roger';
       const newLastName = 'Testeur';
       const newCountry = 'France';
-      const newPicture = 'http://picture.com';
+      const newPicture =
+        'https://www.labrouettemaraichere.com/cdn/shop/products/29109696c-www.fullstackgardener.com_720x.jpg';
 
       // @ts-expect-error editMeUser is not considered as callable
       const response = await usersResolver.Mutation.editMeUser(

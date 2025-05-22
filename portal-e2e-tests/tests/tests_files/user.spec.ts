@@ -7,6 +7,7 @@ import UserPage from '../model/user.pageModel';
 const TEST_USER = {
   userOrganizationName: 'Thales',
   userEmail: 'userInE2E@thales.com',
+  adminThales: 'admin@thales.com',
   otherThalesUserEmail: 'user@thales.com',
 };
 
@@ -19,12 +20,12 @@ test.describe('User Management', () => {
 
     loginPage = new LoginPage(page);
     userPage = new UserPage(page);
-
-    await loginPage.login();
-    await userPage.navigateToUserListAdmin();
   });
 
-  test('Should perform complete CRUD of users', async ({ page }) => {
+  test('Should perform complete CRUD of users as BYPASS', async ({ page }) => {
+    await loginPage.login();
+    await userPage.navigateToUserListAdmin();
+
     await test.step('Add user', async () => {
       await userPage.addUser(
         TEST_USER.userEmail,
@@ -51,6 +52,8 @@ test.describe('User Management', () => {
   });
 
   test('Should only see authorized users', async ({ page }) => {
+    await loginPage.login();
+
     await userPage.navigateToUserListAdmin();
     await expect(page.getByText(TEST_USER.otherThalesUserEmail)).toBeVisible();
     await userPage.navigateToUserManageAccess();
@@ -61,6 +64,27 @@ test.describe('User Management', () => {
     await loginPage.login(TEST_USER.userEmail);
     await expect(
       page.getByRole('button', { name: 'Settings' })
+    ).not.toBeVisible();
+  });
+  test('Should not edit first and last name as MANAGE_ACCESS user', async ({
+    page,
+  }) => {
+    await loginPage.login(TEST_USER.adminThales);
+    await page.getByRole('link', { name: 'Users' }).click();
+    await page.getByRole('button', { name: 'Add user' }).click();
+    await expect(
+      page.getByRole('textbox', { name: 'First name' })
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole('textbox', { name: 'Last name' })
+    ).not.toBeVisible();
+    await page.getByRole('button', { name: 'Cancel' }).click();
+    await page.getByText(TEST_USER.otherThalesUserEmail).click();
+    await expect(
+      page.getByRole('textbox', { name: 'First name' })
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole('textbox', { name: 'Last name' })
     ).not.toBeVisible();
   });
   test.afterAll('Remove newly created user', async () => {

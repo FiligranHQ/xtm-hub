@@ -12,11 +12,12 @@ import { logApp } from '../../utils/app-logger.util';
 
 import { updateUserSession } from '../../sessionStoreManager';
 import {
+  BadRequestError,
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   UnknownError,
 } from '../../utils/error.util';
-import { extractId } from '../../utils/utils';
+import { extractId, isImgUrl } from '../../utils/utils';
 import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
@@ -126,8 +127,6 @@ const resolvers: Resolvers = {
           : await createUserWithPersonalSpace({
               email: input.email,
               password: input.password,
-              first_name: input.first_name,
-              last_name: input.last_name,
               selected_organization_id: chosenOrganization.id,
             });
 
@@ -292,6 +291,13 @@ const resolvers: Resolvers = {
     },
 
     editMeUser: async (_, { input }, context) => {
+      if (input.picture) {
+        const isPictureImgUrl = await isImgUrl(input.picture);
+        if (!isPictureImgUrl) {
+          throw BadRequestError('INVALID_IMAGE_URL');
+        }
+      }
+
       try {
         await updateUser(context, context.user.id, input);
         const user = await loadUserDetails({
@@ -300,12 +306,10 @@ const resolvers: Resolvers = {
 
         updateUserSession(user);
 
-        await dispatch('User', 'edit', user);
+        const mappedUser = mapUserToGraphqlUser(user);
+        await dispatch('User', 'edit', mappedUser);
 
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
-        return user;
+        return mappedUser;
       } catch (error) {
         throw UnknownError('EDIT_ME_USER_ERROR', {
           detail: error,

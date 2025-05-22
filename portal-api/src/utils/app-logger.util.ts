@@ -2,6 +2,7 @@ import config from 'config';
 import { GraphQLError } from 'graphql';
 import { createLogger, format, QueryOptions, transports } from 'winston';
 import pjson from '../../package.json';
+import User from '../model/kanel/public/User';
 import { UnknownError } from './error.util';
 import { omit } from './utils';
 
@@ -70,9 +71,12 @@ const buildMetaErrors = (error: Error) => {
 const addBasicMetaInformation = (
   category: AppLogsCategory,
   error: Error,
-  meta: Record<string, unknown>
+  meta: Record<string, unknown> & { user?: User }
 ) => {
-  const logMeta = { ...meta };
+  const logMeta: Record<string, unknown> = {
+    ...omit(meta, ['user']),
+    userId: meta.user?.id,
+  };
   if (error) logMeta.errors = buildMetaErrors(error);
   return { category, version: pjson.version, ...logMeta };
 };
@@ -83,7 +87,11 @@ export const appLogger = createLogger({
     format.timestamp(),
     format.errors({ stack: appLogsConfig.extended_error_message }),
     process.env.LOCAL_DEV === 'true'
-      ? format.combine(format.prettyPrint(), format.colorize())
+      ? format.combine(
+          format.colorize({ all: true }),
+          format.align(),
+          format.simple()
+        )
       : format.json()
   ),
   transports: [new transports.Console()],
@@ -97,14 +105,19 @@ export const logApp = {
     meta: Record<string, unknown> = {},
     category: AppLogsCategory = AppLogsCategory.BACKEND
   ) => {
-    appLogger.log(
-      level,
-      message,
-      addBasicMetaInformation(category, error, {
-        ...meta,
-        source: 'backend',
-      })
-    );
+    if (process.env.LOCAL_DEV === 'true' && meta.codeStack) {
+      console.error('Original error:');
+      console.error(meta.codeStack);
+    } else {
+      appLogger.log(
+        level,
+        message,
+        addBasicMetaInformation(category, error, {
+          ...meta,
+          source: 'backend',
+        })
+      );
+    }
   },
   _logWithError: (
     level: AppLogsLevel,

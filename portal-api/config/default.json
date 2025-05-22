@@ -17,12 +17,9 @@
     "seeds": "tests/seeds"
   },
   "auth0": {
-    "enabled": false,
-    "config": {
-      "domain": "changeme",
-      "clientId": "changeme",
-      "clientSecret": "changeme"
-    }
+    "domain": "filigran.eu.auth0.com",
+    "clientId": "changeme",
+    "clientSecret": "changeme"
   },
   "oidc_provider": {
     "issuer": "http://localhost:8080/realms/keycloak-express",

@@ -1,14 +1,20 @@
-import { OrderingMode, UserOrdering } from '@generated/userListQuery.graphql';
+import { UserOrderingEnum } from '@generated/models/UserOrdering.enum';
+import { OrderingMode } from '@generated/userListQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
 
 export const useUserListLocalstorage = () => {
   const [count, setCount, removeCount] = useLocalStorage('countUserList', 50);
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>('orderModeUserList', 'asc');
-  const [orderBy, setOrderBy, removeOrderBy] = useLocalStorage<UserOrdering>(
-    'orderByUserList',
-    'email'
-  );
+  const [orderBy, setOrderBy, removeOrderBy] =
+    useLocalStorage<UserOrderingEnum>(
+      'orderByUserList',
+      UserOrderingEnum.EMAIL
+    );
+  const userOrderingValues = Object.values(UserOrderingEnum);
+  if (!userOrderingValues.includes(orderBy)) {
+    setOrderBy(UserOrderingEnum.EMAIL);
+  }
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countUserList',
     50
@@ -29,6 +35,11 @@ export const useUserListLocalstorage = () => {
     removeColumnVisibility();
   };
 
+  const removeOrder = () => {
+    removeOrderBy();
+    removeOrderMode();
+  };
+
   return {
     count,
     setCount,
@@ -36,6 +47,7 @@ export const useUserListLocalstorage = () => {
     setOrderMode,
     orderBy,
     setOrderBy,
+    removeOrderBy,
     pageSize,
     setPageSize,
     columnOrder,
@@ -43,5 +55,6 @@ export const useUserListLocalstorage = () => {
     columnVisibility,
     setColumnVisibility,
     resetAll,
+    removeOrder,
   };
 };

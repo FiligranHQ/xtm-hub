@@ -80,38 +80,42 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="first_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('UserForm.FirstName')}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('UserForm.FirstName')}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="last_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('UserForm.LastName')}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('UserForm.LastName')}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {isAdminPath && (
+          <>
+            <FormField
+              control={form.control}
+              name="first_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('UserForm.FirstName')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('UserForm.FirstName')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="last_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('UserForm.LastName')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('UserForm.LastName')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
         {isDevelopment() && isAdminPath && (
           <FormField
             control={form.control}

@@ -1,4 +1,3 @@
-import config from 'config';
 import { logApp } from '../../utils/app-logger.util';
 import { auth0ClientImplementation } from './implementation';
 import { auth0ClientMock } from './mock';
@@ -16,7 +15,9 @@ export interface Auth0Client {
   resetPassword(email: string): Promise<void>;
 }
 
-const isAuth0Enabled = config.get<boolean>('auth0.enabled');
+const isAuth0Enabled = !(
+  process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
+);
 if (!isAuth0Enabled) {
   logApp.warn('auth0 disabled, using client mock');
 }
