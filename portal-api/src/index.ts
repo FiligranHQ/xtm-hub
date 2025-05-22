@@ -23,6 +23,7 @@ import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import { documentVisualizeEndpoint } from './modules/services/document/visualize-document-endpoint';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
+import { operationMetricsPlugin } from './server/apollo-plugins/metrics';
 import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
@@ -113,6 +114,7 @@ const server = new ApolloServer<PortalContext>({
       variables: {},
     }),
     errorLoggingPlugin(),
+    operationMetricsPlugin,
   ],
 });
 
