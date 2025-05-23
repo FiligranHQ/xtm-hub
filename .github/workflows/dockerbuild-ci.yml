@@ -92,6 +92,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Install docker
+        uses: docker/setup-docker-action@v4
       - name: Install docker compose
         uses: KengoTODA/actions-setup-docker-compose@v1
         with:
