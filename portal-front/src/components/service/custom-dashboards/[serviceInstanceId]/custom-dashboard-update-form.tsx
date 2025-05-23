@@ -118,7 +118,7 @@ export const CustomDashboardUpdateForm = ({
     Array<ExistingFile | (File & { preview: string })>
   >(customDashboard.children_documents as ExistingFile[]);
 
-  const [openDelete, setOpenDelete] = useState<number>(-1);
+  const [openDelete, setOpenDelete] = useState<number | undefined>(undefined);
 
   const handleNameChange = (value: string) => {
     const slug = form.getValues('slug');
@@ -468,8 +468,8 @@ export const CustomDashboardUpdateForm = ({
                 AlertTitle={t('DialogActions.ContinueTitle')}
                 actionButtonText={t('MenuActions.Continue')}
                 variantName={'destructive'}
-                isOpen={openDelete !== -1}
-                onOpenChange={() => setOpenDelete(-1)}
+                isOpen={openDelete !== undefined}
+                onOpenChange={() => setOpenDelete(undefined)}
                 onClickContinue={() => {
                   setCurrentDashboard({
                     ...currentDashboard,
@@ -486,7 +486,7 @@ export const CustomDashboardUpdateForm = ({
                       (_, index) => index !== openDelete
                     ) as unknown as FileList
                   );
-                  setOpenDelete(-1);
+                  setOpenDelete(undefined);
                 }}>
                 {t('DialogActions.DeleteSentence')}
               </AlertDialogComponent>{' '}
