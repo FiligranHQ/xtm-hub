@@ -1,7 +1,7 @@
 import { Combobox } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
-import * as countryData from './data.json';
+import countryData from './data.json';
 
 interface CountryComboboxProps {
   value?: { name: string } | undefined;
@@ -13,9 +13,10 @@ export const CountryCombobox: React.FC<CountryComboboxProps> = ({
   onValueChange,
 }) => {
   const t = useTranslations();
+  const { countries } = countryData;
   const dataTab = useMemo(() => {
-    return countryData.countries.sort((a, b) => a.name.localeCompare(b.name));
-  }, [countryData]);
+    return countries.sort((a, b) => a.name.localeCompare(b.name));
+  }, [countries]);
 
   return (
     <Combobox
