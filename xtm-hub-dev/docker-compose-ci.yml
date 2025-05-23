@@ -150,6 +150,8 @@ services:
         condition: service_healthy
       portal-minio:
         condition: service_healthy
+      docker-in-docker:
+        condition: service_started
     environment:
       - E2E_BASE_URL=http://portal-front:3000
       - POSTGRES_USER=portal
