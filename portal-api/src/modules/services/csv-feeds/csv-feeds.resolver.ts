@@ -1,7 +1,9 @@
 import { dbTx } from '../../../../knexfile';
 import {
   CsvFeedConnection,
+  Label,
   Resolvers,
+  ServiceInstance,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -14,7 +16,6 @@ import {
   getLabels,
   getUploader,
   getUploaderOrganization,
-  loadDocumentById,
   loadParentDocumentsByServiceInstance,
 } from '../document/document.domain';
 import {
@@ -26,9 +27,15 @@ import { getServiceInstance } from '../service-instance.domain';
 import {
   createCsvFeed,
   CsvFeed,
+  loadCsvFeedById,
   loadSeoCsvFeedBySlug,
   loadSeoCsvFeedsByServiceSlug,
 } from './csv-feeds.domain';
+
+export type CsvFeedWithResolvableFields = CsvFeed & {
+  service_instance: ServiceInstance;
+  labels: Label[];
+};
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -38,7 +45,11 @@ const resolvers: Resolvers = {
         const files = await Promise.all(
           document.map((doc: Upload) => createFileInMinIO(doc, context))
         );
-        return createCsvFeed(input, files, context);
+        return createCsvFeed(
+          input,
+          files,
+          context
+        ) as unknown as CsvFeedWithResolvableFields;
       } catch (error) {
         throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
       }
@@ -46,7 +57,7 @@ const resolvers: Resolvers = {
     deleteCsvFeed: async (_, { id }, context) => {
       const trx = await dbTx();
       try {
-        const deletedDoc = await deleteDocument<CsvFeed>(
+        const deletedDoc = await deleteDocument<CsvFeedWithResolvableFields>(
           context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
@@ -81,7 +92,7 @@ const resolvers: Resolvers = {
       );
     },
     csvFeed: async (_, { id }, context) =>
-      loadDocumentById(context, extractId<DocumentId>(id)),
+      loadCsvFeedById(context, extractId<DocumentId>(id)),
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
       loadSeoCsvFeedsByServiceSlug(serviceSlug),
     seoCsvFeedBySlug: async (_, { slug }) => loadSeoCsvFeedBySlug(slug),

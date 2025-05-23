@@ -95,7 +95,6 @@ export const CsvFeedForm = ({
             fieldType: 'file',
             inputProps: {
               allowedTypes: 'application/json',
-              multiple: 'multiple',
             },
           },
           illustration: {

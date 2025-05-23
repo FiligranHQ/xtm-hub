@@ -2,8 +2,9 @@ import { db, dbUnsecure } from '../../../../knexfile';
 import { CreateCsvFeedInput } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
-import { createDocument } from '../document/document.domain';
+import { createDocument, loadDocumentById } from '../document/document.domain';
 import { Document, MinioFile } from '../document/document.helper';
+import { CsvFeedWithResolvableFields } from './csv-feeds.resolver';
 
 export type CsvFeed = Document;
 
@@ -49,7 +50,7 @@ export const loadCsvFeedsById = async (
 
 export const loadSeoCsvFeedsByServiceSlug = async (
   serviceSlug: string
-): Promise<Document[]> => {
+): Promise<CsvFeedWithResolvableFields[]> => {
   const csvFeeds = await dbUnsecure<Document>('Document')
     .select('Document.*')
     .leftJoin(
@@ -83,4 +84,12 @@ export const loadSeoCsvFeedBySlug = async (slug: string) => {
     })
     .first();
   return csvFeed;
+};
+
+export const loadCsvFeedById = async (
+  context: PortalContext,
+  id: string,
+  include_metadata = []
+): Promise<CsvFeedWithResolvableFields> => {
+  return loadDocumentById(context, id, include_metadata);
 };

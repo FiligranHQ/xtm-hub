@@ -105,7 +105,7 @@ export type CsvFeed = Node & {
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   remover_id?: Maybe<Scalars['ID']['output']>;
-  service_instance?: Maybe<ServiceInstance>;
+  service_instance: ServiceInstance;
   service_instance_id: Scalars['String']['output'];
   share_number: Scalars['Int']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
@@ -134,13 +134,13 @@ export type CsvFeedEdge = {
 export type CustomDashboard = Node & {
   __typename?: 'CustomDashboard';
   active: Scalars['Boolean']['output'];
-  children_documents?: Maybe<Array<Maybe<CustomDashboardImage>>>;
+  children_documents?: Maybe<Array<CustomDashboardImage>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number: Scalars['Int']['output'];
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  labels?: Maybe<Array<Maybe<Label>>>;
+  labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   product_version?: Maybe<Scalars['String']['output']>;
@@ -903,7 +903,7 @@ export type RolePortal = Node & {
 export type SeoCustomDashboard = {
   __typename?: 'SeoCustomDashboard';
   active: Scalars['Boolean']['output'];
-  children_documents: Array<Maybe<CustomDashboardImage>>;
+  children_documents: Array<CustomDashboardImage>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
@@ -1529,7 +1529,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
+  service_instance?: Resolver<ResolversTypes['ServiceInstance'], ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1558,13 +1558,13 @@ export type CsvFeedEdgeResolvers<ContextType = PortalContext, ParentType extends
 
 export type CustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboard'] = ResolversParentTypes['CustomDashboard']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  children_documents?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboardImage']>>>, ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['CustomDashboardImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  labels?: Resolver<Maybe<Array<Maybe<ResolversTypes['Label']>>>, ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1830,7 +1830,7 @@ export type RolePortalResolvers<ContextType = PortalContext, ParentType extends 
 
 export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboard'] = ResolversParentTypes['SeoCustomDashboard']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  children_documents?: Resolver<Array<Maybe<ResolversTypes['CustomDashboardImage']>>, ParentType, ContextType>;
+  children_documents?: Resolver<Array<ResolversTypes['CustomDashboardImage']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;

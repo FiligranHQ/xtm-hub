@@ -453,12 +453,12 @@ export const incrementShareNumber = (documentId: DocumentId) => {
     .returning('*');
 };
 
-export const loadDocumentById = async (
+export const loadDocumentById = async <T extends Document>(
   context: PortalContext,
   id: string,
   include_metadata: string[] = []
-): Promise<Document> => {
-  const docQuery = db<Document>(context, 'Document')
+): Promise<T> => {
+  const docQuery = db<T>(context, 'Document')
     .where('id', '=', id)
     .select('Document.*')
     .groupBy(['Document.id']);
