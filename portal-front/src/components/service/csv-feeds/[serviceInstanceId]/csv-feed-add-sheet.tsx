@@ -6,12 +6,12 @@ import {
 } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
 import { Button } from 'filigran-ui';
 
-import { CsvFeedsCreateMutation } from '@/components/service/csv-feeds/csv-feed.graphql';
+import { CsvFeedCreateMutation } from '@/components/service/csv-feeds/csv-feed.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
-import { csvFeedsCreateMutation } from '@generated/csvFeedsCreateMutation.graphql';
+import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -29,8 +29,8 @@ export const CSVFeedAddSheet = ({
 }: CSVFeedAddSheetProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
-  const [createCsvFeed] = useMutation<csvFeedsCreateMutation>(
-    CsvFeedsCreateMutation
+  const [createCsvFeed] = useMutation<csvFeedCreateMutation>(
+    CsvFeedCreateMutation
   );
 
   const userCanUpdate = useServiceCapability(
