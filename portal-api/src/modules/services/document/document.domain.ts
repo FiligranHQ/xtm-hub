@@ -26,6 +26,7 @@ import ObjectLabel, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
+import { formatRawObject } from '../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
@@ -334,6 +335,11 @@ export const loadDocuments = <
       'Document as children_documents',
       'Document_Children.child_document_id',
       'children_documents.id'
+    )
+    .leftJoin(
+      'ServiceInstance',
+      'Document.service_instance_id',
+      'ServiceInstance.id'
     );
 
   loadDocumentQuery.select(
@@ -342,10 +348,17 @@ export const loadDocuments = <
       WHEN COUNT("children_documents"."id") = 0 THEN NULL
       ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
     END AS children_documents`
+    ),
+    dbRaw(
+      formatRawObject({
+        columnName: 'ServiceInstance',
+        typename: 'ServiceInstance',
+        as: 'service_instance',
+      })
     )
   );
 
-  loadDocumentQuery.groupBy(['Document.id']);
+  loadDocumentQuery.groupBy(['Document.id', 'ServiceInstance.*']);
 
   if (Array.isArray(include_metadata)) {
     include_metadata.forEach((metaKey, index) => {
@@ -395,9 +408,9 @@ export const getChildrenDocuments = async (
 };
 
 export const getUploader = async (
-  context,
-  documentId,
-  opts = {}
+  context: PortalContext,
+  documentId: string,
+  opts: Partial<QueryOpts> = {}
 ): Promise<User> => {
   return (
     await db<User>(context, 'User', opts)
@@ -409,9 +422,9 @@ export const getUploader = async (
 };
 
 export const getUploaderOrganization = async (
-  context,
-  documentId,
-  opts = {}
+  context: PortalContext,
+  documentId: string,
+  opts: Partial<QueryOpts> = {}
 ): Promise<Organization> => {
   const [organization] = await db<Organization>(context, 'Organization', opts)
     .leftJoin(

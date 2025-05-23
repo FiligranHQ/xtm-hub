@@ -46,12 +46,14 @@ const resolvers: Resolvers = {
       }),
   },
   CustomDashboard: {
-    labels: ({ id }, _, context) => getLabels(context, id),
+    labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByCustomDashboardId(id),
-    uploader: ({ id }, _, context) => getUploader(context, id),
+    uploader: ({ id }, _, context) =>
+      getUploader(context, id, { unsecured: true }),
     uploader_organization: ({ id }, _, context) =>
-      getUploaderOrganization(context, id),
-    service_instance: ({ id }, _, context) => getServiceInstance(context, id),
+      getUploaderOrganization(context, id, { unsecured: true }),
+    service_instance: ({ service_instance_id }, _, context) =>
+      getServiceInstance(context, service_instance_id),
     subscription: ({ service_instance_id }, _, context) =>
       loadSubscription(context, service_instance_id),
   },
