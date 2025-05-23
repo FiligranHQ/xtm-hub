@@ -83,7 +83,7 @@ test.describe('Custom dashboards', () => {
     await openUpdateDrawer();
 
     let test_step = 0;
-    test.step('Update only texts', async () => {
+    await test.step('Update only texts', async () => {
       test_step++;
       await page
         .getByPlaceholder('Dashboard name')
@@ -107,7 +107,7 @@ test.describe('Custom dashboards', () => {
       ).toBeVisible();
     });
 
-    test.step('Add a new one image', async () => {
+    await test.step('Add a new one image', async () => {
       test_step++;
       await openUpdateDrawer();
       await page
@@ -126,7 +126,7 @@ test.describe('Custom dashboards', () => {
       ).toHaveCount(3);
     });
 
-    test.step('Delete the old image and add a new one', async () => {
+    await test.step('Delete the old image and add a new one', async () => {
       test_step++;
       await openUpdateDrawer();
       await page
@@ -151,7 +151,7 @@ test.describe('Custom dashboards', () => {
       ).toHaveCount(3);
     });
 
-    test.step('Delete the old image and add a new one', async () => {
+    await test.step('Delete the old image and add a new one', async () => {
       test_step++;
       await openUpdateDrawer();
       await page
@@ -176,7 +176,7 @@ test.describe('Custom dashboards', () => {
       ).toHaveCount(3);
     });
 
-    test.step('Delete the old image and add a new one', async () => {
+    await test.step('Delete the old image and add a new one', async () => {
       test_step++;
       await openUpdateDrawer();
       await page
@@ -201,7 +201,7 @@ test.describe('Custom dashboards', () => {
       ).toHaveCount(3);
     });
 
-    test.step('Update the dashboard', async () => {
+    await test.step('Update the dashboard', async () => {
       test_step++;
       await openUpdateDrawer();
       await page
