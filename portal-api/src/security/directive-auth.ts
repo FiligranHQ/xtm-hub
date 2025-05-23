@@ -5,6 +5,7 @@ import { getCapabilityUser, userHasBypassCapability } from './auth.helper';
 
 import { UserLoadUserBy } from '../model/user';
 import { getCapabilities } from '../modules/users/users.domain';
+import { logApp } from '../utils/app-logger.util';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
 export const SERVICE_DIRECTIVE_NAME = 'service_capa';
@@ -66,7 +67,8 @@ const getSchemaTransformer = (
             const serviceCapabilitiesRequired = serviceCapaDirective?.requires;
             // Check if the field requires authentication
             if (authDirective && !isAuthenticatedFn(user)) {
-              throw new Error(`Not authenticated.`);
+              logApp.warn('Not authenticated.');
+              return;
             }
             // Get the required authorization role for the requested field
             if (authDirective && !hasCapabilityFn(user, capabilitiesRequired)) {
