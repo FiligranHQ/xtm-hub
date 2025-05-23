@@ -452,7 +452,7 @@
     "Title": "Profile",
     "UpdateProfile": "Update profile",
     "InstancesEditionDialog": {
-      "ConfirmSentence": "Your first name and your last name will be also updated in your OCTI and OBAS instances."
+      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OCTI and OBAS instances."
     }
   },
   "Utils": {
