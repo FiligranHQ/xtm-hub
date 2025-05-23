@@ -61,12 +61,7 @@ const CustomDashboardsList = ({
   );
 
   const [active, nonActive] = useMemo(() => {
-    return data?.customDashboards.edges.reduce<
-      [
-        customDashboardsItem_fragment$data[],
-        customDashboardsItem_fragment$data[],
-      ]
-    >(
+    return data?.customDashboards.edges.reduce(
       ([activeItems, nonActiveItems], { node }) => {
         const customDashboard =
           readInlineData<customDashboardsItem_fragment$key>(
