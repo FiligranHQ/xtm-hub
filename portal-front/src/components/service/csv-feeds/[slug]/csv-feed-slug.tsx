@@ -36,7 +36,7 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
     },
     {
       label: serviceInstance?.name,
-      href: `/service/csv_feeds/${serviceInstance?.id}`,
+      href: `/service/${serviceInstance.slug}/${serviceInstance?.id}`,
       original: true,
     },
     {
@@ -46,7 +46,7 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   ];
 
   const onDelete = () => {
-    router.push(`/service/csv_feeds/${serviceInstance.id}`);
+    router.push(`/service/${serviceInstance.slug}/${serviceInstance.id}`);
   };
 
   return (
