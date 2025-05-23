@@ -60,30 +60,34 @@ const CustomDashboardsList = ({
     serviceInstance
   );
 
-  const [active, nonActive] = useMemo(() => {
-    return data?.customDashboards.edges.reduce<
-      [
-        customDashboardsItem_fragment$data[],
-        customDashboardsItem_fragment$data[],
-      ]
-    >(
-      (acc, { node }) => {
-        const customDashboard =
-          readInlineData<customDashboardsItem_fragment$key>(
-            customDashboardsItem,
-            node
-          );
+const [active, nonActive] = useMemo(() => {
+  return data?.customDashboards.edges.reduce<
+    [
+      customDashboardsItem_fragment$data[],
+      customDashboardsItem_fragment$data[],
+    ]
+  >(
+    ([activeItems, nonActiveItems], { node }) => {
+      const customDashboard =
+        readInlineData<customDashboardsItem_fragment$key>(
+          customDashboardsItem,
+          node
+        );
 
-        if (customDashboard.active) {
-          acc[0].push(customDashboard);
-        } else {
-          acc[1].push(customDashboard);
-        }
-        return acc;
-      },
-      [[], []]
-    );
-  }, [data]);
+      if (customDashboard.active) {
+      return [
+        [...activeItems, customDashboard], 
+        nonActiveItems
+      ];
+    } else {
+      return [
+        activeItems, 
+        [...nonActiveItems, customDashboard]
+      ];
+    },
+    [[], []]
+  );
+}, [data]);
 
   const firstCustomDashboard = nonActive.length > 0 ? nonActive[0] : active[0];
 
