@@ -1,5 +1,5 @@
 import { ApolloServerPlugin } from '@apollo/server';
-import { Counter, Registry } from 'prom-client';
+import { Counter, Histogram, Registry } from 'prom-client';
 
 export const registry = new Registry();
 
@@ -15,25 +15,55 @@ export const graphqlQueryCounter = new Counter({
   labelNames: ['query'],
 });
 
+export const graphqlOperationDuration = new Histogram({
+  name: 'graphql_operation_duration_seconds',
+  help: 'Duration of GraphQL operations in seconds',
+  labelNames: ['operation', 'name'],
+  buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5],
+});
+
 registry.registerMetric(graphqlMutationCounter);
 registry.registerMetric(graphqlQueryCounter);
-
+registry.registerMetric(graphqlOperationDuration);
 export const operationMetricsPlugin: ApolloServerPlugin = {
   async requestDidStart() {
+    let endTimer: (() => void) | null = null;
+
+    const operationMapping = {
+      mutation: (name: string) => {
+        graphqlMutationCounter.inc({ mutation: name });
+        return 'mutation';
+      },
+      query: (name: string) => {
+        graphqlQueryCounter.inc({ query: name });
+        return 'query';
+      },
+    } as const;
+
     return {
       async didResolveOperation({ request, document }) {
-        if (!request.operationName) {
-          return;
-        }
-        document.definitions.forEach((def) => {
+        const { operationName } = request;
+        if (!operationName) return;
+
+        for (const def of document.definitions) {
           if (def.kind === 'OperationDefinition') {
-            if (def.operation === 'mutation') {
-              graphqlMutationCounter.inc({ mutation: request.operationName });
-            } else if (def.operation === 'query') {
-              graphqlQueryCounter.inc({ query: request.operationName });
+            const operation = def.operation as keyof typeof operationMapping;
+            if (operationMapping[operation]) {
+              const operationType = operationMapping[operation](operationName);
+              endTimer = graphqlOperationDuration.startTimer({
+                operation: operationType,
+                name: operationName,
+              });
+              break;
             }
           }
-        });
+        }
+      },
+
+      async willSendResponse() {
+        if (endTimer) {
+          endTimer();
+        }
       },
     };
   },
