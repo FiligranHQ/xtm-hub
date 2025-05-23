@@ -94,10 +94,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Install docker
         uses: docker/setup-docker-action@v4
-      - name: Install docker compose
-        uses: KengoTODA/actions-setup-docker-compose@v1
-        with:
-          version: "2.29.6"
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
@@ -124,10 +120,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Install docker compose
-        uses: KengoTODA/actions-setup-docker-compose@v1
-        with:
-          version: "2.29.6"
+      - name: Install docker
+        uses: docker/setup-docker-action@v4
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
@@ -151,10 +145,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Install docker compose
-        uses: KengoTODA/actions-setup-docker-compose@v1
-        with:
-          version: "2.29.6"
+      - name: Install docker
+        uses: docker/setup-docker-action@v4
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
