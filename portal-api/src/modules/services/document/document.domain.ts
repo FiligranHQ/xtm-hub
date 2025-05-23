@@ -472,7 +472,7 @@ export const loadDocumentById = async <T extends Document>(
   include_metadata: string[] = []
 ): Promise<T> => {
   const docQuery = db<T>(context, 'Document')
-    .where('id', '=', id)
+    .where('Document.id', '=', id)
     .select('Document.*')
     .groupBy(['Document.id']);
 
