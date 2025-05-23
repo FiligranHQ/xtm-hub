@@ -43,8 +43,6 @@ const ParentDocumentCard = async ({
           customDashboard={
             document as unknown as customDashboardsItem_fragment$data
           }
-          detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-          shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
         />
       );
   }

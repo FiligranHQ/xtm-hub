@@ -3,7 +3,6 @@ import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/
 import { SearchInput } from '@/components/ui/search-input';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { debounceHandleInput } from '@/utils/debounce';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   customDashboardsItem_fragment$data,
   customDashboardsItem_fragment$key,
@@ -147,8 +146,6 @@ const CustomDashboardsList = ({
             key={doc.id}
             customDashboard={doc}
             serviceInstance={serviceInstance}
-            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
-            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
           />
         ))}
       </ul>
