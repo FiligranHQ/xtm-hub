@@ -6,6 +6,11 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileToBase64 } from '@/lib/utils';
+import {
+  ExistingFile,
+  docIsExistingFile,
+  fileListCheck,
+} from '@/utils/documents';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { AddIcon, DeleteIcon } from 'filigran-icon';
 import {
@@ -33,8 +38,6 @@ import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import slugify from 'slugify';
 import { z } from 'zod';
-
-const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 export const updateCustomDashboardSchema = z.object({
   name: z.string().min(1, 'Required'),
@@ -107,13 +110,6 @@ export const CustomDashboardUpdateForm = ({
   const [currentDashboard, setCurrentDashboard] =
     useState<customDashboardsItem_fragment$data>(customDashboard);
 
-  interface ExistingFile {
-    file_name: string;
-    id: string;
-  }
-  const docIsExistingFile = (value: unknown): value is ExistingFile => {
-    return typeof value === 'object' && value !== null && 'file_name' in value;
-  };
   const [images, setImages] = useState<
     Array<ExistingFile | (File & { preview: string })>
   >(customDashboard.children_documents as ExistingFile[]);
