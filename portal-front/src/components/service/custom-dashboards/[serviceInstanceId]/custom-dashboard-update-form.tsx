@@ -95,7 +95,7 @@ export const CustomDashboardUpdateForm = ({
       images:
         (customDashboard.children_documents?.map((n) => ({
           ...n,
-          name: n?.file_name,
+          name: n.file_name,
         })) as unknown as FileList) ?? [],
     },
   });

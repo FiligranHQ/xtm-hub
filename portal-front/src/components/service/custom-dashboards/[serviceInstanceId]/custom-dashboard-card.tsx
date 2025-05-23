@@ -28,7 +28,7 @@ const CustomDashboardCard = ({
 }: CustomDashboardCardProps) => {
   const t = useTranslations();
   const fileNames = (customDashboard.children_documents ?? []).map(
-    (doc) => doc?.id
+    (doc) => doc.id
   );
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,
