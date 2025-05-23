@@ -264,3 +264,11 @@ jobs:
             -f human job_templates launch 'Deploy XTM Hub' \
             --inventory eu-west-staging \
             --extra_vars '{"env":"Development"}'
+      - name: Deploy on Prerelease
+        if: github.ref == 'refs/heads/development'
+        run: |
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Deploy XTM Hub' \
+            --inventory eu-west-staging \
+            --extra_vars '{"env":"Prerelease"}'
