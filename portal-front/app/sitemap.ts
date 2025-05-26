@@ -1,11 +1,11 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { SeoCustomDashboard } from '@/utils/shareable-resources/shareable-resources.utils';
 import SeoCustomDashboardsByServiceSlugQuery, {
   seoCustomDashboardsByServiceSlugQuery,
 } from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import type { MetadataRoute } from 'next';
-import { SeoCustomDashboard } from './(public)/cybersecurity-solutions/[slug]/page';
 
 const CUSTOM_DASHBOARD_SERVICE_SLUG = 'custom-open-cti-dashboards';
 

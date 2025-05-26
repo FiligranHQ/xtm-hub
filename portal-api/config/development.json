@@ -18,7 +18,7 @@
         "id": "42007953-4dbc-480a-8693-8c05f1123460",
         "name": "CSV Feeds Library",
         "description": "Explore a range of CSV Feeds shared by the Filigran team",
-        "identifier": "csv_feed"
+        "identifier": "csv_feeds"
       },
       "price": {
         "id": "275386af-36c2-4bb3-b0d8-f74d447b309e",

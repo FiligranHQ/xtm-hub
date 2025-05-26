@@ -1,71 +1,54 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import {
-  DocumentId,
-  DocumentMutator,
-} from '../../../model/kanel/public/Document';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
-import { extractId } from '../../../utils/utils';
+import { extractId, omit } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
+  createDocument,
   deleteDocument,
   getChildrenDocuments,
-  getLabels,
   getUploader,
   getUploaderOrganization,
   incrementShareNumber,
-  loadDocumentBy,
+  loadDocumentById,
   loadDocuments,
-  sendFileToS3,
-  updateDocumentDescription,
+  updateDocument,
 } from './document.domain';
 import {
   checkDocumentExists,
-  createDocumentCustomDashboard,
-  loadDocumentMetadata,
+  createFileInMinIO,
   normalizeDocumentName,
+  waitForUploads,
 } from './document.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
-    addDocument: async (_, payload, context) => {
+    addDocument: async (
+      _,
+      { document, parentDocumentId, ...payload },
+      context
+    ) => {
       try {
-        const file_name = normalizeDocumentName(payload.document.file.filename);
-        const parent_document_id = payload.parentDocumentId
-          ? (extractId(payload.parentDocumentId) as DocumentId)
-          : null;
-        const minioName = await sendFileToS3(
-          payload.document.file,
-          file_name,
-          context.user.id,
-          context.serviceInstanceId as ServiceInstanceId
+        await waitForUploads(document);
+        const { minioName, fileName, mimeType } = await createFileInMinIO(
+          document,
+          context
         );
 
-        const data: DocumentMutator & { labels?: string[] } = {
-          uploader_id: context.user.id as UserId,
-          name: payload.name,
-          description: payload.description,
-          short_description: payload.short_description,
-          product_version: payload.product_version,
+        const addedDocument = await createDocument<Document>(context, {
+          ...omit(payload, ['service_instance_id']),
           minio_name: minioName,
-          file_name,
-          service_instance_id: context.serviceInstanceId as ServiceInstanceId,
-          created_at: new Date(),
-          mime_type: payload.document.file.mimetype,
-          parent_document_id,
-          active: payload.active ?? true,
-          labels: payload.labels,
-          slug: payload.slug,
-          uploader_organization_id: context.user.selected_organization_id,
-          type: payload.type,
-        };
-
-        const [addedDocument] = await createDocumentCustomDashboard(data);
+          file_name: fileName,
+          mime_type: mimeType,
+          parent_document_id: parentDocumentId
+            ? extractId<DocumentId>(parentDocumentId)
+            : null,
+        });
         return addedDocument;
       } catch (error) {
         console.error('Error while adding document:', error);
@@ -74,18 +57,10 @@ const resolvers: Resolvers = {
     },
     editDocument: async (_, { documentId, input }, context) => {
       try {
-        const [document] = await updateDocumentDescription(
+        const document = await updateDocument(
           context,
-          input.uploader_organization_id
-            ? ({
-                ...input,
-                uploader_organization_id: extractId<OrganizationId>(
-                  input.uploader_organization_id
-                ),
-              } as DocumentMutator)
-            : input,
-          fromGlobalId(documentId).id as DocumentId,
-          context.serviceInstanceId as ServiceInstanceId
+          extractId<DocumentId>(documentId),
+          input
         );
         return document;
       } catch (error) {
@@ -93,14 +68,19 @@ const resolvers: Resolvers = {
       }
     },
     deleteDocument: async (_, { documentId, forceDelete }, context) => {
+      const trx = await dbTx();
       try {
-        return deleteDocument(
+        const doc = await deleteDocument(
           context,
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId,
-          forceDelete
+          forceDelete,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }
     },
@@ -128,20 +108,11 @@ const resolvers: Resolvers = {
       getUploaderOrganization(context, id, {
         unsecured: true,
       }),
-    labels: ({ id }, _, context) =>
-      getLabels(context, id, {
-        unsecured: true,
-      }),
     service_instance: ({ service_instance_id }, _, context) => {
       return getServiceInstance(context, service_instance_id);
     },
     subscription: ({ service_instance_id }, _, context) => {
       return loadSubscription(context, service_instance_id);
-    },
-    document_metadata: ({ id }, _, context) => {
-      return loadDocumentMetadata(context, {
-        document_id: id,
-      } as DocumentMutator);
     },
   },
   Query: {
@@ -184,19 +155,15 @@ const resolvers: Resolvers = {
           },
           {
             'Document.service_instance_id': fromGlobalId(serviceInstanceId).id,
-          } as DocumentMutator
+          }
         );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);
         throw error;
       }
     },
-    document: async (_, { documentId }, context) => {
-      const [parentDocument] = await loadDocumentBy(context, {
-        'Document.id': extractId<DocumentId>(documentId),
-      } as DocumentMutator);
-      return parentDocument;
-    },
+    document: async (_, { documentId }, context) =>
+      loadDocumentById(context, extractId<DocumentId>(documentId)),
   },
 };
 

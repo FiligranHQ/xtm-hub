@@ -35,11 +35,11 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
         serviceInstanceId: slug,
         connections: [connectionId],
       },
-      onCompleted: (response) => {
+      onCompleted: () => {
         toast({
           title: t('Utils.Success'),
           description: t('VaultActions.DocumentDeleted', {
-            file_name: response.deleteDocument.file_name,
+            file_name: documentData.file_name,
           }),
         });
         setMenuOpen(false);

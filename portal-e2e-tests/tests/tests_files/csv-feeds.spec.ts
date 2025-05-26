@@ -4,7 +4,6 @@ import CsvFeedPage from '../model/csvFeed.pageModel';
 import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
 import { removeDocument } from '../db-utils/document.helper';
 import { PLATFORM_ORGANIZATION_UUID } from '../db-utils/const';
-import { waitForDrawerToClose, waitForToasterToHide } from '../model/common';
 
 const CSV_FEED_TEST = {
   name: 'e2e CSV Feed name',
@@ -23,6 +22,15 @@ test.describe('CSV Feeds', () => {
     await loginPage.login();
     await csvFeedPage.subscribeCsvFeedService();
     await csvFeedPage.fillCsvFeed(CSV_FEED_TEST);
+  });
+
+  test.afterEach(async () => {
+    await removeSubscriptionFromService({
+      organizationId: PLATFORM_ORGANIZATION_UUID,
+      serviceInstanceId: CSV_FEED_TEST.csvFeedsServiceInstanceId,
+    });
+    await removeDocument('test.png');
+    await removeDocument('octi_csv_feed.json');
   });
 
   test('Should add CSV Feed', async ({ page }) => {
@@ -48,14 +56,5 @@ test.describe('CSV Feeds', () => {
     await expect(
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();
-  });
-
-  test.afterEach(async () => {
-    await removeSubscriptionFromService({
-      organizationId: PLATFORM_ORGANIZATION_UUID,
-      serviceInstanceId: CSV_FEED_TEST.csvFeedsServiceInstanceId,
-    });
-    await removeDocument('test.png');
-    await removeDocument('octi_csv_feed.json');
   });
 });

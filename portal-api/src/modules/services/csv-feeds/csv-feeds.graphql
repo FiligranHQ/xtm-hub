@@ -1,0 +1,70 @@
+type CsvFeed implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  slug: String
+  labels: [Label!]!
+  service_instance_id: String!
+  service_instance: ServiceInstance!
+  subscription: SubscriptionModel
+  children_documents: [Document!]
+  remover_id: ID
+}
+
+input CreateCsvFeedInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+}
+
+type Mutation {
+  createCsvFeed(
+    input: CreateCsvFeedInput!
+    document: Upload!
+    serviceInstanceId: String!
+  ): CsvFeed @auth @service_capa(requires: [UPLOAD])
+  deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
+    @auth
+    @service_capa(requires: [DELETE])
+}
+
+type CsvFeedEdge {
+  cursor: String!
+  node: CsvFeed!
+}
+
+type CsvFeedConnection {
+  totalCount: Int!
+  edges: [CsvFeedEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Query {
+  csvFeeds(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): CsvFeedConnection! @auth
+  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed @auth
+  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
+  seoCsvFeedBySlug(slug: String): CsvFeed
+}

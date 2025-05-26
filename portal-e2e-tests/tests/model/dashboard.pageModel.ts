@@ -1,12 +1,26 @@
 import { Locator, Page } from '@playwright/test';
-const TEST_JSON_FILE = {
+import { waitForDrawerToClose } from './common';
+export const TEST_JSON_FILE = {
   path: './tests/tests_files/assets/octi_dashboard.json',
   name: 'octi_dashboard.json',
 };
-const TEST_IMAGE_FILE = {
+export const TEST_2_JSON_FILE = {
+  path: './tests/tests_files/assets/octi_dashboard_2.json',
+  name: 'octi_dashboard_2.json',
+};
+export const TEST_IMAGE_FILE = {
   path: './tests/tests_files/assets/test.png',
   name: 'test.png',
 };
+export const TEST_2_IMAGE_FILE = {
+  path: './tests/tests_files/assets/test2.png',
+  name: 'test2.png',
+};
+export const TEST_3_IMAGE_FILE = {
+  path: './tests/tests_files/assets/test3.png',
+  name: 'test3.png',
+};
+export const SERVICE_NAME = 'OpenCTI Custom Dashboards Library';
 
 export default class DashboardPage {
   constructor(private page: Page) {}
@@ -28,13 +42,13 @@ export default class DashboardPage {
   async subscribeDashboardService() {
     await this.page
       .locator('li')
-      .filter({ hasText: 'OpenCTI Custom Dashboards' })
+      .filter({ hasText: SERVICE_NAME })
       .getByRole('button')
       .click();
     await this.page.getByRole('button', { name: 'Continue' }).click();
   }
 
-  async fillCustomDashboard({
+  async addCustomDashboard({
     name,
     shortDescription,
     version,
@@ -58,6 +72,7 @@ export default class DashboardPage {
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await waitForDrawerToClose(this.page);
   }
 
   async navigateToDashboard(shortDescription: string) {
@@ -65,9 +80,7 @@ export default class DashboardPage {
   }
 
   async navigateToPublicCustomDashboard() {
-    await this.page
-      .getByRole('link', { name: 'OpenCTI Custom Dashboards' })
-      .click();
+    await this.page.getByRole('link', { name: SERVICE_NAME }).click();
   }
 
   async navigateToPublicDashboardDetail(shortDescription: string) {

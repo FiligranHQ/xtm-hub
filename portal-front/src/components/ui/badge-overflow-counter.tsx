@@ -12,7 +12,7 @@ import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { useEventListener } from 'usehooks-ts';
 
 interface BadgeOverflowCounterProps {
-  badges: BadgeOverflow[] | undefined;
+  badges: Readonly<BadgeOverflow[]>;
   className?: string;
 }
 

@@ -1,5 +1,6 @@
-type SeoCustomDashboardImage {
+type CustomDashboardImage {
   id: ID!
+  file_name: String!
 }
 
 type SeoCustomDashboard {
@@ -15,12 +16,101 @@ type SeoCustomDashboard {
   download_number: Int
   share_number: Int
   product_version: String
-  children_documents: [SeoCustomDashboardImage]!
+  children_documents: [CustomDashboardImage!]!
   labels: [Label]
   active: Boolean!
+}
+
+input CreateCustomDashboardInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+  # Specific fields for custom dashboards
+  product_version: String!
+}
+
+input UpdateCustomDashboardInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  uploader_organization_id: String
+  # Specific fields for custom dashboards
+  product_version: String
+}
+
+type CustomDashboard implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [CustomDashboardImage!]
+  # Specific fields for custom dashboards
+  product_version: String
+}
+
+type CustomDashboardEdge {
+  cursor: String!
+  node: CustomDashboard!
+}
+
+type CustomDashboardConnection {
+  totalCount: Int!
+  edges: [CustomDashboardEdge!]!
+  pageInfo: PageInfo!
 }
 
 type Query {
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
   seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
+  customDashboards(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): CustomDashboardConnection! @auth
+  customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
+}
+
+type Mutation {
+  createCustomDashboard(
+    input: CreateCustomDashboardInput!
+    document: [Upload!]!
+    serviceInstanceId: String
+  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
+  updateCustomDashboard(
+    documentId: ID
+    input: UpdateCustomDashboardInput!
+    document: [Upload!]
+    updateDocument: Boolean!
+    images: [String!]
+    serviceInstanceId: String
+  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
+  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
+    @auth
+    @service_capa(requires: [DELETE])
 }

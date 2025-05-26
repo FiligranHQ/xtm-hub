@@ -1,4 +1,5 @@
 import config from 'config';
+import { Knex } from 'knex';
 import {
   db,
   dbRaw,
@@ -7,14 +8,17 @@ import {
   QueryOpts,
 } from '../../../../knexfile';
 import {
+  CsvFeedConnection,
+  CustomDashboardConnection,
   DocumentConnection,
   Organization,
   QueryDocumentsArgs,
 } from '../../../__generated__/resolvers-types';
 import {
   DocumentId,
-  DocumentMutator,
+  default as DocumentModel,
 } from '../../../model/kanel/public/Document';
+import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
 import Label, { LabelId } from '../../../model/kanel/public/Label';
 import ObjectLabel, {
   ObjectLabelObjectId,
@@ -22,15 +26,22 @@ import ObjectLabel, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
-import { addPrefixToObject } from '../../../utils/typescript';
-import { extractId } from '../../../utils/utils';
+import { formatRawObject } from '../../../utils/queryRaw.util';
+import { extractId, omit } from '../../../utils/utils';
 import { insertFileInMinio, UploadedFile } from './document-storage';
 import {
-  createDocumentCustomDashboard,
   Document,
+  FullDocumentMutator,
   getDocumentName,
   loadUnsecureDocumentsBy,
+  normalizeDocumentName,
 } from './document.helper';
+
+import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
+import DocumentMetadata, {
+  DocumentMetadataKey,
+} from '../../../model/kanel/public/DocumentMetadata';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 
 export const sendFileToS3 = async (
   file: UploadedFile,
@@ -67,8 +78,9 @@ export const passOldDocumentsIntoInactive = async (
 };
 
 export const insertDocument = async (
-  documentData: DocumentMutator
-): Promise<Document[]> => {
+  context: PortalContext,
+  documentData: FullDocumentMutator
+): Promise<Document> => {
   const existingDocuments = await loadUnsecureDocumentsBy({
     file_name: documentData.file_name,
   });
@@ -76,118 +88,230 @@ export const insertDocument = async (
     passOldDocumentsIntoInactive(existingDocuments);
   }
 
-  return createDocumentCustomDashboard(documentData);
+  return createDocument<Document>(context, documentData);
 };
 
-export const updateDocumentDescription = async (
+export const createDocument = async <T extends DocumentModel>(
   context: PortalContext,
-  updateData: DocumentMutator,
-  documentId: DocumentId,
-  serviceInstanceId: ServiceInstanceId
-): Promise<Document[]> => {
-  return updateDocument(context, updateData, {
-    id: documentId,
-    service_instance_id: serviceInstanceId,
-  });
-};
+  documentData: Omit<Partial<T>, 'labels'> & {
+    labels?: string[];
+    parent_document_id?: string;
+  },
+  metadataKeys: Array<
+    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+  > = []
+): Promise<T> => {
+  const [document] = await db<DocumentModel>(context, 'Document')
+    .insert({
+      ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
+      active: documentData.active ?? true,
+      uploader_id: context.user.id,
+      service_instance_id: context.serviceInstanceId as ServiceInstanceId,
+      uploader_organization_id: context.user.selected_organization_id,
+    })
+    .returning('*');
 
-export const updateDocument = async (
-  context: PortalContext,
-  { labels, ...updateData }: DocumentMutator & { labels?: string[] },
-  field: DocumentMutator
-): Promise<Document[]> => {
-  // IF label is null => that mean we want to update the field to empty
-  if (labels !== undefined) {
-    const { id: object_id } = field as { id: string };
-    const existing = await db<ObjectLabel>(context, 'Object_Label')
-      .where('object_id', '=', object_id)
-      .select('*');
-    if (existing) {
-      await db<ObjectLabel>(context, 'Object_Label')
-        .where('object_id', '=', object_id)
-        .delete('*');
+  if (documentData.parent_document_id) {
+    await db<DocumentChildren>(context, 'Document_Children').insert({
+      parent_document_id: documentData.parent_document_id as DocumentId,
+      child_document_id: document.id,
+    });
+  }
+
+  if (documentData.labels?.length) {
+    await db<ObjectLabel>(context, 'Object_Label').insert(
+      documentData.labels.map((id: string) => ({
+        object_id: document.id as unknown as ObjectLabelObjectId,
+        label_id: extractId(id) as LabelId,
+      }))
+    );
+  }
+
+  if (metadataKeys.length) {
+    const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+      .insert(
+        metadataKeys.map((key) => ({
+          document_id: document.id,
+          key: key as DocumentMetadataKey,
+          value: documentData[key] as string,
+        }))
+      )
+      .returning('*');
+
+    for (const metadata of metadatas) {
+      document[metadata.key] = metadata.value;
     }
-    if ((labels.length ?? 0) > 0) {
+  }
+
+  return document as T;
+};
+
+export const updateDocument = async <T extends DocumentModel>(
+  context: PortalContext,
+  documentId: string,
+  documentData: Omit<Partial<T>, 'labels'> & {
+    labels?: string[];
+  },
+  metadataKeys: Array<
+    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+  > = []
+): Promise<T> => {
+  const uploader_organization_id = documentData.uploader_organization_id
+    ? extractId<OrganizationId>(documentData.uploader_organization_id)
+    : null;
+
+  const [document] = await db<DocumentModel>(context, 'Document')
+    .where('id', '=', documentId)
+    .update({
+      ...omit(documentData, ['labels', ...metadataKeys]),
+      uploader_organization_id,
+      updated_at: new Date(),
+      updater_id: context.user.id,
+    })
+    .returning('*');
+
+  // If label is null => that mean we want to update the field to empty
+  if (documentData.labels !== undefined) {
+    await db<ObjectLabel>(context, 'Object_Label')
+      .where('object_id', '=', documentId)
+      .delete();
+    if (documentData.labels?.length > 0) {
       await db<ObjectLabel>(context, 'Object_Label').insert(
-        labels.map((id) => ({
-          object_id: object_id as unknown as ObjectLabelObjectId,
+        documentData.labels.map((id) => ({
+          object_id: documentId as unknown as ObjectLabelObjectId,
           label_id: extractId(id) as LabelId,
         }))
       );
     }
   }
-  return db<Document>(context, 'Document')
-    .where(field)
-    .update(updateData)
-    .returning('*');
+
+  if (metadataKeys.length) {
+    await db<DocumentMetadata>(context, 'Document_Metadata')
+      .where('document_id', '=', documentId)
+      .delete();
+
+    const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+      .insert(
+        metadataKeys.map((key) => ({
+          document_id: documentId as DocumentId,
+          key: key as DocumentMetadataKey,
+          value: documentData[key] as string,
+        }))
+      )
+      .returning('*');
+
+    for (const metadata of metadatas) {
+      document[metadata.key] = metadata.value;
+    }
+  }
+
+  return document as T;
 };
 
 export const incrementDocumentsDownloads = async (
   context: PortalContext,
-  document: Document
+  document: DocumentModel
 ) => {
-  const data: DocumentMutator = {
+  await updateDocument(context, document.id, {
     download_number: document.download_number + 1,
-  };
-  await updateDocument(context, data, { id: document.id });
+  });
 };
 
-export const deleteDocument = async (
+export const deleteDocument = async <T extends DocumentModel>(
   context: PortalContext,
   documentId: DocumentId,
   serviceInstanceId: ServiceInstanceId,
-  forceDelete: boolean
-): Promise<Document> => {
+  hardDelete: boolean,
+  trx: Knex.Transaction
+): Promise<T> => {
   const [documentFromDb] = await loadDocumentBy(context, {
     'Document.id': documentId,
     'Document.service_instance_id': serviceInstanceId,
   });
-  await db<ObjectLabel>(context, 'Object_Label')
-    .where('object_id', '=', documentId)
-    .delete('*');
-  if (forceDelete) {
+
+  if (!documentFromDb) {
+    throw new Error('Document not found');
+  }
+
+  const children = await db<DocumentChildren>(context, 'Document_Children')
+    .where('parent_document_id', '=', documentId)
+    .select('child_document_id');
+  const childIds = children.map((c) => c.child_document_id);
+
+  if (hardDelete) {
+    // Children
+    await db<DocumentChildren>(context, 'Document_Children')
+      .where('parent_document_id', '=', documentId)
+      .delete('Document_Children.*')
+      .transacting(trx);
+
     await db<Document>(context, 'Document')
-      .where('Document.id', '=', documentFromDb.id)
-      .delete();
-  } else {
-    await passDocumentToInactive(context, documentFromDb);
+      .whereIn('Document.id', childIds)
+      .delete('Document.*')
+      .transacting(trx);
+
+    // Labels
+    await db<ObjectLabel>(context, 'Object_Label')
+      .where('object_id', '=', documentId)
+      .delete('*')
+      .transacting(trx);
+
+    // Parent doc
+    await db<Document>(context, 'Document')
+      .where('Document.id', '=', documentId)
+      .delete()
+      .transacting(trx);
+
+    return documentFromDb as T;
   }
 
-  // Check if this document has a parent
-  let parentDocument = documentFromDb;
-  const parentDocuments = await db(context, 'Document_Children')
-    .select('parent_document_id')
-    .where('child_document_id', documentFromDb.id)
-    .limit(1);
+  // Soft delete => desactivate the document
+  await passDocumentToInactive(context, [documentId, ...childIds]);
 
-  if (parentDocuments.length > 0) {
-    const parents = await loadDocumentBy(context, {
-      'Document.id': parentDocuments[0].parent_document_id,
-      'Document.service_instance_id': serviceInstanceId,
-    });
-
-    if (parents.length > 0) {
-      parentDocument = parents[0];
-    }
-  }
-
-  return parentDocument;
+  return documentFromDb as T;
 };
 
 export const passDocumentToInactive = async (
   context: PortalContext,
-  document: Document
+  documentId: DocumentId | DocumentId[]
 ) => {
+  documentId = Array.isArray(documentId) ? documentId : [documentId];
   await db<Document>(context, 'Document')
-    .where('Document.id', '=', document.id)
+    .whereIn('Document.id', documentId)
     .update({ active: false, remover_id: context.user.id });
 };
 
-export const loadDocuments = (
+export const loadParentDocumentsByServiceInstance = <
+  T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
+>(
   context: PortalContext,
-  opts: QueryDocumentsArgs,
-  field: DocumentMutator
-): Promise<DocumentConnection> => {
+  input: QueryDocumentsArgs,
+  include_metadata?: string[]
+): Promise<T> => {
+  return loadDocuments<T>(
+    context,
+    {
+      ...input,
+      parentsOnly: true,
+      searchTerm: normalizeDocumentName(input.searchTerm),
+    },
+    {
+      'Document.service_instance_id': extractId<ServiceInstanceId>(
+        input.serviceInstanceId
+      ),
+    },
+    include_metadata
+  );
+};
+
+export const loadDocuments = <
+  T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
+>(
+  context: PortalContext,
+  opts: Partial<QueryDocumentsArgs>,
+  field: Record<string, unknown>,
+  include_metadata?: string[]
+): Promise<T> => {
   const loadDocumentQuery = db<Document>(context, 'Document', opts)
     .select(['Document.*'])
     .where(field);
@@ -199,31 +323,59 @@ export const loadDocuments = (
         .from('Document_Children')
         .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
     });
-
-    loadDocumentQuery
-      .leftJoin(
-        'Document_Children',
-        'Document.id',
-        'Document_Children.parent_document_id'
-      )
-      .leftJoin(
-        'Document as children_documents',
-        'Document_Children.child_document_id',
-        'children_documents.id'
-      );
-
-    loadDocumentQuery.select(
-      dbRaw(
-        `CASE
-        WHEN COUNT("children_documents"."id") = 0 THEN NULL
-        ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
-      END AS children_documents`
-      )
-    );
-    loadDocumentQuery.groupBy(['Document.id']);
   }
 
-  return paginate<Document, DocumentConnection>(
+  loadDocumentQuery
+    .leftJoin(
+      'Document_Children',
+      'Document.id',
+      'Document_Children.parent_document_id'
+    )
+    .leftJoin(
+      'Document as children_documents',
+      'Document_Children.child_document_id',
+      'children_documents.id'
+    )
+    .leftJoin(
+      'ServiceInstance',
+      'Document.service_instance_id',
+      'ServiceInstance.id'
+    );
+
+  loadDocumentQuery.select(
+    dbRaw(
+      `CASE
+      WHEN COUNT("children_documents"."id") = 0 THEN NULL
+      ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
+    END AS children_documents`
+    ),
+    dbRaw(
+      formatRawObject({
+        columnName: 'ServiceInstance',
+        typename: 'ServiceInstance',
+        as: 'service_instance',
+      })
+    )
+  );
+
+  loadDocumentQuery.groupBy(['Document.id', 'ServiceInstance.*']);
+
+  if (Array.isArray(include_metadata)) {
+    include_metadata.forEach((metaKey, index) => {
+      const metaAlias = `meta${index}`;
+      loadDocumentQuery
+        .select(`${metaAlias}.value as ${metaKey}`)
+        .leftJoin(
+          { [metaAlias]: 'Document_Metadata' },
+          `${metaAlias}.document_id`,
+          'Document.id'
+        )
+        .andWhere(`${metaAlias}.key`, '=', metaKey)
+        .groupBy([metaKey]);
+    });
+  }
+
+  return paginate<Document, T>(
     context,
     'Document',
     opts,
@@ -234,10 +386,10 @@ export const loadDocuments = (
 
 export const loadDocumentBy = async (
   context: PortalContext,
-  field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator,
+  field: Record<string, unknown>,
   opts = {}
-) => {
-  return db<Document>(context, 'Document', opts)
+): Promise<DocumentModel[]> => {
+  return db<DocumentModel>(context, 'Document', opts)
     .where(field)
     .select('Document.*');
 };
@@ -256,9 +408,9 @@ export const getChildrenDocuments = async (
 };
 
 export const getUploader = async (
-  context,
-  documentId,
-  opts = {}
+  context: PortalContext,
+  documentId: string,
+  opts: Partial<QueryOpts> = {}
 ): Promise<User> => {
   return (
     await db<User>(context, 'User', opts)
@@ -270,9 +422,9 @@ export const getUploader = async (
 };
 
 export const getUploaderOrganization = async (
-  context,
-  documentId,
-  opts = {}
+  context: PortalContext,
+  documentId: string,
+  opts: Partial<QueryOpts> = {}
 ): Promise<Organization> => {
   const [organization] = await db<Organization>(context, 'Organization', opts)
     .leftJoin(
@@ -286,7 +438,22 @@ export const getUploaderOrganization = async (
   return organization;
 };
 
-export const getLabels = (context, documentId, opts = {}): Promise<Label[]> =>
+export const getLabels = (
+  context: PortalContext,
+  documentId: string,
+  opts: Partial<QueryOpts> = {}
+): Promise<Label[]> =>
+  db<Label>(context, 'Label', opts)
+    .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
+    .where('ol.object_id', '=', documentId)
+    .returning('Label.*');
+
+export const getMetadata = (
+  context: PortalContext,
+  documentId: string,
+  metadataKeys: string[],
+  opts: Partial<QueryOpts> = {}
+): Promise<Label[]> =>
   db<Label>(context, 'Label', opts)
     .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
     .where('ol.object_id', '=', documentId)
@@ -299,13 +466,29 @@ export const incrementShareNumber = (documentId: DocumentId) => {
     .returning('*');
 };
 
-export const createDocument = async (
+export const loadDocumentById = async <T extends Document>(
   context: PortalContext,
-  trx,
-  data: DocumentMutator
-): Promise<Document[]> => {
-  return db<Document>(context, 'Document')
-    .insert(data)
-    .returning('*')
-    .transacting(trx);
+  id: string,
+  include_metadata: string[] = []
+): Promise<T> => {
+  const docQuery = db<T>(context, 'Document')
+    .where('Document.id', '=', id)
+    .select('Document.*')
+    .groupBy(['Document.id']);
+
+  if (Array.isArray(include_metadata)) {
+    include_metadata.forEach((metaKey, index) => {
+      const metaAlias = `meta${index}`;
+      docQuery
+        .select(`${metaAlias}.value as ${metaKey}`)
+        .leftJoin(
+          { [metaAlias]: 'Document_Metadata' },
+          `${metaAlias}.document_id`,
+          'Document.id'
+        )
+        .andWhere(`${metaAlias}.key`, '=', metaKey)
+        .groupBy([metaKey]);
+    });
+  }
+  return docQuery.first();
 };

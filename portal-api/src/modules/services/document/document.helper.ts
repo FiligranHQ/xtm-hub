@@ -1,21 +1,20 @@
-import { db, dbUnsecure } from '../../../../knexfile';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
+import { dbUnsecure } from '../../../../knexfile';
 import {
+  DocumentId,
+  default as DocumentModel,
   DocumentMutator,
-  default as DocumentType,
 } from '../../../model/kanel/public/Document';
-import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
-import DocumentMetadata from '../../../model/kanel/public/DocumentMetadata';
-import Label, { LabelId } from '../../../model/kanel/public/Label';
-import ObjectLabel, {
-  ObjectLabelObjectId,
-} from '../../../model/kanel/public/ObjectLabel';
+import Label from '../../../model/kanel/public/Label';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
-import { addPrefixToObject } from '../../../utils/typescript';
-import { extractId } from '../../../utils/utils';
-import { sendFileToS3 } from './document.domain';
+import { createDocument, sendFileToS3 } from './document.domain';
 
-export type Document = DocumentType & { labels: Label[] };
+export type Document = DocumentModel & { labels: Label[] };
+export type FullDocumentMutator = Partial<DocumentModel> & {
+  labels?: string[];
+  parent_document_id?: DocumentId;
+};
 
 export const getDocumentName = (documentName: string) => {
   const splitName = documentName.split('.');
@@ -29,10 +28,39 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[&\\#,+()$~%'":*?!<>{}\s]/g, '-');
+    .replace(/[^a-z0-9\-_.]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 };
 
-export const createFileInMinIO = async (jsonFile, context) => {
+export interface MinioFile {
+  minioName: string;
+  fileName: string;
+  mimeType: string;
+}
+
+export interface ExistingFile {
+  id: string;
+  file_name: string;
+  name: string;
+}
+
+export interface Upload {
+  file: FileUpload;
+  promise: Promise<FileUpload>;
+}
+
+export const waitForUploads = async (uploads: Upload[] | Upload) => {
+  if (!Array.isArray(uploads)) {
+    uploads = [uploads];
+  }
+  await Promise.all(uploads.map((upload) => upload.promise));
+};
+
+export const createFileInMinIO = async (
+  jsonFile: Upload,
+  context: PortalContext
+): Promise<MinioFile> => {
   const fileName = normalizeDocumentName(jsonFile.file.filename);
   const minioName = await sendFileToS3(
     jsonFile.file,
@@ -40,7 +68,7 @@ export const createFileInMinIO = async (jsonFile, context) => {
     context.user.id,
     context.serviceInstanceId as ServiceInstanceId
   );
-  return { minioName, fileName };
+  return { minioName, fileName, mimeType: jsonFile.file.mimetype };
 };
 
 export const checkDocumentExists = async (
@@ -61,57 +89,6 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const createDocumentMetadata = async (
-  context: PortalContext,
-  data: {
-    document_id;
-    key;
-    value;
-  },
-  trx
-): Promise<DocumentMetadata[]> => {
-  return db<DocumentMetadata>(context, 'Document_Metadata')
-    .insert(data)
-    .returning('*')
-    .transacting(trx);
-};
-
-export const loadDocumentMetadata = async (
-  context: PortalContext,
-  field: addPrefixToObject<DocumentMutator, 'Document.'> | DocumentMutator
-): Promise<DocumentMetadata[]> => {
-  return db<DocumentMetadata[]>(context, 'Document_Metadata')
-    .where(field)
-    .select('*');
-};
-
-export const createDocumentCustomDashboard = async ({
-  labels,
-  parent_document_id,
-  ...documentData
-}: DocumentMutator & { labels?: string[] }): Promise<Document[]> => {
-  const [document] = await dbUnsecure<Document>('Document')
-    .insert(documentData)
-    .returning('*');
-
-  if (parent_document_id) {
-    await dbUnsecure<DocumentChildren>('Document_Children').insert({
-      parent_document_id: parent_document_id,
-      child_document_id: document.id,
-    });
-  }
-
-  if (labels?.length) {
-    await dbUnsecure<ObjectLabel>('Object_Label').insert(
-      labels.map((id) => ({
-        object_id: document.id as unknown as ObjectLabelObjectId,
-        label_id: extractId(id) as LabelId,
-      }))
-    );
-  }
-  return [document];
-};
-
 export const uploadNewFile = async (
   context: PortalContext,
   document,
@@ -127,7 +104,7 @@ export const uploadNewFile = async (
     serviceInstanceId
   );
 
-  const data: DocumentMutator & { labels?: string[] } = {
+  const data: FullDocumentMutator = {
     uploader_id: context.user.id,
     name: serviceInstanceId,
     minio_name: minioName,
@@ -138,7 +115,7 @@ export const uploadNewFile = async (
     type: 'service_picture',
   };
 
-  const [addedDocument] = await createDocumentCustomDashboard(data);
+  const addedDocument = await createDocument(context, data);
   return addedDocument;
 };
 

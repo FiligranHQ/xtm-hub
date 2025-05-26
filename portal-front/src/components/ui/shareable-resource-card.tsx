@@ -3,7 +3,8 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { Badge } from 'filigran-ui';
 import { AspectRatio } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
@@ -11,12 +12,18 @@ import Link from 'next/link';
 import { ReactNode } from 'react';
 
 interface ShareableResourceCardProps {
-  document: documentItem_fragment$data;
+  document: ShareableResource;
   detailUrl: string;
   shareLinkUrl: string;
   children: ReactNode;
   extraContent?: ReactNode;
 }
+
+const isCustomDashboard = (
+  document: ShareableResource
+): document is customDashboardsItem_fragment$data => {
+  return document.type === 'custom_dashboard';
+};
 
 const ShareableResourceCard = ({
   document,
@@ -38,15 +45,16 @@ const ShareableResourceCard = ({
       </div>
       <div className="flex flex-col flex-grow p-l space-y-s">
         <div className="flex items-center justify-between">
-          <BadgeOverflowCounter
-            badges={document?.labels as BadgeOverflow[]}
-            className="z-[2]"
-          />
+          {document?.labels && (
+            <BadgeOverflowCounter
+              badges={document?.labels as BadgeOverflow[]}
+              className="z-[2]"
+            />
+          )}
           <ShareLinkButton
             documentId={document.id}
             url={shareLinkUrl}
           />
-
           {extraContent}
         </div>
         <Link
@@ -58,7 +66,7 @@ const ShareableResourceCard = ({
         </Link>
 
         <div className="txt-mini items-center flex mt-auto">
-          {document.product_version && (
+          {isCustomDashboard(document) && document.product_version && (
             <div>
               {t('Service.CustomDashboards.FromOCTIVersion')} :{' '}
               {document.product_version}

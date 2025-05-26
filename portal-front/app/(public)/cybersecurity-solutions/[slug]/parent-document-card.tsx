@@ -1,8 +1,9 @@
-import CustomDashboardCard from '@/components/service/custom-dashboards/custom-dashboard-card';
+import CustomDashboardCard from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-card';
 import DocumentBento from '@/components/ui/document-bento';
 import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 
@@ -12,7 +13,7 @@ const ParentDocumentCard = async ({
   baseUrl,
 }: {
   serviceInstance: seoServiceInstanceFragment$data;
-  document: documentItem_fragment$data;
+  document: ShareableResource;
   baseUrl: string;
 }) => {
   switch (serviceInstance.slug) {
@@ -20,11 +21,11 @@ const ParentDocumentCard = async ({
       return (
         <ShareableResourceCard
           key={document?.id}
-          document={document as documentItem_fragment$data}
+          document={document}
           detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
           shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}>
           <DocumentBento
-            document={document as documentItem_fragment$data}
+            document={document}
             serviceInstanceId={serviceInstance.id}
           />
         </ShareableResourceCard>
@@ -39,9 +40,9 @@ const ParentDocumentCard = async ({
               serviceByIdQuery$data['serviceInstanceById']
             >
           }
-          customDashboard={document as documentItem_fragment$data}
-          detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-          shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+          customDashboard={
+            document as unknown as customDashboardsItem_fragment$data
+          }
         />
       );
   }

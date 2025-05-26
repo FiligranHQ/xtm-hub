@@ -76,7 +76,9 @@
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
-      "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed."
+      "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
+      "CUSTOM_DASHBOARD_INSERTION_ERROR": "Erreur lors de la création du tableau de bord personnalisé.",
+      "CUSTOM_DASHBOARD_UPDATE_ERROR": "Erreur lors de la mise à jour du tableau de bord personnalisé."
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -267,6 +269,7 @@
         "DescriptionPlaceholder": "Description du tableau de bord",
         "ImageLabel": "Images",
         "JSONFile": "Fichier JSON",
+        "ExistingJSONFile": "Fichier JSON existant: ",
         "LabelsLabel": "Étiquettes",
         "LabelsPlaceholder": "Ajouter des étiquettes",
         "NameLabel": "Nom",
@@ -277,6 +280,7 @@
         "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
         "SelectImage": "Selectionnez une/des image(s)",
         "SelectJSONFile": "Selectionnez un fichier JSON",
+        "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "ShortDescriptionLabel": "Brève description",
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",

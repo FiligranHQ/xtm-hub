@@ -18,7 +18,7 @@ export const setQueryForDocument = <T>(
       (serviceDef) => {
         if (
           !capabilities?.includes(ServiceRestriction.Upload) &&
-          ['custom_dashboards', 'csv_feed'].includes(serviceDef.identifier)
+          ['custom_dashboards', 'csv_feeds'].includes(serviceDef.identifier)
         ) {
           queryContext.where('Document.active', '=', 'true');
         }

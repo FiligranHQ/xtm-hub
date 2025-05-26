@@ -10,10 +10,13 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import * as FileStorage from './document-storage';
-import { insertDocument, sendFileToS3 } from './document.domain';
+import {
+  createDocument,
+  insertDocument,
+  sendFileToS3,
+} from './document.domain';
 import {
   checkDocumentExists,
-  createDocumentCustomDashboard,
   deleteDocumentBy,
   deleteDocuments,
   getDocumentName,
@@ -65,7 +68,7 @@ describe('should call S3 to send file', () => {
 
 describe('should add new file', () => {
   beforeAll(async () => {
-    await createDocumentCustomDashboard({
+    await createDocument(contextAdminUser, {
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'description',
       minio_name: 'minioName',
@@ -85,7 +88,7 @@ describe('should add new file', () => {
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
       type: 'vault',
     };
-    await insertDocument(data);
+    await insertDocument(contextAdminUser, data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
     expect(inDb).toBeTruthy();
     expect(inDb[0].file_name).toEqual('filename2');
@@ -101,7 +104,7 @@ describe('should add new file', () => {
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
       type: 'vault',
     };
-    await insertDocument(data);
+    await insertDocument(contextAdminUser, data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
     expect(inDb).toBeTruthy();
     expect(inDb.length).toEqual(2);
@@ -116,7 +119,7 @@ describe('should add new file', () => {
 
 describe('Should modify document', () => {
   beforeAll(async () => {
-    await createDocumentCustomDashboard({
+    await createDocument(contextAdminUser, {
       id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'description',
@@ -176,13 +179,13 @@ describe('getFileName', () => {
 describe('should normalize filename', () => {
   it('should send a normalized fileName', () => {
     const result = normalizeDocumentName('Naîà-méE&mo!');
-    expect(result).toStrictEqual('naia-mee-mo-');
+    expect(result).toStrictEqual('naia-mee-mo');
   });
 });
 
 describe('should check if file already exists', () => {
   beforeAll(async () => {
-    await createDocumentCustomDashboard({
+    await createDocument(contextAdminUser, {
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'description',
       minio_name: 'minioName',
@@ -213,7 +216,7 @@ describe('should check if file already exists', () => {
 
 describe('Documents loading', () => {
   beforeAll(async () => {
-    await createDocumentCustomDashboard({
+    await createDocument(contextAdminUser, {
       id: 'aefd2d32-adae-4329-b772-90a2fb8516ad' as DocumentId,
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'description',
@@ -223,7 +226,7 @@ describe('Documents loading', () => {
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
       type: 'vault',
     });
-    await createDocumentCustomDashboard({
+    await createDocument(contextAdminUser, {
       id: '96847916-2f35-4402-8e64-888c5d5e8b7a' as DocumentId,
       uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
       description: 'xdescription',

@@ -54,14 +54,14 @@ export const initializeBucket = async () => {
   }
 };
 export const insertFileInMinio = async (fileParams) => {
-  const fileKey = fileParams.Key;
+  const fileKey: string = fileParams.Key;
   const s3Upload = new S3Upload({
     client: s3Client,
     params: fileParams,
   });
   await s3Upload.done();
   logApp.debug('[MinIO] inserted file ', fileParams.Key);
-  return await fileKey;
+  return fileKey;
 };
 
 export const downloadFile = async (minioName: string) => {
