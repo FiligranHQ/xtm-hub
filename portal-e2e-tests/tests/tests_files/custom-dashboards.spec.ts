@@ -132,7 +132,7 @@ test.describe('Custom dashboards', () => {
       await page
         .getByPlaceholder('Dashboard name')
         .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
-      await page.locator('.images-grid .btn-delete').first().click();
+      await page.getByTestId('images-grid').getByRole('button').first().click();
       await page
         .getByRole('alertdialog', { name: 'Do you want to continue?' })
         .waitFor();
@@ -157,7 +157,7 @@ test.describe('Custom dashboards', () => {
       await page
         .getByPlaceholder('Dashboard name')
         .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
-      await page.locator('.images-grid .btn-delete').first().click();
+      await page.getByTestId('images-grid').getByRole('button').first().click();
       await page
         .getByRole('alertdialog', { name: 'Do you want to continue?' })
         .waitFor();
@@ -182,7 +182,7 @@ test.describe('Custom dashboards', () => {
       await page
         .getByPlaceholder('Dashboard name')
         .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
-      await page.locator('.images-grid .btn-delete').first().click();
+      await page.getByTestId('images-grid').getByRole('button').first().click();
       await page
         .getByRole('alertdialog', { name: 'Do you want to continue?' })
         .waitFor();
