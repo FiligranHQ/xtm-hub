@@ -8,6 +8,7 @@ import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileToBase64 } from '@/lib/utils';
 import {
   ExistingFile,
+  NewFile,
   docIsExistingFile,
   fileListCheck,
 } from '@/utils/documents';
@@ -110,9 +111,9 @@ export const CustomDashboardUpdateForm = ({
   const [currentDashboard, setCurrentDashboard] =
     useState<customDashboardsItem_fragment$data>(customDashboard);
 
-  const [images, setImages] = useState<
-    Array<ExistingFile | (File & { preview: string })>
-  >(customDashboard.children_documents as ExistingFile[]);
+  const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
+    customDashboard.children_documents as ExistingFile[]
+  );
 
   const [openDelete, setOpenDelete] = useState<number | undefined>(undefined);
 
@@ -397,11 +398,13 @@ export const CustomDashboardUpdateForm = ({
                             const localImages = [...images];
                             if (e.target?.files) {
                               for (const image of Array.from(e.target.files)) {
-                                //@ts-expect-error Preview hack
-                                image.preview = await fileToBase64(image);
-                                localImages.push(
-                                  image as File & { preview: string }
-                                );
+                                const extendedImage = image as NewFile;
+                                extendedImage.preview =
+                                  await fileToBase64(image);
+                                extendedImage.id = new Date()
+                                  .getTime()
+                                  .toString();
+                                localImages.push(extendedImage);
                               }
                             }
                             setImages(localImages);
@@ -437,7 +440,7 @@ export const CustomDashboardUpdateForm = ({
                 <div className="images-grid grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl">
                   {images.map((doc, index) => (
                     <div
-                      key={index}
+                      key={doc!.id}
                       style={{
                         backgroundImage: docIsExistingFile(doc)
                           ? `url(/document/visualize/${customDashboard!.id}/${doc!.id})`

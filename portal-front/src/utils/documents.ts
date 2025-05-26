@@ -3,6 +3,11 @@ export interface ExistingFile {
   id: string;
 }
 
+export type NewFile = File & {
+  preview: string;
+  id: string;
+};
+
 export const docIsExistingFile = (value: unknown): value is ExistingFile => {
   return typeof value === 'object' && value !== null && 'file_name' in value;
 };
