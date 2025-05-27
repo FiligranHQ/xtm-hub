@@ -11,7 +11,6 @@ const breadcrumbValue = [
   },
   {
     label: 'MenuLinks.Profile',
-    href: '/profile',
   },
 ];
 

@@ -18,6 +18,7 @@ import React, {
 interface IconActionsProps {
   children: ReactNode;
   icon: ReactNode;
+  label?: ReactNode;
   className?: string;
 }
 
@@ -30,6 +31,7 @@ export const IconActionContext = createContext<IconActionContextProps>({
 });
 export const IconActions: FunctionComponent<IconActionsProps> = ({
   children,
+  label,
   icon,
   className,
 }) => {
@@ -40,14 +42,14 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
       open={menuOpen}
       onOpenChange={setMenuOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className={cn(
-            'flex h-8 w-8 p-0 data-[state=open]:bg-hover',
-            className
-          )}>
-          {icon}
-        </Button>
+        <div className="flex items-center gap-s cursor-pointer">
+          {label}
+          <Button
+            variant="ghost"
+            className={cn('h-8 w-8 p-0 data-[state=open]:bg-hover', className)}>
+            {icon}
+          </Button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"

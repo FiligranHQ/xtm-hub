@@ -62,9 +62,9 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       />
 
       <div className="mobile:hidden flex items-center gap-s">
-        <User />
         <IconActions
           className="rounded-full"
+          label={<User />}
           icon={
             <>
               <div className="my-auto size-10">
@@ -109,7 +109,8 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
               <NavigationApp open={true} />
-              <div className="pb-xl text-center">
+              <div className="pb-xl flex flex-col text-center">
+                <ProfileMenuButton className="w-full" />
                 <Logout />
               </div>
             </div>
