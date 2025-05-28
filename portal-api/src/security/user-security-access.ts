@@ -3,7 +3,6 @@ import { ActionType, dbUnsecure, QueryOpts } from '../../knexfile';
 import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
 import { OrganizationCapabilityName } from '../modules/common/user-organization-capability.const';
-import { GenericServiceCapabilityName } from '../modules/user_service/service-capability/generic_service_capability.const';
 import { TypedNode } from '../pub';
 import { ForbiddenAccess } from '../utils/error.util';
 import { isUserGranted } from './access';
@@ -25,7 +24,10 @@ export const meUserSSESecurity = (opt: {
 // Used to check access in SSE
 
 export const userSSESecurity = (opt: { user: UserLoadUserBy }) => {
-  return isUserGranted(opt.user, GenericServiceCapabilityName.MANAGE_ACCESS);
+  return isUserGranted(
+    opt.user,
+    OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+  );
 };
 
 export const setQueryForUser = <T>(
@@ -64,7 +66,7 @@ export const setUpdateSecurityForUser = <T>(
     .where({
       id: context.user.id,
       'UserOrganization_Capability.name':
-        OrganizationCapabilityName.MANAGE_ACCESS,
+        OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
     })
     .first();
   if (!getUserCapability) {

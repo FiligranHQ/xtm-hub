@@ -38,12 +38,11 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
     UserOrganizationFormProps[]
   >([]);
 
-  const organizationCapabilitiesData = [
-    OrganizationCapabilityName.MANAGE_ACCESS,
-    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
-  ].map((capabilities) => ({
-    label: capabilities,
-    value: capabilities,
+  const organizationCapabilitiesData = Object.values(
+    OrganizationCapabilityName
+  ).map((capability) => ({
+    label: capability,
+    value: capability,
   }));
 
   const addUserOrganization = (value: UserOrganizationFormProps) => {

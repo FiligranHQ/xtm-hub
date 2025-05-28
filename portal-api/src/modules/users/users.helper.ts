@@ -109,10 +109,7 @@ async function createOrganisationWithAdminUser(email: string) {
 
   await createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
-    capabilities_name: [
-      OrganizationCapabilityName.MANAGE_ACCESS,
-      OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
-    ],
+    capabilities_name: [OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION],
   });
 
   return addedUser;
@@ -197,8 +194,7 @@ export const insertUserIntoOrganization = async (
       await createUserOrganizationCapability({
         user_organization_id: userOrgRelation.id,
         capabilities_name: [
-          OrganizationCapabilityName.MANAGE_ACCESS,
-          OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
         ],
       });
     }
