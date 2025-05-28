@@ -1,9 +1,9 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
 import Organization from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
-import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy } from '../../model/user';
 import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
@@ -69,7 +69,6 @@ describe('User helpers', async () => {
     let organization: Organization;
     let user: UserLoadUserBy;
     let anotherUser: UserLoadUserBy;
-    let context: PortalContext;
 
     beforeEach(async () => {
       const userEmail = `testLastOrganizationAdministrator${uuidv4()}@${organizationName}.fr`;
@@ -81,9 +80,6 @@ describe('User helpers', async () => {
       expect(organization).toBeTruthy();
 
       user = await loadUserBy({ email: userEmail });
-      context = {
-        user,
-      } as PortalContext;
     });
 
     afterEach(async () => {
@@ -99,10 +95,12 @@ describe('User helpers', async () => {
     });
 
     it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
-      return preventRemovalOfLastOrganizationAdministrator(context, {
-        organizationUpdateIds: [organization.id],
-        newCapabilities: [],
-      })
+      return preventRemovalOfLastOrganizationAdministrator(user.id, [
+        {
+          organization_id: toGlobalId('OrganizationId', organization.id),
+          capabilities: [],
+        },
+      ])
         .then(() => {
           throw new Error(
             'preventRemovalOfLastOrganizationAdministrator should throw an error'
@@ -111,30 +109,6 @@ describe('User helpers', async () => {
         .catch((err) => {
           expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');
         });
-    });
-
-    it(`should not thrown when the user does not have ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
-      const modifiedContext: PortalContext = {
-        user: {
-          ...user,
-          organization_capabilities: [
-            {
-              ...user.organization_capabilities[0],
-              capabilities: [],
-            },
-          ],
-        },
-      } as PortalContext;
-
-      const result = await preventRemovalOfLastOrganizationAdministrator(
-        modifiedContext,
-        {
-          organizationUpdateIds: [organization.id],
-          newCapabilities: [],
-        }
-      );
-
-      expect(result).toBeUndefined();
     });
 
     it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
@@ -162,11 +136,13 @@ describe('User helpers', async () => {
       });
 
       const result = await preventRemovalOfLastOrganizationAdministrator(
-        context,
-        {
-          organizationUpdateIds: [organization.id],
-          newCapabilities: [],
-        }
+        user.id,
+        [
+          {
+            organization_id: toGlobalId('OrganizationId', organization.id),
+            capabilities: [],
+          },
+        ]
       );
 
       expect(result).toBeUndefined();

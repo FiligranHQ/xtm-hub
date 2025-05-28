@@ -11,6 +11,7 @@ import UserOrganization, {
 import { PortalContext } from '../../model/portal-context';
 import { sendMail } from '../../server/mail-service';
 import { extractId, isEmpty } from '../../utils/utils';
+import { preventRemovalOfLastOrganizationAdministrator } from '../users/users.helper';
 import {
   createUserOrganizationCapability,
   updateUserOrganizationCapability,
@@ -70,8 +71,10 @@ export const createUserOrganizationRelationUnsecure = async ({
 export const updateMultipleUserOrgWithCapabilities = async (
   context: PortalContext,
   userId: UserId,
-  orgCapabilities: OrganizationCapabilitiesInput[]
+  orgCapabilities?: OrganizationCapabilitiesInput[]
 ) => {
+  await preventRemovalOfLastOrganizationAdministrator(userId, orgCapabilities);
+
   await db<UserOrganization>(context, 'User_Organization')
     .where('user_id', '=', userId)
     .whereNot('organization_id', userId) // Should not touch personal space
