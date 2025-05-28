@@ -12,6 +12,7 @@ on:
       - "v*"
   pull_request:
     branches:
+      - "issue/**"
       - "main"
       - "development"
     paths:
