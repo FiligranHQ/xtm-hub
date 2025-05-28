@@ -10,6 +10,7 @@ import {
   expect,
   it,
 } from 'vitest';
+import { createDatabase } from '../../../tests/config-test';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
@@ -17,7 +18,9 @@ import {
   DEFAULT_ADMIN_PASSWORD,
   SERVICE_VAULT_ID,
   SIMPLE_USER_FILIGRAN_ID,
+  THALES_EMAIL,
   THALES_ORGA_ID,
+  THALES_USER_ID,
 } from '../../../tests/tests.const';
 import {
   AddUserInput,
@@ -274,6 +277,62 @@ describe('User mutation resolver', () => {
 
     afterAll(async () => {
       await deleteUserById(response.id as UserId);
+    });
+  });
+
+  describe('AdminEditUser mutation', () => {
+    let thalesUser: UserLoadUserBy;
+
+    beforeAll(async () => {
+      thalesUser = await loadUserBy({ email: THALES_EMAIL });
+    });
+
+    afterEach(async () => {
+      // @ts-expect-error adminEditUser is not considered as callable
+      await usersResolver.Mutation.adminEditUser(
+        undefined,
+        {
+          id: THALES_USER_ID,
+          input: {
+            organization_capabilities: thalesUser.organization_capabilities.map(
+              (organizationCapabilities) => ({
+                organization_id: toGlobalId(
+                  'Organization',
+                  organizationCapabilities.organization.id
+                ),
+                capabilities: organizationCapabilities.capabilities,
+              })
+            ),
+          },
+        },
+        contextAdminUser
+      );
+    });
+
+    it('should prevent deletion of the last organization administrator', async () => {
+      await createDatabase();
+      // @ts-expect-error adminEditUser is not considered as callable
+      return usersResolver.Mutation.adminEditUser(
+        undefined,
+        {
+          id: THALES_USER_ID,
+          input: {
+            organization_capabilities: [
+              {
+                organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                capabilities: [],
+              },
+            ],
+          } as EditUserInput,
+        },
+        contextAdminUser
+      )
+        .then(() => {
+          throw new Error('adminEditUser should throw an error ');
+        })
+        .catch((err) => {
+          expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');
+        });
     });
   });
 

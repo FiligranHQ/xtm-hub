@@ -22,7 +22,7 @@ import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { sendMail } from '../../server/mail-service';
 import { hashPassword } from '../../utils/hash-password.util';
-import { isEmpty } from '../../utils/utils';
+import { extractId, isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
@@ -242,21 +242,27 @@ export const removeUser = async (
 };
 
 export const preventRemovalOfLastOrganizationAdministrator = async (
-  context: PortalContext,
-  {
-    organizationUpdateIds,
-    newCapabilities,
-  }: { organizationUpdateIds: string[]; newCapabilities: string[] }
+  userId: UserId,
+  newOrganizationCapabilitiesUpdate?: {
+    organization_id: string;
+    capabilities?: string[];
+  }[]
 ) => {
-  for (const organizationId of organizationUpdateIds) {
-    const isAdministrateInNewCapabilities = newCapabilities.includes(
-      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
-    );
+  if (!newOrganizationCapabilitiesUpdate) {
+    return;
+  }
+
+  const user = await loadUserBy({ 'User.id': userId });
+
+  for (const newOrganizationCapabilities of newOrganizationCapabilitiesUpdate) {
+    const isAdministrateInNewCapabilities = (
+      newOrganizationCapabilities.capabilities ?? []
+    ).includes(OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION);
 
     if (!isAdministrateInNewCapabilities) {
       const isLastWithCapability = await isUserLastOrganizationAdministrator(
-        context,
-        organizationId
+        user,
+        newOrganizationCapabilities.organization_id
       );
 
       if (isLastWithCapability) {
@@ -267,18 +273,19 @@ export const preventRemovalOfLastOrganizationAdministrator = async (
 };
 
 const isUserLastOrganizationAdministrator = async (
-  context: PortalContext,
+  user: UserLoadUserBy,
   organizationId: string
 ) => {
-  const userHaveAdministrateCapability =
-    context.user.organization_capabilities.some(
-      (org) =>
-        org.organization.id === organizationId &&
-        org.capabilities.includes(
-          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
-        )
-    );
-
+  const extractedOrganizationId = extractId<OrganizationId>(organizationId);
+  const userHaveAdministrateCapability = (
+    user.organization_capabilities ?? []
+  ).some(
+    (org) =>
+      org.organization.id === extractedOrganizationId &&
+      org.capabilities.includes(
+        OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+      )
+  );
   if (!userHaveAdministrateCapability) {
     return false;
   }
@@ -295,7 +302,7 @@ const isUserLastOrganizationAdministrator = async (
       'UserOrganization_Capability.user_organization_id',
       'User_Organization.id'
     )
-    .where('Organization.id', '=', organizationId)
+    .where('Organization.id', '=', extractedOrganizationId)
     .andWhere(
       'UserOrganization_Capability.name',
       '=',
