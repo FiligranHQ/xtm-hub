@@ -122,7 +122,6 @@ export const createNewUserFromInvitation = async ({
   picture,
 }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>) => {
   const [organization] = await loadOrganizationsFromEmail(email);
-
   const userWithRoles: User = !organization
     ? await createOrganisationWithAdminUser(email)
     : await createUserWithPersonalSpace({
@@ -240,4 +239,68 @@ export const removeUser = async (
     .where({ id: deletedUser.id as unknown as OrganizationId });
 
   return deletedUser;
+};
+
+export const preventRemovalOfLastOrganizationAdministrator = async (
+  context: PortalContext,
+  {
+    organizationUpdateIds,
+    newCapabilities,
+  }: { organizationUpdateIds: string[]; newCapabilities: string[] }
+) => {
+  for (const organizationId of organizationUpdateIds) {
+    const isAdministrateInNewCapabilities = newCapabilities.includes(
+      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+    );
+
+    if (!isAdministrateInNewCapabilities) {
+      const isLastWithCapability = await isUserLastOrganizationAdministrator(
+        context,
+        organizationId
+      );
+
+      if (isLastWithCapability) {
+        throw new Error('CANT_REMOVE_LAST_ADMINISTRATOR');
+      }
+    }
+  }
+};
+
+const isUserLastOrganizationAdministrator = async (
+  context: PortalContext,
+  organizationId: string
+) => {
+  const userHaveAdministrateCapability =
+    context.user.organization_capabilities.some(
+      (org) =>
+        org.organization.id === organizationId &&
+        org.capabilities.includes(
+          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+        )
+    );
+
+  if (!userHaveAdministrateCapability) {
+    return false;
+  }
+
+  const [administratorsCount] = await dbUnsecure('Organization')
+    .count('Organization.id')
+    .leftJoin(
+      'User_Organization',
+      'User_Organization.organization_id',
+      'Organization.id'
+    )
+    .leftJoin(
+      'UserOrganization_Capability',
+      'UserOrganization_Capability.user_organization_id',
+      'User_Organization.id'
+    )
+    .where('Organization.id', '=', organizationId)
+    .andWhere(
+      'UserOrganization_Capability.name',
+      '=',
+      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+    )
+    .groupBy('Organization.id');
+  return userHaveAdministrateCapability && administratorsCount.count <= 1;
 };
