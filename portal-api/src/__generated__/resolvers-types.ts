@@ -882,6 +882,7 @@ export type QueryUsersArgs = {
 };
 
 export enum Restriction {
+  AdministrateOrganization = 'ADMINISTRATE_ORGANIZATION',
   BckManageCommunities = 'BCK_MANAGE_COMMUNITIES',
   BckManageServices = 'BCK_MANAGE_SERVICES',
   Bypass = 'BYPASS',

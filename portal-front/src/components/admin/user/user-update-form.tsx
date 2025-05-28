@@ -41,12 +41,11 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
   const t = useTranslations();
   const isAdminPath = useAdminPath();
 
-  const organizationCapabilitiesData = [
-    OrganizationCapabilityName.MANAGE_ACCESS,
-    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
-  ].map((capabilities) => ({
-    label: capabilities,
-    value: capabilities,
+  const organizationCapabilitiesData = Object.values(
+    OrganizationCapabilityName
+  ).map((capability) => ({
+    label: capability,
+    value: capability,
   }));
 
   const userOrg = user.organization_capabilities?.find(

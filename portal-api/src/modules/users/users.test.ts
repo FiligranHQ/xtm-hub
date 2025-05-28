@@ -39,15 +39,10 @@ describe('User helpers - createNewUserFromInvitation', async () => {
       newUser.id as UserId,
       newOrganization.id
     );
-    expect(userOrgCapa.capabilities.length).toBe(2);
+    expect(userOrgCapa.capabilities.length).toBe(1);
     expect(
       userOrgCapa.capabilities.includes(
-        OrganizationCapabilityName.MANAGE_ACCESS
-      )
-    ).toBeTruthy();
-    expect(
-      userOrgCapa.capabilities.includes(
-        OrganizationCapabilityName.MANAGE_SUBSCRIPTION
+        OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
       )
     ).toBeTruthy();
 
