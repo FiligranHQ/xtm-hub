@@ -17,7 +17,7 @@ const CustomDashboardsListButtons = ({
   const t = useTranslations();
 
   const canManageService = serviceInstance.capabilities.includes(
-    GenericCapabilityName.ManageAccess
+    GenericCapabilityName.MANAGE_ACCESS
   );
   return (
     <>

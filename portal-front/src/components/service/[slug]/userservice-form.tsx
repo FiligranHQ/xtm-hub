@@ -76,9 +76,9 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   const organizationId = subscription.subscriptionById?.organization?.id;
   const genericCapabilities = [
     {
-      id: GenericCapabilityName.ManageAccess as string,
-      name: GenericCapabilityName.ManageAccess as string,
-      description: GenericCapabilityName.ManageAccess as string,
+      id: GenericCapabilityName.MANAGE_ACCESS as string,
+      name: GenericCapabilityName.MANAGE_ACCESS as string,
+      description: GenericCapabilityName.MANAGE_ACCESS as string,
     },
   ];
 
@@ -253,7 +253,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   );
 
   const isCapabilityDisabled = (id: string) => {
-    if (id === GenericCapabilityName.ManageAccess) {
+    if (id === GenericCapabilityName.MANAGE_ACCESS) {
       return false;
     }
 
@@ -366,7 +366,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
                           aria-disabled={isCapabilityDisabled(capability!.id)}
                           className="txt-sub-content cursor-pointer aria-disabled:cursor-not-allowed">
                           {capability!.name ===
-                          GenericCapabilityName.ManageAccess
+                          GenericCapabilityName.MANAGE_ACCESS
                             ? 'Manage access: The user can invite other users from his/her organization to this service'
                             : `${capability!.name} access: ${capability!.description}`}
                           {isCapabilityDisabled(capability!.id)}

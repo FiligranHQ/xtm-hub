@@ -5,7 +5,7 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { isEmpty } from '@/lib/utils';
-import { ORGANIZATION_CAPACITY } from '@/utils/constant';
+import { OrganizationCapabilityName } from '@/utils/constant';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -42,8 +42,8 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
   const isAdminPath = useAdminPath();
 
   const organizationCapabilitiesData = [
-    ORGANIZATION_CAPACITY.MANAGE_ACCESS,
-    ORGANIZATION_CAPACITY.MANAGE_SUBSCRIPTION,
+    OrganizationCapabilityName.MANAGE_ACCESS,
+    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
   ].map((capabilities) => ({
     label: capabilities,
     value: capabilities,

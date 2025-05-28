@@ -1,8 +1,8 @@
 import { serviceByIdWithSubscriptionsQuery$data } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 
 export enum GenericCapabilityName {
-  ManageAccess = 'MANAGE_ACCESS',
-  Access = 'ACCESS',
+  MANAGE_ACCESS = 'MANAGE_ACCESS',
+  ACCESS = 'ACCESS',
 }
 
 export enum ServiceCapabilityName {

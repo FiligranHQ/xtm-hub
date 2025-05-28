@@ -5,9 +5,9 @@ export enum GenericServiceCapabilityIds {
   AccessId = 'cfa2f967-48ae-4057-b079-93daa4c22f2d',
 }
 
-export enum GenericServiceCapabilityNames {
-  BypassServiceName = 'BYPASS_SERVICE',
-  ManageSubscriptionName = 'MANAGE_SUBSCRIPTION',
-  ManageAccessName = 'MANAGE_ACCESS',
-  AccessName = 'ACCESS',
+export enum GenericServiceCapabilityName {
+  BYPASS_SERVICE = 'BYPASS_SERVICE',
+  MANAGE_SUBSCRIPTION = 'MANAGE_SUBSCRIPTION',
+  MANAGE_ACCESS = 'MANAGE_ACCESS',
+  ACCESS = 'ACCESS',
 }

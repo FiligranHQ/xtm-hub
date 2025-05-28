@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { dbUnsecure, QueryOpts } from '../../knexfile';
 import Subscription from '../model/kanel/public/Subscription';
 import { PortalContext } from '../model/portal-context';
+import { GenericServiceCapabilityName } from '../modules/user_service/service-capability/generic_service_capability.const';
 import { ForbiddenAccess } from '../utils/error.util';
 
 export const setDeleteSecurityForUserServiceCapability = <T>(
@@ -31,7 +32,8 @@ export const setDeleteSecurityForUserServiceCapability = <T>(
     .where({
       user_id: context.user.id,
       'User_Service.subscription_id': subscription.id,
-      'Generic_Service_Capability.name': 'MANAGE_ACCESS',
+      'Generic_Service_Capability.name':
+        GenericServiceCapabilityName.MANAGE_ACCESS,
     })
     .first();
 

@@ -28,6 +28,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
+import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
 import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
@@ -291,14 +292,20 @@ describe('User mutation resolver', () => {
                   'Organization',
                   SIMPLE_USER_FILIGRAN_ID
                 ),
-                capabilities: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+                capabilities: [
+                  OrganizationCapabilityName.MANAGE_ACCESS,
+                  OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                ],
               },
               {
                 organization_id: toGlobalId(
                   'Organization',
                   PLATFORM_ORGANIZATION_UUID
                 ),
-                capabilities: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+                capabilities: [
+                  OrganizationCapabilityName.MANAGE_ACCESS,
+                  OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                ],
               },
               {
                 organization_id: toGlobalId('Organization', THALES_ORGA_ID),
@@ -332,14 +339,20 @@ describe('User mutation resolver', () => {
                     'Organization',
                     SIMPLE_USER_FILIGRAN_ID
                   ),
-                  capabilities: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+                  capabilities: [
+                    OrganizationCapabilityName.MANAGE_ACCESS,
+                    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                  ],
                 },
                 {
                   organization_id: toGlobalId(
                     'Organization',
                     PLATFORM_ORGANIZATION_UUID
                   ),
-                  capabilities: ['MANAGE_ACCESS', 'MANAGE_SUBSCRIPTION'],
+                  capabilities: [
+                    OrganizationCapabilityName.MANAGE_ACCESS,
+                    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                  ],
                 },
               ],
             } as EditUserInput,
