@@ -3,7 +3,7 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import useAdminByPass from '@/hooks/useAdminByPass';
 import useGranted from '@/hooks/useGranted';
-import { ORGANIZATION_CAPACITY } from '@/utils/constant';
+import { OrganizationCapabilityName } from '@/utils/constant';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -11,7 +11,7 @@ import { useContext } from 'react';
 // Component interface
 interface GuardComponentProps {
   children: React.ReactNode;
-  capacityRestriction?: ORGANIZATION_CAPACITY[];
+  capacityRestriction?: OrganizationCapabilityName[];
   displayError?: boolean;
 }
 

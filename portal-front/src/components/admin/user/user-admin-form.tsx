@@ -5,7 +5,7 @@ import {
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isDevelopment, isEmpty } from '@/lib/utils';
-import { ORGANIZATION_CAPACITY } from '@/utils/constant';
+import { OrganizationCapabilityName } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
 import {
@@ -39,8 +39,8 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
   >([]);
 
   const organizationCapabilitiesData = [
-    ORGANIZATION_CAPACITY.MANAGE_ACCESS,
-    ORGANIZATION_CAPACITY.MANAGE_SUBSCRIPTION,
+    OrganizationCapabilityName.MANAGE_ACCESS,
+    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
   ].map((capabilities) => ({
     label: capabilities,
     value: capabilities,

@@ -90,7 +90,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
 
   const canManageService =
     queryDataService.serviceInstanceById?.capabilities.includes(
-      GenericCapabilityName.ManageAccess
+      GenericCapabilityName.MANAGE_ACCESS
     );
 
   const documentData: documentItem_fragment$data[] = data.documents.edges.map(

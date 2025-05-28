@@ -135,7 +135,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
         userService?.user_service_capability?.some(
           (user_service_capa) =>
             user_service_capa?.generic_service_capability?.name ===
-            GenericCapabilityName.ManageAccess
+            GenericCapabilityName.MANAGE_ACCESS
         )
       );
     });
@@ -168,11 +168,11 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           if (
             capabilities.length === 1 &&
             capabilities[0]?.generic_service_capability?.name ===
-              GenericCapabilityName.Access
+              GenericCapabilityName.ACCESS
           ) {
             return (
               <Badge className="uppercase">
-                {GenericCapabilityName.Access}
+                {GenericCapabilityName.ACCESS}
               </Badge>
             );
           }
@@ -181,7 +181,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
               const genericName = capability?.generic_service_capability?.name;
               const fallbackName =
                 capability?.subscription_capability?.service_capability?.name;
-              if (genericName === GenericCapabilityName.Access) return null;
+              if (genericName === GenericCapabilityName.ACCESS) return null;
               return {
                 id: genericName ?? fallbackName,
                 name: genericName ?? fallbackName,

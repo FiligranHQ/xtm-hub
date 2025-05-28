@@ -1,0 +1,4 @@
+export enum OrganizationCapabilityName {
+  MANAGE_ACCESS = 'MANAGE_ACCESS',
+  MANAGE_SUBSCRIPTION = 'MANAGE_SUBSCRIPTION',
+}

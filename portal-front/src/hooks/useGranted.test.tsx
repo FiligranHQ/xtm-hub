@@ -1,5 +1,5 @@
 import useGranted from '@/hooks/useGranted';
-import { ORGANIZATION_CAPACITY } from '@/utils/constant';
+import { OrganizationCapabilityName } from '@/utils/constant';
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
 import { renderHook } from '@testing-library/react';
 
@@ -11,7 +11,9 @@ describe('useGranted', () => {
         <TestWrapper
           options={{
             me: {
-              selected_org_capabilities: [ORGANIZATION_CAPACITY.MANAGE_ACCESS],
+              selected_org_capabilities: [
+                OrganizationCapabilityName.MANAGE_ACCESS,
+              ],
             },
           }}>
           {children}
@@ -20,7 +22,7 @@ describe('useGranted', () => {
     };
 
     const { result: resultAdmin } = renderHook(
-      () => useGranted(ORGANIZATION_CAPACITY.MANAGE_ACCESS),
+      () => useGranted(OrganizationCapabilityName.MANAGE_ACCESS),
       {
         wrapper,
       }
@@ -43,7 +45,7 @@ describe('useGranted', () => {
       );
     };
     const { result: resultBypass } = renderHook(
-      () => useGranted(ORGANIZATION_CAPACITY.MANAGE_ACCESS),
+      () => useGranted(OrganizationCapabilityName.MANAGE_ACCESS),
       {
         wrapper,
       }

@@ -17,6 +17,7 @@ import UserOrganization, {
   UserOrganizationId,
 } from '../model/kanel/public/UserOrganization';
 import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
+import { OrganizationCapabilityName } from '../modules/common/user-organization-capability.const';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 
 export const ensureServiceDefinitionExists = async (service) => {
@@ -210,7 +211,9 @@ export const ensurePersonalSpaceExist = async (
 
   await ensureOrganizationExists(orgId, mail);
   const userOrg = await ensureUserOrganizationExists(user_id, orgId);
-  await ensureCapabilitiesExist(userOrg.id, ['MANAGE_SUBSCRIPTION']);
+  await ensureCapabilitiesExist(userOrg.id, [
+    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+  ]);
 };
 
 const ensureOrganizationExists = async (

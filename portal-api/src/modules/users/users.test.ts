@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
 import { UserId } from '../../model/kanel/public/User';
+import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
 import {
   deleteOrganizationByName,
   loadUnsecureOrganizationBy,
@@ -39,9 +40,15 @@ describe('User helpers - createNewUserFromInvitation', async () => {
       newOrganization.id
     );
     expect(userOrgCapa.capabilities.length).toBe(2);
-    expect(userOrgCapa.capabilities.includes('MANAGE_ACCESS')).toBeTruthy();
     expect(
-      userOrgCapa.capabilities.includes('MANAGE_SUBSCRIPTION')
+      userOrgCapa.capabilities.includes(
+        OrganizationCapabilityName.MANAGE_ACCESS
+      )
+    ).toBeTruthy();
+    expect(
+      userOrgCapa.capabilities.includes(
+        OrganizationCapabilityName.MANAGE_SUBSCRIPTION
+      )
     ).toBeTruthy();
 
     expect(newOrganization).toBeTruthy();
