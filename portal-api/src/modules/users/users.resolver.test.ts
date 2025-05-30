@@ -23,7 +23,8 @@ import {
 } from '../../../tests/tests.const';
 import {
   AddUserInput,
-  EditUserInput,
+  AdminEditUserInput,
+  Organization,
 } from '../../__generated__/resolvers-types';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -134,27 +135,33 @@ describe('User mutation resolver', () => {
         expect(error).toBeTruthy();
       }
     });
-    describe('should create user with personal space', async () => {
-      const testMail = `testAddUser${uuidv4()}@test.fr`;
-      // @ts-ignore
-      const response = await usersResolver.Mutation.adminAddUser(
-        undefined,
-        {
-          input: {
-            email: testMail,
-            password: DEFAULT_ADMIN_PASSWORD,
-          } as AddUserInput,
-        },
-        contextAdminUser
-      );
-      expect(response).toBeTruthy();
-      const user = await loadUserBy({ 'User.id': response.id });
-      const organizations = await usersResolver.User.organizations(
-        user,
-        undefined,
-        contextAdminUser,
-        undefined
-      );
+    describe('create user with personal space', async () => {
+      let user: UserLoadUserBy;
+      let organizations: Organization[];
+      beforeAll(async () => {
+        const testMail = `testAddUser${uuidv4()}@test.fr`;
+        // @ts-ignore
+        const response = await usersResolver.Mutation.adminAddUser(
+          undefined,
+          {
+            input: {
+              email: testMail,
+              password: DEFAULT_ADMIN_PASSWORD,
+            } as AddUserInput,
+          },
+          contextAdminUser
+        );
+        expect(response).toBeTruthy();
+
+        user = await loadUserBy({ 'User.id': response.id });
+        // @ts-expect-error organizations is not considered as callable
+        organizations = await usersResolver.User.organizations(
+          user,
+          undefined,
+          contextAdminUser,
+          undefined
+        );
+      });
       it('should have only one organization Personal space', async () => {
         expect(organizations.length).toEqual(1);
       });
@@ -341,7 +348,7 @@ describe('User mutation resolver', () => {
                 capabilities: [],
               },
             ],
-          } as EditUserInput,
+          } as AdminEditUserInput,
         },
         contextAdminUser
       );
@@ -384,7 +391,7 @@ describe('User mutation resolver', () => {
                   ],
                 },
               ],
-            } as EditUserInput,
+            } as AdminEditUserInput,
           },
           contextAdminUser
         );
@@ -404,12 +411,67 @@ describe('User mutation resolver', () => {
                 capabilities: [],
               },
             ],
-          } as EditUserInput,
+          } as AdminEditUserInput,
         },
         contextAdminUser
       )
         .then(() => {
           throw new Error('adminEditUser should throw an error ');
+        })
+        .catch((err) => {
+          expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');
+        });
+    });
+  });
+
+  describe('editUser', () => {
+    let thalesUser: UserLoadUserBy;
+
+    beforeAll(async () => {
+      thalesUser = await loadUserBy({ email: THALES_EMAIL });
+    });
+
+    afterEach(async () => {
+      // @ts-expect-error adminEditUser is not considered as callable
+      await usersResolver.Mutation.adminEditUser(
+        undefined,
+        {
+          id: THALES_USER_ID,
+          input: {
+            organization_capabilities: thalesUser.organization_capabilities.map(
+              (organizationCapabilities) => ({
+                organization_id: toGlobalId(
+                  'Organization',
+                  organizationCapabilities.organization.id
+                ),
+                capabilities: organizationCapabilities.capabilities,
+              })
+            ),
+          },
+        },
+        contextAdminUser
+      );
+    });
+
+    it('should prevent deletion of the last organization administrator', async () => {
+      const testContext = {
+        ...contextAdminUser,
+        user: {
+          ...contextAdminUser.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      // @ts-expect-error editUser is not considered as callable
+      return usersResolver.Mutation.editUser(
+        undefined,
+        {
+          id: THALES_USER_ID,
+          input: { capabilities: [] },
+        },
+        testContext
+      )
+        .then(() => {
+          throw new Error('editUser should throw an error ');
         })
         .catch((err) => {
           expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');

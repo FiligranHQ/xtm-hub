@@ -73,7 +73,13 @@ export const updateMultipleUserOrgWithCapabilities = async (
   userId: UserId,
   orgCapabilities?: OrganizationCapabilitiesInput[]
 ) => {
-  await preventRemovalOfLastOrganizationAdministrator(userId, orgCapabilities);
+  await preventRemovalOfLastOrganizationAdministrator(
+    userId,
+    (orgCapabilities ?? []).map((orgCapability) => ({
+      organizationId: extractId<OrganizationId>(orgCapability.organization_id),
+      capabilities: orgCapability.capabilities,
+    }))
+  );
 
   await db<UserOrganization>(context, 'User_Organization')
     .where('user_id', '=', userId)
@@ -110,6 +116,13 @@ export const updateUserOrgCapabilities = async (
     orgCapabilities: string[];
   }
 ) => {
+  await preventRemovalOfLastOrganizationAdministrator(user_id, [
+    {
+      organizationId: organization_id,
+      capabilities: orgCapabilities,
+    },
+  ]);
+
   const [userOrganization] = await loadUserOrganization(context, {
     user_id,
     organization_id,
