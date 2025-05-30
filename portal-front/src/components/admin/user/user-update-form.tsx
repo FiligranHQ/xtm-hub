@@ -1,3 +1,4 @@
+import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
@@ -16,7 +17,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   MultiSelectFormField,
   SheetFooter,
   toast,
@@ -94,42 +94,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full space-y-xl">
-        {isAdminPath && (
-          <>
-            <FormField
-              control={form.control}
-              name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('UserForm.FirstName')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('UserForm.FirstName')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('UserForm.LastName')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('UserForm.LastName')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
+        <CapabilityDescription />
         <FormField
           control={form.control}
           name="capabilities"
