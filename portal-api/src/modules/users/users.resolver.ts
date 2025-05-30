@@ -255,6 +255,9 @@ const resolvers: Resolvers = {
         return user;
       } catch (error) {
         await trx.rollback();
+        if (error.message === 'CANT_REMOVE_LAST_ADMINISTRATOR') {
+          throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
+        }
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
         });

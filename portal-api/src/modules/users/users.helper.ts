@@ -22,7 +22,7 @@ import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { sendMail } from '../../server/mail-service';
 import { hashPassword } from '../../utils/hash-password.util';
-import { extractId, isEmpty } from '../../utils/utils';
+import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
@@ -244,7 +244,7 @@ export const removeUser = async (
 export const preventRemovalOfLastOrganizationAdministrator = async (
   userId: UserId,
   newOrganizationCapabilitiesUpdate?: {
-    organization_id: string;
+    organizationId: string;
     capabilities?: string[];
   }[]
 ) => {
@@ -262,7 +262,7 @@ export const preventRemovalOfLastOrganizationAdministrator = async (
     if (!isAdministrateInNewCapabilities) {
       const isLastWithCapability = await isUserLastOrganizationAdministrator(
         user,
-        newOrganizationCapabilities.organization_id
+        newOrganizationCapabilities.organizationId
       );
 
       if (isLastWithCapability) {
@@ -276,12 +276,11 @@ const isUserLastOrganizationAdministrator = async (
   user: UserLoadUserBy,
   organizationId: string
 ) => {
-  const extractedOrganizationId = extractId<OrganizationId>(organizationId);
   const userHaveAdministrateCapability = (
     user.organization_capabilities ?? []
   ).some(
     (org) =>
-      org.organization.id === extractedOrganizationId &&
+      org.organization.id === organizationId &&
       org.capabilities.includes(
         OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
       )
@@ -302,7 +301,7 @@ const isUserLastOrganizationAdministrator = async (
       'UserOrganization_Capability.user_organization_id',
       'User_Organization.id'
     )
-    .where('Organization.id', '=', extractedOrganizationId)
+    .where('Organization.id', '=', organizationId)
     .andWhere(
       'UserOrganization_Capability.name',
       '=',

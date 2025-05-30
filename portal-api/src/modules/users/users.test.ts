@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
@@ -97,7 +96,7 @@ describe('User helpers', async () => {
     it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
       return preventRemovalOfLastOrganizationAdministrator(user.id, [
         {
-          organization_id: toGlobalId('OrganizationId', organization.id),
+          organizationId: organization.id,
           capabilities: [],
         },
       ])
@@ -139,7 +138,7 @@ describe('User helpers', async () => {
         user.id,
         [
           {
-            organization_id: toGlobalId('OrganizationId', organization.id),
+            organizationId: organization.id,
             capabilities: [],
           },
         ]
