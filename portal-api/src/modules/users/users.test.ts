@@ -11,7 +11,7 @@ import {
   deleteOrganizationByName,
   loadUnsecureOrganizationBy,
 } from '../organizations/organizations.helper';
-import { loadUserBy, loadUserCapacityByOrganization } from './users.domain';
+import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,
   preventRemovalOfLastOrganizationAdministrator,
@@ -44,7 +44,7 @@ describe('User helpers', async () => {
         'name',
         'test-new-organization'
       );
-      const userOrgCapa = await loadUserCapacityByOrganization(
+      const userOrgCapa = await loadUserCapabilitiesByOrganization(
         newUser.id as UserId,
         newOrganization.id
       );
