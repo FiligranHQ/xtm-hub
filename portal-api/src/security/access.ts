@@ -16,7 +16,7 @@ import {
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
 export const isUserGranted = (
-  user: UserLoadUserBy,
+  user?: UserLoadUserBy,
   orgCapabilitities?: string
 ) => {
   return (
