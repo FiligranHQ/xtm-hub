@@ -5,7 +5,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UnknownError } from '../../../utils/error.util';
+import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
@@ -98,8 +98,13 @@ const resolvers: Resolvers = {
         const files = await Promise.all(
           document.map((doc: Upload) => createFileInMinIO(doc, context))
         );
-        return createCustomDashboard(input, files, context);
+        return await createCustomDashboard(input, files, context);
       } catch (error) {
+        if (error.message?.includes('document_type_slug_unique')) {
+          throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
+            detail: error,
+          });
+        }
         throw UnknownError('CUSTOM_DASHBOARD_INSERTION_ERROR', {
           detail: error,
         });
@@ -124,7 +129,7 @@ const resolvers: Resolvers = {
           newImages = files;
         }
 
-        return updateCustomDashboard(
+        return await updateCustomDashboard(
           extractId<DocumentId>(documentId),
           input,
           {
@@ -137,6 +142,11 @@ const resolvers: Resolvers = {
           context
         );
       } catch (error) {
+        if (error.message?.includes('document_type_slug_unique')) {
+          throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
+            detail: error,
+          });
+        }
         throw UnknownError('CUSTOM_DASHBOARD_UPDATE_ERROR', {
           detail: error,
         });
