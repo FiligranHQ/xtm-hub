@@ -1,6 +1,9 @@
 import createNextIntlPlugin from 'next-intl/plugin';
-
 const withNextIntl = createNextIntlPlugin();
+
+/**
+ * @type {import('next').NextConfig}
+ */
 const nextConfig = {
   output: 'standalone',
   skipTrailingSlashRedirect: true,
@@ -12,13 +15,11 @@ const nextConfig = {
       artifactDirectory: '__generated__',
     },
   },
-  experimental: {
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
   },
