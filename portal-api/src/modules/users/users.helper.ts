@@ -35,7 +35,7 @@ import {
   loadOrganizationsFromEmail,
 } from '../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
-import { loadUserBy } from './users.domain';
+import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 
 export const createUserWithPersonalSpace = async (
   data: Pick<
@@ -244,15 +244,13 @@ export const removeUser = async (
 export const preventRemovalOfLastOrganizationAdministrator = async (
   userId: UserId,
   newOrganizationCapabilitiesUpdate?: {
-    organizationId: string;
+    organizationId: OrganizationId;
     capabilities?: string[];
   }[]
 ) => {
   if (!newOrganizationCapabilitiesUpdate) {
     return;
   }
-
-  const user = await loadUserBy({ 'User.id': userId });
 
   for (const newOrganizationCapabilities of newOrganizationCapabilitiesUpdate) {
     const isAdministrateInNewCapabilities = (
@@ -261,7 +259,7 @@ export const preventRemovalOfLastOrganizationAdministrator = async (
 
     if (!isAdministrateInNewCapabilities) {
       const isLastWithCapability = await isUserLastOrganizationAdministrator(
-        user,
+        userId,
         newOrganizationCapabilities.organizationId
       );
 
@@ -273,22 +271,30 @@ export const preventRemovalOfLastOrganizationAdministrator = async (
 };
 
 const isUserLastOrganizationAdministrator = async (
-  user: UserLoadUserBy,
-  organizationId: string
+  userId: UserId,
+  organizationId: OrganizationId
 ) => {
-  const userHaveAdministrateCapability = (
-    user.organization_capabilities ?? []
-  ).some(
-    (org) =>
-      org.organization.id === organizationId &&
-      org.capabilities.includes(
-        OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
-      )
+  const { capabilities } = await loadUserCapabilitiesByOrganization(
+    userId,
+    organizationId
   );
+  const userHaveAdministrateCapability = (capabilities ?? []).includes(
+    OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+  );
+
   if (!userHaveAdministrateCapability) {
     return false;
   }
 
+  const administratorsCount =
+    await countOrganizationAdministrators(organizationId);
+
+  return userHaveAdministrateCapability && administratorsCount.count <= 1;
+};
+
+const countOrganizationAdministrators = async (
+  organizationId: OrganizationId
+) => {
   const [administratorsCount] = await dbUnsecure('Organization')
     .count('Organization.id')
     .leftJoin(
@@ -308,5 +314,6 @@ const isUserLastOrganizationAdministrator = async (
       OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
     )
     .groupBy('Organization.id');
-  return userHaveAdministrateCapability && administratorsCount.count <= 1;
+
+  return administratorsCount;
 };
