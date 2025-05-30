@@ -258,7 +258,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       href: '/',
     },
     {
-      label: queryDataService.serviceInstanceById?.name,
+      label: queryDataService.serviceInstanceById!.name,
       original: true,
     },
   ];

@@ -66,7 +66,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         ]
       : [{ label: 'MenuLinks.Home', href: '/' }]),
     {
-      label: queryData.serviceInstanceByIdWithSubscriptions?.name,
+      label: queryData.serviceInstanceByIdWithSubscriptions!.name,
       original: true,
     },
   ];

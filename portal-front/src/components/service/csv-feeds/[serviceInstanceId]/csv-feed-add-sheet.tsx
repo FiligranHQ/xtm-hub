@@ -72,7 +72,7 @@ export const CSVFeedAddSheet = ({
         toast({
           title: t('Utils.Success'),
           description: t('Service.CsvFeed.Actions.Added', {
-            name: response.createCsvFeed?.name,
+            name: input.name,
           }),
         });
       },

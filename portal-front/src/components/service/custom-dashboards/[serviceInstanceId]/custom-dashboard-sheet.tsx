@@ -66,7 +66,7 @@ export const CustomDashboardSheet = ({
         toast({
           title: t('Utils.Success'),
           description: t('Service.CustomDashboards.Actions.Added', {
-            name: response.createCustomDashboard.name,
+            name: values.name,
           }),
         });
       },

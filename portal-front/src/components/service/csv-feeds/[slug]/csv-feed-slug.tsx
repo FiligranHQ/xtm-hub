@@ -35,12 +35,12 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
       href: '/',
     },
     {
-      label: serviceInstance?.name,
-      href: `/service/${serviceInstance.slug}/${serviceInstance?.id}`,
+      label: serviceInstance.name,
+      href: `/service/${serviceInstance.slug}/${serviceInstance.id}`,
       original: true,
     },
     {
-      label: documentData?.name,
+      label: documentData!.name!,
       original: true,
     },
   ];

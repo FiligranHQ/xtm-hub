@@ -39,7 +39,7 @@ export const EditUserService: FunctionComponent<EditUserServiceProps> = ({
         </Button>
       }
       title={t('InviteUserServiceForm.Title', {
-        serviceName: subscription.subscriptionById?.service_instance?.name,
+        serviceName: subscription.subscriptionById!.service_instance!.name,
       })}>
       <UserServiceForm
         userService={userService}

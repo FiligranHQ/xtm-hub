@@ -31,7 +31,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       }
     );
 
-    serviceInstance = response.data?.serviceInstanceById;
+    serviceInstance = response.data.serviceInstanceById;
   } catch (error) {
     // The user must self join the service before accessing it
     if (
@@ -46,7 +46,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       );
 
       serviceInstance = response.data
-        ?.selfJoinServiceInstance as serviceByIdQuery$data['serviceInstanceById'];
+        .selfJoinServiceInstance as serviceByIdQuery$data['serviceInstanceById'];
     }
   }
 
@@ -56,7 +56,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       href: '/',
     },
     {
-      label: serviceInstance?.name,
+      label: serviceInstance!.name,
       original: true,
     },
   ];

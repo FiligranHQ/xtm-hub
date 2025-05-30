@@ -104,12 +104,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       { label: 'MenuLinks.Settings' },
       { label: 'MenuLinks.Services', href: '/admin/service' },
       {
-        label: queryDataSubscription.subscriptionById?.service_instance?.name,
+        label: queryDataSubscription.subscriptionById!.service_instance!.name,
         href: `/admin/service/${queryDataSubscription.subscriptionById?.service_instance?.id}`,
         original: true,
       },
       {
-        label: queryDataSubscription.subscriptionById?.organization?.name,
+        label: queryDataSubscription.subscriptionById!.organization.name,
         original: true,
       },
     ];
@@ -236,8 +236,8 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
                       deleteCurrentUser(row.original.user?.email ?? '')
                     }>
                     {t('Service.Management.AreYouSureRemoveAccess', {
-                      firstname: row.original.user?.first_name,
-                      lastname: row.original.user?.last_name,
+                      firstname: row.original.user!.first_name!,
+                      lastname: row.original.user!.last_name!,
                     })}
                   </AlertDialogComponent>
                 </IconActions>
@@ -292,7 +292,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           }
           title={t('InviteUserServiceForm.Title', {
             serviceName:
-              queryDataSubscription.subscriptionById?.service_instance?.name,
+              queryDataSubscription.subscriptionById!.service_instance!.name,
           })}>
           <UserServiceForm
             connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
@@ -311,9 +311,9 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       <h1 className="pb-xl">
         {t('Service.Management.ManageUsersForOrganization', {
           organizationName:
-            queryDataSubscription.subscriptionById?.organization?.name,
+            queryDataSubscription.subscriptionById!.organization.name,
           serviceName:
-            queryDataSubscription.subscriptionById?.service_instance?.name,
+            queryDataSubscription.subscriptionById!.service_instance!.name,
         })}
       </h1>
       {queryDataSubscription.subscriptionById!.subscription_capability!.length >
@@ -325,9 +325,9 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           <div className="italic mb-s">
             {t('InviteUserServiceForm.CapabilitiesDescription', {
               organizationName:
-                queryDataSubscription.subscriptionById?.organization.name,
+                queryDataSubscription.subscriptionById!.organization.name,
               serviceName:
-                queryDataSubscription.subscriptionById?.service_instance?.name,
+                queryDataSubscription.subscriptionById!.service_instance!.name,
             })}
           </div>
           {queryDataSubscription.subscriptionById?.subscription_capability?.map(
