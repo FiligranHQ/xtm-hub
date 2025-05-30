@@ -241,26 +241,33 @@ export const removeUser = async (
   return deletedUser;
 };
 
+export const hasAdministrateOrganizationCapability = (
+  capabilities?: string[]
+): boolean => {
+  return (capabilities ?? []).includes(
+    OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+  );
+};
+
 export const preventRemovalOfLastOrganizationAdministrator = async (
   userId: UserId,
-  newOrganizationCapabilitiesUpdate?: {
+  newOrganizationCapabilities?: {
     organizationId: OrganizationId;
     capabilities?: string[];
   }[]
 ) => {
-  if (!newOrganizationCapabilitiesUpdate) {
+  if (!newOrganizationCapabilities) {
     return;
   }
 
-  for (const newOrganizationCapabilities of newOrganizationCapabilitiesUpdate) {
-    const isAdministrateInNewCapabilities = (
-      newOrganizationCapabilities.capabilities ?? []
-    ).includes(OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION);
+  for (const { capabilities, organizationId } of newOrganizationCapabilities) {
+    const isRemovingAdministratorCapability =
+      !hasAdministrateOrganizationCapability(capabilities);
 
-    if (!isAdministrateInNewCapabilities) {
+    if (isRemovingAdministratorCapability) {
       const isLastWithCapability = await isUserLastOrganizationAdministrator(
         userId,
-        newOrganizationCapabilities.organizationId
+        organizationId
       );
 
       if (isLastWithCapability) {
@@ -278,23 +285,19 @@ const isUserLastOrganizationAdministrator = async (
     userId,
     organizationId
   );
-  const userHaveAdministrateCapability = (capabilities ?? []).includes(
-    OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
-  );
-
-  if (!userHaveAdministrateCapability) {
+  if (!hasAdministrateOrganizationCapability(capabilities)) {
     return false;
   }
 
   const administratorsCount =
     await countOrganizationAdministrators(organizationId);
 
-  return userHaveAdministrateCapability && administratorsCount.count <= 1;
+  return administratorsCount <= 1;
 };
 
 const countOrganizationAdministrators = async (
   organizationId: OrganizationId
-) => {
+): Promise<number> => {
   const [administratorsCount] = await dbUnsecure('Organization')
     .count('Organization.id')
     .leftJoin(
@@ -315,5 +318,5 @@ const countOrganizationAdministrators = async (
     )
     .groupBy('Organization.id');
 
-  return administratorsCount;
+  return administratorsCount?.count ?? 0;
 };
