@@ -1,9 +1,14 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { PortalContext } from '../model/portal-context';
-import { getCapabilityUser, userHasBypassCapability } from './auth.helper';
+import {
+  getCapabilityUser,
+  userHasBypassCapability,
+  userIsOrganizationAdministrator,
+} from './auth.helper';
 
 import { UserLoadUserBy } from '../model/user';
+import { OrganizationCapabilityName } from '../modules/common/user-organization-capability.const';
 import { getCapabilities } from '../modules/users/users.domain';
 import { logApp } from '../utils/app-logger.util';
 
@@ -101,7 +106,7 @@ const isAuthenticated = (user: UserLoadUserBy) => {
   return !!user;
 };
 
-const hasCapability = (
+export const hasCapability = (
   user: UserLoadUserBy,
   capabilitiesRequired: string[]
 ) => {
@@ -110,10 +115,23 @@ const hasCapability = (
   }
   const { selected_org_capabilities } = user;
 
+  if (userIsOrganizationAdministrator(user)) {
+    return true;
+  }
+
   // Authorize if the user is connected and no need specific capabilities
   if (!user.disabled && capabilitiesRequired.length === 0) {
     return true;
   }
+
+  if (
+    selected_org_capabilities.includes(
+      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+    )
+  ) {
+    return true;
+  }
+
   return selected_org_capabilities.some((name) =>
     capabilitiesRequired.includes(name)
   );
