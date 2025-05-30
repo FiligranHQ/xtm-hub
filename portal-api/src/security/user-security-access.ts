@@ -24,10 +24,7 @@ export const meUserSSESecurity = (opt: {
 // Used to check access in SSE
 
 export const userSSESecurity = (opt: { user: UserLoadUserBy }) => {
-  return isUserGranted(
-    opt.user,
-    OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
-  );
+  return isUserGranted(opt.user, OrganizationCapabilityName.MANAGE_ACCESS);
 };
 
 export const setQueryForUser = <T>(
