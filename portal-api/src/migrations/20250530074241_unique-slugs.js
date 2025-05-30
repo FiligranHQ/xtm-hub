@@ -43,7 +43,7 @@ export async function up(knex) {
  * @returns { Promise<void> }
  */
 export async function down(knex) {
-  // Supprimer l'index unique
+  // Delete unique index
   await knex.schema.alterTable('Document', (table) => {
     table.dropUnique(['type', 'slug'], 'document_type_slug_unique');
   });
