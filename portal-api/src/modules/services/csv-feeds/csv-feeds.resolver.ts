@@ -7,7 +7,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UnknownError } from '../../../utils/error.util';
+import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
@@ -45,12 +45,17 @@ const resolvers: Resolvers = {
         const files = await Promise.all(
           document.map((doc: Upload) => createFileInMinIO(doc, context))
         );
-        return createCsvFeed(
+        return (await createCsvFeed(
           input,
           files,
           context
-        ) as unknown as CsvFeedWithResolvableFields;
+        )) as unknown as CsvFeedWithResolvableFields;
       } catch (error) {
+        if (error.message?.includes('document_type_slug_unique')) {
+          throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
+            detail: error,
+          });
+        }
         throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
       }
     },
