@@ -106,7 +106,7 @@ const isAuthenticated = (user: UserLoadUserBy) => {
   return !!user;
 };
 
-export const hasCapability = (
+const hasCapability = (
   user: UserLoadUserBy,
   capabilitiesRequired: string[]
 ) => {
@@ -146,6 +146,10 @@ const hasServiceCapability = async (
     return true;
   }
 
+  if (userIsOrganizationAdministrator(user)) {
+    return true;
+  }
+
   if (!args.service_instance_id && !args.subscription_id) {
     throw new Error(
       `Service_id or subscription_id is undefined, please provide one of them to use this directive`
@@ -158,6 +162,11 @@ const hasServiceCapability = async (
         capabilitiesRequired.includes(capability)
       ) ?? false
   );
+};
+
+export const authDirectives = {
+  hasCapability,
+  hasServiceCapability,
 };
 
 export const { authDirectiveTransformer } = getSchemaTransformer(
