@@ -5,7 +5,7 @@ import {
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isDevelopment, isEmpty } from '@/lib/utils';
-import { OrganizationCapabilityName } from '@/utils/constant';
+import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
 import {
@@ -38,12 +38,8 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
     UserOrganizationFormProps[]
   >([]);
 
-  const organizationCapabilitiesData = Object.values(
-    OrganizationCapabilityName
-  ).map((capability) => ({
-    label: capability,
-    value: capability,
-  }));
+  const organizationCapabilitiesData =
+    buildOrganizationCapabilitiesMultiSelectOptions();
 
   const addUserOrganization = (value: UserOrganizationFormProps) => {
     setUserOrganization([...userOrganization, value]);

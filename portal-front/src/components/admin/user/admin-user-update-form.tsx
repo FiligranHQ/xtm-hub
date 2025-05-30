@@ -6,7 +6,7 @@ import { userEditAdminFormSchema } from '@/components/admin/user/user-form.schem
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isEmpty } from '@/lib/utils';
-import { OrganizationCapabilityName } from '@/utils/constant';
+import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/form';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
@@ -72,12 +72,8 @@ export const AdminUserUpdateForm: FunctionComponent<
     }
   };
 
-  const organizationCapabilitiesData = Object.values(
-    OrganizationCapabilityName
-  ).map((capability) => ({
-    label: capability,
-    value: capability,
-  }));
+  const organizationCapabilitiesData =
+    buildOrganizationCapabilitiesMultiSelectOptions();
 
   const form = useForm<z.infer<typeof userEditAdminFormSchema>>({
     resolver: zodResolver(userEditAdminFormSchema),
