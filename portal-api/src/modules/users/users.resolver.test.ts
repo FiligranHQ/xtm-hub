@@ -10,7 +10,6 @@ import {
   expect,
   it,
 } from 'vitest';
-import { createDatabase } from '../../../tests/config-test';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
@@ -114,7 +113,7 @@ describe('User mutation resolver', () => {
     expect(response).toBeTruthy();
   });
 
-  describe('AdminAddUser Mutation', () => {
+  describe('adminAddUser', () => {
     it('should not create an existing user', async () => {
       try {
         // @ts-ignore
@@ -235,52 +234,51 @@ describe('User mutation resolver', () => {
         expect(error).toBeTruthy();
       }
     });
+    describe('as Admin orga - should create user with personal space and add to Thales organization', async () => {
+      const testMail = `testAddUser${uuidv4()}@thales.com`;
+      // @ts-ignore
+      const response = await usersResolver.Mutation.adminAddUser(
+        undefined,
+        {
+          input: {
+            email: testMail,
+            password: DEFAULT_ADMIN_PASSWORD,
+            organization_capabilities: [
+              {
+                organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                capabilities: [],
+              },
+            ],
+          } as AddUserInput,
+        },
+        contextAdminOrgaThales
+      );
+      const user = await loadUserBy({ 'User.id': response.id });
+      const organizations = await usersResolver.User.organizations(
+        user,
+        undefined,
+        contextAdminUser,
+        undefined
+      );
+      it('should have Personal space and Thales as organization', async () => {
+        expect(response).toBeTruthy();
+        expect(
+          organizations.some((org) => org.id === THALES_ORGA_ID)
+        ).toBeTruthy();
+        expect(
+          organizations.some((org) => org.id.toString() === user.id.toString())
+        ).toBeTruthy();
+      });
+
+      expect(organizations.length).toEqual(2);
+
+      afterAll(async () => {
+        await deleteUserById(response.id as UserId);
+      });
+    });
   });
 
-  describe('as Admin orga - should create user with personal space and add to Thales organization', async () => {
-    const testMail = `testAddUser${uuidv4()}@thales.com`;
-    // @ts-ignore
-    const response = await usersResolver.Mutation.adminAddUser(
-      undefined,
-      {
-        input: {
-          email: testMail,
-          password: DEFAULT_ADMIN_PASSWORD,
-          organization_capabilities: [
-            {
-              organization_id: toGlobalId('Organization', THALES_ORGA_ID),
-              capabilities: [],
-            },
-          ],
-        } as AddUserInput,
-      },
-      contextAdminOrgaThales
-    );
-    const user = await loadUserBy({ 'User.id': response.id });
-    const organizations = await usersResolver.User.organizations(
-      user,
-      undefined,
-      contextAdminUser,
-      undefined
-    );
-    it('should have Personal space and Thales as organization', async () => {
-      expect(response).toBeTruthy();
-      expect(
-        organizations.some((org) => org.id === THALES_ORGA_ID)
-      ).toBeTruthy();
-      expect(
-        organizations.some((org) => org.id.toString() === user.id.toString())
-      ).toBeTruthy();
-    });
-
-    expect(organizations.length).toEqual(2);
-
-    afterAll(async () => {
-      await deleteUserById(response.id as UserId);
-    });
-  });
-
-  describe('AdminEditUser mutation', () => {
+  describe('adminEditUser', () => {
     let thalesUser: UserLoadUserBy;
 
     beforeAll(async () => {
@@ -309,34 +307,6 @@ describe('User mutation resolver', () => {
       );
     });
 
-    it('should prevent deletion of the last organization administrator', async () => {
-      await createDatabase();
-      // @ts-expect-error adminEditUser is not considered as callable
-      return usersResolver.Mutation.adminEditUser(
-        undefined,
-        {
-          id: THALES_USER_ID,
-          input: {
-            organization_capabilities: [
-              {
-                organization_id: toGlobalId('Organization', THALES_ORGA_ID),
-                capabilities: [],
-              },
-            ],
-          } as EditUserInput,
-        },
-        contextAdminUser
-      )
-        .then(() => {
-          throw new Error('adminEditUser should throw an error ');
-        })
-        .catch((err) => {
-          expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');
-        });
-    });
-  });
-
-  describe('EditUser Mutation', () => {
     describe('should edit an existing user', async () => {
       const fallbackUser = await loadUserBy({ email: 'user15@test.fr' });
       // @ts-ignore
@@ -420,9 +390,34 @@ describe('User mutation resolver', () => {
         );
       });
     });
+
+    it('should prevent deletion of the last organization administrator', async () => {
+      // @ts-expect-error adminEditUser is not considered as callable
+      return usersResolver.Mutation.adminEditUser(
+        undefined,
+        {
+          id: THALES_USER_ID,
+          input: {
+            organization_capabilities: [
+              {
+                organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                capabilities: [],
+              },
+            ],
+          } as EditUserInput,
+        },
+        contextAdminUser
+      )
+        .then(() => {
+          throw new Error('adminEditUser should throw an error ');
+        })
+        .catch((err) => {
+          expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');
+        });
+    });
   });
 
-  describe('EditMeUser Mutation', () => {
+  describe('editMeUser', () => {
     let adminUser: UserLoadUserBy;
     let auth0Spy: MockInstance;
     beforeAll(async () => {
@@ -500,7 +495,7 @@ describe('User mutation resolver', () => {
     });
   });
 
-  describe('ResetPassword Mutation', () => {
+  describe('resetPassword', () => {
     let auth0Spy: MockInstance;
     beforeAll(() => {
       auth0Spy = vi.spyOn(auth0ClientMock, 'resetPassword');
