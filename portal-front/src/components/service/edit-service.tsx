@@ -49,7 +49,7 @@ export const EditService: FunctionComponent<EditServiceProps> = ({
         toast({
           title: t('Utils.Success'),
           description: t('ServiceForm.PictureUpdated', {
-            serviceName: response.addServicePicture?.name,
+            serviceName: response.addServicePicture!.name,
           }),
         });
       },

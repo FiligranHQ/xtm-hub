@@ -10,7 +10,7 @@ import {
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { Fragment, FunctionComponent, ReactNode } from 'react';
+import { Fragment, FunctionComponent } from 'react';
 
 interface BreadcrumbProps {
   value: BreadcrumbNavLink[];
@@ -18,7 +18,7 @@ interface BreadcrumbProps {
 
 export interface BreadcrumbNavLink {
   href?: string;
-  label: ReactNode;
+  label: string;
   original?: boolean;
 }
 

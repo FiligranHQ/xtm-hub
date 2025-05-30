@@ -132,11 +132,13 @@ export const CsvFeedForm = ({
           },
         }}>
         <SheetFooter className="pt-2">
-          <CsvFeedDelete
-            userCanDelete={userCanDelete}
-            onDelete={onDelete}
-            csvFeed={csvFeed}
-          />
+          {csvFeed && (
+            <CsvFeedDelete
+              userCanDelete={userCanDelete}
+              onDelete={onDelete}
+              csvFeed={csvFeed}
+            />
+          )}
           <div className="flex gap-s">
             <Button
               variant="outline"

@@ -148,7 +148,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
     commitServiceCapabilityMutation({
       variables: {
         input: {
-          user_service_id: userService?.id,
+          user_service_id: userService!.id,
 
           ...editCapaValues,
         },
@@ -158,7 +158,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
         toast({
           title: t('Utils.Success'),
           description: t('ServiceActions.UserCapabilitiesModified', {
-            email: userService?.user?.email,
+            email: userService!.user!.email,
           }),
         });
         setOpenSheet(false);
@@ -188,7 +188,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
           title: t('Utils.Success'),
           description: t('ServiceActions.UserServiceAdded', {
             email: values.email.map((item) => item.text).join(', '),
-            serviceName: subscription.subscriptionById?.service_instance?.name,
+            serviceName: subscription.subscriptionById!.service_instance!.name,
           }),
         });
         setOpenSheet(false);

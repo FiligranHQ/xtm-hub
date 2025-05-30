@@ -84,7 +84,7 @@ export const CSVFeedUpdateSheet = ({
               </IconActionsButton>
             )
           }
-          title={t('Service.CsvFeed.UpdateCsvFeed', { name: csvFeed.name })}>
+          title={t('Service.CsvFeed.UpdateCsvFeed', { name: csvFeed.name! })}>
           <CsvFeedForm
             onDelete={deleteDocument}
             userCanDelete={userCanDelete}
