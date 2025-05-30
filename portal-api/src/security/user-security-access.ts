@@ -65,8 +65,15 @@ export const setUpdateSecurityForUser = <T>(
     )
     .where({
       id: context.user.id,
-      'UserOrganization_Capability.name':
-        OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
+    })
+    .andWhere(function () {
+      this.where({
+        'UserOrganization_Capability.name':
+          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
+      }).orWhere({
+        'UserOrganization_Capability.name':
+          OrganizationCapabilityName.MANAGE_ACCESS,
+      });
     })
     .first();
   if (!getUserCapability) {
