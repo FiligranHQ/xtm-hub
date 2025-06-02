@@ -146,11 +146,7 @@ const resolvers: Resolvers = {
       return deletedServiceInstance;
     },
     addServicePicture: async (_, payload, context) => {
-      const document = await uploadNewFile(
-        context,
-        payload.document,
-        fromGlobalId(payload.serviceId).id as ServiceInstanceId
-      );
+      const document = await uploadNewFile(context, payload.document);
       const update = payload.isLogo
         ? {
             logo_document_id: document.id,
@@ -162,7 +158,7 @@ const resolvers: Resolvers = {
         context,
         'ServiceInstance'
       )
-        .where({ id: fromGlobalId(payload.serviceId).id })
+        .where({ id: extractId<ServiceInstanceId>(payload.serviceInstanceId) })
         .update(update)
         .returning('*');
       await dispatch('ServiceInstance', 'edit', updatedServiceInstance);

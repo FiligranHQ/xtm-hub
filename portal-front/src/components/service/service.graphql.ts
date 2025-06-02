@@ -14,12 +14,12 @@ export const ServiceListCreateMutation = graphql`
 
 export const ServiceAddPicture = graphql`
   mutation serviceAddPictureMutation(
-    $serviceId: ID
+    $serviceInstanceId: ID!
     $document: Upload
     $isLogo: Boolean
   ) {
     addServicePicture(
-      serviceId: $serviceId
+      serviceInstanceId: $serviceInstanceId
       document: $document
       isLogo: $isLogo
     ) {

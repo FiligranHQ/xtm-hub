@@ -39,7 +39,7 @@ export const EditService: FunctionComponent<EditServiceProps> = ({
     }
     servicePictureMutation({
       variables: {
-        serviceId: service.id,
+        serviceInstanceId: service.id,
         document: document,
         isLogo: isLogo,
       },
