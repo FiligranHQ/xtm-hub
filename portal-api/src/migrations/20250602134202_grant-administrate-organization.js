@@ -3,11 +3,26 @@
  * @returns { Promise<void> }
  */
 export async function up(knex) {
-  await replaceUsersCapability(
-    knex,
-    'MANAGE_ACCESS',
-    'ADMINISTRATE_ORGANIZATION'
-  );
+  const trx = await knex.transaction();
+
+  try {
+    await knex('UserOrganization_Capability')
+      .where('name', '=', 'MANAGE_ACCESS')
+      .update('name', 'ADMINISTRATE_ORGANIZATION')
+      .transacting(trx);
+
+    await replacePersonalSpaceUsersCapability(
+      knex,
+      trx,
+      'MANAGE_SUBSCRIPTION',
+      'ADMINISTRATE_ORGANIZATION'
+    );
+
+    await trx.commit();
+  } catch (err) {
+    await trx.rollback();
+    throw err;
+  }
 }
 
 /**
@@ -15,11 +30,25 @@ export async function up(knex) {
  * @returns { Promise<void> }
  */
 export async function down(knex) {
-  await replaceUsersCapability(
-    knex,
-    'ADMINISTRATE_ORGANIZATION',
-    'MANAGE_ACCESS'
-  );
+  const trx = await knex.transaction();
+  try {
+    await replacePersonalSpaceUsersCapability(
+      knex,
+      trx,
+      'ADMINISTRATE_ORGANIZATION',
+      'MANAGE_SUBSCRIPTION'
+    );
+
+    await knex('UserOrganization_Capability')
+      .where('name', '=', 'ADMINISTRATE_ORGANIZATION')
+      .update('name', 'MANAGE_ACCESS')
+      .transacting(trx);
+
+    await trx.commit();
+  } catch (err) {
+    await trx.rollback();
+    throw err;
+  }
 }
 
 /**
@@ -28,52 +57,35 @@ export async function down(knex) {
  * @param newCapabilityName string
  * @returns { Promise<void> }
  */
-async function replaceUsersCapability(
+async function replacePersonalSpaceUsersCapability(
   knex,
+  trx,
   oldCapabilityName,
   newCapabilityName
 ) {
-  const trx = await knex.transaction();
-  try {
-    const usersToUpdate = await knex('User')
-      .leftJoin('User_Organization', 'User_Organization.user_id', 'User.id')
-      .leftJoin(
-        'UserOrganization_Capability',
-        'UserOrganization_Capability.user_organization_id',
-        'User_Organization.id'
-      )
-      .leftJoin(
-        'Organization',
-        'Organization.id',
-        'User_Organization.organization_id'
-      )
-      .where('Organization.personal_space', '=', false)
-      .andWhere('UserOrganization_Capability.name', '=', oldCapabilityName)
-      .select(
-        'User_Organization.id as userOrganizationId',
-        'UserOrganization_Capability.id as userOrganizationCapabilityId'
-      );
+  const capabilitiesToUpdate = await knex('UserOrganization_Capability')
+    .leftJoin(
+      'User_Organization',
+      'User_Organization.id',
+      'UserOrganization_Capability.user_organization_id'
+    )
+    .leftJoin(
+      'Organization',
+      'Organization.id',
+      'User_Organization.organization_id'
+    )
+    .where('Organization.personal_space', '=', true)
+    .andWhere('UserOrganization_Capability.name', '=', oldCapabilityName)
+    .select('UserOrganization_Capability.id as userOrganizationCapabilityId');
 
-    const updates = usersToUpdate.map(
-      async ({ userOrganizationId, userOrganizationCapabilityId }) => {
-        await knex('UserOrganization_Capability')
-          .where('id', userOrganizationCapabilityId)
-          .delete()
-          .transacting(trx);
+  const updates = capabilitiesToUpdate.map(
+    async ({ userOrganizationCapabilityId }) => {
+      await knex('UserOrganization_Capability')
+        .where('id', userOrganizationCapabilityId)
+        .update('name', newCapabilityName)
+        .transacting(trx);
+    }
+  );
 
-        await knex('UserOrganization_Capability')
-          .insert({
-            user_organization_id: userOrganizationId,
-            name: newCapabilityName,
-          })
-          .transacting(trx);
-      }
-    );
-
-    await Promise.all(updates);
-    await trx.commit();
-  } catch (err) {
-    await trx.rollback();
-    throw err;
-  }
+  await Promise.all(updates);
 }
