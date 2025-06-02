@@ -6,63 +6,34 @@ import { isUserGranted } from './access';
 
 describe('Access', () => {
   describe('isUserGranted', () => {
-    it('should return false when user is not defined', () => {
-      const result = isUserGranted();
+    it.each`
+      isUserDefined | userCapabilities       | organizationCapabilities                                  | expected | reason
+      ${false}      | ${[]}                  | ${[]}                                                     | ${false} | ${'user is not defined'}
+      ${true}       | ${[CAPABILITY_BYPASS]} | ${[]}                                                     | ${true}  | ${'user has the bypass capability'}
+      ${true}       | ${[]}                  | ${[OrganizationCapabilityName.MANAGE_ACCESS]}             | ${true}  | ${'user has the required capability'}
+      ${true}       | ${[]}                  | ${[OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION]} | ${true}  | ${'user is an organization admin'}
+      ${true}       | ${[]}                  | ${[]}                                                     | ${false} | ${'user does not have the required capabilities'}
+    `(
+      'should return $expected when $reason',
+      ({
+        isUserDefined,
+        expected,
+        userCapabilities,
+        organizationCapabilities,
+      }) => {
+        const user = isUserDefined
+          ? {
+              capabilities: userCapabilities,
+              selected_org_capabilities: organizationCapabilities,
+            }
+          : null;
+        const result = isUserGranted(
+          user as UserLoadUserBy,
+          OrganizationCapabilityName.MANAGE_ACCESS
+        );
 
-      expect(result).toBeFalsy();
-    });
-
-    it('should return true when user has the bypass capability', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [CAPABILITY_BYPASS],
-      } as UserLoadUserBy;
-      const result = isUserGranted(
-        user,
-        OrganizationCapabilityName.MANAGE_ACCESS
-      );
-
-      expect(result).toBeTruthy();
-    });
-
-    it('should return true when user has the required capability', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-        selected_org_capabilities: [OrganizationCapabilityName.MANAGE_ACCESS],
-      } as UserLoadUserBy;
-      const result = isUserGranted(
-        user,
-        OrganizationCapabilityName.MANAGE_ACCESS
-      );
-
-      expect(result).toBeTruthy();
-    });
-
-    it('should return true when user is an organization admin', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-        selected_org_capabilities: [
-          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-        ],
-      } as UserLoadUserBy;
-      const result = isUserGranted(
-        user,
-        OrganizationCapabilityName.MANAGE_ACCESS
-      );
-
-      expect(result).toBeTruthy();
-    });
-
-    it('should return false when user does not have the required capabilities', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-        selected_org_capabilities: [],
-      } as UserLoadUserBy;
-      const result = isUserGranted(
-        user,
-        OrganizationCapabilityName.MANAGE_ACCESS
-      );
-
-      expect(result).toBeFalsy();
-    });
+        expect(result).toBe(expected);
+      }
+    );
   });
 });
