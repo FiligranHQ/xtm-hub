@@ -138,8 +138,8 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
         setOpenSheet(false);
         toast({
           title: t('Utils.Success'),
-          description: t('VaultActions.DocumentUpdated', {
-            file_name: customDashboard.name!,
+          description: t('Service.CustomDashboards.Actions.Deleted', {
+            name: customDashboard.name,
           }),
         });
         router.push(`/service/custom_dashboards/${serviceInstance.id}`);

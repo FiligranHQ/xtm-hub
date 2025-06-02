@@ -499,10 +499,7 @@ export const CustomDashboardUpdateForm = ({
               <Button
                 variant="outline-destructive"
                 type="button"
-                onClick={(e) => {
-                  onDelete();
-                  handleCloseSheet(e);
-                }}>
+                onClick={onDelete}>
                 {t('Utils.Delete')}
               </Button>
             )}

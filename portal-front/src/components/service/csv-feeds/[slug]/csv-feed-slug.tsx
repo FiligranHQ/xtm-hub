@@ -7,6 +7,8 @@ import ShareableResourceSlug from '@/components/service/document/shareable-resou
 import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
 import { csvFeedsItem_fragment$key } from '@generated/csvFeedsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { toast } from 'filigran-ui';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
@@ -21,6 +23,8 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   queryRef,
   serviceInstance,
 }) => {
+  const t = useTranslations();
+
   const data = usePreloadedQuery<csvFeedQuery>(CsvFeedQuery, queryRef);
   const router = useRouter();
 
@@ -47,6 +51,12 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
 
   const onDelete = () => {
     router.push(`/service/${serviceInstance.slug}/${serviceInstance.id}`);
+    toast({
+      title: t('Utils.Success'),
+      description: t('Service.CsvFeed.Actions.Deleted', {
+        name: documentData!.name,
+      }),
+    });
   };
 
   return (

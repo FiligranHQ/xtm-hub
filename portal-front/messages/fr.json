@@ -252,9 +252,9 @@
     },
     "CustomDashboards": {
       "Actions": {
-        "Added": "{name} has been added",
-        "Deleted": "{name} has been deleted",
-        "Updated": "{name} has been modified"
+        "Added": "Le custom dashboard {name} a été ajouté avec succès",
+        "Deleted": "Le custom dashboard {name} a été supprimé avec succès",
+        "Updated": "Le custom dashboard {name} a été modifié avec succès"
       },
       "AddDashboard": "Nouveau tableau de bord",
       "Details": {
