@@ -69,6 +69,7 @@ test.describe('Capabilities', () => {
   test('Should add subscription with capabilities', async ({ page }) => {
     await test.step("Add orga's sub + user with manage access", async () => {
       await servicePage.navigateToServiceListAdmin();
+      await servicePage.navigateToServiceItemAdmin();
 
       await servicePage.addOrganizationIntoServiceWithCapabilities(
         TEST_CAPABILITY.organizationName

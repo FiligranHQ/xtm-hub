@@ -89,11 +89,7 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const uploadNewFile = async (
-  context: PortalContext,
-  document,
-  serviceInstanceId: ServiceInstanceId
-) => {
+export const uploadNewFile = async (context: PortalContext, document) => {
   if (!document || !document.file) {
     return;
   }
@@ -101,12 +97,12 @@ export const uploadNewFile = async (
     document.file,
     document.file.name,
     context.user.id,
-    serviceInstanceId
+    context.serviceInstanceId as ServiceInstanceId
   );
 
   const data: FullDocumentMutator = {
     uploader_id: context.user.id,
-    name: serviceInstanceId,
+    name: context.serviceInstanceId,
     minio_name: minioName,
     file_name: document.file.name,
     service_instance_id: null,
@@ -115,8 +111,7 @@ export const uploadNewFile = async (
     type: 'service_picture',
   };
 
-  const addedDocument = await createDocument(context, data);
-  return addedDocument;
+  return createDocument(context, data);
 };
 
 export const deleteDocuments = async () => {

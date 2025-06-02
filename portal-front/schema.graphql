@@ -40,7 +40,7 @@ type Mutation {
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
-  addServicePicture(serviceId: ID, document: Upload, isLogo: Boolean): ServiceInstance
+  addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
   addLabel(input: AddLabelInput!): Label!
   editLabel(id: ID!, input: EditLabelInput!): Label!
   deleteLabel(id: ID!): Label!

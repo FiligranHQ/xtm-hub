@@ -68,7 +68,7 @@ type Mutation {
   deleteServiceInstance(id: ID!): ServiceInstance
     @auth(requires: [MANAGE_SUBSCRIPTION])
   addServicePicture(
-    serviceId: ID
+    serviceInstanceId: ID!
     document: Upload
     isLogo: Boolean
   ): ServiceInstance @auth(requires: [MANAGE_SUBSCRIPTION])

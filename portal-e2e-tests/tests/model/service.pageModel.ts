@@ -8,7 +8,9 @@ export default class ServicePage {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Services' }).click();
     await this.page.getByText('Name', { exact: true }).click();
+  }
 
+  async navigateToServiceItemAdmin() {
     await clickRowAction(
       this.page,
       this.page.getByRole('row', { name: 'Vault' }),
@@ -83,5 +85,27 @@ export default class ServicePage {
     await clickRowAction(this.page, row, 'Delete');
     // Wait for the dialog to appear and animation to finish
     await this.page.getByRole('button', { name: 'Remove access' }).click();
+  }
+
+  async addPictureService(
+    firstPathName: string,
+    secondPathName: string,
+    serviceName: string = 'Filigran Academy'
+  ) {
+    await this.page
+      .getByRole('row', { name: serviceName })
+      .getByRole('button')
+      .click();
+    await this.page
+      .getByRole('button', { name: "Edit service's pictures" })
+      .click();
+    const fileInputIllustration = this.page
+      .locator('input[type="file"]')
+      .nth(0);
+
+    await fileInputIllustration.setInputFiles(firstPathName);
+    const fileInputLogo = this.page.locator('input[type="file"]').nth(1);
+    await fileInputLogo.setInputFiles(secondPathName);
+    await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 }

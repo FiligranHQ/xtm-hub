@@ -30,6 +30,7 @@ test.describe('Service Management', () => {
 
     await loginPage.login();
     await servicePage.navigateToServiceListAdmin();
+    await servicePage.navigateToServiceItemAdmin();
   });
 
   test('should be able to admin service', async ({ page }) => {
