@@ -113,6 +113,10 @@ const resolvers: Resolvers = {
           context.user.selected_organization_id
         );
 
+        if (chosenOrganization.personal_space) {
+          throw new Error('CANT_ADD_USER_TO_PERSONAL_SPACE');
+        }
+
         // The admin orga should only allow to add users in the same organization and with the same domain.
         // Only the admin PLTFM can by pass this check
         if (
@@ -149,6 +153,10 @@ const resolvers: Resolvers = {
         return mapUserToGraphqlUser(loadUserFinalUser);
       } catch (error) {
         await trx.rollback();
+        if (error.message.includes('CANT_ADD_USER_TO_PERSONAL_SPACE')) {
+          logApp.warn('You cannot add a user in your personal space');
+          throw ForbiddenAccess(error.message);
+        }
         if (error.name.includes(FORBIDDEN_ACCESS)) {
           logApp.warn(
             'You cannot add a user whose email domain is outside your organization'
