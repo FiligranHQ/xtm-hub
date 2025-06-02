@@ -228,9 +228,9 @@
     "CreationStatus": "Creation status",
     "CsvFeed": {
       "Actions": {
-        "Added": "{name} has been added",
-        "Deleted": "{name} has been deleted",
-        "Updated": "{name} has been modified"
+        "Added": "The CSV {name} has been added successfully",
+        "Deleted": "The CSV {name} has been deleted successfully",
+        "Updated": "The CSV {name} has been modified successfully"
       },
       "Form": {
         "NameLabel": "Name",
@@ -252,9 +252,9 @@
     },
     "CustomDashboards": {
       "Actions": {
-        "Added": "{name} has been added",
-        "Deleted": "{name} has been deleted",
-        "Updated": "{name} has been modified"
+        "Added": "The custom dashboard {name} has been added successfully",
+        "Deleted": "The custom dashboard {name} has been deleted successfully",
+        "Updated": "The custom dashboard {name} has been modified successfully"
       },
       "AddDashboard": "Add new dashboard",
       "Details": {

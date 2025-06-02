@@ -8,6 +8,7 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MoreVertIcon } from 'filigran-icon';
+import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
 interface CsvFeedCardProps {
@@ -36,6 +37,15 @@ const CsvFeedCard = ({
     serviceInstance
   );
 
+  const onDelete = () => {
+    toast({
+      title: t('Utils.Success'),
+      description: t('Service.CsvFeed.Actions.Deleted', {
+        name: csvFeed.name,
+      }),
+    });
+  };
+
   return (
     <ShareableResourceCard
       key={csvFeed.id}
@@ -53,6 +63,7 @@ const CsvFeedCard = ({
               </>
             }>
             <CSVFeedUpdateSheet
+              onDelete={onDelete}
               connectionId={connectionId}
               variant="menu"
               csvFeed={csvFeed}

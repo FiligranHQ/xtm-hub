@@ -24,14 +24,14 @@ export const CsvFeedDelete = ({
         actionButtonText={t('Utils.Delete')}
         variantName={'destructive'}
         AlertTitle={t('Service.CsvFeed.DeleteCsvFeed', {
-          name: csvFeed.name!,
+          name: csvFeed.name,
         })}
         triggerElement={
           <Button
             variant="outline-destructive"
             className=""
             aria-label={t('Service.CsvFeed.DeleteCsvFeed', {
-              name: csvFeed.name!,
+              name: csvFeed.name,
             })}>
             {t('Utils.Delete')}
           </Button>
@@ -41,7 +41,7 @@ export const CsvFeedDelete = ({
           handleCloseSheet(e);
         }}>
         {t('Service.CsvFeed.SureDeleteCsvFeed', {
-          name: csvFeed.name!,
+          name: csvFeed.name,
         })}
       </AlertDialogComponent>
     )

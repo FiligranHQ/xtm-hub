@@ -3,7 +3,7 @@ type CsvFeed implements Node {
   type: String!
   uploader: User
   uploader_organization: Organization
-  name: String
+  name: String!
   short_description: String
   description: String
   file_name: String!
