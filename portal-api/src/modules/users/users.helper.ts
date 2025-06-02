@@ -49,7 +49,7 @@ export const createUserWithPersonalSpace = async (
   const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
   // Create user personal space organization
-  const [addOrganization] = await insertNewOrganization({
+  const [personalSpaceOrganization] = await insertNewOrganization({
     id: uuid as unknown as OrganizationId,
     name: data.email,
     personal_space: true,
@@ -59,7 +59,7 @@ export const createUserWithPersonalSpace = async (
     .insert({
       id: uuid as UserId,
       selected_organization_id:
-        data.selected_organization_id ?? addOrganization.id,
+        data.selected_organization_id ?? personalSpaceOrganization.id,
       salt,
       email: data.email,
       first_name: data.first_name,
@@ -72,12 +72,12 @@ export const createUserWithPersonalSpace = async (
   // Insert relation UserOrganization
   const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
     user_id: addedUser.id,
-    organizations_id: [addOrganization.id],
+    organizations_id: [personalSpaceOrganization.id],
   });
 
   await createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
-    capabilities_name: [OrganizationCapabilityName.MANAGE_SUBSCRIPTION],
+    capabilities_name: [OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION],
   });
 
   await sendMail({
