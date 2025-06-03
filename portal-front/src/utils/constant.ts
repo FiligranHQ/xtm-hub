@@ -8,5 +8,12 @@ export enum OrganizationCapabilityName {
   MANAGE_SUBSCRIPTION = 'MANAGE_SUBSCRIPTION',
 }
 
+export const organizationCapabilitiesMultiSelectOptions = Object.values(
+  OrganizationCapabilityName
+).map((value) => ({
+  label: value,
+  value,
+}));
+
 export const DEBOUNCE_TIME = 300;
 export const ANIMATION_TIME = 300;
