@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from 'filigran-ui';
+} from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 
@@ -43,7 +43,7 @@ export const CapabilityDescription: React.FC = () => {
           {t('CapabilityDescription.Description')}
         </CardDescription>
         <CardContent className="p-0">
-          <ul className="flex flex-col space-y-2 gap-xs text-xs">
+          <ul className="flex flex-col space-y-s gap-xs text-xs">
             {capabilityList}
           </ul>
         </CardContent>
