@@ -94,20 +94,14 @@ describe('User helpers', async () => {
     });
 
     it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
-      return preventRemovalOfLastOrganizationAdministrator(user.id, [
+      const call = preventRemovalOfLastOrganizationAdministrator(user.id, [
         {
           organizationId: organization.id,
           capabilities: [],
         },
-      ])
-        .then(() => {
-          throw new Error(
-            'preventRemovalOfLastOrganizationAdministrator should throw an error'
-          );
-        })
-        .catch((err) => {
-          expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');
-        });
+      ]);
+
+      await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
     });
 
     it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
