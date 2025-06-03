@@ -1,8 +1,10 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { SearchInput } from '@/components/ui/search-input';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { debounceHandleInput } from '@/utils/debounce';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   customDashboardsItem_fragment$data,
   customDashboardsItem_fragment$key,
@@ -12,7 +14,7 @@ import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql'
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
@@ -45,6 +47,8 @@ const CustomDashboardsList = ({
   labels,
 }: CustomDashboardsListProps) => {
   const t = useTranslations();
+  const { settings } = useContext(SettingsContext);
+
   const queryData = usePreloadedQuery<customDashboardsQuery>(
     CustomDashboardsListQuery,
     queryRef
@@ -131,6 +135,8 @@ const CustomDashboardsList = ({
                 key={doc.id}
                 customDashboard={doc}
                 serviceInstance={serviceInstance}
+                detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
+                shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
               />
             ))}
           </ul>
@@ -146,6 +152,8 @@ const CustomDashboardsList = ({
             key={doc.id}
             customDashboard={doc}
             serviceInstance={serviceInstance}
+            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
+            shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
           />
         ))}
       </ul>
