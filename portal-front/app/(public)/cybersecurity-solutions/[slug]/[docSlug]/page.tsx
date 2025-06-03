@@ -133,14 +133,14 @@ export async function generateMetadata({
 const Page = async ({
   params,
 }: {
-  params: Promise<{ slug: string; dashboardSlug: string }>;
+  params: Promise<{ slug: string; docSlug: string }>;
 }) => {
   const awaitedParams = await params;
 
   try {
     const { baseUrl, serviceInstance, document } = await getPageData(
       awaitedParams.slug,
-      awaitedParams.dashboardSlug
+      awaitedParams.docSlug
     );
     const serviceInformation = getServiceInfo(
       {
