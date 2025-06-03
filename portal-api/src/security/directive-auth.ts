@@ -8,7 +8,6 @@ import {
 } from './auth.helper';
 
 import { UserLoadUserBy } from '../model/user';
-import { OrganizationCapabilityName } from '../modules/common/user-organization-capability.const';
 import { getCapabilities } from '../modules/users/users.domain';
 import { logApp } from '../utils/app-logger.util';
 
@@ -110,25 +109,13 @@ const hasCapability = (
   user: UserLoadUserBy,
   capabilitiesRequired: string[]
 ) => {
-  if (userHasBypassCapability(user)) {
-    return true;
-  }
   const { selected_org_capabilities } = user;
-
-  if (userIsOrganizationAdministrator(user)) {
+  if (userHasBypassCapability(user) || userIsOrganizationAdministrator(user)) {
     return true;
   }
 
   // Authorize if the user is connected and no need specific capabilities
   if (!user.disabled && capabilitiesRequired.length === 0) {
-    return true;
-  }
-
-  if (
-    selected_org_capabilities.includes(
-      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
-    )
-  ) {
     return true;
   }
 

@@ -7,70 +7,50 @@ import { authDirectives } from './directive-auth';
 
 describe('Auth directives', () => {
   describe('hasCapability', () => {
-    it('should allow bypass user', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [CAPABILITY_BYPASS],
-      } as UserLoadUserBy;
+    it.each`
+      description                                                                 | expected | isUserAdmin | userHasManageAccess | areCapabilitiesRequired | isUserBypass
+      ${'allow bypass user'}                                                      | ${true}  | ${false}    | ${false}            | ${true}                 | ${true}
+      ${'allow user when there is no required capability and he is not disabled'} | ${true}  | ${false}    | ${false}            | ${false}                | ${false}
+      ${'allow user when he has the right capability'}                            | ${true}  | ${false}    | ${true}             | ${true}                 | ${false}
+      ${'not allow user when he does not have right capability'}                  | ${false} | ${false}    | ${false}            | ${true}                 | ${false}
+      ${'allow user when he is the organization admin'}                           | ${true}  | ${true}     | ${false}            | ${true}                 | ${false}
+    `(
+      'should $description',
+      ({
+        isUserBypass,
+        expected,
+        isUserAdmin,
+        userHasManageAccess,
+        areCapabilitiesRequired,
+      }) => {
+        const capabilities = isUserBypass ? [CAPABILITY_BYPASS] : [];
+        const organizationCapabilities = [];
+        if (isUserAdmin) {
+          organizationCapabilities.push(
+            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+          );
+        }
+        if (userHasManageAccess) {
+          organizationCapabilities.push(
+            OrganizationCapabilityName.MANAGE_ACCESS
+          );
+        }
 
-      const result = authDirectives.hasCapability(user, [
-        OrganizationCapabilityName.MANAGE_ACCESS,
-      ]);
+        const user = {
+          capabilities,
+          selected_org_capabilities: organizationCapabilities,
+          disabled: false,
+        } as UserLoadUserBy;
 
-      expect(result).toBeTruthy();
-    });
+        const requiredCapabilities = areCapabilitiesRequired
+          ? [OrganizationCapabilityName.MANAGE_ACCESS]
+          : [];
 
-    it('should allow user when there is no required capability and he is not disabled', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-        disabled: true,
-        selected_org_capabilities: [OrganizationCapabilityName.MANAGE_ACCESS],
-      } as UserLoadUserBy;
+        const result = authDirectives.hasCapability(user, requiredCapabilities);
 
-      const result = authDirectives.hasCapability(user, []);
-
-      expect(result).toBeFalsy();
-    });
-
-    it('should allow user when he has the right capability', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-        selected_org_capabilities: [OrganizationCapabilityName.MANAGE_ACCESS],
-      } as UserLoadUserBy;
-
-      const result = authDirectives.hasCapability(user, [
-        OrganizationCapabilityName.MANAGE_ACCESS,
-      ]);
-
-      expect(result).toBeTruthy();
-    });
-
-    it('should not allow user when he does not have right capability', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-        selected_org_capabilities: [],
-      } as UserLoadUserBy;
-
-      const result = authDirectives.hasCapability(user, [
-        OrganizationCapabilityName.MANAGE_ACCESS,
-      ]);
-
-      expect(result).toBeFalsy();
-    });
-
-    it('should allow user when he is the organization admin', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-        selected_org_capabilities: [
-          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-        ],
-      } as UserLoadUserBy;
-
-      const result = authDirectives.hasCapability(user, [
-        OrganizationCapabilityName.MANAGE_ACCESS,
-      ]);
-
-      expect(result).toBeTruthy();
-    });
+        expect(result).toBe(expected);
+      }
+    );
   });
 
   describe('hasServiceCapability', () => {
@@ -78,81 +58,53 @@ describe('Auth directives', () => {
       vi.restoreAllMocks();
     });
 
-    it('should allow bypass user', async () => {
-      const user: UserLoadUserBy = {
-        capabilities: [CAPABILITY_BYPASS],
-      } as UserLoadUserBy;
-      const result = await authDirectives.hasServiceCapability(user, {}, []);
+    it.each`
+      description                                             | expected | expectedError                                   | isUserBypass | isUserOrganizationAdmin | areIdsMissing | hasRequiredCapabilities
+      ${'allow bypass user'}                                  | ${true}  | ${null}                                         | ${true}      | ${false}                | ${false}      | ${false}
+      ${'allow allow user when he is the organization admin'} | ${true}  | ${null}                                         | ${false}     | ${true}                 | ${false}      | ${false}
+      ${'throw an error when ids are missing'}                | ${false} | ${'Service_id or subscription_id is undefined'} | ${false}     | ${false}                | ${true}       | ${false}
+      ${'allow user with the required service capability'}    | ${true}  | ${null}                                         | ${false}     | ${false}                | ${false}      | ${true}
+      ${'not allow user without required service capability'} | ${false} | ${null}                                         | ${false}     | ${false}                | ${false}      | ${false}
+    `(
+      'should $description',
+      async ({
+        expected,
+        isUserBypass,
+        isUserOrganizationAdmin,
+        areIdsMissing,
+        hasRequiredCapabilities,
+        expectedError,
+      }) => {
+        vi.spyOn(AuthHelper, 'getCapabilityUser').mockImplementation(
+          (): Promise<{ capabilities: string[] }> => {
+            if (hasRequiredCapabilities) {
+              return Promise.resolve({ capabilities: ['UPLOAD'] });
+            }
 
-      expect(result).toBeTruthy();
-    });
+            return Promise.resolve({ capabilities: [] });
+          }
+        );
 
-    it('should allow user when he is the organization admin', async () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-        selected_org_capabilities: [
-          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-        ],
-      } as UserLoadUserBy;
-      const result = await authDirectives.hasServiceCapability(user, {}, [
-        'UPLOAD',
-      ]);
+        const capabilities = isUserBypass ? [CAPABILITY_BYPASS] : [];
+        const selected_org_capabilities = isUserOrganizationAdmin
+          ? [OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION]
+          : [];
+        const user: UserLoadUserBy = {
+          capabilities,
+          selected_org_capabilities,
+        } as UserLoadUserBy;
+        const input = areIdsMissing ? {} : { service_instance_id: 'fake' };
+        const call = authDirectives.hasServiceCapability(user, input, [
+          'UPLOAD',
+        ]);
 
-      expect(result).toBeTruthy();
-    });
-
-    it('should throw an error when service instance id and subscription ids are missing', () => {
-      const user: UserLoadUserBy = {
-        capabilities: [],
-      } as UserLoadUserBy;
-      return authDirectives
-        .hasServiceCapability(user, {}, ['UPLOAD'])
-        .then(() => {
-          throw Error('hasServiceCapability should throw an error');
-        })
-        .catch((error) => {
-          expect(
-            error.message.includes('Service_id or subscription_id is undefined')
-          ).toBeTruthy();
-        });
-    });
-
-    it('should allow user with the required service capability', async () => {
-      vi.spyOn(AuthHelper, 'getCapabilityUser').mockImplementation(
-        (): Promise<{ capabilities: string[] }> => {
-          return Promise.resolve({ capabilities: ['UPLOAD'] });
+        if (expectedError) {
+          await expect(call).rejects.toThrow(expectedError);
+        } else {
+          const result = await call;
+          expect(result).toBe(expected);
         }
-      );
-
-      const user: UserLoadUserBy = {
-        capabilities: [],
-      } as UserLoadUserBy;
-      const result = await authDirectives.hasServiceCapability(
-        user,
-        { service_instance_id: 'fake' },
-        ['UPLOAD']
-      );
-
-      expect(result).toBeTruthy();
-    });
-
-    it('should not allow user when he does not have the required service capability', async () => {
-      vi.spyOn(AuthHelper, 'getCapabilityUser').mockImplementation(
-        (): Promise<{ capabilities: string[] }> => {
-          return Promise.resolve({ capabilities: [] });
-        }
-      );
-
-      const user: UserLoadUserBy = {
-        capabilities: [],
-      } as UserLoadUserBy;
-      const result = await authDirectives.hasServiceCapability(
-        user,
-        { service_instance_id: 'fake' },
-        ['UPLOAD']
-      );
-
-      expect(result).toBeFalsy();
-    });
+      }
+    );
   });
 });
