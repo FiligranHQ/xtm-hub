@@ -5,7 +5,7 @@ import {
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isDevelopment, isEmpty } from '@/lib/utils';
-import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/form';
+import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
 import {
@@ -37,9 +37,6 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
   const [userOrganization, setUserOrganization] = useState<
     UserOrganizationFormProps[]
   >([]);
-
-  const organizationCapabilitiesData =
-    buildOrganizationCapabilitiesMultiSelectOptions();
 
   const addUserOrganization = (value: UserOrganizationFormProps) => {
     setUserOrganization([...userOrganization, value]);
@@ -183,7 +180,7 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
                         <FormControl>
                           <MultiSelectFormField
                             noResultString={t('Utils.NotFound')}
-                            options={organizationCapabilitiesData}
+                            options={organizationCapabilitiesMultiSelectOptions}
                             defaultValue={formField.value}
                             onValueChange={formField.onChange}
                             placeholder={t(
