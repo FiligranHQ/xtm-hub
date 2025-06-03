@@ -420,7 +420,7 @@ describe('User mutation resolver', () => {
 
       it('should prevent deletion of the last organization administrator', async () => {
         // @ts-expect-error adminEditUser is not considered as callable
-        return usersResolver.Mutation.adminEditUser(
+        const call = usersResolver.Mutation.adminEditUser(
           undefined,
           {
             id: THALES_USER_ID,
@@ -434,13 +434,9 @@ describe('User mutation resolver', () => {
             } as AdminEditUserInput,
           },
           contextAdminUser
-        )
-          .then(() => {
-            throw new Error('adminEditUser should throw an error ');
-          })
-          .catch((err) => {
-            expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');
-          });
+        );
+
+        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
     });
   });
@@ -483,20 +479,16 @@ describe('User mutation resolver', () => {
         },
       };
       // @ts-expect-error editUser is not considered as callable
-      return usersResolver.Mutation.editUser(
+      const call = usersResolver.Mutation.editUser(
         undefined,
         {
           id: THALES_USER_ID,
           input: { capabilities: [] },
         },
         testContext
-      )
-        .then(() => {
-          throw new Error('editUser should throw an error ');
-        })
-        .catch((err) => {
-          expect(err.message).toBe('CANT_REMOVE_LAST_ADMINISTRATOR');
-        });
+      );
+
+      await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
     });
   });
 
