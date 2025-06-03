@@ -146,6 +146,8 @@ const CustomDashboardsList = ({
             key={doc.id}
             customDashboard={doc}
             serviceInstance={serviceInstance}
+            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`}
+            shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
           />
         ))}
       </ul>

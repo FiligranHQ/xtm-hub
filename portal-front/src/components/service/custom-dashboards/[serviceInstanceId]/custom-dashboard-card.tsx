@@ -5,7 +5,6 @@ import DocumentBento from '@/components/ui/document-bento';
 import { IconActions } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { MoreVertIcon } from 'filigran-icon';
@@ -19,12 +18,16 @@ interface CustomDashboardCardProps {
   customDashboard: customDashboardsItem_fragment$data;
   connectionId?: string;
   serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  detailUrl: string;
+  shareLinkUrl: string;
 }
 
 const CustomDashboardCard = ({
   customDashboard,
   connectionId,
   serviceInstance,
+  detailUrl,
+  shareLinkUrl,
 }: CustomDashboardCardProps) => {
   const t = useTranslations();
   const fileNames = (customDashboard.children_documents ?? []).map(
@@ -52,8 +55,8 @@ const CustomDashboardCard = ({
     <ShareableResourceCard
       key={customDashboard.id}
       document={customDashboard}
-      detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${customDashboard.id}`}
-      shareLinkUrl={`${window.location.origin}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${customDashboard.slug}`}
+      detailUrl={detailUrl}
+      shareLinkUrl={shareLinkUrl}
       extraContent={
         (userCanUpdate || userCanDelete) && (
           <IconActions
