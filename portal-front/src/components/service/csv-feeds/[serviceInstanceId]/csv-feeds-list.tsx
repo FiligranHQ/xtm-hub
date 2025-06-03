@@ -155,7 +155,7 @@ const CsvFeedsList = ({
             csvFeed={csvFeed}
             connectionId={data.csvFeeds!.__id}
             serviceInstance={serviceInstance}
-            detailUrl={`/service/${serviceInstance.slug}/${serviceInstance.id}/${csvFeed.id}`}
+            detailUrl={`/service/csv_feeds/${serviceInstance.id}/${csvFeed.id}`}
             shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
           />
         ))}
