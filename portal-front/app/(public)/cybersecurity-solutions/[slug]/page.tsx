@@ -1,4 +1,6 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import DocumentBento from '@/components/ui/document-bento';
+import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -11,7 +13,6 @@ import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import ParentDocumentCard from './parent-document-card';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -199,12 +200,16 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
             {documents.map((document) => {
               return (
-                <ParentDocumentCard
+                <ShareableResourceCard
                   key={document.id}
-                  serviceInstance={serviceInstance}
                   document={document}
-                  baseUrl={baseUrl}
-                />
+                  detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+                  shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}>
+                  <DocumentBento
+                    document={document}
+                    serviceInstanceId={serviceInstance.id}
+                  />
+                </ShareableResourceCard>
               );
             })}
           </ul>
