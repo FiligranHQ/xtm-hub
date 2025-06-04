@@ -32,7 +32,7 @@ const ShareableResourceSlug: React.FunctionComponent<
   ShareableResourceSlugProps
 > = ({ documentData, breadcrumbValue, children, updateActions }) => {
   const t = useTranslations();
-  const { slug } = useDecodedParams();
+  const { serviceInstanceId } = useDecodedParams();
   const { settings } = useContext(SettingsContext);
 
   const [documentDownloadNumber, setDocumentDownloadNumber] = useState(
@@ -61,7 +61,7 @@ const ShareableResourceSlug: React.FunctionComponent<
           <Button
             onClick={() => {
               incrementDownloadNumber();
-              window.location.href = `/document/get/${slug}/${documentData?.id}`;
+              window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}`;
             }}>
             {t('Utils.Download')}
           </Button>
