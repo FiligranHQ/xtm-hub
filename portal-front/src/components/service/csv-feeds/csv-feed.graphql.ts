@@ -3,7 +3,7 @@ import { graphql } from 'react-relay';
 export const CsvFeedCreateMutation = graphql`
   mutation csvFeedCreateMutation(
     $input: CreateCsvFeedInput!
-    $document: Upload!
+    $document: [Upload!]!
     $serviceInstanceId: String!
     $connections: [ID!]!
   ) {
@@ -14,6 +14,29 @@ export const CsvFeedCreateMutation = graphql`
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
       name
+      ...csvFeedsItem_fragment
+    }
+  }
+`;
+
+export const CsvFeedUpdateMutation = graphql`
+  mutation csvFeedUpdateMutation(
+    $documentId: ID!
+    $input: UpdateCsvFeedInput!
+    $document: [Upload!]
+    $updateDocument: Boolean!
+    $images: [String!]
+    $serviceInstanceId: String!
+  ) {
+    updateCsvFeed(
+      documentId: $documentId
+      input: $input
+      document: $document
+      updateDocument: $updateDocument
+      images: $images
+      serviceInstanceId: $serviceInstanceId
+    ) {
+      __id
       ...csvFeedsItem_fragment
     }
   }
@@ -63,11 +86,6 @@ export const csvFeedsItem = graphql`
     children_documents {
       id
       file_name
-      created_at
-      name
-      description
-      download_number
-      active
     }
     service_instance {
       id

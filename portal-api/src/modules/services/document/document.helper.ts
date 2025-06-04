@@ -16,6 +16,12 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
   parent_document_id?: DocumentId;
 };
 
+export interface UpdateDocumentDocuments {
+  documentFile: MinioFile | undefined;
+  newImages: MinioFile[];
+  existingImages: string[];
+}
+
 export const getDocumentName = (documentName: string) => {
   const splitName = documentName.split('.');
   const nameWithoutExtension = splitName[0];

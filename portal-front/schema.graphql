@@ -28,7 +28,8 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  createCsvFeed(input: CreateCsvFeedInput!, document: Upload!, serviceInstanceId: String!): CsvFeed
+  createCsvFeed(input: CreateCsvFeedInput!, document: [Upload!], serviceInstanceId: String!): CsvFeed!
+  updateCsvFeed(documentId: ID, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
   deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
   createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
   updateCustomDashboard(documentId: ID, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
@@ -151,9 +152,9 @@ type CsvFeed implements Node {
   download_number: Int!
   share_number: Int!
   slug: String
-  labels: [Label!]!
+  labels: [Label!]
   service_instance_id: String!
-  service_instance: ServiceInstance!
+  service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [Document!]
   remover_id: ID
@@ -166,6 +167,16 @@ input CreateCsvFeedInput {
   description: String!
   active: Boolean!
   labels: [String!]
+}
+
+input UpdateCsvFeedInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  uploader_organization_id: String
 }
 
 type CsvFeedEdge {

@@ -14,12 +14,13 @@ import {
   SheetFooter,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
-export const csvFeedFormSchema = z.object({
+const csvFeedFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
   short_description: z.string().min(1, 'Required').max(250),
@@ -29,11 +30,11 @@ export const csvFeedFormSchema = z.object({
   document: z.custom<FileList>(fileListCheck),
   illustration: z.custom<FileList>(fileListCheck),
 });
-export type CsvFeedCreateFormValues = z.infer<typeof csvFeedFormSchema>;
+export type CsvFeedFormValues = z.infer<typeof csvFeedFormSchema>;
 
 interface CsvFeedFormProps {
   userCanDelete?: boolean;
-  handleSubmit?: (values: CsvFeedCreateFormValues) => void;
+  handleSubmit?: (values: CsvFeedFormValues) => void;
   onDelete?: () => void;
   csvFeed?: csvFeedsItem_fragment$data;
 }
@@ -46,11 +47,36 @@ export const CsvFeedForm = ({
 }: CsvFeedFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet } = useDialogContext();
+
+  const values = useMemo(
+    () =>
+      ({
+        ...csvFeed,
+        illustration: csvFeed?.children_documents?.map((n) => ({
+          ...n,
+          name: n.file_name,
+        })) as unknown as FileList,
+      }) as CsvFeedFormValues,
+    [csvFeed]
+  );
+  const formSchema = useMemo(
+    () =>
+      csvFeed
+        ? csvFeedFormSchema.merge(
+            z.object({
+              document: z.custom<FileList>(fileListCheck).optional(),
+              illustration: z.custom<FileList>(fileListCheck).optional(),
+            })
+          )
+        : csvFeedFormSchema,
+    [csvFeed]
+  );
+
   return (
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
-          handleSubmit?.(values as CsvFeedCreateFormValues);
+          handleSubmit?.(values as CsvFeedFormValues);
         }}
         onValuesChange={(values, form) => {
           if (values.name) {
@@ -64,8 +90,8 @@ export const CsvFeedForm = ({
             }
           }
         }}
-        // For #446 to update CSV Feed values={{ name: 'CSVFeedOne' }}
-        formSchema={csvFeedFormSchema}
+        values={values}
+        formSchema={formSchema}
         fieldConfig={{
           description: {
             fieldType: ({ field }) => (
@@ -104,7 +130,11 @@ export const CsvFeedForm = ({
             ),
           },
           document: {
-            label: t('Service.CsvFeed.Form.CsvFeedFile'),
+            label: csvFeed
+              ? t('Service.CsvFeed.Form.ExistingCsvFeedFile', {
+                  file_name: csvFeed.file_name,
+                })
+              : t('Service.CsvFeed.Form.CsvFeedFile'),
             fieldType: 'file',
             inputProps: {
               allowedTypes: 'application/json',

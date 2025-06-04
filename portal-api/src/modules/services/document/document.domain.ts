@@ -35,6 +35,7 @@ import {
   getDocumentName,
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
+  UpdateDocumentDocuments,
 } from './document.helper';
 
 import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
@@ -208,6 +209,63 @@ export const updateDocument = async <T extends DocumentModel>(
   return document as T;
 };
 
+export const updateDocumentWithChildren = async <T extends DocumentModel>(
+  type: string,
+  id: string,
+  input: Partial<T>,
+  documents: UpdateDocumentDocuments,
+  metadataKeys: Array<
+    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+  >,
+  context: PortalContext
+) => {
+  const { documentFile, newImages, existingImages } = documents;
+  const data = {
+    ...input,
+    type,
+  };
+
+  // We are updating the base document
+  if (documentFile) {
+    Object.assign(data, {
+      file_name: documentFile.fileName,
+      minio_name: documentFile.minioName,
+      mime_type: documentFile.mimeType,
+    });
+  }
+
+  const dashboard = await updateDocument<T>(context, id, data, metadataKeys);
+
+  // Delete the images that are not in the existingImages array
+  const childIds = await db<DocumentChildren>(context, 'Document_Children')
+    .where('parent_document_id', '=', id)
+    .whereNotIn('child_document_id', existingImages)
+    .select('child_document_id');
+  if (childIds.length > 0) {
+    await db<Document>(context, 'Document')
+      .whereIn(
+        'id',
+        childIds.map((childId) => childId.child_document_id)
+      )
+      .delete();
+  }
+
+  // Create new images
+  await Promise.all(
+    newImages.map((image) => {
+      createDocument(context, {
+        type: 'image',
+        parent_document_id: id,
+        file_name: image.fileName,
+        minio_name: image.minioName,
+        mime_type: image.mimeType,
+      });
+    })
+  );
+
+  return dashboard;
+};
+
 export const incrementDocumentsDownloads = async (
   context: PortalContext,
   document: DocumentModel
@@ -281,7 +339,7 @@ export const passDocumentToInactive = async (
     .update({ active: false, remover_id: context.user.id });
 };
 
-export const loadParentDocumentsByServiceInstance = <
+export const loadParentDocumentsByServiceInstance = async <
   T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
 >(
   context: PortalContext,
@@ -304,7 +362,7 @@ export const loadParentDocumentsByServiceInstance = <
   );
 };
 
-export const loadDocuments = <
+export const loadDocuments = async <
   T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
 >(
   context: PortalContext,

@@ -15,6 +15,7 @@ import {
   getUploaderOrganization,
   loadDocumentById,
   loadParentDocumentsByServiceInstance,
+  updateDocumentWithChildren,
 } from '../document/document.domain';
 import {
   createFileInMinIO,
@@ -30,7 +31,6 @@ import {
   loadImagesByCustomDashboardId,
   loadSeoCustomDashboardBySlug,
   loadSeoCustomDashboardsByServiceSlug,
-  updateCustomDashboard,
 } from './custom-dashboards.domain';
 
 const resolvers: Resolvers = {
@@ -129,7 +129,8 @@ const resolvers: Resolvers = {
           newImages = files;
         }
 
-        return await updateCustomDashboard(
+        return await updateDocumentWithChildren<CustomDashboard>(
+          'custom_dashboard',
           extractId<DocumentId>(documentId),
           input,
           {
@@ -139,6 +140,7 @@ const resolvers: Resolvers = {
               extractId<DocumentId>(imageId)
             ),
           },
+          CUSTOM_DASHBOARD_METADATA,
           context
         );
       } catch (error) {
