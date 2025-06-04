@@ -1,4 +1,56 @@
 import { db } from './db-connection';
+import { DocumentNode } from 'graphql/language';
+import { ApiClient } from '../tests_files/api/client';
+import { expect } from '../fixtures/baseFixtures';
+
+interface CheckCapabilityParams {
+  loginUserEmail: string;
+  organizationName: string;
+  requiredCapability?: string;
+  capabilityBlackList?: string[];
+  shouldBeAuthorized: boolean;
+  query: DocumentNode;
+  variables: Record<string, unknown>;
+}
+
+export const checkCapability = async ({
+  loginUserEmail,
+  organizationName,
+  requiredCapability,
+  capabilityBlackList,
+  shouldBeAuthorized,
+  query,
+  variables,
+}: CheckCapabilityParams) => {
+  const apiClient = await ApiClient.init();
+  await apiClient.login(loginUserEmail);
+
+  const capabilities = await getUserOrganizationCapabilityNames(
+    loginUserEmail,
+    organizationName
+  );
+
+  if (requiredCapability) {
+    expect(
+      capabilities.includes(requiredCapability),
+      `user ${loginUserEmail} should have capability ${requiredCapability}`
+    ).toBeTruthy();
+  }
+
+  if (capabilityBlackList) {
+    for (const capability of capabilityBlackList) {
+      expect(
+        capabilities.includes(capability),
+        `user ${loginUserEmail} should not have capability ${capability}`
+      ).toBeFalsy();
+    }
+  }
+
+  const response = await apiClient.callGraphQL(query, variables);
+
+  const responseBody = (await response.body()).toString();
+  expect(responseBody.includes('Not authorized')).toBe(!shouldBeAuthorized);
+};
 
 export const getUserOrganizationCapabilityNames = async (
   email: string,
