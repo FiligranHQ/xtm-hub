@@ -52,9 +52,9 @@ export const CsvFeedForm = ({
     () =>
       ({
         ...csvFeed,
-        illustration: csvFeed?.children_documents?.map((n) => ({
-          ...n,
-          name: n.file_name,
+        illustration: csvFeed?.children_documents?.map((doc) => ({
+          ...doc,
+          name: doc.file_name,
         })) as unknown as FileList,
       }) as CsvFeedFormValues,
     [csvFeed]
