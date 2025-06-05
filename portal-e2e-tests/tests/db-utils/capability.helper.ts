@@ -72,5 +72,5 @@ export const getUserOrganizationCapabilityNames = async (
     .where('User.email', '=', email)
     .andWhere('Organization.name', '=', organizationName);
 
-  return Array.from(new Set(capabilities.map(({ name }) => name)));
+  return capabilities.map(({ name }) => name);
 };

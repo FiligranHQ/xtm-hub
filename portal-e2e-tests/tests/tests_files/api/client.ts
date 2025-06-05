@@ -13,7 +13,7 @@ export class ApiClient {
 
   static async init(): Promise<ApiClient> {
     const context = await request.newContext({
-      baseURL: 'http://localhost:4002',
+      baseURL: process.env.E2E_API_URL ?? 'http://localhost:4002',
     });
 
     return new ApiClient(context);
