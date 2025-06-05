@@ -2,7 +2,7 @@ import { CapabilityDescription } from '@/components/admin/user/capability-descri
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { isEmpty } from '@/lib/utils';
-import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/form';
+import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -32,9 +32,6 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const t = useTranslations();
-
-  const organizationCapabilitiesData =
-    buildOrganizationCapabilitiesMultiSelectOptions();
 
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
@@ -84,7 +81,7 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
               <FormControl>
                 <MultiSelectFormField
                   noResultString={t('Utils.NotFound')}
-                  options={organizationCapabilitiesData}
+                  options={organizationCapabilitiesMultiSelectOptions}
                   defaultValue={field.value}
                   onValueChange={field.onChange}
                   placeholder={t(
