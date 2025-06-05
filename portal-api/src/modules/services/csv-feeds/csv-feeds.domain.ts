@@ -1,21 +1,8 @@
 import { db, dbUnsecure } from '../../../../knexfile';
-import {
-  CreateCsvFeedInput,
-  Document as DocumentResolverType,
-  UpdateCsvFeedInput,
-} from '../../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../../model/kanel/public/Document';
-import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
+import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
+import Document from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
-import {
-  createDocument,
-  loadDocumentById,
-  updateDocument,
-} from '../document/document.domain';
-import {
-  MinioFile,
-  UpdateDocumentDocuments,
-} from '../document/document.helper';
+import { loadDocumentById } from '../document/document.domain';
 
 export type CsvFeed = Document;
 
@@ -24,35 +11,6 @@ export type CsvFeedMetadataKeys = Array<
 >;
 
 export const CSV_FEED_METADATA: CsvFeedMetadataKeys = [];
-
-export const createCsvFeed = async (
-  input: CreateCsvFeedInput,
-  files: MinioFile[],
-  context: PortalContext
-) => {
-  const csvFeedFile = files.shift();
-  const csvFeed = await createDocument<CsvFeed>(context, {
-    ...input,
-    type: 'csv_feed',
-    file_name: csvFeedFile.fileName,
-    minio_name: csvFeedFile.minioName,
-    mime_type: csvFeedFile.mimeType,
-  });
-
-  await Promise.all(
-    files.map((file) => {
-      createDocument(context, {
-        type: 'image',
-        parent_document_id: csvFeed.id as DocumentId,
-        file_name: file.fileName,
-        minio_name: file.minioName,
-        mime_type: file.mimeType,
-      });
-    })
-  );
-
-  return csvFeed;
-};
 
 export const loadCsvFeedsById = async (
   context: PortalContext,
@@ -109,54 +67,4 @@ export const loadCsvFeedById = async (
   include_metadata = []
 ): Promise<CsvFeed> => {
   return loadDocumentById(context, id, include_metadata);
-};
-
-export const updateCsvFeed = async (
-  id: string,
-  input: UpdateCsvFeedInput,
-  documents: UpdateDocumentDocuments,
-  context: PortalContext
-) => {
-  const { documentFile, newImages, existingImages } = documents;
-  const data = {
-    ...input,
-    type: 'csv_feed',
-  };
-
-  // We are updating the base document
-  if (documentFile) {
-    Object.assign(data, {
-      file_name: documentFile.fileName,
-      minio_name: documentFile.minioName,
-      mime_type: documentFile.mimeType,
-    });
-  }
-
-  const doc = await updateDocument<CsvFeed>(
-    context,
-    id,
-    data,
-    CSV_FEED_METADATA
-  );
-
-  // Delete the images that are not in the existingImages array
-  await db<DocumentChildren>(context, 'Document_Children')
-    .where('parent_document_id', '=', id)
-    .whereNotIn('child_document_id', existingImages)
-    .delete();
-
-  // Create new images
-  await Promise.all(
-    newImages.map((image) => {
-      createDocument(context, {
-        type: 'image',
-        parent_document_id: id,
-        file_name: image.fileName,
-        minio_name: image.minioName,
-        mime_type: image.mimeType,
-      });
-    })
-  );
-
-  return doc;
 };

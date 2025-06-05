@@ -34,6 +34,7 @@ import {
   FullDocumentMutator,
   getDocumentName,
   loadUnsecureDocumentsBy,
+  MinioFile,
   normalizeDocumentName,
   UpdateDocumentDocuments,
 } from './document.helper';
@@ -43,6 +44,10 @@ import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+
+export type DocumentMetadataKeys<T extends DocumentModel> = Array<
+  Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+>;
 
 export const sendFileToS3 = async (
   file: UploadedFile,
@@ -98,9 +103,7 @@ export const createDocument = async <T extends DocumentModel>(
     labels?: string[];
     parent_document_id?: string;
   },
-  metadataKeys: Array<
-    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
-  > = []
+  metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
   const [document] = await db<DocumentModel>(context, 'Document')
     .insert({
@@ -147,15 +150,48 @@ export const createDocument = async <T extends DocumentModel>(
   return document as T;
 };
 
+export const createDocumentWithChildren = async <T extends DocumentModel>(
+  type: string,
+  input: Partial<T>,
+  files: MinioFile[],
+  metadataKeys: DocumentMetadataKeys<T>,
+  context: PortalContext
+) => {
+  const docFile = files.shift();
+  const doc = await createDocument<T>(
+    context,
+    {
+      ...input,
+      type,
+      file_name: docFile.fileName,
+      minio_name: docFile.minioName,
+      mime_type: docFile.mimeType,
+    },
+    metadataKeys
+  );
+
+  await Promise.all(
+    files.map((file) => {
+      createDocument(context, {
+        type: 'image',
+        parent_document_id: doc.id as DocumentId,
+        file_name: file.fileName,
+        minio_name: file.minioName,
+        mime_type: file.mimeType,
+      });
+    })
+  );
+
+  return doc;
+};
+
 export const updateDocument = async <T extends DocumentModel>(
   context: PortalContext,
   documentId: string,
   documentData: Omit<Partial<T>, 'labels'> & {
     labels?: string[];
   },
-  metadataKeys: Array<
-    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
-  > = []
+  metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
   const uploader_organization_id = documentData.uploader_organization_id
     ? extractId<OrganizationId>(documentData.uploader_organization_id)
@@ -214,9 +250,7 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   id: string,
   input: Partial<T>,
   documents: UpdateDocumentDocuments,
-  metadataKeys: Array<
-    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
-  >,
+  metadataKeys: DocumentMetadataKeys<T>,
   context: PortalContext
 ) => {
   const { documentFile, newImages, existingImages } = documents;
@@ -252,15 +286,15 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
 
   // Create new images
   await Promise.all(
-    newImages.map((image) => {
+    newImages.map((image) =>
       createDocument(context, {
         type: 'image',
         parent_document_id: id,
         file_name: image.fileName,
         minio_name: image.minioName,
         mime_type: image.mimeType,
-      });
-    })
+      })
+    )
   );
 
   return dashboard;
@@ -499,17 +533,6 @@ export const getUploaderOrganization = async (
 export const getLabels = (
   context: PortalContext,
   documentId: string,
-  opts: Partial<QueryOpts> = {}
-): Promise<Label[]> =>
-  db<Label>(context, 'Label', opts)
-    .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
-    .where('ol.object_id', '=', documentId)
-    .returning('Label.*');
-
-export const getMetadata = (
-  context: PortalContext,
-  documentId: string,
-  metadataKeys: string[],
   opts: Partial<QueryOpts> = {}
 ): Promise<Label[]> =>
   db<Label>(context, 'Label', opts)

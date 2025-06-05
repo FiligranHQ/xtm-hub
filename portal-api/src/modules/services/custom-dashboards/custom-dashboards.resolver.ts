@@ -9,6 +9,7 @@ import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
+  createDocumentWithChildren,
   deleteDocument,
   getLabels,
   getUploader,
@@ -25,7 +26,6 @@ import {
 } from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
 import {
-  createCustomDashboard,
   CUSTOM_DASHBOARD_METADATA,
   CustomDashboard,
   loadImagesByCustomDashboardId,
@@ -98,7 +98,13 @@ const resolvers: Resolvers = {
         const files = await Promise.all(
           document.map((doc: Upload) => createFileInMinIO(doc, context))
         );
-        return await createCustomDashboard(input, files, context);
+        return await createDocumentWithChildren<CustomDashboard>(
+          'custom_dashboard',
+          input,
+          files,
+          CUSTOM_DASHBOARD_METADATA,
+          context
+        );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {

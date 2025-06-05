@@ -9,6 +9,7 @@ import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
+  createDocumentWithChildren,
   deleteDocument,
   getChildrenDocuments,
   getLabels,
@@ -25,7 +26,6 @@ import {
 } from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
 import {
-  createCsvFeed,
   CSV_FEED_METADATA,
   CsvFeed,
   loadCsvFeedById,
@@ -41,7 +41,13 @@ const resolvers: Resolvers = {
         const files = await Promise.all(
           document.map((doc: Upload) => createFileInMinIO(doc, context))
         );
-        return await createCsvFeed(input, files, context);
+        return await createDocumentWithChildren<CsvFeed>(
+          'csv_feed',
+          input,
+          files,
+          CSV_FEED_METADATA,
+          context
+        );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
