@@ -122,7 +122,7 @@ const resolvers: Resolvers = {
       context
     ) => {
       try {
-        let documentFile: MinioFile | undefined;
+        let documentFile: MinioFile;
         let newImages: MinioFile[] = [];
         if (document && document.length > 0) {
           await waitForUploads(document);
