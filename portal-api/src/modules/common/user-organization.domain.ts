@@ -113,7 +113,7 @@ export const updateUserOrgCapabilities = async (
   }: {
     user_id: UserId;
     organization_id: OrganizationId;
-    orgCapabilities: string[];
+    orgCapabilities?: string[];
   }
 ) => {
   await preventRemovalOfLastOrganizationAdministrator(user_id, [

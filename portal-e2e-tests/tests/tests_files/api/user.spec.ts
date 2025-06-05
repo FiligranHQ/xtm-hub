@@ -2,7 +2,14 @@ import { test } from '../../fixtures/baseFixtures';
 import gql from 'graphql-tag';
 import {
   checkCapability,
+  getUserOrganizationCapabilityNames,
 } from '../../db-utils/capability.helper';
+import {
+  ACCESS_SUBSCRIPTION_USER,
+  ADMIN_USER,
+  THALES_ADMIN_USER,
+  THALES_USER,
+} from '../../db-utils/const';
 
 test.describe('User API', () => {
   test.describe('editUser', () => {
@@ -15,50 +22,51 @@ test.describe('User API', () => {
     `;
 
     test('should prevent user to update another one when he does not have MANAGE_ACCESS', async () => {
-      const adminId = 'ba091095-418f-4b4f-b150-6c9295e232c3';
-      const variables = {
-        id: adminId,
-        input: {},
-      };
-
       await checkCapability({
-        loginUserEmail: 'user@thales.com',
+        loginUserEmail: THALES_USER.EMAIL,
         organizationName: 'Thales',
         shouldBeAuthorized: false,
         capabilityBlackList: ['ADMINISTRATE_ORGANIZATION', 'MANAGE_ACCESS'],
         query,
-        variables,
+        variables: {
+          id: ADMIN_USER.GLOBAL_ID,
+          input: {},
+        },
       });
     });
 
     test('should allow user to update another one when he has ADMINISTRATE_ORGANIZATION', async () => {
-      const thalesUserId = '154006e2-f24b-42da-b39c-e0fb17bead00';
       await checkCapability({
-        loginUserEmail: 'admin@thales.com',
+        loginUserEmail: THALES_ADMIN_USER.EMAIL,
         organizationName: 'Thales',
         shouldBeAuthorized: true,
         requiredCapability: 'ADMINISTRATE_ORGANIZATION',
         query,
         variables: {
-          id: thalesUserId,
+          id: THALES_USER.GLOBAL_ID,
           input: {},
         },
       });
     });
 
     test('should allow user to update another one when he has MANAGE_ACCESS', async () => {
-      const thalesUserId = '154006e2-f24b-42da-b39c-e0fb17bead00';
+      // update user with same capabilities to prevent other tests failure
+      const adminCapabilityNames = await getUserOrganizationCapabilityNames(
+        ADMIN_USER.EMAIL,
+        'Filigran'
+      );
       await checkCapability({
-        loginUserEmail: 'access-subscription@filigran.io',
+        loginUserEmail: ACCESS_SUBSCRIPTION_USER.EMAIL,
         organizationName: 'Filigran',
-        // TODO: should not be authorized because we have capability on a different organization !
         shouldBeAuthorized: true,
         requiredCapability: 'MANAGE_ACCESS',
         capabilityBlackList: ['ADMINISTRATE_ORGANIZATION'],
         query,
         variables: {
-          id: thalesUserId,
-          input: {},
+          id: ADMIN_USER.GLOBAL_ID,
+          input: {
+            capabilities: adminCapabilityNames,
+          },
         },
       });
     });
