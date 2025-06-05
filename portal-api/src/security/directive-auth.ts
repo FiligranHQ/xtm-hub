@@ -129,11 +129,7 @@ const hasServiceCapability = async (
   args: ServiceCapabilityArgs,
   capabilitiesRequired: string[]
 ) => {
-  if (userHasBypassCapability(user)) {
-    return true;
-  }
-
-  if (userIsOrganizationAdministrator(user)) {
+  if (userHasBypassCapability(user) || userIsOrganizationAdministrator(user)) {
     return true;
   }
 
