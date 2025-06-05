@@ -102,19 +102,29 @@ export async function seed(knex) {
         organization_id: filigranAccessSubscriptionUserId,
       },
     ])
-    .returning('id');
+    .returning(['id', 'user_id', 'organization_id']);
 
   for (const userOrg of accessSubscriptionUserOrganizations) {
-    await knex('UserOrganization_Capability').insert([
-      {
-        user_organization_id: userOrg.id,
-        name: 'MANAGE_ACCESS',
-      },
-      {
-        user_organization_id: userOrg.id,
-        name: 'MANAGE_SUBSCRIPTION',
-      },
-    ]);
+    const isPersonalSpace = userOrg.user_id === userOrg.organization_id;
+    if (isPersonalSpace) {
+      await knex('UserOrganization_Capability').insert([
+        {
+          user_organization_id: userOrg.id,
+          name: 'ADMINISTRATE_ORGANIZATION',
+        },
+      ]);
+    } else {
+      await knex('UserOrganization_Capability').insert([
+        {
+          user_organization_id: userOrg.id,
+          name: 'MANAGE_ACCESS',
+        },
+        {
+          user_organization_id: userOrg.id,
+          name: 'MANAGE_SUBSCRIPTION',
+        },
+      ]);
+    }
   }
 
   await knex('RolePortal')
