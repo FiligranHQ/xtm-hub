@@ -1,41 +1,49 @@
+import knex from 'knex';
+import { db } from './db-connection';
 import { DB_NAME, DB_PASSWORD, DB_USER } from './const';
-import { exec } from 'node:child_process';
 
-const DUMP_FILENAME = 'test.dump.sql';
-const CONTAINER_NAME = 'portal-postgres';
-const dumpCommand = `docker exec -i ${CONTAINER_NAME} /bin/bash -c "PGPASSWORD=${DB_PASSWORD} pg_dump -Fc -U ${DB_USER} ${DB_NAME}" > ${process.cwd()}/${DUMP_FILENAME}`;
-const resetCommand = `docker exec -i ${CONTAINER_NAME} /bin/bash -c "PGPASSWORD=${DB_PASSWORD} pg_restore --clean -U ${DB_USER} -d ${DB_NAME}" < ${process.cwd()}/${DUMP_FILENAME}`;
+const SNAPSHOT_DATABASE_NAME = 'test_database_snapshot';
+
+export const dbPostgres = knex({
+  client: 'pg',
+  connection: {
+    user: DB_USER,
+    host: process.env.E2E_BASE_URL ? process.env.DATABASE_HOST : '127.0.0.1',
+    database: 'postgres',
+    password: DB_PASSWORD,
+    port: process.env.E2E_BASE_URL ? Number(process.env.DATABASE_PORT) : 5434,
+  },
+});
 
 export const createDBSnapshot = async (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    exec(dumpCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.error(error.message);
-        return reject(`Error creating snapshot: ${error.message}`);
-      }
+  await disconnectOtherUsers();
 
-      if (stderr) {
-        return reject(`Error output from pg_dump: ${stderr}`);
-      }
+  await dbPostgres.raw(`DROP DATABASE IF EXISTS ${SNAPSHOT_DATABASE_NAME}`);
 
-      return resolve();
-    });
-  });
+  await dbPostgres.raw(
+    `CREATE DATABASE ${SNAPSHOT_DATABASE_NAME} WITH TEMPLATE ${DB_NAME};`
+  );
 };
 
 export const resetDBSnapshot = async (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    exec(resetCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.error(error.message);
-        return reject(`Error creating snapshot: ${error.message}`);
-      }
+  await disconnectOtherUsers();
 
-      if (stderr) {
-        return reject(`Error output from pg_dump: ${stderr}`);
-      }
+  await dbPostgres.raw(`DROP DATABASE IF EXISTS ${DB_NAME};`);
 
-      return resolve();
-    });
-  });
+  await dbPostgres.raw(
+    `CREATE DATABASE ${DB_NAME} WITH TEMPLATE ${SNAPSHOT_DATABASE_NAME}`
+  );
+};
+
+export const removeDBSnapshot = async (): Promise<void> => {
+  await db.raw(`DROP DATABASE IF EXISTS ${SNAPSHOT_DATABASE_NAME}`);
+};
+
+const disconnectOtherUsers = async (): Promise<void> => {
+  await dbPostgres.raw(
+    `SELECT pg_terminate_backend(pg_stat_activity.pid)
+    FROM pg_stat_activity
+    WHERE pg_stat_activity.datname = '${DB_NAME}'
+    AND pid <> pg_backend_pid();`
+  );
 };

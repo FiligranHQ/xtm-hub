@@ -124,15 +124,6 @@ services:
       timeout: 5s
       retries: 10
 
-  docker-in-docker:
-    image: docker:19.03-dind
-    privileged: true
-    volumes:
-      - "/var/lib/docker"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    environment:
-      DOCKER_TLS_CERTDIR: ''
-
   portal-e2e-tests:
     build:
       context: ../portal-e2e-tests/.
@@ -142,7 +133,6 @@ services:
         - "type=registry,ref=filigran/portal-e2e-tests:development"
     volumes:
       - "./test-results:/app/test-results"
-      - "/var/run/docker.sock:/var/run/docker.sock"
     depends_on:
       portal-front:
         condition: service_healthy
@@ -150,8 +140,6 @@ services:
         condition: service_healthy
       portal-minio:
         condition: service_healthy
-      docker-in-docker:
-        condition: service_started
     environment:
       - E2E_BASE_URL=http://portal-front:3000
       - POSTGRES_USER=portal
@@ -162,4 +150,3 @@ services:
       - TEAMS_WEBHOOK_E2E=${TEAMS_WEBHOOK_E2E}
       - GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}
       - GITHUB_PR_TITLE=${GITHUB_PR_TITLE}
-      - DOCKER_HOST=tcp://docker-in-docker:2375

@@ -2,7 +2,6 @@
 .idea
 *.iml
 .zed
-test.dump.sql
 
 # System files
 *~
