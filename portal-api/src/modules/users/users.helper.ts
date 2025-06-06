@@ -275,7 +275,7 @@ export const preventAdministratorRemovalOfOneOrganization = async (
 export const preventAdministratorRemovalOfAllOrganizations = async (
   context: PortalContext,
   userId: UserId,
-  newOrganizationCapabilities?: {
+  newOrganizationCapabilities: {
     organizationId: OrganizationId;
     capabilities?: string[];
   }[]

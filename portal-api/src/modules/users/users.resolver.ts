@@ -277,7 +277,7 @@ const resolvers: Resolvers = {
       try {
         const { organization_capabilities, ...userInput } = input;
         const userId = id as UserId;
-        const mappedCapabilities = organization_capabilities.map(
+        const mappedCapabilities = (organization_capabilities ?? []).map(
           (orgCapability) => ({
             organizationId: extractId<OrganizationId>(
               orgCapability.organization_id

@@ -159,7 +159,8 @@ describe('User helpers', async () => {
       it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we don't specify new capabilities`, async () => {
         const call = preventAdministratorRemovalOfAllOrganizations(
           contextAdminUser,
-          user.id
+          user.id,
+          []
         );
 
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
