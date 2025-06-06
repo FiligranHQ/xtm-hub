@@ -1,8 +1,8 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import {
-  CsvFeedCreateFormValues,
   CsvFeedForm,
+  CsvFeedFormValues,
 } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
 import { Button } from 'filigran-ui';
 
@@ -38,7 +38,7 @@ export const CSVFeedAddSheet = ({
     serviceInstance
   );
 
-  const handleSubmit = async (values: CsvFeedCreateFormValues) => {
+  const handleSubmit = async (values: CsvFeedFormValues) => {
     const input = omit(values, ['document', 'illustration']);
     const documents = [
       ...Array.from(values.document),

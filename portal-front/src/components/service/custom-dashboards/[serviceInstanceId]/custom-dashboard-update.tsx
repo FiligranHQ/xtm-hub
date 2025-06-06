@@ -9,6 +9,7 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
+import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
@@ -65,24 +66,9 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   ) => {
     const input = omit(values, ['document', 'images']);
 
-    const isFile = (file: unknown): file is File => {
-      return file instanceof File;
-    };
-
     // Split images between existing and new ones
-    const images = Array.from(values.images ?? []) as (File | { id: string })[];
-    const [existingImages, newImages] = images.reduce(
-      ([existing, newImages], image) => {
-        if (isFile(image)) {
-          // Don't pass the big base64 encoded image to the server
-          delete (image as File & { preview?: string }).preview;
-          return [existing, newImages.concat(image)];
-        } else {
-          return [existing.concat(image.id), newImages];
-        }
-      },
-      [[] as string[], [] as File[]]
-    );
+    const images = Array.from(values.images ?? []) as FormImagesValues;
+    const [existingImages, newImages] = splitExistingAndNewImages(images);
     const documentsToUpload = [
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,

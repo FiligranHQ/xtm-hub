@@ -8,6 +8,7 @@ import {
 import Label from '../../../model/kanel/public/Label';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
+import { extractId } from '../../../utils/utils';
 import { createDocument, sendFileToS3 } from './document.domain';
 
 export type Document = DocumentModel & { labels: Label[] };
@@ -15,6 +16,12 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
   labels?: string[];
   parent_document_id?: DocumentId;
 };
+
+export interface UpdateDocumentDocuments {
+  documentFile: MinioFile | undefined;
+  newImages: MinioFile[];
+  existingImages: string[];
+}
 
 export const getDocumentName = (documentName: string) => {
   const splitName = documentName.split('.');
@@ -55,6 +62,45 @@ export const waitForUploads = async (uploads: Upload[] | Upload) => {
     uploads = [uploads];
   }
   await Promise.all(uploads.map((upload) => upload.promise));
+};
+
+export const processUploads = async (
+  uploads: Upload[] | Upload,
+  context: PortalContext
+) => {
+  if (!Array.isArray(uploads)) {
+    uploads = [uploads];
+  }
+  await waitForUploads(uploads);
+  return Promise.all(
+    uploads.map((doc: Upload) => createFileInMinIO(doc, context))
+  );
+};
+
+export const processDocumentUpdateUploads = async (
+  document: Upload[] | undefined,
+  updateDocument: boolean,
+  images: string[],
+  context: PortalContext
+): Promise<UpdateDocumentDocuments> => {
+  let documentFile: MinioFile;
+  let newImages: MinioFile[] = [];
+  if (document && document.length > 0) {
+    await waitForUploads(document);
+    const files = await Promise.all(
+      document.map((doc: Upload) => createFileInMinIO(doc, context))
+    );
+    if (updateDocument) {
+      documentFile = files.shift();
+    }
+    newImages = files;
+  }
+
+  return {
+    documentFile,
+    newImages,
+    existingImages: images.map((imageId) => extractId<DocumentId>(imageId)),
+  };
 };
 
 export const createFileInMinIO = async (

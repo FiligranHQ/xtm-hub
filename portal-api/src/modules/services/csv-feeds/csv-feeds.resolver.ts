@@ -1,9 +1,7 @@
 import { dbTx } from '../../../../knexfile';
 import {
   CsvFeedConnection,
-  Label,
   Resolvers,
-  ServiceInstance,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -11,45 +9,35 @@ import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
+  createDocumentWithChildren,
   deleteDocument,
   getChildrenDocuments,
   getLabels,
   getUploader,
   getUploaderOrganization,
   loadParentDocumentsByServiceInstance,
+  updateDocumentWithChildren,
 } from '../document/document.domain';
-import {
-  createFileInMinIO,
-  Upload,
-  waitForUploads,
-} from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
 import {
-  createCsvFeed,
+  CSV_FEED_METADATA,
   CsvFeed,
   loadCsvFeedById,
   loadSeoCsvFeedBySlug,
   loadSeoCsvFeedsByServiceSlug,
 } from './csv-feeds.domain';
 
-export type CsvFeedWithResolvableFields = CsvFeed & {
-  service_instance: ServiceInstance;
-  labels: Label[];
-};
-
 const resolvers: Resolvers = {
   Mutation: {
     createCsvFeed: async (_, { input, document }, context) => {
       try {
-        await waitForUploads(document);
-        const files = await Promise.all(
-          document.map((doc: Upload) => createFileInMinIO(doc, context))
-        );
-        return (await createCsvFeed(
+        return await createDocumentWithChildren<CsvFeed>(
+          'csv_feed',
           input,
-          files,
+          document,
+          CSV_FEED_METADATA,
           context
-        )) as unknown as CsvFeedWithResolvableFields;
+        );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
@@ -59,10 +47,30 @@ const resolvers: Resolvers = {
         throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
       }
     },
+    updateCsvFeed: async (_, input, context) => {
+      try {
+        return await updateDocumentWithChildren<CsvFeed>(
+          'csv_feed',
+          extractId<DocumentId>(input.documentId),
+          input,
+          CSV_FEED_METADATA,
+          context
+        );
+      } catch (error) {
+        if (error.message?.includes('document_type_slug_unique')) {
+          throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
+            detail: error,
+          });
+        }
+        throw UnknownError('CSV_FEED_UPDATE_ERROR', {
+          detail: error,
+        });
+      }
+    },
     deleteCsvFeed: async (_, { id }, context) => {
       const trx = await dbTx();
       try {
-        const deletedDoc = await deleteDocument<CsvFeedWithResolvableFields>(
+        const deletedDoc = await deleteDocument<CsvFeed>(
           context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
