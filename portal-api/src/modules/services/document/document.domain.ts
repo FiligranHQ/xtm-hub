@@ -11,6 +11,8 @@ import {
   CsvFeedConnection,
   CustomDashboardConnection,
   DocumentConnection,
+  MutationUpdateCsvFeedArgs,
+  MutationUpdateCustomDashboardArgs,
   Organization,
   QueryDocumentsArgs,
 } from '../../../__generated__/resolvers-types';
@@ -34,9 +36,10 @@ import {
   FullDocumentMutator,
   getDocumentName,
   loadUnsecureDocumentsBy,
-  MinioFile,
   normalizeDocumentName,
-  UpdateDocumentDocuments,
+  processDocumentUpdateUploads,
+  processUploads,
+  Upload,
 } from './document.helper';
 
 import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
@@ -48,6 +51,10 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
   Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
 >;
+
+type MutationUpdateDocumentArgs =
+  | MutationUpdateCustomDashboardArgs
+  | MutationUpdateCsvFeedArgs;
 
 export const sendFileToS3 = async (
   file: UploadedFile,
@@ -153,10 +160,12 @@ export const createDocument = async <T extends DocumentModel>(
 export const createDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
   input: Partial<T>,
-  files: MinioFile[],
+  uploads: Upload[] | Upload,
   metadataKeys: DocumentMetadataKeys<T>,
   context: PortalContext
 ) => {
+  const files = await processUploads(uploads, context);
+
   const docFile = files.shift();
   const doc = await createDocument<T>(
     context,
@@ -248,16 +257,23 @@ export const updateDocument = async <T extends DocumentModel>(
 export const updateDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
   id: string,
-  input: Partial<T>,
-  documents: UpdateDocumentDocuments,
+  mutationArgs: MutationUpdateDocumentArgs,
   metadataKeys: DocumentMetadataKeys<T>,
   context: PortalContext
 ) => {
+  const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
+  const documents = await processDocumentUpdateUploads(
+    document,
+    isUpdateDoc,
+    images,
+    context
+  );
+
   const { documentFile, newImages, existingImages } = documents;
   const data = {
     ...input,
     type,
-  };
+  } as Partial<T>;
 
   // We are updating the base document
   if (documentFile) {

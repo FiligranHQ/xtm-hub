@@ -18,12 +18,6 @@ import {
   loadParentDocumentsByServiceInstance,
   updateDocumentWithChildren,
 } from '../document/document.domain';
-import {
-  createFileInMinIO,
-  MinioFile,
-  Upload,
-  waitForUploads,
-} from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
 import {
   CSV_FEED_METADATA,
@@ -37,14 +31,10 @@ const resolvers: Resolvers = {
   Mutation: {
     createCsvFeed: async (_, { input, document }, context) => {
       try {
-        await waitForUploads(document);
-        const files = await Promise.all(
-          document.map((doc: Upload) => createFileInMinIO(doc, context))
-        );
         return await createDocumentWithChildren<CsvFeed>(
           'csv_feed',
           input,
-          files,
+          document,
           CSV_FEED_METADATA,
           context
         );
@@ -57,36 +47,12 @@ const resolvers: Resolvers = {
         throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
       }
     },
-    updateCsvFeed: async (
-      _,
-      { input, documentId, document, updateDocument, images },
-      context
-    ) => {
+    updateCsvFeed: async (_, input, context) => {
       try {
-        let documentFile: MinioFile;
-        let newImages: MinioFile[] = [];
-        if (document && document.length > 0) {
-          await waitForUploads(document);
-          const files = await Promise.all(
-            document.map((doc: Upload) => createFileInMinIO(doc, context))
-          );
-          if (updateDocument) {
-            documentFile = files.shift();
-          }
-          newImages = files;
-        }
-
         return await updateDocumentWithChildren<CsvFeed>(
           'csv_feed',
-          extractId<DocumentId>(documentId),
+          extractId<DocumentId>(input.documentId),
           input,
-          {
-            documentFile,
-            newImages,
-            existingImages: images.map((imageId) =>
-              extractId<DocumentId>(imageId)
-            ),
-          },
           CSV_FEED_METADATA,
           context
         );

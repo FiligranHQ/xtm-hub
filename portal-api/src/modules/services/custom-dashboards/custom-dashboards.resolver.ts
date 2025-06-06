@@ -18,12 +18,6 @@ import {
   loadParentDocumentsByServiceInstance,
   updateDocumentWithChildren,
 } from '../document/document.domain';
-import {
-  createFileInMinIO,
-  MinioFile,
-  Upload,
-  waitForUploads,
-} from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
 import {
   CUSTOM_DASHBOARD_METADATA,
@@ -94,14 +88,10 @@ const resolvers: Resolvers = {
   Mutation: {
     createCustomDashboard: async (_, { input, document }, context) => {
       try {
-        await waitForUploads(document);
-        const files = await Promise.all(
-          document.map((doc: Upload) => createFileInMinIO(doc, context))
-        );
         return await createDocumentWithChildren<CustomDashboard>(
           'custom_dashboard',
           input,
-          files,
+          document,
           CUSTOM_DASHBOARD_METADATA,
           context
         );
@@ -116,36 +106,12 @@ const resolvers: Resolvers = {
         });
       }
     },
-    updateCustomDashboard: async (
-      _,
-      { input, documentId, document, updateDocument, images },
-      context
-    ) => {
+    updateCustomDashboard: async (_, input, context) => {
       try {
-        let documentFile: MinioFile;
-        let newImages: MinioFile[] = [];
-        if (document && document.length > 0) {
-          await waitForUploads(document);
-          const files = await Promise.all(
-            document.map((doc: Upload) => createFileInMinIO(doc, context))
-          );
-          if (updateDocument) {
-            documentFile = files.shift();
-          }
-          newImages = files;
-        }
-
         return await updateDocumentWithChildren<CustomDashboard>(
           'custom_dashboard',
-          extractId<DocumentId>(documentId),
+          extractId<DocumentId>(input.documentId),
           input,
-          {
-            documentFile,
-            newImages,
-            existingImages: images.map((imageId) =>
-              extractId<DocumentId>(imageId)
-            ),
-          },
           CUSTOM_DASHBOARD_METADATA,
           context
         );
