@@ -40,19 +40,6 @@ test.describe('Custom dashboards', () => {
     await dashboardPage.addCustomDashboard(DASHBOARD_TEST);
   });
 
-  test.afterEach(async () => {
-    const serviceInstance = await getServiceInstanceByName(SERVICE_NAME);
-    await removeSubscriptionFromService({
-      organizationId: PLATFORM_ORGANIZATION_UUID,
-      serviceInstanceId: serviceInstance.id,
-    });
-    await removeDocument('test.png');
-    await removeDocument('test2.png');
-    await removeDocument('test3.png');
-    await removeDocument('octi_dashboard.json');
-    await removeDocument('octi_dashboard_2.json');
-  });
-
   test('Should add custom dashboard', async ({ page }) => {
     await dashboardPage.navigateToDashboard(DASHBOARD_TEST.shortDescription);
     await expect(

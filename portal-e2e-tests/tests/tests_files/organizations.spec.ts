@@ -54,8 +54,4 @@ test.describe('Organization Management', () => {
       ).not.toBeVisible();
     });
   });
-
-  test.afterEach('Remove organization', async () => {
-    await removeOrganization(TEST_ORGANIZATION.newName);
-  });
 });

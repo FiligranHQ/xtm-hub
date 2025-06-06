@@ -51,8 +51,4 @@ test.describe('Document Management', () => {
       ).not.toBeVisible();
     });
   });
-
-  test.afterEach(async () => {
-    await removeDocument(TEST_FILE.name);
-  });
 });
