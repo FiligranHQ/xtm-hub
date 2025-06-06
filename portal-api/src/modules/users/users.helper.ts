@@ -21,6 +21,7 @@ import User, {
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { sendMail } from '../../server/mail-service';
+import { logApp } from '../../utils/app-logger.util';
 import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
@@ -249,31 +250,57 @@ export const hasAdministrateOrganizationCapability = (
   );
 };
 
-export const preventRemovalOfLastOrganizationAdministrator = async (
+export const preventAdministratorRemovalOfOneOrganization = async (
+  userId: UserId,
+  organizationId: OrganizationId,
+  capabilities?: string[]
+) => {
+  const isRemovingAdministratorCapability =
+    !hasAdministrateOrganizationCapability(capabilities);
+
+  if (!isRemovingAdministratorCapability) {
+    return;
+  }
+
+  const isLastWithCapability = await isUserLastOrganizationAdministrator(
+    userId,
+    organizationId
+  );
+
+  if (isLastWithCapability) {
+    throw new Error('CANT_REMOVE_LAST_ADMINISTRATOR');
+  }
+};
+
+export const preventAdministratorRemovalOfAllOrganizations = async (
+  context: PortalContext,
   userId: UserId,
   newOrganizationCapabilities?: {
     organizationId: OrganizationId;
     capabilities?: string[];
   }[]
 ) => {
-  if (!newOrganizationCapabilities) {
-    return;
-  }
+  const userOrganizations = await db(context, 'Organization')
+    .select('Organization.id')
+    .leftJoin(
+      'User_Organization',
+      'User_Organization.organization_id',
+      'Organization.id'
+    )
+    .leftJoin('User', 'User.id', 'User_Organization.user_id')
+    .where('User.id', '=', userId)
+    .andWhereNot('Organization.personal_space', '=', true);
 
-  for (const { capabilities, organizationId } of newOrganizationCapabilities) {
-    const isRemovingAdministratorCapability =
-      !hasAdministrateOrganizationCapability(capabilities);
+  for (const organization of userOrganizations) {
+    const organizationCapabilities = (newOrganizationCapabilities ?? []).find(
+      (newCapabilities) => newCapabilities.organizationId === organization.id
+    );
 
-    if (isRemovingAdministratorCapability) {
-      const isLastWithCapability = await isUserLastOrganizationAdministrator(
-        userId,
-        organizationId
-      );
-
-      if (isLastWithCapability) {
-        throw new Error('CANT_REMOVE_LAST_ADMINISTRATOR');
-      }
-    }
+    await preventAdministratorRemovalOfOneOrganization(
+      userId,
+      organization.id,
+      organizationCapabilities?.capabilities
+    );
   }
 };
 
@@ -291,6 +318,12 @@ const isUserLastOrganizationAdministrator = async (
 
   const administratorsCount =
     await countOrganizationAdministrators(organizationId);
+
+  if (administratorsCount === 0) {
+    logApp.error(
+      `Zero administrators found in the organization ${organizationId}`
+    );
+  }
 
   return administratorsCount <= 1;
 };

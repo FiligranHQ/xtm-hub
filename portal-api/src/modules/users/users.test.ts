@@ -14,7 +14,8 @@ import {
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,
-  preventRemovalOfLastOrganizationAdministrator,
+  preventAdministratorRemovalOfAllOrganizations,
+  preventAdministratorRemovalOfOneOrganization,
   removeUser,
 } from './users.helper';
 
@@ -63,7 +64,7 @@ describe('User helpers', async () => {
     });
   });
 
-  describe('preventRemovalOfLastOrganizationAdministrator', () => {
+  describe('delete last administrator prevention', () => {
     const organizationName = 'test-new-organization';
     let organization: Organization;
     let user: UserLoadUserBy;
@@ -84,61 +85,118 @@ describe('User helpers', async () => {
     afterEach(async () => {
       if (user) {
         await removeUser(contextAdminUser, { email: user.email });
+        user = null;
       }
       if (anotherUser) {
         await removeUser(contextAdminUser, { email: anotherUser.email });
+        anotherUser = null;
       }
       if (organization) {
         await deleteOrganizationByName(organizationName);
+        organization = null;
       }
     });
 
-    it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
-      const call = preventRemovalOfLastOrganizationAdministrator(user.id, [
-        {
-          organizationId: organization.id,
-          capabilities: [],
-        },
-      ]);
+    describe('preventAdministratorRemovalOfOneOrganization', () => {
+      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
+        const call = preventAdministratorRemovalOfOneOrganization(
+          user.id,
+          organization.id
+        );
 
-      await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+      });
+
+      it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
+        const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
+        await createNewUserFromInvitation({
+          email: anotherUserEmail,
+        });
+
+        anotherUser = await loadUserBy({
+          'User.email': anotherUserEmail,
+        });
+
+        const [anotherUserOrgRelation] =
+          await createUserOrganizationRelationUnsecure({
+            user_id: anotherUser.id,
+            organizations_id: [organization.id],
+          });
+        expect(anotherUserOrgRelation).toBeTruthy();
+
+        await createUserOrganizationCapability({
+          user_organization_id: anotherUserOrgRelation.id,
+          capabilities_name: [
+            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
+          ],
+        });
+
+        const result = await preventAdministratorRemovalOfOneOrganization(
+          user.id,
+          organization.id
+        );
+
+        expect(result).toBeUndefined();
+      });
     });
 
-    it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
-      const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
-      await createNewUserFromInvitation({
-        email: anotherUserEmail,
+    describe('preventAdministratorRemovalOfAllOrganizations', () => {
+      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we specify empty capabilities`, async () => {
+        const call = preventAdministratorRemovalOfAllOrganizations(
+          contextAdminUser,
+          user.id,
+          [
+            {
+              organizationId: organization.id,
+              capabilities: [],
+            },
+          ]
+        );
+
+        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
 
-      anotherUser = await loadUserBy({
-        'User.email': anotherUserEmail,
+      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we don't specify new capabilities`, async () => {
+        const call = preventAdministratorRemovalOfAllOrganizations(
+          contextAdminUser,
+          user.id
+        );
+
+        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
 
-      const [anotherUserOrgRelation] =
-        await createUserOrganizationRelationUnsecure({
-          user_id: anotherUser.id,
-          organizations_id: [organization.id],
+      it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we remove its capabilities`, async () => {
+        const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
+        await createNewUserFromInvitation({
+          email: anotherUserEmail,
         });
-      expect(anotherUserOrgRelation).toBeTruthy();
 
-      await createUserOrganizationCapability({
-        user_organization_id: anotherUserOrgRelation.id,
-        capabilities_name: [
-          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-        ],
+        anotherUser = await loadUserBy({
+          'User.email': anotherUserEmail,
+        });
+
+        const [anotherUserOrgRelation] =
+          await createUserOrganizationRelationUnsecure({
+            user_id: anotherUser.id,
+            organizations_id: [organization.id],
+          });
+        expect(anotherUserOrgRelation).toBeTruthy();
+
+        await createUserOrganizationCapability({
+          user_organization_id: anotherUserOrgRelation.id,
+          capabilities_name: [
+            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
+          ],
+        });
+
+        const result = await preventAdministratorRemovalOfOneOrganization(
+          user.id,
+          organization.id,
+          []
+        );
+
+        expect(result).toBeUndefined();
       });
-
-      const result = await preventRemovalOfLastOrganizationAdministrator(
-        user.id,
-        [
-          {
-            organizationId: organization.id,
-            capabilities: [],
-          },
-        ]
-      );
-
-      expect(result).toBeUndefined();
     });
   });
 });
