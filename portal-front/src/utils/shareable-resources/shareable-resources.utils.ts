@@ -175,12 +175,12 @@ export function getServiceInfo(
   const serviceId = fromGlobalId(serviceInstance.id).id;
 
   const serviceMap: Record<string, ServiceInfo> = {
-    csv_feeds: {
-      link: `/redirect/csv_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
+    'open-cti-integration-feeds': {
+      link: `/redirect/integration_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
       description:
-        '. Discover more CSV Feeds like this in our OpenCTI CSV Feeds Library, available for download on the XTM Hub.',
+        '. Discover more OpenCTI integration feeds like this in our OpenCTI Integration Feeds Library, available for download on the XTM Hub.',
     },
-    custom_open_cti_dashboards: {
+    'custom-open-cti-dashboards': {
       link: `/redirect/custom_dashboards?service_instance_id=${serviceId}&document_id=${documentId}`,
       description:
         '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
