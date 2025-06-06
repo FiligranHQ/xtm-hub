@@ -72,7 +72,7 @@ export const processUploads = async (
     uploads = [uploads];
   }
   await waitForUploads(uploads);
-  return await Promise.all(
+  return Promise.all(
     uploads.map((doc: Upload) => createFileInMinIO(doc, context))
   );
 };
