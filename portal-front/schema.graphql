@@ -29,7 +29,7 @@ type Mutation {
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
   createCsvFeed(input: CreateCsvFeedInput!, document: [Upload!], serviceInstanceId: String!): CsvFeed!
-  updateCsvFeed(documentId: ID!, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
+  updateCsvFeed(documentId: ID, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
   deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
   createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
   updateCustomDashboard(documentId: ID, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!

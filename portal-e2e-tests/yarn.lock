@@ -608,7 +608,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.12.6":
+"graphql-tag@npm:2.12.6":
   version: 2.12.6
   resolution: "graphql-tag@npm:2.12.6"
   dependencies:
@@ -619,7 +619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.11.0":
+"graphql@npm:16.11.0":
   version: 16.11.0
   resolution: "graphql@npm:16.11.0"
   checksum: 65bc206edbe980f2759a8e4cf324873f75a66ab48263961472716e50127ae446739be20f926bb7f036a8d199bd4de072f684fd147c285bd6ba965d98cebb6200
@@ -1731,8 +1731,8 @@ __metadata:
     "@faker-js/faker": 9.7.0
     "@playwright/test": 1.52.0
     "@types/node": 22.13.14
-    graphql: ^16.11.0
-    graphql-tag: ^2.12.6
+    graphql: 16.11.0
+    graphql-tag: 2.12.6
     knex: 3.1.0
     monocart-reporter: 2.9.17
     pg: 8.14.1
