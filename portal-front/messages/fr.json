@@ -80,7 +80,8 @@
       "CUSTOM_DASHBOARD_INSERTION_ERROR": "Erreur lors de la création du tableau de bord personnalisé.",
       "CUSTOM_DASHBOARD_UPDATE_ERROR": "Erreur lors de la mise à jour du tableau de bord personnalisé.",
       "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "Le slug du tableau de bord personnalisé est déjà utilisé.",
-      "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé."
+      "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
+      "CSV_FEED_UPDATE_ERROR": "Erreur lors de la mise à jour du CSV Feed."
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -240,7 +241,9 @@
         "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le CSV Feed.",
         "LabelsLabel": "Labels",
         "CsvFeedFile": "Fichier Csv Feed",
+        "ExistingCsvFeedFile": "Fichier Csv Feed existant: {file_name}",
         "CsvFeedIllustration": "Illustration",
+        "ExistingCsvFeedIllustration": "Illustration Csv Feed existante: {file_name}",
         "PublishedPlaceholder": "Le CSV Feed est-il publié?"
       },
       "AddCsvFeed": "Ajouter un CSV Feed",

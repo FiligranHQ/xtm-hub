@@ -7,6 +7,7 @@ import { meContext_fragment$key } from '@generated/meContext_fragment.graphql';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import * as React from 'react';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
+import Flowise from '../external/flowise';
 
 // Component interface
 interface ContextProps {
@@ -25,6 +26,7 @@ const MeContext: React.FunctionComponent<ContextProps> = ({
   return (
     <AppPortalContext me={me}>
       <UserEventSubscription />
+      <Flowise user={me} />
       {children}
     </AppPortalContext>
   );

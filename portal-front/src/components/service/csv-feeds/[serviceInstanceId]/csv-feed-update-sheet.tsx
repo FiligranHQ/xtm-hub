@@ -1,16 +1,26 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import { CsvFeedForm } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
-import { CsvFeedDeleteMutation } from '@/components/service/csv-feeds/csv-feed.graphql';
+import {
+  CsvFeedForm,
+  CsvFeedFormValues,
+} from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
+import {
+  CsvFeedDeleteMutation,
+  CsvFeedUpdateMutation,
+} from '@/components/service/csv-feeds/csv-feed.graphql';
 import { IconActionsButton } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useServiceCapability from '@/hooks/useServiceCapability';
+import { omit } from '@/lib/omit';
+import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
+import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
+import { csvFeedUpdateMutation } from '@generated/csvFeedUpdateMutation.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
-import { Button } from 'filigran-ui';
+import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -64,6 +74,55 @@ export const CSVFeedUpdateSheet = ({
     ]);
   };
 
+  const [updateCsvFeedMutation] = useMutation<csvFeedUpdateMutation>(
+    CsvFeedUpdateMutation
+  );
+
+  const handleSubmit = (values: CsvFeedFormValues) => {
+    const input = omit(values, ['document', 'illustration']);
+
+    // Split images between existing and new ones
+    const images = Array.from(values.illustration ?? []) as FormImagesValues;
+    const [existingImages, newImages] = splitExistingAndNewImages(images);
+    const documentsToUpload = [
+      ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
+      ...newImages,
+    ];
+    updateCsvFeedMutation({
+      variables: {
+        input,
+        serviceInstanceId: serviceInstance.id,
+        document: documentsToUpload,
+        documentId: csvFeed.id,
+        updateDocument: values.document !== undefined,
+        images: existingImages,
+      },
+      uploadables: fileListToUploadableMap(documentsToUpload),
+      onCompleted: () => {
+        // If the service has changed, we need to revalidate the path
+        // If the slug has changed, it's necessary to revalidate the previous path, as the new one may not yet be cached.
+        revalidatePathActions([
+          `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`,
+          `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+        ]);
+        setOpenSheet(false);
+        toast({
+          title: t('Utils.Success'),
+          description: t('VaultActions.DocumentUpdated', {
+            file_name: values.name,
+          }),
+        });
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+    });
+  };
+
   return (
     <>
       {(userCanUpdate || userCanDelete) && (
@@ -89,6 +148,7 @@ export const CSVFeedUpdateSheet = ({
             onDelete={deleteDocument}
             userCanDelete={userCanDelete}
             csvFeed={csvFeed}
+            handleSubmit={handleSubmit}
           />
         </SheetWithPreventingDialog>
       )}

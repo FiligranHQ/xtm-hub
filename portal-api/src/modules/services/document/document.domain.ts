@@ -11,6 +11,8 @@ import {
   CsvFeedConnection,
   CustomDashboardConnection,
   DocumentConnection,
+  MutationUpdateCsvFeedArgs,
+  MutationUpdateCustomDashboardArgs,
   Organization,
   QueryDocumentsArgs,
 } from '../../../__generated__/resolvers-types';
@@ -35,6 +37,9 @@ import {
   getDocumentName,
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
+  processDocumentUpdateUploads,
+  processUploads,
+  Upload,
 } from './document.helper';
 
 import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
@@ -42,6 +47,14 @@ import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+
+export type DocumentMetadataKeys<T extends DocumentModel> = Array<
+  Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+>;
+
+type MutationUpdateDocumentArgs =
+  | MutationUpdateCustomDashboardArgs
+  | MutationUpdateCsvFeedArgs;
 
 export const sendFileToS3 = async (
   file: UploadedFile,
@@ -97,9 +110,7 @@ export const createDocument = async <T extends DocumentModel>(
     labels?: string[];
     parent_document_id?: string;
   },
-  metadataKeys: Array<
-    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
-  > = []
+  metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
   const [document] = await db<DocumentModel>(context, 'Document')
     .insert({
@@ -146,15 +157,50 @@ export const createDocument = async <T extends DocumentModel>(
   return document as T;
 };
 
+export const createDocumentWithChildren = async <T extends DocumentModel>(
+  type: string,
+  input: Partial<T>,
+  uploads: Upload[] | Upload,
+  metadataKeys: DocumentMetadataKeys<T>,
+  context: PortalContext
+) => {
+  const files = await processUploads(uploads, context);
+
+  const docFile = files.shift();
+  const doc = await createDocument<T>(
+    context,
+    {
+      ...input,
+      type,
+      file_name: docFile.fileName,
+      minio_name: docFile.minioName,
+      mime_type: docFile.mimeType,
+    },
+    metadataKeys
+  );
+
+  await Promise.all(
+    files.map((file) => {
+      createDocument(context, {
+        type: 'image',
+        parent_document_id: doc.id as DocumentId,
+        file_name: file.fileName,
+        minio_name: file.minioName,
+        mime_type: file.mimeType,
+      });
+    })
+  );
+
+  return doc;
+};
+
 export const updateDocument = async <T extends DocumentModel>(
   context: PortalContext,
   documentId: string,
   documentData: Omit<Partial<T>, 'labels'> & {
     labels?: string[];
   },
-  metadataKeys: Array<
-    Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
-  > = []
+  metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
   const uploader_organization_id = documentData.uploader_organization_id
     ? extractId<OrganizationId>(documentData.uploader_organization_id)
@@ -206,6 +252,68 @@ export const updateDocument = async <T extends DocumentModel>(
   }
 
   return document as T;
+};
+
+export const updateDocumentWithChildren = async <T extends DocumentModel>(
+  type: string,
+  id: string,
+  mutationArgs: MutationUpdateDocumentArgs,
+  metadataKeys: DocumentMetadataKeys<T>,
+  context: PortalContext
+) => {
+  const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
+  const documents = await processDocumentUpdateUploads(
+    document,
+    isUpdateDoc,
+    images,
+    context
+  );
+
+  const { documentFile, newImages, existingImages } = documents;
+  const data = {
+    ...input,
+    type,
+  } as Partial<T>;
+
+  // We are updating the base document
+  if (documentFile) {
+    Object.assign(data, {
+      file_name: documentFile.fileName,
+      minio_name: documentFile.minioName,
+      mime_type: documentFile.mimeType,
+    });
+  }
+
+  const dashboard = await updateDocument<T>(context, id, data, metadataKeys);
+
+  // Delete the images that are not in the existingImages array
+  const childIds = await db<DocumentChildren>(context, 'Document_Children')
+    .where('parent_document_id', '=', id)
+    .whereNotIn('child_document_id', existingImages)
+    .select('child_document_id');
+  if (childIds.length > 0) {
+    await db<Document>(context, 'Document')
+      .whereIn(
+        'id',
+        childIds.map((childId) => childId.child_document_id)
+      )
+      .delete();
+  }
+
+  // Create new images
+  await Promise.all(
+    newImages.map((image) =>
+      createDocument(context, {
+        type: 'image',
+        parent_document_id: id,
+        file_name: image.fileName,
+        minio_name: image.minioName,
+        mime_type: image.mimeType,
+      })
+    )
+  );
+
+  return dashboard;
 };
 
 export const incrementDocumentsDownloads = async (
@@ -281,7 +389,7 @@ export const passDocumentToInactive = async (
     .update({ active: false, remover_id: context.user.id });
 };
 
-export const loadParentDocumentsByServiceInstance = <
+export const loadParentDocumentsByServiceInstance = async <
   T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
 >(
   context: PortalContext,
@@ -304,7 +412,7 @@ export const loadParentDocumentsByServiceInstance = <
   );
 };
 
-export const loadDocuments = <
+export const loadDocuments = async <
   T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
 >(
   context: PortalContext,
@@ -441,17 +549,6 @@ export const getUploaderOrganization = async (
 export const getLabels = (
   context: PortalContext,
   documentId: string,
-  opts: Partial<QueryOpts> = {}
-): Promise<Label[]> =>
-  db<Label>(context, 'Label', opts)
-    .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
-    .where('ol.object_id', '=', documentId)
-    .returning('Label.*');
-
-export const getMetadata = (
-  context: PortalContext,
-  documentId: string,
-  metadataKeys: string[],
   opts: Partial<QueryOpts> = {}
 ): Promise<Label[]> =>
   db<Label>(context, 'Label', opts)
