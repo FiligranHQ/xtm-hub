@@ -82,7 +82,8 @@
       "CUSTOM_DASHBOARD_INSERTION_ERROR": "An error occurred while creating the custom dashboard.",
       "CUSTOM_DASHBOARD_UPDATE_ERROR": "An error occurred while updating the custom dashboard.",
       "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "The custom dashboard slug is already in use.",
-      "CSV_FEED_UNIQUE_SLUG_ERROR": "The CSV feed slug is already in use."
+      "CSV_FEED_UNIQUE_SLUG_ERROR": "The CSV feed slug is already in use.",
+      "CSV_FEED_UPDATE_ERROR": "An error occurred while updating the CSV feed."
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -242,7 +243,9 @@
         "DescriptionPlaceholder": "This is a paragraph to describe the CSV Feed.",
         "LabelsLabel": "Labels",
         "CsvFeedFile": "Csv Feed file",
+        "ExistingCsvFeedFile": "Existing Csv Feed file: {file_name}",
         "CsvFeedIllustration": "Illustration",
+        "ExistingCsvFeedIllustration": "Existing Csv Feed illustration: {file_name}",
         "PublishedPlaceholder": "Is the CSV Feed published?"
       },
       "AddCsvFeed": "Add new CSV Feed",

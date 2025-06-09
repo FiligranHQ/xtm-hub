@@ -94,9 +94,9 @@ export const CustomDashboardUpdateForm = ({
       labels: customDashboard.labels?.map((obj) => obj?.id) ?? [],
       slug: customDashboard.slug ?? '',
       images:
-        (customDashboard.children_documents?.map((n) => ({
-          ...n,
-          name: n.file_name,
+        (customDashboard.children_documents?.map((doc) => ({
+          ...doc,
+          name: doc.file_name,
         })) as unknown as FileList) ?? [],
     },
   });

@@ -101,11 +101,11 @@ export type CsvFeed = Node & {
   download_number: Scalars['Int']['output'];
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  labels: Array<Label>;
+  labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
-  service_instance: ServiceInstance;
+  service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
   share_number: Scalars['Int']['output'];
   short_description?: Maybe<Scalars['String']['output']>;
@@ -330,7 +330,7 @@ export type Mutation = {
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
   changeSelectedOrganization?: Maybe<User>;
-  createCsvFeed?: Maybe<CsvFeed>;
+  createCsvFeed: CsvFeed;
   createCustomDashboard: CustomDashboard;
   deleteCsvFeed: CsvFeed;
   deleteCustomDashboard: CustomDashboard;
@@ -355,6 +355,7 @@ export type Mutation = {
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
   selfJoinServiceInstance?: Maybe<ServiceInstance>;
+  updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
 };
 
@@ -435,7 +436,7 @@ export type MutationChangeSelectedOrganizationArgs = {
 
 
 export type MutationCreateCsvFeedArgs = {
-  document: Scalars['Upload']['input'];
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateCsvFeedInput;
   serviceInstanceId: Scalars['String']['input'];
 };
@@ -566,6 +567,16 @@ export type MutationRemoveUserFromOrganizationArgs = {
 
 export type MutationSelfJoinServiceInstanceArgs = {
   service_instance_id: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateCsvFeedArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  documentId?: InputMaybe<Scalars['ID']['input']>;
+  images?: InputMaybe<Array<Scalars['String']['input']>>;
+  input: UpdateCsvFeedInput;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  updateDocument: Scalars['Boolean']['input'];
 };
 
 
@@ -1110,6 +1121,16 @@ export type TrackingSubscription = {
   edit?: Maybe<ActionTracking>;
 };
 
+export type UpdateCsvFeedInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  short_description?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateCustomDashboardInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -1387,6 +1408,7 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionWithService: ResolverTypeWrapper<SubscriptionWithService>;
   Success: ResolverTypeWrapper<Success>;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
+  UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
@@ -1474,6 +1496,7 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionWithService: SubscriptionWithService;
   Success: Success;
   TrackingSubscription: TrackingSubscription;
+  UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   Upload: Scalars['Upload']['output'];
   User: User;
@@ -1526,11 +1549,11 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  service_instance?: Resolver<ResolversTypes['ServiceInstance'], ParentType, ContextType>;
+  service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1709,7 +1732,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
-  createCsvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'document' | 'input' | 'serviceInstanceId'>>;
+  createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
   deleteCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'id' | 'serviceInstanceId'>>;
   deleteCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationDeleteCustomDashboardArgs, 'id' | 'serviceInstanceId'>>;
@@ -1734,6 +1757,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
+  updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'input' | 'updateDocument'>>;
 }>;
 

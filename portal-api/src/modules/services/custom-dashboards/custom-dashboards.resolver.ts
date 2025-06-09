@@ -9,28 +9,22 @@ import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
+  createDocumentWithChildren,
   deleteDocument,
   getLabels,
   getUploader,
   getUploaderOrganization,
   loadDocumentById,
   loadParentDocumentsByServiceInstance,
+  updateDocumentWithChildren,
 } from '../document/document.domain';
-import {
-  createFileInMinIO,
-  MinioFile,
-  Upload,
-  waitForUploads,
-} from '../document/document.helper';
 import { getServiceInstance } from '../service-instance.domain';
 import {
-  createCustomDashboard,
   CUSTOM_DASHBOARD_METADATA,
   CustomDashboard,
   loadImagesByCustomDashboardId,
   loadSeoCustomDashboardBySlug,
   loadSeoCustomDashboardsByServiceSlug,
-  updateCustomDashboard,
 } from './custom-dashboards.domain';
 
 const resolvers: Resolvers = {
@@ -94,11 +88,13 @@ const resolvers: Resolvers = {
   Mutation: {
     createCustomDashboard: async (_, { input, document }, context) => {
       try {
-        await waitForUploads(document);
-        const files = await Promise.all(
-          document.map((doc: Upload) => createFileInMinIO(doc, context))
+        return await createDocumentWithChildren<CustomDashboard>(
+          'custom_dashboard',
+          input,
+          document,
+          CUSTOM_DASHBOARD_METADATA,
+          context
         );
-        return await createCustomDashboard(input, files, context);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
@@ -110,35 +106,13 @@ const resolvers: Resolvers = {
         });
       }
     },
-    updateCustomDashboard: async (
-      _,
-      { input, documentId, document, updateDocument, images },
-      context
-    ) => {
+    updateCustomDashboard: async (_, input, context) => {
       try {
-        let documentFile: MinioFile | undefined;
-        let newImages: MinioFile[] = [];
-        if (document && document.length > 0) {
-          await waitForUploads(document);
-          const files = await Promise.all(
-            document.map((doc: Upload) => createFileInMinIO(doc, context))
-          );
-          if (updateDocument) {
-            documentFile = files.shift();
-          }
-          newImages = files;
-        }
-
-        return await updateCustomDashboard(
-          extractId<DocumentId>(documentId),
+        return await updateDocumentWithChildren<CustomDashboard>(
+          'custom_dashboard',
+          extractId<DocumentId>(input.documentId),
           input,
-          {
-            documentFile,
-            newImages,
-            existingImages: images.map((imageId) =>
-              extractId<DocumentId>(imageId)
-            ),
-          },
+          CUSTOM_DASHBOARD_METADATA,
           context
         );
       } catch (error) {
