@@ -27,9 +27,7 @@ export const CapabilityDescription: React.FC = () => {
             className="flex items-center"
             key={capability}>
             <span className="min-w-56">
-              <Badge className="col-span-4">
-                {capability.replaceAll('_', ' ')}
-              </Badge>
+              <Badge>{capability.replaceAll('_', ' ')}</Badge>
             </span>
             <span>{t(buildTranslationKey(capability))}</span>
           </li>
