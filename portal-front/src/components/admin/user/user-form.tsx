@@ -2,7 +2,7 @@ import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { isDevelopment, isEmpty } from '@/lib/utils';
-import { OrganizationCapabilityName } from '@/utils/constant';
+import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -33,14 +33,6 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
 
   const t = useTranslations();
   const isAdminPath = useAdminPath();
-
-  const organizationCapabilitiesData = [
-    OrganizationCapabilityName.MANAGE_ACCESS,
-    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
-  ].map((capabilities) => ({
-    label: capabilities,
-    value: capabilities,
-  }));
 
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
@@ -144,7 +136,7 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
               <FormControl>
                 <MultiSelectFormField
                   noResultString={t('Utils.NotFound')}
-                  options={organizationCapabilitiesData}
+                  options={organizationCapabilitiesMultiSelectOptions}
                   defaultValue={field.value}
                   onValueChange={field.onChange}
                   placeholder={t(

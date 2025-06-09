@@ -1,8 +1,13 @@
 export async function seed(knex) {
+  const filigranOrganisationId = 'ba091095-418f-4b4f-b150-6c9295e232c4';
+  const filigranAdminUserId = 'ba091095-418f-4b4f-b150-6c9295e232c3';
+  const filigranAccessSubscriptionUserId =
+    '77b4b845-4ab4-4df8-8e12-0651da813ebb';
+
   await knex('Organization')
     .insert([
       {
-        id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+        id: filigranOrganisationId,
         name: 'Filigran',
         domains: ['filigran.io', 'internal.com'],
       },
@@ -13,14 +18,14 @@ export async function seed(knex) {
   await knex('User')
     .insert([
       {
-        id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        id: filigranAdminUserId,
         email: 'admin@filigran.io',
         salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
         password:
           'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
         first_name: 'firstname',
         last_name: 'lastname',
-        selected_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+        selected_organization_id: filigranOrganisationId,
       },
     ])
     .onConflict('id')
@@ -29,7 +34,7 @@ export async function seed(knex) {
   await knex('Organization')
     .insert([
       {
-        id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        id: filigranAdminUserId,
         name: 'admin@filigran.io',
         personal_space: true,
       },
@@ -37,20 +42,69 @@ export async function seed(knex) {
     .onConflict('id')
     .ignore();
 
-  const userOrganizations = await knex('User_Organization')
+  const adminUserOrganizations = await knex('User_Organization')
     .insert([
       {
-        user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+        user_id: filigranAdminUserId,
+        organization_id: filigranOrganisationId,
       },
       {
-        user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        user_id: filigranAdminUserId,
+        organization_id: filigranAdminUserId,
       },
     ])
     .returning('id');
 
-  for (const userOrg of userOrganizations) {
+  for (const userOrg of adminUserOrganizations) {
+    await knex('UserOrganization_Capability').insert([
+      {
+        user_organization_id: userOrg.id,
+        name: 'ADMINISTRATE_ORGANIZATION',
+      },
+    ]);
+  }
+
+  await knex('User')
+    .insert([
+      {
+        id: filigranAccessSubscriptionUserId,
+        email: 'access-subscription@filigran.io',
+        salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
+        password:
+          'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
+        first_name: 'access',
+        last_name: 'subscription',
+        selected_organization_id: filigranOrganisationId,
+      },
+    ])
+    .onConflict('id')
+    .ignore();
+
+  await knex('Organization')
+    .insert([
+      {
+        id: filigranAccessSubscriptionUserId,
+        name: 'access-subscription@filigran.io',
+        personal_space: true,
+      },
+    ])
+    .onConflict('id')
+    .ignore();
+
+  const accessSubscriptionUserOrganizations = await knex('User_Organization')
+    .insert([
+      {
+        user_id: filigranAccessSubscriptionUserId,
+        organization_id: filigranOrganisationId,
+      },
+      {
+        user_id: filigranAccessSubscriptionUserId,
+        organization_id: filigranAccessSubscriptionUserId,
+      },
+    ])
+    .returning('id');
+
+  for (const userOrg of accessSubscriptionUserOrganizations) {
     await knex('UserOrganization_Capability').insert([
       {
         user_organization_id: userOrg.id,
@@ -70,7 +124,7 @@ export async function seed(knex) {
 
   await knex('User_RolePortal').insert([
     {
-      user_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+      user_id: filigranAdminUserId,
       role_portal_id: '6b632cf2-9105-46ec-a463-ad59ab58c770',
     },
   ]);

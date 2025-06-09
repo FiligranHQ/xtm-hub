@@ -84,11 +84,7 @@ export async function seed(knex) {
     await knex('UserOrganization_Capability').insert([
       {
         user_organization_id: userOrg.id,
-        name: 'MANAGE_ACCESS',
-      },
-      {
-        user_organization_id: userOrg.id,
-        name: 'MANAGE_SUBSCRIPTION',
+        name: 'ADMINISTRATE_ORGANIZATION',
       },
     ]);
   }
