@@ -5,6 +5,7 @@ import { CAPABILITY_BYPASS } from '../portal.const';
 import { TypedNode } from '../pub';
 
 import { UserLoadUserBy } from '../model/user';
+import { OrganizationCapabilityName } from '../modules/common/user-organization-capability.const';
 import { setQueryForDocument } from './document-security-access';
 import {
   meUserSSESecurity,
@@ -15,13 +16,16 @@ import {
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
 export const isUserGranted = (
-  user: UserLoadUserBy,
+  user?: UserLoadUserBy,
   orgCapabilitities?: string
 ) => {
   return (
     !!user &&
     (user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id) ||
-      user.selected_org_capabilities?.includes(orgCapabilitities))
+      user.selected_org_capabilities?.includes(orgCapabilitities) ||
+      user.selected_org_capabilities?.includes(
+        OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+      ))
   );
 };
 /**
