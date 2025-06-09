@@ -1,41 +1,16 @@
 import { db, dbUnsecure } from '../../../../knexfile';
-import { CreateCsvFeedInput } from '../../../__generated__/resolvers-types';
-import { DocumentId } from '../../../model/kanel/public/Document';
+import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
+import Document from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
-import { createDocument, loadDocumentById } from '../document/document.domain';
-import { Document, MinioFile } from '../document/document.helper';
-import { CsvFeedWithResolvableFields } from './csv-feeds.resolver';
+import { loadDocumentById } from '../document/document.domain';
 
 export type CsvFeed = Document;
 
-export const createCsvFeed = async (
-  input: CreateCsvFeedInput,
-  files: MinioFile[],
-  context: PortalContext
-) => {
-  const csvFeedFile = files.shift();
-  const csvFeed = await createDocument<CsvFeed>(context, {
-    ...input,
-    type: 'csv_feed',
-    file_name: csvFeedFile.fileName,
-    minio_name: csvFeedFile.minioName,
-    mime_type: csvFeedFile.mimeType,
-  });
+export type CsvFeedMetadataKeys = Array<
+  Exclude<keyof Omit<CsvFeed, 'labels'>, keyof DocumentResolverType>
+>;
 
-  await Promise.all(
-    files.map((file) => {
-      createDocument(context, {
-        type: 'image',
-        parent_document_id: csvFeed.id as DocumentId,
-        file_name: file.fileName,
-        minio_name: file.minioName,
-        mime_type: file.mimeType,
-      });
-    })
-  );
-
-  return csvFeed;
-};
+export const CSV_FEED_METADATA: CsvFeedMetadataKeys = [];
 
 export const loadCsvFeedsById = async (
   context: PortalContext,
@@ -50,7 +25,7 @@ export const loadCsvFeedsById = async (
 
 export const loadSeoCsvFeedsByServiceSlug = async (
   serviceSlug: string
-): Promise<CsvFeedWithResolvableFields[]> => {
+): Promise<CsvFeed[]> => {
   const csvFeeds = await dbUnsecure<Document>('Document')
     .select('Document.*')
     .leftJoin(
@@ -90,6 +65,6 @@ export const loadCsvFeedById = async (
   context: PortalContext,
   id: string,
   include_metadata = []
-): Promise<CsvFeedWithResolvableFields> => {
+): Promise<CsvFeed> => {
   return loadDocumentById(context, id, include_metadata);
 };
