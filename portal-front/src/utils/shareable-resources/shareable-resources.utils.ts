@@ -97,8 +97,11 @@ type MakeQueryMapParams = {
   query: ConcreteRequest;
   key: string;
 };
+
 type ServiceInfo = { link: string; description: string };
-type ServiceSlug = keyof typeof queryMap;
+export type ServiceSlug =
+  | 'open-cti-integration-feeds'
+  | 'custom-open-cti-dashboards';
 
 function makeQueryMapEntry<TReturn>({
   query,
@@ -122,22 +125,23 @@ function makeSingleQueryMapEntry<TReturn>({
   return { query, cast };
 }
 
-const queryMap = {
-  csv_feeds: makeQueryMapEntry<SeoCsvFeed>({
+const queryMap: Record<ServiceSlug, QueryMapEntry<ShareableResource[]>> = {
+  'open-cti-integration-feeds': makeQueryMapEntry<SeoCsvFeed>({
     query: SeoCsvFeedsByServiceSlugQuery,
     key: 'seoCsvFeedsByServiceSlug',
   }),
-  custom_open_cti_dashboards: makeQueryMapEntry<SeoCustomDashboard>({
+  'custom-open-cti-dashboards': makeQueryMapEntry<SeoCustomDashboard>({
     query: SeoCustomDashboardsByServiceSlugQuery,
     key: 'seoCustomDashboardsByServiceSlug',
   }),
 };
-const querySlugMap = {
-  csv_feeds: makeSingleQueryMapEntry<SeoCsvFeed>({
+
+const querySlugMap: Record<ServiceSlug, QueryMapEntry<ShareableResource>> = {
+  'open-cti-integration-feeds': makeSingleQueryMapEntry<SeoCsvFeed>({
     query: SeoCsvFeedBySlugQuery,
     key: 'seoCsvFeedBySlug',
   }),
-  custom_open_cti_dashboards: makeSingleQueryMapEntry<SeoCustomDashboard>({
+  'custom-open-cti-dashboards': makeSingleQueryMapEntry<SeoCustomDashboard>({
     query: SeoCustomDashboardBySlugQuery,
     key: 'seoCustomDashboardBySlug',
   }),
@@ -145,7 +149,7 @@ const querySlugMap = {
 
 export async function fetchAllDocuments(
   serviceSlug: ServiceSlug
-): Promise<SeoCsvFeed[] | SeoCustomDashboard[]> {
+): Promise<ShareableResource[]> {
   const config = queryMap[serviceSlug];
   const response = await serverFetchGraphQL(
     config.query,
@@ -158,7 +162,7 @@ export async function fetchAllDocuments(
 export async function fetchSingleDocument(
   serviceSlug: ServiceSlug,
   slug: string
-): Promise<SeoCsvFeed | SeoCustomDashboard> {
+): Promise<ShareableResource> {
   const config = querySlugMap[serviceSlug];
   const response = await serverFetchGraphQL(
     config.query,
@@ -174,7 +178,7 @@ export function getServiceInfo(
 ): ServiceInfo | undefined {
   const serviceId = fromGlobalId(serviceInstance.id).id;
 
-  const serviceMap: Record<string, ServiceInfo> = {
+  const serviceMap: Record<ServiceSlug, ServiceInfo> = {
     'open-cti-integration-feeds': {
       link: `/redirect/integration_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
       description:
@@ -187,5 +191,5 @@ export function getServiceInfo(
     },
   };
 
-  return serviceMap[serviceInstance.slug] ?? undefined;
+  return serviceMap[serviceInstance.slug];
 }

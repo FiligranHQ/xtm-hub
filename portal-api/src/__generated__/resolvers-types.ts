@@ -939,7 +939,7 @@ export type SeoServiceInstance = Node & {
   logo_document_id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
   service_definition: ServiceDefinition;
-  slug?: Maybe<ServiceSlug>;
+  slug?: Maybe<Scalars['String']['output']>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
 };
 
@@ -1029,11 +1029,6 @@ export enum ServiceRestriction {
   Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
   Upload = 'UPLOAD'
-}
-
-export enum ServiceSlug {
-  CsvFeeds = 'csv_feeds',
-  CustomOpenCtiDashboards = 'custom_open_cti_dashboards'
 }
 
 export type Settings = {
@@ -1395,7 +1390,6 @@ export type ResolversTypes = ResolversObject<{
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
   ServiceRestriction: ServiceRestriction;
-  ServiceSlug: ServiceSlug;
   Settings: ResolverTypeWrapper<Settings>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   SubscribedServiceInstance: ResolverTypeWrapper<SubscribedServiceInstance>;
@@ -1879,7 +1873,7 @@ export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType 
   logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_definition?: Resolver<ResolversTypes['ServiceDefinition'], ParentType, ContextType>;
-  slug?: Resolver<Maybe<ResolversTypes['ServiceSlug']>, ParentType, ContextType>;
+  slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

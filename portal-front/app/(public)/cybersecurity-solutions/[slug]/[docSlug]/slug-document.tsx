@@ -2,6 +2,7 @@ import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/cus
 import {
   SeoCsvFeed,
   SeoCustomDashboard,
+  ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.utils';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -15,8 +16,8 @@ const SlugDocument = async ({
   serviceInstance: seoServiceInstanceFragment$data;
   document: SeoCsvFeed | SeoCustomDashboard;
 }) => {
-  switch (serviceInstance.slug) {
-    case 'csv_feeds':
+  switch (serviceInstance.slug as ServiceSlug) {
+    case 'open-cti-integration-feeds':
       return (
         <div className="relative w-full h-[35vh]">
           <Image
@@ -28,7 +29,7 @@ const SlugDocument = async ({
         </div>
       );
 
-    case 'custom_open_cti_dashboards':
+    case 'custom-open-cti-dashboards':
       return (
         <DashboardCarousel
           serviceInstance={
