@@ -20,8 +20,8 @@ export class TestAgent {
     organizationName: string,
     {
       requiredCapability,
-      capabilityBlackList,
-    }: { requiredCapability?: string; capabilityBlackList?: string[] }
+      disallowedCapabilities,
+    }: { requiredCapability?: string; disallowedCapabilities?: string[] }
   ) {
     const capabilities = await getUserOrganizationCapabilityNames(
       this.userEmail,
@@ -35,8 +35,8 @@ export class TestAgent {
       ).toBeTruthy();
     }
 
-    if (capabilityBlackList) {
-      for (const capability of capabilityBlackList) {
+    if (disallowedCapabilities) {
+      for (const capability of disallowedCapabilities) {
         expect(
           capabilities.includes(capability),
           `user ${this.userEmail} should not have capability ${capability}`
@@ -52,11 +52,12 @@ export class TestAgent {
   }: {
     query: DocumentNode;
     variables: Record<string, unknown>;
-    shouldBeAuthorized: boolean;
+    shouldBeAuthorized?: boolean;
   }) {
     const response = await this.apiClient.callGraphQL(query, variables);
 
     const responseBody = (await response.body()).toString();
-    expect(responseBody.includes('Not authorized')).toBe(!shouldBeAuthorized);
+    const isAuthorized = !responseBody.includes('Not authorized');
+    expect(isAuthorized).toBe(shouldBeAuthorized ?? true);
   }
 }

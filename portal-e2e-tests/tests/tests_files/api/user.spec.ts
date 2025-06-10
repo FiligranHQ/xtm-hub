@@ -23,7 +23,7 @@ test.describe('User API', () => {
       const agent = await TestAgent.init(THALES_USER.EMAIL);
 
       await agent.assertUserHasCapabilities('Thales', {
-        capabilityBlackList: ['ADMINISTRATE_ORGANIZATION', 'MANAGE_ACCESS'],
+        disallowedCapabilities: ['ADMINISTRATE_ORGANIZATION', 'MANAGE_ACCESS'],
       });
 
       await agent.assertIsAuthorized({
@@ -49,7 +49,6 @@ test.describe('User API', () => {
           id: THALES_USER.GLOBAL_ID,
           input: {},
         },
-        shouldBeAuthorized: true,
       });
     });
 
@@ -64,7 +63,7 @@ test.describe('User API', () => {
 
       await agent.assertUserHasCapabilities('Filigran', {
         requiredCapability: 'MANAGE_ACCESS',
-        capabilityBlackList: ['ADMINISTRATE_ORGANIZATION'],
+        disallowedCapabilities: ['ADMINISTRATE_ORGANIZATION'],
       });
 
       await agent.assertIsAuthorized({
@@ -75,7 +74,6 @@ test.describe('User API', () => {
             capabilities: adminCapabilityNames,
           },
         },
-        shouldBeAuthorized: true,
       });
     });
   });
