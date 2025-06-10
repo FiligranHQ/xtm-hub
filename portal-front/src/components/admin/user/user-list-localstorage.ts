@@ -1,3 +1,4 @@
+import { isValueInEnum } from '@/utils/isValueInEnum';
 import { UserOrderingEnum } from '@generated/models/UserOrdering.enum';
 import { OrderingMode } from '@generated/userListQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
@@ -11,8 +12,8 @@ export const useUserListLocalstorage = () => {
       'orderByUserList',
       UserOrderingEnum.EMAIL
     );
-  const userOrderingValues = Object.values(UserOrderingEnum);
-  if (!userOrderingValues.includes(orderBy)) {
+
+  if (!isValueInEnum(orderBy, UserOrderingEnum)) {
     setOrderBy(UserOrderingEnum.EMAIL);
   }
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
