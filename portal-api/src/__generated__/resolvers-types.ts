@@ -572,7 +572,7 @@ export type MutationSelfJoinServiceInstanceArgs = {
 
 export type MutationUpdateCsvFeedArgs = {
   document?: InputMaybe<Array<Scalars['Upload']['input']>>;
-  documentId?: InputMaybe<Scalars['ID']['input']>;
+  documentId: Scalars['ID']['input'];
   images?: InputMaybe<Array<Scalars['String']['input']>>;
   input: UpdateCsvFeedInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
@@ -582,7 +582,7 @@ export type MutationUpdateCsvFeedArgs = {
 
 export type MutationUpdateCustomDashboardArgs = {
   document?: InputMaybe<Array<Scalars['Upload']['input']>>;
-  documentId?: InputMaybe<Scalars['ID']['input']>;
+  documentId: Scalars['ID']['input'];
   images?: InputMaybe<Array<Scalars['String']['input']>>;
   input: UpdateCustomDashboardInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
@@ -1756,8 +1756,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
-  updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'input' | 'updateDocument'>>;
-  updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'input' | 'updateDocument'>>;
+  updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
+  updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
