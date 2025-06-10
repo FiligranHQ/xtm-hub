@@ -392,6 +392,7 @@ export const passDocumentToInactive = async (
 export const loadParentDocumentsByServiceInstance = async <
   T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
 >(
+  type: string,
   context: PortalContext,
   input: QueryDocumentsArgs,
   include_metadata?: string[]
@@ -407,6 +408,7 @@ export const loadParentDocumentsByServiceInstance = async <
       'Document.service_instance_id': extractId<ServiceInstanceId>(
         input.serviceInstanceId
       ),
+      'Document.type': type,
     },
     include_metadata
   );
