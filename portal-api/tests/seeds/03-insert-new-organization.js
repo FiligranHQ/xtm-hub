@@ -54,10 +54,6 @@ export async function seed(knex) {
   await knex('User_Organization')
     .insert([
       {
-        user_id: '015c0488-848d-4c89-95e3-8a243971f594',
-        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      },
-      {
         user_id: '154006e2-f24b-42da-b39c-e0fb17bead00',
         organization_id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
       },

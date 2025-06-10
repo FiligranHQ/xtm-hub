@@ -104,7 +104,7 @@ export const updateUserOrgCapabilities = async (
   }: {
     user_id: UserId;
     organization_id: OrganizationId;
-    orgCapabilities: string[];
+    orgCapabilities?: string[];
   }
 ) => {
   const [userOrganization] = await loadUserOrganization(context, {
