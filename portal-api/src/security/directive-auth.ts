@@ -108,13 +108,13 @@ const hasCapability = (
   if (userHasBypassCapability(user)) {
     return true;
   }
-  const { selected_org_capabilities } = user;
 
   // Authorize if the user is connected and no need specific capabilities
   if (!user.disabled && capabilitiesRequired.length === 0) {
     return true;
   }
-  return selected_org_capabilities.some((name) =>
+
+  return user.selected_org_capabilities.some((name) =>
     capabilitiesRequired.includes(name)
   );
 };
@@ -140,6 +140,11 @@ const hasServiceCapability = async (
         capabilitiesRequired.includes(capability)
       ) ?? false
   );
+};
+
+export const authDirectives = {
+  hasCapability,
+  hasServiceCapability,
 };
 
 export const { authDirectiveTransformer } = getSchemaTransformer(

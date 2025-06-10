@@ -39,7 +39,7 @@ type SubscriptionEdge {
 
 type Mutation {
   addSubscription(service_instance_id: String): ServiceInstance
-    @auth(requires: [MANAGE_SUBSCRIPTION])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   addSubscriptionInService(
     service_instance_id: String
     organization_id: ID
@@ -48,7 +48,7 @@ type Mutation {
     end_date: Date
   ): ServiceInstance @auth(requires: [BYPASS])
   deleteSubscription(subscription_id: ID!): ServiceInstance
-    @auth(requires: [MANAGE_SUBSCRIPTION])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
     @service_capa(requires: [MANAGE_ACCESS])
 }
 
