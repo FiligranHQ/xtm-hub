@@ -109,8 +109,7 @@ const hasCapability = (
   user: UserLoadUserBy,
   capabilitiesRequired: string[]
 ) => {
-  const { selected_org_capabilities } = user;
-  if (userHasBypassCapability(user) || userIsOrganizationAdministrator(user)) {
+  if (userHasBypassCapability(user)) {
     return true;
   }
 
@@ -119,7 +118,7 @@ const hasCapability = (
     return true;
   }
 
-  return selected_org_capabilities.some((name) =>
+  return user.selected_org_capabilities.some((name) =>
     capabilitiesRequired.includes(name)
   );
 };

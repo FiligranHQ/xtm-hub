@@ -56,7 +56,7 @@ describe('User helpers', async () => {
         )
       ).toBeTruthy();
       expect(newOrganization).toBeTruthy();
-      
+
       // Delete corresponding in order to avoid issue with other tests
       await removeUser(contextAdminUser, { email: testMail });
       await deleteOrganizationByName('test-new-organization');

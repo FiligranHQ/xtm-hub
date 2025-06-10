@@ -62,16 +62,17 @@ input AddServiceInput {
 
 type Mutation {
   editServiceInstance(id: ID!, name: String!): ServiceInstance
-    @auth(requires: [MANAGE_SUBSCRIPTION])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   addServiceInstance(input: AddServiceInput): SubscriptionModel
-    @auth(requires: [MANAGE_SUBSCRIPTION])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   deleteServiceInstance(id: ID!): ServiceInstance
-    @auth(requires: [MANAGE_SUBSCRIPTION])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   addServicePicture(
     serviceInstanceId: ID!
     document: Upload
     isLogo: Boolean
-  ): ServiceInstance @auth(requires: [MANAGE_SUBSCRIPTION])
+  ): ServiceInstance
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
 }
 
 type Query {

@@ -8,12 +8,12 @@ import { authDirectives } from './directive-auth';
 describe('Auth directives', () => {
   describe('hasCapability', () => {
     it.each`
-      description                                                                 | expected | isUserAdmin | userHasManageAccess | areCapabilitiesRequired | isUserBypass
-      ${'allow bypass user'}                                                      | ${true}  | ${false}    | ${false}            | ${true}                 | ${true}
-      ${'allow user when there is no required capability and he is not disabled'} | ${true}  | ${false}    | ${false}            | ${false}                | ${false}
-      ${'allow user when he has the right capability'}                            | ${true}  | ${false}    | ${true}             | ${true}                 | ${false}
-      ${'not allow user when he does not have right capability'}                  | ${false} | ${false}    | ${false}            | ${true}                 | ${false}
-      ${'allow user when he is the organization admin'}                           | ${true}  | ${true}     | ${false}            | ${true}                 | ${false}
+      description                                                                   | expected | isUserAdmin | userHasManageAccess | areCapabilitiesRequired | isUserBypass
+      ${'allow bypass user'}                                                        | ${true}  | ${false}    | ${false}            | ${true}                 | ${true}
+      ${'allow user when there is no required capability and he is not disabled'}   | ${true}  | ${false}    | ${false}            | ${false}                | ${false}
+      ${'allow user when he has the right capability'}                              | ${true}  | ${false}    | ${true}             | ${true}                 | ${false}
+      ${'not allow user when he does not have right capability'}                    | ${false} | ${false}    | ${false}            | ${true}                 | ${false}
+      ${'not allow user is the organization admin but capability is not mentioned'} | ${false} | ${true}     | ${false}            | ${true}                 | ${false}
     `(
       'should $description',
       ({
