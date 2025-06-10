@@ -14,6 +14,15 @@
   "CountryComboBox": {
     "Placeholder": "Choose a country"
   },
+  "CapabilityDescription": {
+    "Title": "Available capabilities",
+    "Description": "You can add specific capabilities to Filigran users",
+    "Capabilities": {
+      "ADMINISTRATE_ORGANIZATION": "Bypass inside of an organization",
+      "MANAGE_ACCESS": "Ability to invite other users to this organization",
+      "MANAGE_SUBSCRIPTION": "Ability to manage and subscribe the organization to services"
+    }
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Columns",
