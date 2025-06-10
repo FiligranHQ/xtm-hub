@@ -73,6 +73,7 @@ const resolvers: Resolvers = {
     },
     customDashboards: async (_, input, context) => {
       return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
+        'custom_dashboard',
         context,
         input,
         CUSTOM_DASHBOARD_METADATA
