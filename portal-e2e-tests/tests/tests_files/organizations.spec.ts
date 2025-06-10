@@ -16,7 +16,7 @@ test.describe('Organization Management', () => {
     loginPage = new LoginPage(page);
     organizationPage = new OrganizationPage(page);
 
-    await loginPage.login();
+    await loginPage.navigateToAndLogin();
     await organizationPage.navigateToOrgaAdmin();
   });
 

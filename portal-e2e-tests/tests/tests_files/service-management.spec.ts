@@ -28,7 +28,7 @@ test.describe('Service Management', () => {
     loginPage = new LoginPage(page);
     servicePage = new ServicePage(page);
 
-    await loginPage.login();
+    await loginPage.navigateToAndLogin();
     await servicePage.navigateToServiceListAdmin();
     await servicePage.navigateToServiceItemAdmin();
   });
