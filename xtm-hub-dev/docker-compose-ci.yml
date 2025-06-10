@@ -143,6 +143,7 @@ services:
         condition: service_healthy
     environment:
       - E2E_BASE_URL=http://portal-front:3000
+      - E2E_API_URL=http://portal-api:4001
       - POSTGRES_USER=portal
       - DATABASE_HOST=portal-postgres
       - POSTGRES_DB=test_database
