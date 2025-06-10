@@ -2,6 +2,7 @@ import {
   AutocompleteOrganization,
   UserOrganizationFormProps,
 } from '@/components/admin/user/autocomplete-organization';
+import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userEditAdminFormSchema } from '@/components/admin/user/user-form.schema';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
@@ -185,6 +186,7 @@ export const AdminUserUpdateForm: FunctionComponent<
             </FormItem>
           )}
         />
+        <CapabilityDescription />
         <div className="flex items-center gap-m">
           <Label>{t('UserForm.Organizations')}</Label>
           <AutocompleteOrganization

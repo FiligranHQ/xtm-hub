@@ -2,6 +2,7 @@ import {
   AutocompleteOrganization,
   UserOrganizationFormProps,
 } from '@/components/admin/user/autocomplete-organization';
+import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isDevelopment, isEmpty } from '@/lib/utils';
@@ -144,6 +145,8 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
             )}
           />
         )}
+
+        <CapabilityDescription />
 
         <div className="flex items-center gap-m">
           <Label>{t('UserForm.Organizations')}</Label>
