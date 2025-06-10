@@ -32,7 +32,7 @@ type Mutation {
   updateCsvFeed(documentId: ID!, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
   deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
   createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
-  updateCustomDashboard(documentId: ID, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
+  updateCustomDashboard(documentId: ID!, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!

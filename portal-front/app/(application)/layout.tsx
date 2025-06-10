@@ -8,7 +8,6 @@ import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import { AdminCallout } from '@/components/admin/admin-callout';
 import { TestEnvCallout } from '@/components/admin/test-env-callout';
 import { ContentLayout } from '@/components/content-layout';
-import Intercom from '@/components/external/intercom';
 import HeaderComponent from '@/components/header';
 import Login from '@/components/login/login';
 import Menu from '@/components/menu/menu';
@@ -66,7 +65,6 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
                   </div>
                 </div>
               </div>
-              <Intercom />
             </PageLoader>
           </div>
         </RelayProvider>

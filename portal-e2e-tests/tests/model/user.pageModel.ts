@@ -31,7 +31,7 @@ export default class UserPage {
     await this.page
       .getByRole('button', { name: 'Additional capabilities' })
       .click();
-    await this.page.getByRole('option', { name: 'MANAGE_ACCESS' }).click();
+    await this.page.getByRole('option', { name: 'MANAGE ACCESS' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 

@@ -101,7 +101,11 @@ const resolvers: Resolvers = {
   },
   Query: {
     csvFeeds: async (_, input, context) =>
-      loadParentDocumentsByServiceInstance<CsvFeedConnection>(context, input),
+      loadParentDocumentsByServiceInstance<CsvFeedConnection>(
+        'csv_feed',
+        context,
+        input
+      ),
     csvFeed: async (_, { id }, context) =>
       loadCsvFeedById(context, extractId<DocumentId>(id)),
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>

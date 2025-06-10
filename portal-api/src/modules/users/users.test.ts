@@ -55,6 +55,7 @@ describe('User helpers', async () => {
           OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
         )
       ).toBeTruthy();
+
       expect(newOrganization).toBeTruthy();
 
       // Delete corresponding in order to avoid issue with other tests
