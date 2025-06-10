@@ -61,7 +61,7 @@ describe('Auth directives', () => {
     it.each`
       description                                             | expected | expectedError                                   | isUserBypass | isUserOrganizationAdmin | areIdsMissing | hasRequiredCapabilities
       ${'allow bypass user'}                                  | ${true}  | ${null}                                         | ${true}      | ${false}                | ${false}      | ${false}
-      ${'allow allow user when he is the organization admin'} | ${true}  | ${null}                                         | ${false}     | ${true}                 | ${false}      | ${false}
+      ${'not allow user when he is the organization admin'}   | ${false} | ${null}                                         | ${false}     | ${true}                 | ${false}      | ${false}
       ${'throw an error when ids are missing'}                | ${false} | ${'Service_id or subscription_id is undefined'} | ${false}     | ${false}                | ${true}       | ${false}
       ${'allow user with the required service capability'}    | ${true}  | ${null}                                         | ${false}     | ${false}                | ${false}      | ${true}
       ${'not allow user without required service capability'} | ${false} | ${null}                                         | ${false}     | ${false}                | ${false}      | ${false}

@@ -1,11 +1,7 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { PortalContext } from '../model/portal-context';
-import {
-  getCapabilityUser,
-  userHasBypassCapability,
-  userIsOrganizationAdministrator,
-} from './auth.helper';
+import { getCapabilityUser, userHasBypassCapability } from './auth.helper';
 
 import { UserLoadUserBy } from '../model/user';
 import { getCapabilities } from '../modules/users/users.domain';
@@ -128,7 +124,7 @@ const hasServiceCapability = async (
   args: ServiceCapabilityArgs,
   capabilitiesRequired: string[]
 ) => {
-  if (userHasBypassCapability(user) || userIsOrganizationAdministrator(user)) {
+  if (userHasBypassCapability(user)) {
     return true;
   }
 
