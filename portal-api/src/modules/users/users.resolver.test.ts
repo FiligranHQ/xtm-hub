@@ -17,11 +17,14 @@ import {
   DEFAULT_ADMIN_PASSWORD,
   SERVICE_VAULT_ID,
   SIMPLE_USER_FILIGRAN_ID,
+  THALES_EMAIL,
   THALES_ORGA_ID,
+  THALES_USER_ID,
 } from '../../../tests/tests.const';
 import {
   AddUserInput,
-  EditUserInput,
+  AdminEditUserInput,
+  Organization,
 } from '../../__generated__/resolvers-types';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -80,9 +83,7 @@ describe('User query resolver', () => {
       });
     });
   });
-});
 
-describe('Query resolver', () => {
   it('should fetch User', async () => {
     // @ts-ignore
     const response = await usersResolver.Query.user(
@@ -111,7 +112,7 @@ describe('User mutation resolver', () => {
     expect(response).toBeTruthy();
   });
 
-  describe('AdminAddUser Mutation', () => {
+  describe('adminAddUser', () => {
     it('should not create an existing user', async () => {
       try {
         // @ts-ignore
@@ -132,27 +133,33 @@ describe('User mutation resolver', () => {
         expect(error).toBeTruthy();
       }
     });
-    describe('should create user with personal space', async () => {
-      const testMail = `testAddUser${uuidv4()}@test.fr`;
-      // @ts-ignore
-      const response = await usersResolver.Mutation.adminAddUser(
-        undefined,
-        {
-          input: {
-            email: testMail,
-            password: DEFAULT_ADMIN_PASSWORD,
-          } as AddUserInput,
-        },
-        contextAdminUser
-      );
-      expect(response).toBeTruthy();
-      const user = await loadUserBy({ 'User.id': response.id });
-      const organizations = await usersResolver.User.organizations(
-        user,
-        undefined,
-        contextAdminUser,
-        undefined
-      );
+    describe('create user with personal space', async () => {
+      let user: UserLoadUserBy;
+      let organizations: Organization[];
+      beforeAll(async () => {
+        const testMail = `testAddUser${uuidv4()}@test.fr`;
+        // @ts-ignore
+        const response = await usersResolver.Mutation.adminAddUser(
+          undefined,
+          {
+            input: {
+              email: testMail,
+              password: DEFAULT_ADMIN_PASSWORD,
+            } as AddUserInput,
+          },
+          contextAdminUser
+        );
+        expect(response).toBeTruthy();
+
+        user = await loadUserBy({ 'User.id': response.id });
+        // @ts-expect-error organizations is not considered as callable
+        organizations = await usersResolver.User.organizations(
+          user,
+          undefined,
+          contextAdminUser,
+          undefined
+        );
+      });
       it('should have only one organization Personal space', async () => {
         expect(organizations.length).toEqual(1);
       });
@@ -161,36 +168,43 @@ describe('User mutation resolver', () => {
         expect(user.id).toEqual(organizations[0].id);
       });
     });
+
     describe('as Admin - should create user with personal space and add to internal organization', async () => {
-      const testMail = `testAddUser${uuidv4()}@test.fr`;
-      // @ts-ignore
-      const response = await usersResolver.Mutation.adminAddUser(
-        undefined,
-        {
-          input: {
-            email: testMail,
-            password: DEFAULT_ADMIN_PASSWORD,
-            organization_capabilities: [
-              {
-                organization_id: toGlobalId(
-                  'Organization',
-                  PLATFORM_ORGANIZATION_UUID
-                ),
-                capabilities: [],
-              },
-            ],
-          } as AddUserInput,
-        },
-        contextAdminUser
-      );
-      expect(response).toBeTruthy();
-      const user = await loadUserBy({ 'User.id': response.id });
-      const organizations = await usersResolver.User.organizations(
-        user,
-        undefined,
-        contextAdminUser,
-        undefined
-      );
+      let response;
+      let organizations: Organization[];
+      let user: UserLoadUserBy;
+      beforeAll(async () => {
+        const testMail = `testAddUser${uuidv4()}@test.fr`;
+        // @ts-ignore
+        response = await usersResolver.Mutation.adminAddUser(
+          undefined,
+          {
+            input: {
+              email: testMail,
+              password: DEFAULT_ADMIN_PASSWORD,
+              organization_capabilities: [
+                {
+                  organization_id: toGlobalId(
+                    'Organization',
+                    PLATFORM_ORGANIZATION_UUID
+                  ),
+                  capabilities: [],
+                },
+              ],
+            } as AddUserInput,
+          },
+          contextAdminUser
+        );
+        expect(response).toBeTruthy();
+        user = await loadUserBy({ 'User.id': response.id });
+        organizations = await usersResolver.User.organizations(
+          user,
+          undefined,
+          contextAdminUser,
+          undefined
+        );
+      });
+
       it('should have Personal space and Internal as organization', async () => {
         expect(
           organizations.some((org) => org.id === PLATFORM_ORGANIZATION_UUID)
@@ -198,9 +212,9 @@ describe('User mutation resolver', () => {
         expect(
           organizations.some((org) => org.id.toString() === user.id.toString())
         ).toBeTruthy();
-      });
 
-      expect(organizations.length).toEqual(2);
+        expect(organizations.length).toEqual(2);
+      });
 
       afterAll(async () => {
         await deleteUserById(response.id as UserId);
@@ -232,98 +246,104 @@ describe('User mutation resolver', () => {
         expect(error).toBeTruthy();
       }
     });
-  });
+    describe('as Admin orga - should create user with personal space and add to Thales organization', async () => {
+      let user: UserLoadUserBy;
+      let organizations: Organization[];
+      let response;
+      beforeAll(async () => {
+        const testMail = `testAddUser${uuidv4()}@thales.com`;
+        // @ts-ignore
+        response = await usersResolver.Mutation.adminAddUser(
+          undefined,
+          {
+            input: {
+              email: testMail,
+              password: DEFAULT_ADMIN_PASSWORD,
+              organization_capabilities: [
+                {
+                  organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                  capabilities: [],
+                },
+              ],
+            } as AddUserInput,
+          },
+          contextAdminOrgaThales
+        );
+        user = await loadUserBy({ 'User.id': response.id });
+        organizations = await usersResolver.User.organizations(
+          user,
+          undefined,
+          contextAdminUser,
+          undefined
+        );
 
-  describe('as Admin orga - should create user with personal space and add to Thales organization', async () => {
-    const testMail = `testAddUser${uuidv4()}@thales.com`;
-    // @ts-ignore
-    const response = await usersResolver.Mutation.adminAddUser(
-      undefined,
-      {
-        input: {
-          email: testMail,
-          password: DEFAULT_ADMIN_PASSWORD,
-          organization_capabilities: [
-            {
-              organization_id: toGlobalId('Organization', THALES_ORGA_ID),
-              capabilities: [],
-            },
-          ],
-        } as AddUserInput,
-      },
-      contextAdminOrgaThales
-    );
-    const user = await loadUserBy({ 'User.id': response.id });
-    const organizations = await usersResolver.User.organizations(
-      user,
-      undefined,
-      contextAdminUser,
-      undefined
-    );
-    it('should have Personal space and Thales as organization', async () => {
-      expect(response).toBeTruthy();
-      expect(
-        organizations.some((org) => org.id === THALES_ORGA_ID)
-      ).toBeTruthy();
-      expect(
-        organizations.some((org) => org.id.toString() === user.id.toString())
-      ).toBeTruthy();
-    });
-
-    expect(organizations.length).toEqual(2);
-
-    afterAll(async () => {
-      await deleteUserById(response.id as UserId);
-    });
-  });
-
-  describe('EditUser Mutation', () => {
-    describe('should edit an existing user', async () => {
-      const fallbackUser = await loadUserBy({ email: 'user15@test.fr' });
-      // @ts-ignore
-      const response = await usersResolver.Mutation.adminEditUser(
-        undefined,
-        {
-          id: SIMPLE_USER_FILIGRAN_ID,
-          input: {
-            organization_capabilities: [
-              {
-                organization_id: toGlobalId(
-                  'Organization',
-                  SIMPLE_USER_FILIGRAN_ID
-                ),
-                capabilities: [
-                  OrganizationCapabilityName.MANAGE_ACCESS,
-                  OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
-                ],
-              },
-              {
-                organization_id: toGlobalId(
-                  'Organization',
-                  PLATFORM_ORGANIZATION_UUID
-                ),
-                capabilities: [
-                  OrganizationCapabilityName.MANAGE_ACCESS,
-                  OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
-                ],
-              },
-              {
-                organization_id: toGlobalId('Organization', THALES_ORGA_ID),
-                capabilities: [],
-              },
-            ],
-          } as EditUserInput,
-        },
-        contextAdminUser
-      );
-
-      expect(response).toBeTruthy();
-      it('should have update organisations, first_name and last_name', async () => {
-        expect(response.organization_capabilities.length).toEqual(3);
+        expect(response).toBeTruthy();
       });
-      it('should not have update other fields', async () => {
-        expect(fallbackUser.first_name).toEqual(response.first_name);
-        expect(fallbackUser.email).toEqual(response.email);
+
+      it('should have Personal space and Thales as organization', async () => {
+        expect(
+          organizations.some((org) => org.id === THALES_ORGA_ID)
+        ).toBeTruthy();
+        expect(
+          organizations.some((org) => org.id.toString() === user.id.toString())
+        ).toBeTruthy();
+
+        expect(organizations.length).toEqual(2);
+      });
+
+      afterAll(async () => {
+        await deleteUserById(response.id as UserId);
+      });
+    });
+  });
+
+  describe('adminEditUser', () => {
+    let thalesUser: UserLoadUserBy;
+
+    describe('existing user edition', async () => {
+      let fallbackUser: UserLoadUserBy;
+      let response;
+      beforeAll(async () => {
+        fallbackUser = await loadUserBy({ email: 'user15@test.fr' });
+
+        // @ts-ignore
+        response = await usersResolver.Mutation.adminEditUser(
+          undefined,
+          {
+            id: SIMPLE_USER_FILIGRAN_ID,
+            input: {
+              organization_capabilities: [
+                {
+                  organization_id: toGlobalId(
+                    'Organization',
+                    SIMPLE_USER_FILIGRAN_ID
+                  ),
+                  capabilities: [
+                    OrganizationCapabilityName.MANAGE_ACCESS,
+                    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                  ],
+                },
+                {
+                  organization_id: toGlobalId(
+                    'Organization',
+                    PLATFORM_ORGANIZATION_UUID
+                  ),
+                  capabilities: [
+                    OrganizationCapabilityName.MANAGE_ACCESS,
+                    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                  ],
+                },
+                {
+                  organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                  capabilities: [],
+                },
+              ],
+            } as AdminEditUserInput,
+          },
+          contextAdminUser
+        );
+
+        expect(response).toBeTruthy();
       });
 
       afterAll(async () => {
@@ -355,15 +375,124 @@ describe('User mutation resolver', () => {
                   ],
                 },
               ],
-            } as EditUserInput,
+            } as AdminEditUserInput,
           },
           contextAdminUser
         );
       });
+
+      it('should have update organisations, first_name and last_name', async () => {
+        expect(response.organization_capabilities.length).toEqual(3);
+      });
+      it('should not have update other fields', async () => {
+        expect(fallbackUser.first_name).toEqual(response.first_name);
+        expect(fallbackUser.email).toEqual(response.email);
+      });
+    });
+
+    describe('administrator deletion', async () => {
+      beforeAll(async () => {
+        thalesUser = await loadUserBy({ email: THALES_EMAIL });
+      });
+
+      afterEach(async () => {
+        // @ts-expect-error adminEditUser is not considered as callable
+        await usersResolver.Mutation.adminEditUser(
+          undefined,
+          {
+            id: THALES_USER_ID,
+            input: {
+              organization_capabilities:
+                thalesUser.organization_capabilities.map(
+                  (organizationCapabilities) => ({
+                    organization_id: toGlobalId(
+                      'Organization',
+                      organizationCapabilities.organization.id
+                    ),
+                    capabilities: organizationCapabilities.capabilities,
+                  })
+                ),
+            },
+          },
+          contextAdminUser
+        );
+      });
+
+      it('should prevent deletion of the last organization administrator', async () => {
+        // @ts-expect-error adminEditUser is not considered as callable
+        const call = usersResolver.Mutation.adminEditUser(
+          undefined,
+          {
+            id: THALES_USER_ID,
+            input: {
+              organization_capabilities: [
+                {
+                  organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                  capabilities: [],
+                },
+              ],
+            } as AdminEditUserInput,
+          },
+          contextAdminUser
+        );
+
+        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+      });
     });
   });
 
-  describe('EditMeUser Mutation', () => {
+  describe('editUser', () => {
+    let thalesUser: UserLoadUserBy;
+
+    beforeAll(async () => {
+      thalesUser = await loadUserBy({ email: THALES_EMAIL });
+    });
+
+    afterEach(async () => {
+      // @ts-expect-error adminEditUser is not considered as callable
+      await usersResolver.Mutation.adminEditUser(
+        undefined,
+        {
+          id: THALES_USER_ID,
+          input: {
+            organization_capabilities: thalesUser.organization_capabilities.map(
+              (organizationCapabilities) => ({
+                organization_id: toGlobalId(
+                  'Organization',
+                  organizationCapabilities.organization.id
+                ),
+                capabilities: organizationCapabilities.capabilities,
+              })
+            ),
+          },
+        },
+        contextAdminUser
+      );
+    });
+
+    it('should prevent deletion of the last organization administrator', async () => {
+      const testContext = {
+        ...contextAdminUser,
+        user: {
+          ...contextAdminUser.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      // @ts-expect-error editUser is not considered as callable
+      const call = usersResolver.Mutation.editUser(
+        undefined,
+        {
+          id: THALES_USER_ID,
+          input: { capabilities: [] },
+        },
+        testContext
+      );
+
+      await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+    });
+  });
+
+  describe('editMeUser', () => {
     let adminUser: UserLoadUserBy;
     let auth0Spy: MockInstance;
     beforeAll(async () => {
@@ -441,7 +570,7 @@ describe('User mutation resolver', () => {
     });
   });
 
-  describe('ResetPassword Mutation', () => {
+  describe('resetPassword', () => {
     let auth0Spy: MockInstance;
     beforeAll(() => {
       auth0Spy = vi.spyOn(auth0ClientMock, 'resetPassword');

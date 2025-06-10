@@ -44,6 +44,8 @@ import {
 import {
   createUserWithPersonalSpace,
   mapUserToGraphqlUser,
+  preventAdministratorRemovalOfAllOrganizations,
+  preventAdministratorRemovalOfOneOrganization,
 } from './users.helper';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
@@ -234,9 +236,16 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const { capabilities, ...userInput } = input;
-        await updateUser(context, id as UserId, userInput);
+        const userId = id as UserId;
+        await preventAdministratorRemovalOfOneOrganization(
+          userId,
+          context.user.selected_organization_id,
+          capabilities
+        );
+
+        await updateUser(context, userId, userInput);
         await updateUserOrgCapabilities(context, {
-          user_id: id as UserId,
+          user_id: userId,
           organization_id: context.user.selected_organization_id,
           orgCapabilities: capabilities,
         });
@@ -255,6 +264,9 @@ const resolvers: Resolvers = {
         return user;
       } catch (error) {
         await trx.rollback();
+        if (error.message === 'CANT_REMOVE_LAST_ADMINISTRATOR') {
+          throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
+        }
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
         });
@@ -264,14 +276,30 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const { organization_capabilities, ...userInput } = input;
-        await updateUser(context, id as UserId, userInput);
+        const userId = id as UserId;
+        const mappedCapabilities = (organization_capabilities ?? []).map(
+          (orgCapability) => ({
+            organizationId: extractId<OrganizationId>(
+              orgCapability.organization_id
+            ),
+            capabilities: orgCapability.capabilities,
+          })
+        );
+        if (!input.disabled) {
+          await preventAdministratorRemovalOfAllOrganizations(
+            context,
+            userId,
+            mappedCapabilities
+          );
+        }
+        await updateUser(context, userId, userInput);
         await updateMultipleUserOrgWithCapabilities(
           context,
-          id as UserId,
+          userId,
           organization_capabilities
         );
         const user = await loadUserDetails({
-          'User.id': id as UserId,
+          'User.id': userId,
         });
         updateUserSession(user);
 
@@ -284,6 +312,10 @@ const resolvers: Resolvers = {
         return user;
       } catch (error) {
         await trx.rollback();
+        if (error.message.includes('CANT_REMOVE_LAST_ADMINISTRATOR')) {
+          throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
+        }
+
         throw UnknownError('EDIT_USER_ERROR', {
           detail: error.message,
         });

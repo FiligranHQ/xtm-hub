@@ -61,6 +61,7 @@
       "AUTH0_USER_NOT_FOUND_ERROR": "Your user profile was not found",
       "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
       "CANT_EDIT_YOURSELF_ERROR": "You cannot edit yourself",
+      "CANT_REMOVE_LAST_ADMINISTRATOR": "You cannot remove the last administrator of an organization",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
