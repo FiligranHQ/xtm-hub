@@ -1,7 +1,7 @@
+import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import useAdminPath from '@/hooks/useAdminPath';
-import { isDevelopment, isEmpty } from '@/lib/utils';
+import { isEmpty } from '@/lib/utils';
 import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -32,7 +32,6 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const t = useTranslations();
-  const isAdminPath = useAdminPath();
 
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
@@ -72,61 +71,7 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
             </FormItem>
           )}
         />
-        {isAdminPath && (
-          <>
-            <FormField
-              control={form.control}
-              name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('UserForm.FirstName')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('UserForm.FirstName')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('UserForm.LastName')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('UserForm.LastName')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
-        {isDevelopment() && isAdminPath && (
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('UserForm.Password')}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder={t('UserForm.Password')}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
+        <CapabilityDescription />
         <FormField
           control={form.control}
           name="capabilities"

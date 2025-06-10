@@ -11,7 +11,7 @@ export enum OrganizationCapabilityName {
 export const organizationCapabilitiesMultiSelectOptions = Object.values(
   OrganizationCapabilityName
 ).map((value) => ({
-  label: value,
+  label: value.replaceAll('_', ' '),
   value,
 }));
 
