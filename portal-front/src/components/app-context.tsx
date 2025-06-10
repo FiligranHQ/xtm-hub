@@ -5,6 +5,7 @@ import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
 import * as React from 'react';
 import { geologica, ibmPlexSans } from '../../app/font';
+import Flowise from './external/flowise';
 import GoogleAnalytics from './external/google-analytics';
 import Hubspot from './external/hubspot';
 
@@ -40,6 +41,7 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
           <Toaster />
           <Hubspot />
           <GoogleAnalytics />
+          <Flowise />
         </ThemeProvider>
       </body>
     </html>

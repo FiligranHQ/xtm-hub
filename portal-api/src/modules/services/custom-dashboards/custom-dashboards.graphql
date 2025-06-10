@@ -103,7 +103,7 @@ type Mutation {
     serviceInstanceId: String
   ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
   updateCustomDashboard(
-    documentId: ID
+    documentId: ID!
     input: UpdateCustomDashboardInput!
     document: [Upload!]
     updateDocument: Boolean!
