@@ -127,7 +127,7 @@ function makeSingleQueryMapEntry<TReturn>({
   return { query, cast };
 }
 
-const queryMap: Record<ServiceSlug, QueryMapEntry<ShareableResource[]>> = {
+const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
   'open-cti-integration-feeds': makeQueryMapEntry<SeoCsvFeed>({
     query: SeoCsvFeedsByServiceSlugQuery,
     key: 'seoCsvFeedsByServiceSlug',
@@ -138,7 +138,7 @@ const queryMap: Record<ServiceSlug, QueryMapEntry<ShareableResource[]>> = {
   }),
 };
 
-const querySlugMap: Record<ServiceSlug, QueryMapEntry<ShareableResource>> = {
+const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
   'open-cti-integration-feeds': makeSingleQueryMapEntry<SeoCsvFeed>({
     query: SeoCsvFeedBySlugQuery,
     key: 'seoCsvFeedBySlug',
@@ -151,7 +151,7 @@ const querySlugMap: Record<ServiceSlug, QueryMapEntry<ShareableResource>> = {
 
 export async function fetchAllDocuments(
   serviceSlug: ServiceSlug
-): Promise<ShareableResource[]> {
+): Promise<SeoResource[]> {
   const config = queryMap[serviceSlug];
   const response = await serverFetchGraphQL(
     config.query,
