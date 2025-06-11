@@ -17,8 +17,6 @@ import { serviceList_fragment$data } from '@generated/serviceList_fragment.graph
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import type { MetadataRoute } from 'next';
 
-const CUSTOM_DASHBOARD_SERVICE_SLUG = 'custom-open-cti-dashboards';
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settingsResponse =
     await serverFetchGraphQL<settingsQuery>(SettingsQuery);
