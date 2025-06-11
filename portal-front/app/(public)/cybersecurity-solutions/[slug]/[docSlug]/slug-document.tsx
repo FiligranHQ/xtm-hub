@@ -17,7 +17,7 @@ const SlugDocument = async ({
   document: SeoCsvFeed | SeoCustomDashboard;
 }) => {
   switch (serviceInstance.slug as ServiceSlug) {
-    case 'open-cti-integration-feeds':
+    case ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS:
       return (
         <div className="relative w-full h-[35vh]">
           <Image
@@ -29,7 +29,7 @@ const SlugDocument = async ({
         </div>
       );
 
-    case 'custom-open-cti-dashboards':
+    case ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS:
       return (
         <DashboardCarousel
           serviceInstance={

@@ -84,7 +84,7 @@ export async function generateMetadata({
     description: document.short_description
       ? `${document.short_description}${serviceInformation?.description}`
       : document.description?.substring(0, 160) ||
-        `Explore this cybersecurity ${serviceInstance.slug === 'custom-open-cti-dashboards' ? 'dashboard' : 'integration feed'} for enhanced threat intelligence and monitoring.`,
+        `Explore this cybersecurity ${serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ? 'dashboard' : 'integration feed'} for enhanced threat intelligence and monitoring.`,
     metadataBase: new URL(baseUrl),
     openGraph: {
       title: document!.name!,

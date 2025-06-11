@@ -5,7 +5,7 @@
 export async function up(knex) {
   await knex.raw(`
     UPDATE "ServiceInstance"
-    SET "slug" = 'open-cti-custom-dashboards'
+      SET "slug" = 'open-cti-custom-dashboards'
     WHERE "slug" = 'custom_open_cti_dashboards'
   `);
 }

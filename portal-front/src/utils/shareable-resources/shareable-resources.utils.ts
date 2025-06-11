@@ -101,9 +101,10 @@ type MakeQueryMapParams = {
 };
 
 type ServiceInfo = { link: string; description: string };
-export type ServiceSlug =
-  | 'open-cti-integration-feeds'
-  | 'custom-open-cti-dashboards';
+export enum ServiceSlug {
+  OPEN_CTI_INTEGRATION_FEEDS = 'open-cti-integration-feeds',
+  OPEN_CTI_CUSTOM_DASHBOARDS = 'open-cti-custom-dashboards',
+}
 
 function makeQueryMapEntry<TReturn>({
   query,
@@ -128,25 +129,29 @@ function makeSingleQueryMapEntry<TReturn>({
 }
 
 const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
-  'open-cti-integration-feeds': makeQueryMapEntry<SeoCsvFeed>({
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeQueryMapEntry<SeoCsvFeed>({
     query: SeoCsvFeedsByServiceSlugQuery,
     key: 'seoCsvFeedsByServiceSlug',
   }),
-  'custom-open-cti-dashboards': makeQueryMapEntry<SeoCustomDashboard>({
-    query: SeoCustomDashboardsByServiceSlugQuery,
-    key: 'seoCustomDashboardsByServiceSlug',
-  }),
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
+    makeQueryMapEntry<SeoCustomDashboard>({
+      query: SeoCustomDashboardsByServiceSlugQuery,
+      key: 'seoCustomDashboardsByServiceSlug',
+    }),
 };
 
 const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
-  'open-cti-integration-feeds': makeSingleQueryMapEntry<SeoCsvFeed>({
-    query: SeoCsvFeedBySlugQuery,
-    key: 'seoCsvFeedBySlug',
-  }),
-  'custom-open-cti-dashboards': makeSingleQueryMapEntry<SeoCustomDashboard>({
-    query: SeoCustomDashboardBySlugQuery,
-    key: 'seoCustomDashboardBySlug',
-  }),
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeSingleQueryMapEntry<SeoCsvFeed>(
+    {
+      query: SeoCsvFeedBySlugQuery,
+      key: 'seoCsvFeedBySlug',
+    }
+  ),
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
+    makeSingleQueryMapEntry<SeoCustomDashboard>({
+      query: SeoCustomDashboardBySlugQuery,
+      key: 'seoCustomDashboardBySlug',
+    }),
 };
 
 export async function fetchAllDocuments(
@@ -181,12 +186,12 @@ export function getServiceInfo(
   const serviceId = fromGlobalId(serviceInstance.id).id;
 
   const serviceMap: Record<ServiceSlug, ServiceInfo> = {
-    'open-cti-integration-feeds': {
+    [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
       link: `/redirect/integration_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
       description:
         '. Discover more OpenCTI integration feeds like this in our OpenCTI Integration Feeds Library, available for download on the XTM Hub.',
     },
-    'custom-open-cti-dashboards': {
+    [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
       link: `/redirect/custom_dashboards?service_instance_id=${serviceId}&document_id=${documentId}`,
       description:
         '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
