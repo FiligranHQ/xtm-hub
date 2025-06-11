@@ -35,14 +35,10 @@ type ServiceConnection {
   edges: [ServiceInstanceEdge!]!
   pageInfo: PageInfo!
 }
-enum ServiceSlug {
-  custom_open_cti_dashboards
-  csv_feeds
-}
 type SeoServiceInstance implements Node {
   id: ID!
   name: String!
-  slug: ServiceSlug
+  slug: String
   description: String
   links: [ServiceLink]
   tags: [String]
