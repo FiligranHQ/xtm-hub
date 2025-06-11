@@ -9,6 +9,8 @@ import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   fetchSingleDocument,
   getServiceInfo,
+  SeoResource,
+  ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -47,10 +49,10 @@ const getPageData = async (serviceSlug: string, docSlug: string) => {
     notFound();
   }
 
-  const document = await fetchSingleDocument(
-    serviceInstance.slug ?? 'custom_open_cti_dashboards',
+  const document = (await fetchSingleDocument(
+    serviceInstance.slug as ServiceSlug,
     docSlug
-  );
+  )) as unknown as SeoResource;
 
   return { baseUrl, serviceInstance, document };
 };
@@ -72,7 +74,7 @@ export async function generateMetadata({
   const serviceInformation = getServiceInfo(
     {
       id: serviceInstance.id,
-      slug: serviceInstance.slug ?? 'custom_open_cti_dashboards',
+      slug: serviceInstance.slug as ServiceSlug,
     },
     document.id
   );
@@ -82,7 +84,7 @@ export async function generateMetadata({
     description: document.short_description
       ? `${document.short_description}${serviceInformation?.description}`
       : document.description?.substring(0, 160) ||
-        `Explore this cybersecurity ${serviceInstance.slug === 'custom_open_cti_dashboards' ? 'dashboard' : 'CSV Feed'} for enhanced threat intelligence and monitoring.`,
+        `Explore this cybersecurity ${serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ? 'dashboard' : 'integration feed'} for enhanced threat intelligence and monitoring.`,
     metadataBase: new URL(baseUrl),
     openGraph: {
       title: document!.name!,
@@ -145,7 +147,7 @@ const Page = async ({
     const serviceInformation = getServiceInfo(
       {
         id: serviceInstance.id,
-        slug: serviceInstance.slug ?? 'custom_open_cti_dashboards',
+        slug: serviceInstance.slug as ServiceSlug,
       },
       document.id
     );

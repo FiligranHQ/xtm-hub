@@ -4,7 +4,10 @@ import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { fetchAllDocuments } from '@/utils/shareable-resources/shareable-resources.utils';
+import {
+  fetchAllDocuments,
+  ServiceSlug,
+} from '@/utils/shareable-resources/shareable-resources.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -39,7 +42,7 @@ const getPageData = cache(async (slug: string) => {
   }
 
   const documents = await fetchAllDocuments(
-    serviceInstance.slug ?? 'custom_open_cti_dashboards'
+    serviceInstance.slug as ServiceSlug
   );
   return { baseUrl, serviceInstance, documents };
 });

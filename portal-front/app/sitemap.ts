@@ -1,18 +1,31 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { SeoCustomDashboard } from '@/utils/shareable-resources/shareable-resources.utils';
-import SeoCustomDashboardsByServiceSlugQuery, {
-  seoCustomDashboardsByServiceSlugQuery,
-} from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
+import {
+  fetchAllDocuments,
+  ServiceSlug,
+} from '@/utils/shareable-resources/shareable-resources.utils';
+import SeoServiceInstancesQuery, {
+  seoServiceInstancesQuery,
+} from '@generated/seoServiceInstancesQuery.graphql';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import type { MetadataRoute } from 'next';
-
-const CUSTOM_DASHBOARD_SERVICE_SLUG = 'custom-open-cti-dashboards';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settingsResponse =
     await serverFetchGraphQL<settingsQuery>(SettingsQuery);
   const baseURI = settingsResponse.data.settings.base_url_front;
+
+  const seoServiceInstancesResponse =
+    await serverFetchGraphQL<seoServiceInstancesQuery>(
+      SeoServiceInstancesQuery
+    );
+
+  const seoServiceInstancesData = seoServiceInstancesResponse.data
+    .seoServiceInstances as unknown as serviceList_fragment$data[];
+  const routableSeoServiceInstances = seoServiceInstancesData.filter(
+    (service) => service.slug !== null && service.slug !== undefined
+  );
 
   const sitemap: MetadataRoute.Sitemap = [
     {
@@ -21,30 +34,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
-    {
-      url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${CUSTOM_DASHBOARD_SERVICE_SLUG}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
   ];
 
-  const customDashboardsResponse =
-    await serverFetchGraphQL<seoCustomDashboardsByServiceSlugQuery>(
-      SeoCustomDashboardsByServiceSlugQuery,
-      { serviceSlug: CUSTOM_DASHBOARD_SERVICE_SLUG }
-    );
-
-  const customDashboards = customDashboardsResponse.data
-    .seoCustomDashboardsByServiceSlug as unknown as SeoCustomDashboard[];
-
-  for (const customDashboard of customDashboards) {
+  for (const service of routableSeoServiceInstances) {
     sitemap.push({
-      url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${CUSTOM_DASHBOARD_SERVICE_SLUG}/${customDashboard.slug}`,
-      lastModified: customDashboard.updated_at ?? customDashboard.created_at,
+      url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${service.slug}`,
+      lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.8,
+      priority: 1,
     });
+
+    const resources = await fetchAllDocuments(service.slug as ServiceSlug);
+    for (const resource of resources) {
+      sitemap.push({
+        url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${service.slug}/${resource.slug}`,
+        lastModified: resource.updated_at ?? resource.created_at,
+        changeFrequency: 'monthly',
+        priority: 0.8,
+      });
+    }
   }
 
   return sitemap;
