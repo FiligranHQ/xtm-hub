@@ -95,6 +95,7 @@ export default async (reportData) => {
   console.log(facts);
 
   const prLink = `https://github.com/FiligranHQ/xtm-hub/pull/${process.env.GITHUB_PR_NUMBER}`;
+  const artifactLink = `https://github.com/FiligranHQ/xtm-hub/actions/runs/${process.env.GITHUB_RUN_ID}`;
   let description = ``;
   if (summary.passed.value === summary.tests.value) {
     description += '\\\n ✔ Congratulations! All tests passed.';
@@ -151,6 +152,11 @@ export default async (reportData) => {
             {
               type: 'TextBlock',
               text: `[${prLink}](${prLink})`,
+            },
+            {
+              type: 'TextBlock',
+              text: `[📋 Service Logs Artifact](${artifactLink})`,
+              weight: 'bolder',
             },
             {
               type: 'Image',
