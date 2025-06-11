@@ -56,3 +56,18 @@ minio:
     diskCount: 2
   server:
     count: 3
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app: minio
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app: minio
+            topologyKey: rack
+          weight: 100

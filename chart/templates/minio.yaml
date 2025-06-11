@@ -10,6 +10,9 @@ metadata:
 spec:
   configuration:
     name: minio-credentials
+  env:
+    - name: MINIO_PROMETHEUS_AUTH_TYPE
+      value: public
   features:
     bucketDNS: false
     enableSFTP: false
@@ -34,6 +37,7 @@ spec:
           requests:
             storage: {{ .Values.minio.storage.diskSize }}
     volumesPerServer: {{ .Values.minio.storage.diskCount }}
+    affinity: {{ .Values.minio.server.affinity }}
   prometheusOperator: false
   requestAutoCert: false
   subPath: /data
