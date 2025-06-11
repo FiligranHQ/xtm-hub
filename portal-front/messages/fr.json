@@ -126,10 +126,6 @@
   "LoginPage": {
     "CreateYourAccount": "créer votre compte",
     "Email": "Email",
-    "Errors": {
-      "AccountNotProvided": "Cette plateforme est pour l'instant dédiée aux partenaires de Filigran.",
-      "AccountNotProvidedTitle": "Votre compte n'existe pas !"
-    },
     "Login": "Connexion",
     "Logout": "Déconnexion",
     "OnFiligranWebsite": "sur le site Filigran",
