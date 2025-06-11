@@ -9,6 +9,7 @@ import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   fetchSingleDocument,
   getServiceInfo,
+  SeoResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -48,10 +49,10 @@ const getPageData = async (serviceSlug: string, docSlug: string) => {
     notFound();
   }
 
-  const document = await fetchSingleDocument(
+  const document = (await fetchSingleDocument(
     serviceInstance.slug as ServiceSlug,
     docSlug
-  );
+  )) as unknown as SeoResource;
 
   return { baseUrl, serviceInstance, document };
 };

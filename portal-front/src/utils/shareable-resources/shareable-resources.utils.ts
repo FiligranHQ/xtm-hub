@@ -15,6 +15,8 @@ export type ShareableResource =
   | SeoCsvFeed
   | SeoCustomDashboard;
 
+export type SeoResource = SeoCsvFeed | SeoCustomDashboard;
+
 export interface SeoCustomDashboard {
   description: string;
   id: string;
