@@ -17,7 +17,7 @@ test.describe('Profile edition', () => {
       lastName: originalLastName,
     });
 
-    await loginPage.login(email);
+    await loginPage.navigateToAndLogin(email);
     await profilePage.navigateTo();
   });
 

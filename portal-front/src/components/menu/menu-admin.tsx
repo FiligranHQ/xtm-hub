@@ -112,7 +112,10 @@ const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: '/admin/user',
     label: t('MenuLinks.Security'),
-    restriction: [OrganizationCapabilityName.MANAGE_ACCESS],
+    restriction: [
+      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
+      OrganizationCapabilityName.MANAGE_ACCESS,
+    ],
   },
   {
     href: '/admin/label',

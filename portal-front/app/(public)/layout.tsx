@@ -71,7 +71,7 @@ export default function RootLayout({
         <Button
           asChild
           className="whitespace-nowrap">
-          <Link href="/">Sign In</Link>
+          <Link href="/login">Sign In</Link>
         </Button>
       </header>
       <main className="container flex-grow">

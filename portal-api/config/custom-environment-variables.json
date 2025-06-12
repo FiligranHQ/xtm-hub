@@ -33,5 +33,6 @@
       "pass": "SMTP_PASSWORD"
     }
   },
-  "base_url_front": "BASE_URL_FRONT"
+  "base_url_front": "BASE_URL_FRONT",
+  "hubspot_webhook_url": "HUBSPOT_WEBHOOK_URL"
 }

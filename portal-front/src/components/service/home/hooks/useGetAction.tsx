@@ -51,6 +51,7 @@ export default function useGetAction(
       ) && (
         <GuardCapacityComponent
           capacityRestriction={[
+            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
             OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
           ]}>
           <AlertDialogComponent

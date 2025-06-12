@@ -232,7 +232,7 @@ export async function GET(
     // we redirect to the homepage with highlighting the services
     return NextResponse.redirect(highlightUrl);
   } catch (error) {
-    const loginURL = new URL('/', baseUrlFront);
+    const loginURL = new URL('/login', baseUrlFront);
 
     // The user must be authenticated to access the service
     if ((error as Error).message === 'UNAUTHENTICATED') {

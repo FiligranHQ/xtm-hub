@@ -17,7 +17,7 @@ services:
       portal-api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://portal-front:3000/"]
+      test: ["CMD", "wget", "-qO-", "http://portal-front:3000/health"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -178,6 +178,7 @@ services:
         condition: service_healthy
     environment:
       - E2E_BASE_URL=http://portal-front:3000
+      - E2E_API_URL=http://portal-api:4001
       - POSTGRES_USER=portal
       - DATABASE_HOST=portal-postgres
       - POSTGRES_DB=test_database

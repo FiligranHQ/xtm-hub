@@ -4,7 +4,7 @@ import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
 import { renderHook } from '@testing-library/react';
 
 describe('useGranted', () => {
-  it('user BYPASS should have all the rights', () => {
+  it('should return true when user has the required capability', () => {
     expect(true).toBe(true);
     const wrapper = ({ children }: ProvidersWrapperProps) => {
       return (
@@ -30,7 +30,7 @@ describe('useGranted', () => {
     expect(resultAdmin.current).toBe(true);
   });
 
-  it('user with no capability should not have any granted right', () => {
+  it('should return false when user does not have the required capability', () => {
     expect(true).toBe(true);
     const wrapper = ({ children }: ProvidersWrapperProps) => {
       return (

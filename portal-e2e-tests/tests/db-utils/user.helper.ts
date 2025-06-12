@@ -1,6 +1,6 @@
 import { db } from './db-connection';
 import { faker } from '@faker-js/faker';
-import { ADMIN_PASSWORD_HASH, ADMIN_PASSWORD_SALT } from './const';
+import { ADMIN_USER } from './const';
 
 export const generateUser = async ({
   firstName,
@@ -31,8 +31,8 @@ export const generateUser = async ({
       {
         id: userId,
         email,
-        salt: ADMIN_PASSWORD_SALT,
-        password: ADMIN_PASSWORD_HASH,
+        salt: ADMIN_USER.PASSWORD_SALT,
+        password: ADMIN_USER.PASSWORD_HASH,
         first_name: firstName,
         last_name: lastName,
         selected_organization_id: organizationId,

@@ -25,8 +25,16 @@ export default class LoginPage {
     return this.page.getByRole('button', { name: 'Sign in' });
   }
 
+  async navigateTo() {
+    await this.page.goto('/login');
+  }
+
+  async navigateToAndLogin(userEmail = 'admin@filigran.io') {
+    await this.navigateTo();
+    return this.login(userEmail);
+  }
+
   async login(userEmail = 'admin@filigran.io') {
-    await this.page.goto('/');
     await this.fillLoginInput(userEmail);
     await this.fillPasswordInput('admin');
     return this.getSignInButton().click();
@@ -35,5 +43,9 @@ export default class LoginPage {
   async logout() {
     await this.page.getByRole('button', { name: 'Open menu user' }).click();
     await this.page.getByRole('button', { name: 'Logout' }).click();
+  }
+
+  async assertCurrentPage() {
+    await this.page.waitForURL('/login');
   }
 }
