@@ -16,10 +16,7 @@ export const hubspotLoginHook = async (userId: string) => {
         return (
           orga_capa.organization.personal_space === false &&
           orga_capa.capabilities.some((capa) =>
-            [
-              Restriction.ManageAccess,
-              Restriction.AdministrateOrganization,
-            ].includes(capa)
+            [Restriction.AdministrateOrganization].includes(capa)
           )
         );
       });
