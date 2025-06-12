@@ -19,14 +19,11 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
-import {
-  UserLoadUserBy,
-  UserWithOrganizations,
-  UserWithOrganizationsAndRole,
-} from '../../model/user';
+import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
 import { auth0Client } from '../../thirdparty/auth0/client';
+import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
@@ -481,10 +478,13 @@ export const userHasOrganizationWithSubscription = async (
 /**
  * #185: If the user has only ONE organization, land him on it rather than its personal space
  */
-export const updateUserAtLogin = async <T extends UserWithOrganizations>(
+export const updateUserAtLogin = async (
   context: PortalContext,
-  user: T
-): Promise<T> => {
+  user: UserLoadUserBy
+): Promise<UserLoadUserBy> => {
+  // Send data to HubSpot, fire-and-forget, don't wait for promise
+  hubspotLoginHook(user.id);
+
   const organizations = user.organizations.filter((o) => !o.personal_space);
   const fields: UserMutator = {
     last_login: new Date(),
