@@ -29,6 +29,9 @@ export const hubspotLoginHook = async (userId: string) => {
         last_login: user.last_login,
         is_admin,
       };
+      console.log(payload);
+
+      logApp.info(`Hubspot login hook sent for user ${user.email}`);
     }
   } catch (error) {
     logApp.error(error);
