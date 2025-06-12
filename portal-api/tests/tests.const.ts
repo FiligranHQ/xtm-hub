@@ -14,6 +14,8 @@ export const SIMPLE_USER_FILIGRAN_ID = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
 export const DEFAULT_ORG = 'Filigran';
 
 export const THALES_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6c';
+export const THALES_USER_ID = '015c0488-848d-4c89-95e3-8a243971f594';
+export const THALES_EMAIL = 'admin@thales.com';
 export const SERVICE_MALWARE_ID = '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4';
 export const SERVICE_VAULT_ID = 'e88e8f80-ba9e-480b-ab27-8613a1565eff';
 
@@ -46,8 +48,8 @@ export const contextAdminUser: PortalContext = {
 
 export const contextAdminOrgaThales: PortalContext = {
   user: {
-    id: '015c0488-848d-4c89-95e3-8a243971f594',
-    email: 'admin@thales.com',
+    id: THALES_USER_ID,
+    email: THALES_EMAIL,
     password: null,
     salt: null,
     first_name: null,
@@ -61,7 +63,7 @@ export const contextAdminOrgaThales: PortalContext = {
         domains: ['thales.com'],
       },
       {
-        id: '015c0488-848d-4c89-95e3-8a243971f594',
+        id: THALES_USER_ID,
         name: 'admin@thales.com',
         personal_space: true,
         domains: [],

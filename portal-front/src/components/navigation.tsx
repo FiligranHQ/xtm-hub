@@ -19,7 +19,10 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   const { hasOrganizationCapability } = useContext(PortalContext);
   const canManageUser =
     hasOrganizationCapability &&
-    hasOrganizationCapability(OrganizationCapabilityName.MANAGE_ACCESS);
+    (hasOrganizationCapability(
+      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+    ) ||
+      hasOrganizationCapability(OrganizationCapabilityName.MANAGE_ACCESS));
 
   return (
     <nav className="flex-1 flex-shrink-0 pt-s">

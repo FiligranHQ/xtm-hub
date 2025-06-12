@@ -380,10 +380,10 @@ export const updateUser = async (
 export const deleteUserById = async (userId: UserId) => {
   return dbUnsecure<User>('User').where('id', userId).delete().returning('*');
 };
-export const loadUserCapacityByOrganization = async (
+export const loadUserCapabilitiesByOrganization = async (
   user_id: UserId,
   organization_id: OrganizationId
-) => {
+): Promise<{ capabilities?: string[] }> => {
   return dbUnsecure('User_Organization')
     .leftJoin(
       'UserOrganization_Capability',

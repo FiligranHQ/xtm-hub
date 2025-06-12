@@ -36,10 +36,6 @@ export async function seed(knex) {
         user_id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
         organization_id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
       },
-      {
-        user_id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
-        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      },
     ])
     .onConflict('id')
     .ignore();
