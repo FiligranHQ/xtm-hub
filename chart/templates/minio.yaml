@@ -37,7 +37,7 @@ spec:
           requests:
             storage: {{ .Values.minio.storage.diskSize }}
     volumesPerServer: {{ .Values.minio.storage.diskCount }}
-    affinity: {{ .Values.minio.server.affinity }}
+    affinity: {{- .Values.minio.server.affinity | toYaml | nindent 6 }}
   prometheusOperator: false
   requestAutoCert: false
   subPath: /data
