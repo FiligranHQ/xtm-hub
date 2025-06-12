@@ -15,6 +15,8 @@ export type ShareableResource =
   | SeoCsvFeed
   | SeoCustomDashboard;
 
+export type SeoResource = SeoCsvFeed | SeoCustomDashboard;
+
 export interface SeoCustomDashboard {
   description: string;
   id: string;
@@ -97,8 +99,12 @@ type MakeQueryMapParams = {
   query: ConcreteRequest;
   key: string;
 };
+
 type ServiceInfo = { link: string; description: string };
-type ServiceSlug = keyof typeof queryMap;
+export enum ServiceSlug {
+  OPEN_CTI_INTEGRATION_FEEDS = 'open-cti-integration-feeds',
+  OPEN_CTI_CUSTOM_DASHBOARDS = 'open-cti-custom-dashboards',
+}
 
 function makeQueryMapEntry<TReturn>({
   query,
@@ -122,30 +128,35 @@ function makeSingleQueryMapEntry<TReturn>({
   return { query, cast };
 }
 
-const queryMap = {
-  csv_feeds: makeQueryMapEntry<SeoCsvFeed>({
+const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeQueryMapEntry<SeoCsvFeed>({
     query: SeoCsvFeedsByServiceSlugQuery,
     key: 'seoCsvFeedsByServiceSlug',
   }),
-  custom_open_cti_dashboards: makeQueryMapEntry<SeoCustomDashboard>({
-    query: SeoCustomDashboardsByServiceSlugQuery,
-    key: 'seoCustomDashboardsByServiceSlug',
-  }),
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
+    makeQueryMapEntry<SeoCustomDashboard>({
+      query: SeoCustomDashboardsByServiceSlugQuery,
+      key: 'seoCustomDashboardsByServiceSlug',
+    }),
 };
-const querySlugMap = {
-  csv_feeds: makeSingleQueryMapEntry<SeoCsvFeed>({
-    query: SeoCsvFeedBySlugQuery,
-    key: 'seoCsvFeedBySlug',
-  }),
-  custom_open_cti_dashboards: makeSingleQueryMapEntry<SeoCustomDashboard>({
-    query: SeoCustomDashboardBySlugQuery,
-    key: 'seoCustomDashboardBySlug',
-  }),
+
+const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeSingleQueryMapEntry<SeoCsvFeed>(
+    {
+      query: SeoCsvFeedBySlugQuery,
+      key: 'seoCsvFeedBySlug',
+    }
+  ),
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
+    makeSingleQueryMapEntry<SeoCustomDashboard>({
+      query: SeoCustomDashboardBySlugQuery,
+      key: 'seoCustomDashboardBySlug',
+    }),
 };
 
 export async function fetchAllDocuments(
   serviceSlug: ServiceSlug
-): Promise<SeoCsvFeed[] | SeoCustomDashboard[]> {
+): Promise<SeoResource[]> {
   const config = queryMap[serviceSlug];
   const response = await serverFetchGraphQL(
     config.query,
@@ -158,7 +169,7 @@ export async function fetchAllDocuments(
 export async function fetchSingleDocument(
   serviceSlug: ServiceSlug,
   slug: string
-): Promise<SeoCsvFeed | SeoCustomDashboard> {
+): Promise<ShareableResource> {
   const config = querySlugMap[serviceSlug];
   const response = await serverFetchGraphQL(
     config.query,
@@ -174,18 +185,18 @@ export function getServiceInfo(
 ): ServiceInfo | undefined {
   const serviceId = fromGlobalId(serviceInstance.id).id;
 
-  const serviceMap: Record<string, ServiceInfo> = {
-    csv_feeds: {
-      link: `/redirect/csv_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
+  const serviceMap: Record<ServiceSlug, ServiceInfo> = {
+    [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
+      link: `/redirect/integration_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
       description:
-        '. Discover more CSV Feeds like this in our OpenCTI CSV Feeds Library, available for download on the XTM Hub.',
+        '. Discover more OpenCTI integration feeds like this in our OpenCTI Integration Feeds Library, available for download on the XTM Hub.',
     },
-    custom_open_cti_dashboards: {
+    [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
       link: `/redirect/custom_dashboards?service_instance_id=${serviceId}&document_id=${documentId}`,
       description:
         '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
     },
   };
 
-  return serviceMap[serviceInstance.slug] ?? undefined;
+  return serviceMap[serviceInstance.slug];
 }

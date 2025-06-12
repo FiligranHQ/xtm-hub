@@ -78,5 +78,6 @@
   "app_logs": {
     "logs_level": "info",
     "extended_error_message": true
-  }
+  },
+  "hubspot_webhook_url": "changeMe"
 }

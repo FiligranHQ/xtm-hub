@@ -36,7 +36,7 @@ export const isEmptyField = (field: unknown): boolean => {
   return isEmpty(field) || isNil(field);
 };
 
-export const isImgUrl = async (url: string): Promise<boolean> => {
+export const isValidUrl = (url: string): boolean => {
   const schema = z
     .string()
     .url()
@@ -46,7 +46,12 @@ export const isImgUrl = async (url: string): Promise<boolean> => {
     });
 
   const parseResult = schema.safeParse(url);
-  if (!parseResult.success) {
+  return parseResult.success;
+};
+
+export const isImgUrl = async (url: string): Promise<boolean> => {
+  const parseResult = isValidUrl(url);
+  if (!parseResult) {
     return false;
   }
 

@@ -7,6 +7,7 @@ import { ServiceCapabilityArgs } from './directive-auth';
 import { ServiceInstance } from '../__generated__/resolvers-types';
 import { SubscriptionMutator } from '../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../model/user';
+import { hasAdministrateOrganizationCapability } from '../modules/users/users.helper';
 import { extractId } from '../utils/utils';
 
 export const loadCapabilitiesByServiceId = async (
@@ -78,6 +79,12 @@ export const loadCapabilitiesByServiceId = async (
 
 export const userHasBypassCapability = (user: UserLoadUserBy): boolean => {
   return user.capabilities.some((c) => c.name === CAPABILITY_BYPASS.name);
+};
+
+export const userIsOrganizationAdministrator = (
+  user: UserLoadUserBy
+): boolean => {
+  return hasAdministrateOrganizationCapability(user.selected_org_capabilities);
 };
 
 export const getCapabilityUser = (
