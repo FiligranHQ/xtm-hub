@@ -37,14 +37,7 @@ export const isEmptyField = (field: unknown): boolean => {
 };
 
 export const isValidUrl = (url: string): boolean => {
-  const schema = z
-    .string()
-    .url()
-    .refine((val) => {
-      const urlRegex = /\.(jpg|jpeg|png|webp|avif|gif)/;
-      return urlRegex.test(val);
-    });
-
+  const schema = z.string().url();
   const parseResult = schema.safeParse(url);
   return parseResult.success;
 };
@@ -52,6 +45,11 @@ export const isValidUrl = (url: string): boolean => {
 export const isImgUrl = async (url: string): Promise<boolean> => {
   const parseResult = isValidUrl(url);
   if (!parseResult) {
+    return false;
+  }
+
+  const urlRegex = /\.(jpg|jpeg|png|webp|avif|gif)/;
+  if (!urlRegex.test(url)) {
     return false;
   }
 

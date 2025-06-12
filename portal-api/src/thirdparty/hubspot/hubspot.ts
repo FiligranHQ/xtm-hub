@@ -30,11 +30,28 @@ export const hubspotLoginHook = async (userId: string) => {
         last_login: user.last_login,
         is_admin,
       };
-      console.log(payload);
+
+      // 3 seconds timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+      try {
+        await fetch(webHookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       logApp.info(`Hubspot login hook sent for user ${user.email}`);
     }
   } catch (error) {
+    logApp.error('An error occurred while sending the Hubspot login hook');
     logApp.error(error);
   }
 };
