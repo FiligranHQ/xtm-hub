@@ -37,7 +37,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
     },
     {
       label: serviceInstance.name,
-      href: `/service/custom_dashboards/${serviceInstance.id}`,
+      href: `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       original: true,
     },
     {

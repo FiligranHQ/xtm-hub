@@ -40,7 +40,7 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
     },
     {
       label: serviceInstance.name,
-      href: `/service/${serviceInstance.slug}/${serviceInstance.id}`,
+      href: `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       original: true,
     },
     {
@@ -50,7 +50,9 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   ];
 
   const onDelete = () => {
-    router.push(`/service/${serviceInstance.slug}/${serviceInstance.id}`);
+    router.push(
+      `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
+    );
     toast({
       title: t('Utils.Success'),
       description: t('Service.CsvFeed.Actions.Deleted', {

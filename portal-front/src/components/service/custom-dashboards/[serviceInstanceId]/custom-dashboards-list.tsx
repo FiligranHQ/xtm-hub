@@ -135,7 +135,7 @@ const CustomDashboardsList = ({
                 key={doc.id}
                 customDashboard={doc}
                 serviceInstance={serviceInstance}
-                detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
+                detailUrl={`/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${doc.id}`}
                 shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
               />
             ))}
@@ -152,7 +152,7 @@ const CustomDashboardsList = ({
             key={doc.id}
             customDashboard={doc}
             serviceInstance={serviceInstance}
-            detailUrl={`/service/custom_dashboards/${serviceInstance.id}/${doc.id}`}
+            detailUrl={`/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${doc.id}`}
             shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
           />
         ))}
