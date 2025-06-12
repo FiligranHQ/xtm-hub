@@ -126,10 +126,6 @@
   "LoginPage": {
     "CreateYourAccount": "create your account",
     "Email": "Email",
-    "Errors": {
-      "AccountNotProvided": "This platform is dedicated to Filigran's closest partners for now.",
-      "AccountNotProvidedTitle": "Your account has not been provided!"
-    },
     "Login": "Login",
     "Logout": "Logout",
     "OnFiligranWebsite": "on the Filigran website",
