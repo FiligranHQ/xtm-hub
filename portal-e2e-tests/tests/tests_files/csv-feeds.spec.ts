@@ -19,7 +19,7 @@ test.describe('CSV Feeds', () => {
     loginPage = new LoginPage(page);
     csvFeedPage = new CsvFeedPage(page);
 
-    await loginPage.login();
+    await loginPage.navigateToAndLogin();
     await csvFeedPage.subscribeCsvFeedService();
     await csvFeedPage.fillCsvFeed(CSV_FEED_TEST);
   });
