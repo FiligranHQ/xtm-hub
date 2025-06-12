@@ -131,3 +131,12 @@ export function pick<U, T extends keyof U>(
     return _pick(inputOrProps, maybeProps || []);
   }
 }
+
+export const isValidUrl = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
