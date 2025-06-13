@@ -1,60 +1,203 @@
 import { v4 as uuidv4 } from 'uuid';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
+import Organization from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../model/user';
 import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
+import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
+import { createUserOrganizationRelationUnsecure } from '../common/user-organization.domain';
 import {
   deleteOrganizationByName,
   loadUnsecureOrganizationBy,
 } from '../organizations/organizations.helper';
-import { loadUserBy, loadUserCapacityByOrganization } from './users.domain';
-import { createNewUserFromInvitation, removeUser } from './users.helper';
+import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
+import {
+  createNewUserFromInvitation,
+  preventAdministratorRemovalOfAllOrganizations,
+  preventAdministratorRemovalOfOneOrganization,
+  removeUser,
+} from './users.helper';
 
-describe('User helpers - createNewUserFromInvitation', async () => {
-  it('should create a new user with Role USER and not add in an existing Organization', async () => {
-    const testMail = `testCreateNewUserFromInvitation${uuidv4()}@filigran.io`;
-    await createNewUserFromInvitation({
-      email: testMail,
+describe('User helpers', async () => {
+  describe('createNewUserFromInvitation', () => {
+    it('should create a new user with Role USER and not add in an existing Organization', async () => {
+      const testMail = `testCreateNewUserFromInvitation${uuidv4()}@filigran.io`;
+      await createNewUserFromInvitation({
+        email: testMail,
+      });
+      const newUser = await loadUserBy({ email: testMail });
+      expect(newUser).toBeTruthy();
+      expect(newUser.selected_org_capabilities.length).toBe(1);
+      expect(newUser.organizations[0].personal_space).toBe(true);
+
+      // Delete corresponding in order to avoid issue with other tests
+      await removeUser(contextAdminUser, { email: newUser.email });
     });
-    const newUser = await loadUserBy({ email: testMail });
-    expect(newUser).toBeTruthy();
-    expect(newUser.selected_org_capabilities.length).toBe(1);
-    expect(newUser.organizations[0].personal_space).toBe(true);
+    it('should add new user with Role admin organization with an new Organization', async () => {
+      const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
+      await createNewUserFromInvitation({
+        email: testMail,
+      });
+      const newUser = await loadUserBy({ email: testMail });
+      expect(newUser).toBeTruthy();
+      const newOrganization = await loadUnsecureOrganizationBy(
+        'name',
+        'test-new-organization'
+      );
+      const userOrgCapa = await loadUserCapabilitiesByOrganization(
+        newUser.id as UserId,
+        newOrganization.id
+      );
+      expect(userOrgCapa.capabilities.length).toBe(1);
+      expect(
+        userOrgCapa.capabilities.includes(
+          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+        )
+      ).toBeTruthy();
 
-    // Delete corresponding in order to avoid issue with other tests
-    await removeUser(contextAdminUser, { email: newUser.email });
+      expect(newOrganization).toBeTruthy();
+
+      // Delete corresponding in order to avoid issue with other tests
+      await removeUser(contextAdminUser, { email: testMail });
+      await deleteOrganizationByName('test-new-organization');
+    });
   });
-  it('should add new user with Role admin organization with an new Organization', async () => {
-    const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
-    await createNewUserFromInvitation({
-      email: testMail,
+
+  describe('delete last administrator prevention', () => {
+    const organizationName = 'test-new-organization';
+    let organization: Organization;
+    let user: UserLoadUserBy;
+    let anotherUser: UserLoadUserBy;
+
+    beforeEach(async () => {
+      const userEmail = `testLastOrganizationAdministrator${uuidv4()}@${organizationName}.fr`;
+      await createNewUserFromInvitation({
+        email: userEmail,
+      });
+      organization = await loadUnsecureOrganizationBy('name', organizationName);
+
+      expect(organization).toBeTruthy();
+
+      user = await loadUserBy({ email: userEmail });
     });
-    const newUser = await loadUserBy({ email: testMail });
-    expect(newUser).toBeTruthy();
-    const newOrganization = await loadUnsecureOrganizationBy(
-      'name',
-      'test-new-organization'
-    );
-    const userOrgCapa = await loadUserCapacityByOrganization(
-      newUser.id as UserId,
-      newOrganization.id
-    );
-    expect(userOrgCapa.capabilities.length).toBe(2);
-    expect(
-      userOrgCapa.capabilities.includes(
-        OrganizationCapabilityName.MANAGE_ACCESS
-      )
-    ).toBeTruthy();
-    expect(
-      userOrgCapa.capabilities.includes(
-        OrganizationCapabilityName.MANAGE_SUBSCRIPTION
-      )
-    ).toBeTruthy();
 
-    expect(newOrganization).toBeTruthy();
+    afterEach(async () => {
+      if (user) {
+        await removeUser(contextAdminUser, { email: user.email });
+        user = null;
+      }
+      if (anotherUser) {
+        await removeUser(contextAdminUser, { email: anotherUser.email });
+        anotherUser = null;
+      }
+      if (organization) {
+        await deleteOrganizationByName(organizationName);
+        organization = null;
+      }
+    });
 
-    // Delete corresponding in order to avoid issue with other tests
-    await removeUser(contextAdminUser, { email: testMail });
-    await deleteOrganizationByName('test-new-organization');
+    describe('preventAdministratorRemovalOfOneOrganization', () => {
+      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
+        const call = preventAdministratorRemovalOfOneOrganization(
+          user.id,
+          organization.id
+        );
+
+        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+      });
+
+      it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
+        const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
+        await createNewUserFromInvitation({
+          email: anotherUserEmail,
+        });
+
+        anotherUser = await loadUserBy({
+          'User.email': anotherUserEmail,
+        });
+
+        const [anotherUserOrgRelation] =
+          await createUserOrganizationRelationUnsecure({
+            user_id: anotherUser.id,
+            organizations_id: [organization.id],
+          });
+        expect(anotherUserOrgRelation).toBeTruthy();
+
+        await createUserOrganizationCapability({
+          user_organization_id: anotherUserOrgRelation.id,
+          capabilities_name: [
+            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
+          ],
+        });
+
+        const result = await preventAdministratorRemovalOfOneOrganization(
+          user.id,
+          organization.id
+        );
+
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('preventAdministratorRemovalOfAllOrganizations', () => {
+      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we specify empty capabilities`, async () => {
+        const call = preventAdministratorRemovalOfAllOrganizations(
+          contextAdminUser,
+          user.id,
+          [
+            {
+              organizationId: organization.id,
+              capabilities: [],
+            },
+          ]
+        );
+
+        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+      });
+
+      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we don't specify new capabilities`, async () => {
+        const call = preventAdministratorRemovalOfAllOrganizations(
+          contextAdminUser,
+          user.id,
+          []
+        );
+
+        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+      });
+
+      it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we remove its capabilities`, async () => {
+        const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
+        await createNewUserFromInvitation({
+          email: anotherUserEmail,
+        });
+
+        anotherUser = await loadUserBy({
+          'User.email': anotherUserEmail,
+        });
+
+        const [anotherUserOrgRelation] =
+          await createUserOrganizationRelationUnsecure({
+            user_id: anotherUser.id,
+            organizations_id: [organization.id],
+          });
+        expect(anotherUserOrgRelation).toBeTruthy();
+
+        await createUserOrganizationCapability({
+          user_organization_id: anotherUserOrgRelation.id,
+          capabilities_name: [
+            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
+          ],
+        });
+
+        const result = await preventAdministratorRemovalOfOneOrganization(
+          user.id,
+          organization.id,
+          []
+        );
+
+        expect(result).toBeUndefined();
+      });
+    });
   });
 });

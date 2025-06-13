@@ -3,7 +3,9 @@ import serverPortalApiFetch, {
   serverMutateGraphQL,
 } from '@/relay/serverPortalApiFetch';
 import { fromGlobalId, toGlobalId } from '@/utils/globalId';
+import { isValueInEnum } from '@/utils/isValueInEnum';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import OrganizationSwitcherMutation, {
   organizationSwitcherMutation,
 } from '@generated/organizationSwitcherMutation.graphql';
@@ -16,7 +18,6 @@ import SettingsQuery, {
   settingsQuery$data,
 } from '@generated/settingsQuery.graphql';
 import { NextRequest, NextResponse } from 'next/server';
-import { isValidServiceDefinitionIdentifier } from './helpers';
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{
@@ -54,6 +55,18 @@ async function switchOrganization(organization_id: string) {
     }
   );
 }
+// temporary fix will be fixed in the next release https://github.com/FiligranHQ/xtm-hub/issues/650
+const mapNewIdentifierToOldIdentifier = (
+  identifier: string
+): ServiceDefinitionIdentifierEnum => {
+  const mapValue: Record<string, ServiceDefinitionIdentifierEnum> = {
+    octi_custom_dashboards: ServiceDefinitionIdentifierEnum.CUSTOM_DASHBOARDS,
+    octi_integration_feeds: ServiceDefinitionIdentifierEnum.CSV_FEEDS,
+  };
+  return (
+    mapValue[identifier] ?? (identifier as ServiceDefinitionIdentifierEnum)
+  );
+};
 
 export async function GET(
   request: NextRequest,
@@ -61,12 +74,12 @@ export async function GET(
 ) {
   const awaitedParams = await params;
   const searchParams = request.nextUrl.searchParams;
-  const identifier = awaitedParams.identifier;
+  const identifier = mapNewIdentifierToOldIdentifier(awaitedParams.identifier);
   const octi_instance_id = searchParams.get('octi_instance_id');
   const service_instance_id = searchParams.get('service_instance_id');
   const document_id = searchParams.get('document_id');
 
-  if (!isValidServiceDefinitionIdentifier(identifier)) {
+  if (!isValueInEnum(identifier, ServiceDefinitionIdentifierEnum)) {
     // Raise a bad request error
     return new Response('Invalid identifier', { status: 400 });
   }
@@ -80,7 +93,7 @@ export async function GET(
 
   // Build the login URL from the settings and the curent URL
   const getRedirectionURL = () => {
-    const baseURL = new URL(baseUrlFront);
+    const baseURL = new URL(`${baseUrlFront}/login`);
     const redirectURL = new URL(request.url);
     redirectURL.hostname = baseURL.hostname;
     redirectURL.protocol = baseURL.protocol;
@@ -219,7 +232,7 @@ export async function GET(
     // we redirect to the homepage with highlighting the services
     return NextResponse.redirect(highlightUrl);
   } catch (error) {
-    const loginURL = new URL('/', baseUrlFront);
+    const loginURL = new URL('/login', baseUrlFront);
 
     // The user must be authenticated to access the service
     if ((error as Error).message === 'UNAUTHENTICATED') {

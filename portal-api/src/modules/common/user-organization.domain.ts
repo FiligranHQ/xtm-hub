@@ -70,7 +70,7 @@ export const createUserOrganizationRelationUnsecure = async ({
 export const updateMultipleUserOrgWithCapabilities = async (
   context: PortalContext,
   userId: UserId,
-  orgCapabilities: OrganizationCapabilitiesInput[]
+  orgCapabilities?: OrganizationCapabilitiesInput[]
 ) => {
   await db<UserOrganization>(context, 'User_Organization')
     .where('user_id', '=', userId)
@@ -104,7 +104,7 @@ export const updateUserOrgCapabilities = async (
   }: {
     user_id: UserId;
     organization_id: OrganizationId;
-    orgCapabilities: string[];
+    orgCapabilities?: string[];
   }
 ) => {
   const [userOrganization] = await loadUserOrganization(context, {

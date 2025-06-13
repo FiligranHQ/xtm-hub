@@ -128,7 +128,9 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
             name: customDashboard.name,
           }),
         });
-        router.push(`/service/custom_dashboards/${serviceInstance.id}`);
+        router.push(
+          `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
+        );
       },
     });
   };

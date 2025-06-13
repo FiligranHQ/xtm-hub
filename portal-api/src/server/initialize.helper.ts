@@ -212,7 +212,7 @@ export const ensurePersonalSpaceExist = async (
   await ensureOrganizationExists(orgId, mail);
   const userOrg = await ensureUserOrganizationExists(user_id, orgId);
   await ensureCapabilitiesExist(userOrg.id, [
-    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+    OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
   ]);
 };
 

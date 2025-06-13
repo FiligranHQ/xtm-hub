@@ -36,17 +36,20 @@ export const isEmptyField = (field: unknown): boolean => {
   return isEmpty(field) || isNil(field);
 };
 
-export const isImgUrl = async (url: string): Promise<boolean> => {
-  const schema = z
-    .string()
-    .url()
-    .refine((val) => {
-      const urlRegex = /\.(jpg|jpeg|png|webp|avif|gif)/;
-      return urlRegex.test(val);
-    });
-
+export const isValidUrl = (url: string): boolean => {
+  const schema = z.string().url();
   const parseResult = schema.safeParse(url);
-  if (!parseResult.success) {
+  return parseResult.success;
+};
+
+export const isImgUrl = async (url: string): Promise<boolean> => {
+  const parseResult = isValidUrl(url);
+  if (!parseResult) {
+    return false;
+  }
+
+  const urlRegex = /\.(jpg|jpeg|png|webp|avif|gif)/;
+  if (!urlRegex.test(url)) {
     return false;
   }
 

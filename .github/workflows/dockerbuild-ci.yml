@@ -12,6 +12,7 @@ on:
       - "v*"
   pull_request:
     branches:
+      - "issue/**"
       - "main"
       - "development"
     paths:
@@ -99,8 +100,60 @@ jobs:
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
            TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
            GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
-           GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}"
+           GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
+           GITHUB_RUN_ID="${{ github.run_id }}"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests
+
+      - name: Collect service logs on failure
+        if: failure()
+        run: |
+          echo "=== Collecting logs from all services ==="
+          echo ""
+          echo "=== Portal API Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-api || echo "Could not collect portal-api logs"
+          echo ""
+          echo "=== Portal API Test Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-api-test || echo "Could not collect portal-api-test logs"
+          echo ""
+          echo "=== Portal Front Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-front || echo "Could not collect portal-front logs"
+          echo ""
+          echo "=== Portal Front Test Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-front-test || echo "Could not collect portal-front-test logs"
+          echo ""
+          echo "=== PostgreSQL Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-postgres || echo "Could not collect portal-postgres logs"
+          echo ""
+          echo "=== MinIO Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-minio || echo "Could not collect portal-minio logs"
+          echo ""
+          echo "=== E2E Tests Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-e2e-tests || echo "Could not collect portal-e2e-tests logs"
+          echo ""
+          echo "=== Docker container status ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml ps -a || echo "Could not get container status"
+
+      - name: Save logs as artifacts
+        if: failure()
+        run: |
+          mkdir -p logs
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-api > logs/portal-api.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-api-test > logs/portal-api-test.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-front > logs/portal-front.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-front-test > logs/portal-front-test.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-postgres > logs/portal-postgres.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-minio > logs/portal-minio.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-e2e-tests > logs/portal-e2e-tests.log 2>&1 || true
+
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-logs-${{ github.run_id }}
+          path: logs/
+          retention-days: 30
+
+
 
   run-front-unit-tests:
     needs: build-images-tests

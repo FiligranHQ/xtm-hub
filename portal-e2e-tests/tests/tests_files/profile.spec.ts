@@ -10,7 +10,7 @@ test.describe('Profile edition', () => {
     loginPage = new LoginPage(page);
     profilePage = new ProfilePage(page);
 
-    await loginPage.login();
+    await loginPage.navigateToAndLogin();
     await profilePage.navigateTo();
   });
 

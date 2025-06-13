@@ -31,6 +31,7 @@ export const loadSeoCustomDashboardsByServiceSlug = async (
     })
     .where('ServiceInstance.slug', '=', serviceSlug)
     .where('Document.active', '=', true)
+    .where('Document.type', '=', 'custom_dashboard')
     .orderBy([
       { column: 'Document.updated_at', order: 'desc' },
       { column: 'Document.created_at', order: 'desc' },

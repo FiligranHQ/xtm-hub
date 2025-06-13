@@ -10,7 +10,10 @@ const Page: React.FunctionComponent = async () => {
   return (
     <GuardCapacityComponent
       displayError
-      capacityRestriction={[OrganizationCapabilityName.MANAGE_ACCESS]}>
+      capacityRestriction={[
+        OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
+        OrganizationCapabilityName.MANAGE_ACCESS,
+      ]}>
       <PageLoader />
     </GuardCapacityComponent>
   );

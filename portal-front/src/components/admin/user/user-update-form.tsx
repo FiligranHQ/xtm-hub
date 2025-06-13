@@ -1,3 +1,4 @@
+import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
@@ -5,7 +6,7 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { isEmpty } from '@/lib/utils';
-import { OrganizationCapabilityName } from '@/utils/constant';
+import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -16,7 +17,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   MultiSelectFormField,
   SheetFooter,
   toast,
@@ -40,14 +40,6 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
   const { me } = useContext(PortalContext);
   const t = useTranslations();
   const isAdminPath = useAdminPath();
-
-  const organizationCapabilitiesData = [
-    OrganizationCapabilityName.MANAGE_ACCESS,
-    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
-  ].map((capabilities) => ({
-    label: capabilities,
-    value: capabilities,
-  }));
 
   const userOrg = user.organization_capabilities?.find(
     (org) => org.organization.id === me?.selected_organization_id
@@ -102,42 +94,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full space-y-xl">
-        {isAdminPath && (
-          <>
-            <FormField
-              control={form.control}
-              name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('UserForm.FirstName')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('UserForm.FirstName')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('UserForm.LastName')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('UserForm.LastName')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
+        <CapabilityDescription />
         <FormField
           control={form.control}
           name="capabilities"
@@ -147,7 +104,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
               <FormControl>
                 <MultiSelectFormField
                   noResultString={t('Utils.NotFound')}
-                  options={organizationCapabilitiesData}
+                  options={organizationCapabilitiesMultiSelectOptions}
                   defaultValue={field.value}
                   onValueChange={field.onChange}
                   placeholder={t(

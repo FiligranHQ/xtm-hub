@@ -99,17 +99,19 @@ input AdminAddUserInput {
 
 type Mutation {
   # Management
-  mergeTest(from: ID!, target: ID!): ID! @auth(requires: [MANAGE_ACCESS])
-  addUser(input: AddUserInput!): User @auth(requires: [MANAGE_ACCESS])
+  mergeTest(from: ID!, target: ID!): ID!
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  addUser(input: AddUserInput!): User
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   adminAddUser(input: AdminAddUserInput!): User @auth(requires: [BYPASS])
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
     @auth(requires: [BYPASS])
   editUser(id: ID!, input: EditUserInput!): User!
-    @auth(requires: [MANAGE_ACCESS])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   editMeUser(input: EditMeUserInput!): User! @auth
   changeSelectedOrganization(organization_id: ID!): User @auth
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
-    @auth(requires: [MANAGE_ACCESS])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   resetPassword: Success! @auth
 
   # Login

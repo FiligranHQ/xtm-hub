@@ -8,12 +8,11 @@ import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import { AdminCallout } from '@/components/admin/admin-callout';
 import { TestEnvCallout } from '@/components/admin/test-env-callout';
 import { ContentLayout } from '@/components/content-layout';
-import Intercom from '@/components/external/intercom';
 import HeaderComponent from '@/components/header';
-import Login from '@/components/login/login';
 import Menu from '@/components/menu/menu';
 import { ErrorPage } from '@/components/ui/error-page';
 import { RelayProvider } from '@/relay/RelayProvider';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
@@ -21,6 +20,7 @@ import meLoaderQueryNode, {
 } from '@generated/meLoaderQuery.graphql';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
 
@@ -38,6 +38,8 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
+const should_redirect_error = 'should_redirect_error';
+
 // Component
 const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
   try {
@@ -49,38 +51,35 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
       );
 
     const me = meData.me as unknown as meContext_fragment$data;
+    if (!me) {
+      throw new Error(should_redirect_error);
+    }
 
-    if (me) {
-      return (
-        <RelayProvider>
-          <div className="flex min-h-screen">
-            <PageLoader>
-              <div className="flex flex-col w-full h-screen">
-                <TestEnvCallout />
-                <AdminCallout />
-                <div className="flex flex-row flex-grow overflow-hidden">
-                  <Menu />
-                  <div className="flex flex-col w-full h-full overflow-auto">
-                    <HeaderComponent />
-                    <ContentLayout>{children}</ContentLayout>
-                  </div>
+    return (
+      <RelayProvider>
+        <div className="flex min-h-screen">
+          <PageLoader>
+            <div className="flex flex-col w-full h-screen">
+              <TestEnvCallout />
+              <AdminCallout />
+              <div className="flex flex-row flex-grow overflow-hidden">
+                <Menu />
+                <div className="flex flex-col w-full h-full overflow-auto">
+                  <HeaderComponent />
+                  <ContentLayout>{children}</ContentLayout>
                 </div>
               </div>
-              <Intercom />
-            </PageLoader>
-          </div>
-        </RelayProvider>
-      );
-    } else {
-      return (
-        <RelayProvider>
-          <Login />
-        </RelayProvider>
-      );
-    }
+            </div>
+          </PageLoader>
+        </div>
+      </RelayProvider>
+    );
   } catch (error) {
-    console.error('RootLayout Error:', error);
+    if ((error as Error).message === should_redirect_error) {
+      redirect(`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`);
+    }
 
+    console.error('RootLayout Error:', error);
     return (
       <div className="flex flex-col w-full h-screen">
         <ErrorPage>

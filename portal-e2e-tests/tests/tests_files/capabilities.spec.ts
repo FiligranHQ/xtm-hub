@@ -64,7 +64,7 @@ test.describe('Capabilities', () => {
     documentPage = new DocumentPage(page);
     servicePage = new ServicePage(page);
 
-    await loginPage.login();
+    await loginPage.navigateToAndLogin();
   });
   test('Should add subscription with capabilities', async ({ page }) => {
     await test.step("Add orga's sub + user with manage access", async () => {
@@ -88,7 +88,7 @@ test.describe('Capabilities', () => {
       await loginPage.logout();
     });
     await test.step('Add simple user access + upload capa', async () => {
-      await loginPage.login(TEST_CAPABILITY.adminThalesEmail);
+      await loginPage.navigateToAndLogin(TEST_CAPABILITY.adminThalesEmail);
 
       await documentPage.navigateToVault();
 
@@ -102,7 +102,7 @@ test.describe('Capabilities', () => {
     });
 
     await test.step('Simple user upload new doc', async () => {
-      await loginPage.login(TEST_CAPABILITY.userThalesEmail);
+      await loginPage.navigateToAndLogin(TEST_CAPABILITY.userThalesEmail);
       await documentPage.navigateToVault();
       // Upload new document
       await documentPage.uploadDocument(TEST_FILE.path, TEST_FILE.description);
@@ -117,7 +117,7 @@ test.describe('Capabilities', () => {
     });
 
     await test.step('Admin user change simple user capa to delete', async () => {
-      await loginPage.login(TEST_CAPABILITY.adminThalesEmail);
+      await loginPage.navigateToAndLogin(TEST_CAPABILITY.adminThalesEmail);
       await documentPage.navigateToVault();
       await page.getByRole('link', { name: 'Manage vault' }).click();
 
@@ -128,7 +128,7 @@ test.describe('Capabilities', () => {
       await loginPage.logout();
     });
     await test.step('Simple user can delete document', async () => {
-      await loginPage.login(TEST_CAPABILITY.userThalesEmail);
+      await loginPage.navigateToAndLogin(TEST_CAPABILITY.userThalesEmail);
       await documentPage.navigateToVault();
 
       await documentPage.deleteDocument(TEST_FILE.name);
