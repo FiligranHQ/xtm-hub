@@ -93,7 +93,7 @@ export async function GET(
 
   // Build the login URL from the settings and the curent URL
   const getRedirectionURL = () => {
-    const baseURL = new URL(baseUrlFront);
+    const baseURL = new URL(`${baseUrlFront}/login`);
     const redirectURL = new URL(request.url);
     redirectURL.hostname = baseURL.hostname;
     redirectURL.protocol = baseURL.protocol;
