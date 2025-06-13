@@ -22,16 +22,6 @@ type SubscriptionModel implements Node {
   user_service: [UserService]!
 }
 
-type SubscriptionWithService implements Node {
-  id: ID!
-  start_date: Date
-  end_date: Date
-  status: String
-  organization: Organization!
-  service_instance: ServiceInstance
-  subscription_capability: [SubscriptionCapability]
-}
-
 type SubscriptionEdge {
   cursor: String!
   node: SubscriptionModel!
@@ -53,5 +43,5 @@ type Mutation {
 }
 
 type Query {
-  subscriptionById(subscription_id: ID): SubscriptionWithService @auth
+  subscriptionById(subscription_id: ID): SubscriptionModel @auth
 }
