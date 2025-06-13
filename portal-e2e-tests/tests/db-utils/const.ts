@@ -25,3 +25,15 @@ export const THALES_USER = {
 
   EMAIL: 'user@thales.com',
 };
+
+export const DB_USER = process.env.E2E_BASE_URL
+  ? process.env.POSTGRES_USER
+  : 'portal';
+
+export const DB_NAME = process.env.E2E_BASE_URL
+  ? process.env.POSTGRES_DB
+  : 'test_database';
+
+export const DB_PASSWORD = process.env.E2E_BASE_URL
+  ? process.env.POSTGRES_PASSWORD
+  : 'portal-password';

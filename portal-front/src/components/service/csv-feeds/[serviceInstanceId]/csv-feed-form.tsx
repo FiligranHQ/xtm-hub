@@ -56,6 +56,7 @@ export const CsvFeedForm = ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
+        labels: csvFeed?.labels?.map((label) => label.id),
       }) as CsvFeedFormValues,
     [csvFeed]
   );
@@ -116,11 +117,11 @@ export const CsvFeedForm = ({
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels().map(({ name, id }) => ({
-                      label: name,
-                      value: id,
-                    }))}
-                    value={field.value || []}
+                    options={getLabels()}
+                    keyValue="id"
+                    keyLabel="name"
+                    defaultValue={field.value}
+                    value={field.value}
                     onValueChange={field.onChange}
                     placeholder={t('Service.CsvFeed.Form.LabelsLabel')}
                     variant="inverted"

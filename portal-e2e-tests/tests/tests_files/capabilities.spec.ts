@@ -137,14 +137,4 @@ test.describe('Capabilities', () => {
       ).not.toBeVisible();
     });
   });
-  test.afterEach(async () => {
-    await removeSubscriptionFromService({
-      organizationId: TEST_CAPABILITY.thalesOrgaId,
-      serviceInstanceId: TEST_CAPABILITY.vaultServiceInstanceId,
-    });
-    await deleteServiceCapability(SERVICE_CAPABILITY.idDelete);
-    await deleteServiceCapability(SERVICE_CAPABILITY.idUpload);
-    await removeDocument(TEST_FILE.name);
-    await removeDocument('fileName.pdf');
-  });
 });

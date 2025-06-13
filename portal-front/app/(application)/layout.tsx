@@ -76,7 +76,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
     );
   } catch (error) {
     if ((error as Error).message === should_redirect_error) {
-      redirect(PUBLIC_CYBERSECURITY_SOLUTIONS_PATH);
+      redirect(`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`);
     }
 
     console.error('RootLayout Error:', error);

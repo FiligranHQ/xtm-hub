@@ -1,4 +1,3 @@
-version: "4"
 services:
   portal-postgres:
     container_name: portal-postgres

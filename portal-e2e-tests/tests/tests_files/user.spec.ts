@@ -87,7 +87,4 @@ test.describe('User Management', () => {
       page.getByRole('textbox', { name: 'Last name' })
     ).not.toBeVisible();
   });
-  test.afterAll('Remove newly created user', async () => {
-    await removeUser(TEST_USER.userEmail);
-  });
 });

@@ -24,15 +24,6 @@ test.describe('CSV Feeds', () => {
     await csvFeedPage.fillCsvFeed(CSV_FEED_TEST);
   });
 
-  test.afterEach(async () => {
-    await removeSubscriptionFromService({
-      organizationId: PLATFORM_ORGANIZATION_UUID,
-      serviceInstanceId: CSV_FEED_TEST.csvFeedsServiceInstanceId,
-    });
-    await removeDocument('test.png');
-    await removeDocument('octi_csv_feed.json');
-  });
-
   test('Should add CSV Feed', async ({ page }) => {
     await csvFeedPage.navigateToCsvFeed(CSV_FEED_TEST.shortDescription);
     await expect(
