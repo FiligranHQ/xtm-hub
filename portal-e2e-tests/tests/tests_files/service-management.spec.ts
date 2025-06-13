@@ -89,11 +89,4 @@ test.describe('Service Management', () => {
       ).not.toBeVisible();
     });
   });
-
-  test.afterEach(async ({}) => {
-    await removeSubscriptionFromService({
-      organizationId: TEST_SUBSCRIPTION.organizationId,
-      serviceInstanceId: TEST_SUBSCRIPTION.vaultServiceInstanceId,
-    });
-  });
 });
