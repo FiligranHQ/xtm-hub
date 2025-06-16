@@ -1,6 +1,6 @@
-import { expect, test } from '../../fixtures/baseFixtures';
+import { test } from '../../fixtures/baseFixtures';
 import LoginPage from '../../model/login.pageModel';
-import { CybersecuritySolutionsPage } from '../../model/cybersecurity-solutions.pageModel';
+import { CybersecuritySolutionsPage } from '../../model/cybersecurity-solutions/index.pageModel';
 import { HomePage } from '../../model/home.pageModel';
 
 test.describe('Public redirections', () => {

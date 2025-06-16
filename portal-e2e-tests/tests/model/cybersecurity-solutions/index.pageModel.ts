@@ -1,11 +1,19 @@
 import { Page } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
+import { expect } from '../../fixtures/baseFixtures';
 
 export class CybersecuritySolutionsPage {
   constructor(private page: Page) {}
 
   async clickOnSignIn() {
     await this.page.getByText('SIGN IN').click();
+  }
+
+  async hasService(text: string) {
+    await expect(this.page.getByText(text)).toBeVisible();
+  }
+
+  async clickOnService(text: string) {
+    await this.page.getByText(text).click();
   }
 
   async navigateTo() {

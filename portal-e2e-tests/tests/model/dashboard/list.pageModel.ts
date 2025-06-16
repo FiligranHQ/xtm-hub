@@ -1,5 +1,7 @@
-import { Locator, Page } from '@playwright/test';
-import { waitForDrawerToClose } from './common';
+import { Page } from '@playwright/test';
+import { waitForDrawerToClose } from '../common';
+import { expect } from '../../fixtures/baseFixtures';
+import { OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME } from '../../db-utils/const';
 export const TEST_JSON_FILE = {
   path: './tests/tests_files/assets/octi_dashboard.json',
   name: 'octi_dashboard.json',
@@ -20,9 +22,8 @@ export const TEST_3_IMAGE_FILE = {
   path: './tests/tests_files/assets/test3.png',
   name: 'test3.png',
 };
-export const SERVICE_NAME = 'OpenCTI Custom Dashboards Library';
 
-export default class DashboardPage {
+export default class DashboardListPage {
   constructor(private page: Page) {}
 
   async uploadJsonDocument(filePath: string) {
@@ -39,28 +40,24 @@ export default class DashboardPage {
     await fileInput.setInputFiles(filePath);
   }
 
-  async subscribeDashboardService() {
-    await this.page
-      .locator('li')
-      .filter({ hasText: SERVICE_NAME })
-      .getByRole('button')
-      .click();
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-  }
-
   async addCustomDashboard({
     name,
     shortDescription,
     version,
     description,
+    slug,
   }: {
     name: string;
     shortDescription: string;
     version: string;
     description: string;
+    slug?: string;
   }) {
     await this.page.getByRole('button', { name: 'Add new dashboard' }).click();
     await this.page.getByPlaceholder('Dashboard name').fill(name);
+    await this.page
+      .getByPlaceholder('dashboard-slug')
+      .fill(slug ?? name.replaceAll(' ', '-'));
     await this.page
       .getByPlaceholder('This is some catchphrases to')
       .fill(shortDescription);
@@ -75,15 +72,17 @@ export default class DashboardPage {
     await waitForDrawerToClose(this.page);
   }
 
-  async navigateToDashboard(shortDescription: string) {
+  async navigateToDashboardDetail(shortDescription: string) {
     await this.page.getByRole('link', { name: shortDescription }).click();
   }
 
-  async navigateToPublicCustomDashboard() {
-    await this.page.getByRole('link', { name: SERVICE_NAME }).click();
-  }
-
-  async navigateToPublicDashboardDetail(shortDescription: string) {
-    await this.page.getByRole('link', { name: shortDescription }).click();
+  async assertCurrentPage() {
+    await this.page.waitForURL(/\/service\/custom_dashboards\/.*/);
+    await expect(
+      this.page.getByRole('heading', {
+        level: 1,
+        name: OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME,
+      })
+    ).toBeVisible();
   }
 }

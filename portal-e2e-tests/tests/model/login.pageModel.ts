@@ -47,6 +47,6 @@ export default class LoginPage {
   }
 
   async assertCurrentPage() {
-    await this.page.waitForURL('/login');
+    await this.page.waitForURL(/\/login.*/);
   }
 }
