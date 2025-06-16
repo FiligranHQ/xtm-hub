@@ -1,7 +1,6 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { CSVFeedUpdateSheet } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-update-sheet';
-import DocumentBento from '@/components/ui/document-bento';
 import { IconActions } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
@@ -52,6 +51,7 @@ const CsvFeedCard = ({
       document={csvFeed}
       detailUrl={detailUrl}
       shareLinkUrl={shareLinkUrl}
+      serviceInstance={serviceInstance}
       extraContent={
         (userCanUpdate || userCanDelete) && (
           <IconActions
@@ -71,12 +71,8 @@ const CsvFeedCard = ({
             />
           </IconActions>
         )
-      }>
-      <DocumentBento
-        document={csvFeed}
-        serviceInstanceId={serviceInstance.id}
-      />
-    </ShareableResourceCard>
+      }
+    />
   );
 };
 
