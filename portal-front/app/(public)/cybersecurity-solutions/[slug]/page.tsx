@@ -1,5 +1,4 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import DocumentBento from '@/components/ui/document-bento';
 import ShareableResourceCard from '@/components/ui/shareable-resource-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
@@ -207,12 +206,9 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                   key={document.id}
                   document={document}
                   detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                  shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}>
-                  <DocumentBento
-                    document={document}
-                    serviceInstanceId={serviceInstance.id}
-                  />
-                </ShareableResourceCard>
+                  shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+                  serviceInstance={serviceInstance}
+                />
               );
             })}
           </ul>
