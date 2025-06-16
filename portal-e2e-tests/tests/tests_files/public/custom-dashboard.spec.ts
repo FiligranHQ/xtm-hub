@@ -4,7 +4,9 @@ import { PublicOpenCtiCustomDashboardListPage } from '../../model/cybersecurity-
 import { PublicOpenCtiCustomDashboardDetailPage } from '../../model/cybersecurity-solutions/open-cti-custom-dashboards/detail.pageModel';
 import LoginPage from '../../model/login.pageModel';
 import { HomePage } from '../../model/home.pageModel';
-import DashboardListPage from '../../model/dashboard/list.pageModel';
+import DashboardListPage, {
+  TEST_JSON_FILE,
+} from '../../model/dashboard/list.pageModel';
 import { DashboardDetailPage } from '../../model/dashboard/detail.pageModel';
 import { OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME } from '../../db-utils/const';
 
@@ -74,6 +76,6 @@ test.describe('Public custom dashboard', () => {
 
     await dashboardDetailPage.assertCurrentPage(DASHBOARD_TEST.name);
 
-    await dashboardDetailPage.clickOnDownload();
+    await dashboardDetailPage.assertDownload(TEST_JSON_FILE.name);
   });
 });

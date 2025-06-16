@@ -4,8 +4,11 @@ import { expect } from '../../fixtures/baseFixtures';
 export class DashboardDetailPage {
   constructor(private page: Page) {}
 
-  async clickOnDownload() {
+  async assertDownload(fileName: string) {
+    const downloadPromise = this.page.waitForEvent('download');
     await this.page.getByRole('button', { name: 'Download' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe(fileName);
   }
 
   async assertCurrentPage(dashboardName: string) {
