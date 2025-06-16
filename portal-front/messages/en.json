@@ -20,6 +20,7 @@
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Bypass inside of an organization",
       "MANAGE_ACCESS": "Ability to invite other users to this organization",
+      "MANAGE_OCTI_ENROLLMENT": "Ability to enroll and unenroll OCTI instances",
       "MANAGE_SUBSCRIPTION": "Ability to manage and subscribe the organization to services"
     }
   },

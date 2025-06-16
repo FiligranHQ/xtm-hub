@@ -1,4 +1,6 @@
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { OrganizationCapabilityName } from '@/utils/constant';
+import { isOCTIEnrollmentEnabled } from '@/utils/isFeatureEnabled';
 import {
   Badge,
   Card,
@@ -8,10 +10,11 @@ import {
   CardTitle,
 } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 export const CapabilityDescription: React.FC = () => {
   const t = useTranslations();
+  const { settings } = useContext(SettingsContext);
 
   const buildTranslationKey = (capability: string) =>
     `CapabilityDescription.Capabilities.${capability}`;
@@ -19,7 +22,11 @@ export const CapabilityDescription: React.FC = () => {
   const capabilityList = useMemo(() => {
     return Object.values(OrganizationCapabilityName)
       .filter((capability) => {
-        return t.has(buildTranslationKey(capability));
+        const shouldDisplayCapability =
+          capability != OrganizationCapabilityName.MANAGE_OCTI_ENROLLMENT ||
+          isOCTIEnrollmentEnabled(settings);
+        const hasTranslation = t.has(buildTranslationKey(capability));
+        return shouldDisplayCapability && hasTranslation;
       })
       .map((capability) => {
         return (
@@ -33,7 +40,7 @@ export const CapabilityDescription: React.FC = () => {
           </li>
         );
       });
-  }, [t, OrganizationCapabilityName]);
+  }, [settings, t, OrganizationCapabilityName]);
 
   return (
     <Card>

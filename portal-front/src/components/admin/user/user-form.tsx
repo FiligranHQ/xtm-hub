@@ -1,8 +1,9 @@
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { isEmpty } from '@/lib/utils';
-import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
+import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -17,7 +18,7 @@ import {
   SheetFooter,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { z, ZodSchema } from 'zod';
 
@@ -30,6 +31,8 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
   validationSchema,
 }) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
+
+  const { settings } = useContext(SettingsContext);
 
   const t = useTranslations();
 
@@ -81,7 +84,9 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
               <FormControl>
                 <MultiSelectFormField
                   noResultString={t('Utils.NotFound')}
-                  options={organizationCapabilitiesMultiSelectOptions}
+                  options={buildOrganizationCapabilitiesMultiSelectOptions(
+                    settings
+                  )}
                   defaultValue={field.value}
                   onValueChange={field.onChange}
                   placeholder={t(

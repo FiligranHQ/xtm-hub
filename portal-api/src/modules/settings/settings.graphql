@@ -4,7 +4,13 @@ type PlatformProvider {
   provider: String!
 }
 
+type PlatformFeatureFlag {
+  id: String!
+  enabled: Boolean!
+}
+
 type Settings {
+  platform_feature_flags: [PlatformFeatureFlag!]!
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!

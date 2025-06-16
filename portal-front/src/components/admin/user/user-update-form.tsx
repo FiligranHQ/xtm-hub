@@ -3,10 +3,11 @@ import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-org
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { PortalContext } from '@/components/me/app-portal-context';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { isEmpty } from '@/lib/utils';
-import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
+import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -38,6 +39,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
 }) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const { me } = useContext(PortalContext);
+  const { settings } = useContext(SettingsContext);
   const t = useTranslations();
   const isAdminPath = useAdminPath();
 
@@ -104,7 +106,9 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
               <FormControl>
                 <MultiSelectFormField
                   noResultString={t('Utils.NotFound')}
-                  options={organizationCapabilitiesMultiSelectOptions}
+                  options={buildOrganizationCapabilitiesMultiSelectOptions(
+                    settings
+                  )}
                   defaultValue={field.value}
                   onValueChange={field.onChange}
                   placeholder={t(

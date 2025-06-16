@@ -718,6 +718,12 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export type PlatformFeatureFlag = {
+  __typename?: 'PlatformFeatureFlag';
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+};
+
 export type PlatformProvider = {
   __typename?: 'PlatformProvider';
   name: Scalars['String']['output'];
@@ -1118,6 +1124,7 @@ export type Settings = {
   __typename?: 'Settings';
   base_url_front: Scalars['String']['output'];
   environment: Scalars['String']['output'];
+  platform_feature_flags: Array<PlatformFeatureFlag>;
   platform_providers: Array<PlatformProvider>;
 };
 
@@ -1466,6 +1473,7 @@ export type ResolversTypes = ResolversObject<{
   OrganizationInput: OrganizationInput;
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
+  PlatformFeatureFlag: ResolverTypeWrapper<PlatformFeatureFlag>;
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
   Query: ResolverTypeWrapper<{}>;
   Restriction: Restriction;
@@ -1562,6 +1570,7 @@ export type ResolversParentTypes = ResolversObject<{
   OrganizationEdge: OrganizationEdge;
   OrganizationInput: OrganizationInput;
   PageInfo: PageInfo;
+  PlatformFeatureFlag: PlatformFeatureFlag;
   PlatformProvider: PlatformProvider;
   Query: {};
   RolePortal: RolePortal;
@@ -1927,6 +1936,12 @@ export type PageInfoResolvers<ContextType = PortalContext, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PlatformFeatureFlagResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformFeatureFlag'] = ResolversParentTypes['PlatformFeatureFlag']> = ResolversObject<{
+  enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PlatformProviderResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformProvider'] = ResolversParentTypes['PlatformProvider']> = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   provider?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2065,6 +2080,7 @@ export type ServiceLinkResolvers<ContextType = PortalContext, ParentType extends
 export type SettingsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Settings'] = ResolversParentTypes['Settings']> = ResolversObject<{
   base_url_front?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   environment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  platform_feature_flags?: Resolver<Array<ResolversTypes['PlatformFeatureFlag']>, ParentType, ContextType>;
   platform_providers?: Resolver<Array<ResolversTypes['PlatformProvider']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2242,6 +2258,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
+  PlatformFeatureFlag?: PlatformFeatureFlagResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;

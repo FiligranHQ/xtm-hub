@@ -4,9 +4,10 @@ import {
 } from '@/components/admin/user/autocomplete-organization';
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isDevelopment, isEmpty } from '@/lib/utils';
-import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
+import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
 import {
@@ -22,7 +23,7 @@ import {
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -33,6 +34,7 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
   handleSubmit,
 }) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
+  const { settings } = useContext(SettingsContext);
 
   const t = useTranslations();
   const [userOrganization, setUserOrganization] = useState<
@@ -183,7 +185,9 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
                         <FormControl>
                           <MultiSelectFormField
                             noResultString={t('Utils.NotFound')}
-                            options={organizationCapabilitiesMultiSelectOptions}
+                            options={buildOrganizationCapabilitiesMultiSelectOptions(
+                              settings
+                            )}
                             defaultValue={formField.value}
                             onValueChange={formField.onChange}
                             placeholder={t(

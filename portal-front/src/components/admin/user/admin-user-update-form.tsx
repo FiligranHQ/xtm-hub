@@ -4,10 +4,11 @@ import {
 } from '@/components/admin/user/autocomplete-organization';
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userEditAdminFormSchema } from '@/components/admin/user/user-form.schema';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isEmpty } from '@/lib/utils';
-import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
+import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
@@ -26,7 +27,7 @@ import {
 } from 'filigran-ui';
 import { Label } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -48,6 +49,7 @@ export const AdminUserUpdateForm: FunctionComponent<
   AdminUserUpdateFormProps
 > = ({ user, callback }) => {
   const t = useTranslations();
+  const { settings } = useContext(SettingsContext);
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const [userOrganization, setUserOrganization] = useState<
@@ -222,7 +224,9 @@ export const AdminUserUpdateForm: FunctionComponent<
                         <FormControl>
                           <MultiSelectFormField
                             noResultString={t('Utils.NotFound')}
-                            options={organizationCapabilitiesMultiSelectOptions}
+                            options={buildOrganizationCapabilitiesMultiSelectOptions(
+                              settings
+                            )}
                             defaultValue={formField.value}
                             onValueChange={formField.onChange}
                             placeholder={t(
