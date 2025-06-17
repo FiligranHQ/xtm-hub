@@ -9,11 +9,11 @@ export class CybersecuritySolutionsPage {
   }
 
   async hasService(text: string) {
-    await expect(this.page.getByText(text)).toBeVisible();
+    await expect(this.page.locator('li').getByText(text)).toBeVisible();
   }
 
   async clickOnService(text: string) {
-    await this.page.getByText(text).click();
+    await this.page.locator('a', { hasText: text }).click();
   }
 
   async navigateTo() {

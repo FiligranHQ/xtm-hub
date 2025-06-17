@@ -73,7 +73,7 @@ export default class DashboardListPage {
   }
 
   async navigateToDashboardDetail(shortDescription: string) {
-    await this.page.getByRole('link', { name: shortDescription }).click();
+    await this.page.getByText(shortDescription).click();
   }
 
   async assertCurrentPage() {
