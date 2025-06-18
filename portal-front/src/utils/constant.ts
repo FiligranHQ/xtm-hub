@@ -10,11 +10,15 @@ export const buildOrganizationCapabilitiesMultiSelectOptions = (
   settings?: settingsContext_fragment$data | null
 ) =>
   Object.values(OrganizationCapabilityEnum)
-    .filter(
-      (value) =>
-        value !== OrganizationCapabilityEnum.MANAGE_OCTI_ENROLLMENT ||
-        isOCTIEnrollmentEnabled(settings)
-    )
+    .filter((value) => {
+      const isCapabilityFeatureFlagged =
+        value === OrganizationCapabilityEnum.MANAGE_OCTI_ENROLLMENT;
+      if (!isCapabilityFeatureFlagged) {
+        return false;
+      }
+
+      return isOCTIEnrollmentEnabled(settings);
+    })
     .map((value) => ({
       label: value.replaceAll('_', ' '),
       value,
