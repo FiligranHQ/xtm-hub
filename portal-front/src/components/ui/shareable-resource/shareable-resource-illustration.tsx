@@ -5,6 +5,7 @@ import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Carousel, CarouselItem } from 'filigran-ui/clients';
 import { AspectRatio } from 'filigran-ui/servers';
 import Image from 'next/image';
+import Link from 'next/link';
 import ShareableResourceBento from './shareable-resource-bento';
 
 interface ShareableResourceCardIllustrationProps {
@@ -63,10 +64,12 @@ const ShareableResourceCardIllustration = ({
             <ShareableResourceCarousel />
           )) || (
           <div className="relative h-full p-s">
-            <ShareableResourceBento
-              document={document}
-              serviceInstanceId={serviceInstance.id}
-            />
+            <Link href={detailUrl}>
+              <ShareableResourceBento
+                document={document}
+                serviceInstanceId={serviceInstance.id}
+              />
+            </Link>
           </div>
         )}
       </AspectRatio>
