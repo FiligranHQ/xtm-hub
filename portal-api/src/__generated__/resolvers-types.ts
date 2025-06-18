@@ -678,15 +678,22 @@ export type Organization = Node & {
 
 export type OrganizationCapabilities = Node & {
   __typename?: 'OrganizationCapabilities';
-  capabilities?: Maybe<Array<Scalars['String']['output']>>;
+  capabilities?: Maybe<Array<OrganizationCapability>>;
   id: Scalars['ID']['output'];
   organization: Organization;
 };
 
 export type OrganizationCapabilitiesInput = {
-  capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
+  capabilities?: InputMaybe<Array<OrganizationCapability>>;
   organization_id: Scalars['ID']['input'];
 };
+
+export enum OrganizationCapability {
+  AdministrateOrganization = 'ADMINISTRATE_ORGANIZATION',
+  ManageAccess = 'MANAGE_ACCESS',
+  ManageOctiEnrollment = 'MANAGE_OCTI_ENROLLMENT',
+  ManageSubscription = 'MANAGE_SUBSCRIPTION'
+}
 
 export type OrganizationConnection = {
   __typename?: 'OrganizationConnection';
@@ -1468,6 +1475,7 @@ export type ResolversTypes = ResolversObject<{
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationCapabilities: ResolverTypeWrapper<OrganizationCapabilities>;
   OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
+  OrganizationCapability: OrganizationCapability;
   OrganizationConnection: ResolverTypeWrapper<OrganizationConnection>;
   OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
   OrganizationInput: OrganizationInput;
@@ -1909,7 +1917,7 @@ export type OrganizationResolvers<ContextType = PortalContext, ParentType extend
 }>;
 
 export type OrganizationCapabilitiesResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationCapabilities'] = ResolversParentTypes['OrganizationCapabilities']> = ResolversObject<{
-  capabilities?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  capabilities?: Resolver<Maybe<Array<ResolversTypes['OrganizationCapability']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

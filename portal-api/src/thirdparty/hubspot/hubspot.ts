@@ -1,5 +1,5 @@
 import config from 'config';
-import { Restriction } from '../../__generated__/resolvers-types';
+import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import { UserId } from '../../model/kanel/public/User';
 import { loadUserBy } from '../../modules/users/users.domain';
 import { logApp } from '../../utils/app-logger.util';
@@ -16,7 +16,7 @@ export const hubspotLoginHook = async (userId: string) => {
         return (
           orga_capa.organization.personal_space === false &&
           orga_capa.capabilities.some((capa) =>
-            [Restriction.AdministrateOrganization].includes(capa)
+            [OrganizationCapability.AdministrateOrganization].includes(capa)
           )
         );
       });

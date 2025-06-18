@@ -2,7 +2,7 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import useAdminByPass from '@/hooks/useAdminByPass';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
-import { OrganizationCapabilityName } from '@/utils/constant';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { SettingsIcon } from 'filigran-icon';
 import {
   Accordion,
@@ -113,8 +113,8 @@ const adminLinksData = (t: UseTranslationsProps) => [
     href: '/admin/user',
     label: t('MenuLinks.Security'),
     restriction: [
-      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-      OrganizationCapabilityName.MANAGE_ACCESS,
+      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+      OrganizationCapabilityEnum.MANAGE_ACCESS,
     ],
   },
   {

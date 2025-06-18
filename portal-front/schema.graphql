@@ -671,7 +671,7 @@ type Capability implements Node {
 type OrganizationCapabilities implements Node {
   id: ID!
   organization: Organization!
-  capabilities: [String!]
+  capabilities: [OrganizationCapability!]
 }
 
 type User implements Node {
@@ -724,7 +724,7 @@ input EditMeUserInput {
 
 input OrganizationCapabilitiesInput {
   organization_id: ID!
-  capabilities: [String!]
+  capabilities: [OrganizationCapability!]
 }
 
 input AddUserInput {
@@ -765,6 +765,13 @@ enum Restriction {
   FRT_ACCESS_BILLING
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
+}
+
+enum OrganizationCapability {
+  ADMINISTRATE_ORGANIZATION
+  MANAGE_ACCESS
+  MANAGE_SUBSCRIPTION
+  MANAGE_OCTI_ENROLLMENT
 }
 
 enum ServiceRestriction {

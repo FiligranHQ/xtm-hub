@@ -15,7 +15,7 @@ type Capability implements Node {
 type OrganizationCapabilities implements Node {
   id: ID!
   organization: Organization!
-  capabilities: [String!]
+  capabilities: [OrganizationCapability!]
 }
 
 type User implements Node {
@@ -82,8 +82,9 @@ input EditMeUserInput {
 
 input OrganizationCapabilitiesInput {
   organization_id: ID!
-  capabilities: [String!]
+  capabilities: [OrganizationCapability!]
 }
+
 input AddUserInput {
   email: String!
   password: String

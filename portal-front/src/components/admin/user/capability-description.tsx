@@ -1,6 +1,6 @@
 import { SettingsContext } from '@/components/settings/env-portal-context';
-import { OrganizationCapabilityName } from '@/utils/constant';
 import { isOCTIEnrollmentEnabled } from '@/utils/isFeatureEnabled';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import {
   Badge,
   Card,
@@ -20,10 +20,10 @@ export const CapabilityDescription: React.FC = () => {
     `CapabilityDescription.Capabilities.${capability}`;
 
   const capabilityList = useMemo(() => {
-    return Object.values(OrganizationCapabilityName)
+    return Object.values(OrganizationCapabilityEnum)
       .filter((capability) => {
         const shouldDisplayCapability =
-          capability != OrganizationCapabilityName.MANAGE_OCTI_ENROLLMENT ||
+          capability != OrganizationCapabilityEnum.MANAGE_OCTI_ENROLLMENT ||
           isOCTIEnrollmentEnabled(settings);
         const hasTranslation = t.has(buildTranslationKey(capability));
         return shouldDisplayCapability && hasTranslation;
@@ -40,7 +40,7 @@ export const CapabilityDescription: React.FC = () => {
           </li>
         );
       });
-  }, [settings, t, OrganizationCapabilityName]);
+  }, [settings, t, OrganizationCapabilityEnum]);
 
   return (
     <Card>

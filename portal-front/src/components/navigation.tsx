@@ -3,7 +3,7 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { LinkMenu } from '@/components/menu/menu';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { OrganizationSwitcher } from '@/components/menu/organization-switcher';
-import { OrganizationCapabilityName } from '@/utils/constant';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { HomeIcon } from 'filigran-icon';
 import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -20,9 +20,9 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   const canManageUser =
     hasOrganizationCapability &&
     (hasOrganizationCapability(
-      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
     ) ||
-      hasOrganizationCapability(OrganizationCapabilityName.MANAGE_ACCESS));
+      hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
 
   return (
     <nav className="flex-1 flex-shrink-0 pt-s">

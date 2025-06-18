@@ -95,10 +95,10 @@ const initializeBuiltInAdministrator = async () => {
   await initAdminUser();
 };
 
-const initializeFeatureFlags = () => {
+const logEnabledFeatureFlags = () => {
   if (portalConfig.enabled_features.length > 0) {
     logApp.info(
-      `[FEATURE-FLAG] Activated features still in development: ${portalConfig.enabled_features}`
+      `[FEATURE-FLAG] Enabled features still in development: ${portalConfig.enabled_features}`
     );
   }
 };
@@ -116,7 +116,7 @@ const initializeDefaultServices = async () => {
 };
 
 const platformInit = async () => {
-  initializeFeatureFlags();
+  logEnabledFeatureFlags();
   await initializeDefaultServices();
   await initializeBuiltInAdministrator();
 };
