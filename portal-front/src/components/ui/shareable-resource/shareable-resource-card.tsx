@@ -2,7 +2,11 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
+import {
+  ServiceSlug,
+  ShareableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -54,6 +58,7 @@ const ShareableResourceCard = ({
           <ShareLinkButton
             documentId={document.id}
             url={shareLinkUrl}
+            tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
           />
           {extraContent}
         </div>

@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Avatar, Label } from 'filigran-ui/clients';
 
 import { roundToNearest } from '@/lib/utils';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { useTranslations } from 'next-intl';
 
 // Component interface

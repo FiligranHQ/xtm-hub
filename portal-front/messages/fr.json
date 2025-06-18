@@ -238,7 +238,8 @@
       "Actions": {
         "Added": "{name} a été ajouté",
         "Deleted": "{name} a été supprimé",
-        "Updated": "{name} a été modifié"
+        "Updated": "{name} a été modifié",
+        "Share": "Partager le CSV Feed"
       },
       "Form": {
         "NameLabel": "Nom",
@@ -264,7 +265,8 @@
       "Actions": {
         "Added": "Le custom dashboard {name} a été ajouté avec succès",
         "Deleted": "Le custom dashboard {name} a été supprimé avec succès",
-        "Updated": "Le custom dashboard {name} a été modifié avec succès"
+        "Updated": "Le custom dashboard {name} a été modifié avec succès",
+        "Share": "Partager le tableau de bord"
       },
       "AddDashboard": "Nouveau tableau de bord",
       "Details": {
@@ -375,6 +377,10 @@
       "UpdateDocument": "Mise à jour du document",
       "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault"
+    },
+    "ShareableResources": {
+      "Share": "Partager",
+      "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager."
     }
   },
   "ServiceActions": {

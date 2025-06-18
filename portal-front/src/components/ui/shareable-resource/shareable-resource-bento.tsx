@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
 

@@ -3,10 +3,8 @@ import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import {
-  fetchAllDocuments,
-  ServiceSlug,
-} from '@/utils/shareable-resources/shareable-resources.utils';
+import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
+import { fetchAllDocuments } from '@/utils/shareable-resources/shareable-resources.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
