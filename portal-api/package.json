@@ -96,7 +96,7 @@
     "concurrently": "9.1.2",
     "esbuild": "0.25.5",
     "eslint": "9.x",
-    "eslint-config-prettier": "10.0.1",
+    "eslint-config-prettier": "10.1.5",
     "globals": "15.9.0",
     "husky": "9.1.6",
     "kanel": "3.9.1",
