@@ -1,5 +1,5 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import ShareableResourceCard from '@/components/ui/shareable-resource-card';
+import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';

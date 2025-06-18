@@ -5,7 +5,7 @@ import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Carousel, CarouselItem } from 'filigran-ui/clients';
 import { AspectRatio } from 'filigran-ui/servers';
 import Image from 'next/image';
-import DocumentBento from './document-bento';
+import ShareableResourceBento from './shareable-resource-bento';
 
 interface ShareableResourceCardIllustrationProps {
   document: ShareableResource;
@@ -22,7 +22,7 @@ const ShareableResourceCardIllustration = ({
 }: ShareableResourceCardIllustrationProps) => {
   const handleClickCarousel = () => (window.location.href = detailUrl);
 
-  const DocumentCarousel = () => (
+  const ShareableResourceCarousel = () => (
     <Carousel
       scrollButton="hover"
       dotButton="hover"
@@ -30,9 +30,10 @@ const ShareableResourceCardIllustration = ({
       <CarouselItem
         className="cursor-pointer"
         onClick={handleClickCarousel}>
-        <DocumentBento
+        <ShareableResourceBento
           document={document}
           serviceInstanceId={serviceInstance.id}
+          className="-mx-s"
         />
       </CarouselItem>
       {document.children_documents!.map((doc) => (
@@ -58,11 +59,15 @@ const ShareableResourceCardIllustration = ({
         ratio={16 / 9}
         className={'z-[10]'}>
         {(document.children_documents &&
-          document.children_documents.length > 1 && <DocumentCarousel />) || (
-          <DocumentBento
-            document={document}
-            serviceInstanceId={serviceInstance.id}
-          />
+          document.children_documents.length > 1 && (
+            <ShareableResourceCarousel />
+          )) || (
+          <div className="relative h-full p-s">
+            <ShareableResourceBento
+              document={document}
+              serviceInstanceId={serviceInstance.id}
+            />
+          </div>
         )}
       </AspectRatio>
     </div>

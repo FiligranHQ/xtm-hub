@@ -2,7 +2,7 @@
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { CSVFeedUpdateSheet } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-update-sheet';
 import { IconActions } from '@/components/ui/icon-actions';
-import ShareableResourceCard from '@/components/ui/shareable-resource-card';
+import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
