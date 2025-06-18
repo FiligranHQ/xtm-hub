@@ -31,7 +31,7 @@ type User implements Node {
   organization_capabilities: [OrganizationCapabilities!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
-  selected_org_capabilities: [String!]
+  selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
 }
 
@@ -82,7 +82,7 @@ input EditMeUserInput {
 
 input OrganizationCapabilitiesInput {
   organization_id: ID!
-  capabilities: [OrganizationCapability!]
+  capabilities: [String!]
 }
 
 input AddUserInput {

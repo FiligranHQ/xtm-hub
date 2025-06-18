@@ -8,10 +8,7 @@ export const SettingsContext_fragment = graphql`
     }
     environment
     base_url_front
-    platform_feature_flags {
-      id
-      enabled
-    }
+    platform_feature_flags
   }
 `;
 
@@ -24,10 +21,7 @@ export const SettingsQuery = graphql`
         type
       }
       base_url_front
-      platform_feature_flags {
-        id
-        enabled
-      }
+      platform_feature_flags
     }
   }
 `;

@@ -507,13 +507,8 @@ type PlatformProvider {
   provider: String!
 }
 
-type PlatformFeatureFlag {
-  id: String!
-  enabled: Boolean!
-}
-
 type Settings {
-  platform_feature_flags: [PlatformFeatureFlag!]!
+  platform_feature_flags: [String!]!
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
@@ -687,7 +682,7 @@ type User implements Node {
   organization_capabilities: [OrganizationCapabilities!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
-  selected_org_capabilities: [String!]
+  selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
 }
 
@@ -724,7 +719,7 @@ input EditMeUserInput {
 
 input OrganizationCapabilitiesInput {
   organization_id: ID!
-  capabilities: [OrganizationCapability!]
+  capabilities: [String!]
 }
 
 input AddUserInput {

@@ -15,7 +15,7 @@ export interface UserInfo {
 
 export interface UserWithOrganizations extends User {
   organizations: Organization[];
-  selected_org_capabilities: string[];
+  selected_org_capabilities: OrganizationCapability[];
 }
 
 export interface UserWithOrganizationsAndRole extends UserWithOrganizations {

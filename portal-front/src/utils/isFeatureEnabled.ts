@@ -6,12 +6,9 @@ export const isOCTIEnrollmentEnabled = (
 
 export const isFeatureEnabled = (
   settings: settingsContext_fragment$data,
-  id: string
+  requiredFlag: string
 ) => {
-  const flags = settings.platform_feature_flags ?? [];
-  // config can target all FF available with special FF id "*"
-  if (flags.find((f) => f.id === '*' && f.enabled)) {
-    return true;
-  }
-  return flags.some((flag) => flag.id === id && flag.enabled);
+  return (settings.platform_feature_flags ?? []).some((flag) =>
+    ['*', requiredFlag].includes(flag)
+  );
 };
