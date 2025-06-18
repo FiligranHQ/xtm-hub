@@ -2,7 +2,7 @@
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import DashboardUpdate from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-update';
 import { IconActions } from '@/components/ui/icon-actions';
-import ShareableResourceCard from '@/components/ui/shareable-resource-card';
+import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
