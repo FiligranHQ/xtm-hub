@@ -17,7 +17,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { ReactNode, useContext } from 'react';
 // Component interface
 interface ShareableResourceSlugProps {

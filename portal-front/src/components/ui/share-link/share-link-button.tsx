@@ -2,7 +2,13 @@
 import { updateShareNumber } from '@/components/ui/share-link/share-link-actions';
 import usePublicPath from '@/hooks/usePublicPath';
 import { ShareIcon } from 'filigran-icon';
-import { toast } from 'filigran-ui';
+import {
+  toast,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
@@ -12,6 +18,7 @@ import { useCopyToClipboard } from 'usehooks-ts';
 export interface ShareLinkButtonProps {
   url: string;
   documentId: string;
+  tooltipText?: string;
 }
 
 export const shareLinkMutation = graphql`
@@ -75,6 +82,7 @@ type ShareLinkCommonProps = ShareLinkButtonProps & {
 export const ShareLinkCommonButton: FunctionComponent<ShareLinkCommonProps> = ({
   url,
   onClickAction,
+  tooltipText,
 }) => {
   const t = useTranslations();
   const [_, copy] = useCopyToClipboard();
@@ -85,7 +93,7 @@ export const ShareLinkCommonButton: FunctionComponent<ShareLinkCommonProps> = ({
       .then(() => {
         onClickAction();
         toast({
-          title: t('Utils.Copied'),
+          title: t('Service.ShareableResources.Copied'),
         });
       })
       .catch((error) => {
@@ -96,12 +104,27 @@ export const ShareLinkCommonButton: FunctionComponent<ShareLinkCommonProps> = ({
       });
   };
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={handleCopy}
-      className="z-[2] text-primary">
-      <ShareIcon className="h-4 w-4" />
-    </Button>
+    <TooltipProvider>
+      <Tooltip
+        delayDuration={50}
+        disableHoverableContent={true}>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleCopy}
+            className="z-[2] text-primary">
+            <ShareIcon className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>
+            {tooltipText
+              ? t(tooltipText)
+              : t('Service.ShareableResources.Share')}
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };

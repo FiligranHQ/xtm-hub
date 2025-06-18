@@ -1,17 +1,20 @@
+import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
 
-const DocumentBento = ({
+const ShareableResourceBento = ({
   document,
   serviceInstanceId,
+  className,
 }: {
   document: ShareableResource;
   serviceInstanceId: string;
+  className?: string;
 }) => {
   return (
-    <div className="flex h-full -mx-s gap-xs bg-page-background">
+    <div className={cn('flex h-full gap-xs bg-page-background', className)}>
       <div className="flex flex-col flex-1 gap-xs text-xs">
         <div className="flex flex-1 justify-center rounded border gap-2 dark:text-white items-center">
           <div className="size-6">
@@ -49,4 +52,4 @@ const DocumentBento = ({
   );
 };
 
-export default DocumentBento;
+export default ShareableResourceBento;

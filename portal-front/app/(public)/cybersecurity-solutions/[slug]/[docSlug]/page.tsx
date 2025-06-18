@@ -6,11 +6,14 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
+import {
+  SeoResource,
+  ServiceSlug,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import {
   fetchSingleDocument,
   getServiceInfo,
-  SeoResource,
-  ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -242,6 +245,7 @@ const Page = async ({
               <ShareLinkButton
                 documentId={document.id}
                 url={`${pageUrl}`}
+                tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
               />
             }
             <Button

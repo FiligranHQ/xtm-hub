@@ -3,7 +3,7 @@ import {
   SeoCsvFeed,
   SeoCustomDashboard,
   ServiceSlug,
-} from '@/utils/shareable-resources/shareable-resources.utils';
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';

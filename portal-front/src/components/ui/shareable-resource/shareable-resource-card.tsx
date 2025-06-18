@@ -1,22 +1,29 @@
-'use client';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
+import {
+  ServiceSlug,
+  ShareableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { Badge } from 'filigran-ui';
-import { AspectRatio } from 'filigran-ui/servers';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { Badge } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import ShareableResourceCardIllustration from './shareable-resource-illustration';
 
 interface ShareableResourceCardProps {
   document: ShareableResource;
   detailUrl: string;
   shareLinkUrl: string;
-  children: ReactNode;
   extraContent?: ReactNode;
+  serviceInstance:
+    | NonNullable<serviceByIdQuery$data['serviceInstanceById']>
+    | seoServiceInstanceFragment$data;
 }
 
 const isCustomDashboard = (
@@ -29,36 +36,34 @@ const ShareableResourceCard = ({
   document,
   detailUrl,
   shareLinkUrl,
-  children,
   extraContent,
+  serviceInstance,
 }: ShareableResourceCardProps) => {
   const t = useTranslations();
 
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover">
-      <div>
-        <AspectRatio
-          ratio={16 / 9}
-          className={'z-[10]'}>
-          {children}
-        </AspectRatio>
-      </div>
+      <ShareableResourceCardIllustration
+        document={document}
+        detailUrl={detailUrl}
+        serviceInstance={serviceInstance}
+      />
       <div className="flex flex-col flex-grow p-l space-y-s">
         <div className="flex items-center justify-between">
           {document?.labels && (
             <BadgeOverflowCounter
               badges={document?.labels as BadgeOverflow[]}
-              className="z-[2]"
             />
           )}
           <ShareLinkButton
             documentId={document.id}
             url={shareLinkUrl}
+            tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
           />
           {extraContent}
         </div>
         <Link
-          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0"
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0 after:z-[1]"
           href={detailUrl}>
           <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
             {document?.short_description}
