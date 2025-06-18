@@ -49,7 +49,6 @@ const ShareableResourceCard = ({
           {document?.labels && (
             <BadgeOverflowCounter
               badges={document?.labels as BadgeOverflow[]}
-              className="z-[2]"
             />
           )}
           <ShareLinkButton
@@ -59,7 +58,7 @@ const ShareableResourceCard = ({
           {extraContent}
         </div>
         <Link
-          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0"
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0 after:z-[1]"
           href={detailUrl}>
           <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
             {document?.short_description}
