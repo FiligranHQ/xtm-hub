@@ -9,6 +9,7 @@ import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   fetchSingleDocument,
   getServiceInfo,
+  localeMap,
   SeoResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.utils';
@@ -242,6 +243,7 @@ const Page = async ({
               <ShareLinkButton
                 documentId={document.id}
                 url={`${pageUrl}`}
+                tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
               />
             }
             <Button

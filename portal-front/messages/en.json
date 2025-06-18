@@ -238,7 +238,8 @@
       "Actions": {
         "Added": "The CSV {name} has been added successfully",
         "Deleted": "The CSV {name} has been deleted successfully",
-        "Updated": "The CSV {name} has been modified successfully"
+        "Updated": "The CSV {name} has been modified successfully",
+        "Share": "Share CSV Feed"
       },
       "Form": {
         "NameLabel": "Name",
@@ -264,7 +265,8 @@
       "Actions": {
         "Added": "The custom dashboard {name} has been added successfully",
         "Deleted": "The custom dashboard {name} has been deleted successfully",
-        "Updated": "The custom dashboard {name} has been modified successfully"
+        "Updated": "The custom dashboard {name} has been modified successfully",
+        "Share": "Share Custom Dashboard"
       },
       "AddDashboard": "Add new dashboard",
       "Details": {
@@ -375,6 +377,10 @@
       "UpdateDocument": "Update document",
       "Vault": "Partner Vault",
       "VaultTitle": "Vault Administration"
+    },
+    "ShareableResources": {
+      "Share": "Share",
+      "Copied": "URL copied! You can now paste and share it."
     }
   },
   "ServiceActions": {

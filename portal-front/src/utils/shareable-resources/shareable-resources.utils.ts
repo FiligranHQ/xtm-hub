@@ -128,6 +128,11 @@ function makeSingleQueryMapEntry<TReturn>({
   return { query, cast };
 }
 
+export const localeMap: Record<ServiceSlug, string> = {
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'CsvFeed',
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'CustomDashboards',
+};
+
 const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
   [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeQueryMapEntry<SeoCsvFeed>({
     query: SeoCsvFeedsByServiceSlugQuery,
