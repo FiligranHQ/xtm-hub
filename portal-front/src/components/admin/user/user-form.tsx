@@ -1,9 +1,8 @@
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
-import { SettingsContext } from '@/components/settings/env-portal-context';
+import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { isEmpty } from '@/lib/utils';
-import { buildOrganizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -14,11 +13,10 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  MultiSelectFormField,
   SheetFooter,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext } from 'react';
+import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { z, ZodSchema } from 'zod';
 
@@ -31,8 +29,6 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
   validationSchema,
 }) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
-
-  const { settings } = useContext(SettingsContext);
 
   const t = useTranslations();
 
@@ -82,17 +78,9 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
             <FormItem>
               <FormLabel>{t('UserForm.OrganizationCapabilities')}</FormLabel>
               <FormControl>
-                <MultiSelectFormField
-                  noResultString={t('Utils.NotFound')}
-                  options={buildOrganizationCapabilitiesMultiSelectOptions(
-                    settings
-                  )}
-                  defaultValue={field.value}
-                  onValueChange={field.onChange}
-                  placeholder={t(
-                    'UserForm.OrganizationsCapabilitiesPlaceholder'
-                  )}
-                  variant="inverted"
+                <CapabilityMultiSelect
+                  value={field.value}
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />

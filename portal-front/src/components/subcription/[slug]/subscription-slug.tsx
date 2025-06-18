@@ -22,7 +22,6 @@ import { FunctionComponent, useContext, useMemo, useState } from 'react';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActionContext, IconActions } from '@/components/ui/icon-actions';
-import { RESTRICTION } from '@/utils/constant';
 import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
 import { useMutation } from 'react-relay';
 
@@ -36,6 +35,7 @@ import {
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
@@ -203,7 +203,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           return (
             <div className="flex items-center justify-end">
               {(me?.capabilities?.some(
-                (capa) => capa?.name === RESTRICTION.CAPABILITY_BYPASS
+                (capa) => capa?.name === RestrictionEnum.BYPASS
               ) ||
                 canManageService()) && (
                 <IconActions
