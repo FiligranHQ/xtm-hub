@@ -6992,10 +6992,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:15.9.0":
-  version: 15.9.0
-  resolution: "globals@npm:15.9.0"
-  checksum: 32c4470ffcc26db3ddbc579ddf968b74c26462d1a268039980c2fa2e107090fd442a7a7445d953dc4ee874f68846e713066c5a8e63d146fd9349cd1fc5a6f63d
+"globals@npm:15.15.0":
+  version: 15.15.0
+  resolution: "globals@npm:15.15.0"
+  checksum: a2a92199a112db00562a2f85eeef2a7e3943e171f7f7d9b17dfa9231e35fd612588f3c199d1509ab1757273467e413b08c80424cf6e399e96acdaf93deb3ee88
   languageName: node
   linkType: hard
 
@@ -9196,7 +9196,7 @@ __metadata:
     express-prom-bundle: 8.0.0
     express-session: 1.18.0
     glob: 11.0.0
-    globals: 15.9.0
+    globals: 15.15.0
     graphql: 16.9.0
     graphql-relay: 0.10.2
     graphql-sse: 2.5.3
