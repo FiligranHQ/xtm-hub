@@ -2,11 +2,11 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
-  localeMap,
   ServiceSlug,
   ShareableResource,
-} from '@/utils/shareable-resources/shareable-resources.utils';
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';

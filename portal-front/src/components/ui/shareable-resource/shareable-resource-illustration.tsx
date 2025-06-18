@@ -1,5 +1,5 @@
 'use client';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.utils';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Carousel, CarouselItem } from 'filigran-ui/clients';
