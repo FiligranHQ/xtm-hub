@@ -42,6 +42,7 @@ import {
   Upload,
 } from './document.helper';
 
+import { toGlobalId } from 'graphql-relay/node/node';
 import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
 import DocumentMetadata, {
   DocumentMetadataKey,
@@ -590,4 +591,63 @@ export const loadDocumentById = async <T extends Document>(
     });
   }
   return docQuery.first();
+};
+
+export const loadSeoDocumentBySlug = async (type: string, slug: string) => {
+  const doc = await dbUnsecure<Document>('Document')
+    .select('Document.*')
+    .where('Document.slug', '=', slug)
+    .where('Document.active', '=', true)
+    .where('Document.type', '=', type)
+    .whereNotExists(function () {
+      this.select('*')
+        .from('Document_Children')
+        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
+    })
+    .first();
+  return doc;
+};
+
+export const loadSeoDocumentsByServiceSlug = async (
+  type: string,
+  serviceSlug: string
+) => {
+  const dashboards = await dbUnsecure<Document>('Document')
+    .select('Document.*')
+    .leftJoin(
+      'ServiceInstance',
+      'Document.service_instance_id',
+      'ServiceInstance.id'
+    )
+    .whereNotExists(function () {
+      this.select('*')
+        .from('Document_Children')
+        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
+    })
+    .where('ServiceInstance.slug', '=', serviceSlug)
+    .where('Document.active', '=', true)
+    .where('Document.type', '=', type)
+    .orderBy([
+      { column: 'Document.updated_at', order: 'desc' },
+      { column: 'Document.created_at', order: 'desc' },
+    ]);
+  return dashboards;
+};
+
+export const loadImagesByDocumentId = async (documentId: string) => {
+  const images = await dbUnsecure<Document>('Document')
+    .select(['Document.id', 'Document.file_name'])
+    .join(
+      'Document_Children',
+      'Document.id',
+      '=',
+      'Document_Children.child_document_id'
+    )
+    .where('Document_Children.parent_document_id', '=', documentId)
+    .where('Document.mime_type', 'like', 'image/%');
+
+  for (const image of images) {
+    image.id = toGlobalId('Document', image.id);
+  }
+  return images;
 };

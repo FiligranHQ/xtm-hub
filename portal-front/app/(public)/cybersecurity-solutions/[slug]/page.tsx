@@ -33,7 +33,7 @@ const getPageData = cache(async (slug: string) => {
 
   const serviceInstance = serviceResponse.data
     .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
-
+  console.log(serviceInstance);
   if (!serviceInstance) {
     notFound();
   }

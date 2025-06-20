@@ -15,16 +15,17 @@ import {
   getLabels,
   getUploader,
   getUploaderOrganization,
+  loadDocumentById,
   loadParentDocumentsByServiceInstance,
+  loadSeoDocumentBySlug,
+  loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
+  CSV_FEED_DOCUMENT_TYPE,
   CSV_FEED_METADATA,
   CsvFeed,
-  loadCsvFeedById,
-  loadSeoCsvFeedBySlug,
-  loadSeoCsvFeedsByServiceSlug,
 } from './csv-feeds.domain';
 
 const resolvers: Resolvers = {
@@ -107,10 +108,11 @@ const resolvers: Resolvers = {
         input
       ),
     csvFeed: async (_, { id }, context) =>
-      loadCsvFeedById(context, extractId<DocumentId>(id)),
+      loadDocumentById(context, extractId<DocumentId>(id)),
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
-      loadSeoCsvFeedsByServiceSlug(serviceSlug),
-    seoCsvFeedBySlug: async (_, { slug }) => loadSeoCsvFeedBySlug(slug),
+      loadSeoDocumentsByServiceSlug(CSV_FEED_DOCUMENT_TYPE, serviceSlug),
+    seoCsvFeedBySlug: async (_, { slug }) =>
+      loadSeoDocumentBySlug(CSV_FEED_DOCUMENT_TYPE, slug),
   },
 };
 
