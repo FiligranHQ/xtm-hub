@@ -19,12 +19,15 @@ import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
+import { Badge, Button, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, Suspense, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 const OrganizationList: FunctionComponent = () => {
   const t = useTranslations();
+  const [editOrganization, setEditOrganization] = useState<
+    organizationItem_fragment$data | undefined
+  >(undefined);
   const columns: ColumnDef<organizationItem_fragment$data>[] = [
     {
       accessorKey: 'name',
@@ -68,7 +71,13 @@ const OrganizationList: FunctionComponent = () => {
                 <span className="sr-only">{t('Utils.OpenMenu')}</span>
               </>
             }>
-            <EditOrganization organization={row.original} />
+            <Button
+              variant="ghost"
+              className="w-full justify-start normal-case"
+              onClick={() => setEditOrganization(row.original)}
+              aria-label={t('OrganizationForm.EditOrganization')}>
+              {t('Utils.Update')}
+            </Button>
             <DeleteOrganization
               connectionId={organizationData.organizations.__id}
               organization={row.original}
@@ -159,61 +168,71 @@ const OrganizationList: FunctionComponent = () => {
   );
 
   return (
-    <Suspense
-      fallback={
+    <>
+      <Suspense
+        fallback={
+          <DataTable
+            i18nKey={i18nKey(t)}
+            data={[]}
+            columns={columns}
+            isLoading={true}
+          />
+        }>
         <DataTable
-          i18nKey={i18nKey(t)}
-          data={[]}
           columns={columns}
-          isLoading={true}
-        />
-      }>
-      <DataTable
-        columns={columns}
-        data={organizationDataTable}
-        toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
-            <label
-              htmlFor="organization-email"
-              className="sr-only">
-              {t('OrganizationActions.SearchOrganizationWithEmail')}
-            </label>
-            <SearchInput
-              id="organization-email"
-              containerClass="w-full sm:w-1/3"
-              placeholder={t('OrganizationActions.SearchOrganizationWithEmail')}
-              onChange={debounceHandleInput}
-            />
-            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
-              <DataTableHeadBarOptions />
-              <CreateOrganization
-                connectionId={organizationData.organizations.__id}
+          data={organizationDataTable}
+          toolbar={
+            <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+              <label
+                htmlFor="organization-email"
+                className="sr-only">
+                {t('OrganizationActions.SearchOrganizationWithEmail')}
+              </label>
+              <SearchInput
+                id="organization-email"
+                containerClass="w-full sm:w-1/3"
+                placeholder={t(
+                  'OrganizationActions.SearchOrganizationWithEmail'
+                )}
+                onChange={debounceHandleInput}
               />
+              <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+                <DataTableHeadBarOptions />
+                <CreateOrganization
+                  connectionId={organizationData.organizations.__id}
+                />
+              </div>
             </div>
-          </div>
-        }
-        onResetTable={resetAll}
-        tableOptions={{
-          onSortingChange: onSortingChange,
-          onPaginationChange: onPaginationChange,
-          manualSorting: true,
-          manualPagination: true,
-          onColumnOrderChange: setColumnOrder,
-          onColumnVisibilityChange: setColumnVisibility,
-          rowCount: organizationData.organizations.totalCount,
-        }}
-        i18nKey={i18nKey(t)}
-        tableState={{
-          sorting: mapToSortingTableValue(orderBy, orderMode),
-          pagination,
-          columnOrder,
-          columnVisibility,
-          columnPinning: {
-            right: ['actions'],
-          },
-        }}
-      />
-    </Suspense>
+          }
+          onResetTable={resetAll}
+          tableOptions={{
+            onSortingChange: onSortingChange,
+            onPaginationChange: onPaginationChange,
+            manualSorting: true,
+            manualPagination: true,
+            onColumnOrderChange: setColumnOrder,
+            onColumnVisibilityChange: setColumnVisibility,
+            rowCount: organizationData.organizations.totalCount,
+          }}
+          i18nKey={i18nKey(t)}
+          tableState={{
+            sorting: mapToSortingTableValue(orderBy, orderMode),
+            pagination,
+            columnOrder,
+            columnVisibility,
+            columnPinning: {
+              right: ['actions'],
+            },
+          }}
+        />
+      </Suspense>
+      {editOrganization && (
+        <EditOrganization
+          key={editOrganization.id}
+          organization={editOrganization}
+        />
+      )}
+    </>
   );
 };
 export default OrganizationList;
