@@ -18,6 +18,7 @@ export const fileListCheck = (file: FileList | undefined) =>
 export const isFile = (file: unknown): file is File => file instanceof File;
 
 export type FormImagesValues = Array<File | ExistingFile>;
+
 export const splitExistingAndNewImages = (
   images: FormImagesValues
 ): [string[], File[]] =>
