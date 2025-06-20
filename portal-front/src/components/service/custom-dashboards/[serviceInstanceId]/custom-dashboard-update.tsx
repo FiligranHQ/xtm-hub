@@ -129,7 +129,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           }),
         });
         router.push(
-          `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
+          `/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
         );
       },
     });

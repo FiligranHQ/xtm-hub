@@ -27,7 +27,7 @@ const CsvFeedButtons = ({
           asChild
           variant="outline">
           <Link
-            href={`/manage/service/${serviceInstance.id}/subscription/${firstCsvFeedSubscriptionId}`}>
+            href={`/app/manage/service/${serviceInstance.id}/subscription/${firstCsvFeedSubscriptionId}`}>
             {t('Service.Capabilities.ManageAccessName')}
           </Link>
         </Button>

@@ -7,7 +7,7 @@ import * as React from 'react';
 const breadcrumbValue = [
   {
     label: 'MenuLinks.Home',
-    href: '/',
+    href: '/app',
   },
   {
     label: 'MenuLinks.Profile',

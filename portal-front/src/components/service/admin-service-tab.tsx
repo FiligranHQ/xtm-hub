@@ -49,7 +49,7 @@ const AdminServiceTab = ({ serviceData }: AdminServiceTabProps) => {
                 </>
               }>
               {row.original.service_definition?.identifier !== 'link' && (
-                <IconActionsLink href={`/admin/service/${row.id}`}>
+                <IconActionsLink href={`/app/admin/service/${row.id}`}>
                   {t('Service.GoToAdminLabel')}
                 </IconActionsLink>
               )}

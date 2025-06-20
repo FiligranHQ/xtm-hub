@@ -57,7 +57,7 @@ export const getServiceInstanceUrl = (
   global_secondary_item_id?: string
 ) =>
   new URL(
-    `/service/${identifier}/${global_service_instance_id}${global_secondary_item_id ? `/${global_secondary_item_id}` : ''}`,
+    `/app/service/${identifier}/${global_service_instance_id}${global_secondary_item_id ? `/${global_secondary_item_id}` : ''}`,
     base_url
   );
 

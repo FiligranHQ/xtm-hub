@@ -15,7 +15,7 @@ const Page: FunctionComponent<PageProps> = async ({ params }) => {
     return <PageLoader id={id} />;
   } catch (_) {
     // If error at user loading, redirect to the list
-    redirect('/');
+    redirect('/app');
   }
 };
 

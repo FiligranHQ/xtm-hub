@@ -255,7 +255,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
-      href: '/',
+      href: '/app',
     },
     {
       label: queryDataService.serviceInstanceById!.name,
@@ -306,7 +306,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                   asChild
                   variant="outline">
                   <Link
-                    href={`/manage/service/${documentData[0]?.service_instance?.id}/subscription/${documentData[0]?.subscription?.id}`}>
+                    href={`/app/manage/service/${documentData[0]?.service_instance?.id}/subscription/${documentData[0]?.subscription?.id}`}>
                     {t('Service.Vault.ManageVault')}
                   </Link>
                 </Button>

@@ -87,11 +87,11 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     );
     if (queryDataService && queryDataService.serviceInstanceById) {
       breadcrumbValue = [
-        { label: 'MenuLinks.Home', href: '/' },
+        { label: 'MenuLinks.Home', href: '/app' },
         {
           label: `${queryDataService.serviceInstanceById.name}`,
           original: true,
-          href: `/service/${queryDataService.serviceInstanceById.service_definition!.identifier}/${queryDataService.serviceInstanceById.id}`,
+          href: `/app/service/${queryDataService.serviceInstanceById.service_definition!.identifier}/${queryDataService.serviceInstanceById.id}`,
         },
         {
           label: t('Service.Management.ManageUsers'),
@@ -100,12 +100,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     }
   } else {
     breadcrumbValue = [
-      { label: 'MenuLinks.Home', href: '/' },
+      { label: 'MenuLinks.Home', href: '/app' },
       { label: 'MenuLinks.Settings' },
-      { label: 'MenuLinks.Services', href: '/admin/service' },
+      { label: 'MenuLinks.Services', href: '/app/admin/service' },
       {
         label: queryDataSubscription.subscriptionById!.service_instance!.name,
-        href: `/admin/service/${queryDataSubscription.subscriptionById?.service_instance?.id}`,
+        href: `/app/admin/service/${queryDataSubscription.subscriptionById?.service_instance?.id}`,
         original: true,
       },
       {

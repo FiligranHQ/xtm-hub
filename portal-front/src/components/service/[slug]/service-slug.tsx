@@ -60,11 +60,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const breadcrumbValue: BreadcrumbNavLink[] = [
     ...(isAdminPath
       ? [
-          { label: 'MenuLinks.Home', href: '/' },
+          { label: 'MenuLinks.Home', href: '/app' },
           { label: 'MenuLinks.Settings' },
-          { label: 'MenuLinks.Services', href: '/admin/service' },
+          { label: 'MenuLinks.Services', href: '/app/admin/service' },
         ]
-      : [{ label: 'MenuLinks.Home', href: '/' }]),
+      : [{ label: 'MenuLinks.Home', href: '/app' }]),
     {
       label: queryData.serviceInstanceByIdWithSubscriptions!.name,
       original: true,
@@ -113,7 +113,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                   <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
               }>
-              <IconActionsLink href={`/admin/service/${row.id}/subscription`}>
+              <IconActionsLink
+                href={`/app/admin/service/${row.id}/subscription`}>
                 {t('Service.Management.ManageUsers')}
               </IconActionsLink>
               <AlertDialogComponent

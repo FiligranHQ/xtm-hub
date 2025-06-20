@@ -50,7 +50,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
         store.invalidateStore();
       },
       onCompleted: () => {
-        router.push('/');
+        router.push('/app');
       },
     });
     setOpenPopover(false);

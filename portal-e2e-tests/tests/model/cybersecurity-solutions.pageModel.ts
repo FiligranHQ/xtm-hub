@@ -9,11 +9,11 @@ export class CybersecuritySolutionsPage {
   }
 
   async navigateTo() {
-    await this.page.goto('/cybersecurity-solutions');
+    await this.page.goto('/');
   }
 
   async assertCurrentPage() {
-    await this.page.waitForURL('/cybersecurity-solutions');
+    await this.page.waitForURL('/');
     await expect(
       this.page.getByText('Discover resources and expertise')
     ).toBeVisible();

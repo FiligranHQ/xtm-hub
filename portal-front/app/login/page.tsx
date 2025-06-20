@@ -35,9 +35,8 @@ const Page: React.FunctionComponent = async () => {
     );
 
   const me = meData.me as unknown as meContext_fragment$data;
-
   if (me) {
-    redirect('/');
+    redirect('/app');
   }
 
   return (

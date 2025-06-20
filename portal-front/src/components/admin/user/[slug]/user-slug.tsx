@@ -83,14 +83,14 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
 
   if (!user) {
     // If user not found, redirect to admin list
-    router.replace('/admin/user');
+    router.replace('/app/admin/user');
   } else {
     const breadcrumbValue = [
       {
         label: 'MenuLinks.Settings',
       },
       {
-        href: '/admin/user',
+        href: '/app/admin/user',
         label: 'MenuLinks.Security',
       },
       {

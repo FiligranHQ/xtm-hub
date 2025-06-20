@@ -31,7 +31,7 @@ const ServiceInstanceCard: React.FunctionComponent<
   const serviceHref =
     isLinkService && serviceInstance.links?.[0]?.url
       ? serviceInstance.links?.[0]?.url
-      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`}`;
+      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/app/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`}`;
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>

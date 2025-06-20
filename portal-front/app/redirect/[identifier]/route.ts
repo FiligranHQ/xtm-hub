@@ -104,7 +104,7 @@ export async function GET(
 
   try {
     // The URL to highlight the service in the homepage
-    const highlightUrl = new URL(`/?h=${identifier}`, baseUrlFront);
+    const highlightUrl = new URL(`/app?h=${identifier}`, baseUrlFront);
 
     // 1. Load the user
     // ----------------

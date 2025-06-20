@@ -24,7 +24,7 @@ export const useGoToServiceLink = () => {
         break;
       default:
         router.push(
-          `/service/${serviceInstance.service_definition.identifier}/${id}`
+          `/app/service/${serviceInstance.service_definition.identifier}/${id}`
         );
         break;
     }

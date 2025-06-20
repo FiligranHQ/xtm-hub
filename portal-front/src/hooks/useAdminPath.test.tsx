@@ -19,7 +19,7 @@ describe('useAdminPath', () => {
     'Should return $expected if user has $userCapa and path includes $path',
     async ({ expected, userCapa, path }) => {
       useAdminByPass.mockReturnValue(userCapa === 'BYPASS');
-      usePathname.mockReturnValue(`/${path}/dashboard`);
+      usePathname.mockReturnValue(`/app/${path}/dashboard`);
 
       const { result } = renderHook(() => useAdminPath());
 

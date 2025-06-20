@@ -32,7 +32,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
         <li>
           <LinkMenu
             open={open}
-            href={'/'}
+            href={'/app'}
             icon={HomeIcon}
             text={t('MenuLinks.Home')}
           />
@@ -41,7 +41,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
           <li>
             <LinkMenu
               open={open}
-              href={'/manage/user'}
+              href={'/app/manage/user'}
               icon={UsersIcon}
               text={t('MenuLinks.Users')}
             />

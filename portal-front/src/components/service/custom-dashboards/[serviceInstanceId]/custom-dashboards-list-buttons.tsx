@@ -26,7 +26,7 @@ const CustomDashboardsListButtons = ({
           asChild
           variant="outline">
           <Link
-            href={`/manage/service/${serviceInstance.id}/subscription/${subscriptionId}`}>
+            href={`/app/manage/service/${serviceInstance.id}/subscription/${subscriptionId}`}>
             {t('Service.Capabilities.ManageAccessName')}
           </Link>
         </Button>

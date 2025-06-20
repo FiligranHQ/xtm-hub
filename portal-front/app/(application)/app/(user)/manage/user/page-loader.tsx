@@ -10,7 +10,7 @@ import { useContext } from 'react';
 const breadcrumbValue = [
   {
     label: 'MenuLinks.Home',
-    href: '/',
+    href: '/app',
   },
   {
     label: 'MenuLinks.Users',

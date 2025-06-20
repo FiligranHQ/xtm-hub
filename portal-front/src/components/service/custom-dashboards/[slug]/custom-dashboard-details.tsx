@@ -33,11 +33,11 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
-      href: '/',
+      href: '/app',
     },
     {
       label: serviceInstance.name,
-      href: `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
+      href: `/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       original: true,
     },
     {

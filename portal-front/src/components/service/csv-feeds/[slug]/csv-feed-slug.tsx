@@ -36,11 +36,11 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
-      href: '/',
+      href: '/app',
     },
     {
       label: serviceInstance.name,
-      href: `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
+      href: `/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       original: true,
     },
     {
@@ -51,7 +51,7 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
 
   const onDelete = () => {
     router.push(
-      `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
+      `/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
     );
     toast({
       title: t('Utils.Success'),
