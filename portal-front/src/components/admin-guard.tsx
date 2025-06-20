@@ -38,6 +38,7 @@ const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   } else if (!authorized) {
     return null;
   }
+
   return <>{children}</>;
 };
 
