@@ -13,6 +13,7 @@ export const SERVICE_DIRECTIVE_NAME = 'service_capa';
 export type ServiceCapabilityArgs = {
   service_instance_id?: string;
   subscription_id?: string;
+  serviceInstanceId?: string;
 };
 
 type AuthFn = (user: UserLoadUserBy) => boolean;
@@ -128,13 +129,20 @@ const hasServiceCapability = async (
     return true;
   }
 
-  if (!args.service_instance_id && !args.subscription_id) {
+  if (
+    !args.serviceInstanceId &&
+    !args.service_instance_id &&
+    !args.subscription_id
+  ) {
     throw new Error(
-      `Service_id or subscription_id is undefined, please provide one of them to use this directive`
+      `serviceInstanceId or service_instance_id or subscription_id is undefined, please provide one of them to use this directive`
     );
   }
+  const mapArgs = args.serviceInstanceId
+    ? { service_instance_id: args.serviceInstanceId }
+    : args;
 
-  return await getCapabilityUser(user, args).then(
+  return await getCapabilityUser(user, mapArgs).then(
     (capabilityUser) =>
       capabilityUser?.capabilities?.some((capability) =>
         capabilitiesRequired.includes(capability)
