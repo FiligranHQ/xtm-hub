@@ -1,21 +1,3 @@
-type SeoObasScenario {
-  id: ID!
-  uploader: User
-  name: String
-  slug: String!
-  short_description: String
-  description: String
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  product_version: String
-  children_documents: [Document!]!
-  labels: [Label]
-  active: Boolean!
-}
-
 input CreateObasScenarioInput {
   name: String!
   slug: String!
@@ -60,7 +42,7 @@ type ObasScenario implements Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [Document!]
+  children_documents: [ShareableResourceImage!]
   # Specific fields for obas scenarios
   product_version: String
 }
@@ -77,8 +59,8 @@ type ObasScenarioConnection {
 }
 
 type Query {
-  seoObasScenariosByServiceSlug(serviceSlug: String): [SeoObasScenario]
-  seoObasScenarioBySlug(slug: String): SeoObasScenario
+  seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
+  seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(
     first: Int!
     after: ID

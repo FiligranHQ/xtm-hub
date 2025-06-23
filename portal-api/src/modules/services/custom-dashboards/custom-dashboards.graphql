@@ -1,8 +1,3 @@
-type CustomDashboardImage {
-  id: ID!
-  file_name: String!
-}
-
 type SeoCustomDashboard {
   id: ID!
   uploader: User
@@ -16,7 +11,7 @@ type SeoCustomDashboard {
   download_number: Int
   share_number: Int
   product_version: String
-  children_documents: [CustomDashboardImage!]!
+  children_documents: [ShareableResourceImage!]!
   labels: [Label]
   active: Boolean!
 }
@@ -65,7 +60,7 @@ type CustomDashboard implements Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [CustomDashboardImage!]
+  children_documents: [ShareableResourceImage!]
   # Specific fields for custom dashboards
   product_version: String
 }

@@ -285,7 +285,12 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
     });
   }
 
-  const dashboard = await updateDocument<T>(context, id, data, metadataKeys);
+  const updatedDocument = await updateDocument<T>(
+    context,
+    id,
+    data,
+    metadataKeys
+  );
 
   // Delete the images that are not in the existingImages array
   const childIds = await db<DocumentChildren>(context, 'Document_Children')
@@ -314,7 +319,7 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
     )
   );
 
-  return dashboard;
+  return updatedDocument;
 };
 
 export const incrementDocumentsDownloads = async (
@@ -593,8 +598,12 @@ export const loadDocumentById = async <T extends Document>(
   return docQuery.first();
 };
 
-export const loadSeoDocumentBySlug = async (type: string, slug: string) => {
-  const doc = await dbUnsecure<Document>('Document')
+export const loadSeoDocumentBySlug = async (
+  type: string,
+  slug: string,
+  include_metadata: string[] = []
+) => {
+  const docQuery = dbUnsecure<Document>('Document')
     .select('Document.*')
     .where('Document.slug', '=', slug)
     .where('Document.active', '=', true)
@@ -604,15 +613,32 @@ export const loadSeoDocumentBySlug = async (type: string, slug: string) => {
         .from('Document_Children')
         .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
     })
-    .first();
-  return doc;
+    .groupBy(['Document.id']);
+
+  if (Array.isArray(include_metadata)) {
+    include_metadata.forEach((metaKey, index) => {
+      const metaAlias = `meta${index}`;
+      docQuery
+        .select(`${metaAlias}.value as ${metaKey}`)
+        .leftJoin(
+          { [metaAlias]: 'Document_Metadata' },
+          `${metaAlias}.document_id`,
+          'Document.id'
+        )
+        .andWhere(`${metaAlias}.key`, '=', metaKey)
+        .groupBy([metaKey]);
+    });
+  }
+
+  return await docQuery.first();
 };
 
 export const loadSeoDocumentsByServiceSlug = async (
   type: string,
-  serviceSlug: string
+  serviceSlug: string,
+  include_metadata: string[] = []
 ) => {
-  const dashboards = await dbUnsecure<Document>('Document')
+  const loadDocumentsQuery = dbUnsecure<Document>('Document')
     .select('Document.*')
     .leftJoin(
       'ServiceInstance',
@@ -630,8 +656,25 @@ export const loadSeoDocumentsByServiceSlug = async (
     .orderBy([
       { column: 'Document.updated_at', order: 'desc' },
       { column: 'Document.created_at', order: 'desc' },
-    ]);
-  return dashboards;
+    ])
+    .groupBy(['Document.id']);
+
+  if (Array.isArray(include_metadata)) {
+    include_metadata.forEach((metaKey, index) => {
+      const metaAlias = `meta${index}`;
+      loadDocumentsQuery
+        .select(`${metaAlias}.value as ${metaKey}`)
+        .leftJoin(
+          { [metaAlias]: 'Document_Metadata' },
+          `${metaAlias}.document_id`,
+          'Document.id'
+        )
+        .andWhere(`${metaAlias}.key`, '=', metaKey)
+        .groupBy([metaKey]);
+    });
+  }
+
+  return await loadDocumentsQuery;
 };
 
 export const loadImagesByDocumentId = async (documentId: string) => {

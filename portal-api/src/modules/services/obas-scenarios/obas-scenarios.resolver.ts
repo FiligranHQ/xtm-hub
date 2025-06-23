@@ -56,7 +56,8 @@ const resolvers: Resolvers = {
     seoObasScenariosByServiceSlug: async (_, { serviceSlug }, context) => {
       const docs = await loadSeoDocumentsByServiceSlug(
         OBAS_SCENARIO_DOCUMENT_TYPE,
-        serviceSlug
+        serviceSlug,
+        OBAS_SCENARIO_METADATA
       );
       for (const doc of docs) {
         doc.children_documents = await loadImagesByDocumentId(doc.id);
@@ -70,7 +71,11 @@ const resolvers: Resolvers = {
       return docs;
     },
     seoObasScenarioBySlug: async (_, { slug }) => {
-      return loadSeoDocumentBySlug(OBAS_SCENARIO_DOCUMENT_TYPE, slug);
+      return loadSeoDocumentBySlug(
+        OBAS_SCENARIO_DOCUMENT_TYPE,
+        slug,
+        OBAS_SCENARIO_METADATA
+      );
     },
     obasScenarios: async (_, input, context) => {
       return loadParentDocumentsByServiceInstance<ObasScenarioConnection>(

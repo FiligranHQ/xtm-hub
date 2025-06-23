@@ -56,7 +56,8 @@ const resolvers: Resolvers = {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
       const dashboards = await loadSeoDocumentsByServiceSlug(
         CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-        serviceSlug
+        serviceSlug,
+        CUSTOM_DASHBOARD_METADATA
       );
       for (const dashboard of dashboards) {
         dashboard.children_documents = await loadImagesByDocumentId(
@@ -72,7 +73,11 @@ const resolvers: Resolvers = {
       return dashboards;
     },
     seoCustomDashboardBySlug: async (_, { slug }) => {
-      return loadSeoDocumentBySlug(CUSTOM_DASHBOARD_DOCUMENT_TYPE, slug);
+      return loadSeoDocumentBySlug(
+        CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        slug,
+        CUSTOM_DASHBOARD_METADATA
+      );
     },
     customDashboards: async (_, input, context) => {
       return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(

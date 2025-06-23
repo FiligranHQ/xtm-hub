@@ -1,3 +1,8 @@
+type ShareableResourceImage {
+  id: ID!
+  file_name: String!
+}
+
 enum DocumentOrdering {
   file_name
   description

@@ -110,9 +110,13 @@ const resolvers: Resolvers = {
     csvFeed: async (_, { id }, context) =>
       loadDocumentById(context, extractId<DocumentId>(id)),
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
-      loadSeoDocumentsByServiceSlug(CSV_FEED_DOCUMENT_TYPE, serviceSlug),
+      loadSeoDocumentsByServiceSlug(
+        CSV_FEED_DOCUMENT_TYPE,
+        serviceSlug,
+        CSV_FEED_METADATA
+      ),
     seoCsvFeedBySlug: async (_, { slug }) =>
-      loadSeoDocumentBySlug(CSV_FEED_DOCUMENT_TYPE, slug),
+      loadSeoDocumentBySlug(CSV_FEED_DOCUMENT_TYPE, slug, CSV_FEED_METADATA),
   },
 };
 
