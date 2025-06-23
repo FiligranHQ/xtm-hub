@@ -42,7 +42,7 @@ import {
   Upload,
 } from './document.helper';
 
-import { toGlobalId } from 'graphql-relay/node/node';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
 import DocumentMetadata, {
   DocumentMetadataKey,
