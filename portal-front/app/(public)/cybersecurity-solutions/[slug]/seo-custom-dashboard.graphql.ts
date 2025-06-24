@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
 export const SeoServiceInstanceFragment = graphql`
-  fragment seoCustomDashboardFragment on SeoCustomDashboard {
+  fragment seoCustomDashboardFragment on CustomDashboard {
     id
     name
     description

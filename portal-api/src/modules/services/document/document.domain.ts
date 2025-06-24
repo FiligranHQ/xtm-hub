@@ -690,7 +690,7 @@ export const loadImagesByDocumentId = async (documentId: string) => {
     .where('Document.mime_type', 'like', 'image/%');
 
   for (const image of images) {
-    image.id = toGlobalId('Document', image.id);
+    image.id = toGlobalId('ShareableResourceImage', image.id);
   }
   return images;
 };

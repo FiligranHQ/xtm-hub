@@ -11,11 +11,11 @@ import { loadSubscription } from '../../subcription/subscription.domain';
 import {
   createDocumentWithChildren,
   deleteDocument,
-  getChildrenDocuments,
   getLabels,
   getUploader,
   getUploaderOrganization,
   loadDocumentById,
+  loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentBySlug,
   loadSeoDocumentsByServiceSlug,
@@ -89,8 +89,8 @@ const resolvers: Resolvers = {
   },
   CsvFeed: {
     labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
-    children_documents: ({ id }, _, context) =>
-      getChildrenDocuments(context, id, { unsecured: true }),
+    children_documents: ({ id }) =>
+      loadImagesByDocumentId(id),
     uploader: ({ id }, _, context) =>
       getUploader(context, id, { unsecured: true }),
     uploader_organization: ({ id }, _, context) =>

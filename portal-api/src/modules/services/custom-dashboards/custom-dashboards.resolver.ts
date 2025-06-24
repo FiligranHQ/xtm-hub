@@ -29,17 +29,6 @@ import {
 } from './custom-dashboards.domain';
 
 const resolvers: Resolvers = {
-  SeoCustomDashboard: {
-    children_documents: ({ id }) => loadImagesByDocumentId(id),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, {
-        unsecured: true,
-      }),
-    labels: ({ id }, _, context) =>
-      getLabels(context, id, {
-        unsecured: true,
-      }),
-  },
   CustomDashboard: {
     labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByDocumentId(id),

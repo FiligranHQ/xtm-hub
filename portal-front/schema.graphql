@@ -100,8 +100,8 @@ type Query {
   csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
   seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
   seoCsvFeedBySlug(slug: String): CsvFeed
-  seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
-  seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
+  seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
+  seoCustomDashboardBySlug(slug: String): CustomDashboard
   customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
   documentExists(documentName: String, service_instance_id: String): Boolean
@@ -195,24 +195,6 @@ type CsvFeedConnection {
   totalCount: Int!
   edges: [CsvFeedEdge!]!
   pageInfo: PageInfo!
-}
-
-type SeoCustomDashboard {
-  id: ID!
-  uploader: User
-  name: String
-  slug: String!
-  short_description: String
-  description: String
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  product_version: String
-  children_documents: [ShareableResourceImage!]!
-  labels: [Label]
-  active: Boolean!
 }
 
 input CreateCustomDashboardInput {

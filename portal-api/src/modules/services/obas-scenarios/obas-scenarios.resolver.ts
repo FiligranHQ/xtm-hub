@@ -53,22 +53,12 @@ const resolvers: Resolvers = {
       loadSubscription(context, service_instance_id),
   },
   Query: {
-    seoObasScenariosByServiceSlug: async (_, { serviceSlug }, context) => {
-      const docs = await loadSeoDocumentsByServiceSlug(
+    seoObasScenariosByServiceSlug: async (_, { serviceSlug }) => {
+      return await loadSeoDocumentsByServiceSlug(
         OBAS_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
         OBAS_SCENARIO_METADATA
       );
-      for (const doc of docs) {
-        doc.children_documents = await loadImagesByDocumentId(doc.id);
-        doc.uploader = await getUploader(context, doc.id, {
-          unsecured: true,
-        });
-        doc.labels = await getLabels(context, doc.id, {
-          unsecured: true,
-        });
-      }
-      return docs;
     },
     seoObasScenarioBySlug: async (_, { slug }) => {
       return loadSeoDocumentBySlug(
