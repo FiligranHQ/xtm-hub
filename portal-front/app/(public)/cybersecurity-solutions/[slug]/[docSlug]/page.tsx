@@ -11,10 +11,8 @@ import {
   SeoResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import {
-  fetchSingleDocument,
-  getServiceInfo,
-} from '@/utils/shareable-resources/shareable-resources.utils';
+import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,

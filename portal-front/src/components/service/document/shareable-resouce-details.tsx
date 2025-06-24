@@ -6,6 +6,7 @@ import { Avatar, Label } from 'filigran-ui/clients';
 
 import { roundToNearest } from '@/lib/utils';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { useTranslations } from 'next-intl';
 
 // Component interface
@@ -35,7 +36,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       )}
       <div>
         <Label className="block pb-s">
-          {t('Service.CustomDashboards.Details.Author')}
+          {t('Service.ShareableResources.Details.Author')}
         </Label>
 
         <div className="flex items-center gap-s">
@@ -50,7 +51,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       </div>
       <div>
         <Label className="block pb-s">
-          {t('Service.CustomDashboards.Details.LastUpdatedAt')}
+          {t('Service.ShareableResources.Details.LastUpdatedAt')}
         </Label>
         <span>
           {formatDate(
@@ -59,16 +60,23 @@ const ShareableResourceDetails: React.FunctionComponent<
           )}
         </span>
       </div>
-
+      {docHasMetadata(documentData, 'product_version') && (
+        <div>
+          <Label className="block pb-s">
+            {t('Service.ShareableResources.Details.ProductVersion')}
+          </Label>
+          <span>{documentData.product_version}</span>
+        </div>
+      )}
       <div>
         <Label className="block pb-s">
-          {t('Service.CustomDashboards.Details.Downloads')}
+          {t('Service.ShareableResources.Details.Downloads')}
         </Label>
         <span>{roundToNearest(downloadNumber)}</span>
       </div>
       <div>
         <Label className="block pb-s">
-          {t('Service.CustomDashboards.Details.Shares')}
+          {t('Service.ShareableResources.Details.Shares')}
         </Label>
         <span>{roundToNearest(documentData.share_number)}</span>
       </div>
