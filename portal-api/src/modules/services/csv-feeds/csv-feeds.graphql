@@ -19,7 +19,7 @@ type CsvFeed implements Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [Document!]
+  children_documents: [ShareableResourceImage!]
   remover_id: ID
 }
 

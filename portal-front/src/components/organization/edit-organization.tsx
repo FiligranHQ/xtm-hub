@@ -4,7 +4,7 @@ import { OrganizationEditMutation } from '@/components/organization/organization
 import { IconActionContext } from '@/components/ui/icon-actions';
 import { organizationEditMutation } from '@generated/organizationEditMutation.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
-import { Button, useToast } from 'filigran-ui';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -22,12 +22,12 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
-  const [openSheet, setOpenSheet] = useState<boolean | null>(null);
+  const [openSheet, setOpenSheet] = useState<boolean | null>(!!organization);
   const { setMenuOpen } = useContext(IconActionContext);
 
   useEffect(() => {
     if (!openSheet && openSheet !== null) setMenuOpen(false);
-  }, [openSheet]);
+  }, [openSheet, setMenuOpen]);
 
   const handleSubmit = (values: z.infer<typeof organizationFormSchema>) => {
     commitOrganizationEditionMutation({
@@ -60,14 +60,6 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
     <SheetWithPreventingDialog
       open={openSheet ?? false}
       setOpen={setOpenSheet}
-      trigger={
-        <Button
-          variant="ghost"
-          className="w-full justify-start normal-case"
-          aria-label={t('OrganizationForm.EditOrganization')}>
-          {t('Utils.Update')}
-        </Button>
-      }
       title={t('OrganizationForm.EditOrganization')}>
       <OrganizationForm
         organization={organization}

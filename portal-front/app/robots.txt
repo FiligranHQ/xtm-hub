@@ -2,6 +2,8 @@ User-agent: *
 Sitemap: https://hub.filigran.io/sitemap.xml
 Disallow: /
 Allow: /$
+Allow: /sitemap.xml$
+Allow: /login$
 Allow: /cybersecurity-solutions
 Allow: /cybersecurity-solutions/
 Allow: /cybersecurity-solutions/*

@@ -146,23 +146,32 @@ const resolvers: Resolvers = {
       return deletedServiceInstance;
     },
     addServicePicture: async (_, payload, context) => {
-      const document = await uploadNewFile(context, payload.document);
-      const update = payload.isLogo
-        ? {
-            logo_document_id: document.id,
-          }
-        : {
-            illustration_document_id: document.id,
-          };
-      const [updatedServiceInstance] = await db<ServiceInstance>(
-        context,
-        'ServiceInstance'
-      )
-        .where({ id: extractId<ServiceInstanceId>(payload.serviceInstanceId) })
-        .update(update)
-        .returning('*');
-      await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
-      return updatedServiceInstance;
+      const trx = await dbTx();
+      try {
+        const document = await uploadNewFile(context, payload.document, trx);
+        const update = payload.isLogo
+          ? {
+              logo_document_id: document.id,
+            }
+          : {
+              illustration_document_id: document.id,
+            };
+        const [updatedServiceInstance] = await db<ServiceInstance>(
+          context,
+          'ServiceInstance'
+        )
+          .where({ id: extractId<ServiceInstanceId>(payload.serviceInstanceId) })
+          .update(update)
+          .returning('*')
+          .transacting(trx);
+        await trx.commit();
+        await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+        return updatedServiceInstance;
+      } catch (error) {
+        await trx.rollback();
+        throw error;
+      }
+
     },
     editServiceInstance: async (_, { id, name }, context) => {
       const { id: databaseId } = fromGlobalId(id) as {

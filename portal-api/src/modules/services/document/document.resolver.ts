@@ -33,6 +33,7 @@ const resolvers: Resolvers = {
       { document, parentDocumentId, ...payload },
       context
     ) => {
+      const trx = await dbTx();
       try {
         await waitForUploads(document);
         const { minioName, fileName, mimeType } = await createFileInMinIO(
@@ -48,22 +49,27 @@ const resolvers: Resolvers = {
           parent_document_id: parentDocumentId
             ? extractId<DocumentId>(parentDocumentId)
             : null,
-        });
+        }, [], trx);
+        await trx.commit();
         return addedDocument;
       } catch (error) {
+        await trx.rollback();
         console.error('Error while adding document:', error);
         throw UnknownError('INSERT_DOCUMENT_ERROR', { detail: error });
       }
     },
     editDocument: async (_, { documentId, input }, context) => {
+      const trx = await dbTx();
       try {
         const document = await updateDocument(
           context,
           extractId<DocumentId>(documentId),
-          input
+          input, [], trx
         );
+        await trx.commit();
         return document;
       } catch (error) {
+        await trx.rollback();
         throw UnknownError('UPDATE_DOCUMENT_ERROR', { detail: error });
       }
     },
