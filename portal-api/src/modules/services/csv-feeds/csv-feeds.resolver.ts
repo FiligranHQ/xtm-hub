@@ -31,15 +31,20 @@ import {
 const resolvers: Resolvers = {
   Mutation: {
     createCsvFeed: async (_, { input, document }, context) => {
+      const trx = await dbTx();
       try {
-        return await createDocumentWithChildren<CsvFeed>(
+        const doc = await createDocumentWithChildren<CsvFeed>(
           'csv_feed',
           input,
           document,
           CSV_FEED_METADATA,
-          context
+          context,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
             detail: error,
@@ -49,15 +54,20 @@ const resolvers: Resolvers = {
       }
     },
     updateCsvFeed: async (_, input, context) => {
+      const trx = await dbTx();
       try {
-        return await updateDocumentWithChildren<CsvFeed>(
+        const doc = await updateDocumentWithChildren<CsvFeed>(
           'csv_feed',
           extractId<DocumentId>(input.documentId),
           input,
           CSV_FEED_METADATA,
-          context
+          context,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
             detail: error,

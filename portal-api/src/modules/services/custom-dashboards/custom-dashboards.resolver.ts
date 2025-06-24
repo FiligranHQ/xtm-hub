@@ -85,15 +85,20 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     createCustomDashboard: async (_, { input, document }, context) => {
+      const trx = await dbTx();
       try {
-        return await createDocumentWithChildren<CustomDashboard>(
+        const doc = await createDocumentWithChildren<CustomDashboard>(
           CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           input,
           document,
           CUSTOM_DASHBOARD_METADATA,
-          context
+          context,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
             detail: error,
@@ -105,15 +110,20 @@ const resolvers: Resolvers = {
       }
     },
     updateCustomDashboard: async (_, input, context) => {
+      const trx = await dbTx();
       try {
-        return await updateDocumentWithChildren<CustomDashboard>(
+        const doc = await updateDocumentWithChildren<CustomDashboard>(
           CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
           CUSTOM_DASHBOARD_METADATA,
-          context
+          context,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
             detail: error,

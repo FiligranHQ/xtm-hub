@@ -93,7 +93,8 @@ export const passOldDocumentsIntoInactive = async (
 
 export const insertDocument = async (
   context: PortalContext,
-  documentData: FullDocumentMutator
+  documentData: FullDocumentMutator,
+  trx: Knex.Transaction
 ): Promise<Document> => {
   const existingDocuments = await loadUnsecureDocumentsBy({
     file_name: documentData.file_name,
@@ -102,7 +103,7 @@ export const insertDocument = async (
     passOldDocumentsIntoInactive(existingDocuments);
   }
 
-  return createDocument<Document>(context, documentData);
+  return createDocument<Document>(context, documentData, [], trx);
 };
 
 export const createDocument = async <T extends DocumentModel>(
@@ -111,7 +112,8 @@ export const createDocument = async <T extends DocumentModel>(
     labels?: string[];
     parent_document_id?: string;
   },
-  metadataKeys: DocumentMetadataKeys<T> = []
+  metadataKeys: DocumentMetadataKeys<T> = [],
+  trx: Knex.Transaction
 ): Promise<T> => {
   const [document] = await db<DocumentModel>(context, 'Document')
     .insert({
@@ -121,13 +123,14 @@ export const createDocument = async <T extends DocumentModel>(
       service_instance_id: context.serviceInstanceId as ServiceInstanceId,
       uploader_organization_id: context.user.selected_organization_id,
     })
-    .returning('*');
+    .returning('*')
+    .transacting(trx);
 
   if (documentData.parent_document_id) {
     await db<DocumentChildren>(context, 'Document_Children').insert({
       parent_document_id: documentData.parent_document_id as DocumentId,
       child_document_id: document.id,
-    });
+    }).transacting(trx);
   }
 
   if (documentData.labels?.length) {
@@ -136,7 +139,7 @@ export const createDocument = async <T extends DocumentModel>(
         object_id: document.id as unknown as ObjectLabelObjectId,
         label_id: extractId(id) as LabelId,
       }))
-    );
+    ).transacting(trx);
   }
 
   if (metadataKeys.length) {
@@ -148,7 +151,8 @@ export const createDocument = async <T extends DocumentModel>(
           value: documentData[key] as string,
         }))
       )
-      .returning('*');
+      .returning('*')
+      .transacting(trx);
 
     for (const metadata of metadatas) {
       document[metadata.key] = metadata.value;
@@ -163,7 +167,8 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
   input: Partial<T>,
   uploads: Upload[] | Upload,
   metadataKeys: DocumentMetadataKeys<T>,
-  context: PortalContext
+  context: PortalContext,
+  trx: Knex.Transaction
 ) => {
   const files = await processUploads(uploads, context);
 
@@ -177,7 +182,8 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
       minio_name: docFile.minioName,
       mime_type: docFile.mimeType,
     },
-    metadataKeys
+    metadataKeys,
+    trx
   );
 
   await Promise.all(
@@ -188,7 +194,7 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
         file_name: file.fileName,
         minio_name: file.minioName,
         mime_type: file.mimeType,
-      });
+      }, [], trx);
     })
   );
 
@@ -201,7 +207,8 @@ export const updateDocument = async <T extends DocumentModel>(
   documentData: Omit<Partial<T>, 'labels'> & {
     labels?: string[];
   },
-  metadataKeys: DocumentMetadataKeys<T> = []
+  metadataKeys: DocumentMetadataKeys<T> = [],
+  trx: Knex.Transaction
 ): Promise<T> => {
   const uploader_organization_id = documentData.uploader_organization_id
     ? extractId<OrganizationId>(documentData.uploader_organization_id)
@@ -215,27 +222,31 @@ export const updateDocument = async <T extends DocumentModel>(
       updated_at: new Date(),
       updater_id: context.user.id,
     })
-    .returning('*');
+    .returning('*')
+    .transacting(trx);
 
   // If label is null => that mean we want to update the field to empty
   if (documentData.labels !== undefined) {
     await db<ObjectLabel>(context, 'Object_Label')
       .where('object_id', '=', documentId)
-      .delete();
+      .delete()
+      .transacting(trx);
+
     if (documentData.labels?.length > 0) {
       await db<ObjectLabel>(context, 'Object_Label').insert(
         documentData.labels.map((id) => ({
           object_id: documentId as unknown as ObjectLabelObjectId,
           label_id: extractId(id) as LabelId,
         }))
-      );
+      ).transacting(trx);
     }
   }
 
   if (metadataKeys.length) {
     await db<DocumentMetadata>(context, 'Document_Metadata')
       .where('document_id', '=', documentId)
-      .delete();
+      .delete()
+      .transacting(trx);
 
     const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
       .insert(
@@ -245,7 +256,7 @@ export const updateDocument = async <T extends DocumentModel>(
           value: documentData[key] as string,
         }))
       )
-      .returning('*');
+      .returning('*').transacting(trx);
 
     for (const metadata of metadatas) {
       document[metadata.key] = metadata.value;
@@ -260,7 +271,8 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   id: string,
   mutationArgs: MutationUpdateDocumentArgs,
   metadataKeys: DocumentMetadataKeys<T>,
-  context: PortalContext
+  context: PortalContext,
+  trx: Knex.Transaction
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
   const documents = await processDocumentUpdateUploads(
@@ -289,21 +301,24 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
     context,
     id,
     data,
-    metadataKeys
+    metadataKeys,
+    trx
   );
 
   // Delete the images that are not in the existingImages array
   const childIds = await db<DocumentChildren>(context, 'Document_Children')
     .where('parent_document_id', '=', id)
     .whereNotIn('child_document_id', existingImages)
-    .select('child_document_id');
+    .select('child_document_id')
+    .transacting(trx);
   if (childIds.length > 0) {
     await db<Document>(context, 'Document')
       .whereIn(
         'id',
         childIds.map((childId) => childId.child_document_id)
       )
-      .delete();
+      .delete()
+      .transacting(trx);
   }
 
   // Create new images
@@ -315,7 +330,7 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
         file_name: image.fileName,
         minio_name: image.minioName,
         mime_type: image.mimeType,
-      })
+      }, [], trx)
     )
   );
 
@@ -324,11 +339,12 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
 
 export const incrementDocumentsDownloads = async (
   context: PortalContext,
-  document: DocumentModel
+  document: DocumentModel,
+  trx: Knex.Transaction
 ) => {
   await updateDocument(context, document.id, {
     download_number: document.download_number + 1,
-  });
+  }, [], trx);
 };
 
 export const deleteDocument = async <T extends DocumentModel>(

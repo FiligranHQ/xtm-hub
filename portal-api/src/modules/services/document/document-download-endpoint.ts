@@ -8,6 +8,7 @@ import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error.util';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
+import { dbTx } from '../../../../knexfile';
 
 export const documentDownloadEndpoint = (app) => {
   app.get(
@@ -19,6 +20,7 @@ export const documentDownloadEndpoint = (app) => {
         res.status(401).json({ message: 'You must be logged in' });
         return;
       }
+      const trx = await dbTx();
       try {
         const context: PortalContext = {
           user: user,
@@ -39,10 +41,11 @@ export const documentDownloadEndpoint = (app) => {
 
         const stream = (await downloadFile(document.minio_name)) as Readable;
         res.attachment(document.file_name);
-        await incrementDocumentsDownloads(context, document);
-
+        await incrementDocumentsDownloads(context, document, trx);
+        await trx.commit();
         stream.pipe(res);
       } catch (error) {
+        await trx.rollback();
         logApp.error('Error while retrieving document: ', error);
         res.status(404).json({ message: 'Document not found' });
         return;

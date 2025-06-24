@@ -84,15 +84,20 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     createObasScenario: async (_, { input, document }, context) => {
+      const trx = await dbTx();
       try {
-        return await createDocumentWithChildren<ObasScenario>(
+        const doc = await createDocumentWithChildren<ObasScenario>(
           OBAS_SCENARIO_DOCUMENT_TYPE,
           input,
           document,
           OBAS_SCENARIO_METADATA,
-          context
+          context,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('OBAS_SCENARIO_UNIQUE_SLUG_ERROR', {
             detail: error,
@@ -104,15 +109,20 @@ const resolvers: Resolvers = {
       }
     },
     updateObasScenario: async (_, input, context) => {
+      const trx = await dbTx();
       try {
-        return await updateDocumentWithChildren<ObasScenario>(
+        const doc = await updateDocumentWithChildren<ObasScenario>(
           OBAS_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
           OBAS_SCENARIO_METADATA,
-          context
+          context,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('OBAS_SCENARIO_UNIQUE_SLUG_ERROR', {
             detail: error,
