@@ -1,6 +1,6 @@
 import { dbTx } from '../../../../knexfile';
 import {
-  CustomDashboardConnection,
+  ObasScenarioConnection,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -23,13 +23,24 @@ import {
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
-  CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-  CUSTOM_DASHBOARD_METADATA,
-  CustomDashboard,
-} from './custom-dashboards.domain';
+  OBAS_SCENARIO_DOCUMENT_TYPE,
+  OBAS_SCENARIO_METADATA,
+  ObasScenario,
+} from './obas-scenarios.domain';
 
 const resolvers: Resolvers = {
-  CustomDashboard: {
+  SeoObasScenario: {
+    children_documents: ({ id }) => loadImagesByDocumentId(id),
+    uploader: ({ id }, _, context) =>
+      getUploader(context, id, {
+        unsecured: true,
+      }),
+    labels: ({ id }, _, context) =>
+      getLabels(context, id, {
+        unsecured: true,
+      }),
+  },
+  ObasScenario: {
     labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByDocumentId(id),
     uploader: ({ id }, _, context) =>
@@ -42,56 +53,44 @@ const resolvers: Resolvers = {
       loadSubscription(context, service_instance_id),
   },
   Query: {
-    seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
-      const dashboards = await loadSeoDocumentsByServiceSlug(
-        CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+    seoObasScenariosByServiceSlug: async (_, { serviceSlug }) => {
+      return await loadSeoDocumentsByServiceSlug(
+        OBAS_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
-        CUSTOM_DASHBOARD_METADATA
+        OBAS_SCENARIO_METADATA
       );
-      for (const dashboard of dashboards) {
-        dashboard.children_documents = await loadImagesByDocumentId(
-          dashboard.id
-        );
-        dashboard.uploader = await getUploader(context, dashboard.id, {
-          unsecured: true,
-        });
-        dashboard.labels = await getLabels(context, dashboard.id, {
-          unsecured: true,
-        });
-      }
-      return dashboards;
     },
-    seoCustomDashboardBySlug: async (_, { slug }) => {
+    seoObasScenarioBySlug: async (_, { slug }) => {
       return loadSeoDocumentBySlug(
-        CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        OBAS_SCENARIO_DOCUMENT_TYPE,
         slug,
-        CUSTOM_DASHBOARD_METADATA
+        OBAS_SCENARIO_METADATA
       );
     },
-    customDashboards: async (_, input, context) => {
-      return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
-        CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+    obasScenarios: async (_, input, context) => {
+      return loadParentDocumentsByServiceInstance<ObasScenarioConnection>(
+        OBAS_SCENARIO_DOCUMENT_TYPE,
         context,
         input,
-        CUSTOM_DASHBOARD_METADATA
+        OBAS_SCENARIO_METADATA
       );
     },
-    customDashboard: async (_, { id }, context) =>
+    obasScenario: async (_, { id }, context) =>
       loadDocumentById(
         context,
         extractId<DocumentId>(id),
-        CUSTOM_DASHBOARD_METADATA
+        OBAS_SCENARIO_METADATA
       ),
   },
   Mutation: {
-    createCustomDashboard: async (_, { input, document }, context) => {
+    createObasScenario: async (_, { input, document }, context) => {
       const trx = await dbTx();
       try {
-        const doc = await createDocumentWithChildren<CustomDashboard>(
-          CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        const doc = await createDocumentWithChildren<ObasScenario>(
+          OBAS_SCENARIO_DOCUMENT_TYPE,
           input,
           document,
-          CUSTOM_DASHBOARD_METADATA,
+          OBAS_SCENARIO_METADATA,
           context,
           trx
         );
@@ -100,23 +99,23 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
+          throw AlreadyExistsError('OBAS_SCENARIO_UNIQUE_SLUG_ERROR', {
             detail: error,
           });
         }
-        throw UnknownError('CUSTOM_DASHBOARD_INSERTION_ERROR', {
+        throw UnknownError('OBAS_SCENARIO_INSERTION_ERROR', {
           detail: error,
         });
       }
     },
-    updateCustomDashboard: async (_, input, context) => {
+    updateObasScenario: async (_, input, context) => {
       const trx = await dbTx();
       try {
-        const doc = await updateDocumentWithChildren<CustomDashboard>(
-          CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        const doc = await updateDocumentWithChildren<ObasScenario>(
+          OBAS_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
-          CUSTOM_DASHBOARD_METADATA,
+          OBAS_SCENARIO_METADATA,
           context,
           trx
         );
@@ -125,19 +124,19 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
+          throw AlreadyExistsError('OBAS_SCENARIO_UNIQUE_SLUG_ERROR', {
             detail: error,
           });
         }
-        throw UnknownError('CUSTOM_DASHBOARD_UPDATE_ERROR', {
+        throw UnknownError('OBAS_SCENARIO_UPDATE_ERROR', {
           detail: error,
         });
       }
     },
-    deleteCustomDashboard: async (_, { id }, context) => {
+    deleteObasScenario: async (_, { id }, context) => {
       const trx = await dbTx();
       try {
-        const doc = await deleteDocument<CustomDashboard>(
+        const doc = await deleteDocument<ObasScenario>(
           context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
@@ -149,7 +148,7 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
 
-        throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
+        throw UnknownError('OBAS_SCENARIO_DELETE_ERROR', { detail: error });
       }
     },
   },

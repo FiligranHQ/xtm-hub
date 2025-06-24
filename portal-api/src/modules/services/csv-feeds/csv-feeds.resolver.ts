@@ -11,34 +11,40 @@ import { loadSubscription } from '../../subcription/subscription.domain';
 import {
   createDocumentWithChildren,
   deleteDocument,
-  getChildrenDocuments,
   getLabels,
   getUploader,
   getUploaderOrganization,
+  loadDocumentById,
+  loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
+  loadSeoDocumentBySlug,
+  loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
+  CSV_FEED_DOCUMENT_TYPE,
   CSV_FEED_METADATA,
   CsvFeed,
-  loadCsvFeedById,
-  loadSeoCsvFeedBySlug,
-  loadSeoCsvFeedsByServiceSlug,
 } from './csv-feeds.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
     createCsvFeed: async (_, { input, document }, context) => {
+      const trx = await dbTx();
       try {
-        return await createDocumentWithChildren<CsvFeed>(
+        const doc = await createDocumentWithChildren<CsvFeed>(
           'csv_feed',
           input,
           document,
           CSV_FEED_METADATA,
-          context
+          context,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
             detail: error,
@@ -48,15 +54,20 @@ const resolvers: Resolvers = {
       }
     },
     updateCsvFeed: async (_, input, context) => {
+      const trx = await dbTx();
       try {
-        return await updateDocumentWithChildren<CsvFeed>(
+        const doc = await updateDocumentWithChildren<CsvFeed>(
           'csv_feed',
           extractId<DocumentId>(input.documentId),
           input,
           CSV_FEED_METADATA,
-          context
+          context,
+          trx
         );
+        await trx.commit();
+        return doc;
       } catch (error) {
+        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
             detail: error,
@@ -88,8 +99,8 @@ const resolvers: Resolvers = {
   },
   CsvFeed: {
     labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
-    children_documents: ({ id }, _, context) =>
-      getChildrenDocuments(context, id, { unsecured: true }),
+    children_documents: ({ id }) =>
+      loadImagesByDocumentId(id),
     uploader: ({ id }, _, context) =>
       getUploader(context, id, { unsecured: true }),
     uploader_organization: ({ id }, _, context) =>
@@ -107,10 +118,15 @@ const resolvers: Resolvers = {
         input
       ),
     csvFeed: async (_, { id }, context) =>
-      loadCsvFeedById(context, extractId<DocumentId>(id)),
+      loadDocumentById(context, extractId<DocumentId>(id)),
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
-      loadSeoCsvFeedsByServiceSlug(serviceSlug),
-    seoCsvFeedBySlug: async (_, { slug }) => loadSeoCsvFeedBySlug(slug),
+      loadSeoDocumentsByServiceSlug(
+        CSV_FEED_DOCUMENT_TYPE,
+        serviceSlug,
+        CSV_FEED_METADATA
+      ),
+    seoCsvFeedBySlug: async (_, { slug }) =>
+      loadSeoDocumentBySlug(CSV_FEED_DOCUMENT_TYPE, slug, CSV_FEED_METADATA),
   },
 };
 

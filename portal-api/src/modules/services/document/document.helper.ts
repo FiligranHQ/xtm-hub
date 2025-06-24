@@ -10,6 +10,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { extractId } from '../../../utils/utils';
 import { createDocument, sendFileToS3 } from './document.domain';
+import { Knex } from 'knex';
 
 export type Document = DocumentModel & { labels: Label[] };
 export type FullDocumentMutator = Partial<DocumentModel> & {
@@ -135,7 +136,7 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const uploadNewFile = async (context: PortalContext, document) => {
+export const uploadNewFile = async (context: PortalContext, document, trx: Knex.Transaction) => {
   if (!document || !document.file) {
     return;
   }
@@ -157,7 +158,7 @@ export const uploadNewFile = async (context: PortalContext, document) => {
     type: 'service_picture',
   };
 
-  return createDocument(context, data);
+  return createDocument(context, data, [], trx);
 };
 
 export const deleteDocuments = async () => {

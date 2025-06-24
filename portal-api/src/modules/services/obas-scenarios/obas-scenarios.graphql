@@ -1,15 +1,15 @@
-input CreateCustomDashboardInput {
+input CreateObasScenarioInput {
   name: String!
   slug: String!
   short_description: String!
   description: String!
   active: Boolean!
   labels: [String!]
-  # Specific fields for custom dashboards
+  # Specific fields for obas scenarios
   product_version: String!
 }
 
-input UpdateCustomDashboardInput {
+input UpdateObasScenarioInput {
   name: String
   slug: String
   short_description: String
@@ -17,11 +17,11 @@ input UpdateCustomDashboardInput {
   active: Boolean
   labels: [String!]
   uploader_organization_id: String
-  # Specific fields for custom dashboards
+  # Specific fields for obas scenarios
   product_version: String
 }
 
-type CustomDashboard implements Node {
+type ObasScenario implements Node {
   id: ID!
   type: String!
   uploader: User
@@ -43,25 +43,25 @@ type CustomDashboard implements Node {
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
-  # Specific fields for custom dashboards
+  # Specific fields for obas scenarios
   product_version: String
 }
 
-type CustomDashboardEdge {
+type ObasScenarioEdge {
   cursor: String!
-  node: CustomDashboard!
+  node: ObasScenario!
 }
 
-type CustomDashboardConnection {
+type ObasScenarioConnection {
   totalCount: Int!
-  edges: [CustomDashboardEdge!]!
+  edges: [ObasScenarioEdge!]!
   pageInfo: PageInfo!
 }
 
 type Query {
-  seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
-  seoCustomDashboardBySlug(slug: String): CustomDashboard
-  customDashboards(
+  seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
+  seoObasScenarioBySlug(slug: String): ObasScenario
+  obasScenarios(
     first: Int!
     after: ID
     orderBy: DocumentOrdering!
@@ -69,25 +69,25 @@ type Query {
     searchTerm: String
     filters: [Filter!]
     serviceInstanceId: String
-  ): CustomDashboardConnection! @auth
-  customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
+  ): ObasScenarioConnection! @auth
+  obasScenario(id: ID, serviceInstanceId: ID): ObasScenario @auth
 }
 
 type Mutation {
-  createCustomDashboard(
-    input: CreateCustomDashboardInput!
+  createObasScenario(
+    input: CreateObasScenarioInput!
     document: [Upload!]!
     serviceInstanceId: String
-  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
-  updateCustomDashboard(
+  ): ObasScenario! @auth @service_capa(requires: [UPLOAD])
+  updateObasScenario(
     documentId: ID!
-    input: UpdateCustomDashboardInput!
+    input: UpdateObasScenarioInput!
     document: [Upload!]
     updateDocument: Boolean!
     images: [String!]
     serviceInstanceId: String
-  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
-  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
+  ): ObasScenario! @auth @service_capa(requires: [UPLOAD])
+  deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
     @auth
     @service_capa(requires: [DELETE])
 }

@@ -27,6 +27,21 @@
         "start_date": null,
         "price": 0
       }
+    },
+    {
+      "serviceDefinition": {
+        "id": "85750de2-1cac-4bda-920f-05382a810d8f",
+        "name": "OpenBAS Scenarios Library",
+        "description": "Explore a range of OpenBAS Scenarios shared by the Filigran team",
+        "identifier": "obas_scenarios"
+      },
+      "price": {
+        "id": "ea221fbb-a8bc-42cb-9119-2a2d45039fff",
+        "service_definition_id": "85750de2-1cac-4bda-920f-05382a810d8f",
+        "fee_type": "YEARLY",
+        "start_date": null,
+        "price": 0
+      }
     }
   ],
   "init_services": [
@@ -46,6 +61,23 @@
         "url": "",
         "name": "OpenCTI Integration Library"
       }
+    },
+    {
+      "service": {
+        "id": "8cc7e79d-f3a4-406b-bc7c-b3d64f8cc5c1",
+        "name": "OpenBAS Scenarios Library",
+        "description": "Explore a range of OpenBAS Scenarios shared by the Filigran team.",
+        "service_definition_id": "85750de2-1cac-4bda-920f-05382a810d8f",
+        "public": true,
+        "slug": "open-bas-scenarios",
+        "join_type": "JOIN_AUTO"
+      },
+      "link": {
+        "id": "5bba5849-90b9-406f-82d2-4f16260926c4",
+        "service_instance_id": "8cc7e79d-f3a4-406b-bc7c-b3d64f8cc5c1",
+        "url": "",
+        "name": "OpenBAS Scenarios Library"
+      }
     }
   ],
   "init_service_capabilities": [
@@ -60,6 +92,18 @@
       "name": "DELETE",
       "description": "The user can delete OpenCTI Integration Feeds in this service.",
       "service_definition_id": "42007953-4dbc-480a-8693-8c05f1123460"
+    },
+    {
+      "id": "48446978-4c3b-499d-8bd8-9d287d09ca8e",
+      "name": "UPLOAD",
+      "description": "The user can upload OpenBAS Scenarios in this service.",
+      "service_definition_id": "85750de2-1cac-4bda-920f-05382a810d8f"
+    },
+    {
+      "id": "6a0f3581-76bc-4a69-8c4c-6d6bb79c9818",
+      "name": "DELETE",
+      "description": "The user can delete OpenBAS Scenarios in this service.",
+      "service_definition_id": "85750de2-1cac-4bda-920f-05382a810d8f"
     }
   ],
   "base_url_front": "http://localhost:3002"

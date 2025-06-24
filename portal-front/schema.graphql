@@ -38,6 +38,9 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
+  createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
+  updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
+  deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -97,13 +100,17 @@ type Query {
   csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
   seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
   seoCsvFeedBySlug(slug: String): CsvFeed
-  seoCustomDashboardsByServiceSlug(serviceSlug: String): [SeoCustomDashboard]
-  seoCustomDashboardBySlug(slug: String): SeoCustomDashboard
+  seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
+  seoCustomDashboardBySlug(slug: String): CustomDashboard
   customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
+  seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
+  seoObasScenarioBySlug(slug: String): ObasScenario
+  obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
+  obasScenario(id: ID, serviceInstanceId: ID): ObasScenario
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
@@ -156,7 +163,7 @@ type CsvFeed implements Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [Document!]
+  children_documents: [ShareableResourceImage!]
   remover_id: ID
 }
 
@@ -188,29 +195,6 @@ type CsvFeedConnection {
   totalCount: Int!
   edges: [CsvFeedEdge!]!
   pageInfo: PageInfo!
-}
-
-type CustomDashboardImage {
-  id: ID!
-  file_name: String!
-}
-
-type SeoCustomDashboard {
-  id: ID!
-  uploader: User
-  name: String
-  slug: String!
-  short_description: String
-  description: String
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  product_version: String
-  children_documents: [CustomDashboardImage!]!
-  labels: [Label]
-  active: Boolean!
 }
 
 input CreateCustomDashboardInput {
@@ -255,7 +239,7 @@ type CustomDashboard implements Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [CustomDashboardImage!]
+  children_documents: [ShareableResourceImage!]
   product_version: String
 }
 
@@ -275,6 +259,7 @@ enum ServiceDefinitionIdentifier {
   link
   custom_dashboards
   csv_feeds
+  obas_scenarios
 }
 
 type ServiceDefinition implements Node {
@@ -284,6 +269,11 @@ type ServiceDefinition implements Node {
   public: Boolean
   identifier: ServiceDefinitionIdentifier!
   service_capability: [ServiceCapability]
+}
+
+type ShareableResourceImage {
+  id: ID!
+  file_name: String!
 }
 
 enum DocumentOrdering {
@@ -341,6 +331,63 @@ type ServiceLink implements Node {
   service_instance_id: ID
   url: String
   name: String
+}
+
+input CreateObasScenarioInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+  product_version: String!
+}
+
+input UpdateObasScenarioInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  uploader_organization_id: String
+  product_version: String
+}
+
+type ObasScenario implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResourceImage!]
+  product_version: String
+}
+
+type ObasScenarioEdge {
+  cursor: String!
+  node: ObasScenario!
+}
+
+type ObasScenarioConnection {
+  totalCount: Int!
+  edges: [ObasScenarioEdge!]!
+  pageInfo: PageInfo!
 }
 
 enum ServiceInstanceOrdering {

@@ -92,10 +92,20 @@ export type CreateCustomDashboardInput = {
   slug: Scalars['String']['input'];
 };
 
+export type CreateObasScenarioInput = {
+  active: Scalars['Boolean']['input'];
+  description: Scalars['String']['input'];
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+  name: Scalars['String']['input'];
+  product_version: Scalars['String']['input'];
+  short_description: Scalars['String']['input'];
+  slug: Scalars['String']['input'];
+};
+
 export type CsvFeed = Node & {
   __typename?: 'CsvFeed';
   active: Scalars['Boolean']['output'];
-  children_documents?: Maybe<Array<Document>>;
+  children_documents?: Maybe<Array<ShareableResourceImage>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number: Scalars['Int']['output'];
@@ -134,7 +144,7 @@ export type CsvFeedEdge = {
 export type CustomDashboard = Node & {
   __typename?: 'CustomDashboard';
   active: Scalars['Boolean']['output'];
-  children_documents?: Maybe<Array<CustomDashboardImage>>;
+  children_documents?: Maybe<Array<ShareableResourceImage>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number: Scalars['Int']['output'];
@@ -168,12 +178,6 @@ export type CustomDashboardEdge = {
   __typename?: 'CustomDashboardEdge';
   cursor: Scalars['String']['output'];
   node: CustomDashboard;
-};
-
-export type CustomDashboardImage = {
-  __typename?: 'CustomDashboardImage';
-  file_name: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
 };
 
 export type Document = Node & {
@@ -332,10 +336,12 @@ export type Mutation = {
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed: CsvFeed;
   createCustomDashboard: CustomDashboard;
+  createObasScenario: ObasScenario;
   deleteCsvFeed: CsvFeed;
   deleteCustomDashboard: CustomDashboard;
   deleteDocument: Document;
   deleteLabel: Label;
+  deleteObasScenario: ObasScenario;
   deleteOrganization?: Maybe<Organization>;
   deleteServiceInstance?: Maybe<ServiceInstance>;
   deleteSubscription?: Maybe<ServiceInstance>;
@@ -357,6 +363,7 @@ export type Mutation = {
   selfJoinServiceInstance?: Maybe<ServiceInstance>;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
+  updateObasScenario: ObasScenario;
 };
 
 
@@ -449,6 +456,13 @@ export type MutationCreateCustomDashboardArgs = {
 };
 
 
+export type MutationCreateObasScenarioArgs = {
+  document: Array<Scalars['Upload']['input']>;
+  input: CreateObasScenarioInput;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationDeleteCsvFeedArgs = {
   id: Scalars['ID']['input'];
   serviceInstanceId: Scalars['String']['input'];
@@ -470,6 +484,12 @@ export type MutationDeleteDocumentArgs = {
 
 export type MutationDeleteLabelArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteObasScenarioArgs = {
+  id: Scalars['ID']['input'];
+  serviceInstanceId: Scalars['String']['input'];
 };
 
 
@@ -589,8 +609,57 @@ export type MutationUpdateCustomDashboardArgs = {
   updateDocument: Scalars['Boolean']['input'];
 };
 
+
+export type MutationUpdateObasScenarioArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  documentId: Scalars['ID']['input'];
+  images?: InputMaybe<Array<Scalars['String']['input']>>;
+  input: UpdateObasScenarioInput;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  updateDocument: Scalars['Boolean']['input'];
+};
+
 export type Node = {
   id: Scalars['ID']['output'];
+};
+
+export type ObasScenario = Node & {
+  __typename?: 'ObasScenario';
+  active: Scalars['Boolean']['output'];
+  children_documents?: Maybe<Array<ShareableResourceImage>>;
+  created_at: Scalars['Date']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  download_number: Scalars['Int']['output'];
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  labels?: Maybe<Array<Label>>;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  product_version?: Maybe<Scalars['String']['output']>;
+  service_instance?: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['String']['output'];
+  share_number: Scalars['Int']['output'];
+  short_description?: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription?: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
+  uploader?: Maybe<User>;
+  uploader_organization?: Maybe<Organization>;
+};
+
+export type ObasScenarioConnection = {
+  __typename?: 'ObasScenarioConnection';
+  edges: Array<ObasScenarioEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ObasScenarioEdge = {
+  __typename?: 'ObasScenarioEdge';
+  cursor: Scalars['String']['output'];
+  node: ObasScenario;
 };
 
 export enum OrderingMode {
@@ -669,6 +738,8 @@ export type Query = {
   labels?: Maybe<LabelConnection>;
   me?: Maybe<User>;
   node?: Maybe<Node>;
+  obasScenario?: Maybe<ObasScenario>;
+  obasScenarios: ObasScenarioConnection;
   organization?: Maybe<Organization>;
   organizations: OrganizationConnection;
   publicServiceInstances: ServiceConnection;
@@ -676,8 +747,10 @@ export type Query = {
   rolesPortal: Array<RolePortal>;
   seoCsvFeedBySlug?: Maybe<CsvFeed>;
   seoCsvFeedsByServiceSlug?: Maybe<Array<Maybe<CsvFeed>>>;
-  seoCustomDashboardBySlug?: Maybe<SeoCustomDashboard>;
-  seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<SeoCustomDashboard>>>;
+  seoCustomDashboardBySlug?: Maybe<CustomDashboard>;
+  seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<CustomDashboard>>>;
+  seoObasScenarioBySlug?: Maybe<ObasScenario>;
+  seoObasScenariosByServiceSlug?: Maybe<Array<Maybe<ObasScenario>>>;
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceInstanceById?: Maybe<ServiceInstance>;
@@ -772,6 +845,23 @@ export type QueryNodeArgs = {
 };
 
 
+export type QueryObasScenarioArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryObasScenariosArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  filters?: InputMaybe<Array<Filter>>;
+  first: Scalars['Int']['input'];
+  orderBy: DocumentOrdering;
+  orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryOrganizationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -815,6 +905,16 @@ export type QuerySeoCustomDashboardBySlugArgs = {
 
 
 export type QuerySeoCustomDashboardsByServiceSlugArgs = {
+  serviceSlug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySeoObasScenarioBySlugArgs = {
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySeoObasScenariosByServiceSlugArgs = {
   serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -912,25 +1012,6 @@ export type RolePortal = Node & {
   name: Scalars['String']['output'];
 };
 
-export type SeoCustomDashboard = {
-  __typename?: 'SeoCustomDashboard';
-  active: Scalars['Boolean']['output'];
-  children_documents: Array<CustomDashboardImage>;
-  created_at: Scalars['Date']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  download_number?: Maybe<Scalars['Int']['output']>;
-  id: Scalars['ID']['output'];
-  labels?: Maybe<Array<Maybe<Label>>>;
-  name?: Maybe<Scalars['String']['output']>;
-  product_version?: Maybe<Scalars['String']['output']>;
-  share_number?: Maybe<Scalars['Int']['output']>;
-  short_description?: Maybe<Scalars['String']['output']>;
-  slug: Scalars['String']['output'];
-  updated_at?: Maybe<Scalars['Date']['output']>;
-  updater_id?: Maybe<Scalars['String']['output']>;
-  uploader?: Maybe<User>;
-};
-
 export type SeoServiceInstance = Node & {
   __typename?: 'SeoServiceInstance';
   description?: Maybe<Scalars['String']['output']>;
@@ -973,6 +1054,7 @@ export enum ServiceDefinitionIdentifier {
   CsvFeeds = 'csv_feeds',
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
+  ObasScenarios = 'obas_scenarios',
   Vault = 'vault'
 }
 
@@ -1037,6 +1119,12 @@ export type Settings = {
   base_url_front: Scalars['String']['output'];
   environment: Scalars['String']['output'];
   platform_providers: Array<PlatformProvider>;
+};
+
+export type ShareableResourceImage = {
+  __typename?: 'ShareableResourceImage';
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
 };
 
 export type SubscribedServiceInstance = {
@@ -1116,6 +1204,17 @@ export type UpdateCsvFeedInput = {
 };
 
 export type UpdateCustomDashboardInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  product_version?: InputMaybe<Scalars['String']['input']>;
+  short_description?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateObasScenarioInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -1308,7 +1407,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( ObasScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -1323,13 +1422,13 @@ export type ResolversTypes = ResolversObject<{
   Capability: ResolverTypeWrapper<Capability>;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
+  CreateObasScenarioInput: CreateObasScenarioInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CsvFeedConnection: ResolverTypeWrapper<CsvFeedConnection>;
   CsvFeedEdge: ResolverTypeWrapper<CsvFeedEdge>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   CustomDashboardConnection: ResolverTypeWrapper<CustomDashboardConnection>;
   CustomDashboardEdge: ResolverTypeWrapper<CustomDashboardEdge>;
-  CustomDashboardImage: ResolverTypeWrapper<CustomDashboardImage>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   Document: ResolverTypeWrapper<Document>;
   DocumentConnection: ResolverTypeWrapper<DocumentConnection>;
@@ -1355,6 +1454,9 @@ export type ResolversTypes = ResolversObject<{
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
+  ObasScenario: ResolverTypeWrapper<ObasScenario>;
+  ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
+  ObasScenarioEdge: ResolverTypeWrapper<ObasScenarioEdge>;
   OrderingMode: OrderingMode;
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationCapabilities: ResolverTypeWrapper<OrganizationCapabilities>;
@@ -1368,7 +1470,6 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
-  SeoCustomDashboard: ResolverTypeWrapper<SeoCustomDashboard>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
@@ -1381,6 +1482,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
   ServiceRestriction: ServiceRestriction;
   Settings: ResolverTypeWrapper<Settings>;
+  ShareableResourceImage: ResolverTypeWrapper<ShareableResourceImage>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   SubscribedServiceInstance: ResolverTypeWrapper<SubscribedServiceInstance>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -1392,6 +1494,7 @@ export type ResolversTypes = ResolversObject<{
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
+  UpdateObasScenarioInput: UpdateObasScenarioInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
@@ -1420,13 +1523,13 @@ export type ResolversParentTypes = ResolversObject<{
   Capability: Capability;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
+  CreateObasScenarioInput: CreateObasScenarioInput;
   CsvFeed: CsvFeed;
   CsvFeedConnection: CsvFeedConnection;
   CsvFeedEdge: CsvFeedEdge;
   CustomDashboard: CustomDashboard;
   CustomDashboardConnection: CustomDashboardConnection;
   CustomDashboardEdge: CustomDashboardEdge;
-  CustomDashboardImage: CustomDashboardImage;
   Date: Scalars['Date']['output'];
   Document: Document;
   DocumentConnection: DocumentConnection;
@@ -1449,6 +1552,9 @@ export type ResolversParentTypes = ResolversObject<{
   MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
+  ObasScenario: ObasScenario;
+  ObasScenarioConnection: ObasScenarioConnection;
+  ObasScenarioEdge: ObasScenarioEdge;
   Organization: Organization;
   OrganizationCapabilities: OrganizationCapabilities;
   OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
@@ -1459,7 +1565,6 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformProvider: PlatformProvider;
   Query: {};
   RolePortal: RolePortal;
-  SeoCustomDashboard: SeoCustomDashboard;
   SeoServiceInstance: SeoServiceInstance;
   ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
@@ -1469,6 +1574,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceInstanceSubscription: ServiceInstanceSubscription;
   ServiceLink: ServiceLink;
   Settings: Settings;
+  ShareableResourceImage: ShareableResourceImage;
   String: Scalars['String']['output'];
   SubscribedServiceInstance: SubscribedServiceInstance;
   Subscription: {};
@@ -1479,6 +1585,7 @@ export type ResolversParentTypes = ResolversObject<{
   TrackingSubscription: TrackingSubscription;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
+  UpdateObasScenarioInput: UpdateObasScenarioInput;
   Upload: Scalars['Upload']['output'];
   User: User;
   UserConnection: UserConnection;
@@ -1524,7 +1631,7 @@ export type CapabilityResolvers<ContextType = PortalContext, ParentType extends 
 
 export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CsvFeed'] = ResolversParentTypes['CsvFeed']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  children_documents?: Resolver<Maybe<Array<ResolversTypes['Document']>>, ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1563,7 +1670,7 @@ export type CsvFeedEdgeResolvers<ContextType = PortalContext, ParentType extends
 
 export type CustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboard'] = ResolversParentTypes['CustomDashboard']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  children_documents?: Resolver<Maybe<Array<ResolversTypes['CustomDashboardImage']>>, ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1597,12 +1704,6 @@ export type CustomDashboardConnectionResolvers<ContextType = PortalContext, Pare
 export type CustomDashboardEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboardEdge'] = ResolversParentTypes['CustomDashboardEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type CustomDashboardImageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboardImage'] = ResolversParentTypes['CustomDashboardImage']> = ResolversObject<{
-  file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1715,10 +1816,12 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
+  createObasScenario?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType, RequireFields<MutationCreateObasScenarioArgs, 'document' | 'input'>>;
   deleteCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'id' | 'serviceInstanceId'>>;
   deleteCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationDeleteCustomDashboardArgs, 'id' | 'serviceInstanceId'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
+  deleteObasScenario?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType, RequireFields<MutationDeleteObasScenarioArgs, 'id' | 'serviceInstanceId'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
@@ -1740,11 +1843,51 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
+  updateObasScenario?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType, RequireFields<MutationUpdateObasScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'ObasScenario' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+}>;
+
+export type ObasScenarioResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenario'] = ResolversParentTypes['ObasScenario']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
+  minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ObasScenarioConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenarioConnection'] = ResolversParentTypes['ObasScenarioConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['ObasScenarioEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ObasScenarioEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenarioEdge'] = ResolversParentTypes['ObasScenarioEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type OrganizationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = ResolversObject<{
@@ -1803,6 +1946,8 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   labels?: Resolver<Maybe<ResolversTypes['LabelConnection']>, ParentType, ContextType, RequireFields<QueryLabelsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+  obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
+  obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -1810,8 +1955,10 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
   seoCsvFeedBySlug?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QuerySeoCsvFeedBySlugArgs>>;
   seoCsvFeedsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CsvFeed']>>>, ParentType, ContextType, Partial<QuerySeoCsvFeedsByServiceSlugArgs>>;
-  seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['SeoCustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
-  seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['SeoCustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
+  seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
+  seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
+  seoObasScenarioBySlug?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QuerySeoObasScenarioBySlugArgs>>;
+  seoObasScenariosByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['ObasScenario']>>>, ParentType, ContextType, Partial<QuerySeoObasScenariosByServiceSlugArgs>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
@@ -1831,25 +1978,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
 export type RolePortalResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RolePortal'] = ResolversParentTypes['RolePortal']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type SeoCustomDashboardResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoCustomDashboard'] = ResolversParentTypes['SeoCustomDashboard']> = ResolversObject<{
-  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  children_documents?: Resolver<Array<ResolversTypes['CustomDashboardImage']>, ParentType, ContextType>;
-  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  labels?: Resolver<Maybe<Array<Maybe<ResolversTypes['Label']>>>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1938,6 +2066,12 @@ export type SettingsResolvers<ContextType = PortalContext, ParentType extends Re
   base_url_front?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   environment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_providers?: Resolver<Array<ResolversTypes['PlatformProvider']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ShareableResourceImageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ShareableResourceImage'] = ResolversParentTypes['ShareableResourceImage']> = ResolversObject<{
+  file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2086,7 +2220,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CustomDashboard?: CustomDashboardResolvers<ContextType>;
   CustomDashboardConnection?: CustomDashboardConnectionResolvers<ContextType>;
   CustomDashboardEdge?: CustomDashboardEdgeResolvers<ContextType>;
-  CustomDashboardImage?: CustomDashboardImageResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
@@ -2101,6 +2234,9 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   MessageTracking?: MessageTrackingResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
+  ObasScenario?: ObasScenarioResolvers<ContextType>;
+  ObasScenarioConnection?: ObasScenarioConnectionResolvers<ContextType>;
+  ObasScenarioEdge?: ObasScenarioEdgeResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
@@ -2109,7 +2245,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
-  SeoCustomDashboard?: SeoCustomDashboardResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
@@ -2119,6 +2254,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceInstanceSubscription?: ServiceInstanceSubscriptionResolvers<ContextType>;
   ServiceLink?: ServiceLinkResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
+  ShareableResourceImage?: ShareableResourceImageResolvers<ContextType>;
   SubscribedServiceInstance?: SubscribedServiceInstanceResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SubscriptionCapability?: SubscriptionCapabilityResolvers<ContextType>;
