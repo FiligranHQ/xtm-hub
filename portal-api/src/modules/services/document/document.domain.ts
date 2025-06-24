@@ -189,15 +189,15 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
   );
 
   await Promise.all(
-    files.map((file) => {
+    files.map((file) =>
       createDocument(context, {
         type: 'image',
         parent_document_id: doc.id as DocumentId,
         file_name: file.fileName,
         minio_name: file.minioName,
         mime_type: file.mimeType,
-      }, [], trx);
-    })
+      }, [], trx)
+    )
   );
 
   return doc;
