@@ -4,6 +4,7 @@ import serverPortalApiFetch, {
 } from '@/relay/serverPortalApiFetch';
 import { fromGlobalId, toGlobalId } from '@/utils/globalId';
 import { isValueInEnum } from '@/utils/isValueInEnum';
+import { APP_PATH } from '@/utils/path/constant';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import OrganizationSwitcherMutation, {
@@ -104,7 +105,7 @@ export async function GET(
 
   try {
     // The URL to highlight the service in the homepage
-    const highlightUrl = new URL(`/app?h=${identifier}`, baseUrlFront);
+    const highlightUrl = new URL(`/${APP_PATH}?h=${identifier}`, baseUrlFront);
 
     // 1. Load the user
     // ----------------

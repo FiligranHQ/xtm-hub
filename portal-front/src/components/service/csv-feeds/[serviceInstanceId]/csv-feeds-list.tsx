@@ -7,7 +7,10 @@ import {
 
 import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import {
   csvFeedsItem_fragment$data,
   csvFeedsItem_fragment$key,
@@ -135,7 +138,7 @@ const CsvFeedsList = ({
                 key={csvFeed.id}
                 csvFeed={csvFeed}
                 serviceInstance={serviceInstance}
-                detailUrl={`/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${csvFeed.id}`}
+                detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${csvFeed.id}`}
                 shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
               />
             ))}
@@ -155,7 +158,7 @@ const CsvFeedsList = ({
             csvFeed={csvFeed}
             connectionId={data.csvFeeds!.__id}
             serviceInstance={serviceInstance}
-            detailUrl={`/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${csvFeed.id}`}
+            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${csvFeed.id}`}
             shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
           />
         ))}

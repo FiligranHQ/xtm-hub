@@ -24,6 +24,7 @@ import {
 
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { useConnectionId } from '@/hooks/useConnectionId';
+import { APP_PATH } from '@/utils/path/constant';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { userSlugQuery } from '@generated/userSlugQuery.graphql';
 
@@ -83,14 +84,14 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
 
   if (!user) {
     // If user not found, redirect to admin list
-    router.replace('/app/admin/user');
+    router.replace(`/${APP_PATH}/admin/user`);
   } else {
     const breadcrumbValue = [
       {
         label: 'MenuLinks.Settings',
       },
       {
-        href: '/app/admin/user',
+        href: `/${APP_PATH}/admin/user`,
         label: 'MenuLinks.Security',
       },
       {

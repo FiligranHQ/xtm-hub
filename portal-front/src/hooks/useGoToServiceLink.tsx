@@ -1,4 +1,5 @@
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
+import { APP_PATH } from '@/utils/path/constant';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useRouter } from 'next/navigation';
 import { useRelayEnvironment } from 'react-relay';
@@ -24,7 +25,7 @@ export const useGoToServiceLink = () => {
         break;
       default:
         router.push(
-          `/app/service/${serviceInstance.service_definition.identifier}/${id}`
+          `/${APP_PATH}/service/${serviceInstance.service_definition.identifier}/${id}`
         );
         break;
     }

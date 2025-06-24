@@ -1,6 +1,7 @@
 import DashboardUpdate from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-update';
 import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
+import { APP_PATH } from '@/utils/path/constant';
 import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
 import { customDashboardsItem_fragment$key } from '@generated/customDashboardsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -33,11 +34,11 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
-      href: '/app',
+      href: `/${APP_PATH}`,
     },
     {
       label: serviceInstance.name,
-      href: `/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
+      href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       original: true,
     },
     {

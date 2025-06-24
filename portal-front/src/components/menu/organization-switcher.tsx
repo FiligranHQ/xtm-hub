@@ -1,6 +1,7 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
+import { APP_PATH } from '@/utils/path/constant';
 import { organizationSwitcherMutation } from '@generated/organizationSwitcherMutation.graphql';
 import { CityIcon, UnfoldMoreIcon } from 'filigran-icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from 'filigran-ui';
@@ -50,7 +51,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
         store.invalidateStore();
       },
       onCompleted: () => {
-        router.push('/app');
+        router.push(`/${APP_PATH}`);
       },
     });
     setOpenPopover(false);

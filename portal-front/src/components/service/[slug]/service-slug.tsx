@@ -15,6 +15,7 @@ import { IconActions, IconActionsLink } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { i18nKey } from '@/utils/datatable';
+import { APP_PATH } from '@/utils/path/constant';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
@@ -60,11 +61,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const breadcrumbValue: BreadcrumbNavLink[] = [
     ...(isAdminPath
       ? [
-          { label: 'MenuLinks.Home', href: '/app' },
+          { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
           { label: 'MenuLinks.Settings' },
-          { label: 'MenuLinks.Services', href: '/app/admin/service' },
+          { label: 'MenuLinks.Services', href: `/${APP_PATH}/admin/service` },
         ]
-      : [{ label: 'MenuLinks.Home', href: '/app' }]),
+      : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
     {
       label: queryData.serviceInstanceByIdWithSubscriptions!.name,
       original: true,
@@ -114,7 +115,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 </>
               }>
               <IconActionsLink
-                href={`/app/admin/service/${row.id}/subscription`}>
+                href={`/${APP_PATH}/admin/service/${row.id}/subscription`}>
                 {t('Service.Management.ManageUsers')}
               </IconActionsLink>
               <AlertDialogComponent

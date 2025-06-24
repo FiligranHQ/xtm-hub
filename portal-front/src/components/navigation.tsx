@@ -4,6 +4,7 @@ import { LinkMenu } from '@/components/menu/menu';
 import MenuAdmin from '@/components/menu/menu-admin';
 import { OrganizationSwitcher } from '@/components/menu/organization-switcher';
 import { OrganizationCapabilityName } from '@/utils/constant';
+import { APP_PATH } from '@/utils/path/constant';
 import { HomeIcon } from 'filigran-icon';
 import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -32,7 +33,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
         <li>
           <LinkMenu
             open={open}
-            href={'/app'}
+            href={`/${APP_PATH}`}
             icon={HomeIcon}
             text={t('MenuLinks.Home')}
           />
@@ -41,7 +42,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
           <li>
             <LinkMenu
               open={open}
-              href={'/app/manage/user'}
+              href={`/${APP_PATH}/manage/user`}
               icon={UsersIcon}
               text={t('MenuLinks.Users')}
             />

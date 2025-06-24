@@ -4,6 +4,7 @@ import {
   csvFeedsItem,
 } from '@/components/service/csv-feeds/csv-feed.graphql';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
+import { APP_PATH } from '@/utils/path/constant';
 import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
 import { csvFeedsItem_fragment$key } from '@generated/csvFeedsItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -36,11 +37,11 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
-      href: '/app',
+      href: `/${APP_PATH}`,
     },
     {
       label: serviceInstance.name,
-      href: `/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
+      href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       original: true,
     },
     {
@@ -51,7 +52,7 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
 
   const onDelete = () => {
     router.push(
-      `/app/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
+      `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
     );
     toast({
       title: t('Utils.Success'),

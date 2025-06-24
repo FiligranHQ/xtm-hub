@@ -1,4 +1,5 @@
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import { APP_PATH } from '@/utils/path/constant';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -26,7 +27,7 @@ const CustomDashboardsListButtons = ({
           asChild
           variant="outline">
           <Link
-            href={`/app/manage/service/${serviceInstance.id}/subscription/${subscriptionId}`}>
+            href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${subscriptionId}`}>
             {t('Service.Capabilities.ManageAccessName')}
           </Link>
         </Button>

@@ -3,6 +3,7 @@
 import { EditService } from '@/components/service/edit-service';
 import { IconActions, IconActionsLink } from '@/components/ui/icon-actions';
 import { i18nKey } from '@/utils/datatable';
+import { APP_PATH } from '@/utils/path/constant';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
@@ -49,7 +50,7 @@ const AdminServiceTab = ({ serviceData }: AdminServiceTabProps) => {
                 </>
               }>
               {row.original.service_definition?.identifier !== 'link' && (
-                <IconActionsLink href={`/app/admin/service/${row.id}`}>
+                <IconActionsLink href={`/${APP_PATH}/admin/service/${row.id}`}>
                   {t('Service.GoToAdminLabel')}
                 </IconActionsLink>
               )}

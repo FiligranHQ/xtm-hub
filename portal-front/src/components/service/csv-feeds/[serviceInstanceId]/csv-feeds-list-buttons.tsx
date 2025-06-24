@@ -1,5 +1,6 @@
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { CSVFeedAddSheet } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-add-sheet';
+import { APP_PATH } from '@/utils/path/constant';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -27,7 +28,7 @@ const CsvFeedButtons = ({
           asChild
           variant="outline">
           <Link
-            href={`/app/manage/service/${serviceInstance.id}/subscription/${firstCsvFeedSubscriptionId}`}>
+            href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${firstCsvFeedSubscriptionId}`}>
             {t('Service.Capabilities.ManageAccessName')}
           </Link>
         </Button>

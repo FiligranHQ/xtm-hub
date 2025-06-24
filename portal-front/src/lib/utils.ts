@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 
+import { APP_PATH } from '@/utils/path/constant';
 import { twMerge } from 'tailwind-merge';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -57,7 +58,7 @@ export const getServiceInstanceUrl = (
   global_secondary_item_id?: string
 ) =>
   new URL(
-    `/app/service/${identifier}/${global_service_instance_id}${global_secondary_item_id ? `/${global_secondary_item_id}` : ''}`,
+    `/${APP_PATH}/service/${identifier}/${global_service_instance_id}${global_secondary_item_id ? `/${global_secondary_item_id}` : ''}`,
     base_url
   );
 

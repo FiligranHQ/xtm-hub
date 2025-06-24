@@ -15,7 +15,10 @@ export class CybersecuritySolutionsPage {
   async assertCurrentPage() {
     await this.page.waitForURL('/');
     await expect(
-      this.page.getByText('Discover resources and expertise')
+      this.page.getByRole('heading', {
+        level: 1,
+        name: 'Discover resources and expertise',
+      })
     ).toBeVisible();
   }
 }
