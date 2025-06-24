@@ -82,13 +82,15 @@ export const sendFileToS3 = async (
 };
 
 export const passOldDocumentsIntoInactive = async (
-  existingDocuments: Document[]
+  existingDocuments: Document[],
+  trx: Knex.Transaction
 ) => {
   const documentIds = existingDocuments.map((doc) => doc.id);
   await dbUnsecure<Document>('Document')
     .whereIn('id', documentIds)
     .update({ active: false })
-    .returning('*');
+    .returning('*')
+    .transacting(trx);
 };
 
 export const insertDocument = async (
@@ -100,7 +102,7 @@ export const insertDocument = async (
     file_name: documentData.file_name,
   });
   if (existingDocuments.length > 0) {
-    passOldDocumentsIntoInactive(existingDocuments);
+    passOldDocumentsIntoInactive(existingDocuments, trx);
   }
 
   return createDocument<Document>(context, documentData, [], trx);
