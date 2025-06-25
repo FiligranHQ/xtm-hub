@@ -1,6 +1,7 @@
 import useAdminByPass from '@/hooks/useAdminByPass';
 import useAdminPath from '@/hooks/useAdminPath';
 import { RESTRICTION } from '@/utils/constant';
+import { APP_PATH } from '@/utils/path/constant';
 import { renderHook } from '@testing-library/react';
 import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
@@ -19,7 +20,7 @@ describe('useAdminPath', () => {
     'Should return $expected if user has $userCapa and path includes $path',
     async ({ expected, userCapa, path }) => {
       useAdminByPass.mockReturnValue(userCapa === 'BYPASS');
-      usePathname.mockReturnValue(`/${path}/dashboard`);
+      usePathname.mockReturnValue(`/${APP_PATH}/${path}/dashboard`);
 
       const { result } = renderHook(() => useAdminPath());
 

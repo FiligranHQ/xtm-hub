@@ -1,5 +1,4 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Button } from 'filigran-ui/servers';
 import 'filigran-ui/theme.css';
@@ -64,7 +63,7 @@ export default function RootLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between sticky top-0 z-[20]">
-        <Link href={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`}>
+        <Link href="/">
           <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
           <span className="sr-only">XTM Hub by Filigran</span>
         </Link>

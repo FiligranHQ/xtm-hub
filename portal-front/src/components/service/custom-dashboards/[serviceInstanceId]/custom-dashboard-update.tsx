@@ -10,7 +10,10 @@ import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
@@ -129,7 +132,7 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
           }),
         });
         router.push(
-          `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
+          `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
         );
       },
     });

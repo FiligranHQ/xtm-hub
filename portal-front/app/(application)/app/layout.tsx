@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import 'filigran-ui/theme.css';
-import '../../styles/globals.css';
+import '../../../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 
@@ -12,7 +12,6 @@ import HeaderComponent from '@/components/header';
 import Menu from '@/components/menu/menu';
 import { ErrorPage } from '@/components/ui/error-page';
 import { RelayProvider } from '@/relay/RelayProvider';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
@@ -76,7 +75,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
     );
   } catch (error) {
     if ((error as Error).message === should_redirect_error) {
-      redirect(`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}`);
+      redirect(`/`);
     }
 
     console.error('RootLayout Error:', error);
