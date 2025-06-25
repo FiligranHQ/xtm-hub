@@ -206,7 +206,7 @@ export async function GET(
           baseUrlFront,
           identifier,
           toGlobalId('ServiceInstance', service_instance_id!),
-          document_id ? toGlobalId('Document', document_id) : undefined
+          document_id
         )
       );
     }
