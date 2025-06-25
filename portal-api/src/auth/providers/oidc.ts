@@ -9,7 +9,8 @@ import { logApp } from '../../utils/app-logger.util';
 import { providerLoginHandler } from '../login-handle';
 import { extractRole } from '../mapping-roles';
 
-export const addOIDCStrategy = (passport) => {
+export const addOIDCStrategy = async (passport): Promise<void> => {
+  logApp.debug('addOIDCStrategy');
   const AUTH_SSO = 'SSO';
   const STRATEGY_OPENID = 'OpenIDConnectStrategy';
   const providers = [];
@@ -21,82 +22,80 @@ export const addOIDCStrategy = (passport) => {
   // All config of openid lib use snake case.
   const openIdClient = undefined;
   OpenIDCustom.setHttpOptionsDefaults({ timeout: 0, agent: openIdClient });
-  OpenIDIssuer.discover(oidcConfig.issuer)
-    .then((issuer) => {
-      const { Client } = issuer;
+  try {
+    const issuer = await OpenIDIssuer.discover(oidcConfig.issuer);
+    const { Client } = issuer;
 
-      const client = new Client(oidcConfig);
+    const client = new Client(oidcConfig);
 
-      // region scopes generation
-      const openIdScopes = ['openid', 'email', 'profile'];
-      // endregion
-      const options = {
-        client,
-        passReqToCallback: true,
-        params: { scope: openIdScopes.join(' ') },
-      };
+    // region scopes generation
+    const openIdScopes = ['openid', 'email', 'profile'];
+    // endregion
+    const options = {
+      client,
+      passReqToCallback: true,
+      params: { scope: openIdScopes.join(' ') },
+    };
 
-      logApp.debug('OIDC Strategy');
-      const openIDStrategy = new OpenIDStrategy(
-        options,
-        async (_, tokenSet, userinfo, done) => {
-          const roles = extractRole(
-            userinfo['https://xtm-hub-development/roles']
-          );
+    const openIDStrategy = new OpenIDStrategy(
+      options,
+      async (_, tokenSet, userinfo, done) => {
+        const roles = extractRole(
+          userinfo['https://xtm-hub-development/roles']
+        );
 
-          const {
+        const {
+          email,
+          nickname: first_name,
+          family_name,
+          given_name,
+          picture,
+        } = userinfo;
+        await providerLoginHandler(
+          {
             email,
-            nickname: first_name,
-            family_name,
-            given_name,
+            first_name: given_name ?? first_name,
+            last_name: family_name,
+            roles,
             picture,
-          } = userinfo;
-          await providerLoginHandler(
-            {
-              email,
-              first_name: given_name ?? first_name,
-              last_name: family_name,
-              roles,
-              picture,
-            },
-            done
-          );
-          logApp.info('[OPENID] Successfully logged', { userinfo });
+          },
+          done
+        );
+        logApp.info('[OPENID] Successfully logged', { userinfo });
 
-          done(null, tokenSet.claims());
-        }
-      );
-      // openIDStrategy.logout = (_, callback) => {
-      //   const isSpecificUri = isNotEmptyField(config.logout_callback_url);
-      //   const endpointUri = issuer.end_session_endpoint ? issuer.end_session_endpoint : `${config.issuer}/oidc/logout`;
-      //   if (isSpecificUri) {
-      //     const logoutUri = `${endpointUri}?post_logout_redirect_uri=${config.logout_callback_url}`;
-      //     callback(null, logoutUri);
-      //   } else {
-      //     callback(null, endpointUri);
-      //   }
-      // };
-      passport.use(providerRef, openIDStrategy);
+        done(null, tokenSet.claims());
+      }
+    );
+    // openIDStrategy.logout = (_, callback) => {
+    //   const isSpecificUri = isNotEmptyField(config.logout_callback_url);
+    //   const endpointUri = issuer.end_session_endpoint ? issuer.end_session_endpoint : `${config.issuer}/oidc/logout`;
+    //   if (isSpecificUri) {
+    //     const logoutUri = `${endpointUri}?post_logout_redirect_uri=${config.logout_callback_url}`;
+    //     callback(null, logoutUri);
+    //   } else {
+    //     callback(null, endpointUri);
+    //   }
+    // };
+    passport.use(providerRef, openIDStrategy);
 
-      passport.serializeUser(function (user, done) {
-        done(null, user);
-      });
-      passport.deserializeUser(function (user, done) {
-        done(null, user);
-      });
-      providers.push({
-        name: 'keycloak-express',
-        type: AUTH_SSO,
-        STRATEGY_OPENID,
-        provider: providerRef,
-      });
-    })
-    .catch((err) => {
-      logApp.error('Error initializing authentication provider', {
-        cause: err,
-        provider: providerRef,
-      });
+    passport.serializeUser(function (user, done) {
+      done(null, user);
     });
+    passport.deserializeUser(function (user, done) {
+      done(null, user);
+    });
+    providers.push({
+      name: 'keycloak-express',
+      type: AUTH_SSO,
+      STRATEGY_OPENID,
+      provider: providerRef,
+    });
+  } catch (err) {
+    logApp.error('Error initializing authentication provider', {
+      cause: err,
+      provider: providerRef,
+    });
+  }
 };
 
 export const getOidcConfig = () => {

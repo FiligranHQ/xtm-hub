@@ -129,19 +129,23 @@ export const createDocument = async <T extends DocumentModel>(
     .transacting(trx);
 
   if (documentData.parent_document_id) {
-    await db<DocumentChildren>(context, 'Document_Children').insert({
-      parent_document_id: documentData.parent_document_id as DocumentId,
-      child_document_id: document.id,
-    }).transacting(trx);
+    await db<DocumentChildren>(context, 'Document_Children')
+      .insert({
+        parent_document_id: documentData.parent_document_id as DocumentId,
+        child_document_id: document.id,
+      })
+      .transacting(trx);
   }
 
   if (documentData.labels?.length) {
-    await db<ObjectLabel>(context, 'Object_Label').insert(
-      documentData.labels.map((id: string) => ({
-        object_id: document.id as unknown as ObjectLabelObjectId,
-        label_id: extractId(id) as LabelId,
-      }))
-    ).transacting(trx);
+    await db<ObjectLabel>(context, 'Object_Label')
+      .insert(
+        documentData.labels.map((id: string) => ({
+          object_id: document.id as unknown as ObjectLabelObjectId,
+          label_id: extractId(id) as LabelId,
+        }))
+      )
+      .transacting(trx);
   }
 
   if (metadataKeys.length) {
@@ -190,13 +194,18 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
 
   await Promise.all(
     files.map((file) =>
-      createDocument(context, {
-        type: 'image',
-        parent_document_id: doc.id as DocumentId,
-        file_name: file.fileName,
-        minio_name: file.minioName,
-        mime_type: file.mimeType,
-      }, [], trx)
+      createDocument(
+        context,
+        {
+          type: 'image',
+          parent_document_id: doc.id as DocumentId,
+          file_name: file.fileName,
+          minio_name: file.minioName,
+          mime_type: file.mimeType,
+        },
+        [],
+        trx
+      )
     )
   );
 
@@ -235,12 +244,14 @@ export const updateDocument = async <T extends DocumentModel>(
       .transacting(trx);
 
     if (documentData.labels?.length > 0) {
-      await db<ObjectLabel>(context, 'Object_Label').insert(
-        documentData.labels.map((id) => ({
-          object_id: documentId as unknown as ObjectLabelObjectId,
-          label_id: extractId(id) as LabelId,
-        }))
-      ).transacting(trx);
+      await db<ObjectLabel>(context, 'Object_Label')
+        .insert(
+          documentData.labels.map((id) => ({
+            object_id: documentId as unknown as ObjectLabelObjectId,
+            label_id: extractId(id) as LabelId,
+          }))
+        )
+        .transacting(trx);
     }
   }
 
@@ -258,7 +269,8 @@ export const updateDocument = async <T extends DocumentModel>(
           value: documentData[key] as string,
         }))
       )
-      .returning('*').transacting(trx);
+      .returning('*')
+      .transacting(trx);
 
     for (const metadata of metadatas) {
       document[metadata.key] = metadata.value;
@@ -326,13 +338,18 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   // Create new images
   await Promise.all(
     newImages.map((image) =>
-      createDocument(context, {
-        type: 'image',
-        parent_document_id: id,
-        file_name: image.fileName,
-        minio_name: image.minioName,
-        mime_type: image.mimeType,
-      }, [], trx)
+      createDocument(
+        context,
+        {
+          type: 'image',
+          parent_document_id: id,
+          file_name: image.fileName,
+          minio_name: image.minioName,
+          mime_type: image.mimeType,
+        },
+        [],
+        trx
+      )
     )
   );
 
@@ -344,9 +361,15 @@ export const incrementDocumentsDownloads = async (
   document: DocumentModel,
   trx: Knex.Transaction
 ) => {
-  await updateDocument(context, document.id, {
-    download_number: document.download_number + 1,
-  }, [], trx);
+  await updateDocument(
+    context,
+    document.id,
+    {
+      download_number: document.download_number + 1,
+    },
+    [],
+    trx
+  );
 };
 
 export const deleteDocument = async <T extends DocumentModel>(

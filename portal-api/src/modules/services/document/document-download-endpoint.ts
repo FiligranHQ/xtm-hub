@@ -1,6 +1,7 @@
 import cors from 'cors';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
+import { dbTx } from '../../../../knexfile';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
@@ -8,7 +9,6 @@ import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error.util';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
-import { dbTx } from '../../../../knexfile';
 
 export const documentDownloadEndpoint = (app) => {
   app.get(

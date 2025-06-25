@@ -160,7 +160,9 @@ const resolvers: Resolvers = {
           context,
           'ServiceInstance'
         )
-          .where({ id: extractId<ServiceInstanceId>(payload.serviceInstanceId) })
+          .where({
+            id: extractId<ServiceInstanceId>(payload.serviceInstanceId),
+          })
           .update(update)
           .returning('*')
           .transacting(trx);
@@ -171,7 +173,6 @@ const resolvers: Resolvers = {
         await trx.rollback();
         throw error;
       }
-
     },
     editServiceInstance: async (_, { id, name }, context) => {
       const { id: databaseId } = fromGlobalId(id) as {
