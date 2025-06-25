@@ -83,6 +83,8 @@ export const CustomDashboardUpdateForm = ({
 
   const { me } = useContext(PortalContext);
 
+  const [imagesIndexToDelete, setImagesIndexToDelete] = useState<number[]>([]);
+
   const form = useForm<CustomDashboardUpdateFormValues>({
     resolver: zodResolver(updateCustomDashboardSchema),
     defaultValues: {
@@ -454,17 +456,22 @@ export const CustomDashboardUpdateForm = ({
                         backgroundSize: 'cover',
                       }}
                       className="min-h-[15rem] border rounded relative">
-                      <Button
-                        variant="outline-destructive"
-                        size="icon"
-                        className="bg-black absolute right-2 top-2"
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setOpenDelete(index);
-                        }}>
-                        <DeleteIcon className="size-4" />
-                      </Button>
+                      {imagesIndexToDelete.includes(index) && (
+                        <div className="absolute inset-0 bg-black bg-opacity-80 rounded flex items-center justify-center"></div>
+                      )}
+                      {!imagesIndexToDelete.includes(index) && (
+                        <Button
+                          variant="outline-destructive"
+                          size="icon"
+                          className="absolute right-2 top-2"
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setOpenDelete(index);
+                          }}>
+                          <DeleteIcon className="size-4" />
+                        </Button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -483,7 +490,8 @@ export const CustomDashboardUpdateForm = ({
                         (_, index) => index !== openDelete
                       ),
                   });
-                  setImages(images.filter((_, index) => index !== openDelete));
+
+                  setImagesIndexToDelete([...imagesIndexToDelete, openDelete]);
                   form.setValue(
                     'images',
                     [].filter.call(
