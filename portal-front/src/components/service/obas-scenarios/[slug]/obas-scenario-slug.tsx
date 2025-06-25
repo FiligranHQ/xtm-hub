@@ -4,6 +4,7 @@ import {
   ObasScenarioQuery,
   obasScenariosItem,
 } from '@/components/service/obas-scenarios/obas-scenario.graphql';
+import { APP_PATH } from '@/utils/path/constant';
 import { obasScenarioQuery } from '@generated/obasScenarioQuery.graphql';
 import { obasScenariosItem_fragment$key } from '@generated/obasScenariosItem_fragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
@@ -39,11 +40,11 @@ const ObasScenarioSlug: React.FunctionComponent<ObasScenarioSlugProps> = ({
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
-      href: '/',
+      href: `/${APP_PATH}`,
     },
     {
       label: serviceInstance.name,
-      href: `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
+      href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       original: true,
     },
     {
@@ -54,7 +55,7 @@ const ObasScenarioSlug: React.FunctionComponent<ObasScenarioSlugProps> = ({
 
   const onDelete = () => {
     router.push(
-      `/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
+      `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
     );
     toast({
       title: t('Utils.Success'),

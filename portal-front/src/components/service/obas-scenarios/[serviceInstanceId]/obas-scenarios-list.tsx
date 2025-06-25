@@ -7,7 +7,10 @@ import {
 
 import { SearchInput } from '@/components/ui/search-input';
 import { debounceHandleInput } from '@/utils/debounce';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import {
   obasScenariosItem_fragment$data,
   obasScenariosItem_fragment$key,
@@ -139,7 +142,7 @@ const ObasScenariosList = ({
                 key={obasScenario.id}
                 obasScenario={obasScenario}
                 serviceInstance={serviceInstance}
-                detailUrl={`/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${obasScenario.id}`}
+                detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${obasScenario.id}`}
                 shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${obasScenario.slug}`}
               />
             ))}
@@ -161,7 +164,7 @@ const ObasScenariosList = ({
             obasScenario={obasScenario}
             connectionId={data.obasScenarios!.__id}
             serviceInstance={serviceInstance}
-            detailUrl={`/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${obasScenario.id}`}
+            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${obasScenario.id}`}
             shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${obasScenario.slug}`}
           />
         ))}

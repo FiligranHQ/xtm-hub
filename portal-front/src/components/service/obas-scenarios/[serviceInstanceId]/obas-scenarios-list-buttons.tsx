@@ -1,5 +1,6 @@
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { ObasScenarioAddSheet } from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-add-sheet';
+import { APP_PATH } from '@/utils/path/constant';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -27,7 +28,7 @@ const ObasScenarioButtons = ({
           asChild
           variant="outline">
           <Link
-            href={`/manage/service/${serviceInstance.id}/subscription/${firstObasScenarioSubscriptionId}`}>
+            href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${firstObasScenarioSubscriptionId}`}>
             {t('Service.Capabilities.ManageAccessName')}
           </Link>
         </Button>

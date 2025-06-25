@@ -3,6 +3,7 @@ import {
   serverFetchGraphQL,
   serverMutateGraphQL,
 } from '@/relay/serverPortalApiFetch';
+import { APP_PATH } from '@/utils/path/constant';
 import ServiceByIdQuery, {
   serviceByIdQuery,
   serviceByIdQuery$data,
@@ -53,7 +54,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
-      href: '/',
+      href: `/${APP_PATH}`,
     },
     {
       label: serviceInstance!.name,
