@@ -16,6 +16,7 @@ export const dbPostgres = knex({
 });
 
 export const createDBSnapshot = async (): Promise<void> => {
+  await setAllowConnections(false);
   await disconnectOtherUsers();
 
   await dbPostgres.raw(`DROP DATABASE IF EXISTS ${SNAPSHOT_DATABASE_NAME}`);
@@ -24,10 +25,12 @@ export const createDBSnapshot = async (): Promise<void> => {
     `CREATE DATABASE ${SNAPSHOT_DATABASE_NAME} WITH TEMPLATE ${DB_NAME};`
   );
 
+  await setAllowConnections(true);
   return new Promise((resolve) => setTimeout(resolve, 400));
 };
 
 export const resetDBSnapshot = async (): Promise<void> => {
+  await setAllowConnections(false);
   await disconnectOtherUsers();
 
   await dbPostgres.raw(`DROP DATABASE IF EXISTS ${DB_NAME};`);
@@ -36,11 +39,18 @@ export const resetDBSnapshot = async (): Promise<void> => {
     `CREATE DATABASE ${DB_NAME} WITH TEMPLATE ${SNAPSHOT_DATABASE_NAME}`
   );
 
+  await setAllowConnections(true);
   return new Promise((resolve) => setTimeout(resolve, 400));
 };
 
 export const removeDBSnapshot = async (): Promise<void> => {
   await db.raw(`DROP DATABASE IF EXISTS ${SNAPSHOT_DATABASE_NAME}`);
+};
+
+const setAllowConnections = async (allowed: boolean): Promise<void> => {
+  await dbPostgres.raw(
+    `UPDATE pg_database SET datallowconn = ${allowed} WHERE datname = '${DB_NAME}';`
+  );
 };
 
 const disconnectOtherUsers = async (): Promise<void> => {
