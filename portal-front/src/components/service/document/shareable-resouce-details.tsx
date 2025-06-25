@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Avatar, Label } from 'filigran-ui/clients';
 
 import { roundToNearest } from '@/lib/utils';
+import { formatPersonNames } from '@/utils/format/name';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { useTranslations } from 'next-intl';
 
@@ -42,10 +43,7 @@ const ShareableResourceDetails: React.FunctionComponent<
           <div className="size-8">
             <Avatar src={documentData.uploader?.picture ?? ''} />
           </div>
-          <span>
-            {`${documentData.uploader?.first_name}
-                ${documentData.uploader?.last_name}`}
-          </span>
+          <span>{formatPersonNames(documentData.uploader)}</span>
         </div>
       </div>
       <div>

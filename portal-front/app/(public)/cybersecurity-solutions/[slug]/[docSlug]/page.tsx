@@ -5,6 +5,7 @@ import BadgeOverflowCounter, {
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
@@ -100,7 +101,7 @@ export async function generateMetadata({
       publishedTime: document.created_at,
       modifiedTime: document.updated_at,
       authors: document.uploader
-        ? [`${document.uploader.first_name} ${document.uploader.last_name}`]
+        ? [formatPersonNames(document.uploader)]
         : undefined,
       tags: document.labels?.map((label) => label.name),
     },
@@ -166,7 +167,7 @@ const Page = async ({
       author: document.uploader
         ? {
             '@type': 'Person',
-            name: `${document.uploader.first_name} ${document.uploader.last_name}`,
+            name: formatPersonNames(document.uploader),
             image: document.uploader.picture || undefined,
           }
         : undefined,
