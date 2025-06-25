@@ -1,7 +1,7 @@
 import { manageRequest } from '@/utils/middleware/graphqlRequest.util';
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 
-export async function middleware(request: NextRequest, event: NextFetchEvent) {
+export async function middleware(request: NextRequest, _: NextFetchEvent) {
   return manageRequest(request) || NextResponse.next();
 }
 
@@ -11,7 +11,7 @@ export const config = {
     '/graphql-sse',
     '/auth/:path*',
     '/document/get/:filename*',
-    '/document/visualize/:filename*',
+    '/document/visualize/:serviceInstanceId/:filename*',
     '/document/images/:documentId*',
   ],
 };
