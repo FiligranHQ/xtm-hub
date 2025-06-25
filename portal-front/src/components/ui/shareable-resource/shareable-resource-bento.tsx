@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
+import { formatPersonNames } from '@/utils/format/name';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
@@ -20,7 +21,7 @@ const ShareableResourceBento = ({
           <div className="size-6">
             <Avatar src={document.uploader?.picture ?? ''} />
           </div>
-          {`${document.uploader?.first_name} ${document.uploader?.last_name}`}
+          {formatPersonNames(document.uploader)}
         </div>
         <div className="flex justify-center items-center flex-[2] rounded px-4 text-center border from-blue to-turquoise-300 bg-gradient-to-r dark:from-darkblue-900 dark:to-darkblue-600 dark:bg-gradient-to-r dark:txt-white">
           {document.name}

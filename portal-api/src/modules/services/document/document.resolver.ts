@@ -41,15 +41,20 @@ const resolvers: Resolvers = {
           context
         );
 
-        const addedDocument = await createDocument<Document>(context, {
-          ...omit(payload, ['service_instance_id']),
-          minio_name: minioName,
-          file_name: fileName,
-          mime_type: mimeType,
-          parent_document_id: parentDocumentId
-            ? extractId<DocumentId>(parentDocumentId)
-            : null,
-        }, [], trx);
+        const addedDocument = await createDocument<Document>(
+          context,
+          {
+            ...omit(payload, ['service_instance_id']),
+            minio_name: minioName,
+            file_name: fileName,
+            mime_type: mimeType,
+            parent_document_id: parentDocumentId
+              ? extractId<DocumentId>(parentDocumentId)
+              : null,
+          },
+          [],
+          trx
+        );
         await trx.commit();
         return addedDocument;
       } catch (error) {
@@ -64,7 +69,9 @@ const resolvers: Resolvers = {
         const document = await updateDocument(
           context,
           extractId<DocumentId>(documentId),
-          input, [], trx
+          input,
+          [],
+          trx
         );
         await trx.commit();
         return document;

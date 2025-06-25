@@ -1,3 +1,4 @@
+import { APP_PATH } from '@/utils/path/constant';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -13,7 +14,7 @@ export const ProfileMenuButton: React.FC<ProfileButtonProps> = ({
   const t = useTranslations();
 
   return (
-    <Link href="/profile">
+    <Link href={`/${APP_PATH}/profile`}>
       <Button
         variant="ghost"
         className={className}>

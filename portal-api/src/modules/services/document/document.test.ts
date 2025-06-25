@@ -1,6 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { dbTx } from '../../../../knexfile';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import {
   DocumentId,
@@ -24,7 +25,6 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
-import { dbTx } from '../../../../knexfile';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {
@@ -70,15 +70,20 @@ describe('should call S3 to send file', () => {
 describe('should add new file', () => {
   beforeAll(async () => {
     const trx = await dbTx();
-    await createDocument(contextAdminUser, {
-      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      description: 'description',
-      minio_name: 'minioName',
-      file_name: 'filename',
-      service_instance_id:
-        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-      type: 'vault',
-    }, [], trx);
+    await createDocument(
+      contextAdminUser,
+      {
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        description: 'description',
+        minio_name: 'minioName',
+        file_name: 'filename',
+        service_instance_id:
+          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+        type: 'vault',
+      },
+      [],
+      trx
+    );
     await trx.commit();
   });
   it('should create Document entry in DB', async () => {
@@ -97,7 +102,6 @@ describe('should add new file', () => {
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
     expect(inDb).toBeTruthy();
     expect(inDb[0].file_name).toEqual('filename2');
-
   });
 
   it('should pass old Documents into inactive state', async () => {
@@ -128,18 +132,23 @@ describe('should add new file', () => {
 describe('Should modify document', () => {
   beforeAll(async () => {
     const trx = await dbTx();
-    await createDocument(contextAdminUser, {
-      id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
-      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      description: 'description',
-      minio_name: 'minioName',
-      file_name: 'filename',
-      uploader_organization_id:
-        'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId,
-      service_instance_id:
-        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-      type: 'vault',
-    }, [], trx);
+    await createDocument(
+      contextAdminUser,
+      {
+        id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        description: 'description',
+        minio_name: 'minioName',
+        file_name: 'filename',
+        uploader_organization_id:
+          'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId,
+        service_instance_id:
+          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+        type: 'vault',
+      },
+      [],
+      trx
+    );
     await trx.commit();
   });
   it('Should update document description', async () => {
@@ -196,15 +205,20 @@ describe('should normalize filename', () => {
 describe('should check if file already exists', () => {
   beforeAll(async () => {
     const trx = await dbTx();
-    await createDocument(contextAdminUser, {
-      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      description: 'description',
-      minio_name: 'minioName',
-      file_name: 'filename',
-      service_instance_id:
-        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-      type: 'vault',
-    }, [], trx);
+    await createDocument(
+      contextAdminUser,
+      {
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        description: 'description',
+        minio_name: 'minioName',
+        file_name: 'filename',
+        service_instance_id:
+          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+        type: 'vault',
+      },
+      [],
+      trx
+    );
     await trx.commit();
   });
 
@@ -229,26 +243,36 @@ describe('should check if file already exists', () => {
 describe('Documents loading', () => {
   beforeAll(async () => {
     const trx = await dbTx();
-    await createDocument(contextAdminUser, {
-      id: 'aefd2d32-adae-4329-b772-90a2fb8516ad' as DocumentId,
-      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      description: 'description',
-      minio_name: 'minioName',
-      file_name: 'filename',
-      service_instance_id:
-        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-      type: 'vault',
-    }, [], trx);
-    await createDocument(contextAdminUser, {
-      id: '96847916-2f35-4402-8e64-888c5d5e8b7a' as DocumentId,
-      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      description: 'xdescription',
-      minio_name: 'xminioName',
-      file_name: 'xfilename',
-      service_instance_id:
-        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-      type: 'vault',
-    }, [], trx);
+    await createDocument(
+      contextAdminUser,
+      {
+        id: 'aefd2d32-adae-4329-b772-90a2fb8516ad' as DocumentId,
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        description: 'description',
+        minio_name: 'minioName',
+        file_name: 'filename',
+        service_instance_id:
+          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+        type: 'vault',
+      },
+      [],
+      trx
+    );
+    await createDocument(
+      contextAdminUser,
+      {
+        id: '96847916-2f35-4402-8e64-888c5d5e8b7a' as DocumentId,
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        description: 'xdescription',
+        minio_name: 'xminioName',
+        file_name: 'xfilename',
+        service_instance_id:
+          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
+        type: 'vault',
+      },
+      [],
+      trx
+    );
     await trx.commit();
   });
 

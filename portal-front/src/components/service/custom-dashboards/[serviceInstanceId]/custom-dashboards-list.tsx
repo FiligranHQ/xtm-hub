@@ -4,7 +4,10 @@ import { SettingsContext } from '@/components/settings/env-portal-context';
 import { SearchInput } from '@/components/ui/search-input';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { debounceHandleInput } from '@/utils/debounce';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import {
   customDashboardsItem_fragment$data,
   customDashboardsItem_fragment$key,
@@ -135,7 +138,7 @@ const CustomDashboardsList = ({
                 key={doc.id}
                 customDashboard={doc}
                 serviceInstance={serviceInstance}
-                detailUrl={`/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${doc.id}`}
+                detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${doc.id}`}
                 shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
               />
             ))}
@@ -152,7 +155,7 @@ const CustomDashboardsList = ({
             key={doc.id}
             customDashboard={doc}
             serviceInstance={serviceInstance}
-            detailUrl={`/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${doc.id}`}
+            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${doc.id}`}
             shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
           />
         ))}

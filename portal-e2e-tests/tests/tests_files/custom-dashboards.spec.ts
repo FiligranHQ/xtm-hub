@@ -48,7 +48,7 @@ test.describe('Custom dashboards', () => {
   });
 
   test('Should see the custom dashboard on public page', async ({ page }) => {
-    await page.goto('/cybersecurity-solutions');
+    await page.goto('/');
     await dashboardPage.navigateToPublicCustomDashboard();
     await dashboardPage.navigateToPublicDashboardDetail(
       DASHBOARD_TEST.shortDescription

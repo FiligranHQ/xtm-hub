@@ -49,18 +49,21 @@ const ShareableResourceCard = ({
         serviceInstance={serviceInstance}
       />
       <div className="flex flex-col flex-grow p-l space-y-s">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center">
           {document?.labels && (
             <BadgeOverflowCounter
               badges={document?.labels as BadgeOverflow[]}
+              className="z-[2]"
             />
           )}
-          <ShareLinkButton
-            documentId={document.id}
-            url={shareLinkUrl}
-            tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
-          />
-          {extraContent}
+          <div className="flex items-center flex-shrink-0 ml-auto">
+            <ShareLinkButton
+              documentId={document.id}
+              url={shareLinkUrl}
+              tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
+            />
+            {extraContent}
+          </div>
         </div>
         <Link
           className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0 after:z-[1]"
