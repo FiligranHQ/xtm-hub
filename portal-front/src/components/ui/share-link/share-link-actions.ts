@@ -1,7 +1,6 @@
 'use server';
 
 import { serverMutateGraphQL } from '@/relay/serverPortalApiFetch';
-import { toGlobalId } from '@/utils/globalId';
 import ShareLinkButtonMutation, {
   shareLinkButtonMutation,
   shareLinkButtonMutation$variables,
@@ -13,6 +12,6 @@ export async function updateShareNumber({
   variables: shareLinkButtonMutation$variables;
 }) {
   await serverMutateGraphQL<shareLinkButtonMutation>(ShareLinkButtonMutation, {
-    documentId: toGlobalId('Document', variables.documentId),
+    documentId: variables.documentId,
   });
 }
