@@ -1,6 +1,7 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { formatPersonNames } from '@/utils/format/name';
 import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
@@ -146,7 +147,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           author: document.uploader
             ? {
                 '@type': 'Person',
-                name: `${document.uploader.first_name} ${document.uploader.last_name}`,
+                name: formatPersonNames(document.uploader),
               }
             : undefined,
           about: {
@@ -173,7 +174,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const breadcrumbValue = [
       {
         label: 'MenuLinks.Home',
-        href: '/cybersecurity-solutions',
+        href: '/',
       },
       {
         label: serviceInstance.name,

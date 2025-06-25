@@ -36,6 +36,7 @@ import {
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { APP_PATH } from '@/utils/path/constant';
 import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
@@ -87,11 +88,11 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     );
     if (queryDataService && queryDataService.serviceInstanceById) {
       breadcrumbValue = [
-        { label: 'MenuLinks.Home', href: '/' },
+        { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
         {
           label: `${queryDataService.serviceInstanceById.name}`,
           original: true,
-          href: `/service/${queryDataService.serviceInstanceById.service_definition!.identifier}/${queryDataService.serviceInstanceById.id}`,
+          href: `/${APP_PATH}/service/${queryDataService.serviceInstanceById.service_definition!.identifier}/${queryDataService.serviceInstanceById.id}`,
         },
         {
           label: t('Service.Management.ManageUsers'),
@@ -100,12 +101,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     }
   } else {
     breadcrumbValue = [
-      { label: 'MenuLinks.Home', href: '/' },
+      { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
       { label: 'MenuLinks.Settings' },
-      { label: 'MenuLinks.Services', href: '/admin/service' },
+      { label: 'MenuLinks.Services', href: `/${APP_PATH}/admin/service` },
       {
         label: queryDataSubscription.subscriptionById!.service_instance!.name,
-        href: `/admin/service/${queryDataSubscription.subscriptionById?.service_instance?.id}`,
+        href: `/${APP_PATH}/admin/service/${queryDataSubscription.subscriptionById?.service_instance?.id}`,
         original: true,
       },
       {

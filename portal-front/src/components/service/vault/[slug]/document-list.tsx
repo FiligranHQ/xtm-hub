@@ -27,6 +27,7 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
+import { APP_PATH } from '@/utils/path/constant';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
@@ -255,7 +256,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
-      href: '/',
+      href: `/${APP_PATH}`,
     },
     {
       label: queryDataService.serviceInstanceById!.name,
@@ -306,7 +307,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                   asChild
                   variant="outline">
                   <Link
-                    href={`/manage/service/${documentData[0]?.service_instance?.id}/subscription/${documentData[0]?.subscription?.id}`}>
+                    href={`/${APP_PATH}/manage/service/${documentData[0]?.service_instance?.id}/subscription/${documentData[0]?.subscription?.id}`}>
                     {t('Service.Vault.ManageVault')}
                   </Link>
                 </Button>

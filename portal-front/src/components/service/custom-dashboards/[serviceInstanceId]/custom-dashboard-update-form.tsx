@@ -445,7 +445,7 @@ export const CustomDashboardUpdateForm = ({
                       key={doc!.id}
                       style={{
                         backgroundImage: docIsExistingFile(doc)
-                          ? `url(/document/visualize/${customDashboard!.id}/${doc!.id})`
+                          ? `url(/document/visualize/${customDashboard!.service_instance!.id}/${doc!.id})`
                           : `url(${doc.preview})`,
                         backgroundSize: 'cover',
                       }}

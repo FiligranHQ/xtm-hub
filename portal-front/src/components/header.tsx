@@ -10,6 +10,7 @@ import { IconActions } from '@/components/ui/icon-actions';
 import { cn, isDevelopment } from '@/lib/utils';
 
 import { ProfileMenuButton } from '@/components/profile/menu/button';
+import { formatPersonNames } from '@/utils/format/name';
 import { Avatar, Skeleton } from 'filigran-ui';
 import {
   Sheet,
@@ -41,9 +42,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
 
   const User = () =>
     me ? (
-      <span>
-        {me.first_name} {me.last_name}
-      </span>
+      <span>{formatPersonNames(me)}</span>
     ) : (
       <Skeleton className="h-6 w-56" />
     );

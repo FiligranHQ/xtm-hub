@@ -6,6 +6,7 @@ import '../../styles/globals.css';
 import Login from '@/components/login/login';
 import { RelayProvider } from '@/relay/RelayProvider';
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
+import { APP_PATH } from '@/utils/path/constant';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
@@ -35,9 +36,8 @@ const Page: React.FunctionComponent = async () => {
     );
 
   const me = meData.me as unknown as meContext_fragment$data;
-
   if (me) {
-    redirect('/');
+    redirect(`/${APP_PATH}`);
   }
 
   return (
