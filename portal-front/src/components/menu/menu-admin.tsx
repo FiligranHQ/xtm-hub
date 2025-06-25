@@ -3,6 +3,7 @@ import useAdminByPass from '@/hooks/useAdminByPass';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 import { OrganizationCapabilityName } from '@/utils/constant';
+import { APP_PATH } from '@/utils/path/constant';
 import { SettingsIcon } from 'filigran-icon';
 import {
   Accordion,
@@ -76,7 +77,7 @@ const ClosedMenuAdmin = () => {
           variant="ghost"
           className={cn(
             'h-9 rounded-none px-m',
-            currentPath.startsWith('/admin/') &&
+            currentPath.startsWith(`/${APP_PATH}/admin/`) &&
               'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
           )}
           aria-label={t('MenuLinks.SettingsLabel')}>
@@ -106,11 +107,11 @@ const ClosedMenuAdmin = () => {
 
 const adminLinksData = (t: UseTranslationsProps) => [
   {
-    href: '/admin/parameters',
+    href: `/${APP_PATH}/admin/parameters`,
     label: t('MenuLinks.Parameters'),
   },
   {
-    href: '/admin/user',
+    href: `/${APP_PATH}/admin/user`,
     label: t('MenuLinks.Security'),
     restriction: [
       OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
@@ -118,15 +119,15 @@ const adminLinksData = (t: UseTranslationsProps) => [
     ],
   },
   {
-    href: '/admin/label',
+    href: `/${APP_PATH}/admin/label`,
     label: t('MenuLinks.Labels'),
   },
   {
-    href: '/admin/organizations',
+    href: `/${APP_PATH}/admin/organizations`,
     label: t('MenuLinks.Organizations'),
   },
   {
-    href: '/admin/service',
+    href: `/${APP_PATH}/admin/service`,
     label: t('MenuLinks.Services'),
   },
 ];

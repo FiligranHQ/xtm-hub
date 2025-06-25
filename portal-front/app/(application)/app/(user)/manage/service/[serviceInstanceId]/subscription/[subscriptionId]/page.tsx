@@ -1,3 +1,4 @@
+import { APP_PATH } from '@/utils/path/constant';
 import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
@@ -21,7 +22,7 @@ const Page: FunctionComponent<PageProps> = async ({ params }) => {
     );
   } catch (_) {
     // If error at user loading, redirect to the list
-    redirect('/');
+    redirect(`/${APP_PATH}`);
   }
 };
 

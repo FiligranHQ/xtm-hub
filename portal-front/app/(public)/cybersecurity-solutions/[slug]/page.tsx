@@ -173,7 +173,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const breadcrumbValue = [
       {
         label: 'MenuLinks.Home',
-        href: '/cybersecurity-solutions',
+        href: '/',
       },
       {
         label: serviceInstance.name,

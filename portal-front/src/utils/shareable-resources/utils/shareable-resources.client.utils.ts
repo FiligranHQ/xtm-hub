@@ -15,7 +15,7 @@ export function getServiceInfo(
 
   const serviceMap: Record<ServiceSlug, ServiceInfo> = {
     [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
-      link: `/redirect/integration_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
+      link: `/redirect/csv_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
       description:
         '. Discover more OpenCTI integration feeds like this in our OpenCTI Integration Feeds Library, available for download on the XTM Hub.',
     },

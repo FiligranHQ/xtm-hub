@@ -23,6 +23,8 @@ export const createDBSnapshot = async (): Promise<void> => {
   await dbPostgres.raw(
     `CREATE DATABASE ${SNAPSHOT_DATABASE_NAME} WITH TEMPLATE ${DB_NAME};`
   );
+
+  return new Promise((resolve) => setTimeout(resolve, 400));
 };
 
 export const resetDBSnapshot = async (): Promise<void> => {
@@ -33,6 +35,8 @@ export const resetDBSnapshot = async (): Promise<void> => {
   await dbPostgres.raw(
     `CREATE DATABASE ${DB_NAME} WITH TEMPLATE ${SNAPSHOT_DATABASE_NAME}`
   );
+
+  return new Promise((resolve) => setTimeout(resolve, 400));
 };
 
 export const removeDBSnapshot = async (): Promise<void> => {

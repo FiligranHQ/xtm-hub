@@ -163,9 +163,9 @@ services:
     build:
       context: ../portal-e2e-tests/.
       cache_from:
-        - "type=registry,ref=filigran/portal-e2e-tests:main"
-        - "type=registry,ref=filigran/portal-e2e-tests:cache-${IMAGE_TAGS}"
-        - "type=registry,ref=filigran/portal-e2e-tests:development"
+        - type=registry,ref=filigran/portal-e2e-tests:cache-${IMAGE_TAGS}
+        - type=registry,ref=filigran/portal-e2e-tests:main
+        - type=registry,ref=filigran/portal-e2e-tests:development
     volumes:
       - "./test-results:/app/test-results"
     depends_on:
