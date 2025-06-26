@@ -36,9 +36,6 @@ test.describe('Public custom dashboard', () => {
   test.beforeEach(async ({ page }) => {
     const agent = await TestAgent.init('admin@filigran.io');
     await agent.createCustomDashboard(DASHBOARD_TEST);
-  });
-
-  test('should display service list and details', ({ page }) => {
     cyberSecurityPage = new CybersecuritySolutionsPage(page);
     customDashboardListPage = new PublicOpenCtiCustomDashboardListPage(page);
     customDashboardDetailPage = new PublicOpenCtiCustomDashboardDetailPage(
@@ -48,8 +45,10 @@ test.describe('Public custom dashboard', () => {
     homePage = new HomePage(page);
     dashboardListPage = new DashboardListPage(page);
     dashboardDetailPage = new DashboardDetailPage(page);
+  });
 
-    test.step('should navigate to dashboard details', async () => {
+  test('should display service list and details', async () => {
+    await test.step('should navigate to dashboard details', async () => {
       await cyberSecurityPage.navigateTo();
       await cyberSecurityPage.assertCurrentPage();
       await cyberSecurityPage.hasService(OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME);
@@ -68,12 +67,12 @@ test.describe('Public custom dashboard', () => {
       );
     });
 
-    test.step('should be redirected to login when download is clicked', async () => {
+    await test.step('should be redirected to login when download is clicked', async () => {
       await customDashboardDetailPage.clickOnDownload();
       await loginPage.assertCurrentPage();
     });
 
-    test.step('should be redirected to dashboard page on login', async () => {
+    await test.step('should be redirected to dashboard page on login', async () => {
       await loginPage.login('admin@thales.com');
       await homePage.assertCurrentPage();
 
@@ -83,7 +82,7 @@ test.describe('Public custom dashboard', () => {
       await dashboardListPage.assertCurrentPage();
     });
 
-    test.step('should be able to download a dashboard', async () => {
+    await test.step('should be able to download a dashboard', async () => {
       await dashboardListPage.navigateToDashboardDetail(
         DASHBOARD_TEST.short_description
       );
