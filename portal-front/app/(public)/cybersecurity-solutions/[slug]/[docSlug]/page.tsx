@@ -275,7 +275,12 @@ const Page = async ({
               Basic Information
             </h3>
             <section className="border rounded border-border-light bg-page-background flex space-y-xl p-l">
-              {document && <DashboardDetails documentData={document} />}
+              {document && (
+                <DashboardDetails
+                  documentData={document}
+                  downloadNumber={document.download_number}
+                />
+              )}
             </section>
           </div>
         </div>
