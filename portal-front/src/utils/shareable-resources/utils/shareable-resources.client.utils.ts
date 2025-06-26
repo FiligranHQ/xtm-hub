@@ -1,38 +1,11 @@
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-
 import { fromGlobalId } from '@/utils/globalId';
-import { queryMap, querySlugMap } from './shareable-resources.consts';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { hasProperty } from '../../hasProperty';
 import {
-  SeoResource,
   ServiceInfo,
   ServiceSlug,
   ShareableResource,
-} from './shareable-resources.types';
-
-export async function fetchAllDocuments(
-  serviceSlug: ServiceSlug
-): Promise<SeoResource[]> {
-  const config = queryMap[serviceSlug];
-  const response = await serverFetchGraphQL(
-    config.query,
-    { serviceSlug },
-    { cache: 'force-cache' }
-  );
-  return config.cast(response.data);
-}
-
-export async function fetchSingleDocument(
-  serviceSlug: ServiceSlug,
-  slug: string
-): Promise<ShareableResource> {
-  const config = querySlugMap[serviceSlug];
-  const response = await serverFetchGraphQL(
-    config.query,
-    { slug },
-    { cache: 'force-cache' }
-  );
-  return config.cast(response.data);
-}
+} from '../shareable-resources.types';
 
 export function getServiceInfo(
   serviceInstance: { id: string; slug: ServiceSlug },
@@ -51,7 +24,24 @@ export function getServiceInfo(
       description:
         '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
     },
+    [ServiceSlug.OPEN_BAS_SCENARIOS]: {
+      link: `/redirect/obas_scenarios?service_instance_id=${serviceId}&document_id=${documentId}`,
+      description:
+        '. Discover more widgets like this in our OpenBAS Scenarios Library, available for download on the XTM Hub.',
+    },
   };
 
   return serviceMap[serviceInstance.slug];
 }
+
+export const isCustomDashboard = (
+  document: ShareableResource
+): document is customDashboardsItem_fragment$data => {
+  return document.type === 'custom_dashboard';
+};
+
+export const docHasMetadata = <T, K extends string>(
+  documentData: T,
+  metadataKey: K
+): documentData is T & Record<K, string> =>
+  hasProperty<T, K, string>(documentData, metadataKey);

@@ -2,12 +2,14 @@ import SeoCsvFeedBySlugQuery from '@generated/seoCsvFeedBySlugQuery.graphql';
 import SeoCsvFeedsByServiceSlugQuery from '@generated/seoCsvFeedsByServiceSlugQuery.graphql';
 import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
-
+import SeoObasScenarioBySlugQuery from '@generated/seoObasScenarioBySlugQuery.graphql';
+import SeoObasScenariosByServiceSlugQuery from '@generated/seoObasScenariosByServiceSlugQuery.graphql';
 import {
   MakeQueryMapParams,
   QueryMapEntry,
   SeoCsvFeed,
   SeoCustomDashboard,
+  SeoObasScenario,
   SeoResource,
   ServiceSlug,
 } from './shareable-resources.types';
@@ -37,6 +39,7 @@ function makeSingleQueryMapEntry<TReturn>({
 export const localeMap: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'CsvFeed',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'CustomDashboards',
+  [ServiceSlug.OPEN_BAS_SCENARIOS]: 'ObasScenario',
 };
 
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
@@ -49,6 +52,10 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
       query: SeoCustomDashboardsByServiceSlugQuery,
       key: 'seoCustomDashboardsByServiceSlug',
     }),
+  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeQueryMapEntry<SeoObasScenario>({
+    query: SeoObasScenariosByServiceSlugQuery,
+    key: 'seoObasScenariosByServiceSlug',
+  }),
 };
 
 export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
@@ -63,4 +70,8 @@ export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
       query: SeoCustomDashboardBySlugQuery,
       key: 'seoCustomDashboardBySlug',
     }),
+  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeSingleQueryMapEntry<SeoObasScenario>({
+    query: SeoObasScenarioBySlugQuery,
+    key: 'seoObasScenarioBySlug',
+  }),
 };
