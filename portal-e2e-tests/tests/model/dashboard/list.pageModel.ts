@@ -5,6 +5,7 @@ import { OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME } from '../../db-utils/const';
 export const TEST_JSON_FILE = {
   path: './tests/tests_files/assets/octi_dashboard.json',
   name: 'octi_dashboard.json',
+  type: 'application/json',
 };
 export const TEST_2_JSON_FILE = {
   path: './tests/tests_files/assets/octi_dashboard_2.json',
@@ -13,6 +14,7 @@ export const TEST_2_JSON_FILE = {
 export const TEST_IMAGE_FILE = {
   path: './tests/tests_files/assets/test.png',
   name: 'test.png',
+  type: 'image/png',
 };
 export const TEST_2_IMAGE_FILE = {
   path: './tests/tests_files/assets/test2.png',

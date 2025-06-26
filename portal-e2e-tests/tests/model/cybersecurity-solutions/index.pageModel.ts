@@ -13,7 +13,7 @@ export class CybersecuritySolutionsPage {
   }
 
   async clickOnService(text: string) {
-    await this.page.locator('a', { hasText: text }).click();
+    await this.page.getByRole('link', { name: text }).click();
   }
 
   async navigateTo() {

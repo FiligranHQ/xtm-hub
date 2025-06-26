@@ -2,6 +2,7 @@ import { APIRequestContext, request } from '@playwright/test';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql/language';
 import { APIResponse } from 'playwright-core';
+import * as fs from 'node:fs';
 
 export class ApiClient {
   private context: APIRequestContext;
@@ -34,6 +35,47 @@ export class ApiClient {
     const result = await this.callGraphQL(loginQuery, { email, password });
     const headers = result.headers();
     this.authCookie = headers['set-cookie'];
+  }
+
+  async callGraphQLWithFiles(
+    query: DocumentNode,
+    variables: Record<string, unknown>,
+    files: { path: string; name: string; type: string }[]
+  ) {
+    const form = new FormData();
+    form.append(
+      'operations',
+      JSON.stringify({
+        query: query.loc.source.body,
+        variables,
+      })
+    );
+
+    const mapParam = files.reduce((acc, current, index) => {
+      return {
+        ...acc,
+        [`${index}`]: [`variables.document.${index}`],
+      };
+    }, {});
+    form.append('map', JSON.stringify(mapParam));
+
+    for (let i = 0; i < files.length; i++) {
+      const fileDescription = files[i];
+      const buffer = fs.readFileSync(fileDescription.path);
+      const file = new File([buffer], fileDescription.name, {
+        type: fileDescription.type,
+      });
+
+      form.append(`${i}`, file, fileDescription.name);
+    }
+
+    return this.context.post('/graphql-api', {
+      multipart: form,
+      headers: {
+        Cookie: this.authCookie,
+        'apollo-require-preflight': 'true',
+      },
+    });
   }
 
   async callGraphQL(

@@ -5,17 +5,23 @@ import { PublicOpenCtiCustomDashboardDetailPage } from '../../model/cybersecurit
 import LoginPage from '../../model/login.pageModel';
 import { HomePage } from '../../model/home.pageModel';
 import DashboardListPage, {
+  TEST_IMAGE_FILE,
   TEST_JSON_FILE,
 } from '../../model/dashboard/list.pageModel';
 import { DashboardDetailPage } from '../../model/dashboard/detail.pageModel';
 import { OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME } from '../../db-utils/const';
+import { TestAgent } from '../../db-utils/test-agent';
 
 const DASHBOARD_TEST = {
   name: 'e2e dashboard name',
   slug: 'e2e-dashboard-slug',
-  shortDescription: 'E2E Custom dashboard short description',
-  version: '1.0.0',
+  short_description: 'E2E Custom dashboard short description',
+  active: true,
+  labels: [],
+  product_version: '1.0.0',
   description: 'This is a dashboard description markdown',
+  content: TEST_JSON_FILE,
+  image: TEST_IMAGE_FILE,
 };
 
 test.describe('Public custom dashboard', () => {
@@ -28,6 +34,11 @@ test.describe('Public custom dashboard', () => {
   let dashboardDetailPage: DashboardDetailPage;
 
   test.beforeEach(async ({ page }) => {
+    const agent = await TestAgent.init('admin@filigran.io');
+    await agent.createCustomDashboard(DASHBOARD_TEST);
+  });
+
+  test('should display service list and details', ({ page }) => {
     cyberSecurityPage = new CybersecuritySolutionsPage(page);
     customDashboardListPage = new PublicOpenCtiCustomDashboardListPage(page);
     customDashboardDetailPage = new PublicOpenCtiCustomDashboardDetailPage(
@@ -38,28 +49,17 @@ test.describe('Public custom dashboard', () => {
     dashboardListPage = new DashboardListPage(page);
     dashboardDetailPage = new DashboardDetailPage(page);
 
-    await loginPage.navigateToAndLogin();
-    await homePage.assertCurrentPage();
-    await homePage.subscribeToService(OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME);
-    await dashboardListPage.addCustomDashboard(DASHBOARD_TEST);
-    await loginPage.logout();
-    await cyberSecurityPage.assertCurrentPage();
-  });
-
-  test('should display service list and details', ({ page }) => {
-    test.step('should display custom dashboard service on public pages', async () => {
-      await cyberSecurityPage.navigateTo();
-      await cyberSecurityPage.hasService(OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME);
-    });
-
     test.step('should navigate to dashboard details', async () => {
+      await cyberSecurityPage.navigateTo();
+      await cyberSecurityPage.assertCurrentPage();
+      await cyberSecurityPage.hasService(OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME);
       await cyberSecurityPage.clickOnService(
         OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME
       );
       await customDashboardListPage.assertCurrentPage();
 
       await customDashboardListPage.navigateToDashboardDetail(
-        DASHBOARD_TEST.shortDescription
+        DASHBOARD_TEST.short_description
       );
 
       await customDashboardDetailPage.assertCurrentPage(
@@ -68,7 +68,7 @@ test.describe('Public custom dashboard', () => {
       );
     });
 
-    test.step('should be redirected to login page on download click', async () => {
+    test.step('should be redirected to login when download is clicked', async () => {
       await customDashboardDetailPage.clickOnDownload();
       await loginPage.assertCurrentPage();
     });
@@ -85,7 +85,7 @@ test.describe('Public custom dashboard', () => {
 
     test.step('should be able to download a dashboard', async () => {
       await dashboardListPage.navigateToDashboardDetail(
-        DASHBOARD_TEST.shortDescription
+        DASHBOARD_TEST.short_description
       );
 
       await dashboardDetailPage.assertCurrentPage(DASHBOARD_TEST.name);
