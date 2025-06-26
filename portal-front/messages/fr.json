@@ -42,7 +42,6 @@
   },
   "DialogActions": {
     "ContinueTitle": "Progrès non sauvegardé",
-    "DeleteSentence": "Une fois que vous aurez cliqué sur le bouton VALIDER, l'image sera effacée. Voulez-vous continuer ?",
     "PreventSheetSentence": "Vous avez commencé à remplir le formulaire. Le fait de le fermer maintenant annulera toute progression non enregistrée. Voulez-vous continuer ?",
     "PreventSheetTitle": "Progrès non sauvegardé"
   },
@@ -319,7 +318,9 @@
         "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
         "productVersion": "OpenCTI version",
-        "productVersionPlaceholder": "1.0.0"
+        "productVersionPlaceholder": "1.0.0",
+        "Restore": "Restore",
+        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image"
       },
       "UpdateDashboard": "Tableau de bord des mises à jour"
     },

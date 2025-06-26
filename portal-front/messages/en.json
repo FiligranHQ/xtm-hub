@@ -42,7 +42,6 @@
   },
   "DialogActions": {
     "ContinueTitle": "Do you want to continue?",
-    "DeleteSentence": "Once you click the VALIDATE button, this image will be permanently deleted. Do you want to continue?",
     "PreventSheetSentence": "You have started filling out the form. Closing it now will discard any unsaved progress. Do you want to proceed?",
     "PreventSheetTitle": "Unsaved progress"
   },
@@ -319,7 +318,9 @@
         "UpdateJSONFile": "Update JSON file",
         "UploadImage": "Upload new image(s)",
         "productVersion": "OpenCTI version",
-        "productVersionPlaceholder": "1.0.0"
+        "productVersionPlaceholder": "1.0.0",
+        "Restore": "Restore",
+        "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image."
       },
       "UpdateDashboard": "Update dashboard"
     },
