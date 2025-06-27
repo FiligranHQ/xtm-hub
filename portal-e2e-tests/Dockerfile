@@ -7,6 +7,8 @@ COPY .yarnrc.yml package.json yarn.lock playwright.config.ts ./
 RUN corepack enable && \
     yarn install --immutable
 
+COPY ./migrations ./migrations
+COPY ./seeds ./seeds
 COPY ./tests ./tests
 
 CMD ["yarn", "playwright", "test"]
