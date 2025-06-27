@@ -1,3 +1,4 @@
+import { isDevelopment } from '@/lib/utils';
 import { createClient } from 'graphql-sse';
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import {
@@ -51,17 +52,27 @@ export async function networkFetch({
     headers.cookie = portalCookie.name + '=' + portalCookie.value;
   }
 
+  const activeCacheConfig = isDevelopment()
+    ? 'no-store'
+    : Boolean(options.cache)
+      ? options.cache
+      : cache;
+
+  if (activeCacheConfig === 'no-store' && options.next?.revalidate) {
+    delete options.next.revalidate;
+  }
+
   const resp = await fetch(apiUri, {
     method: 'POST',
     credentials: 'same-origin',
     headers,
-    cache,
     body: JSON.stringify({
       query: request.text,
       variables,
       operationName: request.name,
     }),
     ...options,
+    cache: activeCacheConfig,
   });
   const json = await resp.json();
   // GraphQL returns exceptions (for example, a missing required variable) in the "errors"

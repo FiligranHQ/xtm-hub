@@ -184,6 +184,8 @@ services:
       - POSTGRES_PASSWORD=portal-password
       - DATABASE_PORT=5432
       - TEAMS_WEBHOOK_E2E=${TEAMS_WEBHOOK_E2E}
+      - MIGRATIONS_PATH=./migrations
+      - SEEDS_PATH=./seeds
       - GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}
       - GITHUB_PR_TITLE=${GITHUB_PR_TITLE}
       - GITHUB_RUN_ID=${GITHUB_RUN_ID}

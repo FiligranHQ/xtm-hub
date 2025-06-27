@@ -61,6 +61,10 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+      - name: Copy migrations
+        run: |
+          cp -r ./portal-api/src/migrations ./portal-e2e-tests/migrations
+          cp -r ./portal-api/tests/seeds ./portal-e2e-tests/seeds
       - name: Build and push portal image
         uses: docker/build-push-action@v6
         with:
@@ -95,6 +99,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Install docker
         uses: docker/setup-docker-action@v4
+      - name: Copy migrations
+        run: |
+          cp -r ./portal-api/src/migrations ./portal-e2e-tests/migrations
+          cp -r ./portal-api/tests/seeds ./portal-e2e-tests/seeds
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
