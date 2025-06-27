@@ -57,6 +57,7 @@ jobs:
         with:
           images: filigran/${{ matrix.image }}
           tags: |
+            type=sha,priority=600
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
