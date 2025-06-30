@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { addOIDCStrategy } from './oidc';
 
-addOIDCStrategy(passport);
-
-export default passport;
+export const initProviders = async (): Promise<passport.PassportStatic> => {
+  await addOIDCStrategy(passport);
+  return passport;
+};

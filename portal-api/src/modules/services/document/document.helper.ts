@@ -1,4 +1,5 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
+import { Knex } from 'knex';
 import { dbUnsecure } from '../../../../knexfile';
 import {
   DocumentId,
@@ -10,7 +11,6 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { extractId } from '../../../utils/utils';
 import { createDocument, sendFileToS3 } from './document.domain';
-import { Knex } from 'knex';
 
 export type Document = DocumentModel & { labels: Label[] };
 export type FullDocumentMutator = Partial<DocumentModel> & {
@@ -136,7 +136,11 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const uploadNewFile = async (context: PortalContext, document, trx: Knex.Transaction) => {
+export const uploadNewFile = async (
+  context: PortalContext,
+  document,
+  trx: Knex.Transaction
+) => {
   if (!document || !document.file) {
     return;
   }
