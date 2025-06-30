@@ -48,6 +48,10 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Are you sure you want to disable this user {email} ?"
   },
+  "UnexpectedErrorDialog": {
+    "Title": "Something unexpected happened.",
+    "Description": "Please try logging in again. If the issue persists, contact us for assistance."
+  },
   "Error": {
     "AnErrorOccured": "An error occurred",
     "Login": {

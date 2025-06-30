@@ -48,6 +48,10 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
+  "UnexpectedErrorDialog": {
+    "Title": "Un événement inattendu s'est produit.",
+    "Description": "Veuillez essayer de vous connecter à nouveau. Si le problème persiste, contactez-nous pour obtenir de l'aide."
+  },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
     "Login": {
@@ -297,7 +301,6 @@
         "productVersion": "OpenCTI version",
         "productVersionPlaceholder": "1.0.0"
       },
-      "FromOCTIVersion": "A partir d'OpenCTI",
       "UpdateDashboard": "Tableau de bord des mises à jour"
     },
     "ObasScenario": {

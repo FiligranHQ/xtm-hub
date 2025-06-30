@@ -21,8 +21,8 @@ export const LoginLayout: FunctionComponent = ({}) => {
     if (error) {
       toast({
         variant: 'destructive',
-        title: t('DeleteUserDialog.TextDeletedUserTitle'),
-        description: t('DeleteUserDialog.TextDeletedUser'),
+        title: t('UnexpectedErrorDialog.Title'),
+        description: t('UnexpectedErrorDialog.Description'),
       });
     }
   }, [currentPath]);
