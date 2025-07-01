@@ -1,7 +1,7 @@
 // fixtures.js for v8 coverage
 import { expect, test as testBase } from '@playwright/test';
 import { addCoverageReport } from 'monocart-reporter';
-import { afterEach, beforeEach } from './hooks';
+import { db } from '../db-utils/db-connection';
 
 const test = testBase.extend({
   autoTestFixture: [
@@ -24,8 +24,6 @@ const test = testBase.extend({
 
       await use('autoTestFixture');
 
-      await afterEach();
-
       // console.log('autoTestFixture teardown...');
       if (activateCoverage) {
         const [jsCoverage, cssCoverage] = await Promise.all([
@@ -43,4 +41,14 @@ const test = testBase.extend({
     },
   ],
 });
+
+test.beforeEach(async () => {
+  await db.raw('DROP SCHEMA public CASCADE;');
+  await db.raw('CREATE SCHEMA public');
+  await db.raw('GRANT ALL ON SCHEMA public TO public');
+
+  await db.migrate.latest();
+  await db.seed.run();
+});
+
 export { test, expect };
