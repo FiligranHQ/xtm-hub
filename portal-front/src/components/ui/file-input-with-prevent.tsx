@@ -15,11 +15,15 @@ import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 
 const FileInputWithPrevent = ({
-  textSelectFile,
+  texts,
   allowedTypes,
   field,
 }: {
-  textSelectFile?: string;
+  texts?: {
+    selectFile: string;
+    dialogTitle: string;
+    dialogDescription: string;
+  };
   allowedTypes?: string;
   field: {
     onChange: (value: string) => void;
@@ -47,16 +51,14 @@ const FileInputWithPrevent = ({
         open={isOpen}
         onOpenChange={setIsOpen}>
         <AlertDialogTrigger asChild>
-          <Button type="button">{textSelectFile}</Button>
+          <Button type="button">{texts.selectFile}</Button>
         </AlertDialogTrigger>
 
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t('Service.CustomDashboards.Form.UpdateJSONFile')}
-            </AlertDialogTitle>
+            <AlertDialogTitle>{texts.dialogTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('Service.CustomDashboards.Form.DescriptionUpdateJSONFile')}
+              {texts.dialogDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
 

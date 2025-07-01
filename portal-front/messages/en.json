@@ -257,6 +257,8 @@
         "LabelsLabel": "Labels",
         "CsvFeedFile": "Csv Feed file",
         "ExistingCsvFeedFile": "Existing Csv Feed file: {file_name}",
+        "UpdateJSONFile": "Update JSON file",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "CsvFeedIllustration": "Illustration",
         "ExistingCsvFeedIllustration": "Existing Csv Feed illustration: {file_name}",
         "PublishedPlaceholder": "Is the CSV Feed published?"

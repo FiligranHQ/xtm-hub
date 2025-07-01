@@ -1,5 +1,6 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { CsvFeedDelete } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-delete';
+import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
@@ -131,16 +132,32 @@ export const CsvFeedForm = ({
             ),
           },
           document: {
-            label: csvFeed
-              ? t('Service.CsvFeed.Form.ExistingCsvFeedFile', {
-                  file_name: csvFeed.file_name,
-                })
-              : t('Service.CsvFeed.Form.CsvFeedFile'),
-            fieldType: 'file',
-            inputProps: {
-              allowedTypes: 'application/json',
-              multiple: 'multiple',
-            },
+            fieldType: ({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CsvFeed.Form.ExistingCsvFeedFile', {
+                    file_name: field.value?.[0].name ?? csvFeed?.file_name,
+                  })}
+                </FormLabel>
+                <FormControl>
+                  <div>
+                    <FileInputWithPrevent
+                      field={field}
+                      textSelectFile={t('Service.CsvFeed.Form.UpdateJSONFile')}
+                      texts={{
+                        selectFile: t('Service.CsvFeed.Form.UpdateJSONFile'),
+                        dialogTitle: t('Service.CsvFeed.Form.UpdateJSONFile'),
+                        dialogDescription: t(
+                          'Service.CsvFeed.Form.DescriptionUpdateJSONFile'
+                        ),
+                      }}
+                      allowedTypes="application/json"
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ),
           },
           illustration: {
             label: t('Service.CsvFeed.Form.CsvFeedIllustration'),

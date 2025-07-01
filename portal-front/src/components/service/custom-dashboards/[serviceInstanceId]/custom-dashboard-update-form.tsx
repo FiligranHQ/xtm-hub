@@ -352,9 +352,17 @@ export const CustomDashboardUpdateForm = ({
                         <div onClick={() => setIsDirty(true)}>
                           <FileInputWithPrevent
                             field={field}
-                            textSelectFile={t(
-                              'Service.CustomDashboards.Form.UpdateJSONFile'
-                            )}
+                            texts={{
+                              selectFile: t(
+                                'Service.CustomDashboards.Form.UpdateJSONFile'
+                              ),
+                              dialogTitle: t(
+                                'Service.CustomDashboards.Form.UpdateJSONFile'
+                              ),
+                              dialogDescription: t(
+                                'Service.CustomDashboards.Form.DescriptionUpdateJSONFile'
+                              ),
+                            }}
                             allowedTypes="application/json"
                           />
                         </div>
@@ -449,7 +457,7 @@ export const CustomDashboardUpdateForm = ({
                       <Button
                         variant="outline-destructive"
                         size="icon"
-                        className="absolute right-2 top-2"
+                        className="bg-black absolute right-2 top-2"
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
