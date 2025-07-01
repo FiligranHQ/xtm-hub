@@ -293,6 +293,7 @@
         "SelectImage": "Select image(s)",
         "SelectJSONFile": "Select JSON file",
         "UpdateJSONFile": "Update JSON file",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "ShortDescriptionLabel": "Short Description",
         "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
         "SlugLabel": "Slug (url)",
