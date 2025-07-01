@@ -26,9 +26,9 @@ const FileInputWithPrevent = ({
   };
   allowedTypes?: string;
   field: {
-    onChange: (value: string) => void;
+    onChange: (value: FileList) => void;
     name: string;
-    value?: string;
+    value?: FileList;
   };
 }) => {
   const t = useTranslations();
@@ -37,8 +37,10 @@ const FileInputWithPrevent = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    field.onChange(files);
-    setIsOpen(false);
+    if (files && files.length > 0) {
+      field.onChange(files);
+      setIsOpen(false);
+    }
   };
 
   const openFileDialog = () => {
@@ -51,14 +53,14 @@ const FileInputWithPrevent = ({
         open={isOpen}
         onOpenChange={setIsOpen}>
         <AlertDialogTrigger asChild>
-          <Button type="button">{texts.selectFile}</Button>
+          <Button type="button">{texts?.selectFile}</Button>
         </AlertDialogTrigger>
 
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{texts.dialogTitle}</AlertDialogTitle>
+            <AlertDialogTitle>{texts?.dialogTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              {texts.dialogDescription}
+              {texts?.dialogDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
 

@@ -49,6 +49,8 @@ export const CsvFeedForm = ({
   const t = useTranslations();
   const { handleCloseSheet } = useDialogContext();
 
+  const isCreation = !csvFeed;
+
   const values = useMemo(
     () =>
       ({
@@ -131,34 +133,46 @@ export const CsvFeedForm = ({
               </FormItem>
             ),
           },
-          document: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t('Service.CsvFeed.Form.ExistingCsvFeedFile', {
-                    file_name: field.value?.[0].name ?? csvFeed?.file_name,
-                  })}
-                </FormLabel>
-                <FormControl>
-                  <div>
-                    <FileInputWithPrevent
-                      field={field}
-                      textSelectFile={t('Service.CsvFeed.Form.UpdateJSONFile')}
-                      texts={{
-                        selectFile: t('Service.CsvFeed.Form.UpdateJSONFile'),
-                        dialogTitle: t('Service.CsvFeed.Form.UpdateJSONFile'),
-                        dialogDescription: t(
-                          'Service.CsvFeed.Form.DescriptionUpdateJSONFile'
-                        ),
-                      }}
-                      allowedTypes="application/json"
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            ),
-          },
+          document: isCreation
+            ? {
+                label: t('Service.CsvFeed.Form.CsvFeedFile'),
+                fieldType: 'file',
+                inputProps: {
+                  allowedTypes: 'application/json',
+                  multiple: 'multiple',
+                },
+              }
+            : {
+                fieldType: ({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t('Service.CsvFeed.Form.ExistingCsvFeedFile', {
+                        file_name: field.value?.[0].name ?? csvFeed?.file_name,
+                      })}
+                    </FormLabel>
+                    <FormControl>
+                      <div>
+                        <FileInputWithPrevent
+                          field={field}
+                          texts={{
+                            selectFile: t(
+                              'Service.CsvFeed.Form.UpdateJSONFile'
+                            ),
+                            dialogTitle: t(
+                              'Service.CsvFeed.Form.UpdateJSONFile'
+                            ),
+                            dialogDescription: t(
+                              'Service.CsvFeed.Form.DescriptionUpdateJSONFile'
+                            ),
+                          }}
+                          allowedTypes="application/json"
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                ),
+              },
           illustration: {
             label: t('Service.CsvFeed.Form.CsvFeedIllustration'),
             fieldType: 'file',

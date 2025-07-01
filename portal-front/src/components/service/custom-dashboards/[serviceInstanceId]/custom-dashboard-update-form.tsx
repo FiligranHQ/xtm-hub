@@ -345,7 +345,7 @@ export const CustomDashboardUpdateForm = ({
                     <FormItem>
                       <FormLabel>
                         {t('Service.CustomDashboards.Form.ExistingJSONFile')}
-                        {form.getValues('document')?.[0].name ??
+                        {form.getValues('document')?.[0]?.name ??
                           currentDashboard?.file_name}
                       </FormLabel>
                       <FormControl>
