@@ -49,6 +49,10 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Are you sure you want to disable this user {email} ?"
   },
+  "UnexpectedErrorDialog": {
+    "Title": "Something unexpected happened.",
+    "Description": "Please try logging in again. If the issue persists, contact us for assistance."
+  },
   "Error": {
     "AnErrorOccured": "An error occurred",
     "Login": {
@@ -89,11 +93,14 @@
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
       "CSV_FEED_INSERTION_ERROR": "An error occurred while creating the CSV Feed.",
+      "CSV_FEED_UNIQUE_SLUG_ERROR": "The CSV feed slug is already in use.",
+      "CSV_FEED_UPDATE_ERROR": "An error occurred while updating the CSV feed.",
       "CUSTOM_DASHBOARD_INSERTION_ERROR": "An error occurred while creating the custom dashboard.",
       "CUSTOM_DASHBOARD_UPDATE_ERROR": "An error occurred while updating the custom dashboard.",
       "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "The custom dashboard slug is already in use.",
-      "CSV_FEED_UNIQUE_SLUG_ERROR": "The CSV feed slug is already in use.",
-      "CSV_FEED_UPDATE_ERROR": "An error occurred while updating the CSV feed."
+      "OBAS_SCENARIO_INSERTION_ERROR": "An error occurred while creating the scenario.",
+      "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "The scenario slug is already in use.",
+      "OBAS_SCENARIO_UPDATE_ERROR": "An error occurred while updating the scenario."
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -270,15 +277,6 @@
         "Share": "Share Custom Dashboard"
       },
       "AddDashboard": "Add new dashboard",
-      "Details": {
-        "Author": "Author",
-        "BasicInformation": "Basic information",
-        "Downloads": "Downloads",
-        "LastUpdatedAt": "Last updated at",
-        "OpenCTIVersion": "OpenCTI minimum version",
-        "Overview": "Overview",
-        "Shares": "Shares"
-      },
       "Form": {
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the document.",
@@ -304,8 +302,35 @@
         "productVersion": "OpenCTI version",
         "productVersionPlaceholder": "1.0.0"
       },
-      "FromOCTIVersion": "From OpenCTI",
       "UpdateDashboard": "Update dashboard"
+    },
+    "ObasScenario": {
+      "Actions": {
+        "Added": "The scenario {name} has been added successfully",
+        "Deleted": "The scenario {name} has been deleted successfully",
+        "Updated": "The scenario {name} has been modified successfully",
+        "Share": "Share Scenario"
+      },
+      "Form": {
+        "NameLabel": "Name",
+        "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
+        "LabelsLabel": "Labels",
+        "ObasScenarioFile": "Scenario file",
+        "ExistingObasScenarioFile": "Existing scenario file: {file_name}",
+        "ObasScenarioIllustration": "Illustration",
+        "ExistingObasScenarioIllustration": "Existing scenario illustration: {file_name}",
+        "PublishedPlaceholder": "Is the scenario published?",
+        "ProductVersionLabel": "OpenBAS Version"
+      },
+      "AddObasScenario": "Add new scenario",
+      "UpdateObasScenario": "Update the scenario {name}",
+      "DeleteObasScenario": "Delete the scenario {name}",
+      "SureDeleteObasScenario": "Are you sure you want to delete the scenario {name}?",
+      "NonActive": "Draft",
+      "Active": "Published"
     },
     "Description": "Description",
     "GoTo": "Go to service page",
@@ -381,7 +406,17 @@
     },
     "ShareableResources": {
       "Share": "Share",
-      "Copied": "URL copied! You can now paste and share it."
+      "Copied": "URL copied! You can now paste and share it.",
+      "FromVersion": "From version",
+      "Details": {
+        "Author": "Author",
+        "BasicInformation": "Basic information",
+        "Downloads": "Downloads",
+        "LastUpdatedAt": "Last updated at",
+        "ProductVersion": "Product minimum version",
+        "Overview": "Overview",
+        "Shares": "Shares"
+      }
     }
   },
   "ServiceActions": {

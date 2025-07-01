@@ -3,9 +3,11 @@ import { UserInfo } from '../model/user';
 import { logApp } from '../utils/app-logger.util';
 import { setCookieError } from '../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
-import passport from './providers/providers';
+import { initProviders } from './providers/providers';
 
 export const initAuthPlatform = async (app) => {
+  logApp.debug('initAuthPlatform');
+  const passport = await initProviders();
   app.get(`/auth/:provider`, (req, res, next) => {
     try {
       const { provider } = req.params;

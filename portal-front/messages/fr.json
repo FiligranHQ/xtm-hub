@@ -49,6 +49,10 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
+  "UnexpectedErrorDialog": {
+    "Title": "Un événement inattendu s'est produit.",
+    "Description": "Veuillez essayer de vous connecter à nouveau. Si le problème persiste, contactez-nous pour obtenir de l'aide."
+  },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
     "Login": {
@@ -89,11 +93,14 @@
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
       "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
+      "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
+      "CSV_FEED_UPDATE_ERROR": "Erreur lors de la mise à jour du CSV Feed.",
       "CUSTOM_DASHBOARD_INSERTION_ERROR": "Erreur lors de la création du tableau de bord personnalisé.",
       "CUSTOM_DASHBOARD_UPDATE_ERROR": "Erreur lors de la mise à jour du tableau de bord personnalisé.",
       "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "Le slug du tableau de bord personnalisé est déjà utilisé.",
-      "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
-      "CSV_FEED_UPDATE_ERROR": "Erreur lors de la mise à jour du CSV Feed."
+      "OBAS_SCENARIO_INSERTION_ERROR": "Erreur lors de la création du scénario.",
+      "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "Le slug du scénario est déjà utilisé.",
+      "OBAS_SCENARIO_UPDATE_ERROR": "Erreur lors de la mise à jour du scénario."
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -270,15 +277,6 @@
         "Share": "Partager le tableau de bord"
       },
       "AddDashboard": "Nouveau tableau de bord",
-      "Details": {
-        "Author": "Auteur",
-        "BasicInformation": "Informations de base",
-        "Downloads": "Téléchargements",
-        "LastUpdatedAt": "Dernière mise à jour le",
-        "OpenCTIVersion": "Version minimale d'OpenCTI",
-        "Overview": "Vue d'ensemble",
-        "Shares": "Actions"
-      },
       "Form": {
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Description du tableau de bord",
@@ -304,8 +302,35 @@
         "productVersion": "OpenCTI version",
         "productVersionPlaceholder": "1.0.0"
       },
-      "FromOCTIVersion": "A partir d'OpenCTI",
       "UpdateDashboard": "Tableau de bord des mises à jour"
+    },
+    "ObasScenario": {
+      "Actions": {
+        "Added": "Le scénario {name} a été ajouté avec succès",
+        "Deleted": "Le scénario {name} a été supprimé avec succès",
+        "Updated": "Le scénario {name} a été modifié avec succès",
+        "Share": "Partager le scénario"
+      },
+      "Form": {
+        "NameLabel": "Nom",
+        "ShortDescriptionLabel": "Description courte",
+        "SlugLabel": "Slug",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le scénario.",
+        "LabelsLabel": "Étiquettes",
+        "ObasScenarioFile": "Fichier de scénario",
+        "ExistingObasScenarioFile": "Fichier de scénario existant : {file_name}",
+        "ObasScenarioIllustration": "Illustration",
+        "ExistingObasScenarioIllustration": "Illustration de scénario existante : {file_name}",
+        "PublishedPlaceholder": "Le scénario est-il publié?",
+        "ProductVersionLabel": "Version OpenBAS"
+      },
+      "AddObasScenario": "Ajouter un nouveau scénario",
+      "UpdateObasScenario": "Mettre à jour le scénario {name}",
+      "DeleteObasScenario": "Supprimer le scénario {name}",
+      "SureDeleteObasScenario": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
     },
     "Description": "Description",
     "GoTo": "Aller au service",
@@ -381,7 +406,17 @@
     },
     "ShareableResources": {
       "Share": "Partager",
-      "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager."
+      "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
+      "FromVersion": "Depuis la version",
+      "Details": {
+        "Author": "Auteur",
+        "BasicInformation": "Informations de base",
+        "Downloads": "Téléchargements",
+        "LastUpdatedAt": "Dernière mise à jour le",
+        "ProductVersion": "Version minimale du produit",
+        "Overview": "Vue d'ensemble",
+        "Shares": "Actions"
+      }
     }
   },
   "ServiceActions": {

@@ -7,7 +7,7 @@ import {
   ServiceSlug,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
 import { Badge } from 'filigran-ui/servers';
@@ -25,12 +25,6 @@ interface ShareableResourceCardProps {
     | NonNullable<serviceByIdQuery$data['serviceInstanceById']>
     | seoServiceInstanceFragment$data;
 }
-
-const isCustomDashboard = (
-  document: ShareableResource
-): document is customDashboardsItem_fragment$data => {
-  return document.type === 'custom_dashboard';
-};
 
 const ShareableResourceCard = ({
   document,
@@ -74,12 +68,13 @@ const ShareableResourceCard = ({
         </Link>
 
         <div className="txt-mini items-center flex mt-auto">
-          {isCustomDashboard(document) && document.product_version && (
-            <div>
-              {t('Service.CustomDashboards.FromOCTIVersion')} :{' '}
-              {document.product_version}
-            </div>
-          )}
+          {docHasMetadata(document, 'product_version') &&
+            document.product_version && (
+              <div>
+                {t('Service.ShareableResources.FromVersion')} :{' '}
+                {document.product_version}
+              </div>
+            )}
           <Badge
             size="sm"
             className="ml-auto"

@@ -20,7 +20,7 @@ const ShareableResourceDescription: React.FunctionComponent<
   return (
     <div className="flex-[3_3_0%]">
       <h2 className="py-s txt-container-title truncate text-muted-foreground">
-        {t('Service.CustomDashboards.Details.Overview')}
+        {t('Service.ShareableResources.Details.Overview')}
       </h2>
       <section
         data-color-mode={theme}

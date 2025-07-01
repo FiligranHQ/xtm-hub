@@ -1,7 +1,6 @@
 import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
 import {
-  SeoCsvFeed,
-  SeoCustomDashboard,
+  SeoResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
@@ -14,7 +13,7 @@ const SlugDocument = async ({
   document,
 }: {
   serviceInstance: seoServiceInstanceFragment$data;
-  document: SeoCsvFeed | SeoCustomDashboard;
+  document: SeoResource;
 }) => {
   switch (serviceInstance.slug as ServiceSlug) {
     case ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS:
