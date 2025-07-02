@@ -75,7 +75,7 @@ const ShareableResourceSlug: React.FunctionComponent<
         />
         <div className="flex-1">
           <h2 className="py-s txt-container-title truncate text-ellipsis text-muted-foreground">
-            {t('Service.CustomDashboards.Details.BasicInformation')}
+            {t('Service.ShareableResources.Details.BasicInformation')}
           </h2>
           <section className="border rounded border-border-light bg-page-background flex space-y-xl p-l">
             {documentData && (

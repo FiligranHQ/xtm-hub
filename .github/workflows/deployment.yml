@@ -37,6 +37,9 @@ jobs:
           git checkout main
           git pull origin main
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -87,6 +90,19 @@ jobs:
           git push origin main
           git push origin "v${{ env.NEW_VERSION }}"
 
+      - name: Trigger Docker Build Workflow
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('Triggering dockerbuild-ci workflow...');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'dockerbuild-ci.yml',
+              ref: 'v${{ env.NEW_VERSION }}'
+            });
+            console.log('✅ Docker build workflow triggered successfully');
+
       - name: Summary
         run: |
           echo "## Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
@@ -94,5 +110,6 @@ jobs:
           echo "- **Version Type:** ${{ github.event.inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Components Updated:** portal-api, portal-front" >> $GITHUB_STEP_SUMMARY
           echo "- **Tag Created:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployment Workflow:** Triggered automatically" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "The deployment has been successfully created and pushed to the repository." >> $GITHUB_STEP_SUMMARY
+          echo "The deployment has been successfully created and the Docker build workflow has been triggered." >> $GITHUB_STEP_SUMMARY

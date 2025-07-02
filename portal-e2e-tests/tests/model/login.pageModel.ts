@@ -43,9 +43,10 @@ export default class LoginPage {
   async logout() {
     await this.page.getByRole('button', { name: 'Open menu user' }).click();
     await this.page.getByRole('button', { name: 'Logout' }).click();
+    await this.page.waitForURL('/');
   }
 
   async assertCurrentPage() {
-    await this.page.waitForURL('/login');
+    await this.page.waitForURL('**/login**', { timeout: 3000 });
   }
 }

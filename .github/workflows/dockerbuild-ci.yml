@@ -12,7 +12,6 @@ on:
       - "v*"
   pull_request:
     branches:
-      - "issue/**"
       - "main"
       - "development"
     paths:
@@ -25,6 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
   build-images-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -61,6 +61,10 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+      - name: Copy migrations
+        run: |
+          cp -r ./portal-api/src/migrations ./portal-e2e-tests/migrations
+          cp -r ./portal-api/tests/seeds ./portal-e2e-tests/seeds
       - name: Build and push portal image
         uses: docker/build-push-action@v6
         with:
@@ -95,6 +99,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Install docker
         uses: docker/setup-docker-action@v4
+      - name: Copy migrations
+        run: |
+          cp -r ./portal-api/src/migrations ./portal-e2e-tests/migrations
+          cp -r ./portal-api/tests/seeds ./portal-e2e-tests/seeds
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
@@ -153,8 +161,6 @@ jobs:
           path: logs/
           retention-days: 30
 
-
-
   run-front-unit-tests:
     needs: build-images-tests
     runs-on: ubuntu-latest
@@ -180,6 +186,7 @@ jobs:
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-front-test
 
+
   run-api-unit-tests:
     needs: build-images-tests
     runs-on: ubuntu-latest
@@ -204,6 +211,49 @@ jobs:
         run: |
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
+
+  deploy-feature-branch:
+    needs: build-images-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'needs feature env')
+    steps:
+      - name: Install AWX cli
+        run: pip install awxkit
+
+      - name: Deploy
+        run: |
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
+            --inventory eu-west-staging \
+            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
+
+  delete-feature-branch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/development'
+    steps:
+      - name: Install AWX cli
+        run: pip install awxkit
+
+      - name: Delete
+        run: |
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          PR_NUMBER=$(echo "$COMMIT_MESSAGE" | grep -oE '#[0-9]+' | tail -1 | sed 's/#//')
+          if [ -n "$PR_NUMBER" ]; then
+            awx --conf.host https://awx.filigran.io \
+              --conf.token ${{ secrets.AWX_TOKEN }} \
+              -f human job_templates launch 'Delete XTM Hub feature branch for testing' \
+              --inventory eu-west-staging \
+              --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-$PR_NUMBER\"}"
+          else
+            echo "No PR number found in commit message"
+          fi
 
   build-images-prod:
     needs:
@@ -274,6 +324,7 @@ jobs:
             type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:latest
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+
 
   deploy:
     needs: build-images-prod

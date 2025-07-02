@@ -1,7 +1,7 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
-import { fetchAllDocuments } from '@/utils/shareable-resources/shareable-resources.utils';
+import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
 } from '@generated/seoServiceInstancesQuery.graphql';

@@ -12,10 +12,8 @@ import {
   SeoResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import {
-  fetchSingleDocument,
-  getServiceInfo,
-} from '@/utils/shareable-resources/shareable-resources.utils';
+import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -277,7 +275,12 @@ const Page = async ({
               Basic Information
             </h3>
             <section className="border rounded border-border-light bg-page-background flex space-y-xl p-l">
-              {document && <DashboardDetails documentData={document} />}
+              {document && (
+                <DashboardDetails
+                  documentData={document}
+                  downloadNumber={document.download_number}
+                />
+              )}
             </section>
           </div>
         </div>
