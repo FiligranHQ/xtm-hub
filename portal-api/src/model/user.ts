@@ -1,4 +1,4 @@
-import { Restriction } from '../__generated__/resolvers-types';
+import { OrganizationCapability } from '../__generated__/resolvers-types';
 import CapabilityPortal from './kanel/public/CapabilityPortal';
 import Organization from './kanel/public/Organization';
 import RolePortal from './kanel/public/RolePortal';
@@ -15,7 +15,7 @@ export interface UserInfo {
 
 export interface UserWithOrganizations extends User {
   organizations: Organization[];
-  selected_org_capabilities: string[];
+  selected_org_capabilities: OrganizationCapability[];
 }
 
 export interface UserWithOrganizationsAndRole extends UserWithOrganizations {
@@ -27,6 +27,6 @@ export interface UserLoadUserBy extends UserWithOrganizationsAndRole {
   organization_capabilities?: {
     id: string;
     organization: Organization;
-    capabilities: Restriction[];
+    capabilities: OrganizationCapability[];
   }[];
 }

@@ -16,7 +16,7 @@
     "test:ci": "yarn test && yarn lint",
     "prepare": "cd .. && husky ./.husky",
     "auto-translation": "i18n-auto-translation -a deepl-free -p ./messages/en.json -t fr -k $SUBSCRIPTION_KEY",
-    "generate:ordering-enum": "tsx scripts/generate-enum.ts"
+    "generate:enum": "tsx scripts/generate-enum.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "3.10.0",

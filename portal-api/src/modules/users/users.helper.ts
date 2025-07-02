@@ -5,6 +5,7 @@ import { db, dbUnsecure } from '../../../knexfile';
 import {
   Capability,
   User as GraphqlUser,
+  OrganizationCapability,
 } from '../../__generated__/resolvers-types';
 import Organization, {
   OrganizationId,
@@ -25,7 +26,6 @@ import { logApp } from '../../utils/app-logger.util';
 import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
-import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
 import {
   createUserOrganizationRelationUnsecure,
@@ -78,7 +78,7 @@ export const createUserWithPersonalSpace = async (
 
   await createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
-    capabilities_name: [OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION],
+    capabilities_name: [OrganizationCapability.AdministrateOrganization],
   });
 
   await sendMail({
@@ -110,7 +110,7 @@ async function createOrganisationWithAdminUser(email: string) {
 
   await createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
-    capabilities_name: [OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION],
+    capabilities_name: [OrganizationCapability.AdministrateOrganization],
   });
 
   return addedUser;
@@ -193,9 +193,7 @@ export const insertUserIntoOrganization = async (
     if (shouldBeAdminOrga) {
       await createUserOrganizationCapability({
         user_organization_id: userOrgRelation.id,
-        capabilities_name: [
-          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-        ],
+        capabilities_name: [OrganizationCapability.AdministrateOrganization],
       });
     }
   }
@@ -246,7 +244,7 @@ export const hasAdministrateOrganizationCapability = (
   capabilities?: string[]
 ): boolean => {
   return (capabilities ?? []).includes(
-    OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+    OrganizationCapability.AdministrateOrganization
   );
 };
 
@@ -347,7 +345,7 @@ const countOrganizationAdministrators = async (
     .andWhere(
       'UserOrganization_Capability.name',
       '=',
-      OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+      OrganizationCapability.AdministrateOrganization
     )
     .groupBy('Organization.id');
 

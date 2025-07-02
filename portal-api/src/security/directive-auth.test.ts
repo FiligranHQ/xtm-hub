@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { OrganizationCapability } from '../__generated__/resolvers-types';
 import { UserLoadUserBy } from '../model/user';
-import { OrganizationCapabilityName } from '../modules/common/user-organization-capability.const';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import * as AuthHelper from './auth.helper';
 import { authDirectives } from './directive-auth';
@@ -27,13 +27,11 @@ describe('Auth directives', () => {
         const organizationCapabilities = [];
         if (isUserAdmin) {
           organizationCapabilities.push(
-            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+            OrganizationCapability.AdministrateOrganization
           );
         }
         if (userHasManageAccess) {
-          organizationCapabilities.push(
-            OrganizationCapabilityName.MANAGE_ACCESS
-          );
+          organizationCapabilities.push(OrganizationCapability.ManageAccess);
         }
 
         const user = {
@@ -43,7 +41,7 @@ describe('Auth directives', () => {
         } as UserLoadUserBy;
 
         const requiredCapabilities = areCapabilitiesRequired
-          ? [OrganizationCapabilityName.MANAGE_ACCESS]
+          ? [OrganizationCapability.ManageAccess]
           : [];
 
         const result = authDirectives.hasCapability(user, requiredCapabilities);
@@ -87,7 +85,7 @@ describe('Auth directives', () => {
 
         const capabilities = isUserBypass ? [CAPABILITY_BYPASS] : [];
         const selected_org_capabilities = isUserOrganizationAdmin
-          ? [OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION]
+          ? [OrganizationCapability.AdministrateOrganization]
           : [];
         const user: UserLoadUserBy = {
           capabilities,

@@ -12,6 +12,7 @@
       "provider": "oidc"
     }
   ],
+  "enabled_features": ["*"],
   "init_service_definitions": [
     {
       "serviceDefinition": {
