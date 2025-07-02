@@ -1,7 +1,9 @@
 import { getLabels } from '@/components/admin/label/label.utils';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { CsvFeedDelete } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-delete';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
+import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import {
@@ -15,15 +17,15 @@ import {
   SheetFooter,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 const csvFeedFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
+  uploader_id: z.string().optional(),
   short_description: z.string().min(1, 'Required').max(250),
   description: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
@@ -47,6 +49,7 @@ export const CsvFeedForm = ({
   csvFeed,
 }: CsvFeedFormProps) => {
   const t = useTranslations();
+  const { me } = useContext(PortalContext);
   const { handleCloseSheet } = useDialogContext();
 
   const isCreation = !csvFeed;
@@ -60,8 +63,9 @@ export const CsvFeedForm = ({
           name: doc.file_name,
         })) as unknown as FileList,
         labels: csvFeed?.labels?.map((label) => label.id),
+        uploader_id: csvFeed?.uploader?.id ?? me!.id,
       }) as CsvFeedFormValues,
-    [csvFeed]
+    [me]
   );
   const formSchema = useMemo(
     () =>
@@ -128,6 +132,20 @@ export const CsvFeedForm = ({
                     onValueChange={field.onChange}
                     placeholder={t('Service.CsvFeed.Form.LabelsLabel')}
                     variant="inverted"
+                  />
+                </FormControl>
+              </FormItem>
+            ),
+          },
+          uploader_id: {
+            fieldType: ({ field }) => (
+              <FormItem>
+                <FormLabel>{t('Service.CsvFeed.Form.Author')}</FormLabel>
+                <FormControl>
+                  <SelectUsersFormField
+                    defaultValue={csvFeed?.uploader?.id ?? me!.id}
+                    value={field.value}
+                    onValueChange={field.onChange}
                   />
                 </FormControl>
               </FormItem>

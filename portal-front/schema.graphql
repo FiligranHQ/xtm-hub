@@ -170,6 +170,7 @@ type CsvFeed implements Node {
 input CreateCsvFeedInput {
   name: String!
   slug: String!
+  uploader_id: String!
   short_description: String!
   description: String!
   active: Boolean!
@@ -184,6 +185,7 @@ input UpdateCsvFeedInput {
   active: Boolean
   labels: [String!]
   uploader_organization_id: String
+  uploader_id: String
 }
 
 type CsvFeedEdge {
@@ -204,6 +206,7 @@ input CreateCustomDashboardInput {
   description: String!
   active: Boolean!
   labels: [String!]
+  uploader_id: String!
   product_version: String!
 }
 
@@ -215,6 +218,7 @@ input UpdateCustomDashboardInput {
   active: Boolean
   labels: [String!]
   uploader_organization_id: String
+  uploader_id: String
   product_version: String
 }
 
@@ -340,6 +344,7 @@ input CreateObasScenarioInput {
   description: String!
   active: Boolean!
   labels: [String!]
+  uploader_id: String!
   product_version: String!
 }
 
@@ -351,6 +356,7 @@ input UpdateObasScenarioInput {
   active: Boolean
   labels: [String!]
   uploader_organization_id: String
+  uploader_id: String
   product_version: String
 }
 

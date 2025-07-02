@@ -279,6 +279,7 @@
         "NameLabel": "Nom",
         "PublishedPlaceholder": "Le CSV Feed est-il publié?",
         "ShortDescriptionLabel": "Courte Description",
+        "Author": "Auteur",
         "SlugLabel": "Slug"
       },
       "NonActive": "Brouillon",
@@ -320,6 +321,7 @@
         "productVersion": "OpenCTI version",
         "productVersionPlaceholder": "1.0.0",
         "Restore": "Restore",
+        "Author": "Auteur",
         "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image"
       },
       "UpdateDashboard": "Tableau de bord des mises à jour"
@@ -343,6 +345,7 @@
         "ObasScenarioIllustration": "Illustration",
         "ExistingObasScenarioIllustration": "Illustration de scénario existante : {file_name}",
         "PublishedPlaceholder": "Le scénario est-il publié?",
+        "Author": "Auteur",
         "ProductVersionLabel": "Version OpenBAS"
       },
       "AddObasScenario": "Ajouter un nouveau scénario",
@@ -532,6 +535,7 @@
   "Utils": {
     "Cancel": "Annuler",
     "Close": "Fermer",
+    "Clear": "Effacer",
     "Continue": "Continuer",
     "Copied": "Copié",
     "Create": "Créer",

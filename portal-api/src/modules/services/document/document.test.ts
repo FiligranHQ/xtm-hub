@@ -136,7 +136,7 @@ describe('Should modify document', () => {
       contextAdminUser,
       {
         id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: toGlobalId('User', 'ba091095-418f-4b4f-b150-6c9295e232c3'),
         description: 'description',
         minio_name: 'minioName',
         file_name: 'filename',

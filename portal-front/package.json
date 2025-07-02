@@ -27,7 +27,7 @@
     "clsx": "2.1.1",
     "extract-files": "13.0.0",
     "filigran-icon": "0.15.0",
-    "filigran-ui": "0.38.1",
+    "filigran-ui": "0.38.3",
     "graphql": "16.11.0",
     "graphql-sse": "2.5.4",
     "lucide-react": "0.471.1",
@@ -46,7 +46,7 @@
     "tailwindcss-animate": "1.0.7",
     "tsx": "4.19.4",
     "usehooks-ts": "3.1.0",
-    "zod": "3.24.2"
+    "zod": "3.25.71"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",

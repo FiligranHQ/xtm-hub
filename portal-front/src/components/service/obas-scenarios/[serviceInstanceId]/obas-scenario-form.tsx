@@ -1,6 +1,8 @@
 import { getLabels } from '@/components/admin/label/label.utils';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { ObasScenarioDelete } from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-delete';
 import MarkdownInput from '@/components/ui/MarkdownInput';
+import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { obasScenariosItem_fragment$data } from '@generated/obasScenariosItem_fragment.graphql';
 import {
@@ -14,7 +16,7 @@ import {
   SheetFooter,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
 
@@ -23,6 +25,7 @@ const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 const obasScenarioFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
+  uploader_id: z.string().optional(),
   short_description: z.string().min(1, 'Required').max(250),
   product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
     message: 'Product version must be X.Y.Z',
@@ -49,6 +52,8 @@ export const ObasScenarioForm = ({
   obasScenario,
 }: ObasScenarioFormProps) => {
   const t = useTranslations();
+  const { me } = useContext(PortalContext);
+
   const { handleCloseSheet } = useDialogContext();
 
   const values = useMemo(
@@ -60,6 +65,7 @@ export const ObasScenarioForm = ({
           name: doc.file_name,
         })) as unknown as FileList,
         labels: obasScenario?.labels?.map((label) => label.id),
+        uploader_id: obasScenario?.uploader?.id ?? me?.id,
       }) as ObasScenarioFormValues,
     [obasScenario]
   );
@@ -130,6 +136,22 @@ export const ObasScenarioForm = ({
                     onValueChange={field.onChange}
                     placeholder={t('Service.ObasScenario.Form.LabelsLabel')}
                     variant="inverted"
+                  />
+                </FormControl>
+              </FormItem>
+            ),
+          },
+          uploader_id: {
+            fieldType: ({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.LabelsLabel')}
+                </FormLabel>
+                <FormControl>
+                  <SelectUsersFormField
+                    defaultValue={obasScenario?.uploader?.email ?? me!.email}
+                    value={field.value}
+                    onValueChange={field.onChange}
                   />
                 </FormControl>
               </FormItem>
