@@ -232,7 +232,6 @@ jobs:
             --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
 
   delete-feature-branch:
-    needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: |
