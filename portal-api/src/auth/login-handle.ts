@@ -1,4 +1,5 @@
 import { UserInfo } from '../model/user';
+import { AppLogsCategory, logApp } from '../utils/app-logger.util';
 import { ErrorType } from '../utils/error.util';
 import { loginFromProvider } from './auth-user';
 
@@ -11,6 +12,7 @@ export const providerLoginHandler = async (userInfo: UserInfo, done) => {
       if (err.name === ErrorType.ForbiddenAccess) {
         done(null, null);
       }
+      logApp.error(err, {}, AppLogsCategory.LOGIN_PROVIDER);
       done(err);
     });
 };

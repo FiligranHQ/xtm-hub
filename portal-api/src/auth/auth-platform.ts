@@ -36,7 +36,7 @@ export const initAuthPlatform = async (app) => {
           passport.authenticate(
             provider,
             {},
-            (err: unknown, user: UserInfo | false | null) => {
+            (err: Error, user: UserInfo | false | null) => {
               if (!user) {
                 reject(new Error('User not provided'));
               } else if (err) {
