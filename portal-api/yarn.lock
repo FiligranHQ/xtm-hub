@@ -4180,12 +4180,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.5.5":
-  version: 22.5.5
-  resolution: "@types/node@npm:22.5.5"
+"@types/node@npm:22.16.0":
+  version: 22.16.0
+  resolution: "@types/node@npm:22.16.0"
   dependencies:
-    undici-types: ~6.19.2
-  checksum: 1f788966ff7df07add0af3481fb68c7fe5091cc72a265c671432abb443788ddacca4ca6378af64fe100c20f857c4d80170d358e66c070171fcea0d4adb1b45b1
+    undici-types: ~6.21.0
+  checksum: fccc24b9cfa95e165fb6a22871c812c9b021b0c686ced9b1572e1bd79ac3f8c78b36c04edfb2c96e10a8a1247c026d1dcad91c0c3e62dccf414057a37bac729d
   languageName: node
   linkType: hard
 
@@ -9145,7 +9145,7 @@ __metadata:
     "@types/express-serve-static-core": 5.0.6
     "@types/express-session": 1.18.0
     "@types/graphql-upload": 16.0.7
-    "@types/node": 22.5.5
+    "@types/node": 22.16.0
     "@types/nodemailer": 6.4.16
     "@types/passport": 1.0.17
     "@types/uuid": 10.0.0
@@ -10584,17 +10584,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:^6.15.0":
+"undici-types@npm:^6.15.0, undici-types@npm:~6.21.0":
   version: 6.21.0
   resolution: "undici-types@npm:6.21.0"
   checksum: 46331c7d6016bf85b3e8f20c159d62f5ae471aba1eb3dc52fff35a0259d58dcc7d592d4cc4f00c5f9243fa738a11cfa48bd20203040d4a9e6bc25e807fab7ab3
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~6.19.2":
-  version: 6.19.8
-  resolution: "undici-types@npm:6.19.8"
-  checksum: de51f1b447d22571cf155dfe14ff6d12c5bdaec237c765085b439c38ca8518fc360e88c70f99469162bf2e14188a7b0bcb06e1ed2dc031042b984b0bb9544017
   languageName: node
   linkType: hard
 

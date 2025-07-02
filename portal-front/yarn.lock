@@ -4738,12 +4738,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.15.23":
-  version: 22.15.23
-  resolution: "@types/node@npm:22.15.23"
+"@types/node@npm:22.16.0":
+  version: 22.16.0
+  resolution: "@types/node@npm:22.16.0"
   dependencies:
     undici-types: ~6.21.0
-  checksum: 24d204beedcf96d5c9068da2553e01b8e90edecab8498055d1abc24d454211a7757fa858fabebbe0aec86988012c33d0025e31bab63ab2c6307807c84931930e
+  checksum: fccc24b9cfa95e165fb6a22871c812c9b021b0c686ced9b1572e1bd79ac3f8c78b36c04edfb2c96e10a8a1247c026d1dcad91c0c3e62dccf414057a37bac729d
   languageName: node
   linkType: hard
 
@@ -11293,7 +11293,7 @@ __metadata:
     "@testing-library/react-hooks": 8.0.1
     "@testing-library/user-event": 14.6.1
     "@types/config": 3.3.5
-    "@types/node": 22.15.23
+    "@types/node": 22.16.0
     "@types/react": 19.1.6
     "@types/react-dom": 19.1.5
     "@types/react-relay": 18.2.1
