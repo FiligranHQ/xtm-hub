@@ -12,7 +12,6 @@ on:
       - "v*"
   pull_request:
     branches:
-      - "issue/**"
       - "main"
       - "development"
     paths:
@@ -213,19 +212,18 @@ jobs:
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
 
-
-
-  manage-feature-branch:
+  deploy-feature-branch:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'needs feature env')
     steps:
       - name: Install AWX cli
         run: pip install awxkit
 
-      - name: Deploy feature branch
-        if: |
-          github.event_name == 'pull_request'
+      - name: Deploy
         run: |
           awx --conf.host https://awx.filigran.io \
             --conf.token ${{ secrets.AWX_TOKEN }} \
@@ -233,9 +231,18 @@ jobs:
             --inventory eu-west-staging \
             --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
 
-      - name: Delete feature branch
-        if: |
-          github.event_name == 'push'
+  delete-feature-branch:
+    needs: build-images-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/development'
+    steps:
+      - name: Install AWX cli
+        run: pip install awxkit
+
+      - name: Delete
         run: |
           COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           PR_NUMBER=$(echo "$COMMIT_MESSAGE" | grep -oE '#[0-9]+' | tail -1 | sed 's/#//')
