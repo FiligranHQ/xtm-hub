@@ -74,6 +74,7 @@ export const csvFeedsItem = graphql`
       color
     }
     uploader {
+      id
       first_name
       last_name
       picture

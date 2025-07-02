@@ -184,6 +184,7 @@ input UpdateCsvFeedInput {
   active: Boolean
   labels: [String!]
   uploader_organization_id: String
+  uploader_id: String
 }
 
 type CsvFeedEdge {

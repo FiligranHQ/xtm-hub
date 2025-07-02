@@ -7725,9 +7725,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.38.1":
-  version: 0.38.1
-  resolution: "filigran-ui@npm:0.38.1"
+"filigran-ui@npm:0.38.2":
+  version: 0.38.2
+  resolution: "filigran-ui@npm:0.38.2"
   dependencies:
     "@dnd-kit/core": 6.1.0
     "@dnd-kit/modifiers": 7.0.0
@@ -11344,7 +11344,7 @@ __metadata:
     eslint-config-prettier: 10.1.5
     extract-files: 13.0.0
     filigran-icon: 0.15.0
-    filigran-ui: 0.38.1
+    filigran-ui: 0.38.2
     graphql: 16.11.0
     graphql-sse: 2.5.4
     husky: 9.1.7

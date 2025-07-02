@@ -26,7 +26,7 @@ import ObjectLabel, {
   ObjectLabelObjectId,
 } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import User from '../../../model/kanel/public/User';
+import User, { UserId } from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
 import { formatRawObject } from '../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../utils/utils';
@@ -225,11 +225,16 @@ export const updateDocument = async <T extends DocumentModel>(
     ? extractId<OrganizationId>(documentData.uploader_organization_id)
     : null;
 
+  const uploader_id = documentData.uploader_id
+    ? extractId<UserId>(documentData.uploader_id)
+    : null;
+
   const [document] = await db<DocumentModel>(context, 'Document')
     .where('id', '=', documentId)
     .update({
       ...omit(documentData, ['labels', ...metadataKeys]),
       uploader_organization_id,
+      uploader_id,
       updated_at: new Date(),
       updater_id: context.user.id,
     })

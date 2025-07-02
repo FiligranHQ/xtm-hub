@@ -234,6 +234,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
 
   const debounceHandleInput = useDebounceCallback(
     handleInputChange,
+    handleInputChange,
     DEBOUNCE_TIME
   );
 
