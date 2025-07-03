@@ -9,6 +9,7 @@ import {
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
 } from '../portal.const';
+import { logApp } from '../utils/app-logger.util';
 import { hashPassword } from '../utils/hash-password.util';
 import {
   ensureCapabilityExists,
@@ -94,6 +95,14 @@ const initializeBuiltInAdministrator = async () => {
   await initAdminUser();
 };
 
+const logEnabledFeatureFlags = () => {
+  if (portalConfig.enabled_features.length > 0) {
+    logApp.info(
+      `[FEATURE-FLAG] Enabled features still in development: ${portalConfig.enabled_features}`
+    );
+  }
+};
+
 const initializeDefaultServices = async () => {
   for (const serviceDefinition of portalConfig.service_definitions) {
     await ensureServiceDefinitionExists(serviceDefinition);
@@ -107,6 +116,7 @@ const initializeDefaultServices = async () => {
 };
 
 const platformInit = async () => {
+  logEnabledFeatureFlags();
   await initializeDefaultServices();
   await initializeBuiltInAdministrator();
 };

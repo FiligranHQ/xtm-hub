@@ -1,6 +1,6 @@
 import useGranted from '@/hooks/useGranted';
-import { OrganizationCapabilityName } from '@/utils/constant';
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { renderHook } from '@testing-library/react';
 
 describe('useGranted', () => {
@@ -12,7 +12,7 @@ describe('useGranted', () => {
           options={{
             me: {
               selected_org_capabilities: [
-                OrganizationCapabilityName.MANAGE_ACCESS,
+                OrganizationCapabilityEnum.MANAGE_ACCESS,
               ],
             },
           }}>
@@ -22,7 +22,7 @@ describe('useGranted', () => {
     };
 
     const { result: resultAdmin } = renderHook(
-      () => useGranted(OrganizationCapabilityName.MANAGE_ACCESS),
+      () => useGranted(OrganizationCapabilityEnum.MANAGE_ACCESS),
       {
         wrapper,
       }
@@ -45,7 +45,7 @@ describe('useGranted', () => {
       );
     };
     const { result: resultBypass } = renderHook(
-      () => useGranted(OrganizationCapabilityName.MANAGE_ACCESS),
+      () => useGranted(OrganizationCapabilityEnum.MANAGE_ACCESS),
       {
         wrapper,
       }

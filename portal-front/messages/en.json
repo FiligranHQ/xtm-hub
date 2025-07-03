@@ -11,17 +11,18 @@
     "Enabled": "Enabled",
     "Published": "Published"
   },
-  "CountryComboBox": {
-    "Placeholder": "Choose a country"
-  },
   "CapabilityDescription": {
-    "Title": "Available capabilities",
-    "Description": "You can add specific capabilities to Filigran users",
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Bypass inside of an organization",
       "MANAGE_ACCESS": "Ability to invite other users to this organization",
+      "MANAGE_OCTI_ENROLLMENT": "Ability to enroll and unenroll OCTI instances",
       "MANAGE_SUBSCRIPTION": "Ability to manage and subscribe the organization to services"
-    }
+    },
+    "Description": "You can add specific capabilities to Filigran users",
+    "Title": "Available capabilities"
+  },
+  "CountryComboBox": {
+    "Placeholder": "Choose a country"
   },
   "Datatable": {
     "Asc": "Asc",
@@ -41,7 +42,6 @@
   },
   "DialogActions": {
     "ContinueTitle": "Do you want to continue?",
-    "DeleteSentence": "This element will be permanently deleted. Do you want to proceed?",
     "PreventSheetSentence": "You have started filling out the form. Closing it now will discard any unsaved progress. Do you want to proceed?",
     "PreventSheetTitle": "Unsaved progress"
   },
@@ -69,14 +69,20 @@
       "CANT_REMOVE_LAST_ADMINISTRATOR": "You cannot remove the last administrator of an organization",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
+      "CSV_FEED_INSERTION_ERROR": "An error occurred while creating the CSV Feed.",
+      "CSV_FEED_UNIQUE_SLUG_ERROR": "The CSV feed slug is already in use.",
+      "CSV_FEED_UPDATE_ERROR": "An error occurred while updating the CSV feed.",
+      "CUSTOM_DASHBOARD_INSERTION_ERROR": "An error occurred while creating the custom dashboard.",
+      "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "The custom dashboard slug is already in use.",
+      "CUSTOM_DASHBOARD_UPDATE_ERROR": "An error occurred while updating the custom dashboard.",
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_ORGANIZATION": "Error while deleting organization",
       "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
       "DELETE_USER_ERROR": "Error while deleting user",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
-      "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
+      "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Error while deleting the subscription: you are not allowed to delete a subscription with billing",
@@ -108,6 +114,7 @@
     "FilterLabels": "Filter by labels...",
     "Search": "Search..."
   },
+  "GoToProd": "Go to production",
   "HomePage": {
     "Homepage": "Homepage",
     "Manage": "Manage",
@@ -221,6 +228,13 @@
   "Parameters": {
     "Version": "Version"
   },
+  "ProfilePage": {
+    "InstancesEditionDialog": {
+      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OCTI and OBAS instances."
+    },
+    "Title": "Profile",
+    "UpdateProfile": "Update profile"
+  },
   "RedirectPage": {
     "ExploringOurRoad": "Hold tight—you're just 3 seconds away from exploring our roadmap and learning more.",
     "YourFutureHub": "Your future Filigran community hub is taking shape !"
@@ -245,43 +259,46 @@
       "Actions": {
         "Added": "The CSV {name} has been added successfully",
         "Deleted": "The CSV {name} has been deleted successfully",
-        "Updated": "The CSV {name} has been modified successfully",
-        "Share": "Share CSV Feed"
+        "Share": "Share CSV Feed",
+        "Updated": "The CSV {name} has been modified successfully"
       },
+      "Active": "Published",
+      "AddCsvFeed": "Add new CSV Feed",
+      "DeleteCsvFeed": "Delete the CSV Feed {name}",
       "Form": {
-        "NameLabel": "Name",
-        "ShortDescriptionLabel": "Short Description",
-        "SlugLabel": "Slug",
+        "CsvFeedFile": "Csv Feed file",
+        "CsvFeedIllustration": "Illustration",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the CSV Feed.",
-        "LabelsLabel": "Labels",
-        "CsvFeedFile": "Csv Feed file",
         "ExistingCsvFeedFile": "Existing Csv Feed file: {file_name}",
+        "UpdateJSONFile": "Update JSON file",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "CsvFeedIllustration": "Illustration",
         "ExistingCsvFeedIllustration": "Existing Csv Feed illustration: {file_name}",
-        "PublishedPlaceholder": "Is the CSV Feed published?"
+        "LabelsLabel": "Labels",
+        "NameLabel": "Name",
+        "PublishedPlaceholder": "Is the CSV Feed published?",
+        "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug"
       },
-      "AddCsvFeed": "Add new CSV Feed",
-      "UpdateCsvFeed": "Update the CSV Feed {name}",
-      "DeleteCsvFeed": "Delete the CSV Feed {name}",
-      "SureDeleteCsvFeed": "Are you sure you want to delete the CSV Feed {name}?",
       "NonActive": "Draft",
-      "Active": "Published"
+      "SureDeleteCsvFeed": "Are you sure you want to delete the CSV Feed {name}?",
+      "UpdateCsvFeed": "Update the CSV Feed {name}"
     },
     "CustomDashboards": {
       "Actions": {
         "Added": "The custom dashboard {name} has been added successfully",
         "Deleted": "The custom dashboard {name} has been deleted successfully",
-        "Updated": "The custom dashboard {name} has been modified successfully",
-        "Share": "Share Custom Dashboard"
+        "Share": "Share Custom Dashboard",
+        "Updated": "The custom dashboard {name} has been modified successfully"
       },
       "AddDashboard": "Add new dashboard",
       "Form": {
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the document.",
+        "ExistingJSONFile": "Existing JSON file: ",
         "ImageLabel": "Images",
         "JSONFile": "JSON file",
-        "ExistingJSONFile": "Existing JSON file: ",
         "LabelsLabel": "Labels",
         "LabelsPlaceholder": "Add labels",
         "NameLabel": "Name",
@@ -293,13 +310,17 @@
         "SelectImage": "Select image(s)",
         "SelectJSONFile": "Select JSON file",
         "UpdateJSONFile": "Update JSON file",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "ShortDescriptionLabel": "Short Description",
         "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
         "SlugLabel": "Slug (url)",
         "SlugPlaceholder": "dashboard-slug",
+        "UpdateJSONFile": "Update JSON file",
         "UploadImage": "Upload new image(s)",
         "productVersion": "OpenCTI version",
-        "productVersionPlaceholder": "1.0.0"
+        "productVersionPlaceholder": "1.0.0",
+        "Restore": "Restore",
+        "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image."
       },
       "UpdateDashboard": "Update dashboard"
     },
@@ -362,6 +383,10 @@
     "NoOwnedService": "You don't have any services yet.",
     "NoService": "There is no service... Yet!",
     "ServiceName": "Service name",
+    "ShareableResources": {
+      "Copied": "URL copied! You can now paste and share it.",
+      "Share": "Share"
+    },
     "Subscribe": "Subscribe",
     "SubscribeOrganization": "Subscribe organization",
     "SubscribeService": "Subscribe to {serviceName} service",
@@ -437,7 +462,6 @@
   "Sort Asc": "Sort Asc",
   "Sort Desc": "Sort Desc",
   "TestEnvCallout": "You are viewing the {environnement} environment.",
-  "GoToProd": "Go to production",
   "ThemeToggle": {
     "Automatic": "Automatic",
     "Dark": "Dark",
@@ -464,6 +488,7 @@
     "UserUpdated": "User {email} has been modified"
   },
   "UserForm": {
+    "AddOrganization": "Add organization",
     "Country": "Country",
     "Email": "Email",
     "Error": {
@@ -484,15 +509,14 @@
       "Success": "Reset password email successfully sent."
     },
     "WhoAreYou": "Who are you?",
-    "WhoAreYouDescription": "Let us know you first name and last name",
-    "AddOrganization": "Add organization"
+    "WhoAreYouDescription": "Let us know you first name and last name"
   },
   "UserListPage": {
+    "Country": "Country",
     "Email": "Email",
     "FirstName": "First name",
     "LastLogin": "Last login",
     "LastName": "Last name",
-    "Country": "Country",
     "Never": "Never",
     "Organizations": "Organizations",
     "Roles": "Roles",
@@ -503,13 +527,6 @@
       "Password": "Password",
       "SelectOrganization": "Select an organization",
       "SelectRoles": "Select roles"
-    }
-  },
-  "ProfilePage": {
-    "Title": "Profile",
-    "UpdateProfile": "Update profile",
-    "InstancesEditionDialog": {
-      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OCTI and OBAS instances."
     }
   },
   "Utils": {

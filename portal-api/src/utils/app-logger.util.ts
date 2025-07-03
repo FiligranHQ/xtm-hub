@@ -18,6 +18,7 @@ export enum AppLogsCategory {
   BACKEND = 'BACKEND',
   GRAPHQL = 'BACKEND_GRAPHQL',
   FRONTEND = 'FRONTEND',
+  LOGIN_PROVIDER = 'LOGIN_PROVIDER',
 }
 
 /*

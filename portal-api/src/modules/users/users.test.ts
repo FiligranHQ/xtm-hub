@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
+import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import Organization from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
-import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
 import { createUserOrganizationRelationUnsecure } from '../common/user-organization.domain';
 import {
@@ -52,7 +52,7 @@ describe('User helpers', async () => {
       expect(userOrgCapa.capabilities.length).toBe(1);
       expect(
         userOrgCapa.capabilities.includes(
-          OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION
+          OrganizationCapability.AdministrateOrganization
         )
       ).toBeTruthy();
 
@@ -98,7 +98,7 @@ describe('User helpers', async () => {
     });
 
     describe('preventAdministratorRemovalOfOneOrganization', () => {
-      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
+      it(`should throw an error when user is the last with ${OrganizationCapability.AdministrateOrganization}`, async () => {
         const call = preventAdministratorRemovalOfOneOrganization(
           user.id,
           organization.id
@@ -107,7 +107,7 @@ describe('User helpers', async () => {
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
 
-      it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION}`, async () => {
+      it(`should not throw when another user in the organization has ${OrganizationCapability.AdministrateOrganization}`, async () => {
         const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
         await createNewUserFromInvitation({
           email: anotherUserEmail,
@@ -126,9 +126,7 @@ describe('User helpers', async () => {
 
         await createUserOrganizationCapability({
           user_organization_id: anotherUserOrgRelation.id,
-          capabilities_name: [
-            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-          ],
+          capabilities_name: [OrganizationCapability.AdministrateOrganization],
         });
 
         const result = await preventAdministratorRemovalOfOneOrganization(
@@ -141,7 +139,7 @@ describe('User helpers', async () => {
     });
 
     describe('preventAdministratorRemovalOfAllOrganizations', () => {
-      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we specify empty capabilities`, async () => {
+      it(`should throw an error when user is the last with ${OrganizationCapability.AdministrateOrganization} and we specify empty capabilities`, async () => {
         const call = preventAdministratorRemovalOfAllOrganizations(
           contextAdminUser,
           user.id,
@@ -156,7 +154,7 @@ describe('User helpers', async () => {
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
 
-      it(`should throw an error when user is the last with ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we don't specify new capabilities`, async () => {
+      it(`should throw an error when user is the last with ${OrganizationCapability.AdministrateOrganization} and we don't specify new capabilities`, async () => {
         const call = preventAdministratorRemovalOfAllOrganizations(
           contextAdminUser,
           user.id,
@@ -166,7 +164,7 @@ describe('User helpers', async () => {
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
 
-      it(`should not throw when another user in the organization has ${OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION} and we remove its capabilities`, async () => {
+      it(`should not throw when another user in the organization has ${OrganizationCapability.AdministrateOrganization} and we remove its capabilities`, async () => {
         const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
         await createNewUserFromInvitation({
           email: anotherUserEmail,
@@ -185,9 +183,7 @@ describe('User helpers', async () => {
 
         await createUserOrganizationCapability({
           user_organization_id: anotherUserOrgRelation.id,
-          capabilities_name: [
-            OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-          ],
+          capabilities_name: [OrganizationCapability.AdministrateOrganization],
         });
 
         const result = await preventAdministratorRemovalOfOneOrganization(

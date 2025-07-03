@@ -25,13 +25,13 @@ import {
   AddUserInput,
   AdminEditUserInput,
   Organization,
+  OrganizationCapability,
 } from '../../__generated__/resolvers-types';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
-import { OrganizationCapabilityName } from '../common/user-organization-capability.const';
 import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
@@ -319,8 +319,8 @@ describe('User mutation resolver', () => {
                     SIMPLE_USER_FILIGRAN_ID
                   ),
                   capabilities: [
-                    OrganizationCapabilityName.MANAGE_ACCESS,
-                    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                    OrganizationCapability.ManageAccess,
+                    OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
@@ -329,8 +329,8 @@ describe('User mutation resolver', () => {
                     PLATFORM_ORGANIZATION_UUID
                   ),
                   capabilities: [
-                    OrganizationCapabilityName.MANAGE_ACCESS,
-                    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                    OrganizationCapability.ManageAccess,
+                    OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
@@ -360,8 +360,8 @@ describe('User mutation resolver', () => {
                     SIMPLE_USER_FILIGRAN_ID
                   ),
                   capabilities: [
-                    OrganizationCapabilityName.MANAGE_ACCESS,
-                    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                    OrganizationCapability.ManageAccess,
+                    OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
@@ -370,8 +370,8 @@ describe('User mutation resolver', () => {
                     PLATFORM_ORGANIZATION_UUID
                   ),
                   capabilities: [
-                    OrganizationCapabilityName.MANAGE_ACCESS,
-                    OrganizationCapabilityName.MANAGE_SUBSCRIPTION,
+                    OrganizationCapability.ManageAccess,
+                    OrganizationCapability.ManageSubscription,
                   ],
                 },
               ],

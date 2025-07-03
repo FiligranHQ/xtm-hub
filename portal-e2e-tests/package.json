@@ -15,11 +15,11 @@
   },
   "devDependencies": {
     "@playwright/test": "1.52.0",
-    "@types/node": "22.13.14",
+    "@types/node": "22.16.0",
     "graphql": "16.11.0",
     "graphql-tag": "2.12.6",
     "monocart-reporter": "2.9.17",
-    "prettier": "3.5.3"
+    "prettier": "3.6.2"
   },
   "packageManager": "yarn@3.6.3",
   "prettier": {

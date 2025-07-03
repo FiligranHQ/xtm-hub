@@ -1,4 +1,4 @@
-import { OrganizationCapabilityName } from '@/utils/constant';
+import { useOrganizationCapabilities } from '@/hooks/useOrganizationCapabilities';
 import {
   Badge,
   Card,
@@ -16,8 +16,10 @@ export const CapabilityDescription: React.FC = () => {
   const buildTranslationKey = (capability: string) =>
     `CapabilityDescription.Capabilities.${capability}`;
 
+  const organizationCapabilities = useOrganizationCapabilities();
+
   const capabilityList = useMemo(() => {
-    return Object.values(OrganizationCapabilityName)
+    return organizationCapabilities
       .filter((capability) => {
         return t.has(buildTranslationKey(capability));
       })
@@ -33,7 +35,7 @@ export const CapabilityDescription: React.FC = () => {
           </li>
         );
       });
-  }, [t, OrganizationCapabilityName]);
+  }, [t, organizationCapabilities]);
 
   return (
     <Card>

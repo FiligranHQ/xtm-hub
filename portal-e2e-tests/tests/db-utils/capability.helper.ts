@@ -1,7 +1,4 @@
 import { db } from './db-connection';
-import { DocumentNode } from 'graphql/language';
-import { ApiClient } from '../tests_files/api/client';
-import { expect } from '../fixtures/baseFixtures';
 
 export const getUserOrganizationCapabilityNames = async (
   email: string,

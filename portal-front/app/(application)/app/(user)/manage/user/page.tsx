@@ -1,5 +1,5 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import { OrganizationCapabilityName } from '@/utils/constant';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import * as React from 'react';
 import PageLoader from './page-loader';
 
@@ -11,8 +11,8 @@ const Page: React.FunctionComponent = async () => {
     <GuardCapacityComponent
       displayError
       capacityRestriction={[
-        OrganizationCapabilityName.ADMINISTRATE_ORGANIZATION,
-        OrganizationCapabilityName.MANAGE_ACCESS,
+        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+        OrganizationCapabilityEnum.MANAGE_ACCESS,
       ]}>
       <PageLoader />
     </GuardCapacityComponent>

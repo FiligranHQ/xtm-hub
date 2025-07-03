@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileToBase64 } from '@/lib/utils';
@@ -13,7 +13,7 @@ import {
   fileListCheck,
 } from '@/utils/documents';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { AddIcon, DeleteIcon } from 'filigran-icon';
+import { AddIcon, DeleteIcon, ReplayIcon } from 'filigran-icon';
 import {
   Button,
   Checkbox,
@@ -33,6 +33,10 @@ import {
   SelectValue,
   SheetFooter,
   Textarea,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
@@ -101,21 +105,33 @@ export const CustomDashboardUpdateForm = ({
     },
   });
 
-  useEffect(() => setIsDirty(form.formState.isDirty), [form.formState.isDirty]);
+  useEffect(
+    () => setIsDirty(form.formState.isDirty),
+    [form.formState.isDirty, setIsDirty]
+  );
   form.watch(['images', 'document']);
 
   const onSubmit = (values: z.infer<typeof updateCustomDashboardSchema>) => {
-    handleSubmit(values, () => form.reset());
+    const finalImages = images.filter(
+      (img) => !imagesToDelete.includes(img.id)
+    );
+
+    const finalValues = {
+      ...values,
+      images: finalImages as unknown as FileList,
+    };
+
+    handleSubmit(finalValues, () => {
+      form.reset();
+      setImagesToDelete([]);
+    });
   };
 
-  const [currentDashboard, setCurrentDashboard] =
-    useState<customDashboardsItem_fragment$data>(customDashboard);
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
     customDashboard.children_documents as ExistingFile[]
   );
-
-  const [openDelete, setOpenDelete] = useState<number | undefined>(undefined);
 
   const handleNameChange = (value: string) => {
     const slug = form.getValues('slug');
@@ -130,7 +146,7 @@ export const CustomDashboardUpdateForm = ({
   };
 
   return (
-    <>
+    <TooltipProvider delayDuration={1}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -344,24 +360,27 @@ export const CustomDashboardUpdateForm = ({
                     <FormItem>
                       <FormLabel>
                         {t('Service.CustomDashboards.Form.ExistingJSONFile')}
-                        {currentDashboard?.file_name}
+                        {form.getValues('document')?.[0]?.name ??
+                          customDashboard?.file_name}
                       </FormLabel>
                       <FormControl>
-                        <FileInput
-                          {...field}
-                          texts={{
-                            selectFile: t(
-                              'Service.CustomDashboards.Form.UpdateJSONFile'
-                            ),
-                            noFile: t(
-                              'Service.CustomDashboards.Form.NoJSONFile'
-                            ),
-                            dropFiles: t(
-                              'Service.Vault.FileForm.DropDocuments'
-                            ),
-                          }}
-                          allowedTypes={'application/json'}
-                        />
+                        <div onClick={() => setIsDirty(true)}>
+                          <FileInputWithPrevent
+                            field={field}
+                            texts={{
+                              selectFile: t(
+                                'Service.CustomDashboards.Form.UpdateJSONFile'
+                              ),
+                              dialogTitle: t(
+                                'Service.CustomDashboards.Form.UpdateJSONFile'
+                              ),
+                              dialogDescription: t(
+                                'Service.CustomDashboards.Form.DescriptionUpdateJSONFile'
+                              ),
+                            }}
+                            allowedTypes="application/json"
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -440,7 +459,7 @@ export const CustomDashboardUpdateForm = ({
                 <div
                   className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl"
                   data-testid="images-grid">
-                  {images.map((doc, index) => (
+                  {images.map((doc) => (
                     <div
                       key={doc!.id}
                       style={{
@@ -450,47 +469,69 @@ export const CustomDashboardUpdateForm = ({
                         backgroundSize: 'cover',
                       }}
                       className="min-h-[15rem] border rounded relative">
-                      <Button
-                        variant="outline-destructive"
-                        size="icon"
-                        className="absolute right-2 top-2"
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setOpenDelete(index);
-                        }}>
-                        <DeleteIcon className="size-4" />
-                      </Button>
+                      <div
+                        className={`absolute inset-0 bg-black flex flex-col items-center justify-center transition-all duration-800 ease-in ${
+                          imagesToDelete.includes(doc!.id)
+                            ? 'bg-opacity-90 opacity-100'
+                            : 'bg-opacity-0 opacity-0'
+                        }`}>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="absolute right-2 top-2"
+                          type="button"
+                          onClick={() => {
+                            setImagesToDelete(
+                              imagesToDelete.filter((id) => id !== doc!.id)
+                            );
+                          }}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <ReplayIcon className="size-4" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-gray-50">
+                              {t('Service.CustomDashboards.Form.Restore')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </Button>
+                        <DeleteIcon
+                          focusable={false}
+                          className="size-6 text-gray-300"
+                        />
+                      </div>
+
+                      {!imagesToDelete.includes(doc!.id) && (
+                        <div className="flex flex-row items-center bg-page-background h-12 opacity-90">
+                          <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-s mr-s flex-1 min-w-0">
+                            {(doc as ExistingFile)?.file_name ??
+                              (doc as NewFile)?.name}
+                          </div>
+                          <Button
+                            variant="outline-destructive"
+                            size="icon"
+                            type="button"
+                            className="ml-auto m-s"
+                            onClick={() => {
+                              setImagesToDelete([...imagesToDelete, doc!.id]);
+                              setIsDirty(true);
+                            }}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <DeleteIcon className="size-4" />
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-gray-50">
+                                {t(
+                                  'Service.CustomDashboards.Form.DeleteSentence'
+                                )}
+                              </TooltipContent>
+                            </Tooltip>
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
-              <AlertDialogComponent
-                AlertTitle={t('DialogActions.ContinueTitle')}
-                actionButtonText={t('MenuActions.Continue')}
-                variantName={'destructive'}
-                isOpen={openDelete !== undefined}
-                onOpenChange={() => setOpenDelete(undefined)}
-                onClickContinue={() => {
-                  setCurrentDashboard({
-                    ...currentDashboard,
-                    children_documents:
-                      currentDashboard!.children_documents!.filter(
-                        (_, index) => index !== openDelete
-                      ),
-                  });
-                  setImages(images.filter((_, index) => index !== openDelete));
-                  form.setValue(
-                    'images',
-                    [].filter.call(
-                      form.getValues('images'),
-                      (_, index) => index !== openDelete
-                    ) as unknown as FileList
-                  );
-                  setOpenDelete(undefined);
-                }}>
-                {t('DialogActions.DeleteSentence')}
-              </AlertDialogComponent>{' '}
             </>
           )}
 
@@ -511,15 +552,11 @@ export const CustomDashboardUpdateForm = ({
                 {t('Utils.Cancel')}
               </Button>
 
-              <Button
-                disabled={!form.formState.isValid}
-                type="submit">
-                {t('Utils.Validate')}
-              </Button>
+              <Button type="submit">{t('Utils.Validate')}</Button>
             </div>
           </SheetFooter>
         </form>
       </Form>
-    </>
+    </TooltipProvider>
   );
 };

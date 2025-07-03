@@ -4738,12 +4738,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.15.23":
-  version: 22.15.23
-  resolution: "@types/node@npm:22.15.23"
+"@types/node@npm:22.16.0":
+  version: 22.16.0
+  resolution: "@types/node@npm:22.16.0"
   dependencies:
     undici-types: ~6.21.0
-  checksum: 24d204beedcf96d5c9068da2553e01b8e90edecab8498055d1abc24d454211a7757fa858fabebbe0aec86988012c33d0025e31bab63ab2c6307807c84931930e
+  checksum: fccc24b9cfa95e165fb6a22871c812c9b021b0c686ced9b1572e1bd79ac3f8c78b36c04edfb2c96e10a8a1247c026d1dcad91c0c3e62dccf414057a37bac729d
   languageName: node
   linkType: hard
 
@@ -7684,16 +7684,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-icon@npm:0.14.1, filigran-icon@npm:^0.14.1":
+"filigran-icon@npm:0.15.0":
+  version: 0.15.0
+  resolution: "filigran-icon@npm:0.15.0"
+  checksum: 765f3209d11b02032a73dc72dc9e2ccf7b6d788a38942b19852df17c77b3e175fe58b3d40005fd0f46335692ea129ea73477360723317e7a30810a15d92fd976
+  languageName: node
+  linkType: hard
+
+"filigran-icon@npm:^0.14.1":
   version: 0.14.1
   resolution: "filigran-icon@npm:0.14.1"
   checksum: 03a0d8023de33ebd6814162c0391ef053844af0318e458e5cdd8ba36f4415413a5b8d807ebc48960304ce186d0d862e96fa066608981f5e97c98905ba105ef86
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.37.3":
-  version: 0.37.3
-  resolution: "filigran-ui@npm:0.37.3"
+"filigran-ui@npm:0.38.1":
+  version: 0.38.1
+  resolution: "filigran-ui@npm:0.38.1"
   dependencies:
     "@dnd-kit/core": 6.1.0
     "@dnd-kit/modifiers": 7.0.0
@@ -7738,7 +7745,7 @@ __metadata:
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
-  checksum: 3cc19a7486b0c07cdd754295289c48fd311f66d6c65741e16fae31df262d447d63362aa56289d1ba137768ff306268ae21df10e56c88f8777da276a03275ca7f
+  checksum: b35cd388bac426c0fc2440c18132d34f1fc637e2a6170780274c93c4e66761cd4fea8338e9389bf50e6822c55e26a6ea91faa7740ce240877299d6be97eeebd7
   languageName: node
   linkType: hard
 
@@ -11293,7 +11300,7 @@ __metadata:
     "@testing-library/react-hooks": 8.0.1
     "@testing-library/user-event": 14.6.1
     "@types/config": 3.3.5
-    "@types/node": 22.15.23
+    "@types/node": 22.16.0
     "@types/react": 19.1.6
     "@types/react-dom": 19.1.5
     "@types/react-relay": 18.2.1
@@ -11309,8 +11316,8 @@ __metadata:
     eslint-config-next: 15.3.2
     eslint-config-prettier: 10.1.5
     extract-files: 13.0.0
-    filigran-icon: 0.14.1
-    filigran-ui: 0.37.3
+    filigran-icon: 0.15.0
+    filigran-ui: 0.38.1
     graphql: 16.11.0
     graphql-sse: 2.5.4
     husky: 9.1.7
@@ -11323,7 +11330,7 @@ __metadata:
     next-intl: 4.1.0
     next-themes: 0.4.6
     postcss: 8.5.3
-    prettier: 3.5.3
+    prettier: 3.6.2
     prettier-plugin-organize-imports: 4.1.0
     prettier-plugin-tailwindcss: 0.6.9
     react: 19.1.0
@@ -11537,12 +11544,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.5.3":
-  version: 3.5.3
-  resolution: "prettier@npm:3.5.3"
+"prettier@npm:3.6.2":
+  version: 3.6.2
+  resolution: "prettier@npm:3.6.2"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 61e97bb8e71a95d8f9c71f1fd5229c9aaa9d1e184dedb12399f76aa802fb6fdc8954ecac9df25a7f82ee7311cf8ddbd06baf5507388fc98e5b44036cc6a88a1b
+  checksum: 0206f5f437892e8858f298af8850bf9d0ef1c22e21107a213ba56bfb9c2387a2020bfda244a20161d8e3dad40c6b04101609a55d370dece53d0a31893b64f861
   languageName: node
   linkType: hard
 

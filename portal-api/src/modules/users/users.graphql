@@ -15,7 +15,7 @@ type Capability implements Node {
 type OrganizationCapabilities implements Node {
   id: ID!
   organization: Organization!
-  capabilities: [String!]
+  capabilities: [OrganizationCapability!]
 }
 
 type User implements Node {
@@ -31,7 +31,7 @@ type User implements Node {
   organization_capabilities: [OrganizationCapabilities!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
-  selected_org_capabilities: [String!]
+  selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
 }
 
@@ -84,6 +84,7 @@ input OrganizationCapabilitiesInput {
   organization_id: ID!
   capabilities: [String!]
 }
+
 input AddUserInput {
   email: String!
   password: String

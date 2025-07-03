@@ -11,17 +11,18 @@
     "Enabled": "Activé",
     "Published": "Publié"
   },
-  "CountryComboBox": {
-    "Placeholder": "Choisir un pays"
-  },
   "CapabilityDescription": {
-    "Title": "Capacités disponibles",
-    "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Contournement à l'intérieur d'une organisation",
       "MANAGE_ACCESS": "Possibilité d'inviter d'autres utilisateurs dans cette organisation",
+      "MANAGE_OCTI_ENROLLMENT": "Possibilité d'inscrire et de désinscrire des instances OCTI",
       "MANAGE_SUBSCRIPTION": "Possibilité de gérer et d'abonner l'organisation à des services"
-    }
+    },
+    "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
+    "Title": "Capacités disponibles"
+  },
+  "CountryComboBox": {
+    "Placeholder": "Choisir un pays"
   },
   "Datatable": {
     "Asc": "Asc",
@@ -41,7 +42,6 @@
   },
   "DialogActions": {
     "ContinueTitle": "Progrès non sauvegardé",
-    "DeleteSentence": "Cet élément sera définitivement supprimé. Voulez-vous continuer ?",
     "PreventSheetSentence": "Vous avez commencé à remplir le formulaire. Le fait de le fermer maintenant annulera toute progression non enregistrée. Voulez-vous continuer ?",
     "PreventSheetTitle": "Progrès non sauvegardé"
   },
@@ -69,14 +69,20 @@
       "CANT_REMOVE_LAST_ADMINISTRATOR": "Vous ne pouvez pas supprimer le dernier administrateur d'une organisation",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
+      "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
+      "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
+      "CSV_FEED_UPDATE_ERROR": "Erreur lors de la mise à jour du CSV Feed.",
+      "CUSTOM_DASHBOARD_INSERTION_ERROR": "Erreur lors de la création du tableau de bord personnalisé.",
+      "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "Le slug du tableau de bord personnalisé est déjà utilisé.",
+      "CUSTOM_DASHBOARD_UPDATE_ERROR": "Erreur lors de la mise à jour du tableau de bord personnalisé.",
       "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
       "DELETE_ORGANIZATION": "Erreur lors de la suppression de l'organisation",
       "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
       "DELETE_USER_ERROR": "Erreur lors de la suppression de l'utilisateur",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
-      "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
       "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
+      "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
@@ -108,6 +114,7 @@
     "FilterLabels": "Filtrer par étiquettes...",
     "Search": "Recherche..."
   },
+  "GoToProd": "Allez sur la production",
   "HomePage": {
     "Homepage": "Page d'accueil",
     "Manage": "Gérer",
@@ -221,6 +228,13 @@
   "Parameters": {
     "Version": "Version"
   },
+  "ProfilePage": {
+    "InstancesEditionDialog": {
+      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos instances OCTI et OBAS."
+    },
+    "Title": "Profile",
+    "UpdateProfile": "Mise à jour du profil"
+  },
   "RedirectPage": {
     "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus.",
     "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !"
@@ -245,43 +259,46 @@
       "Actions": {
         "Added": "{name} a été ajouté",
         "Deleted": "{name} a été supprimé",
-        "Updated": "{name} a été modifié",
-        "Share": "Partager le CSV Feed"
+        "Share": "Partager le CSV Feed",
+        "Updated": "{name} a été modifié"
       },
+      "Active": "Publié",
+      "AddCsvFeed": "Ajouter un CSV Feed",
+      "DeleteCsvFeed": "Supprimer le CSV Feed {name}",
       "Form": {
-        "NameLabel": "Nom",
-        "ShortDescriptionLabel": "Courte Description",
-        "SlugLabel": "Slug",
+        "CsvFeedFile": "Fichier Csv Feed",
+        "CsvFeedIllustration": "Illustration",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le CSV Feed.",
-        "LabelsLabel": "Labels",
-        "CsvFeedFile": "Fichier Csv Feed",
         "ExistingCsvFeedFile": "Fichier Csv Feed existant: {file_name}",
+        "UpdateJSONFile": "Mettre à jour le fichier JSON",
+        "DescriptionUpdateJSONFile": "Vous allez mettre un nouveau fichier JSON. L'ancien sera écrasé, voulez-vous continuer ?",
         "CsvFeedIllustration": "Illustration",
         "ExistingCsvFeedIllustration": "Illustration Csv Feed existante: {file_name}",
-        "PublishedPlaceholder": "Le CSV Feed est-il publié?"
+        "LabelsLabel": "Labels",
+        "NameLabel": "Nom",
+        "PublishedPlaceholder": "Le CSV Feed est-il publié?",
+        "ShortDescriptionLabel": "Courte Description",
+        "SlugLabel": "Slug"
       },
-      "AddCsvFeed": "Ajouter un CSV Feed",
-      "UpdateCsvFeed": "Editer le CSV Feed {name}",
-      "DeleteCsvFeed": "Supprimer le CSV Feed {name}",
-      "SureDeleteCsvFeed": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
       "NonActive": "Brouillon",
-      "Active": "Publié"
+      "SureDeleteCsvFeed": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
+      "UpdateCsvFeed": "Editer le CSV Feed {name}"
     },
     "CustomDashboards": {
       "Actions": {
         "Added": "Le custom dashboard {name} a été ajouté avec succès",
         "Deleted": "Le custom dashboard {name} a été supprimé avec succès",
-        "Updated": "Le custom dashboard {name} a été modifié avec succès",
-        "Share": "Partager le tableau de bord"
+        "Share": "Partager le tableau de bord",
+        "Updated": "Le custom dashboard {name} a été modifié avec succès"
       },
       "AddDashboard": "Nouveau tableau de bord",
       "Form": {
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Description du tableau de bord",
+        "ExistingJSONFile": "Fichier JSON existant: ",
         "ImageLabel": "Images",
         "JSONFile": "Fichier JSON",
-        "ExistingJSONFile": "Fichier JSON existant: ",
         "LabelsLabel": "Étiquettes",
         "LabelsPlaceholder": "Ajouter des étiquettes",
         "NameLabel": "Nom",
@@ -293,13 +310,17 @@
         "SelectImage": "Selectionnez une/des image(s)",
         "SelectJSONFile": "Selectionnez un fichier JSON",
         "UpdateJSONFile": "Mettre à jour le fichier JSON",
+        "DescriptionUpdateJSONFile": "Vous allez envoyer un nouveau fichier JSON. L'ancien sera supprimé. Voulez-vous continuer ?",
         "ShortDescriptionLabel": "Brève description",
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",
         "SlugPlaceholder": "dashboard-slug",
+        "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
         "productVersion": "OpenCTI version",
-        "productVersionPlaceholder": "1.0.0"
+        "productVersionPlaceholder": "1.0.0",
+        "Restore": "Restore",
+        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image"
       },
       "UpdateDashboard": "Tableau de bord des mises à jour"
     },
@@ -362,6 +383,10 @@
     "NoOwnedService": "Vous n'avez pas encore de service.",
     "NoService": "Il n'y a pas encore de service...",
     "ServiceName": "Nom du service",
+    "ShareableResources": {
+      "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
+      "Share": "Partager"
+    },
     "Subscribe": "Souscrire",
     "SubscribeOrganization": "Souscrire une organisation",
     "SubscribeService": "Souscrire au service {serviceName}",
@@ -437,7 +462,6 @@
   "Sort Asc": "Tri Asc",
   "Sort Desc": "Sort Desc",
   "TestEnvCallout": "Vous êtes sur l'environnement {environnement}",
-  "GoToProd": "Allez sur la production",
   "ThemeToggle": {
     "Automatic": "Automatique",
     "Dark": "Foncé",
@@ -464,6 +488,7 @@
     "UserUpdated": "L'utilisateur {email} a été modifié"
   },
   "UserForm": {
+    "AddOrganization": "Ajouter une organisation",
     "Country": "Pays",
     "Email": "Courriel",
     "Error": {
@@ -484,15 +509,14 @@
       "Success": "L'email de réinitialisation du mot de passe a été envoyé avec succès."
     },
     "WhoAreYou": "Qui êtes-vous ?",
-    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom",
-    "AddOrganization": "Ajouter une organisation"
+    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom"
   },
   "UserListPage": {
+    "Country": "Pays",
     "Email": "Email",
     "FirstName": "Prénom",
     "LastLogin": "Dernière connexion",
     "LastName": "Nom de famille",
-    "Country": "Pays",
     "Never": "Jamais",
     "Organizations": "Organisations",
     "Roles": "Rôles",
@@ -503,13 +527,6 @@
       "Password": "Mot de passe",
       "SelectOrganization": "Sélectionner une organisation",
       "SelectRoles": "Sélectionner rôles"
-    }
-  },
-  "ProfilePage": {
-    "Title": "Profile",
-    "UpdateProfile": "Mise à jour du profil",
-    "InstancesEditionDialog": {
-      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos instances OCTI et OBAS."
     }
   },
   "Utils": {

@@ -508,6 +508,7 @@ type PlatformProvider {
 }
 
 type Settings {
+  platform_feature_flags: [String!]!
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
@@ -665,7 +666,7 @@ type Capability implements Node {
 type OrganizationCapabilities implements Node {
   id: ID!
   organization: Organization!
-  capabilities: [String!]
+  capabilities: [OrganizationCapability!]
 }
 
 type User implements Node {
@@ -681,7 +682,7 @@ type User implements Node {
   organization_capabilities: [OrganizationCapabilities!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
-  selected_org_capabilities: [String!]
+  selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
 }
 
@@ -759,6 +760,13 @@ enum Restriction {
   FRT_ACCESS_BILLING
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
+}
+
+enum OrganizationCapability {
+  ADMINISTRATE_ORGANIZATION
+  MANAGE_ACCESS
+  MANAGE_SUBSCRIPTION
+  MANAGE_OCTI_ENROLLMENT
 }
 
 enum ServiceRestriction {

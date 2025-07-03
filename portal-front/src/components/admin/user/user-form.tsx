@@ -1,8 +1,8 @@
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
+import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { isEmpty } from '@/lib/utils';
-import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  MultiSelectFormField,
   SheetFooter,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -79,15 +78,9 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
             <FormItem>
               <FormLabel>{t('UserForm.OrganizationCapabilities')}</FormLabel>
               <FormControl>
-                <MultiSelectFormField
-                  noResultString={t('Utils.NotFound')}
-                  options={organizationCapabilitiesMultiSelectOptions}
-                  defaultValue={field.value}
-                  onValueChange={field.onChange}
-                  placeholder={t(
-                    'UserForm.OrganizationsCapabilitiesPlaceholder'
-                  )}
-                  variant="inverted"
+                <CapabilityMultiSelect
+                  value={field.value}
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
