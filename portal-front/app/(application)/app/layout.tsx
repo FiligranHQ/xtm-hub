@@ -79,6 +79,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
     }
 
     console.error('RootLayout Error:', error);
+
     return (
       <div className="flex flex-col w-full h-screen">
         <ErrorPage>

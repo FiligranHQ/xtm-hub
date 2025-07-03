@@ -1,3 +1,6 @@
+export const OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME =
+  'OpenCTI Custom Dashboards Library';
+
 export const PLATFORM_ORGANIZATION_UUID =
   'ba091095-418f-4b4f-b150-6c9295e232c4';
 
