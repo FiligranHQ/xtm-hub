@@ -17,6 +17,7 @@ import { setQueryForDocument } from './document-security-access';
 import { meUserSSESecurity, userSSESecurity } from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
+import { logApp } from '../utils/app-logger.util';
 import { userSecurityLayer } from './layer/user';
 import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
 import { userServiceCapabilitySecurityLayer } from './layer/user-service-capability';
@@ -166,7 +167,7 @@ export const applyDbSecurityLayer = async (
 
   // First check if we have a valid table type
   if (!table) {
-    console.error('No table specified in query');
+    logApp.error(`No table specified in query: ${qb}`);
     return qb;
   }
 
@@ -192,10 +193,10 @@ export const applyDbSecurityLayer = async (
       await tableSecurityMap[table][method](context, qb, opts);
       return qb;
     } else {
-      console.error(`No ${method} security handler for ${table}`);
+      logApp.warn(`No ${method} security handler for ${table}`);
     }
   } else {
-    console.error(`No security handlers defined for table: ${table}`);
+    logApp.warn(`No security handlers defined for table: ${table}`);
   }
 
   return qb;
