@@ -258,6 +258,8 @@
         "LabelsLabel": "Labels",
         "CsvFeedFile": "Csv Feed file",
         "ExistingCsvFeedFile": "Existing Csv Feed file: {file_name}",
+        "UpdateJSONFile": "Update JSON file",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "CsvFeedIllustration": "Illustration",
         "ExistingCsvFeedIllustration": "Existing Csv Feed illustration: {file_name}",
         "PublishedPlaceholder": "Is the CSV Feed published?"
@@ -294,6 +296,7 @@
         "SelectImage": "Select image(s)",
         "SelectJSONFile": "Select JSON file",
         "UpdateJSONFile": "Update JSON file",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "ShortDescriptionLabel": "Short Description",
         "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
         "SlugLabel": "Slug (url)",

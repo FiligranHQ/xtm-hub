@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileToBase64 } from '@/lib/utils';
@@ -344,24 +345,27 @@ export const CustomDashboardUpdateForm = ({
                     <FormItem>
                       <FormLabel>
                         {t('Service.CustomDashboards.Form.ExistingJSONFile')}
-                        {currentDashboard?.file_name}
+                        {form.getValues('document')?.[0]?.name ??
+                          currentDashboard?.file_name}
                       </FormLabel>
                       <FormControl>
-                        <FileInput
-                          {...field}
-                          texts={{
-                            selectFile: t(
-                              'Service.CustomDashboards.Form.UpdateJSONFile'
-                            ),
-                            noFile: t(
-                              'Service.CustomDashboards.Form.NoJSONFile'
-                            ),
-                            dropFiles: t(
-                              'Service.Vault.FileForm.DropDocuments'
-                            ),
-                          }}
-                          allowedTypes={'application/json'}
-                        />
+                        <div onClick={() => setIsDirty(true)}>
+                          <FileInputWithPrevent
+                            field={field}
+                            texts={{
+                              selectFile: t(
+                                'Service.CustomDashboards.Form.UpdateJSONFile'
+                              ),
+                              dialogTitle: t(
+                                'Service.CustomDashboards.Form.UpdateJSONFile'
+                              ),
+                              dialogDescription: t(
+                                'Service.CustomDashboards.Form.DescriptionUpdateJSONFile'
+                              ),
+                            }}
+                            allowedTypes="application/json"
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -453,7 +457,7 @@ export const CustomDashboardUpdateForm = ({
                       <Button
                         variant="outline-destructive"
                         size="icon"
-                        className="absolute right-2 top-2"
+                        className="bg-black absolute right-2 top-2"
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
@@ -512,7 +516,7 @@ export const CustomDashboardUpdateForm = ({
               </Button>
 
               <Button
-                disabled={!form.formState.isValid}
+                disabled={!form.formState.isDirty}
                 type="submit">
                 {t('Utils.Validate')}
               </Button>
