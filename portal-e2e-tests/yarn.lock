@@ -59,12 +59,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.13.14":
-  version: 22.13.14
-  resolution: "@types/node@npm:22.13.14"
+"@types/node@npm:22.16.0":
+  version: 22.16.0
+  resolution: "@types/node@npm:22.16.0"
   dependencies:
-    undici-types: ~6.20.0
-  checksum: 8c5a3c1ec085bc320d6b19915406920e41bc482aed24098bf9858957ace22b762b50594a2805766b2d09966ea457dfad847b51a2d10dd4c1931955f80de598ce
+    undici-types: ~6.21.0
+  checksum: fccc24b9cfa95e165fb6a22871c812c9b021b0c686ced9b1572e1bd79ac3f8c78b36c04edfb2c96e10a8a1247c026d1dcad91c0c3e62dccf414057a37bac729d
   languageName: node
   linkType: hard
 
@@ -1722,7 +1722,7 @@ __metadata:
   resolution: "test_e2e@workspace:."
   dependencies:
     "@playwright/test": 1.52.0
-    "@types/node": 22.13.14
+    "@types/node": 22.16.0
     graphql: 16.11.0
     graphql-tag: 2.12.6
     knex: 3.1.0
@@ -1772,10 +1772,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.20.0":
-  version: 6.20.0
-  resolution: "undici-types@npm:6.20.0"
-  checksum: b7bc50f012dc6afbcce56c9fd62d7e86b20a62ff21f12b7b5cbf1973b9578d90f22a9c7fe50e638e96905d33893bf2f9f16d98929c4673c2480de05c6c96ea8b
+"undici-types@npm:~6.21.0":
+  version: 6.21.0
+  resolution: "undici-types@npm:6.21.0"
+  checksum: 46331c7d6016bf85b3e8f20c159d62f5ae471aba1eb3dc52fff35a0259d58dcc7d592d4cc4f00c5f9243fa738a11cfa48bd20203040d4a9e6bc25e807fab7ab3
   languageName: node
   linkType: hard
 
