@@ -6,6 +6,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    image: filigran/portal-front:${IMAGE_TAGS}
     build:
       context: ../portal-front/.
       cache_from:
@@ -82,6 +83,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    image: filigran/portal-api:${IMAGE_TAGS}
     build:
       context: ../portal-api/.
       cache_from:
@@ -160,6 +162,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    image: filigran/portal-e2e-tests:${IMAGE_TAGS}
     build:
       context: ../portal-e2e-tests/.
       cache_from:
