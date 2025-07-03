@@ -22,7 +22,7 @@ describe('Users domain', () => {
     expect(response.organization_capabilities).toHaveLength(2);
   });
 
-  it('on Simple User using EditUSer should throw error FORBIDDEN_ACCESS', async () => {
+  it('should throw FORBIDDEN_ACCESS when Simple User calls EditUser', async () => {
     try {
       await updateUser(
         contextSimpleUserThales,
