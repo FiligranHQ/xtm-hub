@@ -4,7 +4,6 @@ xtmhub:
   node_env: "production"
   api:
     repository: "portal-api-prod"
-    resources: {}
     replicas: 1
     admin:
       email: ""
@@ -17,14 +16,25 @@ xtmhub:
       MINIO_USE_SSL: "false"
       MINIO_PORT: 80
       MINIO_ENDPOINT: minio
+    resources:
+      requests:
+        cpu: "64m"
+        memory: 128Mi
+      limits:
+        memory: 8Gi
     secret:
       OIDC_CLIENT_SECRET: ""
     livenessProbe: {}
   front:
     repository: "portal-front-prod"
-    resources: {}
     replicas: 1
     livenessProbe: {}
+    resources:
+      requests:
+        cpu: "128m"
+        memory: 100Mi
+      limits:
+        memory: 4Gi
   imagePullSecrets: []
   labels:
     environment: dev
@@ -51,6 +61,13 @@ minio:
     tag: RELEASE.2024-08-03T04-33-23Z
     pullPolicy: IfNotPresent
   ingressWhitelistSourceRange: "149.88.28.168/32,10.0.0.0/8"
+  resources:
+    requests:
+      cpu: "256m"
+      memory: "512Mi"
+    limits:
+      cpu: "2"
+      memory: "8Gi"
   storage:
     diskSize: 10Gi
     diskCount: 2
