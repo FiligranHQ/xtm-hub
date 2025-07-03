@@ -111,11 +111,8 @@ test.describe('Custom dashboards management', () => {
       await page
         .getByPlaceholder('Dashboard name')
         .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
-      await page.getByTestId('images-grid').getByRole('button').first().click();
-      await page
-        .getByRole('alertdialog', { name: 'Do you want to continue?' })
-        .waitFor();
-      await page.getByRole('button', { name: 'Continue' }).click();
+      await page.getByTestId('images-grid').getByRole('button').nth(1).click();
+
       await dashboardListPage.uploadImageDocument(TEST_3_IMAGE_FILE.path);
 
       await page.getByRole('button', { name: 'Validate' }).click();
@@ -136,11 +133,8 @@ test.describe('Custom dashboards management', () => {
       await page
         .getByPlaceholder('Dashboard name')
         .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
-      await page.getByTestId('images-grid').getByRole('button').first().click();
-      await page
-        .getByRole('alertdialog', { name: 'Do you want to continue?' })
-        .waitFor();
-      await page.getByRole('button', { name: 'Continue' }).click();
+      await page.getByTestId('images-grid').getByRole('button').nth(1).click();
+
       await dashboardListPage.uploadImageDocument(TEST_3_IMAGE_FILE.path);
 
       await page.getByRole('button', { name: 'Validate' }).click();
@@ -161,11 +155,8 @@ test.describe('Custom dashboards management', () => {
       await page
         .getByPlaceholder('Dashboard name')
         .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
-      await page.getByTestId('images-grid').getByRole('button').first().click();
-      await page
-        .getByRole('alertdialog', { name: 'Do you want to continue?' })
-        .waitFor();
-      await page.getByRole('button', { name: 'Continue' }).click();
+      await page.getByTestId('images-grid').getByRole('button').nth(1).click();
+
       await dashboardListPage.uploadImageDocument(TEST_3_IMAGE_FILE.path);
 
       await page.getByRole('button', { name: 'Validate' }).click();

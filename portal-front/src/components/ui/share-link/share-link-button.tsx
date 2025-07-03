@@ -93,7 +93,7 @@ export const ShareLinkCommonButton: FunctionComponent<ShareLinkCommonProps> = ({
       .then(() => {
         onClickAction();
         toast({
-          title: t('Service.ShareableResources.Copied'),
+          description: t('Service.ShareableResources.Copied'),
         });
       })
       .catch((error) => {

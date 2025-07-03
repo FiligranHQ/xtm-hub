@@ -16,6 +16,7 @@
     "database": "test_database",
     "seeds": "tests/seeds"
   },
+  "enabled_features": [],
   "auth0": {
     "domain": "filigran.eu.auth0.com",
     "clientId": "changeme",

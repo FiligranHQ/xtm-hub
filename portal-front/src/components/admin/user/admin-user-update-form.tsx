@@ -5,9 +5,9 @@ import {
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userEditAdminFormSchema } from '@/components/admin/user/user-form.schema';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isEmpty } from '@/lib/utils';
-import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
@@ -20,7 +20,6 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  MultiSelectFormField,
   SheetFooter,
   toast,
 } from 'filigran-ui';
@@ -220,15 +219,9 @@ export const AdminUserUpdateForm: FunctionComponent<
                           }
                         </Label>
                         <FormControl>
-                          <MultiSelectFormField
-                            noResultString={t('Utils.NotFound')}
-                            options={organizationCapabilitiesMultiSelectOptions}
-                            defaultValue={formField.value}
-                            onValueChange={formField.onChange}
-                            placeholder={t(
-                              'UserForm.OrganizationsCapabilitiesPlaceholder'
-                            )}
-                            variant="inverted"
+                          <CapabilityMultiSelect
+                            value={formField.value}
+                            onChange={formField.onChange}
                           />
                         </FormControl>
                         <Button

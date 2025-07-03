@@ -76,7 +76,7 @@
     "zod": "3.24.4"
   },
   "devDependencies": {
-    "@eslint/js": "9.18.0",
+    "@eslint/js": "9.30.1",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/typescript": "4.0.9",
     "@graphql-codegen/typescript-resolvers": "4.2.1",
@@ -86,7 +86,7 @@
     "@types/express-serve-static-core": "5.0.6",
     "@types/express-session": "1.18.0",
     "@types/graphql-upload": "16.0.7",
-    "@types/node": "22.5.5",
+    "@types/node": "22.16.0",
     "@types/nodemailer": "6.4.16",
     "@types/passport": "1.0.17",
     "@types/uuid": "10.0.0",
@@ -100,11 +100,11 @@
     "globals": "15.15.0",
     "husky": "9.1.6",
     "kanel": "3.14.1",
-    "lint-staged": "15.2.10",
-    "prettier": "3.3.3",
+    "lint-staged": "15.5.2",
+    "prettier": "3.6.2",
     "prettier-plugin-organize-imports": "4.1.0",
     "tsx": "4.19.2",
-    "typescript": "5.6.2",
+    "typescript": "5.8.3",
     "typescript-eslint": "8.20.0",
     "vitest": "2.1.1"
   },

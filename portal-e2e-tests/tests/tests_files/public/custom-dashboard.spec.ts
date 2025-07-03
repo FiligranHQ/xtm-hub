@@ -78,7 +78,6 @@ test.describe('Public custom dashboard', () => {
 
       await homePage.subscribeToService(OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME);
 
-      await homePage.navigateToService(OCTI_CUSTOM_DASHBOARDS_SERVICE_NAME);
       await dashboardListPage.assertCurrentPage();
     });
 

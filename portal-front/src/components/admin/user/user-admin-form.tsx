@@ -4,9 +4,9 @@ import {
 } from '@/components/admin/user/autocomplete-organization';
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
+import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isDevelopment, isEmpty } from '@/lib/utils';
-import { organizationCapabilitiesMultiSelectOptions } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
 import {
@@ -17,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
   Label,
-  MultiSelectFormField,
   SheetFooter,
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
@@ -33,7 +32,6 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
   handleSubmit,
 }) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
-
   const t = useTranslations();
   const [userOrganization, setUserOrganization] = useState<
     UserOrganizationFormProps[]
@@ -181,15 +179,9 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
                           }
                         </Label>
                         <FormControl>
-                          <MultiSelectFormField
-                            noResultString={t('Utils.NotFound')}
-                            options={organizationCapabilitiesMultiSelectOptions}
-                            defaultValue={formField.value}
-                            onValueChange={formField.onChange}
-                            placeholder={t(
-                              'UserForm.OrganizationsCapabilitiesPlaceholder'
-                            )}
-                            variant="inverted"
+                          <CapabilityMultiSelect
+                            value={formField.value}
+                            onChange={formField.onChange}
                           />
                         </FormControl>
                         <Button

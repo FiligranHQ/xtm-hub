@@ -1,7 +1,7 @@
 // fixtures.js for v8 coverage
 import { expect, test as testBase } from '@playwright/test';
 import { addCoverageReport } from 'monocart-reporter';
-import { afterEach, beforeEach } from './hooks';
+import { beforeEach } from './hooks';
 
 const test = testBase.extend({
   autoTestFixture: [
@@ -22,9 +22,9 @@ const test = testBase.extend({
         ]);
       }
 
-      await use('autoTestFixture');
+      await beforeEach();
 
-      await afterEach();
+      await use('autoTestFixture');
 
       // console.log('autoTestFixture teardown...');
       if (activateCoverage) {
@@ -43,4 +43,5 @@ const test = testBase.extend({
     },
   ],
 });
+
 export { test, expect };
