@@ -59,7 +59,7 @@ export type DatabaseType =
   | 'Document_Metadata';
 
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
-export type MethodType = 'select' | 'insert' | 'update' | 'del' | 'delete';
+export type MethodType = 'select' | 'insert' | 'update' | 'del';
 
 interface Pagination {
   first?: number;
@@ -122,7 +122,7 @@ export interface QueryOpts {
   after?: string;
   orderMode?: string;
   orderBy?: string;
-  queryType?: MethodType;
+  methodType?: MethodType;
   capabilities?: string[];
   searchTerm?: string;
   filters?: Filter[];

@@ -1,9 +1,3 @@
-/**
- * This file serves as a template/example for implementing security layers.
- * Use this as a reference when creating new security layer implementations.
- * DO NOT MODIFY THIS FILE - create a new file for your specific security layer instead.
- */
-
 import { KnexQueryBuilder } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
@@ -64,5 +58,4 @@ export const userOrganizationCapabilitySecurityLayer: SecuryQueryHandlers = {
   insert: setInsertSecurity,
   update: setUpdateSecurity,
   del: setDeleteSecurity,
-  delete: setDeleteSecurity,
 };

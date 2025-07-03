@@ -28,7 +28,7 @@ const resolvers: Resolvers = {
 
         const user_service_id = fromGlobalId(input.user_service_id).id;
         await db<UserServiceCapability>(context, 'UserService_Capability', {
-          queryType: 'delete',
+          methodType: 'del',
         })
           .where('user_service_id', '=', user_service_id)
           .delete('*')

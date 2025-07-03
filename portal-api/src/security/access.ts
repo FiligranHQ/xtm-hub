@@ -129,11 +129,11 @@ export const applyDbSecurity = <T>(
     opts: QueryOpts
   ) => Knex.QueryBuilder<T>;
 
-  if (opts.queryType === 'update') {
+  if (opts.methodType === 'update') {
     return queryContext;
   }
 
-  if (opts.queryType === 'del') {
+  if (opts.methodType === 'del') {
     const updateMapping: Partial<
       Record<DatabaseType, UpdateAccessibilityChecker>
     > = {

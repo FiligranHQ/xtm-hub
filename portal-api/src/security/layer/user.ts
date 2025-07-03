@@ -61,5 +61,4 @@ export const userSecurityLayer: SecuryQueryHandlers = {
   insert: setInsertSecurity,
   update: setUpdateSecurity,
   del: setDeleteSecurity,
-  delete: setDeleteSecurity,
 };
