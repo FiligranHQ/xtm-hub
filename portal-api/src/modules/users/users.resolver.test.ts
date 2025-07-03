@@ -17,9 +17,9 @@ import {
   DEFAULT_ADMIN_PASSWORD,
   SERVICE_VAULT_ID,
   SIMPLE_USER_FILIGRAN_ID,
-  THALES_EMAIL,
+  THALES_ADMIN_ORGA_EMAIL,
+  THALES_ADMIN_ORGA_ID,
   THALES_ORGA_ID,
-  THALES_USER_ID,
 } from '../../../tests/tests.const';
 import {
   AddUserInput,
@@ -392,7 +392,7 @@ describe('User mutation resolver', () => {
 
     describe('administrator deletion', async () => {
       beforeAll(async () => {
-        thalesUser = await loadUserBy({ email: THALES_EMAIL });
+        thalesUser = await loadUserBy({ email: THALES_ADMIN_ORGA_EMAIL });
       });
 
       afterEach(async () => {
@@ -400,7 +400,7 @@ describe('User mutation resolver', () => {
         await usersResolver.Mutation.adminEditUser(
           undefined,
           {
-            id: THALES_USER_ID,
+            id: THALES_ADMIN_ORGA_ID,
             input: {
               organization_capabilities:
                 thalesUser.organization_capabilities.map(
@@ -423,7 +423,7 @@ describe('User mutation resolver', () => {
         const call = usersResolver.Mutation.adminEditUser(
           undefined,
           {
-            id: THALES_USER_ID,
+            id: THALES_ADMIN_ORGA_ID,
             input: {
               organization_capabilities: [
                 {
@@ -445,7 +445,7 @@ describe('User mutation resolver', () => {
     let thalesUser: UserLoadUserBy;
 
     beforeAll(async () => {
-      thalesUser = await loadUserBy({ email: THALES_EMAIL });
+      thalesUser = await loadUserBy({ email: THALES_ADMIN_ORGA_EMAIL });
     });
 
     afterEach(async () => {
@@ -453,7 +453,7 @@ describe('User mutation resolver', () => {
       await usersResolver.Mutation.adminEditUser(
         undefined,
         {
-          id: THALES_USER_ID,
+          id: THALES_ADMIN_ORGA_ID,
           input: {
             organization_capabilities: thalesUser.organization_capabilities.map(
               (organizationCapabilities) => ({
@@ -482,7 +482,7 @@ describe('User mutation resolver', () => {
       const call = usersResolver.Mutation.editUser(
         undefined,
         {
-          id: THALES_USER_ID,
+          id: THALES_ADMIN_ORGA_ID,
           input: { capabilities: [] },
         },
         testContext

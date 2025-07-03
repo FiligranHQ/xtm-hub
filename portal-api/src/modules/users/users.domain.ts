@@ -340,20 +340,26 @@ export const resetPassword = async (context: PortalContext): Promise<void> => {
 export const updateUser = async (
   context: PortalContext,
   id: UserId,
-  input: UserMutator
+  input: UserMutator,
+  secure: boolean = true
 ): Promise<User> => {
   if (isEmpty(input)) {
     return;
   }
   const trx = await dbTx();
   try {
-    const [updatedUser] = await db<User>(context, 'User', {
-      queryType: 'update',
-    })
-      .where({ id })
-      .update(input)
-      .returning('*')
-      .transacting(trx);
+    const [updatedUser] = secure
+      ? await db<User>(context, 'User')
+          .where({ id })
+          .update(input)
+          .returning('*')
+          .transacting(trx)
+          .secureQuery()
+      : await dbUnsecure<User>('User')
+          .where({ id })
+          .update(input)
+          .returning('*')
+          .transacting(trx);
 
     if (input.disabled) {
       await dispatch('User', 'delete', updatedUser);
@@ -492,7 +498,9 @@ export const updateUserAtLogin = async (
   if (organizations.length === 1) {
     fields.selected_organization_id = organizations[0].id;
   }
-  const updatedUser = await updateUser(context, user.id, fields);
+
+  // TODO: Refactor, this function has mixed responsibilities and needs to be separated.
+  const updatedUser = await updateUser(context, user.id, fields, false);
   return {
     ...user,
     selected_organization_id: updatedUser.selected_organization_id,

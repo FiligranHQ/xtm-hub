@@ -1,12 +1,17 @@
 import { describe, expect } from 'vitest';
-import { DEFAULT_ADMIN_EMAIL } from '../../../tests/tests.const';
+import {
+  contextSimpleUserThales,
+  DEFAULT_ADMIN_EMAIL,
+  THALES_ADMIN_ORGA_EMAIL,
+  THALES_ADMIN_ORGA_ID,
+} from '../../../tests/tests.const';
 import { UserId } from '../../model/kanel/public/User';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { loadUserBy } from './users.domain';
+import { loadUserBy, updateUser } from './users.domain';
 
 //Issue with test
-describe.skip('Users domain', () => {
-  it('should load user Admin', async () => {
+describe('Users domain', () => {
+  it.skip('should load user Admin', async () => {
     const response = await loadUserBy({
       'User.id': ADMIN_UUID as UserId,
     });
@@ -15,5 +20,19 @@ describe.skip('Users domain', () => {
       PLATFORM_ORGANIZATION_UUID
     );
     expect(response.organization_capabilities).toHaveLength(2);
+  });
+
+  it('should throw FORBIDDEN_ACCESS when Simple User calls EditUser', async () => {
+    try {
+      await updateUser(
+        contextSimpleUserThales,
+        THALES_ADMIN_ORGA_ID as UserId,
+        {
+          email: THALES_ADMIN_ORGA_EMAIL,
+        }
+      );
+    } catch (error) {
+      expect(error.name).toBe('FORBIDDEN_ACCESS');
+    }
   });
 });

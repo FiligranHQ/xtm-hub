@@ -14,10 +14,12 @@ export const SIMPLE_USER_FILIGRAN_ID = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
 export const DEFAULT_ORG = 'Filigran';
 
 export const THALES_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6c';
-export const THALES_USER_ID = '015c0488-848d-4c89-95e3-8a243971f594';
-export const THALES_EMAIL = 'admin@thales.com';
+export const THALES_ADMIN_ORGA_ID = '015c0488-848d-4c89-95e3-8a243971f594';
+export const THALES_ADMIN_ORGA_EMAIL = 'admin@thales.com';
 export const SERVICE_MALWARE_ID = '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4';
 export const SERVICE_VAULT_ID = 'e88e8f80-ba9e-480b-ab27-8613a1565eff';
+export const THALES_SIMPLE_USER_ID = '154006e2-f24b-42da-b39c-e0fb17bead00';
+export const THALES_SIMPLE_USER_EMAIL = 'user@thales.com';
 
 export const contextAdminUser: PortalContext = {
   user: {
@@ -48,8 +50,8 @@ export const contextAdminUser: PortalContext = {
 
 export const contextAdminOrgaThales: PortalContext = {
   user: {
-    id: THALES_USER_ID,
-    email: THALES_EMAIL,
+    id: THALES_ADMIN_ORGA_ID,
+    email: THALES_ADMIN_ORGA_EMAIL,
     password: null,
     salt: null,
     first_name: null,
@@ -63,8 +65,8 @@ export const contextAdminOrgaThales: PortalContext = {
         domains: ['thales.com'],
       },
       {
-        id: THALES_USER_ID,
-        name: 'admin@thales.com',
+        id: THALES_ADMIN_ORGA_ID,
+        name: THALES_ADMIN_ORGA_EMAIL,
         personal_space: true,
         domains: [],
       },
@@ -75,5 +77,32 @@ export const contextAdminOrgaThales: PortalContext = {
         ...ROLE_ADMIN,
       },
     ],
+  },
+} as PortalContext;
+export const contextSimpleUserThales: PortalContext = {
+  user: {
+    id: THALES_SIMPLE_USER_ID,
+    email: THALES_SIMPLE_USER_EMAIL,
+    password: null,
+    salt: null,
+    first_name: null,
+    last_name: null,
+    selected_organization_id: THALES_ORGA_ID,
+    organizations: [
+      {
+        id: THALES_ORGA_ID,
+        name: 'Thales',
+        personal_space: false,
+        domains: ['thales.com'],
+      },
+      {
+        id: THALES_ADMIN_ORGA_ID,
+        name: THALES_SIMPLE_USER_EMAIL,
+        personal_space: true,
+        domains: [],
+      },
+    ],
+    capabilities: [],
+    roles_portal: [],
   },
 } as PortalContext;

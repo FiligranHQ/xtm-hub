@@ -1,5 +1,12 @@
 import { Knex } from 'knex';
-import { ActionType, DatabaseType, QueryOpts } from '../../knexfile';
+import {
+  ActionType,
+  DatabaseType,
+  KnexQueryBuilder,
+  MethodType,
+  QueryOpts,
+  SecuryQueryOpts,
+} from '../../knexfile';
 import { PortalContext } from '../model/portal-context';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { TypedNode } from '../pub';
@@ -7,13 +14,21 @@ import { TypedNode } from '../pub';
 import { OrganizationCapability } from '../__generated__/resolvers-types';
 import { UserLoadUserBy } from '../model/user';
 import { setQueryForDocument } from './document-security-access';
-import {
-  meUserSSESecurity,
-  setQueryForUser,
-  setUpdateSecurityForUser,
-  userSSESecurity,
-} from './user-security-access';
+import { meUserSSESecurity, userSSESecurity } from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
+
+import { logApp } from '../utils/app-logger.util';
+import { userSecurityLayer } from './layer/user';
+import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
+import { userServiceCapabilitySecurityLayer } from './layer/user-service-capability';
+
+export type SecuryQueryHandlers = {
+  [key in MethodType]: (
+    context: PortalContext,
+    qb: KnexQueryBuilder,
+    opts?: SecuryQueryOpts
+  ) => KnexQueryBuilder | Promise<KnexQueryBuilder>;
+};
 
 export const isUserGranted = (
   user?: UserLoadUserBy,
@@ -28,6 +43,9 @@ export const isUserGranted = (
       ))
   );
 };
+
+export const isUserAdminPlatform = (user: UserLoadUserBy) =>
+  !!user && user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id);
 /**
  * This method will filter every event to distribute real time data to users that have access to it
  * Data event must be consistent to provide all information needed to infer security access.
@@ -42,10 +60,7 @@ export const applySSESecurity = (opt: {
   if (isUserGranted(opt.user)) {
     return true;
   }
-  if (opt.type === opt.topic) {
-    return true;
-  }
-  return false;
+  return opt.type === opt.topic;
 };
 
 export type AccessibleTopics = 'MeUser' | DatabaseType;
@@ -115,19 +130,11 @@ export const applyDbSecurity = <T>(
     opts: QueryOpts
   ) => Knex.QueryBuilder<T>;
 
-  if (opts.queryType === 'update') {
-    const updateMapping: Partial<
-      Record<DatabaseType, UpdateAccessibilityChecker>
-    > = {
-      User: setUpdateSecurityForUser,
-    };
-    const selectedFunction = updateMapping[type] || setQuery;
-    if (!selectedFunction) {
-      throw new Error(`Security behavior must be defined for type ${type}`);
-    }
-    return selectedFunction(context, queryContext, opts);
+  if (opts.methodType === 'update') {
+    return queryContext;
   }
-  if (opts.queryType === 'delete') {
+
+  if (opts.methodType === 'del') {
     const updateMapping: Partial<
       Record<DatabaseType, UpdateAccessibilityChecker>
     > = {
@@ -142,11 +149,55 @@ export const applyDbSecurity = <T>(
 
   const queryMapping: Partial<Record<DatabaseType, AccessibilityChecker>> = {
     Document: setQueryForDocument,
-    User: setQueryForUser,
   };
   const selectedFunction = queryMapping[type] || setQuery;
   if (!selectedFunction) {
     throw new Error(`Security behavior must be defined for type ${type}`);
   }
   return selectedFunction(context, queryContext);
+};
+
+export const applyDbSecurityLayer = async (
+  qb: KnexQueryBuilder,
+  opts: SecuryQueryOpts
+) => {
+  const table = qb._queryContext.__typename;
+  const context = qb._queryContext.context;
+  const method = qb.toSQL().method;
+
+  // First check if we have a valid table type
+  if (!table) {
+    logApp.error(`No table specified in query: ${qb}`);
+    return qb;
+  }
+
+  // Define table-specific security handlers
+  const tableSecurityMap: Partial<Record<DatabaseType, SecuryQueryHandlers>> = {
+    User: userSecurityLayer,
+    UserService_Capability: userServiceCapabilitySecurityLayer,
+    UserOrganization_Capability: userOrganizationCapabilitySecurityLayer,
+  };
+
+  if (tableSecurityMap[table]) {
+    if (method && tableSecurityMap[table][method]) {
+      // We could perform the verification earlier, but I want to be able to check everything in development.
+      // By default, we're in ADMIN_PLTFM in dev, so this helps ensure the security is properly implemented.
+      if (isUserAdminPlatform(context.user)) {
+        return qb;
+      }
+      if (method === 'select') {
+        return tableSecurityMap[table][method](context, qb, opts);
+      }
+      // Check the promise and then if it not throwing error we return qb.
+      // QB in promise execute automatically the query but we don't always want to execute the query at this moment
+      await tableSecurityMap[table][method](context, qb, opts);
+      return qb;
+    } else {
+      logApp.warn(`No ${method} security handler for ${table}`);
+    }
+  } else {
+    logApp.warn(`No security handlers defined for table: ${table}`);
+  }
+
+  return qb;
 };
