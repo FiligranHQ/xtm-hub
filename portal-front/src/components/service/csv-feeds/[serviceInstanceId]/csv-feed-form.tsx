@@ -1,19 +1,10 @@
 import { getLabels } from '@/components/admin/label/label.utils';
-import {
-  UserFragment,
-  userListFragment,
-  UserListQuery,
-} from '@/components/admin/user/user-list';
-import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { CsvFeedDelete } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-delete';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
+import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { DEBOUNCE_TIME } from '@/utils/constant';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
-import { userListQuery } from '@generated/userListQuery.graphql';
-import { userList_fragment$key } from '@generated/userList_fragment.graphql';
-import { userList_users$key } from '@generated/userList_users.graphql';
 import {
   AutoForm,
   Button,
@@ -23,25 +14,17 @@ import {
   FormMessage,
   MultiSelectFormField,
   SheetFooter,
-  Tag,
-  TagInput,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useCallback, useMemo, useRef, useState } from 'react';
-import {
-  readInlineData,
-  useLazyLoadQuery,
-  useRefetchableFragment,
-} from 'react-relay';
+import { useMemo } from 'react';
 import slugify from 'slugify';
-import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 const csvFeedFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
-  author_id: z.array(z.string()),
+  uploader_id: z.array(z.string()).optional(),
   short_description: z.string().min(1, 'Required').max(250),
   description: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
@@ -69,50 +52,6 @@ export const CsvFeedForm = ({
 
   const isCreation = !csvFeed;
 
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [tagsId, setTagsId] = useState<Tag[]>([]);
-  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
-
-  const { orderMode, orderBy } = useUserListLocalstorage();
-
-  const filterRef = useRef({ search: undefined });
-  const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
-    count: 10,
-    orderMode,
-    orderBy,
-    searchTerm: filterRef.current.search,
-  });
-  const [data, refetch] = useRefetchableFragment<
-    userListQuery,
-    userList_users$key
-  >(userListFragment, queryData);
-  const users = data?.users?.edges?.map((edge) => {
-    const user = readInlineData<userList_fragment$key>(UserFragment, edge.node);
-    return {
-      id: user.id,
-      text: user.email,
-    };
-  });
-
-  const handleInputChange = useCallback((inputValue: string) => {
-    filterRef.current = {
-      ...filterRef.current,
-      search: inputValue,
-    };
-
-    refetch({
-      count: 10,
-      orderMode,
-      orderBy,
-      searchTerm: filterRef.current.search,
-    });
-  }, []);
-
-  const debounceHandleInput = useDebounceCallback(
-    handleInputChange,
-    DEBOUNCE_TIME
-  );
-
   const values = useMemo(
     () =>
       ({
@@ -122,6 +61,7 @@ export const CsvFeedForm = ({
           name: doc.file_name,
         })) as unknown as FileList,
         labels: csvFeed?.labels?.map((label) => label.id),
+        uploader_id: [csvFeed?.uploader?.id],
       }) as CsvFeedFormValues,
     [csvFeed]
   );
@@ -154,9 +94,6 @@ export const CsvFeedForm = ({
             if (currentSlug !== generatedSlug) {
               form.setValue('slug', generatedSlug, { shouldDirty: false });
             }
-          }
-          if (values.author_id) {
-            form.setValue('author_id', tagsId, { shouldDirty: true });
           }
         }}
         values={values}
@@ -198,46 +135,16 @@ export const CsvFeedForm = ({
               </FormItem>
             ),
           },
-          author_id: {
+          uploader_id: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{'Author'}</FormLabel>
                 <FormControl>
-                  {/*<MultiSelectFormField*/}
-                  {/*  noResultString={t('Utils.NotFound')}*/}
-                  {/*  options={users}*/}
-                  {/*  keyValue="id"*/}
-                  {/*  keyLabel="text"*/}
-                  {/*  defaultValue={field.value}*/}
-                  {/*  value={field.value}*/}
-                  {/*  onValueChange={field.onChange}*/}
-                  {/*  onInputChange={debounceHandleInput}*/}
-                  {/*  placeholder={'Email'}*/}
-                  {/*  variant="inverted"*/}
-                  {/*/>*/}
-                  <TagInput
-                    {...field}
-                    placeholder={t('OrganizationForm.DomainsPlaceholder')}
-                    tags={tags}
-                    className="sm:min-w-[450px]"
-                    activeTagIndex={activeTagIndex}
-                    enableAutocomplete={true}
-                    autocompleteOptions={users}
-                    setActiveTagIndex={setActiveTagIndex}
-                    onInputChange={debounceHandleInput}
-                    setTags={(newTags) => {
-                      const newTagsId: string[] = (newTags as Tag[]).map(
-                        (tag) => tag.id
-                      );
-                      setTags(newTags);
-                      setTagsId(newTagsId);
-                      // setValue('domains', newTagsText, {
-                      //   shouldDirty: true,
-                      // });
-                    }}
+                  <SelectUsersFormField
+                    defaultValue={[csvFeed?.uploader?.email]}
+                    value={field.value}
+                    onValueChange={field.onChange}
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             ),
           },

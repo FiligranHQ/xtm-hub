@@ -79,7 +79,10 @@ export const CSVFeedUpdateSheet = ({
   );
 
   const handleSubmit = (values: CsvFeedFormValues) => {
-    const input = omit(values, ['document', 'illustration']);
+    const input = {
+      ...omit(values, ['document', 'illustration']),
+      uploader_id: values.uploader_id[0],
+    };
 
     // Split images between existing and new ones
     const images = Array.from(values.illustration ?? []) as FormImagesValues;
