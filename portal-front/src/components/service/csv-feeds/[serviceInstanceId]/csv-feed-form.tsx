@@ -94,6 +94,7 @@ export const CsvFeedForm = ({
             }
           }
         }}
+        intlTranslation={t}
         values={values}
         formSchema={formSchema}
         fieldConfig={{
