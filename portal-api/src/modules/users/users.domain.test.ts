@@ -11,7 +11,7 @@ import { loadUserBy, updateUser } from './users.domain';
 
 //Issue with test
 describe('Users domain', () => {
-  it.skip('should load user Admin', async () => {
+  it('should load user Admin', async () => {
     const response = await loadUserBy({
       'User.id': ADMIN_UUID as UserId,
     });
