@@ -108,7 +108,7 @@
     "typescript-eslint": "8.35.1",
     "vitest": "2.1.1"
   },
-  "packageManager": "yarn@3.6.3",
+  "packageManager": "yarn@3.8.7",
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,json}": [
       "yarn format",
