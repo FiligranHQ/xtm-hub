@@ -10,20 +10,22 @@ export async function up(knex) {
 
   await knex.schema.createTable('Service_Contract', (table) => {
     table.uuid('service_definition_id', { primaryKey: true });
-    table.jsonb('schema').notNullable();
     table
       .foreign('service_definition_id')
       .references('id')
       .inTable('ServiceDefinition');
+
+    table.jsonb('schema').notNullable();
   });
 
   await knex.schema.createTable('Service_Configuration', (table) => {
     table.uuid('service_instance_id', { primaryKey: true });
-    table.jsonb('config').notNullable();
     table
       .foreign('service_instance_id')
       .references('id')
       .inTable('ServiceInstance');
+
+    table.jsonb('config').notNullable();
   });
 
   await knex('ServiceDefinition').insert([
@@ -32,7 +34,7 @@ export async function up(knex) {
       name: 'OpenCTI Enrollment',
       description: 'Enroll your OpenCTI instance',
       public: false,
-      identifier: 'open-cti-enrollment',
+      identifier: 'octi_enrollment',
     },
   ]);
 

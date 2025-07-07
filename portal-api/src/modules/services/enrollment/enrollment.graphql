@@ -1,0 +1,11 @@
+input EnrollOCTIInstanceInput {
+  organizationId: ID!
+  platformId: String!
+  platformTitle: String!
+  platformUrl: String!
+}
+
+type Mutation {
+  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): String!
+    @auth(requires: [MANAGE_OCTI_ENROLLMENT])
+}

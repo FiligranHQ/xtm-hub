@@ -4,6 +4,7 @@ enum ServiceDefinitionIdentifier {
   custom_dashboards
   csv_feeds
   obas_scenarios
+  octi_enrollment
 }
 type ServiceDefinition implements Node {
   id: ID!
