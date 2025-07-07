@@ -15,7 +15,7 @@ const resolvers: Resolvers = {
 
       const result = schema.safeParse(input);
       if (!result.success) {
-        throw BadRequestError('OCTI_ENROLLMENT_MISSING_DATA');
+        throw BadRequestError('OCTI_ENROLLMENT_INVALID_DATA');
       }
 
       const token = await enrollmentApp.enrollOCTIInstance(context, input);
