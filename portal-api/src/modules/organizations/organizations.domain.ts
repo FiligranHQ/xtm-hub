@@ -8,6 +8,28 @@ import {
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 
+export const loadUserOrganizations = async (context: PortalContext) => {
+  const loadQuery = db<Organization>(context, 'Organization')
+    .leftJoin(
+      'User_Organization',
+      'User_Organization.organization_id',
+      '=',
+      'Organization.id'
+    )
+    .where('User_Organization.user_id', '=', context.user.id)
+    .select('*');
+
+  return paginate<Organization, OrganizationConnection>(
+    context,
+    'Organization',
+    {
+      orderBy: 'name',
+    },
+    undefined,
+    loadQuery
+  );
+};
+
 export const loadOrganizationBy = async (
   context: PortalContext,
   field: string,
@@ -34,7 +56,10 @@ export const loadOrganizations = (
       orderBy,
       searchTerm,
       filters: [
-        { key: FilterKey.PersonalSpace, value: [false] } as unknown as Filter,
+        {
+          key: FilterKey.PersonalSpace,
+          value: [false],
+        } as unknown as Filter,
       ],
     }
   );
