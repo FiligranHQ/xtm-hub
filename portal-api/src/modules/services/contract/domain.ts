@@ -3,33 +3,33 @@ import { db } from '../../../../knexfile';
 import ServiceContract from '../../../model/kanel/public/ServiceContract';
 import { PortalContext } from '../../../model/portal-context';
 
+const loadServiceContract = async (
+  context: PortalContext,
+  serviceDefinitionId: string
+): Promise<ServiceContract> => {
+  return db(context, 'Service_Contract')
+    .where('service_definition_id', '=', serviceDefinitionId)
+    .select('*')
+    .first();
+};
+
 export const serviceContractDomain = {
   isServiceConfigurationValid: async (
     context: PortalContext,
     serviceDefinitionId: string,
     config: Record<string, unknown>
   ): Promise<boolean> => {
-    const serviceContract = await serviceContractDomain.loadServiceContract(
+    const serviceContract = await loadServiceContract(
       context,
       serviceDefinitionId
     );
     if (!serviceContract) {
-      throw new Error('Service contract not found');
+      throw new Error('SERVICE_CONTRACT_NOT_FOUND');
     }
 
     const schema = JSONSchemaToZod.convert(serviceContract.schema);
     const { success } = schema.safeParse(config);
     return success;
-  },
-  loadServiceContract: async (
-    context: PortalContext,
-    serviceDefinitionId: string
-  ): Promise<ServiceContract> => {
-    return db(context, 'Service_Contract').where(
-      'service_definition_id',
-      '=',
-      serviceDefinitionId
-    );
   },
   saveConfiguration: async (
     context: PortalContext,
