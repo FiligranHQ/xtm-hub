@@ -33,7 +33,7 @@ export const enrollmentApp = {
     );
 
     if (!serviceDefinition) {
-      throw new Error('ServiceDefinition not found');
+      throw new Error('SERVICE_DEFINITION_NOT_FOUND');
     }
 
     const isConfigurationValid =
@@ -44,7 +44,7 @@ export const enrollmentApp = {
       );
 
     if (!isConfigurationValid) {
-      throw new Error('Service configuration validation failed');
+      throw new Error('INVALID_SERVICE_CONFIGURATION');
     }
 
     // insert service instance
@@ -55,6 +55,7 @@ export const enrollmentApp = {
       );
 
     await insertSubscription(context, {
+      id: uuidv4(),
       organization_id: payload.organizationId,
       service_instance_id: serviceInstanceId,
       start_date: new Date(),
