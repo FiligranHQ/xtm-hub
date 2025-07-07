@@ -9260,7 +9260,7 @@ __metadata:
     uuid: 10.0.0
     vitest: 2.1.1
     winston: 3.17.0
-    zod: 3.24.4
+    zod: 3.25.75
   languageName: unknown
   linkType: soft
 
@@ -11240,9 +11240,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:3.24.4":
-  version: 3.24.4
-  resolution: "zod@npm:3.24.4"
-  checksum: 62829789765a9187bd72bed3972a7c1a39fdfe6c59bc752eedabec5f99af701658471b8577d22e0fee2081e6e35d4efc93c02c90e13350755a36feadbf72bbbc
+"zod@npm:3.25.75":
+  version: 3.25.75
+  resolution: "zod@npm:3.25.75"
+  checksum: 55760599dab4441b3d14eaae6d2f5d98b47eb03fb9b5a8dca9edec812d56649b179f1a239a1daf9a7d03f2f601a86dbc73795bbfb0cf45d9a5d78b26ff87543e
   languageName: node
   linkType: hard
