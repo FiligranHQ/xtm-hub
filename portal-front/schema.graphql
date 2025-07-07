@@ -38,6 +38,7 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
+  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): String!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
@@ -265,6 +266,7 @@ enum ServiceDefinitionIdentifier {
   custom_dashboards
   csv_feeds
   obas_scenarios
+  octi_enrollment
 }
 
 type ServiceDefinition implements Node {
@@ -329,6 +331,13 @@ type DocumentConnection {
   totalCount: Int!
   edges: [DocumentEdge!]!
   pageInfo: PageInfo!
+}
+
+input EnrollOCTIInstanceInput {
+  organizationId: ID!
+  platformId: String!
+  platformTitle: String!
+  platformUrl: String!
 }
 
 type ServiceLink implements Node {
@@ -766,6 +775,7 @@ enum Restriction {
   FRT_ACCESS_BILLING
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
+  MANAGE_OCTI_ENROLLMENT
 }
 
 enum OrganizationCapability {

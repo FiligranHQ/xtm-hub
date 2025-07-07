@@ -1547,6 +1547,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dmitryrechkin/json-schema-to-zod@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@dmitryrechkin/json-schema-to-zod@npm:1.0.1"
+  dependencies:
+    zod: ^3.23.8
+  checksum: 17f0aad4e2c20bb521362bd14a3a184337f220c10cd81a71572fa8c82b1d71007c3b513f1360de4392a221d6a9c905ec51cafcc9592e3cf8b2c36d84760cea94
+  languageName: node
+  linkType: hard
+
 "@electric-sql/pglite@npm:^0.2.14":
   version: 0.2.16
   resolution: "@electric-sql/pglite@npm:0.2.16"
@@ -9201,6 +9210,7 @@ __metadata:
     "@apollo/server": 4.11.0
     "@aws-sdk/client-s3": 3.670.0
     "@aws-sdk/lib-storage": 3.670.0
+    "@dmitryrechkin/json-schema-to-zod": ^1.0.1
     "@eslint/js": 9.30.1
     "@graphql-codegen/cli": 5.0.2
     "@graphql-codegen/plugin-helpers": 5.1.0
@@ -11240,7 +11250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:3.25.75":
+"zod@npm:3.25.75, zod@npm:^3.23.8":
   version: 3.25.75
   resolution: "zod@npm:3.25.75"
   checksum: 55760599dab4441b3d14eaae6d2f5d98b47eb03fb9b5a8dca9edec812d56649b179f1a239a1daf9a7d03f2f601a86dbc73795bbfb0cf45d9a5d78b26ff87543e

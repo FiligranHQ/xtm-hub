@@ -56,7 +56,9 @@ export type DatabaseType =
   | 'Object_Label'
   | 'UserOrganization_Capability'
   | 'Document_Children'
-  | 'Document_Metadata';
+  | 'Document_Metadata'
+  | 'Service_Contract'
+  | 'Service_Configuration';
 
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 export type MethodType = 'select' | 'insert' | 'update' | 'del';
