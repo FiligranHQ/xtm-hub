@@ -110,6 +110,15 @@
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
   },
+  "Enroll": {
+    "Register": "Enrôler",
+    "OCTI": {
+      "OrganizationForm": {
+        "Title": "Vous êtes sur le point d'enrôler votre instance OpenCTI dans XTM Hub",
+        "Description": "Dans quel espace souhaitez-vous enrôler votre instance OpenCTI ?"
+      }
+    }
+  },
   "GenericActions": {
     "FilterLabels": "Filtrer par étiquettes...",
     "Search": "Recherche..."
