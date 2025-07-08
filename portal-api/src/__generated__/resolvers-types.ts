@@ -750,6 +750,7 @@ export type Query = {
   obasScenario?: Maybe<ObasScenario>;
   obasScenarios: ObasScenarioConnection;
   organization?: Maybe<Organization>;
+  organizationAdministrators: Array<User>;
   organizations: OrganizationConnection;
   publicServiceInstances: ServiceConnection;
   rolePortal?: Maybe<RolePortal>;
@@ -874,6 +875,11 @@ export type QueryObasScenariosArgs = {
 
 export type QueryOrganizationArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryOrganizationAdministratorsArgs = {
+  organizationId: Scalars['ID']['input'];
 };
 
 
@@ -1960,6 +1966,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
   obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
+  organizationAdministrators?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryOrganizationAdministratorsArgs, 'organizationId'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;

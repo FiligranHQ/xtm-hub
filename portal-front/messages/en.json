@@ -113,6 +113,14 @@
   "Enroll": {
     "Register": "Register",
     "OCTI": {
+      "Back": "Back to OpenCTI",
+      "Error": {
+        "Capability": {
+          "Title": "You do not have the necessary {capability} access on the XTM Hub.",
+          "Description": "If you want to proceed with the enrollment of your OCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
+          "AdminListTitle": "The administrators of your organization are the following:"
+        }
+      },
       "OrganizationForm": {
         "Title": "You're about to register your OpenCTI instance into XTM Hub",
         "Description": "In which organization space do you want to register your OpenCTI instance ?"
