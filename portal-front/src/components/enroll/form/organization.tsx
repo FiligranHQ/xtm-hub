@@ -16,23 +16,25 @@ import { z } from 'zod';
 
 interface Props {
   organizations: Omit<organizationItem_fragment$data, ' $fragmentType'>[];
+  cancel: () => void;
+  confirm: (organizationId: string) => void;
 }
 
 export const selectOrganizationSchema = z.object({
-  organization_id: z.string().nonempty(),
+  organizationId: z.string().nonempty(),
 });
 
-export const EnrollOrganizationForm: React.FC<Props> = ({ organizations }) => {
+export const EnrollOrganizationForm: React.FC<Props> = ({
+  cancel,
+  confirm,
+  organizations,
+}) => {
   const t = useTranslations();
-
-  const cancel = () => {
-    window.postMessage('cancel');
-  };
 
   const form = useForm<z.infer<typeof selectOrganizationSchema>>({
     resolver: zodResolver(selectOrganizationSchema),
     defaultValues: {
-      organization_id: organizations[0]?.id ?? '',
+      organizationId: organizations[0]?.id ?? '',
     },
   });
 
@@ -76,18 +78,25 @@ export const EnrollOrganizationForm: React.FC<Props> = ({ organizations }) => {
                 })}
               </>
             )}
-            name="organization_id"
+            name="organizationId"
           />
         </div>
         <div className="flex justify-end gap-s">
           <Button
             variant="outline"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               cancel();
             }}>
             {t('Utils.Cancel')}
           </Button>
-          <Button>{t('Enroll.Register')}</Button>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              confirm(form.getValues().organizationId);
+            }}>
+            {t('Enroll.Register')}
+          </Button>
         </div>
       </form>
     </Form>

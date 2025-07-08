@@ -38,7 +38,7 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
-  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): String!
+  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): EnrollmentResponse!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
@@ -338,6 +338,10 @@ input EnrollOCTIInstanceInput {
   platformId: String!
   platformTitle: String!
   platformUrl: String!
+}
+
+type EnrollmentResponse {
+  token: String!
 }
 
 type ServiceLink implements Node {

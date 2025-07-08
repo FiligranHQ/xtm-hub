@@ -5,7 +5,11 @@ input EnrollOCTIInstanceInput {
   platformUrl: String!
 }
 
+type EnrollmentResponse {
+  token: String!
+}
+
 type Mutation {
-  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): String!
+  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): EnrollmentResponse!
     @auth(requires: [MANAGE_OCTI_ENROLLMENT])
 }

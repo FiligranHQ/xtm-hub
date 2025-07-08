@@ -34,7 +34,12 @@ export const redirectToOCTIEnrollment = async (request: NextRequest) => {
       return NextResponse.redirect(redirectionUrl);
     }
 
-    const enrollmentUrl = new URL(`/enroll/octi`, baseUrlFront);
+    const params = request.url.split('?');
+    if (params.length !== 2) {
+      return NextResponse.redirect('/');
+    }
+
+    const enrollmentUrl = new URL(`/enroll/octi?${params[1]}`, baseUrlFront);
     return NextResponse.redirect(enrollmentUrl);
   } catch (error) {
     if ((error as Error).message === 'UNAUTHENTICATED') {
