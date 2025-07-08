@@ -31,7 +31,7 @@ test.describe('User API', () => {
         variables: {
           id: ADMIN_USER.GLOBAL_ID,
           input: {
-            email: 'user@thales.com',
+            capabilities: ['MANAGE_ACCESS'],
           },
         },
         shouldBeAuthorized: false,

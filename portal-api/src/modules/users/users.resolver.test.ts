@@ -449,7 +449,6 @@ describe('User mutation resolver', () => {
     });
 
     afterEach(async () => {
-      // @ts-expect-error adminEditUser is not considered as callable
       await usersResolver.Mutation.adminEditUser(
         undefined,
         {
@@ -466,7 +465,8 @@ describe('User mutation resolver', () => {
             ),
           },
         },
-        contextAdminUser
+        contextAdminUser,
+        undefined
       );
     });
 
@@ -478,14 +478,14 @@ describe('User mutation resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
-      // @ts-expect-error editUserCapabilities is not considered as callable
       const call = usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
           id: THALES_ADMIN_ORGA_ID,
           input: { capabilities: [] },
         },
-        testContext
+        testContext,
+        undefined
       );
 
       await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
@@ -493,7 +493,7 @@ describe('User mutation resolver', () => {
 
     it('should edit capabilities', async () => {
       expect(thalesUser.selected_org_capabilities).not.to.includes(
-        'MANAGE_SUBSCRIPTION'
+        'MANAGE_OCTI_ENROLLMENT'
       );
 
       const testContext = {
@@ -503,24 +503,38 @@ describe('User mutation resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
-      // @ts-expect-error editUserCapabilities is not considered as callable
       await usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
           id: THALES_ADMIN_ORGA_ID,
           input: {
-            capabilities: ['MANAGE_SUBSCRIPTION', 'ADMINISTRATE_ORGANIZATION'],
+            capabilities: [
+              'MANAGE_OCTI_ENROLLMENT',
+              'ADMINISTRATE_ORGANIZATION',
+            ],
           },
         },
-        testContext
+        testContext,
+        undefined
       );
       thalesUser = await loadUserBy({ email: THALES_ADMIN_ORGA_EMAIL });
       expect(thalesUser.selected_org_capabilities).to.includes(
-        'MANAGE_SUBSCRIPTION'
+        'MANAGE_OCTI_ENROLLMENT'
+      );
+      // Put back the original capabilities
+      await usersResolver.Mutation.editUserCapabilities(
+        undefined,
+        {
+          id: THALES_ADMIN_ORGA_ID,
+          input: {
+            capabilities: ['ADMINISTRATE_ORGANIZATION'],
+          },
+        },
+        testContext,
+        undefined
       );
     });
   });
-
   describe('editMeUser', () => {
     let adminUser: UserLoadUserBy;
     let auth0Spy: MockInstance;

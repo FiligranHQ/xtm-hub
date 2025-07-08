@@ -1,8 +1,6 @@
 import { KnexQueryBuilder } from '../../../knexfile';
-import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 import { SecuryQueryHandlers } from '../access';
-import { checkUserCapabilities } from '../utils/user';
 
 const setDeleteSecurity = (
   context: PortalContext,
@@ -29,15 +27,9 @@ const setInsertSecurity = (): KnexQueryBuilder => {
   throw new Error('Missing security logic');
 };
 
-const setUpdateSecurity = async (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  await checkUserCapabilities(context, [
-    OrganizationCapability.AdministrateOrganization,
-    OrganizationCapability.ManageAccess,
-  ]);
-  return qb;
+const setUpdateSecurity = (): KnexQueryBuilder => {
+  // Implement UserService_Capability-specific update security logic
+  throw new Error('Missing security logic');
 };
 
 const setSelectSecurity = (): KnexQueryBuilder => {
