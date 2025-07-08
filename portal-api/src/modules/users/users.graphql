@@ -68,8 +68,7 @@ input AdminEditUserInput {
   organization_capabilities: [OrganizationCapabilitiesInput!]
 }
 
-input EditUserInput {
-  email: String
+input EditUserCapabilitiesInput {
   capabilities: [String!]
 }
 
@@ -107,7 +106,7 @@ type Mutation {
   adminAddUser(input: AdminAddUserInput!): User @auth(requires: [BYPASS])
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
     @auth(requires: [BYPASS])
-  editUser(id: ID!, input: EditUserInput!): User!
+  editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   editMeUser(input: EditMeUserInput!): User! @auth
   changeSelectedOrganization(organization_id: ID!): User @auth

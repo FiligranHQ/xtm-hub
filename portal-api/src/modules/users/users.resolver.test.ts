@@ -441,7 +441,7 @@ describe('User mutation resolver', () => {
     });
   });
 
-  describe('editUser', () => {
+  describe('editUserCapabilities', () => {
     let thalesUser: UserLoadUserBy;
 
     beforeAll(async () => {
@@ -478,8 +478,8 @@ describe('User mutation resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
-      // @ts-expect-error editUser is not considered as callable
-      const call = usersResolver.Mutation.editUser(
+      // @ts-expect-error editUserCapabilities is not considered as callable
+      const call = usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
           id: THALES_ADMIN_ORGA_ID,
@@ -489,6 +489,35 @@ describe('User mutation resolver', () => {
       );
 
       await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+    });
+
+    it('should edit capabilities', async () => {
+      expect(thalesUser.selected_org_capabilities).not.to.includes(
+        'MANAGE_SUBSCRIPTION'
+      );
+
+      const testContext = {
+        ...contextAdminUser,
+        user: {
+          ...contextAdminUser.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      // @ts-expect-error editUserCapabilities is not considered as callable
+      await usersResolver.Mutation.editUserCapabilities(
+        undefined,
+        {
+          id: THALES_ADMIN_ORGA_ID,
+          input: {
+            capabilities: ['MANAGE_SUBSCRIPTION', 'ADMINISTRATE_ORGANIZATION'],
+          },
+        },
+        testContext
+      );
+      thalesUser = await loadUserBy({ email: THALES_ADMIN_ORGA_EMAIL });
+      expect(thalesUser.selected_org_capabilities).to.includes(
+        'MANAGE_SUBSCRIPTION'
+      );
     });
   });
 

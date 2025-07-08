@@ -12,8 +12,8 @@ import { TestAgent } from '../../db-utils/test-agent';
 test.describe('User API', () => {
   test.describe('editUser', () => {
     const query = gql`
-      mutation EditUser($id: ID!, $input: EditUserInput!) {
-        editUser(id: $id, input: $input) {
+      mutation EditUser($id: ID!, $input: EditUserCapabilitiesInput!) {
+        editUserCapabilities(id: $id, input: $input) {
           id
         }
       }
