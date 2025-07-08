@@ -32,6 +32,7 @@ import {
   getCapabilities,
   getOrganizations,
   getRolesPortal,
+  loadOrganizationAdministrators,
   loadUnsecureUser,
   loadUserBy,
   loadUserDetails,
@@ -73,6 +74,12 @@ const resolvers: Resolvers = {
       return loadUserDetails({
         'User.id': id as UserId,
       });
+    },
+    organizationAdministrators: async (_, { organizationId }, context) => {
+      return loadOrganizationAdministrators(
+        context,
+        fromGlobalId(organizationId).id
+      );
     },
     users: async (
       _,

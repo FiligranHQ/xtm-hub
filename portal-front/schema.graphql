@@ -129,6 +129,7 @@ type Query {
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
   me: User
   user(id: ID!): User
+  organizationAdministrators(organizationId: ID!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
   node(id: ID!): Node

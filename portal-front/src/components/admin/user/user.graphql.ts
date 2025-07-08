@@ -69,3 +69,14 @@ export const UserSlugQuery = graphql`
     }
   }
 `;
+
+export const ListOrganizationAdministratorsQuery = graphql`
+  query userListOrganizationAdministratorsQuery($organizationId: ID!) {
+    organizationAdministrators(organizationId: $organizationId) {
+      id
+      email
+      first_name
+      last_name
+    }
+  }
+`;
