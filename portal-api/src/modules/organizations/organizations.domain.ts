@@ -17,7 +17,7 @@ export const loadUserOrganizations = async (context: PortalContext) => {
       'Organization.id'
     )
     .where('User_Organization.user_id', '=', context.user.id)
-    .select('*');
+    .select('Organization.*');
 
   return paginate<Organization, OrganizationConnection>(
     context,
