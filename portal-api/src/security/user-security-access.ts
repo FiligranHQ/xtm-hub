@@ -1,10 +1,7 @@
-import { Knex } from 'knex';
-import { ActionType, dbUnsecure, QueryOpts } from '../../knexfile';
+import { ActionType } from '../../knexfile';
 import { OrganizationCapability } from '../__generated__/resolvers-types';
-import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
 import { TypedNode } from '../pub';
-import { ForbiddenAccess } from '../utils/error.util';
 import { isUserGranted } from './access';
 
 // Used to check access in SSE
@@ -25,55 +22,4 @@ export const meUserSSESecurity = (opt: {
 
 export const userSSESecurity = (opt: { user: UserLoadUserBy }) => {
   return isUserGranted(opt.user, OrganizationCapability.ManageAccess);
-};
-
-export const setQueryForUser = <T>(
-  context: PortalContext,
-  queryContext: Knex.QueryBuilder<T>
-): Knex.QueryBuilder<T> => {
-  queryContext
-    .innerJoin(
-      'User_Organization as securityUserOrg',
-      'User.id',
-      '=',
-      'securityUserOrg.user_id'
-    )
-    .where(
-      'securityUserOrg.organization_id',
-      '=',
-      context.user.selected_organization_id
-    );
-  return queryContext;
-};
-
-export const setUpdateSecurityForUser = <T>(
-  context: PortalContext,
-  queryContext: Knex.QueryBuilder<T>,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  opts: QueryOpts
-): Knex.QueryBuilder<T> => {
-  // TODO Apply Db security for Updating
-  const getUserCapability = dbUnsecure('User')
-    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
-    .leftJoin(
-      'UserOrganization_Capability',
-      'User_Organization.id',
-      'UserOrganization_Capability.user_organization_id'
-    )
-    .where({
-      id: context.user.id,
-    })
-    .andWhere(function () {
-      this.where({
-        'UserOrganization_Capability.name':
-          OrganizationCapability.AdministrateOrganization,
-      }).orWhere({
-        'UserOrganization_Capability.name': OrganizationCapability.ManageAccess,
-      });
-    })
-    .first();
-  if (!getUserCapability) {
-    throw ForbiddenAccess('Insufficient right');
-  }
-  return queryContext;
 };

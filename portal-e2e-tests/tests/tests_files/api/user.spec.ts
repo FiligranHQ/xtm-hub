@@ -30,7 +30,9 @@ test.describe('User API', () => {
         query,
         variables: {
           id: ADMIN_USER.GLOBAL_ID,
-          input: {},
+          input: {
+            email: 'user@thales.com',
+          },
         },
         shouldBeAuthorized: false,
       });

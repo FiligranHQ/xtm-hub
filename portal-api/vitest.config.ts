@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     globalSetup: './tests/config-test.ts',
+    setupFiles: './tests/setup-test.ts',
     fileParallelism: false,
   },
   plugins: [], // only if you are using custom tsconfig paths

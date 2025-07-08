@@ -3,9 +3,20 @@ import pkg, { type Knex } from 'knex';
 import { Filter, FilterKey } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
-import { applyDbSecurity } from './src/security/access';
+import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
+
+export interface SecuryQueryOpts {
+  [key: string]: string | number | boolean;
+}
+
+export interface KnexQueryBuilder extends Knex.QueryBuilder {
+  _queryContext?: {
+    context: PortalContext;
+    __typename: DatabaseType;
+  };
+}
 
 declare module 'knex' {
   // TODO: Knex specificity, could be complicated modify the model directly
@@ -13,6 +24,7 @@ declare module 'knex' {
   namespace Knex {
     interface QueryBuilder {
       asConnection<T>(): Promise<T>;
+      secureQuery(opt?: SecuryQueryOpts): Knex.QueryBuilder;
     }
   }
 }
@@ -47,6 +59,7 @@ export type DatabaseType =
   | 'Document_Metadata';
 
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
+export type MethodType = 'select' | 'insert' | 'update' | 'del';
 
 interface Pagination {
   first?: number;
@@ -59,6 +72,9 @@ interface Pagination {
 
 const knex = pkg;
 
+pkg.QueryBuilder.extend('secureQuery', function (opts: SecuryQueryOpts) {
+  return applyDbSecurityLayer(this, opts);
+});
 const config: Knex.Config = {
   asyncStackTraces:
     process.env.LOCAL_DEV === 'true' ||
@@ -106,7 +122,7 @@ export interface QueryOpts {
   after?: string;
   orderMode?: string;
   orderBy?: string;
-  queryType?: 'select' | 'insert' | 'update' | 'delete';
+  methodType?: MethodType;
   capabilities?: string[];
   searchTerm?: string;
   filters?: Filter[];
@@ -125,7 +141,10 @@ export const db = <T>(
   type: DatabaseType,
   opts: Partial<QueryOpts> = {}
 ) => {
-  const queryContext = database<T>(type).queryContext({ __typename: type });
+  const queryContext = database<T>(type).queryContext({
+    __typename: type,
+    context,
+  });
   return applyDbSecurity<T>(context, type, queryContext, opts);
 };
 
@@ -227,16 +246,19 @@ export const paginate = async <T, U>(
     .clearOrder()
     .clearSelect()
     .clearGroup()
-    .countDistinct(`${type}.id as totalCount`);
+    .countDistinct(`${type}.id as totalCount`)
+    .first()
+    .secureQuery();
 
   queryContext
     .orderBy([{ column: orderBy, order: orderMode }])
     .offset(currentOffset)
-    .limit(first);
+    .limit(first)
+    .secureQuery();
 
   const [query, { totalCount }] = await Promise.all([
     queryContext,
-    totalCountQuery.first(),
+    totalCountQuery,
   ]);
   return dbConnections(query, after, first, totalCount ?? 0) as U;
 };
