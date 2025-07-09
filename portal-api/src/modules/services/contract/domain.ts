@@ -32,6 +32,7 @@ export const serviceContractDomain = {
     const { success } = schema.safeParse(config);
     return success;
   },
+
   findConfiguration: async (
     context: PortalContext,
     platformId: string
@@ -43,7 +44,18 @@ export const serviceContractDomain = {
 
     return configuration ?? null;
   },
-  saveConfiguration: async (
+
+  updateConfiguration: async (
+    context: PortalContext,
+    serviceInstanceId: string,
+    config: Record<string, unknown>
+  ) => {
+    await db(context, 'Service_Configuration')
+      .update({ config })
+      .where('service_instance_id', '=', serviceInstanceId);
+  },
+
+  insertConfiguration: async (
     context: PortalContext,
     serviceInstanceId: string,
     config: Record<string, unknown>

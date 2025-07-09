@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
-import { serviceDefinitionHelper } from '../definition/helper';
+import { serviceDefinitionDomain } from '../definition/domain';
 import { serviceContractDomain } from './domain';
 
 describe('Service Contract Domain', () => {
@@ -19,7 +19,7 @@ describe('Service Contract Domain', () => {
     });
 
     it('should return true when configuration match the schema specifications', async () => {
-      const serviceDefinition = await serviceDefinitionHelper.findByIdentifier(
+      const serviceDefinition = await serviceDefinitionDomain.findByIdentifier(
         context,
         ServiceDefinitionIdentifier.OctiEnrollment
       );
@@ -44,7 +44,7 @@ describe('Service Contract Domain', () => {
     });
 
     it('should return false when configuration does not match the schema specifications', async () => {
-      const serviceDefinition = await serviceDefinitionHelper.findByIdentifier(
+      const serviceDefinition = await serviceDefinitionDomain.findByIdentifier(
         context,
         ServiceDefinitionIdentifier.OctiEnrollment
       );
