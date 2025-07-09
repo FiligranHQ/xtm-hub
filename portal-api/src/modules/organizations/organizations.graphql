@@ -29,7 +29,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
   ): OrganizationConnection! @auth
-  userOrganizations: OrganizationConnection! @auth
+  userOrganizations: [Organization!]! @auth
 }
 
 input OrganizationInput {

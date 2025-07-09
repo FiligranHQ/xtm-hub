@@ -1,4 +1,4 @@
-import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
+import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 interface Props {
-  organizations: Omit<organizationItem_fragment$data, ' $fragmentType'>[];
+  organizations: organizationListUserOrganizationsQuery$data['userOrganizations'];
   cancel: () => void;
   confirm: (organizationId: string) => void;
 }

@@ -1,22 +1,10 @@
 import { graphql } from 'react-relay';
 
-export const OrganizationListUserOrganizationsQuery = graphql`
+export const ListUserOrganizationsQuery = graphql`
   query organizationListUserOrganizationsQuery {
-    ...organizationList_userOrganizations
-  }
-`;
-
-export const listUserOrganizationsFragment = graphql`
-  fragment organizationList_userOrganizations on Query
-  @refetchable(queryName: "UserOrganizationsPaginationQuery") {
     userOrganizations {
-      __id
-      totalCount
-      edges {
-        node {
-          ...organizationItem_fragment @relay(mask: false)
-        }
-      }
+      id
+      name
     }
   }
 `;
