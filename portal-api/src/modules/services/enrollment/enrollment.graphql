@@ -5,8 +5,30 @@ input EnrollOCTIInstanceInput {
   platformUrl: String!
 }
 
+input CanEnrollOCTIInstanceInput {
+  organizationId: ID!
+  platformId: String!
+}
+
 type EnrollmentResponse {
   token: String!
+}
+
+enum CanEnrollStatus {
+  enrolled
+  unenrolled
+  never_enrolled
+}
+
+type CanEnrollResponse {
+  allowed: Boolean!
+  status: CanEnrollStatus!
+  sameOrganization: Boolean
+}
+
+type Query {
+  canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput): CanEnrollResponse!
+    @auth(requires: [MANAGE_OCTI_ENROLLMENT])
 }
 
 type Mutation {

@@ -1,6 +1,7 @@
 import { EnrollOCTIInstance } from '@/components/enroll/enroll.graphql';
 import { EnrollOrganizationForm } from '@/components/enroll/form/organization';
 import { isEnrollmentPossible } from '@/components/enroll/helper';
+import { canEnrollOCTIInstance } from '@/components/enroll/service';
 import { EnrollStateSwitch } from '@/components/enroll/state/switch';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
@@ -17,12 +18,6 @@ interface Props {
   queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
 }
 
-export interface EnrollmentState {
-  status: 'enrolled' | 'unenrolled' | 'never_enrolled';
-  sameOrganization?: boolean;
-  allowed: boolean;
-}
-
 export const EnrollOCTI: React.FC<Props> = ({
   queryRef,
   platformId,
@@ -31,28 +26,18 @@ export const EnrollOCTI: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
 
-  const query = usePreloadedQuery<organizationListUserOrganizationsQuery>(
-    OrganizationListUserOrganizationsQueryGraphql,
-    queryRef
-  );
+  const userOrganizationsPreloadedQuery =
+    usePreloadedQuery<organizationListUserOrganizationsQuery>(
+      OrganizationListUserOrganizationsQueryGraphql,
+      queryRef
+    );
 
   const [organizationId, setOrganizationId] = useState<string>();
-  const [enrollmentState, setEnrollmentState] = useState<
-    EnrollmentState | undefined
-  >();
+  const enrollmentState = canEnrollOCTIInstance({ organizationId, platformId });
   const [enrollInstance] = useMutation(EnrollOCTIInstance);
 
   const cancel = () => {
     window.postMessage('cancel');
-  };
-
-  const chooseOrganization = (organizationId: string) => {
-    setOrganizationId(organizationId);
-    setEnrollmentState({
-      status: 'enrolled',
-      allowed: false,
-      sameOrganization: false,
-    });
   };
 
   useEffect(() => {
@@ -91,8 +76,8 @@ export const EnrollOCTI: React.FC<Props> = ({
   ) : (
     <EnrollOrganizationForm
       cancel={cancel}
-      confirm={chooseOrganization}
-      organizations={query.userOrganizations}
+      confirm={setOrganizationId}
+      organizations={userOrganizationsPreloadedQuery.userOrganizations}
     />
   );
 };

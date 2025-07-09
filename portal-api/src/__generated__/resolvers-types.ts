@@ -67,6 +67,24 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
+export type CanEnrollOctiInstanceInput = {
+  organizationId: Scalars['ID']['input'];
+  platformId: Scalars['String']['input'];
+};
+
+export type CanEnrollResponse = {
+  __typename?: 'CanEnrollResponse';
+  allowed: Scalars['Boolean']['output'];
+  sameOrganization?: Maybe<Scalars['Boolean']['output']>;
+  status: CanEnrollStatus;
+};
+
+export enum CanEnrollStatus {
+  Enrolled = 'enrolled',
+  NeverEnrolled = 'never_enrolled',
+  Unenrolled = 'unenrolled'
+}
+
 export type Capability = Node & {
   __typename?: 'Capability';
   id: Scalars['ID']['output'];
@@ -754,6 +772,7 @@ export type PlatformProvider = {
 
 export type Query = {
   __typename?: 'Query';
+  canEnrollOCTIInstance: CanEnrollResponse;
   csvFeed?: Maybe<CsvFeed>;
   csvFeeds: CsvFeedConnection;
   customDashboard?: Maybe<CustomDashboard>;
@@ -794,6 +813,11 @@ export type Query = {
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
+};
+
+
+export type QueryCanEnrollOctiInstanceArgs = {
+  input?: InputMaybe<CanEnrollOctiInstanceInput>;
 };
 
 
@@ -1455,6 +1479,9 @@ export type ResolversTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  CanEnrollOCTIInstanceInput: CanEnrollOctiInstanceInput;
+  CanEnrollResponse: ResolverTypeWrapper<CanEnrollResponse>;
+  CanEnrollStatus: CanEnrollStatus;
   Capability: ResolverTypeWrapper<Capability>;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
@@ -1559,6 +1586,8 @@ export type ResolversParentTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
+  CanEnrollOCTIInstanceInput: CanEnrollOctiInstanceInput;
+  CanEnrollResponse: CanEnrollResponse;
   Capability: Capability;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
@@ -1661,6 +1690,13 @@ export type ActionTrackingResolvers<ContextType = PortalContext, ParentType exte
   message_tracking?: Resolver<Array<ResolversTypes['MessageTracking']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CanEnrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanEnrollResponse'] = ResolversParentTypes['CanEnrollResponse']> = ResolversObject<{
+  allowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  sameOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['CanEnrollStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1982,6 +2018,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  canEnrollOCTIInstance?: Resolver<ResolversTypes['CanEnrollResponse'], ParentType, ContextType, Partial<QueryCanEnrollOctiInstanceArgs>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
   csvFeeds?: Resolver<ResolversTypes['CsvFeedConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
@@ -2263,6 +2300,7 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
+  CanEnrollResponse?: CanEnrollResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CsvFeedConnection?: CsvFeedConnectionResolvers<ContextType>;

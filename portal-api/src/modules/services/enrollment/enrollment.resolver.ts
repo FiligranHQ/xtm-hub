@@ -6,6 +6,11 @@ import { BadRequestError } from '../../../utils/error.util';
 import { enrollmentApp } from './enrollment.app';
 
 const resolvers: Resolvers = {
+  Query: {
+    canEnrollOCTIInstance: async (_, { input }, context) => {
+      return enrollmentApp.canEnrollOCTIInstance(context, input);
+    },
+  },
   Mutation: {
     enrollOCTIInstance: async (_, { input }, context) => {
       const schema = z.object({
