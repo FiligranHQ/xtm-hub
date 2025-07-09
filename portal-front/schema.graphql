@@ -95,7 +95,7 @@ type OrganizationConnection {
 type Query {
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
-  userOrganizations: OrganizationConnection!
+  userOrganizations: [Organization!]!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!

@@ -8,8 +8,10 @@ import {
 } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
 
-export const loadUserOrganizations = async (context: PortalContext) => {
-  const loadQuery = db<Organization>(context, 'Organization')
+export const loadUserOrganizations = async (
+  context: PortalContext
+): Promise<Organization[]> => {
+  const organizations = await db<Organization>(context, 'Organization')
     .leftJoin(
       'User_Organization',
       'User_Organization.organization_id',
@@ -19,15 +21,7 @@ export const loadUserOrganizations = async (context: PortalContext) => {
     .where('User_Organization.user_id', '=', context.user.id)
     .select('Organization.*');
 
-  return paginate<Organization, OrganizationConnection>(
-    context,
-    'Organization',
-    {
-      orderBy: 'name',
-    },
-    undefined,
-    loadQuery
-  );
+  return organizations;
 };
 
 export const loadOrganizationBy = async (
