@@ -11,7 +11,7 @@ interface Props {
   queryRef: PreloadedQuery<userListOrganizationAdministratorsQuery>;
 }
 
-export const EnrollErrorCapability: React.FC<Props> = ({ queryRef }) => {
+export const EnrollStateMissingCapability: React.FC<Props> = ({ queryRef }) => {
   const t = useTranslations();
   const query = usePreloadedQuery<userListOrganizationAdministratorsQuery>(
     UserListOrganizationAdministratorsQueryGraphql,
@@ -46,7 +46,7 @@ export const EnrollErrorCapability: React.FC<Props> = ({ queryRef }) => {
         </ul>
       </div>
       <div className="flex justify-end">
-        <Button onClick={back}>Back to OCTI</Button>
+        <Button onClick={back}>{t('Enroll.OCTI.Back')}</Button>
       </div>
     </div>
   );
