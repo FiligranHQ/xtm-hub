@@ -1,12 +1,13 @@
 import { EnrollOCTIInstance } from '@/components/enroll/enroll.graphql';
 import { EnrollOrganizationForm } from '@/components/enroll/form/organization';
+import { isEnrollmentPossible } from '@/components/enroll/helper';
+import { EnrollStateSwitch } from '@/components/enroll/state/switch';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import { redirect } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 
 interface Props {
@@ -14,6 +15,12 @@ interface Props {
   platformUrl: string;
   platformTitle: string;
   queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
+}
+
+export interface EnrollmentState {
+  status: 'enrolled' | 'unenrolled' | 'never_enrolled';
+  sameOrganization?: boolean;
+  allowed: boolean;
 }
 
 export const EnrollOCTI: React.FC<Props> = ({
@@ -29,13 +36,32 @@ export const EnrollOCTI: React.FC<Props> = ({
     queryRef
   );
 
+  const [organizationId, setOrganizationId] = useState<string>();
+  const [enrollmentState, setEnrollmentState] = useState<
+    EnrollmentState | undefined
+  >();
   const [enrollInstance] = useMutation(EnrollOCTIInstance);
 
   const cancel = () => {
     window.postMessage('cancel');
   };
 
-  const confirm = (organizationId: string) => {
+  const chooseOrganization = (organizationId: string) => {
+    setOrganizationId(organizationId);
+    setEnrollmentState({
+      status: 'enrolled',
+      allowed: false,
+      sameOrganization: false,
+    });
+  };
+
+  useEffect(() => {
+    if (enrollmentState && isEnrollmentPossible(enrollmentState)) {
+      enroll();
+    }
+  }, [enrollmentState]);
+
+  const enroll = () => {
     enrollInstance({
       variables: {
         input: { organizationId, platformId, platformTitle, platformUrl },
@@ -46,25 +72,26 @@ export const EnrollOCTI: React.FC<Props> = ({
         });
       },
       onError: (error) => {
-        if (error.message.includes('Not authorized')) {
-          redirect(
-            `/enroll/error/octi/capability?organization_id=${organizationId}`
-          );
-        } else {
-          toast({
-            variant: 'destructive',
-            title: t('Utils.Error'),
-            description: t(`Error.Server.${error.message}`),
-          });
-        }
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
       },
     });
   };
 
-  return (
+  return enrollmentState ? (
+    <EnrollStateSwitch
+      state={enrollmentState}
+      organizationId={organizationId}
+      cancel={cancel}
+      confirm={enroll}
+    />
+  ) : (
     <EnrollOrganizationForm
       cancel={cancel}
-      confirm={confirm}
+      confirm={chooseOrganization}
       organizations={query.userOrganizations}
     />
   );

@@ -257,6 +257,18 @@ export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type EnrollOctiInstanceInput = {
+  organizationId: Scalars['ID']['input'];
+  platformId: Scalars['String']['input'];
+  platformTitle: Scalars['String']['input'];
+  platformUrl: Scalars['String']['input'];
+};
+
+export type EnrollmentResponse = {
+  __typename?: 'EnrollmentResponse';
+  token: Scalars['String']['output'];
+};
+
 export type Filter = {
   key?: InputMaybe<FilterKey>;
   value: Array<Scalars['String']['input']>;
@@ -355,6 +367,7 @@ export type Mutation = {
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
   editUserCapabilities: User;
+  enrollOCTIInstance: EnrollmentResponse;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
@@ -554,6 +567,11 @@ export type MutationEditServiceInstanceArgs = {
 export type MutationEditUserCapabilitiesArgs = {
   id: Scalars['ID']['input'];
   input: EditUserCapabilitiesInput;
+};
+
+
+export type MutationEnrollOctiInstanceArgs = {
+  input: EnrollOctiInstanceInput;
 };
 
 
@@ -1019,6 +1037,7 @@ export enum Restriction {
   FrtManageUser = 'FRT_MANAGE_USER',
   FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER',
   ManageAccess = 'MANAGE_ACCESS',
+  ManageOctiEnrollment = 'MANAGE_OCTI_ENROLLMENT',
   ManageSubscription = 'MANAGE_SUBSCRIPTION'
 }
 
@@ -1071,6 +1090,7 @@ export enum ServiceDefinitionIdentifier {
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
   ObasScenarios = 'obas_scenarios',
+  OctiEnrollment = 'octi_enrollment',
   Vault = 'vault'
 }
 
@@ -1455,6 +1475,8 @@ export type ResolversTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  EnrollOCTIInstanceInput: EnrollOctiInstanceInput;
+  EnrollmentResponse: ResolverTypeWrapper<EnrollmentResponse>;
   Filter: Filter;
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
@@ -1556,6 +1578,8 @@ export type ResolversParentTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  EnrollOCTIInstanceInput: EnrollOctiInstanceInput;
+  EnrollmentResponse: EnrollmentResponse;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -1765,6 +1789,11 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type EnrollmentResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EnrollmentResponse'] = ResolversParentTypes['EnrollmentResponse']> = ResolversObject<{
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type GenericServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['GenericServiceCapability'] = ResolversParentTypes['GenericServiceCapability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1850,6 +1879,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
+  enrollOCTIInstance?: Resolver<ResolversTypes['EnrollmentResponse'], ParentType, ContextType, RequireFields<MutationEnrollOctiInstanceArgs, 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
@@ -2244,6 +2274,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
+  EnrollmentResponse?: EnrollmentResponseResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Label?: LabelResolvers<ContextType>;
