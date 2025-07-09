@@ -1,5 +1,6 @@
 import { JSONSchemaToZod } from '@dmitryrechkin/json-schema-to-zod';
 import { db } from '../../../../knexfile';
+import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceContract from '../../../model/kanel/public/ServiceContract';
 import { PortalContext } from '../../../model/portal-context';
 
@@ -30,6 +31,17 @@ export const serviceContractDomain = {
     const schema = JSONSchemaToZod.convert(serviceContract.schema);
     const { success } = schema.safeParse(config);
     return success;
+  },
+  findConfiguration: async (
+    context: PortalContext,
+    platformId: string
+  ): Promise<ServiceConfiguration | null> => {
+    const configuration = await db(context, 'Service_Configuration')
+      .whereRaw("config->>'platform_id' = ?", platformId)
+      .first()
+      .select('*');
+
+    return configuration ?? null;
   },
   saveConfiguration: async (
     context: PortalContext,

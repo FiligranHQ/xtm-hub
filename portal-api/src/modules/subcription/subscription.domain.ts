@@ -6,6 +6,7 @@ import {
   UserService,
 } from '../../__generated__/resolvers-types';
 import {
+  default as SubscriptionDB,
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
@@ -126,7 +127,18 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
   return userServicesData;
 };
 
-export const loadSubscription = async (context, id) => {
+export const loadSubscriptionByServiceInstance = async (
+  context: PortalContext,
+  serviceInstanceId: string
+): Promise<SubscriptionDB | null> => {
+  const subscription = await db<Subscription>(context, 'Subscription')
+    .where('service_instance_id', '=', serviceInstanceId)
+    .first();
+
+  return subscription ?? null;
+};
+
+export const loadSubscription = async (context: PortalContext, id: string) => {
   return await db<Subscription>(context, 'Subscription')
     .where('service_instance_id', '=', id)
     .where('organization_id', '=', context.user.selected_organization_id)

@@ -53,3 +53,22 @@ export const updateUserOrganizationCapability = async (
     .returning('*')
     .secureQuery();
 };
+
+export const loadUserOrganizationCapabilities = async (
+  context: PortalContext,
+  organizationId: string
+): Promise<UserOrganizationCapability[]> => {
+  const capabilities = await db<UserOrganizationCapability>(
+    context,
+    'UserOrganization_Capability'
+  )
+    .leftJoin(
+      'User_Organization',
+      'UserOrganization_Capability.user_organization_id',
+      'User_Organization.id'
+    )
+    .where('User_Organization.organization_id', '=', organizationId)
+    .select('UserOrganization_Capability.*');
+
+  return capabilities;
+};
