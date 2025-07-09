@@ -9,10 +9,12 @@ import { PortalContext } from '../../../model/portal-context';
 import { userHasBypassCapability } from '../../../security/auth.helper';
 import { loadUserOrganizationCapabilities } from '../../common/user-organization-capability.domain';
 import { loadSubscriptionByServiceInstance } from '../../subcription/subscription.domain';
-import { insertSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
-import { serviceDefinitionHelper } from '../definition/helper';
-import { serviceInstanceHelper } from '../instances/helper';
+import { serviceDefinitionDomain } from '../definition/domain';
+import {
+  enrollmentDomain,
+  OCTIInstanceConfiguration,
+} from './enrollment.domain';
 
 interface EnrollOCTIInstancePayload {
   organizationId: string;
@@ -24,22 +26,26 @@ interface EnrollOCTIInstancePayload {
 export const enrollmentApp = {
   enrollOCTIInstance: async (
     context: PortalContext,
-    payload: EnrollOCTIInstancePayload
+    {
+      organizationId,
+      platformId,
+      platformUrl,
+      platformTitle,
+    }: EnrollOCTIInstancePayload
   ): Promise<string> => {
     const token = uuidv4();
-    const configuration = {
+    const configuration: OCTIInstanceConfiguration = {
       enroller_id: context.user.id,
-      platform_id: payload.platformId,
-      platform_url: payload.platformUrl,
-      platform_title: payload.platformTitle,
+      platform_id: platformId,
+      platform_url: platformUrl,
+      platform_title: platformTitle,
       token: token,
     };
 
-    const serviceDefinition = await serviceDefinitionHelper.findByIdentifier(
+    const serviceDefinition = await serviceDefinitionDomain.findByIdentifier(
       context,
       ServiceDefinitionIdentifier.OctiEnrollment
     );
-
     if (!serviceDefinition) {
       throw new Error('SERVICE_DEFINITION_NOT_FOUND');
     }
@@ -50,35 +56,26 @@ export const enrollmentApp = {
         serviceDefinition.id,
         configuration
       );
-
     if (!isConfigurationValid) {
       throw new Error('INVALID_SERVICE_CONFIGURATION');
     }
 
-    // insert service instance
-    const serviceInstanceId =
-      await serviceInstanceHelper.createOCTIServiceInstance(
-        context,
-        serviceDefinition.id
-      );
+    const existingServiceConfiguration =
+      await serviceContractDomain.findConfiguration(context, platformId);
 
-    await insertSubscription(context, {
-      id: uuidv4(),
-      organization_id: payload.organizationId,
-      service_instance_id: serviceInstanceId,
-      start_date: new Date(),
-      end_date: null,
-      status: 'ACCEPTED',
-      joining: 'AUTO_JOIN',
-      billing: 0,
-      justification: null,
-    });
-
-    await serviceContractDomain.saveConfiguration(
-      context,
-      serviceInstanceId,
-      configuration
-    );
+    if (existingServiceConfiguration) {
+      await enrollmentDomain.enrollExistingInstance(context, {
+        serviceInstanceId: existingServiceConfiguration.service_instance_id,
+        organizationId,
+        configuration,
+      });
+    } else {
+      await enrollmentDomain.enrollNewInstance(context, {
+        serviceDefinitionId: serviceDefinition.id,
+        organizationId,
+        configuration,
+      });
+    }
 
     return token;
   },
