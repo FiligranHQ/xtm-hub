@@ -6,9 +6,9 @@ export const CanEnrollOCTIInstanceQuery = graphql`
     $skip: Boolean!
   ) {
     canEnrollOCTIInstance(input: $input) @skip(if: $skip) {
-      sameOrganization
       status
-      allowed
+      isAllowed
+      isSameOrganization
     }
   }
 `;

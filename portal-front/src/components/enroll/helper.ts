@@ -3,11 +3,11 @@ import { enrollCanEnrollOCTIInstanceQuery$data } from '@generated/enrollCanEnrol
 export const isEnrollmentPossible = (
   state: enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance']
 ): boolean => {
-  return !!state && state.status === 'never_enrolled' && state.allowed;
+  return !!state && state.status === 'never_enrolled' && state.isAllowed;
 };
 
 export const isMissingCapability = (
   state: enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance']
 ): boolean => {
-  return !!state && state.status === 'never_enrolled' && !state.allowed;
+  return !!state && state.status === 'never_enrolled' && !state.isAllowed;
 };

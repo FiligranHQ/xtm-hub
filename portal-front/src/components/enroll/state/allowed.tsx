@@ -14,7 +14,7 @@ const buildTranslationKey = (
 ): string => {
   const enrollmentKey =
     state?.status === 'enrolled' ? 'Enrolled' : 'Unenrolled';
-  const organizationKey = state?.sameOrganization
+  const organizationKey = state?.isSameOrganization
     ? 'SameOrganization'
     : 'AnotherOrganization.Allowed';
   return `${organizationKey}.${enrollmentKey}`;

@@ -6,8 +6,7 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { PortalContext } from '../../../model/portal-context';
-import { userHasBypassCapability } from '../../../security/auth.helper';
-import { loadUserOrganizationCapabilities } from '../../common/user-organization-capability.domain';
+import { isUserAllowed } from '../../../security/auth.helper';
 import { loadSubscriptionByServiceInstance } from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
@@ -91,10 +90,15 @@ export const enrollmentApp = {
       platformId
     );
 
+    const isAllowedOnTargetOrganization = await isUserAllowed(context, {
+      organizationId,
+      capability: OrganizationCapability.ManageOctiEnrollment,
+    });
+
     if (!serviceConfiguration) {
       return {
         status: CanEnrollStatus.NeverEnrolled,
-        allowed: true,
+        isAllowed: isAllowedOnTargetOrganization,
       };
     }
 
@@ -107,29 +111,15 @@ export const enrollmentApp = {
       throw new Error('SUBSCRIPTION_NOT_FOUND');
     }
 
-    if (subscription.organization_id === organizationId) {
-      return {
-        status: CanEnrollStatus.Enrolled,
-        allowed: true,
-        sameOrganization: true,
-      };
-    }
-
-    const capabilities = await loadUserOrganizationCapabilities(
-      context,
-      subscription.organization_id
-    );
-
-    const hasCapability =
-      userHasBypassCapability(context.user) ||
-      capabilities.some(
-        (c) => c.name === OrganizationCapability.ManageOctiEnrollment
-      );
+    const isAllowedOnOriginOrganization = await isUserAllowed(context, {
+      organizationId: subscription.organization_id,
+      capability: OrganizationCapability.ManageOctiEnrollment,
+    });
 
     return {
       status: CanEnrollStatus.Enrolled,
-      allowed: hasCapability,
-      sameOrganization: false,
+      isAllowed: isAllowedOnTargetOrganization && isAllowedOnOriginOrganization,
+      isSameOrganization: subscription.organization_id === organizationId,
     };
   },
 };

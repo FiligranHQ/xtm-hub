@@ -74,8 +74,8 @@ export type CanEnrollOctiInstanceInput = {
 
 export type CanEnrollResponse = {
   __typename?: 'CanEnrollResponse';
-  allowed: Scalars['Boolean']['output'];
-  sameOrganization?: Maybe<Scalars['Boolean']['output']>;
+  isAllowed: Scalars['Boolean']['output'];
+  isSameOrganization?: Maybe<Scalars['Boolean']['output']>;
   status: CanEnrollStatus;
 };
 
@@ -1694,8 +1694,8 @@ export type ActionTrackingResolvers<ContextType = PortalContext, ParentType exte
 }>;
 
 export type CanEnrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanEnrollResponse'] = ResolversParentTypes['CanEnrollResponse']> = ResolversObject<{
-  allowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  sameOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isAllowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isSameOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['CanEnrollStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

@@ -21,14 +21,14 @@ enum CanEnrollStatus {
 }
 
 type CanEnrollResponse {
-  allowed: Boolean!
+  isAllowed: Boolean!
   status: CanEnrollStatus!
-  sameOrganization: Boolean
+  isSameOrganization: Boolean
 }
 
 type Query {
   canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput): CanEnrollResponse!
-    @auth(requires: [MANAGE_OCTI_ENROLLMENT])
+    @auth
 }
 
 type Mutation {
