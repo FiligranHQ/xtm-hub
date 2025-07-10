@@ -63,9 +63,9 @@ export const enrollmentApp = {
       await serviceContractDomain.findConfiguration(context, platformId);
 
     if (existingServiceConfiguration) {
-      await enrollmentDomain.enrollExistingInstance(context, {
+      await enrollmentDomain.transferExistingInstance(context, {
         serviceInstanceId: existingServiceConfiguration.service_instance_id,
-        organizationId,
+        targetOrganizationId: organizationId,
         configuration,
       });
     } else {
@@ -111,6 +111,14 @@ export const enrollmentApp = {
       throw new Error('SUBSCRIPTION_NOT_FOUND');
     }
 
+    if (subscription.organization_id === organizationId) {
+      return {
+        status: CanEnrollStatus.Enrolled,
+        isAllowed: isAllowedOnTargetOrganization,
+        isSameOrganization: true,
+      };
+    }
+
     const isAllowedOnOriginOrganization = await isUserAllowed(context, {
       organizationId: subscription.organization_id,
       capability: OrganizationCapability.ManageOctiEnrollment,
@@ -119,7 +127,7 @@ export const enrollmentApp = {
     return {
       status: CanEnrollStatus.Enrolled,
       isAllowed: isAllowedOnTargetOrganization && isAllowedOnOriginOrganization,
-      isSameOrganization: subscription.organization_id === organizationId,
+      isSameOrganization: false,
     };
   },
 };

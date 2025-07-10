@@ -52,16 +52,16 @@ export const enrollmentDomain = {
       configuration
     );
   },
-  enrollExistingInstance: async (
+  transferExistingInstance: async (
     context: PortalContext,
     {
       configuration,
       serviceInstanceId,
-      organizationId,
+      targetOrganizationId,
     }: {
       configuration: OCTIInstanceConfiguration;
       serviceInstanceId: string;
-      organizationId: string;
+      targetOrganizationId: string;
     }
   ) => {
     const subscription = await loadSubscriptionByServiceInstance(
@@ -73,14 +73,15 @@ export const enrollmentDomain = {
       throw new Error('SUBSCRIPTION_NOT_FOUND');
     }
 
-    if (subscription.organization_id !== organizationId) {
+    const originOrganizationId = subscription.organization_id;
+    if (originOrganizationId !== targetOrganizationId) {
       const isAllowed = await isUserAllowed(context, {
-        organizationId: subscription.organization_id,
+        organizationId: originOrganizationId,
         capability: OrganizationCapability.ManageOctiEnrollment,
       });
 
       if (!isAllowed) {
-        throw new Error('MISSING_CAPABILITY_ON_DESTINATION_ORGANIZATION');
+        throw new Error('MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION');
       }
     }
 
