@@ -358,9 +358,9 @@ enum CanEnrollStatus {
 }
 
 type CanEnrollResponse {
-  allowed: Boolean!
+  isAllowed: Boolean!
   status: CanEnrollStatus!
-  sameOrganization: Boolean
+  isSameOrganization: Boolean
 }
 
 type ServiceLink implements Node {

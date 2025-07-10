@@ -64,7 +64,7 @@ export const EnrollStateResult: React.FC<Props> = ({
     );
   }
 
-  if (state.allowed) {
+  if (state.isAllowed) {
     return (
       <EnrollStateAllowed
         cancel={cancel}

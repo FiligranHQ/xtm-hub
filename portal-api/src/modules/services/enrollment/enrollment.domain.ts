@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { PortalContext } from '../../../model/portal-context';
-import { userHasBypassCapability } from '../../../security/auth.helper';
-import { loadUserOrganizationCapabilities } from '../../common/user-organization-capability.domain';
+import { isUserAllowed } from '../../../security/auth.helper';
 import { loadSubscriptionByServiceInstance } from '../../subcription/subscription.domain';
 import { insertSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
@@ -75,18 +74,12 @@ export const enrollmentDomain = {
     }
 
     if (subscription.organization_id !== organizationId) {
-      const capabilities = await loadUserOrganizationCapabilities(
-        context,
-        subscription.organization_id
-      );
+      const isAllowed = await isUserAllowed(context, {
+        organizationId: subscription.organization_id,
+        capability: OrganizationCapability.ManageOctiEnrollment,
+      });
 
-      const hasCapability =
-        userHasBypassCapability(context.user) ||
-        capabilities.some(
-          (c) => c.name === OrganizationCapability.ManageOctiEnrollment
-        );
-
-      if (!hasCapability) {
+      if (!isAllowed) {
         throw new Error('MISSING_CAPABILITY_ON_DESTINATION_ORGANIZATION');
       }
     }

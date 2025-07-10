@@ -8,7 +8,10 @@ import { enrollmentApp } from './enrollment.app';
 const resolvers: Resolvers = {
   Query: {
     canEnrollOCTIInstance: async (_, { input }, context) => {
-      return enrollmentApp.canEnrollOCTIInstance(context, input);
+      return enrollmentApp.canEnrollOCTIInstance(context, {
+        ...input,
+        organizationId: fromGlobalId(input.organizationId).id,
+      });
     },
   },
   Mutation: {

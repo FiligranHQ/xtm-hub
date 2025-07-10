@@ -4,10 +4,14 @@ import { loadUnsecureSubscriptionBy } from '../modules/subcription/subscription.
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { ServiceCapabilityArgs } from './directive-auth';
 
-import { ServiceInstance } from '../__generated__/resolvers-types';
+import {
+  OrganizationCapability,
+  ServiceInstance,
+} from '../__generated__/resolvers-types';
 import { SubscriptionMutator } from '../model/kanel/public/Subscription';
+import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
-import { hasAdministrateOrganizationCapability } from '../modules/users/users.helper';
+import { loadUserOrganizationCapabilities } from '../modules/common/user-organization-capability.domain';
 import { extractId } from '../utils/utils';
 
 export const loadCapabilitiesByServiceId = async (
@@ -81,12 +85,6 @@ export const userHasBypassCapability = (user: UserLoadUserBy): boolean => {
   return user.capabilities.some((c) => c.name === CAPABILITY_BYPASS.name);
 };
 
-export const userIsOrganizationAdministrator = (
-  user: UserLoadUserBy
-): boolean => {
-  return hasAdministrateOrganizationCapability(user.selected_org_capabilities);
-};
-
 export const getCapabilityUser = (
   user: UserLoadUserBy,
   args: ServiceCapabilityArgs
@@ -101,3 +99,24 @@ export const getCapabilityUser = (
       } as SubscriptionMutator).then(([subscription]) =>
         loadCapabilitiesByServiceId(user, subscription.service_instance_id)
       );
+
+export const isUserAllowed = async (
+  context: PortalContext,
+  {
+    organizationId,
+    capability,
+  }: {
+    organizationId: string;
+    capability: OrganizationCapability;
+  }
+): Promise<boolean> => {
+  const capabilities = await loadUserOrganizationCapabilities(
+    context,
+    organizationId
+  );
+
+  return (
+    userHasBypassCapability(context.user) ||
+    capabilities.some((c) => c.name === capability)
+  );
+};
