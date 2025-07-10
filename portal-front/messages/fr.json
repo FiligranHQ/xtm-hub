@@ -363,6 +363,7 @@
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",
         "SlugPlaceholder": "dashboard-slug",
+        "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
         "productVersion": "OpenCTI version",
         "productVersionPlaceholder": "1.0.0",
@@ -434,17 +435,7 @@
     "ServiceName": "Nom du service",
     "ShareableResources": {
       "Share": "Partager",
-      "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
-      "FromVersion": "Depuis la version",
-      "Details": {
-        "Author": "Auteur",
-        "BasicInformation": "Informations de base",
-        "Downloads": "Téléchargements",
-        "LastUpdatedAt": "Dernière mise à jour le",
-        "ProductVersion": "Version minimale du produit",
-        "Overview": "Vue d'ensemble",
-        "Shares": "Actions"
-      }
+      "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager."
     },
     "Subscribe": "Souscrire",
     "SubscribeOrganization": "Souscrire une organisation",

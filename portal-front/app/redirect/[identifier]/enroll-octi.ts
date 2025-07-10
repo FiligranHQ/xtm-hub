@@ -3,7 +3,8 @@ import { FeatureFlag } from '@/utils/constant';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { NextRequest, NextResponse } from 'next/server';
-import { getLoginRedirectionURL, MeResponse, SettingsResponse } from './route';
+import { MeResponse, SettingsResponse } from './response';
+import { getLoginRedirectionURL } from './url';
 
 export const redirectToOCTIEnrollment = async (request: NextRequest) => {
   const settingsResponse = (await serverPortalApiFetch<
