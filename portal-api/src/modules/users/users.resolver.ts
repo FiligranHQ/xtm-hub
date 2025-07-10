@@ -240,22 +240,20 @@ const resolvers: Resolvers = {
         });
       }
     },
-    editUser: async (_, { id, input }, context) => {
+    editUserCapabilities: async (_, { id, input }, context) => {
       const trx = await dbTx();
       try {
-        const { capabilities, ...userInput } = input;
         const userId = id as UserId;
         await preventAdministratorRemovalOfOneOrganization(
           userId,
           context.user.selected_organization_id,
-          capabilities
+          input.capabilities
         );
 
-        await updateUser(context, userId, userInput);
         await updateUserOrgCapabilities(context, {
           user_id: userId,
           organization_id: context.user.selected_organization_id,
-          orgCapabilities: capabilities,
+          orgCapabilities: input.capabilities,
         });
         const user = await loadUserDetails({
           'User.id': id as UserId,

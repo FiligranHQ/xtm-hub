@@ -79,7 +79,10 @@ export const ObasScenarioUpdateSheet = ({
   );
 
   const handleSubmit = (values: ObasScenarioFormValues) => {
-    const input = omit(values, ['document', 'illustration']);
+    const input = {
+      ...omit(values, ['document', 'illustration']),
+      uploader_id: values?.uploader_id ?? '',
+    };
 
     // Split images between existing and new ones
     const images = Array.from(values.illustration ?? []) as FormImagesValues;

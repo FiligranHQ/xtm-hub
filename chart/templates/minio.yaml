@@ -36,6 +36,19 @@ spec:
         resources:
           requests:
             storage: {{ .Values.minio.storage.diskSize }}
+            {{- with .Values.minio.resources.requests.cpu }}
+            cpu: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.minio.resources.requests.memory }}
+            memory: {{ . | quote }}
+            {{- end }}
+          limits:
+            {{- with .Values.minio.resources.limits.cpu }}
+            cpu: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.minio.resources.limits.memory }}
+            memory: {{ . | quote }}
+            {{- end }}
     volumesPerServer: {{ .Values.minio.storage.diskCount }}
     affinity: {{- .Values.minio.server.affinity | toYaml | nindent 6 }}
   prometheusOperator: false

@@ -80,6 +80,7 @@ export type CreateCsvFeedInput = {
   name: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  uploader_id: Scalars['String']['input'];
 };
 
 export type CreateCustomDashboardInput = {
@@ -90,6 +91,7 @@ export type CreateCustomDashboardInput = {
   product_version: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  uploader_id: Scalars['String']['input'];
 };
 
 export type CreateObasScenarioInput = {
@@ -100,6 +102,7 @@ export type CreateObasScenarioInput = {
   product_version: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  uploader_id: Scalars['String']['input'];
 };
 
 export type CsvFeed = Node & {
@@ -250,9 +253,8 @@ export type EditServiceCapabilityInput = {
   user_service_id?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type EditUserInput = {
+export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
-  email?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Filter = {
@@ -352,7 +354,7 @@ export type Mutation = {
   editOrganization?: Maybe<Organization>;
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
-  editUser: User;
+  editUserCapabilities: User;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
@@ -549,9 +551,9 @@ export type MutationEditServiceInstanceArgs = {
 };
 
 
-export type MutationEditUserArgs = {
+export type MutationEditUserCapabilitiesArgs = {
   id: Scalars['ID']['input'];
-  input: EditUserInput;
+  input: EditUserCapabilitiesInput;
 };
 
 
@@ -1208,6 +1210,7 @@ export type UpdateCsvFeedInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1219,6 +1222,7 @@ export type UpdateCustomDashboardInput = {
   product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1230,6 +1234,7 @@ export type UpdateObasScenarioInput = {
   product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1442,7 +1447,7 @@ export type ResolversTypes = ResolversObject<{
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
-  EditUserInput: EditUserInput;
+  EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   Filter: Filter;
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
@@ -1543,7 +1548,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
-  EditUserInput: EditUserInput;
+  EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -1837,7 +1842,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
-  editUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserArgs, 'id' | 'input'>>;
+  editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;

@@ -67,8 +67,10 @@ const DashboardUpdate: React.FunctionComponent<DashboardUpdateProps> = ({
   const updateDocument = (
     values: z.infer<typeof updateCustomDashboardSchema>
   ) => {
-    const input = omit(values, ['document', 'images']);
-
+    const input = {
+      ...omit(values, ['document', 'images']),
+      uploader_id: values?.uploader_id ?? '',
+    };
     // Split images between existing and new ones
     const images = Array.from(values.images ?? []) as FormImagesValues;
     const [existingImages, newImages] = splitExistingAndNewImages(images);

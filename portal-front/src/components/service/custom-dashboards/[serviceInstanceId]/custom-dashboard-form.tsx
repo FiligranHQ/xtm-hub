@@ -1,5 +1,7 @@
 import { getLabels } from '@/components/admin/label/label.utils';
+import { PortalContext } from '@/components/me/app-portal-context';
 import MarkdownInput from '@/components/ui/MarkdownInput';
+import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -18,7 +20,7 @@ import {
   Textarea,
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import slugify from 'slugify';
 import { z } from 'zod';
@@ -38,6 +40,7 @@ export const newCustomDashboardSchema = z.object({
   active: z.boolean(),
   labels: z.array(z.string()).optional(),
   slug: z.string().min(1, 'Required'),
+  uploader_id: z.string().optional(),
 });
 
 export type CustomDashboardFormValues = z.infer<
@@ -55,6 +58,7 @@ export const CustomDashboardForm = ({
   handleSubmit,
 }: CustomDashboardFormProps) => {
   const t = useTranslations();
+  const { me } = useContext(PortalContext);
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const form = useForm<CustomDashboardFormValues>({
@@ -71,6 +75,7 @@ export const CustomDashboardForm = ({
       images: undefined,
       labels: [],
       slug: '',
+      uploader_id: me?.id,
     },
   });
 
@@ -258,6 +263,25 @@ export const CustomDashboardForm = ({
                   </FormLabel>
                 </div>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="uploader_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.CustomDashboards.Form.Author')}
+                </FormLabel>
+                <FormControl>
+                  <SelectUsersFormField
+                    defaultValue={me!.email}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />

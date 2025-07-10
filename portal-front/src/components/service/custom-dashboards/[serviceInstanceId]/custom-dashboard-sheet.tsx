@@ -37,7 +37,10 @@ export const CustomDashboardSheet = ({
     values: CustomDashboardFormValues,
     callback: () => void
   ) => {
-    const input = omit(values, ['document', 'images', 'documentId']);
+    const input = {
+      ...omit(values, ['document', 'images', 'documentId']),
+      uploader_id: values?.uploader_id ?? '',
+    };
     const documents = [
       ...Array.from(values.document),
       ...Array.from(values.images),

@@ -5,6 +5,7 @@ input CreateCustomDashboardInput {
   description: String!
   active: Boolean!
   labels: [String!]
+  uploader_id: String!
   # Specific fields for custom dashboards
   product_version: String!
 }
@@ -17,6 +18,7 @@ input UpdateCustomDashboardInput {
   active: Boolean
   labels: [String!]
   uploader_organization_id: String
+  uploader_id: String
   # Specific fields for custom dashboards
   product_version: String
 }
