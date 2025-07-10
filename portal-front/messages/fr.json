@@ -113,6 +113,44 @@
   "Enroll": {
     "Register": "Enrôler",
     "OCTI": {
+      "Success": {
+        "Title": "L'instance OCTI a été inscrite avec succès",
+        "Description": "Cet onglet sera bientôt fermé"
+      },
+      "SameOrganization": {
+        "Enrolled": {
+          "Title": "Instance déjà enrôlée",
+          "Description": "Votre instance OCTI est déjà enrôlée. Voulez-vous enrôler votre instance à nouveau ?"
+        },
+        "Unenrolled": {
+          "Title": "L'instance était enrôlée",
+          "Description": "Votre instance OCTI a déjà été enrôlée. Voulez-vous enrôler votre instance à nouveau  ?"
+        }
+      },
+      "AnotherOrganization": {
+        "NotAllowed": {
+          "Title": "L'instance est enrôlée dans une autre organisation",
+          "Description": "Votre instance OCTI est déjà enrôlée dans une autre organisation et vous n'avez pas les permissions pour la transférer."
+        },
+        "Allowed": {
+          "Enrolled": {
+            "Title": "Instance déjà enrôlée",
+            "Description": "Votre instance OCTI est déjà inscrite dans une autre organisation. Voulez-vous transférer votre instance ?"
+          },
+          "Unenrolled": {
+            "Title": "L'instance était enrôlée",
+            "Description": "Votre instance OCTI a déjà été enrôlée dans une autre organisation. Souhaitez-vous enrôler votre instance à nouveau ?"
+          }
+        }
+      },
+      "Back": "Retour à OpenCTI",
+      "Error": {
+        "Capability": {
+          "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",
+          "Description": "Si vous souhaitez procéder à l'enrôlement de votre plateforme OCTI dans le XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
+          "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
+        }
+      },
       "OrganizationForm": {
         "Title": "Vous êtes sur le point d'enrôler votre instance OpenCTI dans XTM Hub",
         "Description": "Dans quel espace souhaitez-vous enrôler votre instance OpenCTI ?"
@@ -325,7 +363,6 @@
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",
         "SlugPlaceholder": "dashboard-slug",
-        "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
         "productVersion": "OpenCTI version",
         "productVersionPlaceholder": "1.0.0",
@@ -396,8 +433,18 @@
     "NoService": "Il n'y a pas encore de service...",
     "ServiceName": "Nom du service",
     "ShareableResources": {
+      "Share": "Partager",
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
-      "Share": "Partager"
+      "FromVersion": "Depuis la version",
+      "Details": {
+        "Author": "Auteur",
+        "BasicInformation": "Informations de base",
+        "Downloads": "Téléchargements",
+        "LastUpdatedAt": "Dernière mise à jour le",
+        "ProductVersion": "Version minimale du produit",
+        "Overview": "Vue d'ensemble",
+        "Shares": "Actions"
+      }
     },
     "Subscribe": "Souscrire",
     "SubscribeOrganization": "Souscrire une organisation",
@@ -545,6 +592,7 @@
     "Cancel": "Annuler",
     "Close": "Fermer",
     "Clear": "Effacer",
+    "Confirm": "Confirmer",
     "Continue": "Continuer",
     "Copied": "Copié",
     "Create": "Créer",

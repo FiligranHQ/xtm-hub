@@ -2,7 +2,8 @@ import { EnrollOCTIInstance } from '@/components/enroll/enroll.graphql';
 import { EnrollOrganizationForm } from '@/components/enroll/form/organization';
 import { isEnrollmentPossible } from '@/components/enroll/helper';
 import { canEnrollOCTIInstance } from '@/components/enroll/service';
-import { EnrollStateSwitch } from '@/components/enroll/state/switch';
+import { EnrollStateResult } from '@/components/enroll/state/result';
+import { enrollOCTIInstanceMutation } from '@generated/enrollOCTIInstanceMutation.graphql';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
@@ -32,12 +33,14 @@ export const EnrollOCTI: React.FC<Props> = ({
       queryRef
     );
 
+  const [isSuccess, setIsSuccess] = useState(false);
   const [organizationId, setOrganizationId] = useState<string>();
   const enrollmentState = canEnrollOCTIInstance({ organizationId, platformId });
-  const [enrollInstance] = useMutation(EnrollOCTIInstance);
+  const [enrollInstance] =
+    useMutation<enrollOCTIInstanceMutation>(EnrollOCTIInstance);
 
   const cancel = () => {
-    window.postMessage('cancel');
+    window.opener.postMessage({ action: 'cancel' }, '*');
   };
 
   useEffect(() => {
@@ -47,14 +50,24 @@ export const EnrollOCTI: React.FC<Props> = ({
   }, [enrollmentState]);
 
   const enroll = () => {
+    if (!organizationId) {
+      return;
+    }
+
     enrollInstance({
       variables: {
         input: { organizationId, platformId, platformTitle, platformUrl },
       },
-      onCompleted: () => {
-        toast({
-          title: t('Utils.Success'),
-        });
+      onCompleted: (response) => {
+        const token = response.enrollOCTIInstance.token;
+        setIsSuccess(true);
+        window.opener.postMessage(
+          {
+            action: 'enroll',
+            token,
+          },
+          '*'
+        );
       },
       onError: (error) => {
         toast({
@@ -67,7 +80,8 @@ export const EnrollOCTI: React.FC<Props> = ({
   };
 
   return enrollmentState ? (
-    <EnrollStateSwitch
+    <EnrollStateResult
+      isSuccess={isSuccess}
       state={enrollmentState}
       organizationId={organizationId}
       cancel={cancel}

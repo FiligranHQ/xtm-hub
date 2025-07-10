@@ -41,45 +41,47 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
   return (
     <Form {...form}>
       <form className="flex flex-col h-full justify-between">
-        <div className="flex flex-col">
-          <h2>{t('Enroll.OCTI.OrganizationForm.Title')}</h2>
+        <div className="flex flex-col gap-m">
+          <h1>{t('Enroll.OCTI.OrganizationForm.Title')}</h1>
           <p>{t('Enroll.OCTI.OrganizationForm.Description')}</p>
-          <FormField
-            control={form.control}
-            render={({ field }) => (
-              <>
-                {organizations.map((organization) => {
-                  return (
-                    <FormItem
-                      key={organization.id}
-                      className="flex justify-start gap-s items-center">
-                      <FormControl>
-                        <Input
-                          className="w-auto mt-8px"
-                          aria-labelledby={`enroll-form-organization-${organization.name}`}
-                          type="radio"
-                          onChange={() => {
-                            field.onChange(organization.id);
-                          }}
-                          checked={field.value === organization.id}
-                          value={organization.name}
-                        />
-                      </FormControl>
+          <div>
+            <FormField
+              control={form.control}
+              render={({ field }) => (
+                <>
+                  {organizations.map((organization) => {
+                    return (
+                      <FormItem
+                        key={organization.id}
+                        className="flex justify-start gap-xs items-center">
+                        <FormControl>
+                          <Input
+                            className="w-auto mt-8px"
+                            aria-labelledby={`enroll-form-organization-${organization.name}`}
+                            type="radio"
+                            onChange={() => {
+                              field.onChange(organization.id);
+                            }}
+                            checked={field.value === organization.id}
+                            value={organization.name}
+                          />
+                        </FormControl>
 
-                      <FormLabel
-                        id={`enroll-form-organization-${organization.name}`}
-                        className="!mt-0">
-                        {organization.name}
-                      </FormLabel>
+                        <FormLabel
+                          id={`enroll-form-organization-${organization.name}`}
+                          className="!mt-0">
+                          {organization.name}
+                        </FormLabel>
 
-                      <FormMessage />
-                    </FormItem>
-                  );
-                })}
-              </>
-            )}
-            name="organizationId"
-          />
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  })}
+                </>
+              )}
+              name="organizationId"
+            />
+          </div>
         </div>
         <div className="flex justify-end gap-s">
           <Button
