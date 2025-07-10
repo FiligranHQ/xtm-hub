@@ -14,6 +14,7 @@ import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
+import { Card } from 'filigran-ui/servers';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -54,7 +55,11 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
     return (
       <RelayProvider>
         <PageLoader>
-          <ContentLayout>{children}</ContentLayout>
+          <ContentLayout>
+            <Card className="w-4/5 m-auto mt-l p-l h-auto bg-gray-900">
+              {children}
+            </Card>
+          </ContentLayout>
         </PageLoader>
       </RelayProvider>
     );

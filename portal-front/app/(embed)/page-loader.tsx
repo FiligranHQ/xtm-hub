@@ -10,12 +10,10 @@ import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 
-// Component interface
 interface LayoutPreloaderProps {
   children: React.ReactNode;
 }
 
-// Component
 const PageLoader: React.FunctionComponent<LayoutPreloaderProps> = ({
   children,
 }) => {

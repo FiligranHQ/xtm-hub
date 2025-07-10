@@ -113,6 +113,36 @@
   "Enroll": {
     "Register": "Register",
     "OCTI": {
+      "Success": {
+        "Title": "OCTI instance enrolled successfully",
+        "Description": "This tab will be closed soon"
+      },
+      "SameOrganization": {
+        "Enrolled": {
+          "Title": "Instance already enrolled",
+          "Description": "Your OCTI instance is already enrolled. Do you want to re-enroll your instance ?"
+        },
+        "Unenrolled": {
+          "Title": "Instance was enrolled",
+          "Description": "Your OCTI instance was previously enrolled. Do you want to re-enroll your instance ?"
+        }
+      },
+      "AnotherOrganization": {
+        "NotAllowed": {
+          "Title": "The instance is enrolled on another organization",
+          "Description": "Your OCTI instance is already enrolled in another organization and you don't have the necesarry permissions to transfer it."
+        },
+        "Allowed": {
+          "Enrolled": {
+            "Title": "Instance already enrolled",
+            "Description": "Your OCTI instance is already enrolled in another organization. Do you want to transfer your instance ?"
+          },
+          "Unenrolled": {
+            "Title": "Instance was enrolled",
+            "Description": "Your OCTI instance was previously enrolled in another organization. Do you want to re-enroll your instance ?"
+          }
+        }
+      },
       "Back": "Back to OpenCTI",
       "Error": {
         "Capability": {
@@ -296,7 +326,6 @@
         "NameLabel": "Name",
         "PublishedPlaceholder": "Is the CSV Feed published?",
         "ShortDescriptionLabel": "Short Description",
-        "Author": "Author",
         "SlugLabel": "Slug"
       },
       "NonActive": "Draft",
@@ -338,7 +367,6 @@
         "productVersion": "OpenCTI version",
         "productVersionPlaceholder": "1.0.0",
         "Restore": "Restore",
-        "Author": "Author",
         "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image."
       },
       "UpdateDashboard": "Update dashboard"
@@ -362,7 +390,6 @@
         "ObasScenarioIllustration": "Illustration",
         "ExistingObasScenarioIllustration": "Existing scenario illustration: {file_name}",
         "PublishedPlaceholder": "Is the scenario published?",
-        "Author": "Author",
         "ProductVersionLabel": "OpenBAS Version"
       },
       "AddObasScenario": "Add new scenario",
@@ -552,7 +579,6 @@
   "Utils": {
     "Cancel": "Cancel",
     "Close": "Close",
-    "Clear": "Clear",
     "Confirm": "Confirm",
     "Continue": "Continue",
     "Copied": "Copied",

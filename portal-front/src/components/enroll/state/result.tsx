@@ -1,32 +1,36 @@
 'use client';
 
 import { isMissingCapability } from '@/components/enroll/helper';
-import { EnrollmentState } from '@/components/enroll/octi';
-import { EnrollStateAnotherOrganizationAllowed } from '@/components/enroll/state/another-organization/allowed';
-import { EnrollStateAnotherOrganizationNotAllowed } from '@/components/enroll/state/another-organization/not-allowed';
+import { EnrollStateAllowed } from '@/components/enroll/state/allowed';
+import { EnrollStateLayout } from '@/components/enroll/state/layout';
 import { EnrollStateMissingCapability } from '@/components/enroll/state/missing-capability';
-import { EnrollStateSameOrganization } from '@/components/enroll/state/same-organization';
+import { EnrollStateNotAllowed } from '@/components/enroll/state/not-allowed';
 import Loader from '@/components/loader';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { enrollCanEnrollOCTIInstanceQuery$data } from '@generated/enrollCanEnrollOCTIInstanceQuery.graphql';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,
 } from '@generated/userListOrganizationAdministratorsQuery.graphql';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useQueryLoader } from 'react-relay';
 
 interface Props {
   organizationId?: string;
-  state: EnrollmentState;
+  state: enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance'];
   confirm: () => void;
   cancel: () => void;
+  isSuccess: boolean;
 }
 
-export const EnrollStateSwitch: React.FC<Props> = ({
+export const EnrollStateResult: React.FC<Props> = ({
   cancel,
   confirm,
+  isSuccess,
   organizationId,
   state,
 }) => {
+  const t = useTranslations();
   const [queryRef, loadQuery] =
     useQueryLoader<userListOrganizationAdministratorsQuery>(
       UserListOrganizationAdministratorsQueryGraphql
@@ -38,17 +42,31 @@ export const EnrollStateSwitch: React.FC<Props> = ({
     return null;
   }
 
-  if (!queryRef) {
+  if (!queryRef || !state) {
     return <Loader />;
   }
 
-  if (isMissingCapability(state)) {
-    return <EnrollStateMissingCapability queryRef={queryRef} />;
+  if (isSuccess) {
+    return (
+      <EnrollStateLayout>
+        <h1>{t('Enroll.OCTI.Success.Title')}</h1>
+        <p>{t('Enroll.OCTI.Success.Description')}</p>
+      </EnrollStateLayout>
+    );
   }
 
-  if (state.sameOrganization) {
+  if (isMissingCapability(state)) {
     return (
-      <EnrollStateSameOrganization
+      <EnrollStateMissingCapability
+        cancel={cancel}
+        queryRef={queryRef}
+      />
+    );
+  }
+
+  if (state.allowed) {
+    return (
+      <EnrollStateAllowed
         cancel={cancel}
         confirm={confirm}
         state={state}
@@ -56,15 +74,5 @@ export const EnrollStateSwitch: React.FC<Props> = ({
     );
   }
 
-  if (!state.allowed) {
-    return <EnrollStateAnotherOrganizationNotAllowed cancel={cancel} />;
-  }
-
-  return (
-    <EnrollStateAnotherOrganizationAllowed
-      cancel={cancel}
-      confirm={confirm}
-      state={state}
-    />
-  );
+  return <EnrollStateNotAllowed cancel={cancel} />;
 };
