@@ -39,7 +39,10 @@ export const ObasScenarioAddSheet = ({
   );
 
   const handleSubmit = async (values: ObasScenarioFormValues) => {
-    const input = omit(values, ['document', 'illustration']);
+    const input = {
+      ...omit(values, ['document', 'illustration']),
+      uploader_id: values?.uploader_id ?? '',
+    };
     const documents = [
       ...Array.from(values.document),
       ...Array.from(values.illustration),

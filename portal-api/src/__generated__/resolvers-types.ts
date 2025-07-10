@@ -80,6 +80,7 @@ export type CreateCsvFeedInput = {
   name: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  uploader_id: Scalars['String']['input'];
 };
 
 export type CreateCustomDashboardInput = {
@@ -90,6 +91,7 @@ export type CreateCustomDashboardInput = {
   product_version: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  uploader_id: Scalars['String']['input'];
 };
 
 export type CreateObasScenarioInput = {
@@ -100,6 +102,7 @@ export type CreateObasScenarioInput = {
   product_version: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  uploader_id: Scalars['String']['input'];
 };
 
 export type CsvFeed = Node & {
@@ -1208,6 +1211,7 @@ export type UpdateCsvFeedInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1219,6 +1223,7 @@ export type UpdateCustomDashboardInput = {
   product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1230,6 +1235,7 @@ export type UpdateObasScenarioInput = {
   product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
