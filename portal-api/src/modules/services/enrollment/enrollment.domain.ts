@@ -2,10 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
-import { loadSubscriptionByServiceInstance } from '../../subcription/subscription.domain';
+import {
+  loadSubscriptionByServiceInstance,
+  transferSubscription,
+} from '../../subcription/subscription.domain';
 import { insertSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
-import { serviceInstanceHelper } from '../instances/helper';
+import { serviceInstanceDomain } from '../instances/domain';
 
 export type OCTIInstanceConfiguration = {
   enroller_id: string;
@@ -29,7 +32,7 @@ export const enrollmentDomain = {
     }
   ) => {
     const serviceInstanceId =
-      await serviceInstanceHelper.createOCTIServiceInstance(
+      await serviceInstanceDomain.createOCTIServiceInstance(
         context,
         serviceDefinitionId
       );
@@ -90,5 +93,10 @@ export const enrollmentDomain = {
       serviceInstanceId,
       configuration
     );
+
+    await transferSubscription(context, {
+      subscriptionId: subscription.id,
+      targetOrganizationId,
+    });
   },
 };

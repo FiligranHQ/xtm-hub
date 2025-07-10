@@ -56,7 +56,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
       <RelayProvider>
         <PageLoader>
           <ContentLayout>
-            <Card className="w-4/5 m-auto mt-l p-l h-auto bg-gray-900">
+            <Card className="w-4/5 m-auto mt-l p-l h-auto bg-page-background">
               {children}
             </Card>
           </ContentLayout>

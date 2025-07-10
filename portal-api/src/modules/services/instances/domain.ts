@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../knexfile';
 import { PortalContext } from '../../../model/portal-context';
 
-export const serviceInstanceHelper = {
+export const serviceInstanceDomain = {
   createOCTIServiceInstance: async (
     context: PortalContext,
     serviceDefinitionId: string
