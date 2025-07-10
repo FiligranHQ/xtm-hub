@@ -138,6 +138,23 @@ export const loadSubscriptionByServiceInstance = async (
   return subscription ?? null;
 };
 
+export const transferSubscription = async (
+  context: PortalContext,
+  {
+    subscriptionId,
+    targetOrganizationId,
+  }: {
+    subscriptionId: string;
+    targetOrganizationId: string;
+  }
+) => {
+  await db(context, 'Subscription')
+    .update({
+      organization_id: targetOrganizationId,
+    })
+    .where('id', '=', subscriptionId);
+};
+
 export const loadSubscription = async (context: PortalContext, id: string) => {
   return await db<Subscription>(context, 'Subscription')
     .where('service_instance_id', '=', id)

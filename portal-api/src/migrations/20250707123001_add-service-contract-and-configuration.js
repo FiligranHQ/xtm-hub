@@ -23,7 +23,7 @@ const jsonSchema = {
       pattern:
         '^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$',
     },
-    platform_url: { type: 'string', minLength: 1 },
+    platform_url: { type: 'string', minLength: 1, format: 'uri' },
     platform_title: { type: 'string', minLength: 1 },
     token: { type: 'string', minLength: 1 },
   },
