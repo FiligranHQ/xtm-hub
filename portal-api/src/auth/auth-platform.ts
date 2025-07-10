@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser';
 import { UserInfo } from '../model/user';
-import { logApp } from '../utils/app-logger.util';
+import { AppLogsCategory, logApp } from '../utils/app-logger.util';
 import { setCookieError } from '../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
 import { initProviders } from './providers/providers';
@@ -38,6 +38,7 @@ export const initAuthPlatform = async (app) => {
             {},
             (err: Error, user: UserInfo | false | null) => {
               if (!user) {
+                logApp.error(err, {}, AppLogsCategory.LOGIN_PROVIDER);
                 reject(new Error('User not provided'));
               } else if (err) {
                 reject(err || new Error('Invalid authentication'));
