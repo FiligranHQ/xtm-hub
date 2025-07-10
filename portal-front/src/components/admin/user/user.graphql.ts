@@ -10,8 +10,8 @@ export const UserListCreateMutation = graphql`
 `;
 
 export const UserSlugEditMutation = graphql`
-  mutation userSlugEditMutation($id: ID!, $input: EditUserInput!) {
-    editUser(id: $id, input: $input) {
+  mutation userSlugEditMutation($id: ID!, $input: EditUserCapabilitiesInput!) {
+    editUserCapabilities(id: $id, input: $input) {
       ...userList_fragment
     }
   }

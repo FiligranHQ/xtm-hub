@@ -59,7 +59,7 @@ type Mutation {
   addUser(input: AddUserInput!): User
   adminAddUser(input: AdminAddUserInput!): User
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
-  editUser(id: ID!, input: EditUserInput!): User!
+  editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   editMeUser(input: EditMeUserInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
@@ -711,8 +711,7 @@ input AdminEditUserInput {
   organization_capabilities: [OrganizationCapabilitiesInput!]
 }
 
-input EditUserInput {
-  email: String
+input EditUserCapabilitiesInput {
   capabilities: [String!]
 }
 
