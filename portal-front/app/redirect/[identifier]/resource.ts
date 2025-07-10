@@ -16,7 +16,8 @@ import ServiceInstancesSubscribedByIdentifierQuery, {
 } from '@generated/serviceInstancesSubscribedByIdentifierQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { NextRequest, NextResponse } from 'next/server';
-import { getLoginRedirectionURL, MeResponse, SettingsResponse } from './route';
+import { MeResponse, SettingsResponse } from './response';
+import { getLoginRedirectionURL } from './url';
 
 interface UserServiceOwnedResponse {
   data: serviceInstancesSubscribedByIdentifierQuery$data;
