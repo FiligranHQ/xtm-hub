@@ -4,5 +4,4 @@
 cd portal-api
 yarn lint-staged
 
-cd ../portal-front
-yarn lint-staged
+cd ../libs/portal-front

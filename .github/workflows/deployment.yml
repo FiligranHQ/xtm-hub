@@ -51,7 +51,7 @@ jobs:
 
       - name: Verify directories exist
         run: |
-          if [ ! -d "./portal-api" ] || [ ! -d "./portal-front" ]; then
+          if [ ! -d "./portal-api" ] || [ ! -d "./libs/portal-front" ]; then
             echo "Error: portal-api or portal-front directory does not exist"
             exit 1
           fi
@@ -63,7 +63,7 @@ jobs:
           yarn plugin import version
 
       - name: Install dependencies for portal-front
-        working-directory: ./portal-front
+        working-directory: ./libs/portal-front
         run: |
           yarn install
           yarn plugin import version
@@ -75,7 +75,7 @@ jobs:
           echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Sync deployment version in portal-front
-        working-directory: ./portal-front
+        working-directory: ./libs/portal-front
         run: |
           yarn version ${{ env.NEW_VERSION }}
 

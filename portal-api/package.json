@@ -41,6 +41,10 @@
     "lint-staged": "lint-staged",
     "watch:graphql": "node builder/dev/watch-graphql.js"
   },
+  "peerDependencies": {
+    "tsx": "4.19.4",
+    "express": "4.21.0"
+  },
   "dependencies": {
     "@apollo/server": "4.11.0",
     "@aws-sdk/client-s3": "3.670.0",
@@ -55,7 +59,6 @@
     "config": "3.3.12",
     "copyfiles": "2.4.1",
     "cors": "2.8.5",
-    "express": "4.21.0",
     "express-prom-bundle": "8.0.0",
     "express-session": "1.18.0",
     "glob": "11.0.0",
@@ -103,7 +106,6 @@
     "lint-staged": "15.5.2",
     "prettier": "3.6.2",
     "prettier-plugin-organize-imports": "4.1.0",
-    "tsx": "4.19.2",
     "typescript": "5.8.3",
     "typescript-eslint": "8.35.1",
     "vitest": "2.1.1"

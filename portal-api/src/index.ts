@@ -90,7 +90,7 @@ app.use(graphqlUploadExpress());
 
 if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
   const printedSchema = printSchema(schema);
-  fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
+  fs.writeFileSync('../libs/portal-front/schema.graphql', printedSchema);
 }
 
 // The ApolloServer constructor requires two parameters: your schema
