@@ -3,6 +3,9 @@ import { EnrollOrganizationForm } from '@/components/enroll/form/organization';
 import { isEnrollmentPossible } from '@/components/enroll/helper';
 import { canEnrollOCTIInstance } from '@/components/enroll/service';
 import { EnrollStateResult } from '@/components/enroll/state/result';
+import enrollOCTIFragmentGraphql, {
+  enrollOCTIFragment$key,
+} from '@generated/enrollOCTIFragment.graphql';
 import { enrollOCTIInstanceMutation } from '@generated/enrollOCTIInstanceMutation.graphql';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
@@ -10,7 +13,12 @@ import OrganizationListUserOrganizationsQueryGraphql, {
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
-import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
+import {
+  PreloadedQuery,
+  useFragment,
+  useMutation,
+  usePreloadedQuery,
+} from 'react-relay';
 
 interface Props {
   platform: {
@@ -42,9 +50,31 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const [enrollInstance] =
     useMutation<enrollOCTIInstanceMutation>(EnrollOCTIInstance);
 
+  const [enrollFragmentRef, setEnrollFragmentRef] =
+    useState<enrollOCTIFragment$key | null>(null);
+  const enrollDataResponse = useFragment<enrollOCTIFragment$key>(
+    enrollOCTIFragmentGraphql,
+    enrollFragmentRef
+  );
+
   const cancel = () => {
     window.opener.postMessage({ action: 'cancel' }, '*');
   };
+
+  useEffect(() => {
+    if (!enrollDataResponse?.token) {
+      return;
+    }
+
+    setEnrollmentStatus('succeeded');
+    window.opener.postMessage(
+      {
+        action: 'enroll',
+        token: enrollDataResponse.token,
+      },
+      '*'
+    );
+  }, [enrollDataResponse]);
 
   useEffect(() => {
     if (canEnrollState && isEnrollmentPossible(canEnrollState)) {
@@ -62,15 +92,7 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
         input: { organizationId, platform },
       },
       onCompleted: (response) => {
-        const token = response.enrollOCTIInstance.token;
-        setEnrollmentStatus('succeeded');
-        window.opener.postMessage(
-          {
-            action: 'enroll',
-            token,
-          },
-          '*'
-        );
+        setEnrollFragmentRef(response.enrollOCTIInstance);
       },
       onError: (error) => {
         setEnrollmentStatus('failed');

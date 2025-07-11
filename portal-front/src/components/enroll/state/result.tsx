@@ -8,7 +8,7 @@ import { EnrollStateMissingCapability } from '@/components/enroll/state/missing-
 import { EnrollStateNotAllowed } from '@/components/enroll/state/not-allowed';
 import Loader from '@/components/loader';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { enrollCanEnrollOCTIInstanceQuery$data } from '@generated/enrollCanEnrollOCTIInstanceQuery.graphql';
+import { enrollCanEnrollOCTIInstanceFragment$data } from '@generated/enrollCanEnrollOCTIInstanceFragment.graphql';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,
 } from '@generated/userListOrganizationAdministratorsQuery.graphql';
@@ -18,7 +18,7 @@ import { useQueryLoader } from 'react-relay';
 
 interface Props {
   organizationId?: string;
-  canEnrollState: enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance'];
+  canEnrollState: enrollCanEnrollOCTIInstanceFragment$data;
   confirm: () => void;
   cancel: () => void;
   enrollmentStatus: EnrollmentStatus;
