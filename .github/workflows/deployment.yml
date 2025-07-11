@@ -46,42 +46,42 @@ jobs:
           node-version: "23"
           cache: "yarn"
           cache-dependency-path: |
-            portal-api/yarn.lock
-            portal-front/yarn.lock
+            apps/portal-api/yarn.lock
+            apps/portal-front/yarn.lock
 
       - name: Verify directories exist
         run: |
-          if [ ! -d "./portal-api" ] || [ ! -d "./portal-front" ]; then
+          if [ ! -d "./apps/portal-api" ] || [ ! -d "./apps/portal-front" ]; then
             echo "Error: portal-api or portal-front directory does not exist"
             exit 1
           fi
 
       - name: Install dependencies for portal-api
-        working-directory: ./portal-api
+        working-directory: ./apps/portal-api
         run: |
           yarn install
           yarn plugin import version
 
       - name: Install dependencies for portal-front
-        working-directory: ./portal-front
+        working-directory: ./apps/portal-front
         run: |
           yarn install
           yarn plugin import version
 
       - name: Bump deployment version in portal-api
-        working-directory: ./portal-api
+        working-directory: ./apps/portal-api
         run: |
           yarn version ${{ github.event.inputs.version_type }}
           echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Sync deployment version in portal-front
-        working-directory: ./portal-front
+        working-directory: ./apps/portal-front
         run: |
           yarn version ${{ env.NEW_VERSION }}
 
       - name: Commit and tag changes
         run: |
-          git add portal-api/package.json portal-api/yarn.lock portal-front/package.json portal-front/yarn.lock
+          git add apps/portal-api/package.json apps/portal-api/yarn.lock apps/portal-front/package.json apps/portal-front/yarn.lock
           git commit -m "chore(release): bump version to ${{ env.NEW_VERSION }}"
           git tag "v${{ env.NEW_VERSION }}"
 

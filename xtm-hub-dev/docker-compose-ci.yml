@@ -7,11 +7,11 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-front/.
+      context: ../apps/portal-front/.
       cache_from:
-        - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-front:main
-        - type=registry,ref=filigran/portal-front:development
+        - type=registry,ref=filigran/apps/portal-front:cache-${IMAGE_TAGS}
+        - type=registry,ref=filigran/apps/portal-front:main
+        - type=registry,ref=filigran/apps/portal-front:development
     depends_on:
       portal-api:
         condition: service_healthy
@@ -31,12 +31,12 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-front/.
+      context: ../apps/portal-front/.
       dockerfile: test.Dockerfile
       cache_from:
-        - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-front:main
-        - type=registry,ref=filigran/portal-front:development
+        - type=registry,ref=filigran/apps/portal-front:cache-${IMAGE_TAGS}
+        - type=registry,ref=filigran/apps/portal-front:main
+        - type=registry,ref=filigran/apps/portal-front:development
     environment:
       - SERVER_HTTP_API=http://portal-api:4001
 
@@ -48,7 +48,7 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-api/.
+      context: ../apps/portal-api/.
       dockerfile: test.Dockerfile
       cache_from:
         - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
@@ -83,7 +83,7 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-api/.
+      context: ../apps/portal-api/.
       cache_from:
         - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-api:main

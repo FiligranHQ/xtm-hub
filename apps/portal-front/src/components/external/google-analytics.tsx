@@ -5,6 +5,7 @@ import Script from 'next/script';
 export default function GoogleAnalytics() {
   return (
     <Script
+      id="google-analytics"
       strategy="lazyOnload"
       src="https://www.googletagmanager.com/gtag/js?id=G-9FC0TL0TH3"
       onLoad={() => {

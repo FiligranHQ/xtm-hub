@@ -1,0 +1,129 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "generate:enum": {
+      "outputs": [
+        "{projectRoot}/apps/portal-front/__generated__/models"
+      ],
+      "cache": true
+    },
+    "copy": {
+      "cache": true
+    },
+    "check-ts": {
+      "cache": true
+    },
+    "generate:ts": {
+      "cache": true
+    },
+    "knex:run": {
+      "cache": true
+    },
+    "migrate:make": {
+      "cache": true
+    },
+    "migrate:latest": {
+      "cache": true
+    },
+    "migrate:up": {
+      "cache": true
+    },
+    "migrate:down": {
+      "cache": true
+    },
+    "seed:make": {
+      "cache": true
+    },
+    "generate-pg-to-ts": {
+      "cache": true
+    },
+    "build": {
+      "cache": true
+    },
+    "start": {
+      "cache": true
+    },
+    "start-tsx": {
+      "cache": true
+    },
+    "dev:tsc": {
+      "cache": true
+    },
+    "dev:node": {
+      "cache": true
+    },
+    "start-dev": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "lint:fix": {
+      "cache": true
+    },
+    "format:check": {
+      "cache": true
+    },
+    "format": {
+      "cache": true
+    },
+    "test": {
+      "cache": true
+    },
+    "test:ci": {
+      "cache": true
+    },
+    "prepare": {
+      "cache": true
+    },
+    "seed:make:test": {
+      "cache": true
+    },
+    "start-dev-test": {
+      "cache": true
+    },
+    "start-dev-e2e-test": {
+      "cache": true
+    },
+    "test:w": {
+      "cache": true
+    },
+    "init-db-test": {
+      "cache": true
+    },
+    "clean-db-test": {
+      "cache": true
+    },
+    "lint-staged": {
+      "cache": true
+    },
+    "watch:graphql": {
+      "cache": true
+    },
+    "test:e2e": {
+      "cache": true
+    },
+    "test:e2e:ui": {
+      "cache": true
+    },
+    "generate-test-e2e": {
+      "cache": true
+    },
+    "dev": {
+      "cache": true
+    },
+    "check-ts-test": {
+      "cache": true
+    },
+    "relay": {
+      "cache": true
+    },
+    "auto-translation": {
+      "cache": true
+    },
+    "generate:ordering-enum": {
+      "cache": true
+    }
+  },
+  "nxCloudId": "686f6eb0b382454c97cd8bcd"
+}

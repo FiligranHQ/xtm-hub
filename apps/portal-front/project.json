@@ -1,0 +1,26 @@
+{
+  "name": "portal-front",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/portal-front/src",
+  "projectType": "application",
+  "types": ["next", "yarn"],
+  "targets": {
+    "build": {
+      "executor":"@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "apps/portal-front/dist",
+        "cwd": "apps/portal-front",
+        "command": "relay-compiler && tsx scripts/generate-enum.ts && next build"
+      }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/portal-front",
+        "command": "next start -p 3002"
+      }
+    }
+  },
+  "tags": []
+}
