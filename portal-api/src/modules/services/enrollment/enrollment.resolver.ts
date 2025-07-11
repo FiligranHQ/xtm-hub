@@ -35,7 +35,6 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     enrollOCTIInstance: async (_, { input }, context) => {
-      const trx = await dbTx();
       const schema = z.object({
         organizationId: z.uuid().nonempty(),
         platformId: z.uuid().nonempty(),
@@ -54,6 +53,7 @@ const resolvers: Resolvers = {
         throw BadRequestError(ErrorCode.EnrollOCITInstanceInvalidData);
       }
 
+      const trx = await dbTx();
       try {
         const token = await enrollmentApp.enrollOCTIInstance(
           {

@@ -1,6 +1,7 @@
 'use client';
 
 import { isMissingCapability } from '@/components/enroll/helper';
+import { EnrollmentStatus } from '@/components/enroll/octi';
 import { EnrollStateAllowed } from '@/components/enroll/state/allowed';
 import { EnrollStateLayout } from '@/components/enroll/state/layout';
 import { EnrollStateMissingCapability } from '@/components/enroll/state/missing-capability';
@@ -17,18 +18,18 @@ import { useQueryLoader } from 'react-relay';
 
 interface Props {
   organizationId?: string;
-  state: enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance'];
+  canEnrollState: enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance'];
   confirm: () => void;
   cancel: () => void;
-  isSuccess: boolean;
+  enrollmentStatus: EnrollmentStatus;
 }
 
 export const EnrollStateResult: React.FC<Props> = ({
   cancel,
   confirm,
-  isSuccess,
+  enrollmentStatus,
   organizationId,
-  state,
+  canEnrollState,
 }) => {
   const t = useTranslations();
   const [queryRef, loadQuery] =
@@ -42,20 +43,33 @@ export const EnrollStateResult: React.FC<Props> = ({
     return null;
   }
 
-  if (!queryRef || !state) {
+  if (
+    !queryRef ||
+    !canEnrollState ||
+    (canEnrollState.status === 'never_enrolled' && enrollmentStatus === 'idle')
+  ) {
     return <Loader />;
   }
 
-  if (isSuccess) {
+  if (enrollmentStatus === 'succeeded') {
     return (
       <EnrollStateLayout>
-        <h1>{t('Enroll.OCTI.Success.Title')}</h1>
-        <p>{t('Enroll.OCTI.Success.Description')}</p>
+        <h1>{t('Enroll.OCTI.Succeeded.Title')}</h1>
+        <p>{t('Enroll.OCTI.Succeeded.Description')}</p>
       </EnrollStateLayout>
     );
   }
 
-  if (isMissingCapability(state)) {
+  if (enrollmentStatus === 'failed') {
+    return (
+      <EnrollStateLayout cancel={cancel}>
+        <h1>{t('Enroll.OCTI.Failed.Title')}</h1>
+        <p>{t('Enroll.OCTI.Failed.Description')}</p>
+      </EnrollStateLayout>
+    );
+  }
+
+  if (isMissingCapability(canEnrollState)) {
     return (
       <EnrollStateMissingCapability
         cancel={cancel}
@@ -64,12 +78,12 @@ export const EnrollStateResult: React.FC<Props> = ({
     );
   }
 
-  if (state.isAllowed) {
+  if (canEnrollState.isAllowed) {
     return (
       <EnrollStateAllowed
         cancel={cancel}
         confirm={confirm}
-        state={state}
+        state={canEnrollState}
       />
     );
   }

@@ -19,6 +19,8 @@ interface Props {
   queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
 }
 
+export type EnrollmentStatus = 'idle' | 'succeeded' | 'failed';
+
 export const EnrollOCTI: React.FC<Props> = ({
   queryRef,
   platformId,
@@ -33,9 +35,10 @@ export const EnrollOCTI: React.FC<Props> = ({
       queryRef
     );
 
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [enrollmentStatus, setEnrollmentStatus] =
+    useState<EnrollmentStatus>('idle');
   const [organizationId, setOrganizationId] = useState<string>();
-  const enrollmentState = canEnrollOCTIInstance({ organizationId, platformId });
+  const canEnrollState = canEnrollOCTIInstance({ organizationId, platformId });
   const [enrollInstance] =
     useMutation<enrollOCTIInstanceMutation>(EnrollOCTIInstance);
 
@@ -44,10 +47,10 @@ export const EnrollOCTI: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (enrollmentState && isEnrollmentPossible(enrollmentState)) {
+    if (canEnrollState && isEnrollmentPossible(canEnrollState)) {
       enroll();
     }
-  }, [enrollmentState]);
+  }, [canEnrollState]);
 
   const enroll = () => {
     if (!organizationId) {
@@ -60,7 +63,7 @@ export const EnrollOCTI: React.FC<Props> = ({
       },
       onCompleted: (response) => {
         const token = response.enrollOCTIInstance.token;
-        setIsSuccess(true);
+        setEnrollmentStatus('succeeded');
         window.opener.postMessage(
           {
             action: 'enroll',
@@ -70,6 +73,7 @@ export const EnrollOCTI: React.FC<Props> = ({
         );
       },
       onError: (error) => {
+        setEnrollmentStatus('failed');
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
@@ -79,10 +83,10 @@ export const EnrollOCTI: React.FC<Props> = ({
     });
   };
 
-  return enrollmentState ? (
+  return canEnrollState ? (
     <EnrollStateResult
-      isSuccess={isSuccess}
-      state={enrollmentState}
+      enrollmentStatus={enrollmentStatus}
+      canEnrollState={canEnrollState}
       organizationId={organizationId}
       cancel={cancel}
       confirm={enroll}
