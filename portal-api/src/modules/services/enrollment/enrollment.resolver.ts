@@ -1,21 +1,41 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { z } from 'zod/v4';
+import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { logApp } from '../../../utils/app-logger.util';
-import { BadRequestError } from '../../../utils/error.util';
+import {
+  BadRequestError,
+  FORBIDDEN_ACCESS,
+  ForbiddenAccess,
+  NotFoundError,
+  UnknownError,
+} from '../../../utils/error.util';
+import { ErrorCode } from '../../common/error-code';
 import { enrollmentApp } from './enrollment.app';
 
 const resolvers: Resolvers = {
   Query: {
     canEnrollOCTIInstance: async (_, { input }, context) => {
-      return enrollmentApp.canEnrollOCTIInstance(context, {
-        ...input,
-        organizationId: fromGlobalId(input.organizationId).id,
-      });
+      try {
+        const response = enrollmentApp.canEnrollOCTIInstance(context, {
+          ...input,
+          organizationId: fromGlobalId(input.organizationId).id,
+        });
+        return response;
+      } catch (error) {
+        if (error.message.includes(ErrorCode.SubscriptionNotFound)) {
+          throw NotFoundError(error.message);
+        }
+
+        throw UnknownError(ErrorCode.CanEnrollOCTIInstanceUnknownError, {
+          detail: error,
+        });
+      }
     },
   },
   Mutation: {
     enrollOCTIInstance: async (_, { input }, context) => {
+      const trx = await dbTx();
       const schema = z.object({
         organizationId: z.uuid().nonempty(),
         platformId: z.uuid().nonempty(),
@@ -31,11 +51,40 @@ const resolvers: Resolvers = {
       const result = schema.safeParse(payload);
       if (!result.success) {
         logApp.warn(result.error);
-        throw BadRequestError('OCTI_ENROLLMENT_INVALID_DATA');
+        throw BadRequestError(ErrorCode.EnrollOCITInstanceInvalidData);
       }
 
-      const token = await enrollmentApp.enrollOCTIInstance(context, payload);
-      return { token };
+      try {
+        const token = await enrollmentApp.enrollOCTIInstance(
+          {
+            ...context,
+            trx,
+          },
+          payload
+        );
+        await trx.commit();
+        return { token };
+      } catch (error) {
+        await trx.rollback();
+        switch (error.message) {
+          case ErrorCode.InvalidServiceConfiguration:
+            throw BadRequestError(error.message);
+          case ErrorCode.ServiceDefinitionNotFound:
+          case ErrorCode.SubscriptionNotFound:
+          case ErrorCode.ServiceContractNotFound:
+            throw NotFoundError(error.message);
+          case ErrorCode.MissingCapabilityOnOriginOrganization:
+            throw ForbiddenAccess(error.message);
+        }
+
+        if (error.name.includes(FORBIDDEN_ACCESS)) {
+          throw ForbiddenAccess(error.message);
+        }
+
+        throw UnknownError(ErrorCode.EnrollOCTIInstanceUnknownError, {
+          detail: error,
+        });
+      }
     },
   },
 };
