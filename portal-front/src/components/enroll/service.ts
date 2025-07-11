@@ -1,8 +1,11 @@
+import enrollCanEnrollOCTIInstanceFragmentGraphql, {
+  enrollCanEnrollOCTIInstanceFragment$data,
+  enrollCanEnrollOCTIInstanceFragment$key,
+} from '@generated/enrollCanEnrollOCTIInstanceFragment.graphql';
 import enrollCanEnrollOCTIInstanceQueryGraphql, {
   enrollCanEnrollOCTIInstanceQuery,
-  enrollCanEnrollOCTIInstanceQuery$data,
 } from '@generated/enrollCanEnrollOCTIInstanceQuery.graphql';
-import { useLazyLoadQuery } from 'react-relay';
+import { useFragment, useLazyLoadQuery } from 'react-relay';
 
 interface CanEnrollOCTIInstanceQueryParams {
   organizationId?: string;
@@ -13,9 +16,10 @@ export const canEnrollOCTIInstance = ({
   organizationId,
   platformId,
 }: CanEnrollOCTIInstanceQueryParams):
-  | enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance']
-  | undefined => {
-  const canEnrollData = useLazyLoadQuery<enrollCanEnrollOCTIInstanceQuery>(
+  | enrollCanEnrollOCTIInstanceFragment$data
+  | undefined
+  | null => {
+  const data = useLazyLoadQuery<enrollCanEnrollOCTIInstanceQuery>(
     enrollCanEnrollOCTIInstanceQueryGraphql,
     {
       input: {
@@ -26,5 +30,8 @@ export const canEnrollOCTIInstance = ({
     }
   );
 
-  return canEnrollData.canEnrollOCTIInstance;
+  return useFragment<enrollCanEnrollOCTIInstanceFragment$key>(
+    enrollCanEnrollOCTIInstanceFragmentGraphql,
+    data.canEnrollOCTIInstance
+  );
 };

@@ -155,7 +155,7 @@ export const db = <T>(
     opts
   );
 
-  if (context.trx) {
+  if (context?.trx) {
     queryContext.transacting(context.trx);
   }
 

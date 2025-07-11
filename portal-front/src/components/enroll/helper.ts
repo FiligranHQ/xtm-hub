@@ -1,13 +1,13 @@
-import { enrollCanEnrollOCTIInstanceQuery$data } from '@generated/enrollCanEnrollOCTIInstanceQuery.graphql';
+import { enrollCanEnrollOCTIInstanceFragment$data } from '@generated/enrollCanEnrollOCTIInstanceFragment.graphql';
 
 export const isEnrollmentPossible = (
-  state: enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance']
+  state: enrollCanEnrollOCTIInstanceFragment$data
 ): boolean => {
   return !!state && state.status === 'never_enrolled' && state.isAllowed;
 };
 
 export const isMissingCapability = (
-  state: enrollCanEnrollOCTIInstanceQuery$data['canEnrollOCTIInstance']
+  state: enrollCanEnrollOCTIInstanceFragment$data
 ): boolean => {
   if (!state) {
     return false;

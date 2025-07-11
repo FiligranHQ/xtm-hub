@@ -13,7 +13,7 @@ export const loadOrganizationsByUser = async (
   context: PortalContext,
   userId: UserId
 ): Promise<Organization[]> => {
-  const organizations = await db<Organization>(context, 'Organization')
+  return db<Organization>(context, 'Organization')
     .leftJoin(
       'User_Organization',
       'User_Organization.organization_id',
@@ -22,8 +22,6 @@ export const loadOrganizationsByUser = async (
     )
     .where('User_Organization.user_id', '=', userId)
     .select('Organization.*');
-
-  return organizations;
 };
 
 export const loadOrganizationBy = async (
