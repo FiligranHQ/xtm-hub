@@ -277,9 +277,7 @@ export type EditUserCapabilitiesInput = {
 
 export type EnrollOctiInstanceInput = {
   organizationId: Scalars['ID']['input'];
-  platformId: Scalars['String']['input'];
-  platformTitle: Scalars['String']['input'];
-  platformUrl: Scalars['String']['input'];
+  platform: OctiPlatform;
 };
 
 export type EnrollmentResponse = {
@@ -659,6 +657,12 @@ export type MutationUpdateObasScenarioArgs = {
 
 export type Node = {
   id: Scalars['ID']['output'];
+};
+
+export type OctiPlatform = {
+  id: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  url: Scalars['String']['input'];
 };
 
 export type ObasScenario = Node & {
@@ -1519,6 +1523,7 @@ export type ResolversTypes = ResolversObject<{
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
+  OCTIPlatform: OctiPlatform;
   ObasScenario: ResolverTypeWrapper<ObasScenario>;
   ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
   ObasScenarioEdge: ResolverTypeWrapper<ObasScenarioEdge>;
@@ -1622,6 +1627,7 @@ export type ResolversParentTypes = ResolversObject<{
   MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
+  OCTIPlatform: OctiPlatform;
   ObasScenario: ObasScenario;
   ObasScenarioConnection: ObasScenarioConnection;
   ObasScenarioEdge: ObasScenarioEdge;

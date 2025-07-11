@@ -1,8 +1,12 @@
+input OCTIPlatform {
+  id: String!
+  url: String!
+  title: String!
+}
+
 input EnrollOCTIInstanceInput {
   organizationId: ID!
-  platformId: String!
-  platformTitle: String!
-  platformUrl: String!
+  platform: OCTIPlatform!
 }
 
 input CanEnrollOCTIInstanceInput {
