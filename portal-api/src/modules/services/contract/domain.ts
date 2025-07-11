@@ -3,6 +3,7 @@ import { db } from '../../../../knexfile';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceContract from '../../../model/kanel/public/ServiceContract';
 import { PortalContext } from '../../../model/portal-context';
+import { ErrorCode } from '../../common/error-code';
 
 const loadServiceContract = async (
   context: PortalContext,
@@ -25,7 +26,7 @@ export const serviceContractDomain = {
       serviceDefinitionId
     );
     if (!serviceContract) {
-      throw new Error('SERVICE_CONTRACT_NOT_FOUND');
+      throw new Error(ErrorCode.ServiceContractNotFound);
     }
 
     const schema = JSONSchemaToZod.convert(serviceContract.schema);

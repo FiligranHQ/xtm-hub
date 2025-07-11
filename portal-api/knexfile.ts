@@ -147,7 +147,19 @@ export const db = <T>(
     __typename: type,
     context,
   });
-  return applyDbSecurity<T>(context, type, queryContext, opts);
+
+  const securedQueryContext = applyDbSecurity<T>(
+    context,
+    type,
+    queryContext,
+    opts
+  );
+
+  if (context.trx) {
+    queryContext.transacting(context.trx);
+  }
+
+  return securedQueryContext;
 };
 
 export const dbUnsecure = <T>(type: DatabaseType) => {

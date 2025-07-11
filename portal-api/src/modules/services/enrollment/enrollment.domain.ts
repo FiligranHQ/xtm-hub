@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
+import { ErrorCode } from '../../common/error-code';
 import {
   loadSubscriptionByServiceInstance,
   transferSubscription,
@@ -73,7 +74,7 @@ export const enrollmentDomain = {
     );
 
     if (!subscription) {
-      throw new Error('SUBSCRIPTION_NOT_FOUND');
+      throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
     const originOrganizationId = subscription.organization_id;
@@ -84,7 +85,7 @@ export const enrollmentDomain = {
       });
 
       if (!isAllowed) {
-        throw new Error('MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION');
+        throw new Error(ErrorCode.MissingCapabilityOnOriginOrganization);
       }
     }
 

@@ -7,6 +7,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
+import { ErrorCode } from '../../common/error-code';
 import { loadSubscriptionByServiceInstance } from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
@@ -46,7 +47,7 @@ export const enrollmentApp = {
       ServiceDefinitionIdentifier.OctiEnrollment
     );
     if (!serviceDefinition) {
-      throw new Error('SERVICE_DEFINITION_NOT_FOUND');
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
     const isConfigurationValid =
@@ -56,7 +57,7 @@ export const enrollmentApp = {
         configuration
       );
     if (!isConfigurationValid) {
-      throw new Error('INVALID_SERVICE_CONFIGURATION');
+      throw new Error(ErrorCode.InvalidServiceConfiguration);
     }
 
     const existingServiceConfiguration =
@@ -108,7 +109,7 @@ export const enrollmentApp = {
     );
 
     if (!subscription) {
-      throw new Error('SUBSCRIPTION_NOT_FOUND');
+      throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
     if (subscription.organization_id === organizationId) {

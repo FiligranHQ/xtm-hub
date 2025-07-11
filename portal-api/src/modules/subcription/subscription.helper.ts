@@ -134,9 +134,7 @@ export const insertSubscription = async (
   context: PortalContext,
   dataSubscription
 ) => {
-  return db<Subscription>(context, 'Subscription')
-    .insert(dataSubscription)
-    .returning('*');
+  await db<Subscription>(context, 'Subscription').insert(dataSubscription);
 };
 
 export const insertUnsecureSubscription = async (dataSubscription) => {
