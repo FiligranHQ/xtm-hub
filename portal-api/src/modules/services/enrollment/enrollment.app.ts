@@ -8,7 +8,7 @@ import {
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
-import { loadSubscriptionByServiceInstance } from '../../subcription/subscription.domain';
+import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
@@ -42,10 +42,10 @@ export const enrollmentApp = {
       token: token,
     };
 
-    const serviceDefinition = await serviceDefinitionDomain.findByIdentifier(
-      context,
-      ServiceDefinitionIdentifier.OctiEnrollment
-    );
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
+        identifier: ServiceDefinitionIdentifier.OctiEnrollment,
+      });
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
@@ -61,7 +61,10 @@ export const enrollmentApp = {
     }
 
     const existingServiceConfiguration =
-      await serviceContractDomain.findConfiguration(context, platformId);
+      await serviceContractDomain.loadConfigurationByPlatform(
+        context,
+        platformId
+      );
 
     if (existingServiceConfiguration) {
       await enrollmentDomain.transferExistingInstance(context, {
@@ -86,10 +89,11 @@ export const enrollmentApp = {
       platformId,
     }: { organizationId: string; platformId: string }
   ): Promise<CanEnrollResponse> => {
-    const serviceConfiguration = await serviceContractDomain.findConfiguration(
-      context,
-      platformId
-    );
+    const serviceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatform(
+        context,
+        platformId
+      );
 
     const isAllowedOnTargetOrganization = await isUserAllowed(context, {
       organizationId,
@@ -103,10 +107,9 @@ export const enrollmentApp = {
       };
     }
 
-    const subscription = await loadSubscriptionByServiceInstance(
-      context,
-      serviceConfiguration.service_instance_id
-    );
+    const subscription = await loadSubscriptionBy(context, {
+      service_instance_id: serviceConfiguration.service_instance_id,
+    });
 
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);

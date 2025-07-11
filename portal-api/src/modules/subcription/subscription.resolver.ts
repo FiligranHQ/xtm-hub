@@ -29,7 +29,7 @@ import {
   getSubscriptionCapability,
   getUserService,
 } from './subscription.domain';
-import { loadSubscriptionBy } from './subscription.helper';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
   SubscriptionModel: {
@@ -187,9 +187,10 @@ const resolvers: Resolvers = {
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
       try {
-        const [subscription] = await loadSubscriptionBy(context, {
-          'Subscription.id': extractId<SubscriptionId>(subscription_id),
-        } as SubscriptionMutator);
+        const [subscription] =
+          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+            'Subscription.id': extractId<SubscriptionId>(subscription_id),
+          } as SubscriptionMutator);
 
         // TODO: to be rethought when billing is used in XTM
         // if (subscription.billing !== 0) {
@@ -217,9 +218,10 @@ const resolvers: Resolvers = {
   },
   Query: {
     subscriptionById: async (_, { subscription_id }, context) => {
-      const subscriptions = await loadSubscriptionBy(context, {
-        'Subscription.id': extractId<SubscriptionId>(subscription_id),
-      } as SubscriptionMutator);
+      const subscriptions =
+        await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+          'Subscription.id': extractId<SubscriptionId>(subscription_id),
+        } as SubscriptionMutator);
 
       return subscriptions[0];
     },

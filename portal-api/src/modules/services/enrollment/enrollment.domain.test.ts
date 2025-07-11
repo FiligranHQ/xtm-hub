@@ -103,7 +103,7 @@ describe('Enrollment domain', () => {
       });
 
       const existingServiceConfiguration =
-        await serviceContractDomain.findConfiguration(
+        await serviceContractDomain.loadConfigurationByPlatform(
           contextAdminUser,
           platformId
         );
@@ -136,7 +136,7 @@ describe('Enrollment domain', () => {
       });
 
       const existingServiceConfiguration =
-        await serviceContractDomain.findConfiguration(
+        await serviceContractDomain.loadConfigurationByPlatform(
           contextAdminUser,
           platformId
         );
