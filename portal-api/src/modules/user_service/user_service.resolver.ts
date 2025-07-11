@@ -1,6 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
@@ -180,7 +181,7 @@ const resolvers: Resolvers = {
         const subscription = await checkSubscriptionExists(
           context,
           context.user.selected_organization_id,
-          serviceInstanceId
+          serviceInstanceId as ServiceInstanceId
         );
         if (!subscription) {
           throw ForbiddenAccess('NOT_SUBSCRIBED_ORGANIZATION_ERROR');
