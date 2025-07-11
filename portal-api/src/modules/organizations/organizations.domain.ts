@@ -6,7 +6,23 @@ import {
   OrganizationConnection,
   QueryOrganizationsArgs,
 } from '../../__generated__/resolvers-types';
+import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
+
+export const loadOrganizationsByUser = async (
+  context: PortalContext,
+  userId: UserId
+): Promise<Organization[]> => {
+  return db<Organization>(context, 'Organization')
+    .leftJoin(
+      'User_Organization',
+      'User_Organization.organization_id',
+      '=',
+      'Organization.id'
+    )
+    .where('User_Organization.user_id', '=', userId)
+    .select('Organization.*');
+};
 
 export const loadOrganizationBy = async (
   context: PortalContext,
@@ -34,7 +50,10 @@ export const loadOrganizations = (
       orderBy,
       searchTerm,
       filters: [
-        { key: FilterKey.PersonalSpace, value: [false] } as unknown as Filter,
+        {
+          key: FilterKey.PersonalSpace,
+          value: [false],
+        } as unknown as Filter,
       ],
     }
   );

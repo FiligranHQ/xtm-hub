@@ -63,6 +63,7 @@
       "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
       "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation est déjà abonnée à ce service",
       "AUTH0_USER_NOT_FOUND_ERROR": "Votre profile utilisateur est introuvable",
+      "CAN_ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enrôlement de l'instance",
       "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "Vous ne pouvez pas ajouter un utilisateur à votre espace personnel",
       "CANT_EDIT_YOURSELF_ERROR": "Vous ne pouvez pas vous modifier vous-même",
@@ -85,11 +86,17 @@
       "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
+      "ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enrôlement de l'instance",
+      "ENROLL_OCTI_INSTANCE_INVALID_DATA": "Les données envoyées pour l'enrôlement de l'instance OCTI ne sont pas valides",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
+      "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
+      "MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION": "Permissions manquantes",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
+      "SERVICE_CONTRACT_NOT_FOUND": "Le contrat de service n'a pas été trouvé",
+      "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
       "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas",
       "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
       "SUBSCRIPTION_NOT_FOUND_ERROR": "La souscription n'existe pas",
@@ -97,18 +104,63 @@
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
-      "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
-      "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
-      "CSV_FEED_UPDATE_ERROR": "Erreur lors de la mise à jour du CSV Feed.",
-      "CUSTOM_DASHBOARD_INSERTION_ERROR": "Erreur lors de la création du tableau de bord personnalisé.",
-      "CUSTOM_DASHBOARD_UPDATE_ERROR": "Erreur lors de la mise à jour du tableau de bord personnalisé.",
-      "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "Le slug du tableau de bord personnalisé est déjà utilisé.",
       "OBAS_SCENARIO_INSERTION_ERROR": "Erreur lors de la création du scénario.",
       "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "Le slug du scénario est déjà utilisé.",
       "OBAS_SCENARIO_UPDATE_ERROR": "Erreur lors de la mise à jour du scénario."
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
+  },
+  "Enroll": {
+    "Register": "Enrôler",
+    "OCTI": {
+      "Succeeded": {
+        "Title": "L'instance OCTI a été enrôlée avec succès",
+        "Description": "Cet onglet sera bientôt fermé"
+      },
+      "Failed": {
+        "Title": "L'enrôlement a échoué",
+        "Description": "Une erreur s'est produite lors de l'enrôlement de l'instance"
+      },
+      "SameOrganization": {
+        "Enrolled": {
+          "Title": "Instance déjà enrôlée",
+          "Description": "Votre instance OCTI est déjà enrôlée. Voulez-vous enrôler votre instance à nouveau ?"
+        },
+        "Unenrolled": {
+          "Title": "L'instance était enrôlée",
+          "Description": "Votre instance OCTI a déjà été enrôlée. Voulez-vous enrôler votre instance à nouveau  ?"
+        }
+      },
+      "AnotherOrganization": {
+        "NotAllowed": {
+          "Title": "L'instance est enrôlée dans une autre organisation",
+          "Description": "Votre instance OCTI est déjà enrôlée dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer."
+        },
+        "Allowed": {
+          "Enrolled": {
+            "Title": "Instance déjà enrôlée",
+            "Description": "Votre instance OCTI est déjà inscrite dans une autre organisation. Voulez-vous transférer votre instance ?"
+          },
+          "Unenrolled": {
+            "Title": "L'instance était enrôlée",
+            "Description": "Votre instance OCTI a déjà été enrôlée dans une autre organisation. Souhaitez-vous enrôler votre instance à nouveau ?"
+          }
+        }
+      },
+      "Back": "Retour à OpenCTI",
+      "Error": {
+        "Capability": {
+          "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",
+          "Description": "Si vous souhaitez procéder à l'enrôlement de votre plateforme OCTI dans le XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
+          "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
+        }
+      },
+      "OrganizationForm": {
+        "Title": "Vous êtes sur le point d'enrôler votre instance OpenCTI dans XTM Hub",
+        "Description": "Dans quel espace souhaitez-vous enrôler votre instance OpenCTI ?"
+      }
+    }
   },
   "GenericActions": {
     "FilterLabels": "Filtrer par étiquettes...",
@@ -273,7 +325,6 @@
         "ExistingCsvFeedFile": "Fichier Csv Feed existant: {file_name}",
         "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "DescriptionUpdateJSONFile": "Vous allez mettre un nouveau fichier JSON. L'ancien sera écrasé, voulez-vous continuer ?",
-        "CsvFeedIllustration": "Illustration",
         "ExistingCsvFeedIllustration": "Illustration Csv Feed existante: {file_name}",
         "LabelsLabel": "Labels",
         "NameLabel": "Nom",
@@ -316,7 +367,6 @@
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",
         "SlugPlaceholder": "dashboard-slug",
-        "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
         "productVersion": "OpenCTI version",
         "productVersionPlaceholder": "1.0.0",
@@ -387,8 +437,18 @@
     "NoService": "Il n'y a pas encore de service...",
     "ServiceName": "Nom du service",
     "ShareableResources": {
+      "Share": "Partager",
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
-      "Share": "Partager"
+      "FromVersion": "Depuis la version",
+      "Details": {
+        "Author": "Auteur",
+        "BasicInformation": "Informations de base",
+        "Downloads": "Téléchargements",
+        "LastUpdatedAt": "Dernière mise à jour le",
+        "ProductVersion": "Version minimale du produit",
+        "Overview": "Vue d'ensemble",
+        "Shares": "Actions"
+      }
     },
     "Subscribe": "Souscrire",
     "SubscribeOrganization": "Souscrire une organisation",
@@ -430,20 +490,6 @@
       "UpdateDocument": "Mise à jour du document",
       "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault"
-    },
-    "ShareableResources": {
-      "Share": "Partager",
-      "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
-      "FromVersion": "Depuis la version",
-      "Details": {
-        "Author": "Auteur",
-        "BasicInformation": "Informations de base",
-        "Downloads": "Téléchargements",
-        "LastUpdatedAt": "Dernière mise à jour le",
-        "ProductVersion": "Version minimale du produit",
-        "Overview": "Vue d'ensemble",
-        "Shares": "Actions"
-      }
     }
   },
   "ServiceActions": {
@@ -536,6 +582,7 @@
     "Cancel": "Annuler",
     "Close": "Fermer",
     "Clear": "Effacer",
+    "Confirm": "Confirmer",
     "Continue": "Continuer",
     "Copied": "Copié",
     "Create": "Créer",

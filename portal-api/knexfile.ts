@@ -56,7 +56,9 @@ export type DatabaseType =
   | 'Object_Label'
   | 'UserOrganization_Capability'
   | 'Document_Children'
-  | 'Document_Metadata';
+  | 'Document_Metadata'
+  | 'Service_Contract'
+  | 'Service_Configuration';
 
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 export type MethodType = 'select' | 'insert' | 'update' | 'del';
@@ -145,7 +147,19 @@ export const db = <T>(
     __typename: type,
     context,
   });
-  return applyDbSecurity<T>(context, type, queryContext, opts);
+
+  const securedQueryContext = applyDbSecurity<T>(
+    context,
+    type,
+    queryContext,
+    opts
+  );
+
+  if (context?.trx) {
+    queryContext.transacting(context.trx);
+  }
+
+  return securedQueryContext;
 };
 
 export const dbUnsecure = <T>(type: DatabaseType) => {

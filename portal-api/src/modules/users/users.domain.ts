@@ -10,6 +10,7 @@ import {
   Filter,
   FilterKey,
   Organization,
+  OrganizationCapability,
   QueryUsersArgs,
   Subscription,
   UserConnection,
@@ -251,6 +252,34 @@ export const loadUserBy = async (
     .first();
 
   return userQuery;
+};
+
+export const loadOrganizationAdministrators = async (
+  context: PortalContext,
+  organizationId: string
+): Promise<User[]> => {
+  const users: User[] = await db<User>(context, 'User')
+    .leftJoin('User_Organization', 'User_Organization.user_id', 'User.id')
+    .leftJoin(
+      'UserOrganization_Capability',
+      'UserOrganization_Capability.user_organization_id',
+      'User_Organization.id'
+    )
+    .where('User_Organization.organization_id', '=', organizationId)
+    .andWhere((qb) => {
+      qb.where(
+        'UserOrganization_Capability.name',
+        '=',
+        OrganizationCapability.AdministrateOrganization
+      ).orWhere(
+        'UserOrganization_Capability.name',
+        '=',
+        OrganizationCapability.ManageOctiEnrollment
+      );
+    })
+    .select('User.*');
+
+  return users;
 };
 
 export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {

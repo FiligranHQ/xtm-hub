@@ -1,11 +1,12 @@
 import { db } from '../../../knexfile';
 import {
   ServiceCapability,
-  Subscription,
   SubscriptionModel,
   UserService,
 } from '../../__generated__/resolvers-types';
-import {
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
@@ -15,7 +16,7 @@ import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
-import { loadSubscriptionBy } from './subscription.helper';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 export const fillSubscription = async (
   context: PortalContext,
@@ -62,9 +63,9 @@ export const getServiceCapability = async (context, id) => {
 
 export const checkSubscriptionExists = async (
   context: PortalContext,
-  organization_id: string,
-  service_instance_id: string
-): Promise<SubscriptionModel | false> => {
+  organization_id: OrganizationId,
+  service_instance_id: ServiceInstanceId
+): Promise<Subscription | false> => {
   const subscriptionQuery = db<Subscription>(context, 'Subscription')
     .where({ organization_id, service_instance_id })
     .select('*')
@@ -77,9 +78,12 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
   context: PortalContext,
   subscriptionId: SubscriptionId
 ) => {
-  const [sub] = await loadSubscriptionBy(context, {
-    'Subscription.id': subscriptionId,
-  } as SubscriptionMutator);
+  const [sub] = await loadSubscriptionWithOrganizationAndCapabilitiesBy(
+    context,
+    {
+      'Subscription.id': subscriptionId,
+    } as SubscriptionMutator
+  );
 
   const organization = await loadOrganizationBy(
     context,
@@ -126,7 +130,31 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
   return userServicesData;
 };
 
-export const loadSubscription = async (context, id) => {
+export const loadSubscriptionBy = async (
+  context: PortalContext,
+  field: SubscriptionMutator
+): Promise<Subscription | undefined> => {
+  return db<Subscription>(context, 'Subscription').where(field).first();
+};
+
+export const transferSubscription = async (
+  context: PortalContext,
+  {
+    subscriptionId,
+    targetOrganizationId,
+  }: {
+    subscriptionId: string;
+    targetOrganizationId: string;
+  }
+) => {
+  await db(context, 'Subscription')
+    .update({
+      organization_id: targetOrganizationId,
+    })
+    .where('id', '=', subscriptionId);
+};
+
+export const loadSubscription = async (context: PortalContext, id: string) => {
   return await db<Subscription>(context, 'Subscription')
     .where('service_instance_id', '=', id)
     .where('organization_id', '=', context.user.selected_organization_id)
