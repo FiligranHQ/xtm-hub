@@ -1,12 +1,12 @@
 import { db } from '../../../knexfile';
 import {
   ServiceCapability,
-  Subscription,
   SubscriptionModel,
   UserService,
 } from '../../__generated__/resolvers-types';
-import {
-  default as SubscriptionDB,
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
@@ -63,9 +63,9 @@ export const getServiceCapability = async (context, id) => {
 
 export const checkSubscriptionExists = async (
   context: PortalContext,
-  organization_id: string,
-  service_instance_id: string
-): Promise<SubscriptionModel | false> => {
+  organization_id: OrganizationId,
+  service_instance_id: ServiceInstanceId
+): Promise<Subscription | false> => {
   const subscriptionQuery = db<Subscription>(context, 'Subscription')
     .where({ organization_id, service_instance_id })
     .select('*')
@@ -133,7 +133,7 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
 export const loadSubscriptionBy = async (
   context: PortalContext,
   field: SubscriptionMutator
-): Promise<SubscriptionDB | null> => {
+): Promise<Subscription | null> => {
   const subscription = await db<Subscription>(context, 'Subscription')
     .where(field)
     .first();

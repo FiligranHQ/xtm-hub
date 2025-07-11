@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -52,7 +54,7 @@ const resolvers: Resolvers = {
         const subscription = await checkSubscriptionExists(
           context,
           context.user.selected_organization_id,
-          fromGlobalId(service_instance_id).id
+          fromGlobalId(service_instance_id).id as ServiceInstanceId
         );
 
         if (subscription) {
@@ -136,9 +138,9 @@ const resolvers: Resolvers = {
       try {
         const subscription = await checkSubscriptionExists(
           context,
-          fromGlobalId(organization_id).id ??
-            context.user.selected_organization_id,
-          fromGlobalId(service_instance_id).id
+          (fromGlobalId(organization_id).id ??
+            context.user.selected_organization_id) as OrganizationId,
+          fromGlobalId(service_instance_id).id as ServiceInstanceId
         );
         if (subscription) {
           throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
