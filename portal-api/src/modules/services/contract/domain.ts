@@ -1,30 +1,29 @@
 import { JSONSchemaToZod } from '@dmitryrechkin/json-schema-to-zod';
 import { db } from '../../../../knexfile';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
-import ServiceContract from '../../../model/kanel/public/ServiceContract';
+import ServiceContract, {
+  ServiceContractMutator,
+} from '../../../model/kanel/public/ServiceContract';
+import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode } from '../../common/error-code';
 
-const loadServiceContract = async (
+const loadServiceContractBy = async (
   context: PortalContext,
-  serviceDefinitionId: string
+  field: ServiceContractMutator
 ): Promise<ServiceContract> => {
-  return db(context, 'Service_Contract')
-    .where('service_definition_id', '=', serviceDefinitionId)
-    .select('*')
-    .first();
+  return db(context, 'Service_Contract').where(field).select('*').first();
 };
 
 export const serviceContractDomain = {
   isServiceConfigurationValid: async (
     context: PortalContext,
-    serviceDefinitionId: string,
+    serviceDefinitionId: ServiceDefinitionId,
     config: Record<string, unknown>
   ): Promise<boolean> => {
-    const serviceContract = await loadServiceContract(
-      context,
-      serviceDefinitionId
-    );
+    const serviceContract = await loadServiceContractBy(context, {
+      service_definition_id: serviceDefinitionId,
+    });
     if (!serviceContract) {
       throw new Error(ErrorCode.ServiceContractNotFound);
     }
@@ -34,7 +33,7 @@ export const serviceContractDomain = {
     return success;
   },
 
-  findConfiguration: async (
+  loadConfigurationByPlatform: async (
     context: PortalContext,
     platformId: string
   ): Promise<ServiceConfiguration | null> => {
@@ -56,7 +55,7 @@ export const serviceContractDomain = {
       .where('service_instance_id', '=', serviceInstanceId);
   },
 
-  insertConfiguration: async (
+  createConfiguration: async (
     context: PortalContext,
     serviceInstanceId: string,
     config: Record<string, unknown>

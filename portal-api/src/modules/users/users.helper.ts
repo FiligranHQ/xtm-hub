@@ -35,7 +35,7 @@ import {
   insertNewOrganization,
   loadOrganizationsFromEmail,
 } from '../organizations/organizations.helper';
-import { loadSubscriptionBy } from '../subcription/subscription.helper';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 
 export const createUserWithPersonalSpace = async (
@@ -165,9 +165,10 @@ export const insertUserIntoOrganization = async (
   user: User,
   subscriptionId: SubscriptionId
 ) => {
-  const [subscription] = await loadSubscriptionBy(context, {
-    'Subscription.id': subscriptionId,
-  } as SubscriptionMutator);
+  const [subscription] =
+    await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+      'Subscription.id': subscriptionId,
+    } as SubscriptionMutator);
   const [organization] = await loadOrganizationsFromEmail(user.email);
   const userOrganization = await loadUserOrganization(context, {
     user_id: user.id,

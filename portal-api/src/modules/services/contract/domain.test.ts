@@ -19,10 +19,10 @@ describe('Service Contract Domain', () => {
     });
 
     it('should return true when configuration match the schema specifications', async () => {
-      const serviceDefinition = await serviceDefinitionDomain.findByIdentifier(
-        context,
-        ServiceDefinitionIdentifier.OctiEnrollment
-      );
+      const serviceDefinition =
+        await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
+          identifier: ServiceDefinitionIdentifier.OctiEnrollment,
+        });
 
       expect(serviceDefinition).toBeDefined();
 
@@ -44,10 +44,10 @@ describe('Service Contract Domain', () => {
     });
 
     it('should return false when configuration does not match the schema specifications', async () => {
-      const serviceDefinition = await serviceDefinitionDomain.findByIdentifier(
-        context,
-        ServiceDefinitionIdentifier.OctiEnrollment
-      );
+      const serviceDefinition =
+        await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
+          identifier: ServiceDefinitionIdentifier.OctiEnrollment,
+        });
 
       expect(serviceDefinition).toBeDefined();
 

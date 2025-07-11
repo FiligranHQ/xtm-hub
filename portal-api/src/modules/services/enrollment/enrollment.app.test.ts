@@ -74,11 +74,11 @@ describe('Enrollment app', () => {
       isUserAllowedSpy = vi.spyOn(authHelper, 'isUserAllowed');
       findConfigurationSpy = vi.spyOn(
         serviceContractDomain,
-        'findConfiguration'
+        'loadConfigurationByPlatform'
       );
       loadSubscriptionByServiceInstanceSpy = vi.spyOn(
         subscriptionDomain,
-        'loadSubscriptionByServiceInstance'
+        'loadSubscriptionBy'
       );
     });
 

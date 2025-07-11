@@ -16,7 +16,7 @@ import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
-import { loadSubscriptionBy } from './subscription.helper';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 export const fillSubscription = async (
   context: PortalContext,
@@ -78,9 +78,12 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
   context: PortalContext,
   subscriptionId: SubscriptionId
 ) => {
-  const [sub] = await loadSubscriptionBy(context, {
-    'Subscription.id': subscriptionId,
-  } as SubscriptionMutator);
+  const [sub] = await loadSubscriptionWithOrganizationAndCapabilitiesBy(
+    context,
+    {
+      'Subscription.id': subscriptionId,
+    } as SubscriptionMutator
+  );
 
   const organization = await loadOrganizationBy(
     context,
@@ -127,12 +130,12 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
   return userServicesData;
 };
 
-export const loadSubscriptionByServiceInstance = async (
+export const loadSubscriptionBy = async (
   context: PortalContext,
-  serviceInstanceId: string
+  field: SubscriptionMutator
 ): Promise<SubscriptionDB | null> => {
   const subscription = await db<Subscription>(context, 'Subscription')
-    .where('service_instance_id', '=', serviceInstanceId)
+    .where(field)
     .first();
 
   return subscription ?? null;

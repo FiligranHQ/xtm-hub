@@ -1,13 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import { OrganizationCapability } from '../../../__generated__/resolvers-types';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import {
-  loadSubscriptionByServiceInstance,
+  loadSubscriptionBy,
   transferSubscription,
 } from '../../subcription/subscription.domain';
-import { insertSubscription } from '../../subcription/subscription.helper';
+import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
 
@@ -28,7 +31,7 @@ export const enrollmentDomain = {
       configuration,
     }: {
       serviceDefinitionId: string;
-      organizationId: string;
+      organizationId: OrganizationId;
       configuration: OCTIInstanceConfiguration;
     }
   ) => {
@@ -38,8 +41,8 @@ export const enrollmentDomain = {
         serviceDefinitionId
       );
 
-    await insertSubscription(context, {
-      id: uuidv4(),
+    await createSubscription(context, {
+      id: uuidv4() as SubscriptionId,
       organization_id: organizationId,
       service_instance_id: serviceInstanceId,
       start_date: new Date(),
@@ -50,7 +53,7 @@ export const enrollmentDomain = {
       justification: null,
     });
 
-    await serviceContractDomain.insertConfiguration(
+    await serviceContractDomain.createConfiguration(
       context,
       serviceInstanceId,
       configuration
@@ -64,14 +67,13 @@ export const enrollmentDomain = {
       targetOrganizationId,
     }: {
       configuration: OCTIInstanceConfiguration;
-      serviceInstanceId: string;
+      serviceInstanceId: ServiceInstanceId;
       targetOrganizationId: string;
     }
   ) => {
-    const subscription = await loadSubscriptionByServiceInstance(
-      context,
-      serviceInstanceId
-    );
+    const subscription = await loadSubscriptionBy(context, {
+      service_instance_id: serviceInstanceId,
+    });
 
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);

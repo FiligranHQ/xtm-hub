@@ -22,7 +22,7 @@ export const loadUnsecureSubscriptionBy = async (
   return dbUnsecure<Subscription>('Subscription').where(field);
 };
 
-export const loadSubscriptionBy = async (
+export const loadSubscriptionWithOrganizationAndCapabilitiesBy = async (
   context: PortalContext,
   field: SubscriptionMutator
 ) => {
@@ -130,9 +130,9 @@ export const isOrgMatchingSub = async (
   return subscription.organization_id === organization_id;
 };
 
-export const insertSubscription = async (
+export const createSubscription = async (
   context: PortalContext,
-  dataSubscription
+  dataSubscription: Subscription
 ) => {
   await db<Subscription>(context, 'Subscription').insert(dataSubscription);
 };

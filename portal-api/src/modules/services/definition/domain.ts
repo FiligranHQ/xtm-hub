@@ -1,15 +1,14 @@
 import { db } from '../../../../knexfile';
-import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
+import ServiceDefinition, {
+  ServiceDefinitionMutator,
+} from '../../../model/kanel/public/ServiceDefinition';
 import { PortalContext } from '../../../model/portal-context';
 
 export const serviceDefinitionDomain = {
-  findByIdentifier(
+  loadServiceDefinitionBy(
     context: PortalContext,
-    identifier: string
+    field: ServiceDefinitionMutator
   ): Promise<ServiceDefinition> {
-    return db(context, 'ServiceDefinition')
-      .where('identifier', '=', identifier)
-      .select('id')
-      .first();
+    return db(context, 'ServiceDefinition').where(field).select('id').first();
   },
 };
