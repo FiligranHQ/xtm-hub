@@ -51,10 +51,12 @@ const resolvers: Resolvers = {
 
       // Check the subscription does not already exist :
       try {
+        const serviceInstanceId =
+          extractId<ServiceInstanceId>(service_instance_id);
         const subscription = await checkSubscriptionExists(
           context,
           context.user.selected_organization_id,
-          fromGlobalId(service_instance_id).id as ServiceInstanceId
+          serviceInstanceId
         );
 
         if (subscription) {
@@ -63,7 +65,7 @@ const resolvers: Resolvers = {
 
         const subscriptionData = {
           id: uuidv4(),
-          service_instance_id: fromGlobalId(service_instance_id).id,
+          service_instance_id: serviceInstanceId,
           organization_id: context.user.selected_organization_id,
           start_date: new Date(),
           end_date: undefined,
