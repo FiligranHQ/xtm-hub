@@ -37,9 +37,9 @@ const jsonSchema = {
   additionalProperties: false,
 };
 
-export async function up(knex) {
-  const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
+const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
 
+export async function up(knex) {
   await knex.schema.createTable('Service_Contract', (table) => {
     table.uuid('service_definition_id', { primaryKey: true });
     table
@@ -85,4 +85,8 @@ export async function up(knex) {
 export async function down(knex) {
   await knex.schema.dropTable('Service_Contract');
   await knex.schema.dropTable('Service_Configuration');
+  await knex('ServiceDefinition').where('id', '=', serviceDefinitionId).del();
+  await knex('Service_Contract')
+    .where('service_definition_id', '=', serviceDefinitionId)
+    .del();
 }
