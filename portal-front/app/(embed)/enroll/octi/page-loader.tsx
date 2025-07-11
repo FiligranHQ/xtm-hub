@@ -18,23 +18,23 @@ export const PageLoader: React.FC = () => {
     );
   useMountingLoader(loadQuery, {});
 
-  const {
-    platform_id: platformId,
-    platform_title: platformTitle,
-    platform_url: platformUrl,
-  } = useDecodedQuery();
+  const { platform_id, platform_title, platform_url } = useDecodedQuery();
 
-  const areParametersValid = platformId && platformTitle && platformUrl;
+  const areParametersValid = platform_id && platform_title && platform_url;
   if (!areParametersValid) {
     return redirect('/');
   }
 
+  const platform = {
+    id: platform_id,
+    title: platform_title,
+    url: platform_url,
+  };
+
   return queryRef ? (
     <EnrollOCTI
       queryRef={queryRef}
-      platformUrl={platformUrl}
-      platformTitle={platformTitle}
-      platformId={platformId}
+      platform={platform}
     />
   ) : (
     <Loader />

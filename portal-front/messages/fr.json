@@ -135,7 +135,7 @@
       "AnotherOrganization": {
         "NotAllowed": {
           "Title": "L'instance est enrôlée dans une autre organisation",
-          "Description": "Votre instance OCTI est déjà enrôlée dans une autre organisation et vous n'avez pas les permissions pour la transférer."
+          "Description": "Votre instance OCTI est déjà enrôlée dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer."
         },
         "Allowed": {
           "Enrolled": {

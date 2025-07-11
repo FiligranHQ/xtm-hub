@@ -13,20 +13,17 @@ import React, { useEffect, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 
 interface Props {
-  platformId: string;
-  platformUrl: string;
-  platformTitle: string;
+  platform: {
+    id: string;
+    url: string;
+    title: string;
+  };
   queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
 }
 
 export type EnrollmentStatus = 'idle' | 'succeeded' | 'failed';
 
-export const EnrollOCTI: React.FC<Props> = ({
-  queryRef,
-  platformId,
-  platformUrl,
-  platformTitle,
-}) => {
+export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
 
   const userOrganizationsPreloadedQuery =
@@ -38,7 +35,10 @@ export const EnrollOCTI: React.FC<Props> = ({
   const [enrollmentStatus, setEnrollmentStatus] =
     useState<EnrollmentStatus>('idle');
   const [organizationId, setOrganizationId] = useState<string>();
-  const canEnrollState = canEnrollOCTIInstance({ organizationId, platformId });
+  const canEnrollState = canEnrollOCTIInstance({
+    organizationId,
+    platformId: platform.id,
+  });
   const [enrollInstance] =
     useMutation<enrollOCTIInstanceMutation>(EnrollOCTIInstance);
 
@@ -59,7 +59,7 @@ export const EnrollOCTI: React.FC<Props> = ({
 
     enrollInstance({
       variables: {
-        input: { organizationId, platformId, platformTitle, platformUrl },
+        input: { organizationId, platform },
       },
       onCompleted: (response) => {
         const token = response.enrollOCTIInstance.token;

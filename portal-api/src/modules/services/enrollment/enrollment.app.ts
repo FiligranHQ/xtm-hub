@@ -2,9 +2,11 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   CanEnrollResponse,
   CanEnrollStatus,
+  EnrollOctiInstanceInput,
   OrganizationCapability,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
@@ -16,29 +18,17 @@ import {
   OCTIInstanceConfiguration,
 } from './enrollment.domain';
 
-interface EnrollOCTIInstancePayload {
-  organizationId: string;
-  platformId: string;
-  platformUrl: string;
-  platformTitle: string;
-}
-
 export const enrollmentApp = {
   enrollOCTIInstance: async (
     context: PortalContext,
-    {
-      organizationId,
-      platformId,
-      platformUrl,
-      platformTitle,
-    }: EnrollOCTIInstancePayload
+    { organizationId, platform }: EnrollOctiInstanceInput
   ): Promise<string> => {
     const token = uuidv4();
     const configuration: OCTIInstanceConfiguration = {
       enroller_id: context.user.id,
-      platform_id: platformId,
-      platform_url: platformUrl,
-      platform_title: platformTitle,
+      platform_id: platform.id,
+      platform_url: platform.url,
+      platform_title: platform.title,
       token: token,
     };
 
@@ -63,7 +53,7 @@ export const enrollmentApp = {
     const existingServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
-        platformId
+        platform.id
       );
 
     if (existingServiceConfiguration) {
@@ -75,7 +65,7 @@ export const enrollmentApp = {
     } else {
       await enrollmentDomain.enrollNewInstance(context, {
         serviceDefinitionId: serviceDefinition.id,
-        organizationId,
+        organizationId: organizationId as OrganizationId,
         configuration,
       });
     }

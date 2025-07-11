@@ -37,9 +37,11 @@ const resolvers: Resolvers = {
     enrollOCTIInstance: async (_, { input }, context) => {
       const schema = z.object({
         organizationId: z.uuid().nonempty(),
-        platformId: z.uuid().nonempty(),
-        platformUrl: z.string().nonempty(),
-        platformTitle: z.string().nonempty(),
+        platform: z.object({
+          id: z.uuid().nonempty(),
+          url: z.url().nonempty(),
+          title: z.string().nonempty(),
+        }),
       });
 
       const payload = {

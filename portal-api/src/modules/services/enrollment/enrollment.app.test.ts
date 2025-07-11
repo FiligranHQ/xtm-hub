@@ -11,17 +11,20 @@ import { enrollmentApp } from './enrollment.app';
 
 describe('Enrollment app', () => {
   describe('enrollOCTIInstance', () => {
-    const platformId = uuidv4();
-    const platformTitle = 'My OCTI instance';
-    const platformUrl = 'http://example.com';
+    const platform = {
+      id: uuidv4(),
+      title: 'My OCTI instance',
+      url: 'http://example.com',
+    };
 
     describe('invalid configuration', async () => {
       it('should throw when platformId is not valid', async () => {
         const call = enrollmentApp.enrollOCTIInstance(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
-          platformTitle,
-          platformId: 'hello',
-          platformUrl,
+          platform: {
+            ...platform,
+            id: 'hello',
+          },
         });
 
         await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
@@ -30,9 +33,10 @@ describe('Enrollment app', () => {
       it('should throw when platformUrl is not valid', async () => {
         const call = enrollmentApp.enrollOCTIInstance(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
-          platformTitle,
-          platformId,
-          platformUrl: 'hello',
+          platform: {
+            ...platform,
+            url: 'hello',
+          },
         });
 
         await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
@@ -41,9 +45,10 @@ describe('Enrollment app', () => {
       it('should throw when platformTitle is not valid', async () => {
         const call = enrollmentApp.enrollOCTIInstance(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
-          platformTitle: null,
-          platformId,
-          platformUrl,
+          platform: {
+            ...platform,
+            title: null,
+          },
         });
 
         await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
@@ -53,9 +58,7 @@ describe('Enrollment app', () => {
     it('return token when instance is enrolled', async () => {
       const token = await enrollmentApp.enrollOCTIInstance(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
-        platformTitle,
-        platformId,
-        platformUrl,
+        platform,
       });
 
       expect(token).toBeDefined();
