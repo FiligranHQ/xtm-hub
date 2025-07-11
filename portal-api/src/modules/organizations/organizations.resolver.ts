@@ -11,7 +11,7 @@ import {
 import {
   loadOrganizationBy,
   loadOrganizations,
-  loadUserOrganizations,
+  loadOrganizationsByUser,
 } from './organizations.domain';
 
 const resolvers: Resolvers = {
@@ -22,7 +22,7 @@ const resolvers: Resolvers = {
       return loadOrganizations(context, opts);
     },
     userOrganizations: async (_, __, context) => {
-      return loadUserOrganizations(context);
+      return loadOrganizationsByUser(context, context.user.id);
     },
   },
   Mutation: {
