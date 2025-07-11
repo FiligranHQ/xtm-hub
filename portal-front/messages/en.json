@@ -120,9 +120,13 @@
   "Enroll": {
     "Register": "Register",
     "OCTI": {
-      "Success": {
+      "Succeeded": {
         "Title": "OCTI instance enrolled successfully",
         "Description": "This tab will be closed soon"
+      },
+      "Failed": {
+        "Title": "Enrollment failed",
+        "Description": "An error occurred during the instance enrollment"
       },
       "SameOrganization": {
         "Enrolled": {

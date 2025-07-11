@@ -114,9 +114,13 @@
   "Enroll": {
     "Register": "Enrôler",
     "OCTI": {
-      "Success": {
-        "Title": "L'instance OCTI a été inscrite avec succès",
+      "Succeeded": {
+        "Title": "L'instance OCTI a été enrôlée avec succès",
         "Description": "Cet onglet sera bientôt fermé"
+      },
+      "Failed": {
+        "Title": "L'enrôlement a échoué",
+        "Description": "Une erreur s'est produite lors de l'enrôlement de l'instance"
       },
       "SameOrganization": {
         "Enrolled": {
