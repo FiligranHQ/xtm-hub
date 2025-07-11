@@ -133,12 +133,8 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
 export const loadSubscriptionBy = async (
   context: PortalContext,
   field: SubscriptionMutator
-): Promise<Subscription | null> => {
-  const subscription = await db<Subscription>(context, 'Subscription')
-    .where(field)
-    .first();
-
-  return subscription ?? null;
+): Promise<Subscription | undefined> => {
+  return db<Subscription>(context, 'Subscription').where(field).first();
 };
 
 export const transferSubscription = async (

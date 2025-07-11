@@ -31,7 +31,7 @@ type CanEnrollResponse {
 }
 
 type Query {
-  canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput): CanEnrollResponse!
+  canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
     @auth
 }
 

@@ -58,7 +58,7 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
   );
 
   const cancel = () => {
-    window.opener.postMessage({ action: 'cancel' }, '*');
+    window.opener?.postMessage({ action: 'cancel' }, '*');
   };
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
     }
 
     setEnrollmentStatus('succeeded');
-    window.opener.postMessage(
+    window.opener?.postMessage(
       {
         action: 'enroll',
         token: enrollDataResponse.token,

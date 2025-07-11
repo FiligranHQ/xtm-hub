@@ -29,8 +29,8 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
   const t = useTranslations();
 
   return (
-    <div className="flex flex-col h-full justify-between">
-      <div className="flex flex-col gap-m mb-m">
+    <div className="flex flex-col h-full justify-between gap-m">
+      <div className="space-y-m">
         <h1>{t('Enroll.OCTI.OrganizationForm.Title')}</h1>
         <p>{t('Enroll.OCTI.OrganizationForm.Description')}</p>
       </div>
@@ -51,7 +51,7 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
                       className="flex justify-start gap-xs items-center">
                       <FormControl>
                         <Input
-                          className="w-auto mt-8px"
+                          className="w-auto"
                           aria-labelledby={`enroll-form-organization-${organization.name}`}
                           type="radio"
                           onChange={() => {

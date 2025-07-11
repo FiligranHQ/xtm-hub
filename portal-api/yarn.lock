@@ -1547,7 +1547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dmitryrechkin/json-schema-to-zod@npm:^1.0.1":
+"@dmitryrechkin/json-schema-to-zod@npm:1.0.1":
   version: 1.0.1
   resolution: "@dmitryrechkin/json-schema-to-zod@npm:1.0.1"
   dependencies:
@@ -9210,7 +9210,7 @@ __metadata:
     "@apollo/server": 4.11.0
     "@aws-sdk/client-s3": 3.670.0
     "@aws-sdk/lib-storage": 3.670.0
-    "@dmitryrechkin/json-schema-to-zod": ^1.0.1
+    "@dmitryrechkin/json-schema-to-zod": 1.0.1
     "@eslint/js": 9.30.1
     "@graphql-codegen/cli": 5.0.2
     "@graphql-codegen/plugin-helpers": 5.1.0

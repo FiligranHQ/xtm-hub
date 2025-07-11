@@ -821,7 +821,7 @@ export type Query = {
 
 
 export type QueryCanEnrollOctiInstanceArgs = {
-  input?: InputMaybe<CanEnrollOctiInstanceInput>;
+  input: CanEnrollOctiInstanceInput;
 };
 
 
@@ -2024,7 +2024,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  canEnrollOCTIInstance?: Resolver<ResolversTypes['CanEnrollResponse'], ParentType, ContextType, Partial<QueryCanEnrollOctiInstanceArgs>>;
+  canEnrollOCTIInstance?: Resolver<ResolversTypes['CanEnrollResponse'], ParentType, ContextType, RequireFields<QueryCanEnrollOctiInstanceArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
   csvFeeds?: Resolver<ResolversTypes['CsvFeedConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
