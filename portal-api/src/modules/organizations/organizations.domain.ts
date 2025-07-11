@@ -6,10 +6,12 @@ import {
   OrganizationConnection,
   QueryOrganizationsArgs,
 } from '../../__generated__/resolvers-types';
+import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 
-export const loadUserOrganizations = async (
-  context: PortalContext
+export const loadOrganizationsByUser = async (
+  context: PortalContext,
+  userId: UserId
 ): Promise<Organization[]> => {
   const organizations = await db<Organization>(context, 'Organization')
     .leftJoin(
@@ -18,7 +20,7 @@ export const loadUserOrganizations = async (
       '=',
       'Organization.id'
     )
-    .where('User_Organization.user_id', '=', context.user.id)
+    .where('User_Organization.user_id', '=', userId)
     .select('Organization.*');
 
   return organizations;
