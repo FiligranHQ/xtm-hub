@@ -34,8 +34,8 @@ spec:
         affinity:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- if .Values.enablePriorityClasses }}
-        priorityClassName: openbas-core-components
+        {{- if .Values.elasticsearch.priorityClassName }}
+        priorityClassName: {{ .Values.elasticsearch.priorityClassName }}
         {{- end }}
         {{- if .Values.elasticsearch.plugin_prometheus_enabled }}
         initContainers:
@@ -80,9 +80,9 @@ spec:
         affinity:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{ if .Values.enablePriorityClasses }}
-        priorityClassName: openbas-core-components
-        {{ end }}
+        {{- if .Values.elasticsearch.priorityClassName }}
+        priorityClassName: {{ .Values.elasticsearch.priorityClassName }}
+        {{- end }}
         {{- if .Values.elasticsearch.plugin_prometheus_enabled }}
         initContainers:
         - name: install-plugins

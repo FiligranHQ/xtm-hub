@@ -85,6 +85,7 @@ elasticsearch:
               elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
           topologyKey: kubernetes.io/hostname
   clusterName: "elasticsearch"
+  priorityClassName: ""
   secretNameSuffix: -es-elastic-user
   image:
     repository: elasticsearch
