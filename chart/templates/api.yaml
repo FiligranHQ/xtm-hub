@@ -97,6 +97,20 @@ spec:
               name: minio-credentials
               key: secretKey
               optional: false
+        {{ if .Values.elasticsearch.enabled }}
+        - name: ELASTIC_HOST
+          value: "elasticsearch-es-http"
+        - name: ELASTIC_PORT
+          value: "9200"
+        - name: ELASTIC_USER
+          value: "elastic"
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-es-elastic-user
+              key: elastic
+              optional: false
+        {{ end }}
         {{- with .Values.xtmhub.api.env }}
         {{- range $key, $value := . }}
         - name: {{ $key }}
