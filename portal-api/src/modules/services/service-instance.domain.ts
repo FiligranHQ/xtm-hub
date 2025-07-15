@@ -22,7 +22,7 @@ import { PortalContext } from '../../model/portal-context';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
-import { loadSubscriptionBy } from '../subcription/subscription.helper';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { insertUserService } from '../user_service/user_service.domain';
@@ -449,9 +449,10 @@ export const grantServiceAccess = async (
     dataUserServices
   )) as [UserService];
 
-  const [subscription] = await loadSubscriptionBy(context, {
-    'Subscription.id': subscriptionId,
-  } as SubscriptionMutator);
+  const [subscription] =
+    await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+      'Subscription.id': subscriptionId,
+    } as SubscriptionMutator);
   for (const userId of usersId) {
     const user = await loadUserBy({ 'User.id': userId } as UserMutator);
 

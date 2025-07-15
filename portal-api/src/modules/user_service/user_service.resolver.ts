@@ -1,6 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
@@ -24,7 +25,7 @@ import {
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
 import { checkSubscriptionExists } from '../subcription/subscription.domain';
-import { loadSubscriptionBy } from '../subcription/subscription.helper';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserDetails } from '../users/users.domain';
 import {
   getOrCreateUser,
@@ -83,9 +84,10 @@ const resolvers: Resolvers = {
         if (input.email.some((email) => email === context.user.email)) {
           throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
         }
-        const [subscription] = await loadSubscriptionBy(context, {
-          'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
-        } as SubscriptionMutator);
+        const [subscription] =
+          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+            'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
+          } as SubscriptionMutator);
 
         if (!subscription) {
           throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
@@ -157,9 +159,10 @@ const resolvers: Resolvers = {
       });
 
       if (usersServices.length === 0) {
-        const [subscription] = await loadSubscriptionBy(context, {
-          'Subscription.id': deletedUserService?.subscription_id,
-        } as SubscriptionMutator);
+        const [subscription] =
+          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+            'Subscription.id': deletedUserService?.subscription_id,
+          } as SubscriptionMutator);
         await db<Subscription>(context, 'Subscription')
           .where('Subscription.id', '=', subscription.id)
           .delete('*')
@@ -178,7 +181,7 @@ const resolvers: Resolvers = {
         const subscription = await checkSubscriptionExists(
           context,
           context.user.selected_organization_id,
-          serviceInstanceId
+          serviceInstanceId as ServiceInstanceId
         );
         if (!subscription) {
           throw ForbiddenAccess('NOT_SUBSCRIBED_ORGANIZATION_ERROR');

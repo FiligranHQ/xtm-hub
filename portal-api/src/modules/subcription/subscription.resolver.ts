@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -29,7 +31,7 @@ import {
   getSubscriptionCapability,
   getUserService,
 } from './subscription.domain';
-import { loadSubscriptionBy } from './subscription.helper';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
   SubscriptionModel: {
@@ -49,10 +51,12 @@ const resolvers: Resolvers = {
 
       // Check the subscription does not already exist :
       try {
+        const serviceInstanceId =
+          extractId<ServiceInstanceId>(service_instance_id);
         const subscription = await checkSubscriptionExists(
           context,
           context.user.selected_organization_id,
-          fromGlobalId(service_instance_id).id
+          serviceInstanceId
         );
 
         if (subscription) {
@@ -61,7 +65,7 @@ const resolvers: Resolvers = {
 
         const subscriptionData = {
           id: uuidv4(),
-          service_instance_id: fromGlobalId(service_instance_id).id,
+          service_instance_id: serviceInstanceId,
           organization_id: context.user.selected_organization_id,
           start_date: new Date(),
           end_date: undefined,
@@ -136,9 +140,9 @@ const resolvers: Resolvers = {
       try {
         const subscription = await checkSubscriptionExists(
           context,
-          fromGlobalId(organization_id).id ??
-            context.user.selected_organization_id,
-          fromGlobalId(service_instance_id).id
+          (fromGlobalId(organization_id).id ??
+            context.user.selected_organization_id) as OrganizationId,
+          fromGlobalId(service_instance_id).id as ServiceInstanceId
         );
         if (subscription) {
           throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
@@ -187,9 +191,10 @@ const resolvers: Resolvers = {
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
       try {
-        const [subscription] = await loadSubscriptionBy(context, {
-          'Subscription.id': extractId<SubscriptionId>(subscription_id),
-        } as SubscriptionMutator);
+        const [subscription] =
+          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+            'Subscription.id': extractId<SubscriptionId>(subscription_id),
+          } as SubscriptionMutator);
 
         // TODO: to be rethought when billing is used in XTM
         // if (subscription.billing !== 0) {
@@ -217,9 +222,10 @@ const resolvers: Resolvers = {
   },
   Query: {
     subscriptionById: async (_, { subscription_id }, context) => {
-      const subscriptions = await loadSubscriptionBy(context, {
-        'Subscription.id': extractId<SubscriptionId>(subscription_id),
-      } as SubscriptionMutator);
+      const subscriptions =
+        await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+          'Subscription.id': extractId<SubscriptionId>(subscription_id),
+        } as SubscriptionMutator);
 
       return subscriptions[0];
     },

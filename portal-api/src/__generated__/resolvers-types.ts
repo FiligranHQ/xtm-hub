@@ -67,6 +67,24 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
+export type CanEnrollOctiInstanceInput = {
+  organizationId: Scalars['ID']['input'];
+  platformId: Scalars['String']['input'];
+};
+
+export type CanEnrollResponse = {
+  __typename?: 'CanEnrollResponse';
+  isAllowed: Scalars['Boolean']['output'];
+  isSameOrganization?: Maybe<Scalars['Boolean']['output']>;
+  status: CanEnrollStatus;
+};
+
+export enum CanEnrollStatus {
+  Enrolled = 'enrolled',
+  NeverEnrolled = 'never_enrolled',
+  Unenrolled = 'unenrolled'
+}
+
 export type Capability = Node & {
   __typename?: 'Capability';
   id: Scalars['ID']['output'];
@@ -257,6 +275,16 @@ export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type EnrollOctiInstanceInput = {
+  organizationId: Scalars['ID']['input'];
+  platform: OctiPlatform;
+};
+
+export type EnrollmentResponse = {
+  __typename?: 'EnrollmentResponse';
+  token: Scalars['String']['output'];
+};
+
 export type Filter = {
   key?: InputMaybe<FilterKey>;
   value: Array<Scalars['String']['input']>;
@@ -355,6 +383,7 @@ export type Mutation = {
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
   editUserCapabilities: User;
+  enrollOCTIInstance: EnrollmentResponse;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
@@ -557,6 +586,11 @@ export type MutationEditUserCapabilitiesArgs = {
 };
 
 
+export type MutationEnrollOctiInstanceArgs = {
+  input: EnrollOctiInstanceInput;
+};
+
+
 export type MutationFrontendErrorLogArgs = {
   codeStack?: InputMaybe<Scalars['String']['input']>;
   componentStack?: InputMaybe<Scalars['String']['input']>;
@@ -623,6 +657,12 @@ export type MutationUpdateObasScenarioArgs = {
 
 export type Node = {
   id: Scalars['ID']['output'];
+};
+
+export type OctiPlatform = {
+  id: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  url: Scalars['String']['input'];
 };
 
 export type ObasScenario = Node & {
@@ -736,6 +776,7 @@ export type PlatformProvider = {
 
 export type Query = {
   __typename?: 'Query';
+  canEnrollOCTIInstance: CanEnrollResponse;
   csvFeed?: Maybe<CsvFeed>;
   csvFeeds: CsvFeedConnection;
   customDashboard?: Maybe<CustomDashboard>;
@@ -750,6 +791,7 @@ export type Query = {
   obasScenario?: Maybe<ObasScenario>;
   obasScenarios: ObasScenarioConnection;
   organization?: Maybe<Organization>;
+  organizationAdministrators: Array<User>;
   organizations: OrganizationConnection;
   publicServiceInstances: ServiceConnection;
   rolePortal?: Maybe<RolePortal>;
@@ -771,9 +813,15 @@ export type Query = {
   subscriptionById?: Maybe<SubscriptionModel>;
   user?: Maybe<User>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
+  userOrganizations: Array<Organization>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
+};
+
+
+export type QueryCanEnrollOctiInstanceArgs = {
+  input: CanEnrollOctiInstanceInput;
 };
 
 
@@ -873,6 +921,11 @@ export type QueryObasScenariosArgs = {
 
 export type QueryOrganizationArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryOrganizationAdministratorsArgs = {
+  organizationId: Scalars['ID']['input'];
 };
 
 
@@ -1012,6 +1065,7 @@ export enum Restriction {
   FrtManageUser = 'FRT_MANAGE_USER',
   FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER',
   ManageAccess = 'MANAGE_ACCESS',
+  ManageOctiEnrollment = 'MANAGE_OCTI_ENROLLMENT',
   ManageSubscription = 'MANAGE_SUBSCRIPTION'
 }
 
@@ -1064,6 +1118,7 @@ export enum ServiceDefinitionIdentifier {
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
   ObasScenarios = 'obas_scenarios',
+  OctiEnrollment = 'octi_enrollment',
   Vault = 'vault'
 }
 
@@ -1428,6 +1483,9 @@ export type ResolversTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  CanEnrollOCTIInstanceInput: CanEnrollOctiInstanceInput;
+  CanEnrollResponse: ResolverTypeWrapper<CanEnrollResponse>;
+  CanEnrollStatus: CanEnrollStatus;
   Capability: ResolverTypeWrapper<Capability>;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
@@ -1448,6 +1506,8 @@ export type ResolversTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  EnrollOCTIInstanceInput: EnrollOctiInstanceInput;
+  EnrollmentResponse: ResolverTypeWrapper<EnrollmentResponse>;
   Filter: Filter;
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
@@ -1463,6 +1523,7 @@ export type ResolversTypes = ResolversObject<{
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
+  OCTIPlatform: OctiPlatform;
   ObasScenario: ResolverTypeWrapper<ObasScenario>;
   ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
   ObasScenarioEdge: ResolverTypeWrapper<ObasScenarioEdge>;
@@ -1530,6 +1591,8 @@ export type ResolversParentTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
+  CanEnrollOCTIInstanceInput: CanEnrollOctiInstanceInput;
+  CanEnrollResponse: CanEnrollResponse;
   Capability: Capability;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
@@ -1549,6 +1612,8 @@ export type ResolversParentTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  EnrollOCTIInstanceInput: EnrollOctiInstanceInput;
+  EnrollmentResponse: EnrollmentResponse;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -1562,6 +1627,7 @@ export type ResolversParentTypes = ResolversObject<{
   MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
+  OCTIPlatform: OctiPlatform;
   ObasScenario: ObasScenario;
   ObasScenarioConnection: ObasScenarioConnection;
   ObasScenarioEdge: ObasScenarioEdge;
@@ -1630,6 +1696,13 @@ export type ActionTrackingResolvers<ContextType = PortalContext, ParentType exte
   message_tracking?: Resolver<Array<ResolversTypes['MessageTracking']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CanEnrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanEnrollResponse'] = ResolversParentTypes['CanEnrollResponse']> = ResolversObject<{
+  isAllowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isSameOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['CanEnrollStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1758,6 +1831,11 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type EnrollmentResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EnrollmentResponse'] = ResolversParentTypes['EnrollmentResponse']> = ResolversObject<{
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type GenericServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['GenericServiceCapability'] = ResolversParentTypes['GenericServiceCapability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1843,6 +1921,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
+  enrollOCTIInstance?: Resolver<ResolversTypes['EnrollmentResponse'], ParentType, ContextType, RequireFields<MutationEnrollOctiInstanceArgs, 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
@@ -1945,6 +2024,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  canEnrollOCTIInstance?: Resolver<ResolversTypes['CanEnrollResponse'], ParentType, ContextType, RequireFields<QueryCanEnrollOctiInstanceArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
   csvFeeds?: Resolver<ResolversTypes['CsvFeedConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
@@ -1959,6 +2039,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
   obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
+  organizationAdministrators?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryOrganizationAdministratorsArgs, 'organizationId'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
@@ -1980,6 +2061,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   userServiceOwned?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2224,6 +2306,7 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
+  CanEnrollResponse?: CanEnrollResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CsvFeedConnection?: CsvFeedConnectionResolvers<ContextType>;
@@ -2235,6 +2318,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
+  EnrollmentResponse?: EnrollmentResponseResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Label?: LabelResolvers<ContextType>;

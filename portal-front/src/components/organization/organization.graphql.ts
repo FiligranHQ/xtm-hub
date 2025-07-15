@@ -1,5 +1,14 @@
 import { graphql } from 'react-relay';
 
+export const ListUserOrganizationsQuery = graphql`
+  query organizationListUserOrganizationsQuery {
+    userOrganizations {
+      id
+      name
+    }
+  }
+`;
+
 export const organizationsFragment = graphql`
   fragment organizationList_organizations on Query
   @refetchable(queryName: "OrganizationsPaginationQuery") {
@@ -21,7 +30,7 @@ export const organizationsFragment = graphql`
   }
 `;
 
-export const organizationItem = graphql`
+export const organizationItemFragment = graphql`
   fragment organizationItem_fragment on Organization {
     id
     name
@@ -29,6 +38,7 @@ export const organizationItem = graphql`
     personal_space
   }
 `;
+
 export const organizationFetch = graphql`
   query organizationSelectQuery(
     $count: Int
