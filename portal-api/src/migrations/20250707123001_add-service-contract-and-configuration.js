@@ -63,8 +63,8 @@ export async function up(knex) {
   await knex('ServiceDefinition').insert([
     {
       id: serviceDefinitionId,
-      name: 'OpenCTI Enrollment',
-      description: 'Enroll your OpenCTI instance',
+      name: 'OpenCTI Instance',
+      description: 'Access and manage your OpenCTI instance',
       public: false,
       identifier: 'octi_enrollment',
     },
