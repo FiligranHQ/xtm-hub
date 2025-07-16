@@ -32,6 +32,7 @@ describe('Service Contract Domain', () => {
         platform_url: 'http://example.com/',
         platform_title: 'Platform title',
         token: uuidv4(),
+        platform_contract: 'EE',
       };
 
       const result = await serviceContractDomain.isServiceConfigurationValid(
