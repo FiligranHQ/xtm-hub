@@ -17,7 +17,7 @@ on:
     paths:
       - "apps/portal-api/**"
       - "apps/portal-front/**"
-      - "portal-e2e-tests/**"
+      - "apps/portal-e2e-tests/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
