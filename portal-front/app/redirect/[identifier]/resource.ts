@@ -2,7 +2,6 @@ import { getServiceInstanceUrl } from '@/lib/utils';
 import serverPortalApiFetch, {
   serverMutateGraphQL,
 } from '@/relay/serverPortalApiFetch';
-import { fromGlobalId, toGlobalId } from '@/utils/globalId';
 import { isValueInEnum } from '@/utils/isValueInEnum';
 import { APP_PATH } from '@/utils/path/constant';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
@@ -124,18 +123,12 @@ export const redirectToResource = async (
     for (const instance of servicesInstances) {
       if (instance.service_instance_id === service_instance_id) {
         // We found the service instance associated with the requested service
-        organizationGlobalId = toGlobalId(
-          'Organization',
-          instance.organization_id
-        );
+        organizationGlobalId = instance.organization_id;
       } else if (instance.links) {
         for (const link of instance.links) {
           if (link && link.url === octi_instance_id) {
             // We found the organization associated with the OpenCTI instance
-            organizationGlobalId = toGlobalId(
-              'Organization',
-              instance.organization_id
-            );
+            organizationGlobalId = instance.organization_id;
             break;
           }
         }
@@ -156,8 +149,7 @@ export const redirectToResource = async (
     // Get the organization service instances
     const organizationServiceInstances = servicesInstances.filter(
       (serviceInstance) =>
-        serviceInstance.organization_id ===
-        fromGlobalId(organizationGlobalId).id
+        serviceInstance.organization_id === organizationGlobalId
     );
 
     // We have the requested service instance in the available services in the organization
@@ -171,7 +163,7 @@ export const redirectToResource = async (
         getServiceInstanceUrl(
           baseUrlFront,
           identifier,
-          toGlobalId('ServiceInstance', service_instance_id!),
+          service_instance_id!,
           document_id
         )
       );
@@ -187,10 +179,7 @@ export const redirectToResource = async (
         getServiceInstanceUrl(
           baseUrlFront,
           identifier,
-          toGlobalId(
-            'ServiceInstance',
-            organizationServiceInstances[0].service_instance_id
-          )
+          organizationServiceInstances[0].service_instance_id
         )
       );
     }

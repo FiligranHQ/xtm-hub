@@ -1,4 +1,3 @@
-import { fromGlobalId } from '@/utils/globalId';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { hasProperty } from '../../hasProperty';
 import {
@@ -11,7 +10,7 @@ export function getServiceInfo(
   serviceInstance: { id: string; slug: ServiceSlug },
   documentId: string
 ): ServiceInfo | undefined {
-  const serviceId = fromGlobalId(serviceInstance.id).id;
+  const serviceId = serviceInstance.id;
 
   const serviceMap: Record<ServiceSlug, ServiceInfo> = {
     [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {

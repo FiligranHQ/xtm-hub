@@ -2,7 +2,6 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { formatPersonNames } from '@/utils/format/name';
-import { toGlobalId } from '@/utils/globalId';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
@@ -81,7 +80,7 @@ export async function generateMetadata({
   if (serviceInstance.illustration_document_id) {
     metadata.openGraph!.images = [
       {
-        url: `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
+        url: `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
         alt: serviceInstance.name,
         width: 1200,
         height: 630,
@@ -89,7 +88,7 @@ export async function generateMetadata({
       },
     ];
     metadata.twitter!.images = [
-      `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
+      `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
     ];
   }
 
@@ -168,7 +167,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
 
     if (serviceInstance.illustration_document_id) {
       jsonLd.image = [
-        `${baseUrl}/document/images/${serviceInstance.id}/${toGlobalId('Document', serviceInstance.illustration_document_id)}`,
+        `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
       ];
     }
     const breadcrumbValue = [
