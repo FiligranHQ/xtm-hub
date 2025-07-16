@@ -27,6 +27,7 @@
     "start-dev": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\"",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
+    "lint-staged": "lint-staged",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "test": "VITEST_MODE=true && vitest run",
@@ -38,7 +39,6 @@
     "test:w": "VITEST_MODE=true && vitest",
     "init-db-test": "VITEST_MODE=true tsx tests/script/create-database.ts",
     "clean-db-test": "VITEST_MODE=true tsx tests/script/clean-database.ts",
-    "lint-staged": "lint-staged",
     "watch:graphql": "node builder/dev/watch-graphql.js"
   },
   "dependencies": {

@@ -10,7 +10,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "portal-api/dist",
-        "cwd": "portal-api",
+        "cwd": "apps/portal-api",
         "command": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\""
       }
     },
@@ -18,8 +18,8 @@
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "portal-api/dist",
-        "cwd": "portal-api",
+        "outputPath": "apps/portal-api/dist",
+        "cwd": "apps/portal-api",
         "command": "graphql-codegen-esm --config codegen.yml"
       }
     }

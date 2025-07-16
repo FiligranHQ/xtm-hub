@@ -6,8 +6,8 @@ on:
       - "main"
       - "development"
     paths:
-      - "portal-api/**"
-      - "portal-front/**"
+      - "apps/portal-api/**"
+      - "apps/portal-front/**"
     tags:
       - "v*"
   pull_request:
@@ -15,8 +15,8 @@ on:
       - "main"
       - "development"
     paths:
-      - "portal-api/**"
-      - "portal-front/**"
+      - "apps/portal-api/**"
+      - "apps/portal-front/**"
       - "portal-e2e-tests/**"
 
 concurrency:
@@ -63,8 +63,8 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
       - name: Copy migrations
         run: |
-          cp -r ./portal-api/src/migrations ./portal-e2e-tests/migrations
-          cp -r ./portal-api/tests/seeds ./portal-e2e-tests/seeds
+          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
+          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
       - name: Build and push portal image
         uses: docker/build-push-action@v6
         with:
@@ -101,8 +101,8 @@ jobs:
         uses: docker/setup-docker-action@v4
       - name: Copy migrations
         run: |
-          cp -r ./portal-api/src/migrations ./portal-e2e-tests/migrations
-          cp -r ./portal-api/tests/seeds ./portal-e2e-tests/seeds
+          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
+          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \

@@ -34,6 +34,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@nx/react", "npm:21.2.3"],\
             ["@nx/web", "npm:21.2.3"],\
             ["@nx/workspace", "npm:21.2.3"],\
+            ["@playwright/test", "npm:1.53.2"],\
             ["@types/node", "npm:24.0.12"],\
             ["@types/react", "npm:19.1.6"],\
             ["@types/react-relay", "npm:18.2.1"],\
@@ -4775,7 +4776,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@nx/eslint", "virtual:ce007cec9bdc40c6affdcd50df27a9f0c5d2040633ac7c7d5586a25057ec890be49d32c4fce627ca62f777fd5bf117d4f6bc00d7029eddd3616af09b387e5d13#npm:21.2.3"],\
             ["@nx/js", "virtual:5388a10769f9ffd63cf964bcaa08e54c57a658de631be60beb288e65735af22ce2830f2988a7498d69a4219a893c33f2ed352bff217f85c52b7b545ee6382e05#npm:21.2.3"],\
             ["@phenomnomnominal/tsquery", "virtual:ce007cec9bdc40c6affdcd50df27a9f0c5d2040633ac7c7d5586a25057ec890be49d32c4fce627ca62f777fd5bf117d4f6bc00d7029eddd3616af09b387e5d13#npm:5.0.1"],\
-            ["@playwright/test", null],\
+            ["@playwright/test", "npm:1.53.2"],\
             ["@types/playwright__test", null],\
             ["minimatch", "npm:9.0.3"],\
             ["tslib", "npm:2.8.1"]\
@@ -5061,6 +5062,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@pkgjs-parseargs-npm-0.11.0-cd2a3fe948-6ad6a00fc4.zip/node_modules/@pkgjs/parseargs/",\
           "packageDependencies": [\
             ["@pkgjs/parseargs", "npm:0.11.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@playwright/test", [\
+        ["npm:1.53.2", {\
+          "packageLocation": "./.yarn/cache/@playwright-test-npm-1.53.2-e5fb038ee8-b13cb56e60.zip/node_modules/@playwright/test/",\
+          "packageDependencies": [\
+            ["@playwright/test", "npm:1.53.2"],\
+            ["playwright", "npm:1.53.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -10761,6 +10772,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["fsevents", [\
+        ["patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1", {\
+          "packageLocation": "./.yarn/unplugged/fsevents-patch-2882183fbf/node_modules/fsevents/",\
+          "packageDependencies": [\
+            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
+            ["node-gyp", "npm:11.2.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=df0bf1", {\
           "packageLocation": "./.yarn/unplugged/fsevents-patch-21ad2b1333/node_modules/fsevents/",\
           "packageDependencies": [\
@@ -13112,7 +13131,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@next/swc-win32-arm64-msvc", "npm:15.3.3"],\
             ["@next/swc-win32-x64-msvc", "npm:15.3.3"],\
             ["@opentelemetry/api", null],\
-            ["@playwright/test", null],\
+            ["@playwright/test", "npm:1.53.2"],\
             ["@swc/counter", "npm:0.1.3"],\
             ["@swc/helpers", "npm:0.5.15"],\
             ["@types/babel-plugin-react-compiler", null],\
@@ -13900,6 +13919,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["pkg-dir", "npm:7.0.0"],\
             ["find-up", "npm:6.3.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["playwright", [\
+        ["npm:1.53.2", {\
+          "packageLocation": "./.yarn/cache/playwright-npm-1.53.2-8cd06d2b42-f5a1cb319e.zip/node_modules/playwright/",\
+          "packageDependencies": [\
+            ["playwright", "npm:1.53.2"],\
+            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
+            ["playwright-core", "npm:1.53.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["playwright-core", [\
+        ["npm:1.53.2", {\
+          "packageLocation": "./.yarn/cache/playwright-core-npm-1.53.2-78051f8150-01530abe93.zip/node_modules/playwright-core/",\
+          "packageDependencies": [\
+            ["playwright-core", "npm:1.53.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -18204,6 +18243,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@nx/react", "npm:21.2.3"],\
             ["@nx/web", "npm:21.2.3"],\
             ["@nx/workspace", "npm:21.2.3"],\
+            ["@playwright/test", "npm:1.53.2"],\
             ["@types/node", "npm:24.0.12"],\
             ["@types/react", "npm:19.1.6"],\
             ["@types/react-relay", "npm:18.2.1"],\
