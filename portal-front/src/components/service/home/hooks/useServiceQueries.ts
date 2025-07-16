@@ -1,5 +1,12 @@
+import {
+  enrollOCTIInstanceListFragment,
+  EnrollOCTIInstancesQuery,
+} from '@/components/enroll/enroll.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { getServiceInstanceUrl } from '@/lib/utils';
+import { enrollOCTIInstanceFragment$data } from '@generated/enrollOCTIInstanceFragment.graphql';
+import { enrollOCTIInstanceListFragment$key } from '@generated/enrollOCTIInstanceListFragment.graphql';
+import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
@@ -44,6 +51,24 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
   ).map((userService) => userService.node as userServicesOwned_fragment$data);
 
   return ownedServices;
+};
+
+const getOCTIInstances = (
+  queryRef: PreloadedQuery<enrollOCTIInstancesQuery>
+): enrollOCTIInstanceFragment$data[] => {
+  const queryData = usePreloadedQuery<enrollOCTIInstancesQuery>(
+    EnrollOCTIInstancesQuery,
+    queryRef
+  );
+
+  const [data] = useRefetchableFragment<
+    enrollOCTIInstancesQuery,
+    enrollOCTIInstanceListFragment$key
+  >(enrollOCTIInstanceListFragment, queryData);
+
+  return (
+    (data.octiInstances as unknown as enrollOCTIInstanceFragment$data[]) ?? []
+  );
 };
 
 const getPublicServices = (
@@ -126,6 +151,7 @@ const getPublicServices = (
 export const useServiceQueries = (
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>,
   queryRefPublicService: PreloadedQuery<publicServiceQuery>,
+  queryRefOCTIInstances: PreloadedQuery<enrollOCTIInstancesQuery>,
   onUpdate: () => void,
   handleSuccess: (message: string) => void,
   handleError: (error: Error) => void
@@ -139,6 +165,7 @@ export const useServiceQueries = (
 
   return {
     ownedServices: getOwnedServices(queryRefUserServiceOwned),
+    octiInstances: getOCTIInstances(queryRefOCTIInstances),
     publicServices,
     addSubscriptionInDb,
   };

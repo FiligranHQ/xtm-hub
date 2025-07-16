@@ -160,6 +160,11 @@
         "Title": "Vous êtes sur le point d'enrôler votre instance OpenCTI dans XTM Hub",
         "Description": "Dans quel espace souhaitez-vous enrôler votre instance OpenCTI ?"
       }
+    },
+    "Details": {
+      "InstanceID": "ID de l'instance",
+      "InstanceURL": "URL de l'instance",
+      "Contract": "Contrat"
     }
   },
   "GenericActions": {
