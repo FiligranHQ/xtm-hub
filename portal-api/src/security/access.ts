@@ -20,6 +20,7 @@ import { setDeleteSecurityForUserServiceCapability } from './user-service-capabi
 import { logApp } from '../utils/app-logger.util';
 import { userSecurityLayer } from './layer/user';
 import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
+import { userServiceSecurityLayer } from './layer/user-service';
 import { userServiceCapabilitySecurityLayer } from './layer/user-service-capability';
 
 export type SecuryQueryHandlers = {
@@ -176,6 +177,7 @@ export const applyDbSecurityLayer = async (
     User: userSecurityLayer,
     UserService_Capability: userServiceCapabilitySecurityLayer,
     UserOrganization_Capability: userOrganizationCapabilitySecurityLayer,
+    User_Service: userServiceSecurityLayer,
   };
 
   if (tableSecurityMap[table]) {
@@ -185,8 +187,8 @@ export const applyDbSecurityLayer = async (
       if (isUserAdminPlatform(context.user)) {
         return qb;
       }
-      if (method === 'select') {
-        return tableSecurityMap[table][method](context, qb, opts);
+      if (method === 'select' || method === 'first') {
+        return tableSecurityMap[table]['select'](context, qb, opts);
       }
       // Check the promise and then if it not throwing error we return qb.
       // QB in promise execute automatically the query but we don't always want to execute the query at this moment
