@@ -371,15 +371,13 @@ export const incrementDocumentsDownloads = async (
   document: DocumentModel,
   trx: Knex.Transaction
 ) => {
-  await updateDocument(
-    context,
-    document.id,
-    {
+  await db<DocumentModel>(context, 'Document')
+    .where('id', '=', document.id)
+    .update({
       download_number: document.download_number + 1,
-    },
-    [],
-    trx
-  );
+    })
+    .returning('*')
+    .transacting(trx);
 };
 
 export const deleteDocument = async <T extends DocumentModel>(
