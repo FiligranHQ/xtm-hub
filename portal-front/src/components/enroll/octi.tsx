@@ -25,6 +25,7 @@ interface Props {
     id: string;
     url: string;
     title: string;
+    contract: string;
   };
   queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
 }
