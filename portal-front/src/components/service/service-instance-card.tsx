@@ -1,15 +1,15 @@
-import {
-  SERVICE_CREATION_STATUS,
-  SERVICE_DEFINITION_IDENTIFIER,
-} from '@/components/service/service.const';
+import { SERVICE_CREATION_STATUS } from '@/components/service/service.const';
 import { cn } from '@/lib/utils';
+import { fromGlobalId } from '@/utils/globalId';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
+import { isEnrollmentService, isExternalService } from '@/utils/services';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
 import { AspectRatio } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
@@ -25,14 +25,13 @@ interface ServiceInstanceCardProps {
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className, seo }) => {
-  const isLinkService =
-    serviceInstance?.service_definition?.identifier ===
-    SERVICE_DEFINITION_IDENTIFIER.LINK;
+  const t = useTranslations();
+
   const isDisabled =
     serviceInstance?.creation_status === SERVICE_CREATION_STATUS.PENDING;
 
   const serviceHref =
-    isLinkService && serviceInstance.links?.[0]?.url
+    isExternalService(serviceInstance) && serviceInstance.links?.[0]?.url
       ? serviceInstance.links?.[0]?.url
       : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`}`;
 
@@ -83,13 +82,34 @@ const ServiceInstanceCard: React.FunctionComponent<
               </Link>
             )}
 
-            {isLinkService && (
+            {isExternalService(serviceInstance) && (
               <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />
             )}
           </div>
-          <p className="txt-sub-content text-muted-foreground">
-            {serviceInstance.description}
-          </p>
+          {(isEnrollmentService(serviceInstance) && (
+            <div className="grid grid-cols-3 gap-s">
+              <div className="txt-sub-content text-muted-foreground">
+                {t('Enroll.Details.InstanceID')}
+              </div>
+              <div className="txt-sub-content col-span-2">
+                {fromGlobalId(serviceInstance.id).id}
+              </div>
+              <div className="txt-sub-content text-muted-foreground">
+                {t('Enroll.Details.InstanceURL')}
+              </div>
+              <div className="txt-sub-content col-span-2">{serviceHref}</div>
+              <div className="txt-sub-content text-muted-foreground">
+                {t('Enroll.Details.Contract')}
+              </div>
+              <div className="txt-sub-content col-span-2">
+                {t(`Enroll.Details.Contracts.${serviceInstance.description}`)}
+              </div>
+            </div>
+          )) || (
+            <p className="txt-sub-content text-muted-foreground">
+              {serviceInstance.description}
+            </p>
+          )}
           {rightAction && (
             <div
               className="flex pt-s mt-auto ml-auto

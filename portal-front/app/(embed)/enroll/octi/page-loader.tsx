@@ -18,9 +18,11 @@ export const PageLoader: React.FC = () => {
     );
   useMountingLoader(loadQuery, {});
 
-  const { platform_id, platform_title, platform_url } = useDecodedQuery();
+  const { platform_id, platform_title, platform_url, platform_contract } =
+    useDecodedQuery();
 
-  const areParametersValid = platform_id && platform_title && platform_url;
+  const areParametersValid =
+    platform_id && platform_title && platform_url && platform_contract;
   if (!areParametersValid) {
     return redirect('/');
   }
@@ -29,6 +31,7 @@ export const PageLoader: React.FC = () => {
     id: platform_id,
     title: platform_title,
     url: platform_url,
+    contract: platform_contract,
   };
 
   return queryRef ? (

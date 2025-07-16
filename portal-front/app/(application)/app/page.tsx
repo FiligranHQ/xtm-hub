@@ -1,5 +1,6 @@
 'use client';
 
+import { EnrollOCTIInstancesQuery } from '@/components/enroll/enroll.graphql';
 import Loader from '@/components/loader';
 import { publicServiceListQuery } from '@/components/service/public-service.graphql';
 import ServiceList from '@/components/service/service-list';
@@ -10,6 +11,7 @@ import { useCallback } from 'react';
 import { useQueryLoader } from 'react-relay';
 import { useLocalStorage } from 'usehooks-ts';
 
+import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
 import {
   OrderingMode,
   publicServiceQuery,
@@ -48,6 +50,11 @@ const Page: React.FunctionComponent = () => {
     orderMode: orderModeServiceList,
   });
 
+  // OCTI Instances
+  const [queryRefOCTIInstances, loadQueryOCTIInstances] =
+    useQueryLoader<enrollOCTIInstancesQuery>(EnrollOCTIInstancesQuery);
+  useMountingLoader(loadQueryOCTIInstances, {});
+
   const handleUpdate = useCallback(() => {
     loadQueryUserServiceOwned(
       {
@@ -65,15 +72,21 @@ const Page: React.FunctionComponent = () => {
       },
       { fetchPolicy: 'network-only' }
     );
+    loadQueryOCTIInstances({}, { fetchPolicy: 'network-only' });
   }, []);
 
-  if (!queryRefUserServiceOwned || !queryRefPublicServiceList)
+  if (
+    !queryRefUserServiceOwned ||
+    !queryRefPublicServiceList ||
+    !queryRefOCTIInstances
+  )
     return <Loader />;
 
   return (
     <ServiceList
       queryRefUserServiceOwned={queryRefUserServiceOwned}
       queryRefServiceList={queryRefPublicServiceList}
+      queryRefOCTIInstances={queryRefOCTIInstances}
       onUpdate={handleUpdate}
     />
   );

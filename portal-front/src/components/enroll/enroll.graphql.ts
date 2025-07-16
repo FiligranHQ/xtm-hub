@@ -31,3 +31,27 @@ export const EnrollOCTIInstance = graphql`
     }
   }
 `;
+
+export const enrollOCTIInstanceFragment = graphql`
+  fragment enrollOCTIInstanceFragment on OCTIPlatform {
+    id
+    title
+    url
+    contract
+  }
+`;
+
+export const enrollOCTIInstanceListFragment = graphql`
+  fragment enrollOCTIInstanceListFragment on Query
+  @refetchable(queryName: "EnrollOCTIInstanceListQuery") {
+    octiInstances {
+      ...enrollOCTIInstanceFragment @relay(mask: false)
+    }
+  }
+`;
+
+export const EnrollOCTIInstancesQuery = graphql`
+  query enrollOCTIInstancesQuery {
+    ...enrollOCTIInstanceListFragment
+  }
+`;
