@@ -1,0 +1,108 @@
+{{ if .Values.elasticsearch.enabled }}
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: {{ .Values.elasticsearch.clusterName | quote }}
+  annotations:
+    eck.k8s.elastic.co/disable-downgrade-validation: "true"
+spec:
+  version: {{ .Values.elasticsearch.image.tag }}
+  nodeSets:
+  - name: node
+    count: {{ .Values.elasticsearch.replicas }}
+    config:
+      node.store.allow_mmap: {{ .Values.elasticsearch.allow_mmap }}
+      xpack.ml.enabled: false
+      thread_pool.search.queue_size: 5000
+      logger.org.elasticsearch.discovery: "ERROR"
+      {{- if .Values.elasticsearch.reindexRemote.enabled }}
+      reindex.remote.whitelist: [{{ .Values.elasticsearch.reindexRemote.serviceName }}:{{ .Values.elasticsearch.reindexRemote.port }} ]
+      {{- end }}
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.elasticsearch.storage.size }}
+        storageClassName: {{ .Values.elasticsearch.storage.classname }}
+    podTemplate:
+      spec:
+        {{- with .Values.elasticsearch.affinity }}
+        affinity:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.elasticsearch.priorityClassName }}
+        priorityClassName: {{ .Values.elasticsearch.priorityClassName }}
+        {{- end }}
+        {{- if .Values.elasticsearch.plugin_prometheus_enabled }}
+        initContainers:
+        - name: install-plugins
+          command:
+          - sh
+          - -c
+          - |
+            (/usr/share/elasticsearch/bin/elasticsearch-plugin list | grep prometheus-exporter) || bin/elasticsearch-plugin install --batch https://github.com/mindw/elasticsearch-prometheus-exporter/releases/download/{{ .Values.elasticsearch.image.tag }}.0/prometheus-exporter-{{ .Values.elasticsearch.image.tag }}.0.zip
+        {{ end }}
+        containers:
+        - name: elasticsearch
+          env:
+          - name: ES_JAVA_OPTS
+            value: {{ .Values.elasticsearch.java_opts }}
+          resources:
+            {{- toYaml .Values.elasticsearch.resources | nindent 12 }}
+        nodeSelector:
+          {{- toYaml .Values.elasticsearch.nodeSelector | nindent 10 }}
+  {{- if eq (int .Values.elasticsearch.replicas) 2 }}
+  - name: tiebreaker
+    count: 1
+    config:
+      node.store.allow_mmap: {{ .Values.elasticsearch.allow_mmap }}
+      node.roles: [ "master", "voting_only" ]
+      xpack.ml.enabled: false
+      thread_pool.search.queue_size: 5000
+      logger.org.elasticsearch.discovery: "ERROR"
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: {{ .Values.elasticsearch.storage.classname }}
+    podTemplate:
+      spec:
+        {{- with .Values.elasticsearch.affinity }}
+        affinity:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.elasticsearch.priorityClassName }}
+        priorityClassName: {{ .Values.elasticsearch.priorityClassName }}
+        {{- end }}
+        {{- if .Values.elasticsearch.plugin_prometheus_enabled }}
+        initContainers:
+        - name: install-plugins
+          command:
+          - sh
+          - -c
+          - |
+            bin/elasticsearch-plugin install --batch https://github.com/mindw/elasticsearch-prometheus-exporter/releases/download/{{ .Values.elasticsearch.image.tag }}.0/prometheus-exporter-{{ .Values.elasticsearch.image.tag }}.0.zip
+        {{ end }}
+        containers:
+        - name: elasticsearch
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms500m -Xmx500m -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=debug:stderr:utctime"
+          resources:
+            requests:
+              memory: 1.5Gi
+            limits:
+              memory: 1.5Gi
+        nodeSelector:
+          {{- toYaml .Values.elasticsearch.nodeSelector | nindent 10 }}
+  {{- end }}
+{{- end }}
