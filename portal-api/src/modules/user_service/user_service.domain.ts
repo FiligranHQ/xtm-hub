@@ -215,9 +215,12 @@ export const loadUserServiceByUser = (context: PortalContext, opts) => {
       'service_link.service_instance_id'
     )
     .where('sub.status', 'ACCEPTED')
-    .where('sub.end_date', '>', new Date())
-    .where('sub.start_date', '<', new Date())
-    .orWhereNull('sub.end_date')
+    .where((qb) =>
+      qb
+        .where('sub.end_date', '>=', new Date())
+        .where('sub.start_date', '<=', new Date())
+        .orWhereNull('sub.end_date')
+    )
     .where('user.id', userId)
     .where('sub.organization_id', userSelectedOrganization)
     .select([

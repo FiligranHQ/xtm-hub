@@ -76,15 +76,55 @@ minio:
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
-        - podAffinityTerm:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: minio
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: minio
+              topologyKey: rack
+            weight: 100
+elasticsearch:
+  enabled: true
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
             labelSelector:
               matchLabels:
-                app: minio
+                elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
             topologyKey: kubernetes.io/hostname
-          weight: 100
-        - podAffinityTerm:
-            labelSelector:
-              matchLabels:
-                app: minio
-            topologyKey: rack
-          weight: 100
+  clusterName: "elasticsearch"
+  priorityClassName: ""
+  secretNameSuffix: -es-elastic-user
+  image:
+    repository: elasticsearch
+    tag: 8.17.3
+  replicas: 2
+  storage:
+    size: 5Gi
+    classname: openebs-lvmpv
+  nodeSelector: {}
+  java_opts: -Xms2g -Xmx2g -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=debug:stderr:utctime
+  allow_mmap: true
+  resources:
+    requests:
+      memory: 3Gi
+      cpu: "256m"
+    limits:
+      memory: 4Gi
+  plugin_prometheus_enabled: true
+  reindexRemote:
+    enabled: false
+    serviceName: opensearch-cluster-master
+    port: "9200"
+  externalMinioRestore:
+    enabled: false
+    # Used to define which namespace ES will connect as a snapshot repository. Required
+    # namespace: customer-example-minio
+    port: 9000

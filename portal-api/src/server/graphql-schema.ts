@@ -8,6 +8,7 @@ import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import csvFeedsResolver from '../modules/services/csv-feeds/csv-feeds.resolver';
 import customDashboardsResolver from '../modules/services/custom-dashboards/custom-dashboards.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
+import enrollmentResolver from '../modules/services/enrollment/enrollment.resolver';
 import obasScenariosResolver from '../modules/services/obas-scenarios/obas-scenarios.resolver';
 import servicesResolver from '../modules/services/services.resolver';
 import labelsResolver from '../modules/settings/labels/labels.resolver';
@@ -45,6 +46,7 @@ const resolvers = mergeResolvers([
   customDashboardsResolver,
   csvFeedsResolver,
   obasScenariosResolver,
+  enrollmentResolver,
 ]);
 
 const createSchema = () => {

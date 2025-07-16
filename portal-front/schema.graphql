@@ -38,6 +38,7 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
+  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): EnrollmentResponse!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
@@ -94,6 +95,7 @@ type OrganizationConnection {
 type Query {
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
+  userOrganizations: [Organization!]!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
@@ -107,6 +109,7 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
+  canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
   seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
   seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
@@ -127,6 +130,7 @@ type Query {
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
   me: User
   user(id: ID!): User
+  organizationAdministrators(organizationId: ID!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
   node(id: ID!): Node
@@ -264,6 +268,7 @@ enum ServiceDefinitionIdentifier {
   custom_dashboards
   csv_feeds
   obas_scenarios
+  octi_enrollment
 }
 
 type ServiceDefinition implements Node {
@@ -328,6 +333,38 @@ type DocumentConnection {
   totalCount: Int!
   edges: [DocumentEdge!]!
   pageInfo: PageInfo!
+}
+
+input OCTIPlatform {
+  id: String!
+  url: String!
+  title: String!
+}
+
+input EnrollOCTIInstanceInput {
+  organizationId: ID!
+  platform: OCTIPlatform!
+}
+
+input CanEnrollOCTIInstanceInput {
+  organizationId: ID!
+  platformId: String!
+}
+
+type EnrollmentResponse {
+  token: String!
+}
+
+enum CanEnrollStatus {
+  enrolled
+  unenrolled
+  never_enrolled
+}
+
+type CanEnrollResponse {
+  isAllowed: Boolean!
+  status: CanEnrollStatus!
+  isSameOrganization: Boolean
 }
 
 type ServiceLink implements Node {
@@ -765,6 +802,7 @@ enum Restriction {
   FRT_ACCESS_BILLING
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
+  MANAGE_OCTI_ENROLLMENT
 }
 
 enum OrganizationCapability {

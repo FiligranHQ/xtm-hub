@@ -8,7 +8,11 @@ import {
   StillReferencedError,
   UnknownError,
 } from '../../utils/error.util';
-import { loadOrganizationBy, loadOrganizations } from './organizations.domain';
+import {
+  loadOrganizationBy,
+  loadOrganizations,
+  loadOrganizationsByUser,
+} from './organizations.domain';
 
 const resolvers: Resolvers = {
   Query: {
@@ -16,6 +20,9 @@ const resolvers: Resolvers = {
       loadOrganizationBy(context, 'Organization.id', id),
     organizations: async (_, opts, context) => {
       return loadOrganizations(context, opts);
+    },
+    userOrganizations: async (_, __, context) => {
+      return loadOrganizationsByUser(context, context.user.id);
     },
   },
   Mutation: {
