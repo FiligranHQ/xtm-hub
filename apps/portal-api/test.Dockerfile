@@ -5,7 +5,7 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY .yarnrc.yml package.json yarn.lock ./
+COPY apps/portal-api/.yarnrc.yml apps/portal-api/package.json apps/portal-api/yarn.lock ./
 RUN corepack enable && \
     yarn install --immutable
 
@@ -13,7 +13,7 @@ RUN corepack enable && \
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY apps/portal-api/. .
 RUN corepack enable
 
 CMD ["yarn", "test:ci"]

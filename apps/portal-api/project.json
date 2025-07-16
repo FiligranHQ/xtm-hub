@@ -14,6 +14,15 @@
         "command": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\""
       }
     },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "portal-api/dist",
+        "cwd": "apps/portal-api",
+        "command": "yarn copy && node builder/prod/prod.js"
+      }
+    },
     "generate-ts": {
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],

@@ -36,8 +36,11 @@ jobs:
       matrix:
         include:
           - image: portal-front
+            dockerfile: apps/portal-front/Dockerfile
           - image: portal-api
+            dockerfile: apps/portal-api/Dockerfile
           - image: portal-e2e-tests
+            dockerfile: apps/portal-e2e-tests/Dockerfile
     outputs:
       docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
       docker-labels: ${{ steps.meta.outputs.labels }}
@@ -68,7 +71,8 @@ jobs:
       - name: Build and push portal image
         uses: docker/build-push-action@v6
         with:
-          context: ${{ matrix.image }}
+          context: .
+          file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -270,7 +274,9 @@ jobs:
       matrix:
         include:
           - image: portal-front
+            dockerfile: apps/portal-front/Dockerfile
           - image: portal-api
+            dockerfile: apps/portal-api/Dockerfile
     if: |
       always() &&
       github.event_name != 'pull_request' &&
@@ -313,7 +319,8 @@ jobs:
       - name: Build and push images
         uses: docker/build-push-action@v6
         with:
-          context: ${{ matrix.image }}
+          context: .
+          file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
