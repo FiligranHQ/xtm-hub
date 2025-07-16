@@ -1,0 +1,28 @@
+{
+  "name": "portal-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/portal-api",
+  "projectType": "application",
+  "types": ["yarn"],
+  "targets": {
+    "start": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "portal-api/dist",
+        "cwd": "portal-api",
+        "command": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\""
+      }
+    },
+    "generate-ts": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "portal-api/dist",
+        "cwd": "portal-api",
+        "command": "graphql-codegen-esm --config codegen.yml"
+      }
+    }
+  },
+  "tags": []
+}
