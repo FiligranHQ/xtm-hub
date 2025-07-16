@@ -2,7 +2,7 @@ name: Helm lint, test, package and publish
 
 on:
   push:
-    branches: ["main"]
+    branches: ["development"]
     paths:
     - 'chart/**'
 
