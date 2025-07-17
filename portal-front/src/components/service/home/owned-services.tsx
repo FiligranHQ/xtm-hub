@@ -5,7 +5,7 @@ import {
   publicServiceInstanceToInstanceCardData,
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
-import { enrollOCTIInstanceFragment$data } from '@generated/enrollOCTIInstanceFragment.graphql';
+import { enrollOCTIInstanceListFragment$data } from '@generated/enrollOCTIInstanceListFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { Suspense } from 'react';
@@ -14,7 +14,7 @@ import ServiceInstanceCard from '../service-instance-card';
 interface OwnedServicesProps {
   services: userServicesOwned_fragment$data[];
   publicServices: serviceList_fragment$data[];
-  octiInstances: enrollOCTIInstanceFragment$data[];
+  octiInstances: enrollOCTIInstanceListFragment$data['octiInstances'];
 }
 
 const OwnedServices = ({

@@ -45,7 +45,7 @@ export const enrollOCTIInstanceListFragment = graphql`
   fragment enrollOCTIInstanceListFragment on Query
   @refetchable(queryName: "EnrollOCTIInstanceListQuery") {
     octiInstances {
-      ...enrollOCTIInstanceFragment @relay(mask: false)
+      ...enrollOCTIInstanceFragment @relay(mask: false, plural: true)
     }
   }
 `;

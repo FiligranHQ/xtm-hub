@@ -4,7 +4,6 @@ import {
 } from '@/components/enroll/enroll.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { getServiceInstanceUrl } from '@/lib/utils';
-import { enrollOCTIInstanceFragment$data } from '@generated/enrollOCTIInstanceFragment.graphql';
 import { enrollOCTIInstanceListFragment$key } from '@generated/enrollOCTIInstanceListFragment.graphql';
 import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
@@ -55,7 +54,7 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
 
 const getOCTIInstances = (
   queryRef: PreloadedQuery<enrollOCTIInstancesQuery>
-): enrollOCTIInstanceFragment$data[] => {
+) => {
   const queryData = usePreloadedQuery<enrollOCTIInstancesQuery>(
     EnrollOCTIInstancesQuery,
     queryRef
@@ -66,9 +65,7 @@ const getOCTIInstances = (
     enrollOCTIInstanceListFragment$key
   >(enrollOCTIInstanceListFragment, queryData);
 
-  return (
-    (data.octiInstances as unknown as enrollOCTIInstanceFragment$data[]) ?? []
-  );
+  return data.octiInstances ?? [];
 };
 
 const getPublicServices = (
