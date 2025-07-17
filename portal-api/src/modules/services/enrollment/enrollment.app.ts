@@ -20,8 +20,10 @@ import {
 } from './enrollment.domain';
 
 export const enrollmentApp = {
-  octiInstances: async (context: PortalContext): Promise<OctiPlatform[]> => {
-    const instances = await enrollmentDomain.octiInstances(context);
+  loadOctiInstances: async (
+    context: PortalContext
+  ): Promise<OctiPlatform[]> => {
+    const instances = await enrollmentDomain.loadOctiInstances(context);
     return instances.map((instance) => ({
       __typename: 'OCTIPlatform',
       id: instance.config.platform_id,

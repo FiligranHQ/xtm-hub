@@ -32,9 +32,8 @@ const resolvers: Resolvers = {
         });
       }
     },
-    octiInstances: async (_, _z, context) => {
-      return enrollmentApp.octiInstances(context);
-    },
+    octiInstances: async (_, _z, context) =>
+      enrollmentApp.loadOctiInstances(context),
   },
   Mutation: {
     enrollOCTIInstance: async (_, { input }, context) => {

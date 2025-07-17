@@ -112,7 +112,7 @@ export const enrollmentDomain = {
     });
   },
 
-  octiInstances: async (
+  loadOctiInstances: async (
     context: PortalContext,
     opts: QueryOpts = {}
   ): Promise<{ config: OCTIInstanceConfiguration }[]> => {
