@@ -33,7 +33,7 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
   context: PortalContext,
   identifier: string
 ) => {
-  return await db<UserService>(context, 'ServiceInstance')
+  const subServiceInstance = await db<UserService>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link',
       'Service_Link.service_instance_id',
@@ -73,6 +73,17 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
       'Organization.personal_space AS is_personal_space',
       dbRaw('COALESCE(json_agg("Service_Link"), \'[]\'::json) AS links'),
     ]);
+
+  return subServiceInstance.map((sub) => {
+    return {
+      ...sub,
+      organization_id: toGlobalId('Organization', sub.organization_id),
+      service_instance_id: toGlobalId(
+        'ServiceInstance',
+        sub.service_instance_id
+      ),
+    };
+  });
 };
 
 export const loadPublicServiceInstances = (context: PortalContext, opts) => {
