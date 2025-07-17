@@ -4,18 +4,24 @@ FROM node:23-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
-# Install dependencies based on the preferred package managers
-COPY apps/portal-api/.yarnrc.yml apps/portal-api/package.json apps/portal-api/yarn.lock ./
+# Copy monorepo configuration files
+COPY .yarnrc.yml package.json yarn.lock ./
+COPY apps/portal-api/package.json ./apps/portal-api/package.json
+
+# Install all dependencies at the workspace level
 RUN corepack enable && \
-    yarn install --immutable
+    yarn install
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY apps/portal-api/. .
+COPY --from=deps /app/apps/portal-api/node_modules ./apps/portal-api/node_modules
+COPY .yarnrc.yml package.json yarn.lock ./
+COPY apps/portal-api/. ./apps/portal-api/
 
 # Build the backend
+WORKDIR /app/apps/portal-api
 RUN corepack enable && \
     yarn build
 
@@ -33,11 +39,11 @@ RUN addgroup --system --gid 1001 nodejs && \
     chown graphql:nodejs .graphql
 
 COPY --from=builder --chown=graphql:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=graphql:nodejs /app/config ./config
-COPY --from=builder --chown=graphql:nodejs /app/package.json .
-COPY --from=builder --chown=graphql:nodejs /app/tests/seeds ./tests/seeds
-COPY --from=builder --chown=graphql:nodejs /app/dist .
-COPY --from=builder --chown=graphql:nodejs /app/src/server/mail-template ./src/server/mail-template
+COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/config ./config
+COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/package.json .
+COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/tests/seeds ./tests/seeds
+COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/dist .
+COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/src/server/mail-template ./src/server/mail-template
 
 USER graphql
 EXPOSE 4001

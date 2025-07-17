@@ -8,6 +8,12 @@ const nextConfig = {
   output: 'standalone',
   skipTrailingSlashRedirect: true,
   reactStrictMode: true,
+  experimental: {
+    outputFileTracingRoot: new URL('../../', import.meta.url).pathname,
+    outputFileTracingIncludes: {
+      '/': ['apps/portal-front/**/*'],
+    },
+  },
   compiler: {
     relay: {
       src: './',
