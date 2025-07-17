@@ -6,6 +6,7 @@ import { AddSubscriptionMutation } from '@/components/subcription/subscription.g
 import { getServiceInstanceUrl } from '@/lib/utils';
 import { enrollOCTIInstanceListFragment$key } from '@generated/enrollOCTIInstanceListFragment.graphql';
 import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
+import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
@@ -28,7 +29,6 @@ import {
   publicServiceListQuery,
 } from '../../public-service.graphql';
 import { subscription } from '../../service.graphql';
-import { JOIN_TYPE } from '../../service.types';
 import {
   userServiceOwnedFragment,
   UserServiceOwnedQuery,
@@ -124,9 +124,10 @@ const getPublicServices = (
 
       if (
         service.join_type &&
-        [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
-          service.join_type as JOIN_TYPE
-        )
+        [
+          ServiceInstanceJoinTypeEnum.JOIN_SELF,
+          ServiceInstanceJoinTypeEnum.JOIN_AUTO,
+        ].includes(service.join_type as ServiceInstanceJoinTypeEnum)
       ) {
         commitMutation('ACCEPTED', t('Service.SubscribeSuccessful'));
       } else {

@@ -1,7 +1,7 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
-import { SERVICE_CREATION_STATUS } from '@/components/service/service.types';
 import { enrollOCTIInstanceListFragment$data } from '@generated/enrollOCTIInstanceListFragment.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -25,7 +25,7 @@ export const octiInstanceToServiceInstanceCardData = (
   return {
     id: instance.id,
     platform_id: instance.platform_id,
-    creation_status: SERVICE_CREATION_STATUS.CREATED,
+    creation_status: ServiceInstanceCreationStatusEnum.CREATED,
     name: instance.title,
     platform_contract: instance.contract,
     illustration_document_id: null,
@@ -42,7 +42,8 @@ export const publicServiceInstanceToInstanceCardData = (
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    creation_status: instance.creation_status as SERVICE_CREATION_STATUS,
+    creation_status:
+      instance.creation_status as ServiceInstanceCreationStatusEnum,
     name: instance.name,
     description: instance.description!,
     illustration_document_id: instance.illustration_document_id as string,
@@ -60,7 +61,8 @@ export const userServicesOwnedServiceToInstanceCardData = ({
   const instance = subscription!.service_instance!;
   return {
     id: instance.id,
-    creation_status: instance.creation_status as SERVICE_CREATION_STATUS,
+    creation_status:
+      instance.creation_status as ServiceInstanceCreationStatusEnum,
     name: instance.name,
     description: instance.description!,
     illustration_document_id: instance.illustration_document_id as string,
@@ -77,7 +79,7 @@ export const seoServiceInstanceToInstanceCardData = (
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    creation_status: SERVICE_CREATION_STATUS.CREATED,
+    creation_status: ServiceInstanceCreationStatusEnum.CREATED,
     name: instance.name,
     slug: instance.slug as string,
     description: instance.description!,

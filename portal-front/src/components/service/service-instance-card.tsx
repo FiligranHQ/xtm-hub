@@ -1,4 +1,3 @@
-import { SERVICE_CREATION_STATUS } from '@/components/service/service.types';
 import { cn } from '@/lib/utils';
 import {
   APP_PATH,
@@ -6,6 +5,7 @@ import {
 } from '@/utils/path/constant';
 import { isEnrollmentService, isExternalService } from '@/utils/services';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
 import { AspectRatio } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
@@ -15,7 +15,7 @@ import { ReactNode } from 'react';
 
 export interface ServiceInstanceCardData {
   id: string;
-  creation_status: SERVICE_CREATION_STATUS;
+  creation_status: ServiceInstanceCreationStatusEnum;
   name: string;
   slug?: string;
   platform_contract?: string;
@@ -66,7 +66,8 @@ const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className, seo }) => {
   const isDisabled =
-    serviceInstance.creation_status === SERVICE_CREATION_STATUS.PENDING;
+    serviceInstance.creation_status ===
+    ServiceInstanceCreationStatusEnum.PENDING;
 
   const serviceHref =
     isExternalService(serviceInstance.service_definition_identifier) &&

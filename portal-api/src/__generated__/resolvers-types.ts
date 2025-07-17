@@ -1141,11 +1141,11 @@ export enum ServiceDefinitionIdentifier {
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
   capabilities: Array<Maybe<Scalars['String']['output']>>;
-  creation_status?: Maybe<Scalars['String']['output']>;
+  creation_status?: Maybe<ServiceInstanceCreationStatus>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   illustration_document_id?: Maybe<Scalars['ID']['output']>;
-  join_type?: Maybe<Scalars['String']['output']>;
+  join_type?: Maybe<ServiceInstanceJoinType>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   logo_document_id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
@@ -1160,11 +1160,23 @@ export type ServiceInstance = Node & {
   user_joined?: Maybe<Scalars['Boolean']['output']>;
 };
 
+export enum ServiceInstanceCreationStatus {
+  Created = 'CREATED',
+  Pending = 'PENDING'
+}
+
 export type ServiceInstanceEdge = {
   __typename?: 'ServiceInstanceEdge';
   cursor: Scalars['String']['output'];
   node: ServiceInstance;
 };
+
+export enum ServiceInstanceJoinType {
+  JoinAsk = 'JOIN_ASK',
+  JoinAuto = 'JOIN_AUTO',
+  JoinInvite = 'JOIN_INVITE',
+  JoinSelf = 'JOIN_SELF'
+}
 
 export enum ServiceInstanceOrdering {
   Description = 'description',
@@ -1565,7 +1577,9 @@ export type ResolversTypes = ResolversObject<{
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
   ServiceInstance: ResolverTypeWrapper<ServiceInstance>;
+  ServiceInstanceCreationStatus: ServiceInstanceCreationStatus;
   ServiceInstanceEdge: ResolverTypeWrapper<ServiceInstanceEdge>;
+  ServiceInstanceJoinType: ServiceInstanceJoinType;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
@@ -2142,11 +2156,11 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
 
 export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstance'] = ResolversParentTypes['ServiceInstance']> = ResolversObject<{
   capabilities?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
-  creation_status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  creation_status?: Resolver<Maybe<ResolversTypes['ServiceInstanceCreationStatus']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   illustration_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  join_type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  join_type?: Resolver<Maybe<ResolversTypes['ServiceInstanceJoinType']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
