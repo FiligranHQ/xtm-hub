@@ -39,7 +39,6 @@ next-env.d.ts
 
 # Yarn
 .yarn
-.yarnrc.yml
 .pnp.*
 /test-results/
 /playwright-report/

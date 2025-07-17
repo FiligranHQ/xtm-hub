@@ -1,5 +1,5 @@
 import plugin from 'tailwindcss/plugin';
-
+/* eslint-disable @typescript-eslint/no-require-imports */
 const FiligranUIPlugin = require('filigran-ui/plugin');
 module.exports = {
   darkMode: ['class'],
@@ -21,3 +21,4 @@ module.exports = {
     }),
   ],
 };
+/* eslint-enable @typescript-eslint/no-require-imports */

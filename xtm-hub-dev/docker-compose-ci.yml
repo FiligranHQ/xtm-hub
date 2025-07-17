@@ -7,7 +7,8 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-front/.
+      context: ../
+      dockerfile: apps/portal-front/Dockerfile
       cache_from:
         - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-front:main
@@ -31,8 +32,8 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-front/.
-      dockerfile: test.Dockerfile
+      context: ../
+      dockerfile: apps/portal-front/test.Dockerfile
       cache_from:
         - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-front:main
@@ -48,8 +49,8 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-api/.
-      dockerfile: test.Dockerfile
+      context: ../
+      dockerfile: apps/portal-api/test.Dockerfile
       cache_from:
         - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-api:main
@@ -83,7 +84,8 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-api/.
+      context: ../
+      dockerfile: apps/portal-api/Dockerfile
       cache_from:
         - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-api:main
@@ -161,7 +163,8 @@ services:
         max-size: "10m"
         max-file: "3"
     build:
-      context: ../portal-e2e-tests/.
+      context: ../
+      dockerfile: apps/portal-e2e-tests/Dockerfile
       cache_from:
         - type=registry,ref=filigran/portal-e2e-tests:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-e2e-tests:main
