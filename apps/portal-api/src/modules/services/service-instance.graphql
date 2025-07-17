@@ -7,6 +7,7 @@ enum ServiceInstanceOrdering {
 enum ServiceInstanceCreationStatus {
   PENDING
   CREATED
+  READY
 }
 
 enum ServiceInstanceJoinType {

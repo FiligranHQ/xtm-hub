@@ -1162,7 +1162,8 @@ export type ServiceInstance = Node & {
 
 export enum ServiceInstanceCreationStatus {
   Created = 'CREATED',
-  Pending = 'PENDING'
+  Pending = 'PENDING',
+  Ready = 'READY'
 }
 
 export type ServiceInstanceEdge = {
