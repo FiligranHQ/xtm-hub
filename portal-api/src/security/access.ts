@@ -164,7 +164,7 @@ export const applyDbSecurityLayer = async (
 ) => {
   const table = qb._queryContext.__typename;
   const context = qb._queryContext.context;
-  const method = qb.toSQL().method;
+  let method = qb.toSQL().method;
 
   // First check if we have a valid table type
   if (!table) {
@@ -181,14 +181,14 @@ export const applyDbSecurityLayer = async (
   };
 
   if (tableSecurityMap[table]) {
+    if (method === 'first') {
+      method = 'select';
+    }
     if (method && tableSecurityMap[table][method]) {
       // We could perform the verification earlier, but I want to be able to check everything in development.
       // By default, we're in ADMIN_PLTFM in dev, so this helps ensure the security is properly implemented.
       if (isUserAdminPlatform(context.user)) {
         return qb;
-      }
-      if (method === 'select' || method === 'first') {
-        return tableSecurityMap[table]['select'](context, qb, opts);
       }
       // Check the promise and then if it not throwing error we return qb.
       // QB in promise execute automatically the query but we don't always want to execute the query at this moment
