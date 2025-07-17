@@ -164,7 +164,11 @@
     "Details": {
       "InstanceID": "ID de l'instance",
       "InstanceURL": "URL de l'instance",
-      "Contract": "Contrat"
+      "Contract": "Contrat",
+      "Contracts": {
+        "CE": "Edition Communautaire",
+        "EE": "Edition Entreprise"
+      }
     }
   },
   "GenericActions": {
