@@ -1,7 +1,11 @@
 'use client';
 
+import {
+  octiInstanceToServiceInstanceCardData,
+  publicServiceInstanceToInstanceCardData,
+  userServicesOwnedServiceToInstanceCardData,
+} from '@/utils/services';
 import { enrollOCTIInstanceFragment$data } from '@generated/enrollOCTIInstanceFragment.graphql';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { Suspense } from 'react';
@@ -13,28 +17,6 @@ interface OwnedServicesProps {
   octiInstances: enrollOCTIInstanceFragment$data[];
 }
 
-const octiInstanceToServiceListFragment = (
-  instance: enrollOCTIInstanceFragment$data
-) => {
-  return {
-    id: instance.id,
-    name: instance.title,
-    description: instance.contract,
-    illustration_document_id: null,
-    logo_document_id: null,
-    service_definition: {
-      identifier: ServiceDefinitionIdentifierEnum.OCTI_ENROLLMENT,
-    },
-    links: [
-      {
-        url: instance.url,
-        name: instance.url,
-      },
-    ],
-    ordering: -1, // OCTI Instances are displayed at the first position
-  } as unknown as serviceList_fragment$data;
-};
-
 const OwnedServices = ({
   services,
   publicServices,
@@ -42,12 +24,9 @@ const OwnedServices = ({
 }: OwnedServicesProps) => {
   // Merge and sort by ordering property
   const sortedServices = [
-    ...services.map(
-      ({ subscription }) =>
-        subscription!.service_instance as serviceList_fragment$data
-    ),
-    ...publicServices,
-    ...octiInstances.map(octiInstanceToServiceListFragment),
+    ...services.map(userServicesOwnedServiceToInstanceCardData),
+    ...publicServices.map(publicServiceInstanceToInstanceCardData),
+    ...octiInstances.map(octiInstanceToServiceInstanceCardData),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
   if (sortedServices.length > 0) {

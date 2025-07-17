@@ -3,6 +3,7 @@
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { isExternalService } from '@/utils/services';
 import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
@@ -75,7 +76,10 @@ const ServiceList = ({
         // A service is owned if it is subscribed or if it is an external service
         else if (
           service.organization_subscribed ||
-          isExternalService(service)
+          isExternalService(
+            service.service_definition!
+              .identifier as ServiceDefinitionIdentifierEnum
+          )
         ) {
           acc.owned.push(service);
         } else {
