@@ -35,11 +35,36 @@ interface ServiceInstanceCardProps {
   className?: string;
 }
 
+const EnrollmentDetails: React.FunctionComponent<{
+  serviceInstance: ServiceInstanceCardData;
+  serviceHref: string;
+}> = ({ serviceInstance, serviceHref }) => {
+  const t = useTranslations();
+  return (
+    <dl className="grid grid-cols-3 gap-s">
+      <dt className="txt-sub-content text-muted-foreground">
+        {t('Enroll.Details.InstanceID')}
+      </dt>
+      <dd className="txt-sub-content col-span-2">
+        {fromGlobalId(serviceInstance.id).id}
+      </dd>
+      <dt className="txt-sub-content text-muted-foreground">
+        {t('Enroll.Details.InstanceURL')}
+      </dt>
+      <dd className="txt-sub-content col-span-2">{serviceHref}</dd>
+      <dt className="txt-sub-content text-muted-foreground">
+        {t('Enroll.Details.Contract')}
+      </dt>
+      <dd className="txt-sub-content col-span-2">
+        {t(`Enroll.Details.Contracts.${serviceInstance.contract}`)}
+      </dd>
+    </dl>
+  );
+};
+
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className, seo }) => {
-  const t = useTranslations();
-
   const isDisabled =
     serviceInstance.creation_status === SERVICE_CREATION_STATUS.PENDING;
 
@@ -101,24 +126,10 @@ const ServiceInstanceCard: React.FunctionComponent<
             ) && <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />}
           </div>
           {(isEnrollmentService(serviceInstance) && (
-            <div className="grid grid-cols-3 gap-s">
-              <div className="txt-sub-content text-muted-foreground">
-                {t('Enroll.Details.InstanceID')}
-              </div>
-              <div className="txt-sub-content col-span-2">
-                {fromGlobalId(serviceInstance.id).id}
-              </div>
-              <div className="txt-sub-content text-muted-foreground">
-                {t('Enroll.Details.InstanceURL')}
-              </div>
-              <div className="txt-sub-content col-span-2">{serviceHref}</div>
-              <div className="txt-sub-content text-muted-foreground">
-                {t('Enroll.Details.Contract')}
-              </div>
-              <div className="txt-sub-content col-span-2">
-                {t(`Enroll.Details.Contracts.${serviceInstance.contract}`)}
-              </div>
-            </div>
+            <EnrollmentDetails
+              serviceInstance={serviceInstance}
+              serviceHref={serviceHref}
+            />
           )) || (
             <p className="txt-sub-content text-muted-foreground">
               {serviceInstance.description}
