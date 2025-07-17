@@ -5,7 +5,7 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY .yarnrc.yml package.json yarn.lock ./
+COPY apps/portal-front/.yarnrc.yml apps/portal-front/package.json apps/portal-front/yarn.lock ./
 RUN corepack enable && \
     yarn install --immutable
 
@@ -14,7 +14,7 @@ FROM base AS builder
 ARG APP_VERSION=0.0.0-dev
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY apps/portal-front/. .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION

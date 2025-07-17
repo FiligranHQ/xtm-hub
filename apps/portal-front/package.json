@@ -84,6 +84,7 @@
     "vite-tsconfig-paths": "4.3.2",
     "vitest": "2.1.8"
   },
+  "tsConfig": "apps/portal-front/tsconfig.json",
   "packageManager": "yarn@3.8.7",
   "prettier": {
     "printWidth": 80,

@@ -15,7 +15,6 @@ __pycache__
 
 # Yarn
 .yarn
-.yarnrc.yml
 .pnp.*
 
 /config/local*.json
