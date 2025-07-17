@@ -5,6 +5,7 @@ import {
   contextAdminUser,
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
+import { OctiPlatformContract } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import Subscription from '../../../model/kanel/public/Subscription';
@@ -20,7 +21,7 @@ describe('Enrollment domain', () => {
   const token = uuidv4();
   const platformTitle = 'My OCTI instance';
   const platformUrl = 'http://example.com';
-  const platformContract = 'EE';
+  const platformContract = OctiPlatformContract.Ee;
   const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
   let configuration: OCTIInstanceConfiguration;
 
