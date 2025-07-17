@@ -78,6 +78,7 @@ export const seoServiceInstanceToInstanceCardData = (
     id: instance.id,
     creation_status: SERVICE_CREATION_STATUS.CREATED,
     name: instance.name,
+    slug: instance.slug as string,
     description: instance.description!,
     illustration_document_id: instance.illustration_document_id as string,
     logo_document_id: instance.logo_document_id as string,
