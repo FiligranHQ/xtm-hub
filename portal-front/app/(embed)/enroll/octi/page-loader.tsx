@@ -4,6 +4,7 @@ import { EnrollOCTI } from '@/components/enroll/octi';
 import Loader from '@/components/loader';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import useMountingLoader from '@/hooks/useMountingLoader';
+import { OCTIPlatformContract } from '@generated/enrollOCTIInstanceFragment.graphql';
 import OrganizationListUserOrganizationsQuery, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
@@ -31,7 +32,7 @@ export const PageLoader: React.FC = () => {
     id: platform_id,
     title: platform_title,
     url: platform_url,
-    contract: platform_contract,
+    contract: platform_contract as OCTIPlatformContract,
   };
 
   return queryRef ? (

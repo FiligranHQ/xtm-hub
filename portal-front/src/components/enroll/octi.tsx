@@ -6,7 +6,10 @@ import { EnrollStateResult } from '@/components/enroll/state/result';
 import enrollOCTIFragmentGraphql, {
   enrollOCTIFragment$key,
 } from '@generated/enrollOCTIFragment.graphql';
-import { enrollOCTIInstanceMutation } from '@generated/enrollOCTIInstanceMutation.graphql';
+import {
+  enrollOCTIInstanceMutation,
+  OCTIPlatformContract,
+} from '@generated/enrollOCTIInstanceMutation.graphql';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
@@ -25,7 +28,7 @@ interface Props {
     id: string;
     url: string;
     title: string;
-    contract: string;
+    contract: OCTIPlatformContract;
   };
   queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
 }

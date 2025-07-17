@@ -336,18 +336,23 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
+enum OCTIPlatformContract {
+  CE
+  EE
+}
+
 type OCTIPlatform implements Node {
   id: ID!
   url: String!
   title: String!
-  contract: String!
+  contract: OCTIPlatformContract!
 }
 
 input OCTIPlatformInput {
   id: ID!
   url: String!
   title: String!
-  contract: String!
+  contract: OCTIPlatformContract!
 }
 
 input EnrollOCTIInstanceInput {
