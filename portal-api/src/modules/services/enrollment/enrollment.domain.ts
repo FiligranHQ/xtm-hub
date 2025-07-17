@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, QueryOpts } from '../../../../knexfile';
 import {
+  OctiPlatformContract,
   OrganizationCapability,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -25,7 +26,7 @@ export type OCTIInstanceConfiguration = {
   platform_id: string;
   platform_url: string;
   platform_title: string;
-  platform_contract: string;
+  platform_contract: OctiPlatformContract;
   token: string;
 };
 

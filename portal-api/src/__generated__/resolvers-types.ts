@@ -661,14 +661,19 @@ export type Node = {
 
 export type OctiPlatform = Node & {
   __typename?: 'OCTIPlatform';
-  contract: Scalars['String']['output'];
+  contract: OctiPlatformContract;
   id: Scalars['ID']['output'];
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
 };
 
+export enum OctiPlatformContract {
+  Ce = 'CE',
+  Ee = 'EE'
+}
+
 export type OctiPlatformInput = {
-  contract: Scalars['String']['input'];
+  contract: OctiPlatformContract;
   id: Scalars['ID']['input'];
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
@@ -1534,6 +1539,7 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OCTIPlatform: ResolverTypeWrapper<OctiPlatform>;
+  OCTIPlatformContract: OctiPlatformContract;
   OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ResolverTypeWrapper<ObasScenario>;
   ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
@@ -1953,7 +1959,7 @@ export type NodeResolvers<ContextType = PortalContext, ParentType extends Resolv
 }>;
 
 export type OctiPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OCTIPlatform'] = ResolversParentTypes['OCTIPlatform']> = ResolversObject<{
-  contract?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contract?: Resolver<ResolversTypes['OCTIPlatformContract'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
