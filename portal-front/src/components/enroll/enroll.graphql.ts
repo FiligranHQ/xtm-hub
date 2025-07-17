@@ -35,6 +35,7 @@ export const EnrollOCTIInstance = graphql`
 export const enrollOCTIInstanceFragment = graphql`
   fragment enrollOCTIInstanceFragment on OCTIPlatform {
     id
+    platform_id
     title
     url
     contract

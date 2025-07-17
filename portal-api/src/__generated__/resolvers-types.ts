@@ -663,6 +663,7 @@ export type OctiPlatform = Node & {
   __typename?: 'OCTIPlatform';
   contract: OctiPlatformContract;
   id: Scalars['ID']['output'];
+  platform_id: Scalars['String']['output'];
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
 };
@@ -1961,6 +1962,7 @@ export type NodeResolvers<ContextType = PortalContext, ParentType extends Resolv
 export type OctiPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OCTIPlatform'] = ResolversParentTypes['OCTIPlatform']> = ResolversObject<{
   contract?: Resolver<ResolversTypes['OCTIPlatformContract'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

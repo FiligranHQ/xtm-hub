@@ -346,6 +346,7 @@ type OCTIPlatform implements Node {
   url: String!
   title: String!
   contract: OCTIPlatformContract!
+  platform_id: String!
 }
 
 input OCTIPlatformInput {

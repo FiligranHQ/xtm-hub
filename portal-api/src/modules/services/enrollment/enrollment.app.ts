@@ -27,6 +27,7 @@ export const enrollmentApp = {
     return instances.map((instance) => ({
       __typename: 'OCTIPlatform',
       id: instance.config.platform_id,
+      platform_id: instance.config.platform_id,
       title: instance.config.platform_title,
       url: instance.config.platform_url,
       contract: instance.config.platform_contract,

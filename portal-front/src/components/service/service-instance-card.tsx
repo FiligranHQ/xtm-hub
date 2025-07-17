@@ -1,6 +1,5 @@
 import { SERVICE_CREATION_STATUS } from '@/components/service/service.types';
 import { cn } from '@/lib/utils';
-import { fromGlobalId } from '@/utils/globalId';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
@@ -19,7 +18,8 @@ export interface ServiceInstanceCardData {
   creation_status: SERVICE_CREATION_STATUS;
   name: string;
   slug?: string;
-  contract?: string;
+  platform_contract?: string;
+  platform_id?: string;
   logo_document_id: string | null;
   illustration_document_id: string | null;
   service_definition_identifier: ServiceDefinitionIdentifierEnum;
@@ -46,7 +46,7 @@ const EnrollmentDetails: React.FunctionComponent<{
         {t('Enroll.Details.InstanceID')}
       </dt>
       <dd className="txt-sub-content col-span-2">
-        {fromGlobalId(serviceInstance.id).id}
+        {serviceInstance.platform_id}
       </dd>
       <dt className="txt-sub-content text-muted-foreground">
         {t('Enroll.Details.InstanceURL')}
@@ -56,7 +56,7 @@ const EnrollmentDetails: React.FunctionComponent<{
         {t('Enroll.Details.Contract')}
       </dt>
       <dd className="txt-sub-content col-span-2">
-        {t(`Enroll.Details.Contracts.${serviceInstance.contract}`)}
+        {t(`Enroll.Details.Contracts.${serviceInstance.platform_contract}`)}
       </dd>
     </dl>
   );

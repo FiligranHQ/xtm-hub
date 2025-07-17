@@ -24,9 +24,10 @@ export const octiInstanceToServiceInstanceCardData = (
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
+    platform_id: instance.platform_id,
     creation_status: SERVICE_CREATION_STATUS.CREATED,
     name: instance.title,
-    contract: instance.contract,
+    platform_contract: instance.contract,
     illustration_document_id: null,
     logo_document_id: null,
     service_definition_identifier:
