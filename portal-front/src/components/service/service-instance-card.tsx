@@ -1,4 +1,4 @@
-import { SERVICE_CREATION_STATUS } from '@/components/service/service.const';
+import { SERVICE_CREATION_STATUS } from '@/components/service/service.types';
 import { cn } from '@/lib/utils';
 import { fromGlobalId } from '@/utils/globalId';
 import {
@@ -6,17 +6,30 @@ import {
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import { isEnrollmentService, isExternalService } from '@/utils/services';
-import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
 import { AspectRatio } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import * as React from 'react';
 import { ReactNode } from 'react';
 
+export interface ServiceInstanceCardData {
+  id: string;
+  creation_status: SERVICE_CREATION_STATUS;
+  name: string;
+  slug?: string;
+  contract?: string;
+  logo_document_id: string | null;
+  illustration_document_id: string | null;
+  service_definition_identifier: ServiceDefinitionIdentifierEnum;
+  description?: string;
+  url?: string;
+  ordering: number;
+}
+
 interface ServiceInstanceCardProps {
-  serviceInstance: serviceList_fragment$data;
+  serviceInstance: ServiceInstanceCardData;
   rightAction?: ReactNode;
   seo?: boolean;
   className?: string;
@@ -28,12 +41,13 @@ const ServiceInstanceCard: React.FunctionComponent<
   const t = useTranslations();
 
   const isDisabled =
-    serviceInstance?.creation_status === SERVICE_CREATION_STATUS.PENDING;
+    serviceInstance.creation_status === SERVICE_CREATION_STATUS.PENDING;
 
   const serviceHref =
-    isExternalService(serviceInstance) && serviceInstance.links?.[0]?.url
-      ? serviceInstance.links?.[0]?.url
-      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`}`;
+    isExternalService(serviceInstance.service_definition_identifier) &&
+    serviceInstance.url
+      ? serviceInstance.url
+      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
@@ -82,9 +96,9 @@ const ServiceInstanceCard: React.FunctionComponent<
               </Link>
             )}
 
-            {isExternalService(serviceInstance) && (
-              <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />
-            )}
+            {isExternalService(
+              serviceInstance.service_definition_identifier
+            ) && <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />}
           </div>
           {(isEnrollmentService(serviceInstance) && (
             <div className="grid grid-cols-3 gap-s">
@@ -102,7 +116,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 {t('Enroll.Details.Contract')}
               </div>
               <div className="txt-sub-content col-span-2">
-                {t(`Enroll.Details.Contracts.${serviceInstance.description}`)}
+                {t(`Enroll.Details.Contracts.${serviceInstance.contract}`)}
               </div>
             </div>
           )) || (

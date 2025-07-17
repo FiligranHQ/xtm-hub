@@ -8,7 +8,7 @@ import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { useMutation } from 'react-relay';
-import { JOIN_TYPE } from '../../service.const';
+import { JOIN_TYPE } from '../../service.types';
 
 export default function useGetAction(
   addSubscriptionInDb: (service: serviceList_fragment$data) => void
@@ -23,7 +23,7 @@ export default function useGetAction(
       !service.user_joined &&
       service.organization_subscribed &&
       [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
-        service.join_type ?? ''
+        (service.join_type as JOIN_TYPE) ?? ''
       )
     ) {
       return (
@@ -47,7 +47,7 @@ export default function useGetAction(
       !service.organization_subscribed &&
       service.join_type &&
       [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
-        service.join_type
+        service.join_type as JOIN_TYPE
       ) && (
         <GuardCapacityComponent
           capacityRestriction={[

@@ -28,8 +28,8 @@ import {
   publicServiceListFragment,
   publicServiceListQuery,
 } from '../../public-service.graphql';
-import { JOIN_TYPE } from '../../service.const';
 import { subscription } from '../../service.graphql';
+import { JOIN_TYPE } from '../../service.types';
 import {
   userServiceOwnedFragment,
   UserServiceOwnedQuery,
@@ -127,7 +127,9 @@ const getPublicServices = (
 
       if (
         service.join_type &&
-        [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(service.join_type)
+        [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
+          service.join_type as JOIN_TYPE
+        )
       ) {
         commitMutation('ACCEPTED', t('Service.SubscribeSuccessful'));
       } else {
