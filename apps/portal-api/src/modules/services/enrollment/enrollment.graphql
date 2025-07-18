@@ -3,7 +3,7 @@ enum OCTIPlatformContract {
   EE
 }
 
-type OCTIPlatform implements Node {
+type OctiInstance implements Node {
   id: ID!
   url: String!
   title: String!
@@ -47,7 +47,7 @@ type CanEnrollResponse {
 type Query {
   canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
     @auth
-  octiInstances: [OCTIPlatform!]! @auth
+  octiInstances: [OctiInstance!]! @auth
 }
 
 type Mutation {

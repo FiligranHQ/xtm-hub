@@ -33,7 +33,7 @@ export const EnrollOCTIInstance = graphql`
 `;
 
 export const enrollOCTIInstanceFragment = graphql`
-  fragment enrollOCTIInstanceFragment on OCTIPlatform {
+  fragment enrollOCTIInstanceFragment on OctiInstance {
     id
     platform_id
     title

@@ -659,15 +659,6 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
-export type OctiPlatform = Node & {
-  __typename?: 'OCTIPlatform';
-  contract: OctiPlatformContract;
-  id: Scalars['ID']['output'];
-  platform_id: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  url: Scalars['String']['output'];
-};
-
 export enum OctiPlatformContract {
   Ce = 'CE',
   Ee = 'EE'
@@ -717,6 +708,15 @@ export type ObasScenarioEdge = {
   __typename?: 'ObasScenarioEdge';
   cursor: Scalars['String']['output'];
   node: ObasScenario;
+};
+
+export type OctiInstance = Node & {
+  __typename?: 'OctiInstance';
+  contract: OctiPlatformContract;
+  id: Scalars['ID']['output'];
+  platform_id: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  url: Scalars['String']['output'];
 };
 
 export enum OrderingMode {
@@ -805,7 +805,7 @@ export type Query = {
   node?: Maybe<Node>;
   obasScenario?: Maybe<ObasScenario>;
   obasScenarios: ObasScenarioConnection;
-  octiInstances: Array<OctiPlatform>;
+  octiInstances: Array<OctiInstance>;
   organization?: Maybe<Organization>;
   organizationAdministrators: Array<User>;
   organizations: OrganizationConnection;
@@ -1500,7 +1500,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( OctiPlatform ) | ( ObasScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( ObasScenario ) | ( OctiInstance ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -1552,12 +1552,12 @@ export type ResolversTypes = ResolversObject<{
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
-  OCTIPlatform: ResolverTypeWrapper<OctiPlatform>;
   OCTIPlatformContract: OctiPlatformContract;
   OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ResolverTypeWrapper<ObasScenario>;
   ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
   ObasScenarioEdge: ResolverTypeWrapper<ObasScenarioEdge>;
+  OctiInstance: ResolverTypeWrapper<OctiInstance>;
   OrderingMode: OrderingMode;
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationCapabilities: ResolverTypeWrapper<OrganizationCapabilities>;
@@ -1660,11 +1660,11 @@ export type ResolversParentTypes = ResolversObject<{
   MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
-  OCTIPlatform: OctiPlatform;
   OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ObasScenario;
   ObasScenarioConnection: ObasScenarioConnection;
   ObasScenarioEdge: ObasScenarioEdge;
+  OctiInstance: OctiInstance;
   Organization: Organization;
   OrganizationCapabilities: OrganizationCapabilities;
   OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
@@ -1970,17 +1970,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'OCTIPlatform' | 'ObasScenario' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'ObasScenario' | 'OctiInstance' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-}>;
-
-export type OctiPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OCTIPlatform'] = ResolversParentTypes['OCTIPlatform']> = ResolversObject<{
-  contract?: Resolver<ResolversTypes['OCTIPlatformContract'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ObasScenarioResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenario'] = ResolversParentTypes['ObasScenario']> = ResolversObject<{
@@ -2019,6 +2010,15 @@ export type ObasScenarioConnectionResolvers<ContextType = PortalContext, ParentT
 export type ObasScenarioEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenarioEdge'] = ResolversParentTypes['ObasScenarioEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type OctiInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OctiInstance'] = ResolversParentTypes['OctiInstance']> = ResolversObject<{
+  contract?: Resolver<ResolversTypes['OCTIPlatformContract'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2081,7 +2081,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
   obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  octiInstances?: Resolver<Array<ResolversTypes['OCTIPlatform']>, ParentType, ContextType>;
+  octiInstances?: Resolver<Array<ResolversTypes['OctiInstance']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizationAdministrators?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryOrganizationAdministratorsArgs, 'organizationId'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2373,10 +2373,10 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   MessageTracking?: MessageTrackingResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
-  OCTIPlatform?: OctiPlatformResolvers<ContextType>;
   ObasScenario?: ObasScenarioResolvers<ContextType>;
   ObasScenarioConnection?: ObasScenarioConnectionResolvers<ContextType>;
   ObasScenarioEdge?: ObasScenarioEdgeResolvers<ContextType>;
+  OctiInstance?: OctiInstanceResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
