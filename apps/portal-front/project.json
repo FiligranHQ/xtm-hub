@@ -5,10 +5,17 @@
   "projectType": "application",
   "types": ["next", "yarn"],
   "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/portal-front",
+        "command": "yarn dev"
+      }
+    },
     "build": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/dist"],
-      "options": {
+        "options": {
         "cwd": "apps/portal-front",
         "command": "relay-compiler && tsx scripts/generate-enum.ts && next build"
       }
