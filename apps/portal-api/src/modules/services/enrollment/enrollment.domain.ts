@@ -145,7 +145,8 @@ export const enrollmentDomain = {
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
-      .select(['Service_Configuration.config']);
+      .select(['Service_Configuration.config'])
+      .secureQuery();
 
     return query;
   },
