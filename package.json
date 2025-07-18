@@ -12,6 +12,10 @@
   "main": "index.js",
   "keywords": [],
   "author": "Filigran",
+  "scripts": {
+    "dev:api": "npx nx run portal-api:dev",
+    "dev:front": "npx nx run portal-front:dev"
+  },
   "devDependencies": {
     "@nx/eslint": "21.2.3",
     "@nx/next": "21.2.3",
