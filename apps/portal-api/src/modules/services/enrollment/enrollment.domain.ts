@@ -1,7 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
-import { OrganizationCapability } from '../../../__generated__/resolvers-types';
+import { db, QueryOpts } from '../../../../knexfile';
+import {
+  OctiPlatformContract,
+  OrganizationCapability,
+  ServiceDefinitionIdentifier,
+} from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
@@ -19,6 +26,7 @@ export type OCTIInstanceConfiguration = {
   platform_id: string;
   platform_url: string;
   platform_title: string;
+  platform_contract: OctiPlatformContract;
   token: string;
 };
 
@@ -59,6 +67,7 @@ export const enrollmentDomain = {
       configuration
     );
   },
+
   transferExistingInstance: async (
     context: PortalContext,
     {
@@ -101,5 +110,44 @@ export const enrollmentDomain = {
       subscriptionId: subscription.id,
       targetOrganizationId,
     });
+  },
+
+  loadOctiInstances: async (
+    context: PortalContext,
+    opts: QueryOpts = {}
+  ): Promise<{ config: OCTIInstanceConfiguration }[]> => {
+    const userSelectedOrganization = context.user.selected_organization_id;
+
+    const query = await db<ServiceInstance>(context, 'ServiceInstance', opts)
+      .leftJoin(
+        'Service_Configuration',
+        'Service_Configuration.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .leftJoin(
+        'ServiceDefinition',
+        'ServiceDefinition.id',
+        '=',
+        'ServiceInstance.service_definition_id'
+      )
+      .leftJoin(
+        'Subscription',
+        'Subscription.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .where(
+        'ServiceDefinition.identifier',
+        '=',
+        ServiceDefinitionIdentifier.OctiEnrollment
+      )
+      .where('Subscription.organization_id', '=', userSelectedOrganization)
+      .where('Subscription.status', '=', 'ACCEPTED')
+      .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
+      .select(['Service_Configuration.config'])
+      .secureQuery();
+
+    return query;
   },
 };

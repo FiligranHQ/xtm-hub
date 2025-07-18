@@ -1,9 +1,10 @@
 import ServiceInstanceCard from '@/components/service/service-instance-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
 } from '@generated/seoServiceInstancesQuery.graphql';
-import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 
 const Page = async () => {
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
@@ -12,7 +13,7 @@ const Page = async () => {
     { cache: undefined, next: { revalidate: 3600 } }
   );
   const services = response.data
-    .seoServiceInstances as unknown as serviceList_fragment$data[];
+    .seoServiceInstances as unknown as seoServiceInstanceFragment$data[];
 
   return (
     <>
@@ -26,7 +27,7 @@ const Page = async () => {
         {services.map((service) => (
           <ServiceInstanceCard
             key={service.id}
-            serviceInstance={service}
+            serviceInstance={seoServiceInstanceToInstanceCardData(service)}
             seo={true}
           />
         ))}

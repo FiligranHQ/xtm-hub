@@ -3,12 +3,12 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { useMutation } from 'react-relay';
-import { JOIN_TYPE } from '../../service.const';
 
 export default function useGetAction(
   addSubscriptionInDb: (service: serviceList_fragment$data) => void
@@ -22,9 +22,10 @@ export default function useGetAction(
     if (
       !service.user_joined &&
       service.organization_subscribed &&
-      [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
-        service.join_type ?? ''
-      )
+      [
+        ServiceInstanceJoinTypeEnum.JOIN_SELF,
+        ServiceInstanceJoinTypeEnum.JOIN_AUTO,
+      ].includes((service.join_type as ServiceInstanceJoinTypeEnum) ?? '')
     ) {
       return (
         <Button
@@ -46,9 +47,10 @@ export default function useGetAction(
     return (
       !service.organization_subscribed &&
       service.join_type &&
-      [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(
-        service.join_type
-      ) && (
+      [
+        ServiceInstanceJoinTypeEnum.JOIN_SELF,
+        ServiceInstanceJoinTypeEnum.JOIN_AUTO,
+      ].includes(service.join_type as ServiceInstanceJoinTypeEnum) && (
         <GuardCapacityComponent
           capacityRestriction={[
             OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,

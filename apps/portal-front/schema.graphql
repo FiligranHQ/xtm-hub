@@ -110,6 +110,7 @@ type Query {
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
+  octiInstances: [OctiInstance!]!
   seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
   seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
@@ -335,15 +336,29 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
-input OCTIPlatform {
-  id: String!
+enum OCTIPlatformContract {
+  CE
+  EE
+}
+
+type OctiInstance implements Node {
+  id: ID!
   url: String!
   title: String!
+  contract: OCTIPlatformContract!
+  platform_id: String!
+}
+
+input OCTIPlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: OCTIPlatformContract!
 }
 
 input EnrollOCTIInstanceInput {
   organizationId: ID!
-  platform: OCTIPlatform!
+  platform: OCTIPlatformInput!
 }
 
 input CanEnrollOCTIInstanceInput {
@@ -439,12 +454,25 @@ enum ServiceInstanceOrdering {
   ordering
 }
 
+enum ServiceInstanceCreationStatus {
+  PENDING
+  CREATED
+  READY
+}
+
+enum ServiceInstanceJoinType {
+  JOIN_INVITE
+  JOIN_ASK
+  JOIN_AUTO
+  JOIN_SELF
+}
+
 type ServiceInstance implements Node {
   id: ID!
   name: String!
   description: String
   slug: String
-  creation_status: String
+  creation_status: ServiceInstanceCreationStatus
   organization_subscribed: Boolean
   user_joined: Boolean
   links: [ServiceLink]
@@ -452,7 +480,7 @@ type ServiceInstance implements Node {
   subscriptions: [SubscriptionModel]
   capabilities: [String]!
   public: Boolean
-  join_type: String
+  join_type: ServiceInstanceJoinType
   tags: [String]
   service_definition: ServiceDefinition
   logo_document_id: ID

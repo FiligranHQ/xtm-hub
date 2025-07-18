@@ -1,9 +1,7 @@
 {
   "name": "xtm-hub",
   "workspaces": [
-    "portal-api/*",
-    "portal-front/*",
-    "portal-e2e-tests/*"
+    "apps/*"
   ],
   "private": true,
   "type": "module",
@@ -24,27 +22,22 @@
     "@nx/web": "^21.2.3",
     "@nx/workspace": "21.2.3",
     "@playwright/test": "1.53.2",
-    "concurrently": "9.2.0",
     "eslint": "^9.30.1",
     "eslint-config-next": "^15.3.5",
     "eslint-config-prettier": "^10.1.5",
     "nx": "21.2.3",
-    "relay-compiler": "18.2.0",
     "typescript": "5.8.3"
   },
   "dependencies": {
     "@types/node": "24.0.12",
-    "@types/react": "19.1.6",
-    "@types/react-relay": "18.2.1",
-    "express": "4.21.0",
-    "next": "15.3.3",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-relay": "18.2.0",
     "tsx": "4.19.4",
-    "usehooks-ts": "3.1.0",
-    "vitest": "3.2.4"
+    "typescript": "5.8.3"
   },
   "tsConfig": "tsconfig.json",
-  "packageManager": "yarn@3.8.7"
+  "packageManager": "yarn@3.8.7",
+  "resolutions": {
+    "@types/express-serve-static-core": "5.0.7",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  }
 }

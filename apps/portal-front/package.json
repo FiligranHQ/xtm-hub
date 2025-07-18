@@ -1,5 +1,5 @@
 {
-  "name": "portal-front",
+  "name": "@xtm-hub/portal-front",
   "version": "1.4.8",
   "private": true,
   "scripts": {

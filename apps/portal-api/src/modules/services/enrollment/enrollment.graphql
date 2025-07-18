@@ -1,12 +1,26 @@
-input OCTIPlatform {
-  id: String!
+enum OCTIPlatformContract {
+  CE
+  EE
+}
+
+type OctiInstance implements Node {
+  id: ID!
   url: String!
   title: String!
+  contract: OCTIPlatformContract!
+  platform_id: String!
+}
+
+input OCTIPlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: OCTIPlatformContract!
 }
 
 input EnrollOCTIInstanceInput {
   organizationId: ID!
-  platform: OCTIPlatform!
+  platform: OCTIPlatformInput!
 }
 
 input CanEnrollOCTIInstanceInput {
@@ -33,6 +47,7 @@ type CanEnrollResponse {
 type Query {
   canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
     @auth
+  octiInstances: [OctiInstance!]! @auth
 }
 
 type Mutation {

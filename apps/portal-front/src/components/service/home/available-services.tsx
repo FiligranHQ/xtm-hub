@@ -1,5 +1,6 @@
 'use client';
 
+import { publicServiceInstanceToInstanceCardData } from '@/utils/services';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { Separator } from 'filigran-ui';
 import { Suspense } from 'react';
@@ -29,7 +30,9 @@ const AvailableServices = ({
                 <ServiceInstanceCard
                   key={service.id}
                   rightAction={getAction(service)}
-                  serviceInstance={service}
+                  serviceInstance={publicServiceInstanceToInstanceCardData(
+                    service
+                  )}
                 />
               )
             );

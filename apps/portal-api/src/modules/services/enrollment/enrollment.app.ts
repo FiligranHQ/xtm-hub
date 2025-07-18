@@ -3,6 +3,7 @@ import {
   CanEnrollResponse,
   CanEnrollStatus,
   EnrollOctiInstanceInput,
+  OctiInstance,
   OrganizationCapability,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -19,6 +20,20 @@ import {
 } from './enrollment.domain';
 
 export const enrollmentApp = {
+  loadOctiInstances: async (
+    context: PortalContext
+  ): Promise<OctiInstance[]> => {
+    const instances = await enrollmentDomain.loadOctiInstances(context);
+    return instances.map((instance) => ({
+      __typename: 'OctiInstance',
+      id: instance.config.platform_id,
+      platform_id: instance.config.platform_id,
+      title: instance.config.platform_title,
+      url: instance.config.platform_url,
+      contract: instance.config.platform_contract,
+    }));
+  },
+
   enrollOCTIInstance: async (
     context: PortalContext,
     { organizationId, platform }: EnrollOctiInstanceInput
@@ -29,6 +44,7 @@ export const enrollmentApp = {
       platform_id: platform.id,
       platform_url: platform.url,
       platform_title: platform.title,
+      platform_contract: platform.contract,
       token: token,
     };
 

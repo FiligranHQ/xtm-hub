@@ -1,10 +1,15 @@
 import react from '@vitejs/plugin-react';
+import type { PluginOption } from 'vite';
 import relay from 'vite-plugin-relay';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), react(), relay],
+  plugins: [
+    tsconfigPaths() as PluginOption,
+    react() as PluginOption,
+    relay as PluginOption,
+  ],
   test: {
     globals: true,
     environment: 'jsdom',

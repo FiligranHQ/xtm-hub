@@ -1,5 +1,5 @@
 {
-  "name": "test_e2e",
+  "name": "@xtm-hub/test_e2e",
   "version": "0.1.0",
   "private": true,
   "scripts": {

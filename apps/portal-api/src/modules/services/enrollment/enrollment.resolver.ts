@@ -32,6 +32,8 @@ const resolvers: Resolvers = {
         });
       }
     },
+    octiInstances: async (_, _z, context) =>
+      enrollmentApp.loadOctiInstances(context),
   },
   Mutation: {
     enrollOCTIInstance: async (_, { input }, context) => {
@@ -41,6 +43,7 @@ const resolvers: Resolvers = {
           id: z.uuid().nonempty(),
           url: z.url().nonempty(),
           title: z.string().nonempty(),
+          contract: z.string().nonempty(),
         }),
       });
 

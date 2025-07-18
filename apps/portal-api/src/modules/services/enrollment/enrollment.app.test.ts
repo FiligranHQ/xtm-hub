@@ -15,6 +15,7 @@ describe('Enrollment app', () => {
       id: uuidv4(),
       title: 'My OCTI instance',
       url: 'http://example.com',
+      contract: 'EE',
     };
 
     describe('invalid configuration', async () => {
