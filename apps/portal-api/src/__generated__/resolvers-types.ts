@@ -402,6 +402,7 @@ export type Mutation = {
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
   selfJoinServiceInstance?: Maybe<ServiceInstance>;
+  unenrollOCTIInstance: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
   updateObasScenario: ObasScenario;
@@ -633,6 +634,11 @@ export type MutationRemoveUserFromOrganizationArgs = {
 
 export type MutationSelfJoinServiceInstanceArgs = {
   service_instance_id: Scalars['ID']['input'];
+};
+
+
+export type MutationUnenrollOctiInstanceArgs = {
+  input?: InputMaybe<UnenrollOctiInstanceInput>;
 };
 
 
@@ -1128,6 +1134,11 @@ export type ServiceCapability = Node & {
   service_definition_id?: Maybe<Scalars['ID']['output']>;
 };
 
+export enum ServiceConfigurationStatus {
+  Active = 'active',
+  Inactive = 'inactive'
+}
+
 export type ServiceConnection = {
   __typename?: 'ServiceConnection';
   edges: Array<ServiceInstanceEdge>;
@@ -1301,6 +1312,10 @@ export type TrackingSubscription = {
   add?: Maybe<ActionTracking>;
   delete?: Maybe<ActionTracking>;
   edit?: Maybe<ActionTracking>;
+};
+
+export type UnenrollOctiInstanceInput = {
+  platformId: Scalars['String']['input'];
 };
 
 export type UpdateCsvFeedInput = {
@@ -1592,6 +1607,7 @@ export type ResolversTypes = ResolversObject<{
   RolePortal: ResolverTypeWrapper<RolePortal>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
+  ServiceConfigurationStatus: ServiceConfigurationStatus;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
@@ -1614,6 +1630,7 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
+  UnenrollOCTIInstanceInput: UnenrollOctiInstanceInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateObasScenarioInput: UpdateObasScenarioInput;
@@ -1713,6 +1730,7 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionModel: SubscriptionModel;
   Success: Success;
   TrackingSubscription: TrackingSubscription;
+  UnenrollOCTIInstanceInput: UnenrollOctiInstanceInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateObasScenarioInput: UpdateObasScenarioInput;
@@ -1990,6 +2008,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
+  unenrollOCTIInstance?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnenrollOctiInstanceArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateObasScenario?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType, RequireFields<MutationUpdateObasScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;

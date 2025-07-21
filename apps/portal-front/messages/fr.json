@@ -104,6 +104,7 @@
       "SUBSCRIPTION_NOT_FOUND_ERROR": "La souscription n'existe pas",
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins une souscription y est toujours affiliée. Supprimez la/les souscription(s) d'abord.",
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
+      "UNENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de l'instance",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
       "OBAS_SCENARIO_INSERTION_ERROR": "Erreur lors de la création du scénario.",

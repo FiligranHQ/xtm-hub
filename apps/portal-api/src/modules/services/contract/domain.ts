@@ -1,10 +1,14 @@
 import { JSONSchemaToZod } from '@dmitryrechkin/json-schema-to-zod';
 import { db } from '../../../../knexfile';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
+import ServiceConfiguration, {
+  ServiceConfigurationMutator,
+} from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceContract, {
   ServiceContractMutator,
 } from '../../../model/kanel/public/ServiceContract';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode } from '../../common/error-code';
 
@@ -47,11 +51,11 @@ export const serviceContractDomain = {
 
   updateConfiguration: async (
     context: PortalContext,
-    serviceInstanceId: string,
-    config: Record<string, unknown>
+    serviceInstanceId: ServiceInstanceId,
+    mutator: ServiceConfigurationMutator
   ) => {
     await db(context, 'Service_Configuration')
-      .update({ config })
+      .update(mutator)
       .where('service_instance_id', '=', serviceInstanceId);
   },
 

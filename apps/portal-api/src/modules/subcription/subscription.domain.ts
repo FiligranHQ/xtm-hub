@@ -137,6 +137,17 @@ export const loadSubscriptionBy = async (
   return db<Subscription>(context, 'Subscription').where(field).first();
 };
 
+export const endSubscription = async (
+  context: PortalContext,
+  subscriptionId: SubscriptionId
+) => {
+  await db(context, 'Subscription')
+    .update({
+      end_date: new Date(),
+    })
+    .where('id', '=', subscriptionId);
+};
+
 export const transferSubscription = async (
   context: PortalContext,
   {

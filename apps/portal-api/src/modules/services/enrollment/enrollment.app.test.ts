@@ -1,12 +1,15 @@
 import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { dbUnsecure } from '../../../../knexfile';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import {
   CanEnrollStatus,
   OctiPlatformContract,
   OctiPlatformInput,
+  ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
+import Subscription from '../../../model/kanel/public/Subscription';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
@@ -56,6 +59,52 @@ describe('Enrollment app', () => {
       });
 
       expect(token).toBeDefined();
+    });
+  });
+
+  describe('unenrollOCTIInstance', () => {
+    const platformId = uuidv4();
+    const platform: OctiPlatformInput = {
+      id: platformId,
+      title: 'My OCTI instance',
+      url: 'http://example.com',
+      contract: OctiPlatformContract.Ee,
+    };
+
+    beforeEach(async () => {
+      await enrollmentApp.enrollOCTIInstance(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform,
+      });
+    });
+
+    it('should unenroll instance when the instance is still active', async () => {
+      await enrollmentApp.unenrollOCTIInstance(contextAdminUser, {
+        platformId,
+      });
+
+      const serviceConfiguration =
+        await serviceContractDomain.loadConfigurationByPlatform(
+          contextAdminUser,
+          platformId
+        );
+
+      expect(serviceConfiguration).toBeDefined();
+      expect(serviceConfiguration.status).toBe(
+        ServiceConfigurationStatus.Inactive
+      );
+
+      const subscription = await dbUnsecure<Subscription>('Subscription')
+        .where(
+          'service_instance_id',
+          '=',
+          serviceConfiguration.service_instance_id
+        )
+        .select('*')
+        .first();
+
+      expect(subscription).toBeDefined();
+      expect(subscription.end_date).toBeDefined();
     });
   });
 

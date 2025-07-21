@@ -9,4 +9,5 @@ export enum ErrorCode {
   ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+  UnenrollOCTIInstanceUnknownError = 'UNENROLL_OCTI_INSTANCE_UNKNOWN_ERROR',
 }

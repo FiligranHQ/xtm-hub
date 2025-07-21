@@ -3,6 +3,7 @@ import { db, QueryOpts } from '../../../../knexfile';
 import {
   OctiPlatformContract,
   OrganizationCapability,
+  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
@@ -103,7 +104,7 @@ export const enrollmentDomain = {
     await serviceContractDomain.updateConfiguration(
       context,
       serviceInstanceId,
-      configuration
+      { config: configuration }
     );
 
     await transferSubscription(context, {

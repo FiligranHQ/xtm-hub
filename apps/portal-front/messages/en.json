@@ -104,6 +104,7 @@
       "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exist",
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
+      "UNENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "An unknown error occurred during instance unenrollment",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
       "OBAS_SCENARIO_INSERTION_ERROR": "An error occurred while creating the scenario.",

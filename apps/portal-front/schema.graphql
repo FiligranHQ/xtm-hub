@@ -39,6 +39,7 @@ type Mutation {
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   enrollOCTIInstance(input: EnrollOCTIInstanceInput!): EnrollmentResponse!
+  unenrollOCTIInstance(input: UnenrollOCTIInstanceInput): Success!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
@@ -146,6 +147,11 @@ input OrganizationInput {
 type RolePortal implements Node {
   id: ID!
   name: String!
+}
+
+enum ServiceConfigurationStatus {
+  active
+  inactive
 }
 
 type CsvFeed implements Node {
@@ -390,6 +396,10 @@ type CanEnrollResponse {
 type CanUnenrollResponse {
   isAllowed: Boolean!
   organizationId: ID!
+}
+
+input UnenrollOCTIInstanceInput {
+  platformId: String!
 }
 
 type ServiceLink implements Node {

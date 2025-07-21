@@ -114,6 +114,33 @@ const resolvers: Resolvers = {
         });
       }
     },
+    unenrollOCTIInstance: async (_, { input }, context) => {
+      const trx = await dbTx();
+      try {
+        await enrollmentApp.unenrollOCTIInstance(
+          {
+            ...context,
+            trx,
+          },
+          input
+        );
+        await trx.commit();
+        return { success: true };
+      } catch (error) {
+        await trx.rollback();
+        switch (error.message) {
+          case ErrorCode.ServiceConfigurationNotFound:
+          case ErrorCode.SubscriptionNotFound:
+            throw NotFoundError(error.message);
+          case ErrorCode.MissingCapabilityOnOriginOrganization:
+            throw ForbiddenAccess(error.message);
+        }
+
+        throw UnknownError(ErrorCode.UnenrollOCTIInstanceUnknownError, {
+          detail: error,
+        });
+      }
+    },
   },
 };
 

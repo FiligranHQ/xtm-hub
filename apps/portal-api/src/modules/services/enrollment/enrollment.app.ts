@@ -7,13 +7,17 @@ import {
   EnrollOctiInstanceInput,
   OctiInstance,
   OrganizationCapability,
+  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
-import { loadSubscriptionBy } from '../../subcription/subscription.domain';
+import {
+  endSubscription,
+  loadSubscriptionBy,
+} from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
@@ -90,6 +94,45 @@ export const enrollmentApp = {
 
     return token;
   },
+
+  unenrollOCTIInstance: async (
+    context: PortalContext,
+    { platformId }: CanUnenrollOctiInstanceInput
+  ) => {
+    const activeServiceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatform(
+        context,
+        platformId,
+        ServiceConfigurationStatus.Active
+      );
+    if (!activeServiceConfiguration) {
+      return;
+    }
+
+    const subscription = await loadSubscriptionBy(context, {
+      service_instance_id: activeServiceConfiguration.service_instance_id,
+    });
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
+
+    const isAllowed = await isUserAllowed(context, {
+      organizationId: subscription.organization_id,
+      capability: OrganizationCapability.ManageOctiEnrollment,
+    });
+    if (!isAllowed) {
+      throw new Error(ErrorCode.MissingCapabilityOnOriginOrganization);
+    }
+
+    await serviceContractDomain.updateConfiguration(
+      context,
+      activeServiceConfiguration.service_instance_id,
+      { status: ServiceConfigurationStatus.Inactive }
+    );
+
+    await endSubscription(context, subscription.id);
+  },
+
   canEnrollOCTIInstance: async (
     context: PortalContext,
     {
@@ -118,7 +161,6 @@ export const enrollmentApp = {
     const subscription = await loadSubscriptionBy(context, {
       service_instance_id: serviceConfiguration.service_instance_id,
     });
-
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
