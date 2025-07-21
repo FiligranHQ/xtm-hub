@@ -490,7 +490,7 @@ export const CustomDashboardUpdateForm = ({
                 images: { fieldType: () => <></> },
               }),
         }}>
-        <SheetFooter className="sm:justify-between pb-0">
+        <SheetFooter className="pb-0">
           {customDashboard && (
              <CustomDashboardDelete
                userCanDelete={userCanDelete}
@@ -498,7 +498,7 @@ export const CustomDashboardUpdateForm = ({
                customDashboard={customDashboard}
              />
           )}
-          <div className="ml-auto flex gap-s">
+          <div className="flex gap-s">
             <Button
               variant="outline"
               type="button"
