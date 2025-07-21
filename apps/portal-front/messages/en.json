@@ -521,6 +521,8 @@
     },
     "ShareableResources": {
       "Share": "Share",
+      "Download": "Download",
+      "DeployOcti": "Deploy in OCTI",
       "Copied": "URL copied! You can now paste and share it.",
       "FromVersion": "From version",
       "Details": {

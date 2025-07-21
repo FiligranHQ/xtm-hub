@@ -480,6 +480,8 @@
     "ServiceName": "Nom du service",
     "ShareableResources": {
       "Share": "Partager",
+      "Download": "Télécharger",
+      "DeployOcti": "Déployer dans OCTI",
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
       "FromVersion": "Depuis la version",
       "Details": {

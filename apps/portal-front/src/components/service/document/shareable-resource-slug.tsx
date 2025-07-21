@@ -4,6 +4,13 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
+import { KeyboardArrowDownIcon } from 'filigran-icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -16,6 +23,8 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
+import { FeatureFlag } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { ReactNode, useContext } from 'react';
@@ -42,6 +51,9 @@ const ShareableResourceSlug: React.FunctionComponent<
   const incrementDownloadNumber = () => {
     setDocumentDownloadNumber(documentDownloadNumber + 1);
   };
+  const isOneClickFeatureEnabled = useIsFeatureEnabled(
+    FeatureFlag.ONECLICK_DEPLOY_DASHBOARD
+  );
 
   return (
     <>
@@ -55,17 +67,49 @@ const ShareableResourceSlug: React.FunctionComponent<
           documentId={documentData.id}
           url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
+        {documentData.type === 'custom_dashboard' &&
+        isOneClickFeatureEnabled ? (
+          <div className="flex items-center gap-2 ml-auto">
+            <TooltipProvider>
+              <Tooltip
+                delayDuration={50}
+                disableHoverableContent={true}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      incrementDownloadNumber();
+                      window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}`;
+                    }}
+                    className="z-[2] text-primary">
+                    <KeyboardArrowDownIcon className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t('Service.ShareableResources.Download')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            {updateActions}
+          </div>
+        ) : (
+          <>
+            <Button
+              onClick={() => {
+                incrementDownloadNumber();
+                window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}`;
+              }}>
+              {t('Utils.Download')}
+            </Button>
+            <div>{updateActions}</div>
+          </>
+        )}
 
-        <div className="flex items-center gap-2 ml-auto">
-          {updateActions}
-          <Button
-            onClick={() => {
-              incrementDownloadNumber();
-              window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}`;
-            }}>
-            {t('Utils.Download')}
-          </Button>
-        </div>
+        {isOneClickFeatureEnabled &&
+          documentData.type === 'custom_dashboard' && (
+            <OneClickDeploy documentData={documentData} />
+          )}
       </div>
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
