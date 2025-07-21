@@ -146,6 +146,13 @@ export const enrollmentDomain = {
       )
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
+      .whereNot((qb) => {
+        qb.whereNotNull('Subscription.end_date').orWhere(
+          'Service_Configuration.status',
+          '=',
+          ServiceConfigurationStatus.Inactive
+        );
+      })
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .select(['Service_Configuration.config'])
       .secureQuery();
