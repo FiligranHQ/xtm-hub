@@ -277,7 +277,7 @@ export type EditUserCapabilitiesInput = {
 
 export type EnrollOctiInstanceInput = {
   organizationId: Scalars['ID']['input'];
-  platform: OctiPlatform;
+  platform: OctiPlatformInput;
 };
 
 export type EnrollmentResponse = {
@@ -659,8 +659,14 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
-export type OctiPlatform = {
-  id: Scalars['String']['input'];
+export enum OctiPlatformContract {
+  Ce = 'CE',
+  Ee = 'EE'
+}
+
+export type OctiPlatformInput = {
+  contract: OctiPlatformContract;
+  id: Scalars['ID']['input'];
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
 };
@@ -702,6 +708,15 @@ export type ObasScenarioEdge = {
   __typename?: 'ObasScenarioEdge';
   cursor: Scalars['String']['output'];
   node: ObasScenario;
+};
+
+export type OctiInstance = Node & {
+  __typename?: 'OctiInstance';
+  contract: OctiPlatformContract;
+  id: Scalars['ID']['output'];
+  platform_id: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  url: Scalars['String']['output'];
 };
 
 export enum OrderingMode {
@@ -790,6 +805,7 @@ export type Query = {
   node?: Maybe<Node>;
   obasScenario?: Maybe<ObasScenario>;
   obasScenarios: ObasScenarioConnection;
+  octiInstances: Array<OctiInstance>;
   organization?: Maybe<Organization>;
   organizationAdministrators: Array<User>;
   organizations: OrganizationConnection;
@@ -1125,11 +1141,11 @@ export enum ServiceDefinitionIdentifier {
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
   capabilities: Array<Maybe<Scalars['String']['output']>>;
-  creation_status?: Maybe<Scalars['String']['output']>;
+  creation_status?: Maybe<ServiceInstanceCreationStatus>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   illustration_document_id?: Maybe<Scalars['ID']['output']>;
-  join_type?: Maybe<Scalars['String']['output']>;
+  join_type?: Maybe<ServiceInstanceJoinType>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   logo_document_id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
@@ -1144,11 +1160,24 @@ export type ServiceInstance = Node & {
   user_joined?: Maybe<Scalars['Boolean']['output']>;
 };
 
+export enum ServiceInstanceCreationStatus {
+  Created = 'CREATED',
+  Pending = 'PENDING',
+  Ready = 'READY'
+}
+
 export type ServiceInstanceEdge = {
   __typename?: 'ServiceInstanceEdge';
   cursor: Scalars['String']['output'];
   node: ServiceInstance;
 };
+
+export enum ServiceInstanceJoinType {
+  JoinAsk = 'JOIN_ASK',
+  JoinAuto = 'JOIN_AUTO',
+  JoinInvite = 'JOIN_INVITE',
+  JoinSelf = 'JOIN_SELF'
+}
 
 export enum ServiceInstanceOrdering {
   Description = 'description',
@@ -1471,7 +1500,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( ObasScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( ObasScenario ) | ( OctiInstance ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -1523,10 +1552,12 @@ export type ResolversTypes = ResolversObject<{
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
-  OCTIPlatform: OctiPlatform;
+  OCTIPlatformContract: OctiPlatformContract;
+  OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ResolverTypeWrapper<ObasScenario>;
   ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
   ObasScenarioEdge: ResolverTypeWrapper<ObasScenarioEdge>;
+  OctiInstance: ResolverTypeWrapper<OctiInstance>;
   OrderingMode: OrderingMode;
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationCapabilities: ResolverTypeWrapper<OrganizationCapabilities>;
@@ -1547,7 +1578,9 @@ export type ResolversTypes = ResolversObject<{
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
   ServiceInstance: ResolverTypeWrapper<ServiceInstance>;
+  ServiceInstanceCreationStatus: ServiceInstanceCreationStatus;
   ServiceInstanceEdge: ResolverTypeWrapper<ServiceInstanceEdge>;
+  ServiceInstanceJoinType: ServiceInstanceJoinType;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
@@ -1627,10 +1660,11 @@ export type ResolversParentTypes = ResolversObject<{
   MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
-  OCTIPlatform: OctiPlatform;
+  OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ObasScenario;
   ObasScenarioConnection: ObasScenarioConnection;
   ObasScenarioEdge: ObasScenarioEdge;
+  OctiInstance: OctiInstance;
   Organization: Organization;
   OrganizationCapabilities: OrganizationCapabilities;
   OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
@@ -1936,7 +1970,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'ObasScenario' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'ObasScenario' | 'OctiInstance' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -1976,6 +2010,15 @@ export type ObasScenarioConnectionResolvers<ContextType = PortalContext, ParentT
 export type ObasScenarioEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenarioEdge'] = ResolversParentTypes['ObasScenarioEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type OctiInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OctiInstance'] = ResolversParentTypes['OctiInstance']> = ResolversObject<{
+  contract?: Resolver<ResolversTypes['OCTIPlatformContract'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2038,6 +2081,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
   obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  octiInstances?: Resolver<Array<ResolversTypes['OctiInstance']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizationAdministrators?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryOrganizationAdministratorsArgs, 'organizationId'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2113,11 +2157,11 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
 
 export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstance'] = ResolversParentTypes['ServiceInstance']> = ResolversObject<{
   capabilities?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
-  creation_status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  creation_status?: Resolver<Maybe<ResolversTypes['ServiceInstanceCreationStatus']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   illustration_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  join_type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  join_type?: Resolver<Maybe<ResolversTypes['ServiceInstanceJoinType']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2332,6 +2376,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ObasScenario?: ObasScenarioResolvers<ContextType>;
   ObasScenarioConnection?: ObasScenarioConnectionResolvers<ContextType>;
   ObasScenarioEdge?: ObasScenarioEdgeResolvers<ContextType>;
+  OctiInstance?: OctiInstanceResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;

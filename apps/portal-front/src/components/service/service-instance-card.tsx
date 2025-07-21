@@ -1,40 +1,79 @@
-import {
-  SERVICE_CREATION_STATUS,
-  SERVICE_DEFINITION_IDENTIFIER,
-} from '@/components/service/service.const';
 import { cn } from '@/lib/utils';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { isEnrollmentService, isExternalService } from '@/utils/services';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
 import { AspectRatio } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import * as React from 'react';
 import { ReactNode } from 'react';
 
+export interface ServiceInstanceCardData {
+  id: string;
+  creation_status: ServiceInstanceCreationStatusEnum;
+  name: string;
+  slug?: string;
+  platform_contract?: string;
+  platform_id?: string;
+  logo_document_id: string | null;
+  illustration_document_id: string | null;
+  service_definition_identifier: ServiceDefinitionIdentifierEnum;
+  description?: string;
+  url?: string;
+  ordering: number;
+}
+
 interface ServiceInstanceCardProps {
-  serviceInstance: serviceList_fragment$data;
+  serviceInstance: ServiceInstanceCardData;
   rightAction?: ReactNode;
   seo?: boolean;
   className?: string;
 }
 
+const EnrollmentDetails: React.FunctionComponent<{
+  serviceInstance: ServiceInstanceCardData;
+  serviceHref: string;
+}> = ({ serviceInstance, serviceHref }) => {
+  const t = useTranslations();
+  return (
+    <dl className="grid grid-cols-3 gap-s">
+      <dt className="txt-sub-content text-muted-foreground">
+        {t('Enroll.Details.InstanceID')}
+      </dt>
+      <dd className="txt-sub-content col-span-2">
+        {serviceInstance.platform_id}
+      </dd>
+      <dt className="txt-sub-content text-muted-foreground">
+        {t('Enroll.Details.InstanceURL')}
+      </dt>
+      <dd className="txt-sub-content col-span-2">{serviceHref}</dd>
+      <dt className="txt-sub-content text-muted-foreground">
+        {t('Enroll.Details.Contract')}
+      </dt>
+      <dd className="txt-sub-content col-span-2">
+        {t(`Enroll.Details.Contracts.${serviceInstance.platform_contract}`)}
+      </dd>
+    </dl>
+  );
+};
+
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className, seo }) => {
-  const isLinkService =
-    serviceInstance?.service_definition?.identifier ===
-    SERVICE_DEFINITION_IDENTIFIER.LINK;
   const isDisabled =
-    serviceInstance?.creation_status === SERVICE_CREATION_STATUS.PENDING;
+    serviceInstance.creation_status ===
+    ServiceInstanceCreationStatusEnum.PENDING;
 
   const serviceHref =
-    isLinkService && serviceInstance.links?.[0]?.url
-      ? serviceInstance.links?.[0]?.url
-      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`}`;
+    isExternalService(serviceInstance.service_definition_identifier) &&
+    serviceInstance.url
+      ? serviceInstance.url
+      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
@@ -83,13 +122,20 @@ const ServiceInstanceCard: React.FunctionComponent<
               </Link>
             )}
 
-            {isLinkService && (
-              <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />
-            )}
+            {isExternalService(
+              serviceInstance.service_definition_identifier
+            ) && <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />}
           </div>
-          <p className="txt-sub-content text-muted-foreground">
-            {serviceInstance.description}
-          </p>
+          {(isEnrollmentService(serviceInstance) && (
+            <EnrollmentDetails
+              serviceInstance={serviceInstance}
+              serviceHref={serviceHref}
+            />
+          )) || (
+            <p className="txt-sub-content text-muted-foreground">
+              {serviceInstance.description}
+            </p>
+          )}
           {rightAction && (
             <div
               className="flex pt-s mt-auto ml-auto

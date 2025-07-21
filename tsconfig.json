@@ -20,12 +20,11 @@
         "name": "next"
       }
     ],
-    "paths": {
-      "@/*": ["./src/*"],
-      "@generated/*": ["./__generated__/*"]
-    },
-    "types": ["vitest/globals"]
+
+    // Path mapping for monorepo
+    "baseUrl": ".",
+    "paths": {}
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [],
   "exclude": ["node_modules"]
 }

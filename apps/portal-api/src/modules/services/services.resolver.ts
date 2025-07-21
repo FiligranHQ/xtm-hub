@@ -5,6 +5,7 @@ import {
   Resolvers,
   SeoServiceInstance,
   ServiceInstance,
+  ServiceInstanceCreationStatus,
   ServiceLink,
   Subscription,
 } from '../../__generated__/resolvers-types';
@@ -197,7 +198,7 @@ const resolvers: Resolvers = {
           id: uuidv4(),
           name: input.service_instance_name,
           description: input.service_instance_description,
-          creation_status: 'PENDING',
+          creation_status: ServiceInstanceCreationStatus.Pending,
         };
         const [addedServiceInstance] = await db<ServiceInstance>(
           context,

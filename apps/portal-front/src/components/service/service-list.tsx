@@ -1,6 +1,9 @@
 'use client';
 
 import useDecodedQuery from '@/hooks/useDecodedQuery';
+import { isExternalService } from '@/utils/services';
+import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
@@ -13,17 +16,18 @@ import AvailableServices from './home/available-services';
 import HighligthedServices from './home/highlighted-services';
 import { useServiceQueries } from './home/hooks/useServiceQueries';
 import OwnedServices from './home/owned-services';
-import { SERVICE_DEFINITION_IDENTIFIER } from './service.const';
 
 interface ServiceProps {
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>;
   queryRefServiceList: PreloadedQuery<publicServiceQuery>;
+  queryRefOCTIInstances: PreloadedQuery<enrollOCTIInstancesQuery>;
   onUpdate: () => void;
 }
 
 const ServiceList = ({
   queryRefUserServiceOwned,
   queryRefServiceList,
+  queryRefOCTIInstances,
   onUpdate,
 }: ServiceProps) => {
   const t = useTranslations();
@@ -49,10 +53,11 @@ const ServiceList = ({
     });
   }
 
-  const { ownedServices, publicServices, addSubscriptionInDb } =
+  const { ownedServices, publicServices, octiInstances, addSubscriptionInDb } =
     useServiceQueries(
       queryRefUserServiceOwned,
       queryRefServiceList,
+      queryRefOCTIInstances,
       onUpdate,
       handleSuccess,
       handleError
@@ -68,11 +73,13 @@ const ServiceList = ({
         if (service.service_definition?.identifier === h) {
           acc.highlighted.push(service);
         }
-        // A service is owned if it is subscribed or if it is a link service (link service are special ones)
+        // A service is owned if it is subscribed or if it is an external service
         else if (
           service.organization_subscribed ||
-          service.service_definition?.identifier ===
-            SERVICE_DEFINITION_IDENTIFIER.LINK
+          isExternalService(
+            service.service_definition!
+              .identifier as ServiceDefinitionIdentifierEnum
+          )
         ) {
           acc.owned.push(service);
         } else {
@@ -125,6 +132,7 @@ const ServiceList = ({
       <OwnedServices
         services={regularOwnedServices}
         publicServices={publicOwnedServices}
+        octiInstances={octiInstances}
       />
     </>
   );

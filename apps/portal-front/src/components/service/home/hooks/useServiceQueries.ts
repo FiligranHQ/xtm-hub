@@ -1,5 +1,12 @@
+import {
+  enrollOCTIInstanceListFragment,
+  EnrollOCTIInstancesQuery,
+} from '@/components/enroll/enroll.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { getServiceInstanceUrl } from '@/lib/utils';
+import { enrollOCTIInstanceListFragment$key } from '@generated/enrollOCTIInstanceListFragment.graphql';
+import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
+import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
@@ -21,7 +28,6 @@ import {
   publicServiceListFragment,
   publicServiceListQuery,
 } from '../../public-service.graphql';
-import { JOIN_TYPE } from '../../service.const';
 import { subscription } from '../../service.graphql';
 import {
   userServiceOwnedFragment,
@@ -44,6 +50,22 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
   ).map((userService) => userService.node as userServicesOwned_fragment$data);
 
   return ownedServices;
+};
+
+const getOCTIInstances = (
+  queryRef: PreloadedQuery<enrollOCTIInstancesQuery>
+) => {
+  const queryData = usePreloadedQuery<enrollOCTIInstancesQuery>(
+    EnrollOCTIInstancesQuery,
+    queryRef
+  );
+
+  const [data] = useRefetchableFragment<
+    enrollOCTIInstancesQuery,
+    enrollOCTIInstanceListFragment$key
+  >(enrollOCTIInstanceListFragment, queryData);
+
+  return data.octiInstances ?? [];
 };
 
 const getPublicServices = (
@@ -102,7 +124,10 @@ const getPublicServices = (
 
       if (
         service.join_type &&
-        [JOIN_TYPE.JOIN_SELF, JOIN_TYPE.JOIN_AUTO].includes(service.join_type)
+        [
+          ServiceInstanceJoinTypeEnum.JOIN_SELF,
+          ServiceInstanceJoinTypeEnum.JOIN_AUTO,
+        ].includes(service.join_type as ServiceInstanceJoinTypeEnum)
       ) {
         commitMutation('ACCEPTED', t('Service.SubscribeSuccessful'));
       } else {
@@ -126,6 +151,7 @@ const getPublicServices = (
 export const useServiceQueries = (
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>,
   queryRefPublicService: PreloadedQuery<publicServiceQuery>,
+  queryRefOCTIInstances: PreloadedQuery<enrollOCTIInstancesQuery>,
   onUpdate: () => void,
   handleSuccess: (message: string) => void,
   handleError: (error: Error) => void
@@ -139,6 +165,7 @@ export const useServiceQueries = (
 
   return {
     ownedServices: getOwnedServices(queryRefUserServiceOwned),
+    octiInstances: getOCTIInstances(queryRefOCTIInstances),
     publicServices,
     addSubscriptionInDb,
   };
