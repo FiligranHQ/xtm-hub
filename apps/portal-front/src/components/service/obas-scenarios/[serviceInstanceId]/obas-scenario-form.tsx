@@ -192,7 +192,7 @@ export const ObasScenarioForm = ({
             label: t('Service.ObasScenario.Form.ProductVersionLabel'),
           },
         }}>
-        <SheetFooter className="pt-2">
+        <SheetFooter className="sm:justify-between pt-2">
           {obasScenario && (
             <ObasScenarioDelete
               userCanDelete={userCanDelete}
@@ -200,7 +200,7 @@ export const ObasScenarioForm = ({
               obasScenario={obasScenario}
             />
           )}
-          <div className="flex gap-s">
+          <div className="ml-auto flex gap-s">
             <Button
               variant="outline"
               type="button"

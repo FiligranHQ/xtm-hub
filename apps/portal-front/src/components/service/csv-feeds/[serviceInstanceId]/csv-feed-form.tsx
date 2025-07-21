@@ -211,7 +211,7 @@ export const CsvFeedForm = ({
             label: t('Service.CsvFeed.Form.NameLabel'),
           },
         }}>
-        <SheetFooter className="pt-2">
+        <SheetFooter className="sm:justify-between pt-2">
           {csvFeed && (
             <CsvFeedDelete
               userCanDelete={userCanDelete}
@@ -219,7 +219,7 @@ export const CsvFeedForm = ({
               csvFeed={csvFeed}
             />
           )}
-          <div className="flex gap-s">
+          <div className="ml-auto flex gap-s">
             <Button
               variant="outline"
               type="button"
