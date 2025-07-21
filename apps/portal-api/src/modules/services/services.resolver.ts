@@ -107,28 +107,39 @@ const resolvers: Resolvers = {
     },
     seoServiceInstances: async (_, _opt, context) => {
       const services = await loadSeoServiceInstances(context);
-      return services.map((service: SeoServiceInstance) => {
-        if (service.illustration_document_id) {
-          service.illustration_document_id = toGlobalId(
+      return services.map((service: SeoServiceInstance) => ({
+        ...service,
+        ...(service.illustration_document_id && {
+          illustration_document_id: toGlobalId(
             'Document',
             service.illustration_document_id
-          );
-        }
-        if (service.logo_document_id) {
-          service.logo_document_id = toGlobalId(
-            'Document',
-            service.logo_document_id
-          );
-        }
-        return service;
-      });
+          ),
+        }),
+        ...(service.logo_document_id && {
+          logo_document_id: toGlobalId('Document', service.logo_document_id),
+        }),
+      }));
     },
     seoServiceInstance: async (_, { slug }, context) => {
       const serviceInstance = await loadSeoServiceInstanceBySlug(context, slug);
       if (!serviceInstance) {
         return NotFoundError('SERVICE_NOT_FOUND_ERROR');
       }
-      return serviceInstance;
+      return {
+        ...serviceInstance,
+        ...(serviceInstance.illustration_document_id && {
+          illustration_document_id: toGlobalId(
+            'Document',
+            serviceInstance.illustration_document_id
+          ),
+        }),
+        ...(serviceInstance.logo_document_id && {
+          logo_document_id: toGlobalId(
+            'Document',
+            serviceInstance.logo_document_id
+          ),
+        }),
+      };
     },
   },
   Mutation: {

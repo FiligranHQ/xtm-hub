@@ -2,7 +2,6 @@ import { getServiceInstanceUrl } from '@/lib/utils';
 import serverPortalApiFetch, {
   serverMutateGraphQL,
 } from '@/relay/serverPortalApiFetch';
-import { fromGlobalId, toGlobalId } from '@/utils/globalId';
 import { isValueInEnum } from '@/utils/isValueInEnum';
 import { APP_PATH } from '@/utils/path/constant';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
@@ -120,22 +119,16 @@ export const redirectToResource = async (
     // We check if :
     //   - there is a corresponding requested `service_instance_id` in the URL to directly redirect to the service
     //   - the the OpenCTI instance is associated with any user's organization thanks to the services links
-    let organizationGlobalId: string | undefined;
+    let organizationId: string | undefined;
     for (const instance of servicesInstances) {
       if (instance.service_instance_id === service_instance_id) {
         // We found the service instance associated with the requested service
-        organizationGlobalId = toGlobalId(
-          'Organization',
-          instance.organization_id
-        );
+        organizationId = instance.organization_id;
       } else if (instance.links) {
         for (const link of instance.links) {
           if (link && link.url === octi_instance_id) {
             // We found the organization associated with the OpenCTI instance
-            organizationGlobalId = toGlobalId(
-              'Organization',
-              instance.organization_id
-            );
+            organizationId = instance.organization_id;
             break;
           }
         }
@@ -143,21 +136,19 @@ export const redirectToResource = async (
     }
 
     // No organization found, fallback to the personal space
-    if (!organizationGlobalId) {
-      organizationGlobalId = personalSpaceGlobalId;
+    if (!organizationId) {
+      organizationId = personalSpaceGlobalId;
     }
 
     // 4. Switch to the found organization
-    await switchOrganization(organizationGlobalId);
+    await switchOrganization(organizationId);
 
     // 6. Redirect the user
     // --------------------
 
     // Get the organization service instances
     const organizationServiceInstances = servicesInstances.filter(
-      (serviceInstance) =>
-        serviceInstance.organization_id ===
-        fromGlobalId(organizationGlobalId).id
+      (serviceInstance) => serviceInstance.organization_id === organizationId
     );
 
     // We have the requested service instance in the available services in the organization
@@ -171,7 +162,7 @@ export const redirectToResource = async (
         getServiceInstanceUrl(
           baseUrlFront,
           identifier,
-          toGlobalId('ServiceInstance', service_instance_id!),
+          service_instance_id!,
           document_id
         )
       );
@@ -187,10 +178,7 @@ export const redirectToResource = async (
         getServiceInstanceUrl(
           baseUrlFront,
           identifier,
-          toGlobalId(
-            'ServiceInstance',
-            organizationServiceInstances[0].service_instance_id
-          )
+          organizationServiceInstances[0].service_instance_id
         )
       );
     }
