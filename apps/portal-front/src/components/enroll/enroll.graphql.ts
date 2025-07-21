@@ -18,6 +18,23 @@ export const CanEnrollOCTIInstanceQuery = graphql`
   }
 `;
 
+export const CanUnenrollOCTIInstanceFragment = graphql`
+  fragment enrollCanUnenrollOCTIInstanceFragment on CanUnenrollResponse {
+    isAllowed
+    organizationId
+  }
+`;
+
+export const CanUnenrollOCTIInstanceQuery = graphql`
+  query enrollCanUnenrollOCTIInstanceQuery(
+    $input: CanUnenrollOCTIInstanceInput!
+  ) {
+    canUnenrollOCTIInstance(input: $input) {
+      ...enrollCanUnenrollOCTIInstanceFragment
+    }
+  }
+`;
+
 export const EnrollOCTIFragment = graphql`
   fragment enrollOCTIFragment on EnrollmentResponse {
     token

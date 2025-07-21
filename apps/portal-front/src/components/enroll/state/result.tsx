@@ -38,7 +38,6 @@ export const EnrollStateResult: React.FC<Props> = ({
     );
 
   useMountingLoader(loadQuery, { organizationId: organizationId });
-
   if (!organizationId) {
     return null;
   }
@@ -46,7 +45,9 @@ export const EnrollStateResult: React.FC<Props> = ({
   if (
     !queryRef ||
     !canEnrollState ||
-    (canEnrollState.status === 'never_enrolled' && enrollmentStatus === 'idle')
+    (canEnrollState.status === 'never_enrolled' &&
+      enrollmentStatus === 'idle' &&
+      !isMissingCapability(canEnrollState))
   ) {
     return <Loader />;
   }
