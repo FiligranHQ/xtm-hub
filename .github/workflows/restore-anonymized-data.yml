@@ -1,6 +1,8 @@
 ---
 
 name: Restore anonymized data on a test env
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
