@@ -1,4 +1,3 @@
-import { fromGlobalId } from '@/utils/globalId';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { hasProperty } from '../../hasProperty';
 import {
@@ -11,21 +10,19 @@ export function getServiceInfo(
   serviceInstance: { id: string; slug: ServiceSlug },
   documentId: string
 ): ServiceInfo | undefined {
-  const serviceId = fromGlobalId(serviceInstance.id).id;
-
   const serviceMap: Record<ServiceSlug, ServiceInfo> = {
     [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
-      link: `/redirect/csv_feeds?service_instance_id=${serviceId}&document_id=${documentId}`,
+      link: `/redirect/csv_feeds?service_instance_id=${serviceInstance.id}&document_id=${documentId}`,
       description:
         '. Discover more OpenCTI integration feeds like this in our OpenCTI Integration Feeds Library, available for download on the XTM Hub.',
     },
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
-      link: `/redirect/custom_dashboards?service_instance_id=${serviceId}&document_id=${documentId}`,
+      link: `/redirect/custom_dashboards?service_instance_id=${serviceInstance.id}&document_id=${documentId}`,
       description:
         '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
     },
     [ServiceSlug.OPEN_BAS_SCENARIOS]: {
-      link: `/redirect/obas_scenarios?service_instance_id=${serviceId}&document_id=${documentId}`,
+      link: `/redirect/obas_scenarios?service_instance_id=${serviceInstance.id}&document_id=${documentId}`,
       description:
         '. Discover more widgets like this in our OpenBAS Scenarios Library, available for download on the XTM Hub.',
     },
