@@ -47,6 +47,9 @@ import {
 import { useForm } from 'react-hook-form';
 import slugify from 'slugify';
 import { z } from 'zod';
+import {
+  CustomDashboardDelete
+} from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-delete';
 
 export const updateCustomDashboardSchema = z.object({
   name: z.string().min(1, 'Required'),
@@ -488,13 +491,12 @@ export const CustomDashboardUpdateForm = ({
               }),
         }}>
         <SheetFooter className="sm:justify-between pb-0">
-          {userCanDelete && (
-            <Button
-              variant="outline-destructive"
-              type="button"
-              onClick={onDelete}>
-              {t('Utils.Delete')}
-            </Button>
+          {customDashboard && (
+             <CustomDashboardDelete
+               userCanDelete={userCanDelete}
+               onDelete={onDelete}
+               customDashboard={customDashboard}
+             />
           )}
           <div className="ml-auto flex gap-s">
             <Button

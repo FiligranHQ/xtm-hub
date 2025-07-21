@@ -345,6 +345,7 @@
         "Updated": "Le custom dashboard {name} a été modifié avec succès"
       },
       "AddDashboard": "Nouveau tableau de bord",
+      "DeleteDashboard": "Supprimer le tableau de bord {name}",
       "Form": {
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Description du tableau de bord",
@@ -374,6 +375,7 @@
         "Author": "Auteur",
         "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image"
       },
+      "SureDeleteDashboard": "Etes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
       "UpdateDashboard": "Tableau de bord des mises à jour"
     },
     "ObasScenario": {
