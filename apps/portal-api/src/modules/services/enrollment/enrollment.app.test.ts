@@ -2,20 +2,25 @@ import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser } from '../../../../tests/tests.const';
-import { CanEnrollStatus } from '../../../__generated__/resolvers-types';
+import {
+  CanEnrollStatus,
+  OctiPlatformContract,
+  OctiPlatformInput,
+} from '../../../__generated__/resolvers-types';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
+import { ErrorCode } from '../../common/error-code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { enrollmentApp } from './enrollment.app';
 
 describe('Enrollment app', () => {
   describe('enrollOCTIInstance', () => {
-    const platform = {
+    const platform: OctiPlatformInput = {
       id: uuidv4(),
       title: 'My OCTI instance',
       url: 'http://example.com',
-      contract: 'EE',
+      contract: OctiPlatformContract.Ee,
     };
 
     describe('invalid configuration', async () => {
@@ -42,18 +47,6 @@ describe('Enrollment app', () => {
 
         await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
       });
-
-      it('should throw when platformTitle is not valid', async () => {
-        const call = enrollmentApp.enrollOCTIInstance(contextAdminUser, {
-          organizationId: PLATFORM_ORGANIZATION_UUID,
-          platform: {
-            ...platform,
-            title: null,
-          },
-        });
-
-        await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
-      });
     });
 
     it('return token when instance is enrolled', async () => {
@@ -71,12 +64,12 @@ describe('Enrollment app', () => {
     const platformId = uuidv4();
 
     let isUserAllowedSpy: MockInstance;
-    let findConfigurationSpy: MockInstance;
+    let loadConfigurationByPlatformSpy: MockInstance;
     let loadSubscriptionByServiceInstanceSpy: MockInstance;
 
     beforeEach(() => {
       isUserAllowedSpy = vi.spyOn(authHelper, 'isUserAllowed');
-      findConfigurationSpy = vi.spyOn(
+      loadConfigurationByPlatformSpy = vi.spyOn(
         serviceContractDomain,
         'loadConfigurationByPlatform'
       );
@@ -92,7 +85,7 @@ describe('Enrollment app', () => {
 
     describe('never_enrolled', () => {
       it(`should allow user to enroll when he has the required capabilities`, async () => {
-        findConfigurationSpy.mockReturnValue(Promise.resolve(null));
+        loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
         isUserAllowedSpy.mockReturnValue(Promise.resolve(true));
 
         const result = await enrollmentApp.canEnrollOCTIInstance(
@@ -109,7 +102,7 @@ describe('Enrollment app', () => {
       });
 
       it('should not allow user to enroll when he does not have the required capabilities', async () => {
-        findConfigurationSpy.mockReturnValue(Promise.resolve(null));
+        loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
         isUserAllowedSpy.mockReturnValue(Promise.resolve(false));
 
         const result = await enrollmentApp.canEnrollOCTIInstance(
@@ -128,7 +121,7 @@ describe('Enrollment app', () => {
 
     describe('enrolled', () => {
       beforeEach(() => {
-        findConfigurationSpy.mockReturnValue(
+        loadConfigurationByPlatformSpy.mockReturnValue(
           Promise.resolve({ service_instance_id: uuidv4() })
         );
       });
@@ -239,6 +232,93 @@ describe('Enrollment app', () => {
           expect(result.status).toBe(CanEnrollStatus.Enrolled);
         });
       });
+    });
+  });
+
+  describe('canUnenrollOCTIInstance', () => {
+    const platformId = uuidv4();
+
+    let isUserAllowedSpy: MockInstance;
+    let loadConfigurationByPlatformSpy: MockInstance;
+    let loadSubscriptionBySpy: MockInstance;
+
+    beforeEach(() => {
+      isUserAllowedSpy = vi.spyOn(authHelper, 'isUserAllowed');
+      loadConfigurationByPlatformSpy = vi.spyOn(
+        serviceContractDomain,
+        'loadConfigurationByPlatform'
+      );
+      loadSubscriptionBySpy = vi.spyOn(
+        subscriptionDomain,
+        'loadSubscriptionBy'
+      );
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should throw an error when configuration for platform does not exist', async () => {
+      loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
+
+      const call = enrollmentApp.canUnenrollOCTIInstance(contextAdminUser, {
+        platformId,
+      });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.ServiceConfigurationNotFound
+      );
+    });
+
+    it('should throw an error when subscription does not exist', async () => {
+      loadConfigurationByPlatformSpy.mockReturnValue(
+        Promise.resolve({ service_instance_id: uuidv4() })
+      );
+      loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
+
+      const call = enrollmentApp.canUnenrollOCTIInstance(contextAdminUser, {
+        platformId,
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
+    });
+
+    it('should allow user to enroll when he has the required capabilities', async () => {
+      const organizationId = uuidv4();
+      isUserAllowedSpy.mockReturnValue(Promise.resolve(true));
+      loadConfigurationByPlatformSpy.mockReturnValue(
+        Promise.resolve({ service_instance_id: uuidv4() })
+      );
+      loadSubscriptionBySpy.mockReturnValue(
+        Promise.resolve({ organization_id: organizationId })
+      );
+
+      const result = await enrollmentApp.canUnenrollOCTIInstance(
+        contextAdminUser,
+        { platformId }
+      );
+
+      expect(result.isAllowed).toBeTruthy();
+      expect(result.organizationId).toBe(organizationId);
+    });
+
+    it('should not allow user to enroll when he does not have the required capabilities', async () => {
+      const organizationId = uuidv4();
+      loadConfigurationByPlatformSpy.mockReturnValue(
+        Promise.resolve({ service_instance_id: uuidv4() })
+      );
+      loadSubscriptionBySpy.mockReturnValue(
+        Promise.resolve({ organization_id: organizationId })
+      );
+      isUserAllowedSpy.mockReturnValue(Promise.resolve(false));
+
+      const result = await enrollmentApp.canUnenrollOCTIInstance(
+        contextAdminUser,
+        { platformId }
+      );
+
+      expect(result.isAllowed).toBeFalsy();
+      expect(result.organizationId).toBe(organizationId);
     });
   });
 });

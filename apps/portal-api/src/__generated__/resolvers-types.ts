@@ -85,6 +85,16 @@ export enum CanEnrollStatus {
   Unenrolled = 'unenrolled'
 }
 
+export type CanUnenrollOctiInstanceInput = {
+  platformId: Scalars['String']['input'];
+};
+
+export type CanUnenrollResponse = {
+  __typename?: 'CanUnenrollResponse';
+  isAllowed: Scalars['Boolean']['output'];
+  organizationId: Scalars['ID']['output'];
+};
+
 export type Capability = Node & {
   __typename?: 'Capability';
   id: Scalars['ID']['output'];
@@ -792,6 +802,7 @@ export type PlatformProvider = {
 export type Query = {
   __typename?: 'Query';
   canEnrollOCTIInstance: CanEnrollResponse;
+  canUnenrollOCTIInstance: CanUnenrollResponse;
   csvFeed?: Maybe<CsvFeed>;
   csvFeeds: CsvFeedConnection;
   customDashboard?: Maybe<CustomDashboard>;
@@ -838,6 +849,11 @@ export type Query = {
 
 export type QueryCanEnrollOctiInstanceArgs = {
   input: CanEnrollOctiInstanceInput;
+};
+
+
+export type QueryCanUnenrollOctiInstanceArgs = {
+  input: CanUnenrollOctiInstanceInput;
 };
 
 
@@ -1515,6 +1531,8 @@ export type ResolversTypes = ResolversObject<{
   CanEnrollOCTIInstanceInput: CanEnrollOctiInstanceInput;
   CanEnrollResponse: ResolverTypeWrapper<CanEnrollResponse>;
   CanEnrollStatus: CanEnrollStatus;
+  CanUnenrollOCTIInstanceInput: CanUnenrollOctiInstanceInput;
+  CanUnenrollResponse: ResolverTypeWrapper<CanUnenrollResponse>;
   Capability: ResolverTypeWrapper<Capability>;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
@@ -1626,6 +1644,8 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   CanEnrollOCTIInstanceInput: CanEnrollOctiInstanceInput;
   CanEnrollResponse: CanEnrollResponse;
+  CanUnenrollOCTIInstanceInput: CanUnenrollOctiInstanceInput;
+  CanUnenrollResponse: CanUnenrollResponse;
   Capability: Capability;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
@@ -1737,6 +1757,12 @@ export type CanEnrollResponseResolvers<ContextType = PortalContext, ParentType e
   isAllowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isSameOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['CanEnrollStatus'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CanUnenrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnenrollResponse'] = ResolversParentTypes['CanUnenrollResponse']> = ResolversObject<{
+  isAllowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  organizationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2068,6 +2094,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canEnrollOCTIInstance?: Resolver<ResolversTypes['CanEnrollResponse'], ParentType, ContextType, RequireFields<QueryCanEnrollOctiInstanceArgs, 'input'>>;
+  canUnenrollOCTIInstance?: Resolver<ResolversTypes['CanUnenrollResponse'], ParentType, ContextType, RequireFields<QueryCanUnenrollOctiInstanceArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
   csvFeeds?: Resolver<ResolversTypes['CsvFeedConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
@@ -2351,6 +2378,7 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
   CanEnrollResponse?: CanEnrollResponseResolvers<ContextType>;
+  CanUnenrollResponse?: CanUnenrollResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CsvFeedConnection?: CsvFeedConnectionResolvers<ContextType>;

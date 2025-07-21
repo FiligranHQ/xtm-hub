@@ -1,4 +1,4 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { z } from 'zod/v4';
 import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
@@ -17,10 +17,11 @@ const resolvers: Resolvers = {
   Query: {
     canEnrollOCTIInstance: async (_, { input }, context) => {
       try {
-        const response = enrollmentApp.canEnrollOCTIInstance(context, {
+        const response = await enrollmentApp.canEnrollOCTIInstance(context, {
           ...input,
           organizationId: fromGlobalId(input.organizationId).id,
         });
+
         return response;
       } catch (error) {
         if (error.message.includes(ErrorCode.SubscriptionNotFound)) {
@@ -28,6 +29,28 @@ const resolvers: Resolvers = {
         }
 
         throw UnknownError(ErrorCode.CanEnrollOCTIInstanceUnknownError, {
+          detail: error,
+        });
+      }
+    },
+    canUnenrollOCTIInstance: async (_, { input }, context) => {
+      try {
+        const response = await enrollmentApp.canUnenrollOCTIInstance(
+          context,
+          input
+        );
+
+        return {
+          ...response,
+          organizationId: toGlobalId('Organization', response.organizationId),
+        };
+      } catch (error) {
+        switch (error.message) {
+          case ErrorCode.ServiceConfigurationNotFound:
+          case ErrorCode.SubscriptionNotFound:
+            throw NotFoundError(error.message);
+        }
+        throw UnknownError(ErrorCode.CanUnenrollOCTIInstanceUnknownError, {
           detail: error,
         });
       }

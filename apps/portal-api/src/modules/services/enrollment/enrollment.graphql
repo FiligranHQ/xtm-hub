@@ -28,6 +28,10 @@ input CanEnrollOCTIInstanceInput {
   platformId: String!
 }
 
+input CanUnenrollOCTIInstanceInput {
+  platformId: String!
+}
+
 type EnrollmentResponse {
   token: String!
 }
@@ -44,9 +48,17 @@ type CanEnrollResponse {
   isSameOrganization: Boolean
 }
 
+type CanUnenrollResponse {
+  isAllowed: Boolean!
+  organizationId: ID!
+}
+
 type Query {
   canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
     @auth
+  canUnenrollOCTIInstance(
+    input: CanUnenrollOCTIInstanceInput!
+  ): CanUnenrollResponse!
   octiInstances: [OctiInstance!]! @auth
 }
 

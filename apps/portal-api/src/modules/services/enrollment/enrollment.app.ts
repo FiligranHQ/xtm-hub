@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   CanEnrollResponse,
   CanEnrollStatus,
+  CanUnenrollOctiInstanceInput,
+  CanUnenrollResponse,
   EnrollOctiInstanceInput,
   OctiInstance,
   OrganizationCapability,
@@ -139,5 +141,33 @@ export const enrollmentApp = {
       isAllowed: isAllowedOnTargetOrganization && isAllowedOnOriginOrganization,
       isSameOrganization: false,
     };
+  },
+
+  canUnenrollOCTIInstance: async (
+    context: PortalContext,
+    { platformId }: CanUnenrollOctiInstanceInput
+  ): Promise<CanUnenrollResponse> => {
+    const serviceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatform(
+        context,
+        platformId
+      );
+    if (!serviceConfiguration) {
+      throw new Error(ErrorCode.ServiceConfigurationNotFound);
+    }
+
+    const subscription = await loadSubscriptionBy(context, {
+      service_instance_id: serviceConfiguration.service_instance_id,
+    });
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
+
+    const isAllowed = await isUserAllowed(context, {
+      organizationId: subscription.organization_id,
+      capability: OrganizationCapability.ManageOctiEnrollment,
+    });
+
+    return { isAllowed, organizationId: subscription.organization_id };
   },
 };
