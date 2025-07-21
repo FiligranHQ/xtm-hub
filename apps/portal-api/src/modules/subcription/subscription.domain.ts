@@ -165,6 +165,21 @@ export const transferSubscription = async (
     .where('id', '=', subscriptionId);
 };
 
+export const loadLastSubscriptionByServiceInstance = async (
+  context: PortalContext,
+  serviceInstanceIds: ServiceInstanceId[]
+): Promise<Subscription | null> => {
+  return db<Subscription>(context, 'Subscription')
+    .whereRaw(
+      `service_instance_id in (${serviceInstanceIds.map(() => '?').join(',')})`,
+      serviceInstanceIds
+    )
+    .whereNotNull('end_date')
+    .orderBy('end_date', 'desc')
+    .first()
+    .select('*');
+};
+
 export const loadSubscription = async (context: PortalContext, id: string) => {
   return await db<Subscription>(context, 'Subscription')
     .where('service_instance_id', '=', id)

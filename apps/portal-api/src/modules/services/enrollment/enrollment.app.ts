@@ -16,6 +16,7 @@ import { isUserAllowed } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import {
   endSubscription,
+  loadLastSubscriptionByServiceInstance,
   loadSubscriptionBy,
 } from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
@@ -72,15 +73,16 @@ export const enrollmentApp = {
       throw new Error(ErrorCode.InvalidServiceConfiguration);
     }
 
-    const existingServiceConfiguration =
+    const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
-        platform.id
+        platform.id,
+        ServiceConfigurationStatus.Active
       );
 
-    if (existingServiceConfiguration) {
+    if (activeServiceConfiguration) {
       await enrollmentDomain.transferExistingInstance(context, {
-        serviceInstanceId: existingServiceConfiguration.service_instance_id,
+        serviceInstanceId: activeServiceConfiguration.service_instance_id,
         targetOrganizationId: organizationId,
         configuration,
       });
@@ -140,48 +142,64 @@ export const enrollmentApp = {
       platformId,
     }: { organizationId: string; platformId: string }
   ): Promise<CanEnrollResponse> => {
-    const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(
+    const serviceConfigurations =
+      await serviceContractDomain.loadConfigurationsByPlatform(
         context,
         platformId
       );
-
     const isAllowedOnTargetOrganization = await isUserAllowed(context, {
       organizationId,
       capability: OrganizationCapability.ManageOctiEnrollment,
     });
 
-    if (!serviceConfiguration) {
+    const wasEnrolledOnce = !!serviceConfigurations.length;
+    if (!wasEnrolledOnce) {
       return {
         status: CanEnrollStatus.NeverEnrolled,
         isAllowed: isAllowedOnTargetOrganization,
       };
     }
 
-    const subscription = await loadSubscriptionBy(context, {
-      service_instance_id: serviceConfiguration.service_instance_id,
-    });
+    const activeConfiguration = serviceConfigurations.find(
+      (configuration) =>
+        configuration.status === ServiceConfigurationStatus.Active
+    );
+
+    const subscription = activeConfiguration
+      ? await loadSubscriptionBy(context, {
+          service_instance_id: activeConfiguration.service_instance_id,
+        })
+      : await loadLastSubscriptionByServiceInstance(
+          context,
+          serviceConfigurations.map(
+            (configuration) => configuration.service_instance_id
+          )
+        );
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    if (subscription.organization_id === organizationId) {
-      return {
-        status: CanEnrollStatus.Enrolled,
-        isAllowed: isAllowedOnTargetOrganization,
-        isSameOrganization: true,
-      };
-    }
+    const enrolledStatus = activeConfiguration
+      ? CanEnrollStatus.Enrolled
+      : CanEnrollStatus.Unenrolled;
+    const isSameOrganization = subscription.organization_id === organizationId;
+    const isAllowed = async () => {
+      if (isSameOrganization) {
+        return isAllowedOnTargetOrganization;
+      }
 
-    const isAllowedOnOriginOrganization = await isUserAllowed(context, {
-      organizationId: subscription.organization_id,
-      capability: OrganizationCapability.ManageOctiEnrollment,
-    });
+      const isAllowedOnOriginOrganization = await isUserAllowed(context, {
+        organizationId: subscription.organization_id,
+        capability: OrganizationCapability.ManageOctiEnrollment,
+      });
+
+      return isAllowedOnTargetOrganization && isAllowedOnOriginOrganization;
+    };
 
     return {
-      status: CanEnrollStatus.Enrolled,
-      isAllowed: isAllowedOnTargetOrganization && isAllowedOnOriginOrganization,
-      isSameOrganization: false,
+      status: enrolledStatus,
+      isSameOrganization,
+      isAllowed: await isAllowed(),
     };
   },
 

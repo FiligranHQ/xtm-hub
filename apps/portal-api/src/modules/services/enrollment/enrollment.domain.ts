@@ -19,6 +19,7 @@ import {
   transferSubscription,
 } from '../../subcription/subscription.domain';
 import { createSubscription } from '../../subcription/subscription.helper';
+import { ServiceConfigurationStatus } from '../contract/constant';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
 

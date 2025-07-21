@@ -11,6 +11,7 @@ import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefiniti
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode } from '../../common/error-code';
+import { ServiceConfigurationStatus } from './constant';
 
 const loadServiceContractBy = async (
   context: PortalContext,
@@ -37,16 +38,30 @@ export const serviceContractDomain = {
     return success;
   },
 
-  loadConfigurationByPlatform: async (
+  loadConfigurationsByPlatform: async (
     context: PortalContext,
     platformId: string
+  ): Promise<ServiceConfiguration[]> => {
+    return db(context, 'Service_Configuration')
+      .whereRaw("config->>'platform_id' = ?", platformId)
+      .select('*');
+  },
+
+  loadConfigurationByPlatform: async (
+    context: PortalContext,
+    platformId: string,
+    status?: ServiceConfigurationStatus
   ): Promise<ServiceConfiguration | null> => {
-    const configuration = await db(context, 'Service_Configuration')
+    const qb = db(context, 'Service_Configuration')
       .whereRaw("config->>'platform_id' = ?", platformId)
       .first()
       .select('*');
 
-    return configuration ?? null;
+    if (status) {
+      qb.where({ status });
+    }
+
+    return (await qb) ?? null;
   },
 
   updateConfiguration: async (
