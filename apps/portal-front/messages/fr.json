@@ -116,6 +116,10 @@
   },
   "Unenroll": {
     "OCTI": {
+      "Confirm": {
+        "Title": "Vous'êtes sur le point de désenregistrer votre instance OpenCTI",
+        "Description": "Voulez-vous procéder à la désinscription ?"
+      },
       "Error": {
         "Capability": {
           "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",

@@ -116,6 +116,10 @@
   },
   "Unenroll": {
     "OCTI": {
+      "Confirm": {
+        "Title": "You're about to unregister your OpenCTI instance",
+        "Description": "Do you want to proceed with the unenrollment ?"
+      },
       "Error": {
         "Capability": {
           "Title": "You do not have the necessary {capability} access on the XTM Hub.",

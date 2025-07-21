@@ -49,6 +49,22 @@ export const EnrollOCTIInstance = graphql`
   }
 `;
 
+export const UnenrollOCTIFragment = graphql`
+  fragment enrollUnenrollOCTIFragment on Success {
+    success
+  }
+`;
+
+export const UnenrollOCTIInstance = graphql`
+  mutation enrollUnenrollOCTIInstanceMutation(
+    $input: UnenrollOCTIInstanceInput!
+  ) {
+    unenrollOCTIInstance(input: $input) {
+      ...enrollUnenrollOCTIFragment
+    }
+  }
+`;
+
 export const enrollOCTIInstanceFragment = graphql`
   fragment enrollOCTIInstanceFragment on OctiInstance {
     id
