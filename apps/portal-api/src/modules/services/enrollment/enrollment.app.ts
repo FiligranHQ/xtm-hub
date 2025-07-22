@@ -11,13 +11,15 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import Subscription from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import {
   endSubscription,
+  loadActiveSubscriptionBy,
   loadLastSubscriptionByServiceInstance,
-  loadSubscriptionBy,
 } from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
@@ -25,6 +27,36 @@ import {
   enrollmentDomain,
   OCTIInstanceConfiguration,
 } from './enrollment.domain';
+
+const loadActiveOrLastSubscription = async (
+  context: PortalContext,
+  serviceConfigurations: ServiceConfiguration[]
+): Promise<{ subscription?: Subscription; isActive: boolean }> => {
+  const activeConfiguration = serviceConfigurations.find(
+    (configuration) =>
+      configuration.status === ServiceConfigurationStatus.Active
+  );
+  if (activeConfiguration) {
+    const subscription = await loadActiveSubscriptionBy(context, {
+      service_instance_id: activeConfiguration.service_instance_id,
+    });
+    return {
+      subscription,
+      isActive: true,
+    };
+  }
+
+  const subscription = await loadLastSubscriptionByServiceInstance(
+    context,
+    serviceConfigurations.map(
+      (configuration) => configuration.service_instance_id
+    )
+  );
+  return {
+    subscription,
+    isActive: false,
+  };
+};
 
 export const enrollmentApp = {
   loadOctiInstances: async (
@@ -111,7 +143,7 @@ export const enrollmentApp = {
       return;
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadActiveSubscriptionBy(context, {
       service_instance_id: activeServiceConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -160,26 +192,15 @@ export const enrollmentApp = {
       };
     }
 
-    const activeConfiguration = serviceConfigurations.find(
-      (configuration) =>
-        configuration.status === ServiceConfigurationStatus.Active
+    const { subscription, isActive } = await loadActiveOrLastSubscription(
+      context,
+      serviceConfigurations
     );
-
-    const subscription = activeConfiguration
-      ? await loadSubscriptionBy(context, {
-          service_instance_id: activeConfiguration.service_instance_id,
-        })
-      : await loadLastSubscriptionByServiceInstance(
-          context,
-          serviceConfigurations.map(
-            (configuration) => configuration.service_instance_id
-          )
-        );
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const enrolledStatus = activeConfiguration
+    const enrolledStatus = isActive
       ? CanEnrollStatus.Enrolled
       : CanEnrollStatus.Unenrolled;
     const isSameOrganization = subscription.organization_id === organizationId;
@@ -206,21 +227,22 @@ export const enrollmentApp = {
   canUnenrollOCTIInstance: async (
     context: PortalContext,
     { platformId }: CanUnenrollOctiInstanceInput
-  ): Promise<CanUnenrollResponse> => {
+  ): Promise<CanUnenrollResponse['instance']> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
-        platformId
+        platformId,
+        ServiceConfigurationStatus.Active
       );
     if (!serviceConfiguration) {
-      throw new Error(ErrorCode.ServiceConfigurationNotFound);
+      throw new Error(ErrorCode.InstanceNotEnrolled);
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadActiveSubscriptionBy(context, {
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
-      throw new Error(ErrorCode.SubscriptionNotFound);
+      throw new Error(ErrorCode.InstanceNotEnrolled);
     }
 
     const isAllowed = await isUserAllowed(context, {

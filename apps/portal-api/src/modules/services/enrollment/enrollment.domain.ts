@@ -15,7 +15,7 @@ import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import {
-  loadSubscriptionBy,
+  loadActiveSubscriptionBy,
   transferSubscription,
 } from '../../subcription/subscription.domain';
 import { createSubscription } from '../../subcription/subscription.helper';
@@ -82,7 +82,7 @@ export const enrollmentDomain = {
       targetOrganizationId: string;
     }
   ) => {
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadActiveSubscriptionBy(context, {
       service_instance_id: serviceInstanceId,
     });
 

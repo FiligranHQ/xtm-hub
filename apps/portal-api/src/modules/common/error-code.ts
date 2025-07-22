@@ -3,6 +3,7 @@ export enum ErrorCode {
   CanUnenrollOCTIInstanceUnknownError = 'CAN_UNENROLL_OCTI_INSTANCE_UNKNOWN_ERROR',
   EnrollOCTIInstanceUnknownError = 'ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR',
   EnrollOCITInstanceInvalidData = 'ENROLL_OCTI_INSTANCE_INVALID_DATA',
+  InstanceNotEnrolled = 'INSTANCE_NOT_ENROLLED',
   InvalidServiceConfiguration = 'INVALID_SERVICE_CONFIGURATION',
   MissingCapabilityOnOriginOrganization = 'MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION',
   ServiceContractNotFound = 'SERVICE_CONTRACT_NOT_FOUND',

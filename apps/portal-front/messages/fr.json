@@ -96,7 +96,6 @@
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
       "MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION": "Permissions manquantes",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
-      "SERVICE_CONFIGURATION_NOT_FOUND": "La configuration du service n'a pas été trouvée",
       "SERVICE_CONTRACT_NOT_FOUND": "Le contrat de service n'a pas été trouvé",
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
       "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas",
@@ -125,6 +124,10 @@
           "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",
           "Description": "Si vous voulez procéder à la désinscription de votre plateforme OCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
           "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
+        },
+        "InstanceNotEnrolled": {
+          "Title": "L'instance que vous essayez de désinscrire n'est pas inscrite",
+          "Description": "L'instance n'est actuellement liée à aucune organisation du XTM Hub."
         }
       }
     }

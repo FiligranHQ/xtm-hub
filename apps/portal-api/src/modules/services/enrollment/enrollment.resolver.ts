@@ -41,14 +41,15 @@ const resolvers: Resolvers = {
         );
 
         return {
-          ...response,
-          organizationId: toGlobalId('Organization', response.organizationId),
+          instance: {
+            ...response,
+            organizationId: toGlobalId('Organization', response.organizationId),
+          },
         };
       } catch (error) {
         switch (error.message) {
-          case ErrorCode.ServiceConfigurationNotFound:
-          case ErrorCode.SubscriptionNotFound:
-            throw NotFoundError(error.message);
+          case ErrorCode.InstanceNotEnrolled:
+            return {};
         }
         throw UnknownError(ErrorCode.CanUnenrollOCTIInstanceUnknownError, {
           detail: error,

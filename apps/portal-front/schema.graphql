@@ -393,9 +393,13 @@ type CanEnrollResponse {
   isSameOrganization: Boolean
 }
 
-type CanUnenrollResponse {
+type EnrolledInstance {
   isAllowed: Boolean!
   organizationId: ID!
+}
+
+type CanUnenrollResponse {
+  instance: EnrolledInstance
 }
 
 input UnenrollOCTIInstanceInput {

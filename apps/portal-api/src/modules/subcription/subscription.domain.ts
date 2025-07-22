@@ -130,6 +130,16 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
   return userServicesData;
 };
 
+export const loadActiveSubscriptionBy = async (
+  context: PortalContext,
+  field: SubscriptionMutator
+): Promise<Subscription | null> => {
+  return db<Subscription>(context, 'Subscription')
+    .where(field)
+    .whereNull('end_date')
+    .first();
+};
+
 export const loadSubscriptionBy = async (
   context: PortalContext,
   field: SubscriptionMutator

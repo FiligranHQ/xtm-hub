@@ -114,7 +114,7 @@ describe('Enrollment app', () => {
 
     let isUserAllowedSpy: MockInstance;
     let loadConfigurationsByPlatformSpy: MockInstance;
-    let loadSubscriptionBySpy: MockInstance;
+    let loadActiveSubscriptionBySpy: MockInstance;
     let loadLastSubscriptionByServiceInstanceSpy: MockInstance;
 
     beforeEach(() => {
@@ -123,9 +123,9 @@ describe('Enrollment app', () => {
         serviceContractDomain,
         'loadConfigurationsByPlatform'
       );
-      loadSubscriptionBySpy = vi.spyOn(
+      loadActiveSubscriptionBySpy = vi.spyOn(
         subscriptionDomain,
-        'loadSubscriptionBy'
+        'loadActiveSubscriptionBy'
       );
       loadLastSubscriptionByServiceInstanceSpy = vi.spyOn(
         subscriptionDomain,
@@ -189,7 +189,7 @@ describe('Enrollment app', () => {
 
       describe('same organization', () => {
         beforeEach(() => {
-          loadSubscriptionBySpy.mockReturnValue(
+          loadActiveSubscriptionBySpy.mockReturnValue(
             Promise.resolve({ organization_id: organizationId })
           );
         });
@@ -230,7 +230,7 @@ describe('Enrollment app', () => {
       describe('another organization', () => {
         const anotherOrganizationId = uuidv4();
         beforeEach(() => {
-          loadSubscriptionBySpy.mockReturnValue(
+          loadActiveSubscriptionBySpy.mockReturnValue(
             Promise.resolve({ organization_id: anotherOrganizationId })
           );
         });
@@ -421,7 +421,7 @@ describe('Enrollment app', () => {
 
     let isUserAllowedSpy: MockInstance;
     let loadConfigurationByPlatformSpy: MockInstance;
-    let loadSubscriptionBySpy: MockInstance;
+    let loadActiveSubscriptionBySpy: MockInstance;
 
     beforeEach(() => {
       isUserAllowedSpy = vi.spyOn(authHelper, 'isUserAllowed');
@@ -429,9 +429,9 @@ describe('Enrollment app', () => {
         serviceContractDomain,
         'loadConfigurationByPlatform'
       );
-      loadSubscriptionBySpy = vi.spyOn(
+      loadActiveSubscriptionBySpy = vi.spyOn(
         subscriptionDomain,
-        'loadSubscriptionBy'
+        'loadActiveSubscriptionBy'
       );
     });
 
@@ -446,22 +446,20 @@ describe('Enrollment app', () => {
         platformId,
       });
 
-      await expect(call).rejects.toThrow(
-        ErrorCode.ServiceConfigurationNotFound
-      );
+      await expect(call).rejects.toThrow(ErrorCode.InstanceNotEnrolled);
     });
 
     it('should throw an error when subscription does not exist', async () => {
       loadConfigurationByPlatformSpy.mockReturnValue(
         Promise.resolve({ service_instance_id: uuidv4() })
       );
-      loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
+      loadActiveSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
       const call = enrollmentApp.canUnenrollOCTIInstance(contextAdminUser, {
         platformId,
       });
 
-      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
+      await expect(call).rejects.toThrow(ErrorCode.InstanceNotEnrolled);
     });
 
     it('should allow user to enroll when he has the required capabilities', async () => {
@@ -470,7 +468,7 @@ describe('Enrollment app', () => {
       loadConfigurationByPlatformSpy.mockReturnValue(
         Promise.resolve({ service_instance_id: uuidv4() })
       );
-      loadSubscriptionBySpy.mockReturnValue(
+      loadActiveSubscriptionBySpy.mockReturnValue(
         Promise.resolve({ organization_id: organizationId })
       );
 
@@ -488,7 +486,7 @@ describe('Enrollment app', () => {
       loadConfigurationByPlatformSpy.mockReturnValue(
         Promise.resolve({ service_instance_id: uuidv4() })
       );
-      loadSubscriptionBySpy.mockReturnValue(
+      loadActiveSubscriptionBySpy.mockReturnValue(
         Promise.resolve({ organization_id: organizationId })
       );
       isUserAllowedSpy.mockReturnValue(Promise.resolve(false));

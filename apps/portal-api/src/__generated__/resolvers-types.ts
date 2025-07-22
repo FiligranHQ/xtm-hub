@@ -91,8 +91,7 @@ export type CanUnenrollOctiInstanceInput = {
 
 export type CanUnenrollResponse = {
   __typename?: 'CanUnenrollResponse';
-  isAllowed: Scalars['Boolean']['output'];
-  organizationId: Scalars['ID']['output'];
+  instance?: Maybe<EnrolledInstance>;
 };
 
 export type Capability = Node & {
@@ -288,6 +287,12 @@ export type EditUserCapabilitiesInput = {
 export type EnrollOctiInstanceInput = {
   organizationId: Scalars['ID']['input'];
   platform: OctiPlatformInput;
+};
+
+export type EnrolledInstance = {
+  __typename?: 'EnrolledInstance';
+  isAllowed: Scalars['Boolean']['output'];
+  organizationId: Scalars['ID']['output'];
 };
 
 export type EnrollmentResponse = {
@@ -1569,6 +1574,7 @@ export type ResolversTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   EnrollOCTIInstanceInput: EnrollOctiInstanceInput;
+  EnrolledInstance: ResolverTypeWrapper<EnrolledInstance>;
   EnrollmentResponse: ResolverTypeWrapper<EnrollmentResponse>;
   Filter: Filter;
   FilterKey: FilterKey;
@@ -1683,6 +1689,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   EnrollOCTIInstanceInput: EnrollOctiInstanceInput;
+  EnrolledInstance: EnrolledInstance;
   EnrollmentResponse: EnrollmentResponse;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
@@ -1779,8 +1786,7 @@ export type CanEnrollResponseResolvers<ContextType = PortalContext, ParentType e
 }>;
 
 export type CanUnenrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnenrollResponse'] = ResolversParentTypes['CanUnenrollResponse']> = ResolversObject<{
-  isAllowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  organizationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  instance?: Resolver<Maybe<ResolversTypes['EnrolledInstance']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1906,6 +1912,12 @@ export type DocumentConnectionResolvers<ContextType = PortalContext, ParentType 
 export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DocumentEdge'] = ResolversParentTypes['DocumentEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Document'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EnrolledInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EnrolledInstance'] = ResolversParentTypes['EnrolledInstance']> = ResolversObject<{
+  isAllowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  organizationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2409,6 +2421,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
+  EnrolledInstance?: EnrolledInstanceResolvers<ContextType>;
   EnrollmentResponse?: EnrollmentResponseResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   JSON?: GraphQLScalarType;

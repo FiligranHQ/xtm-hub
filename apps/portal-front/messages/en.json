@@ -96,7 +96,6 @@
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
       "MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION": "Missing permissions",
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
-      "SERVICE_CONFIGURATION_NOT_FOUND": "Service configuration was not found",
       "SERVICE_CONTRACT_NOT_FOUND": "Service contract was not found",
       "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
       "SERVICE_NOT_FOUND_ERROR": "The service does not exist",
@@ -125,6 +124,10 @@
           "Title": "You do not have the necessary {capability} access on the XTM Hub.",
           "Description": "If you want to proceed with the unenrollment of your OCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
           "AdminListTitle": "The administrators of your organization are the following:"
+        },
+        "InstanceNotEnrolled": {
+          "Title": "The instance you're trying to unenroll is not enrolled",
+          "Description": "The instance is not currently linked to any XTM Hub organization."
         }
       }
     }

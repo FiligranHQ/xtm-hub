@@ -4,6 +4,7 @@ import {
 } from '@/components/enroll/enroll.graphql';
 import Loader from '@/components/loader';
 import { UnenrollOCTIConfirm } from '@/components/unenroll/octi/confirm';
+import { UnenrollOCTIInstanceNotEnrolled } from '@/components/unenroll/octi/instance-not-enrolled';
 import { UnenrollOCTIMissingCapability } from '@/components/unenroll/octi/missing-capability';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { enrollCanUnenrollOCTIInstanceFragment$key } from '@generated/enrollCanUnenrollOCTIInstanceFragment.graphql';
@@ -38,11 +39,10 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
       queryRef
     );
 
-  const { isAllowed, organizationId } =
-    useFragment<enrollCanUnenrollOCTIInstanceFragment$key>(
-      CanUnenrollOCTIInstanceFragment,
-      canUnenrollPreloadedQuery.canUnenrollOCTIInstance
-    );
+  const { instance } = useFragment<enrollCanUnenrollOCTIInstanceFragment$key>(
+    CanUnenrollOCTIInstanceFragment,
+    canUnenrollPreloadedQuery.canUnenrollOCTIInstance
+  );
 
   const [
     organizationAdministratorsQueryRef,
@@ -50,7 +50,9 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   ] = useQueryLoader<userListOrganizationAdministratorsQuery>(
     UserListOrganizationAdministratorsQueryGraphql
   );
-  useMountingLoader(loadOrganizationAdministratorsQuery, { organizationId });
+  useMountingLoader(loadOrganizationAdministratorsQuery, {
+    organizationId: instance?.organizationId,
+  });
   const [unenrollInstance] =
     useMutation<enrollUnenrollOCTIInstanceMutation>(UnenrollOCTIInstance);
 
@@ -78,7 +80,11 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     });
   };
 
-  if (!isAllowed) {
+  if (!instance) {
+    return <UnenrollOCTIInstanceNotEnrolled cancel={cancel} />;
+  }
+
+  if (!instance?.isAllowed) {
     return organizationAdministratorsQueryRef ? (
       <UnenrollOCTIMissingCapability
         queryRef={organizationAdministratorsQueryRef}
@@ -93,7 +99,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     <UnenrollOCTIConfirm
       cancel={cancel}
       confirm={confirm}
-      organizationId={organizationId}
+      organizationId={instance?.organizationId}
     />
   );
 };
