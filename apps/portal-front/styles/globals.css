@@ -42,3 +42,8 @@
     list-style-type: decimal;
   }
 }
+
+/* Allow fullsize textArea in MD editor (https://github.com/uiwjs/react-md-editor/issues/625) */
+.w-md-editor-text {
+  min-height: 100% !important;
+}
