@@ -20,6 +20,7 @@ const MarkdownInput = ({
       <MDEditor
         value={value}
         onChange={onChange}
+        highlightEnable={false}
         style={{
           background: 'hsl(var(--page-background))',
           color: 'hsl(var(--text-foreground))',
