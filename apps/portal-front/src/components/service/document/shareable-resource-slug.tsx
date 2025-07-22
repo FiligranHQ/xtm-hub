@@ -4,7 +4,7 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
-import { KeyboardArrowDownIcon } from 'filigran-icon';
+import { DownloadIcon } from 'filigran-icon';
 import {
   Tooltip,
   TooltipContent,
@@ -15,6 +15,7 @@ import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import OneClickDeploy from '@/components/service/document/one-click-deploy';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
 import { SettingsContext } from '@/components/settings/env-portal-context';
@@ -83,7 +84,7 @@ const ShareableResourceSlug: React.FunctionComponent<
                       window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}`;
                     }}
                     className="z-[2] text-primary">
-                    <KeyboardArrowDownIcon className="h-4 w-4" />
+                    <DownloadIcon className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>

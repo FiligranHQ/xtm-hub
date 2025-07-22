@@ -12,6 +12,7 @@ export const config = {
     '/auth/:path*',
     '/document/get/:filename*',
     '/document/visualize/:serviceInstanceId/:filename*',
+    '/document/deploy/:serviceInstanceId/:filename*',
     '/document/images/:documentId*',
   ],
 };

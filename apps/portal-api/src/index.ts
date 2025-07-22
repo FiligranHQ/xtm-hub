@@ -20,6 +20,7 @@ import portalConfig from './config';
 import { awxEndpoint } from './managers/awx/awx-endpoint';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
+import { documentDeployEndpoint } from './modules/services/document/deploy-document-endpoint';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import { documentVisualizeEndpoint } from './modules/services/document/visualize-document-endpoint';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
@@ -178,6 +179,7 @@ await initAuthPlatform(app);
 // Therefore, we have to handle it through this route instead.
 documentDownloadEndpoint(app);
 documentVisualizeEndpoint(app);
+documentDeployEndpoint(app);
 awxEndpoint(app);
 healthEndpoint(app);
 
