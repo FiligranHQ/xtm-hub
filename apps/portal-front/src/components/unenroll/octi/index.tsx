@@ -93,6 +93,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     <UnenrollOCTIConfirm
       cancel={cancel}
       confirm={confirm}
+      organizationId={organizationId}
     />
   );
 };

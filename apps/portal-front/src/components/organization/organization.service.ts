@@ -1,14 +1,22 @@
 import {
   organizationFetch,
+  organizationItemFragment,
+  organizationQuery,
   organizationsFragment,
 } from '@/components/organization/organization.graphql';
 import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
+import { organizationItem_fragment$key } from '@generated/organizationItem_fragment.graphql';
 import { organizationList_organizations$key } from '@generated/organizationList_organizations.graphql';
+import { organizationQuery as organizationQueryGraphql } from '@generated/organizationQuery.graphql';
 import {
   OrderingMode,
   organizationSelectQuery,
 } from '@generated/organizationSelectQuery.graphql';
-import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import {
+  useFragment,
+  useLazyLoadQuery,
+  useRefetchableFragment,
+} from 'react-relay';
 
 interface OrganizationParamsQuery {
   count: number;
@@ -16,6 +24,19 @@ interface OrganizationParamsQuery {
   orderMode: OrderingMode;
   searchTerm?: string;
 }
+
+export const getOrganization = (organizationId: string) => {
+  const organizationData = useLazyLoadQuery<organizationQueryGraphql>(
+    organizationQuery,
+    { id: organizationId }
+  );
+
+  return useFragment<organizationItem_fragment$key>(
+    organizationItemFragment,
+    organizationData.organization
+  );
+};
+
 export const getOrganizations = ({
   searchTerm = '',
   count = 50,

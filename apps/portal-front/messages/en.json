@@ -117,7 +117,7 @@
   "Unenroll": {
     "OCTI": {
       "Confirm": {
-        "Title": "You're about to unregister your OpenCTI instance",
+        "Title": "You are about to unregister your OpenCTI instance from the {name} organization on the Hub.",
         "Description": "Do you want to proceed with the unenrollment ?"
       },
       "Error": {
