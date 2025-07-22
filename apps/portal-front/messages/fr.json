@@ -115,6 +115,14 @@
   },
   "Unenroll": {
     "OCTI": {
+      "Succeeded": {
+        "Title": "L'instance OCTI a été désinscrite avec succès",
+        "Description": "Cet onglet sera bientôt fermé"
+      },
+      "Failed": {
+        "Title": "La désinscription a échoué",
+        "Description": "Une erreur s'est produite lors de la désinscription de l'instance"
+      },
       "Confirm": {
         "Title": "Vous'êtes sur le point de désenregistrer votre instance OpenCTI",
         "Description": "Voulez-vous procéder à la désinscription ?"

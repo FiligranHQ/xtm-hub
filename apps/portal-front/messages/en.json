@@ -115,6 +115,14 @@
   },
   "Unenroll": {
     "OCTI": {
+      "Succeeded": {
+        "Title": "OCTI instance unenrolled successfully",
+        "Description": "This tab will be closed soon"
+      },
+      "Failed": {
+        "Title": "Unenrollment failed",
+        "Description": "An error occurred during the instance unenrollment"
+      },
       "Confirm": {
         "Title": "You are about to unregister your OpenCTI instance from the {name} organization on the Hub.",
         "Description": "Do you want to proceed with the unenrollment ?"
