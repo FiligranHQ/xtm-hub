@@ -15,7 +15,7 @@ import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import OneClickDeploy from '@/components/service/document/one-click-deploy';
+import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
 import { SettingsContext } from '@/components/settings/env-portal-context';

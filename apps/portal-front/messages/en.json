@@ -522,7 +522,12 @@
     "ShareableResources": {
       "Share": "Share",
       "Download": "Download",
-      "DeployOcti": "Deploy in OCTI",
+      "DeployOcti": "Deploy in OpenCTI",
+      "DeployOctiDescription": "You're about to deploy the {dashboardName} dashboard.",
+      "DeployOctiQuestionTag": "In which OpenCTI platform do you want to deploy it?",
+      "DeployOctiDescriptionOneInstance": "Do you want to deploy it in the {instanceName} platform?",
+      "DeployOctiDescriptionNoInstance": "You have to be an admin or contact your admin to go to register your OpenCTI platform.",
+      "DeployOctiDescriptionNoInstanceThen": "The registration can be done through the settings in the following section:",
       "Copied": "URL copied! You can now paste and share it.",
       "FromVersion": "From version",
       "Details": {
