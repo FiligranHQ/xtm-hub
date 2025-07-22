@@ -354,6 +354,7 @@
         "Updated": "The custom dashboard {name} has been modified successfully"
       },
       "AddDashboard": "Add new dashboard",
+      "DeleteDashboard": "Delete the custom dashboard {name}",
       "Form": {
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the document.",
@@ -383,6 +384,7 @@
         "Author": "Author",
         "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image."
       },
+      "SureDeleteDashboard": "Are you sure you want to delete the {name} dashboard?",
       "UpdateDashboard": "Update dashboard"
     },
     "ObasScenario": {
