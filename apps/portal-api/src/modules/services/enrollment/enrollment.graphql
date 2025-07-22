@@ -1,0 +1,56 @@
+enum OCTIPlatformContract {
+  CE
+  EE
+}
+
+type OctiInstance implements Node {
+  id: ID!
+  url: String!
+  title: String!
+  contract: OCTIPlatformContract!
+  platform_id: String!
+}
+
+input OCTIPlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: OCTIPlatformContract!
+}
+
+input EnrollOCTIInstanceInput {
+  organizationId: ID!
+  platform: OCTIPlatformInput!
+}
+
+input CanEnrollOCTIInstanceInput {
+  organizationId: ID!
+  platformId: String!
+}
+
+type EnrollmentResponse {
+  token: String!
+}
+
+enum CanEnrollStatus {
+  enrolled
+  unenrolled
+  never_enrolled
+}
+
+type CanEnrollResponse {
+  isAllowed: Boolean!
+  status: CanEnrollStatus!
+  isSameOrganization: Boolean
+}
+
+type Query {
+  canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
+    @auth
+  octiInstances: [OctiInstance!]! @auth
+}
+
+type Mutation {
+  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): EnrollmentResponse!
+    @auth(requires: [MANAGE_OCTI_ENROLLMENT])
+}

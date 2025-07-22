@@ -1,0 +1,31 @@
+{
+  "name": "test_e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/portal-e2e-tests",
+  "projectType": "application",
+  "types": ["yarn"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/portal-e2e-tests",
+        "command": "playwright test"
+      }
+    },
+    "test-e2e-ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/portal-e2e-tests",
+        "command": "playwright test --ui"
+      }
+    },
+    "generate-test-e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/portal-e2e-tests",
+        "command": "npx playwright codegen http://localhost:3002/"
+      }
+    }
+  },
+  "tags": []
+}

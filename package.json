@@ -1,0 +1,43 @@
+{
+  "name": "xtm-hub",
+  "workspaces": [
+    "apps/*"
+  ],
+  "private": true,
+  "type": "module",
+  "version": "1.4.8",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "Filigran",
+  "scripts": {
+    "dev:api": "npx nx run portal-api:dev",
+    "dev:front": "npx nx run portal-front:dev"
+  },
+  "devDependencies": {
+    "@nx/eslint": "21.2.3",
+    "@nx/next": "21.2.3",
+    "@nx/playwright": "21.2.3",
+    "@nx/react": "21.2.3",
+    "@nx/web": "^21.2.3",
+    "@nx/workspace": "21.2.3",
+    "@playwright/test": "1.53.2",
+    "eslint": "^9.30.1",
+    "eslint-config-next": "^15.3.5",
+    "eslint-config-prettier": "^10.1.5",
+    "nx": "21.2.3",
+    "typescript": "5.8.3"
+  },
+  "dependencies": {
+    "@types/node": "24.0.12",
+    "tsx": "4.19.4",
+    "typescript": "5.8.3"
+  },
+  "tsConfig": "tsconfig.json",
+  "packageManager": "yarn@3.8.7",
+  "resolutions": {
+    "@types/express-serve-static-core": "5.0.7",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  }
+}

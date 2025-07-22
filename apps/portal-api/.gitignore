@@ -1,0 +1,26 @@
+.eslintcache
+.env
+.clinic
+build
+dist
+node_modules
+config/ssl
+config/reference.json
+coverage
+test-results
+logs
+yarn-error.log
+graphql.schema.json
+__pycache__
+
+# Yarn
+.yarn
+.pnp.*
+
+/config/local*.json
+/uploads/**
+!uploads/.gitkeep
+/config/filigran.json
+/config/thales.json
+
+*~

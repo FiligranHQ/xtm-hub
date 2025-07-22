@@ -1,0 +1,627 @@
+{
+  "AdminCallout": "You are currently in admin mode.",
+  "App": {
+    "Collapse": "Collapse",
+    "CollapseSidebar": "Collapse sidebar",
+    "Title": "XTM Hub"
+  },
+  "Badge": {
+    "Disabled": "Disabled",
+    "Draft": "Draft",
+    "Enabled": "Enabled",
+    "Published": "Published"
+  },
+  "CapabilityDescription": {
+    "Capabilities": {
+      "ADMINISTRATE_ORGANIZATION": "Bypass inside of an organization",
+      "MANAGE_ACCESS": "Ability to invite other users to this organization",
+      "MANAGE_OCTI_ENROLLMENT": "Ability to enroll and unenroll OCTI instances",
+      "MANAGE_SUBSCRIPTION": "Ability to manage and subscribe the organization to services"
+    },
+    "Description": "You can add specific capabilities to Filigran users",
+    "Title": "Available capabilities"
+  },
+  "CountryComboBox": {
+    "Placeholder": "Choose a country"
+  },
+  "Datatable": {
+    "Asc": "Asc",
+    "Columns": "Columns",
+    "Desc": "Desc",
+    "GoFirstPage": "Go to first page",
+    "GoLastPage": "Go to last page",
+    "GoNextPage": "Go to next page",
+    "GoPreviousPage": "Go to previous page",
+    "Hide": "Hide",
+    "ManageColumnsVisibility": "Manage columns visibility",
+    "ResetTable": "Reset table",
+    "RowsPerPage": "Rows per page"
+  },
+  "DeleteLabelDialog": {
+    "TextDeleteLabel": "Do you really want to delete this label {name} ?"
+  },
+  "DialogActions": {
+    "ContinueTitle": "Do you want to continue?",
+    "PreventSheetSentence": "You have started filling out the form. Closing it now will discard any unsaved progress. Do you want to proceed?",
+    "PreventSheetTitle": "Unsaved progress"
+  },
+  "DisableUserDialog": {
+    "TextDisableThisUser": "Are you sure you want to disable this user {email} ?"
+  },
+  "UnexpectedErrorDialog": {
+    "Title": "Something unexpected happened.",
+    "Description": "Please try logging in again. If the issue persists, contact us for assistance."
+  },
+  "Error": {
+    "AnErrorOccured": "An error occurred",
+    "Login": {
+      "LoginError": "You are not allowed to login"
+    },
+    "Server": {
+      "ADDING_USER_ERROR": "Error while creating user",
+      "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
+      "ALREADY_SUBSCRIBED": "You have already subscribed to this service",
+      "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "You have already subscribed this organization to this service",
+      "AUTH0_USER_NOT_FOUND_ERROR": "Your user profile was not found",
+      "CAN_ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "An unknown error occurred during instance enrollment",
+      "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
+      "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
+      "CANT_EDIT_YOURSELF_ERROR": "You cannot edit yourself",
+      "CANT_REMOVE_LAST_ADMINISTRATOR": "You cannot remove the last administrator of an organization",
+      "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
+      "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
+      "CSV_FEED_INSERTION_ERROR": "An error occurred while creating the CSV Feed.",
+      "CSV_FEED_UNIQUE_SLUG_ERROR": "The CSV feed slug is already in use.",
+      "CSV_FEED_UPDATE_ERROR": "An error occurred while updating the CSV feed.",
+      "CUSTOM_DASHBOARD_INSERTION_ERROR": "An error occurred while creating the custom dashboard.",
+      "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "The custom dashboard slug is already in use.",
+      "CUSTOM_DASHBOARD_UPDATE_ERROR": "An error occurred while updating the custom dashboard.",
+      "DELETE_DOCUMENT_ERROR": "Error while deleting document",
+      "DELETE_ORGANIZATION": "Error while deleting organization",
+      "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
+      "DELETE_USER_ERROR": "Error while deleting user",
+      "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
+      "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
+      "EDIT_ME_USER_ERROR": "Error while editing your profile",
+      "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
+      "EDIT_USER_ERROR": "Error while editing user",
+      "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
+      "ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "An unknown error occurred during instance enrollment",
+      "ENROLL_OCTI_INSTANCE_INVALID_DATA": "Data sent for OCTI instance enrollment is invalid",
+      "ERROR_SUBSCRIPTION_WITH_BILLING": "Error while deleting the subscription: you are not allowed to delete a subscription with billing",
+      "INSERT_DOCUMENT_ERROR": "Error while inserting document",
+      "INVALID_IMAGE_URL": "The image URL is not valid",
+      "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
+      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
+      "MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION": "Missing permissions",
+      "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
+      "SERVICE_CONTRACT_NOT_FOUND": "Service contract was not found",
+      "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
+      "SERVICE_NOT_FOUND_ERROR": "The service does not exist",
+      "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
+      "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exist",
+      "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
+      "UPDATE_DOCUMENT_ERROR": "Error while updating document",
+      "USER_ALREADY_EXISTS_ERROR": "The user already has access",
+      "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
+      "OBAS_SCENARIO_INSERTION_ERROR": "An error occurred while creating the scenario.",
+      "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "The scenario slug is already in use.",
+      "OBAS_SCENARIO_UPDATE_ERROR": "An error occurred while updating the scenario."
+    },
+    "SomethingWentWrong": "Something went wrong",
+    "YouAreNotAuthorized": "You are not authorized to get this page."
+  },
+  "Enroll": {
+    "Register": "Register",
+    "OCTI": {
+      "Succeeded": {
+        "Title": "OCTI instance enrolled successfully",
+        "Description": "This tab will be closed soon"
+      },
+      "Failed": {
+        "Title": "Enrollment failed",
+        "Description": "An error occurred during the instance enrollment"
+      },
+      "SameOrganization": {
+        "Enrolled": {
+          "Title": "Instance already enrolled",
+          "Description": "Your OCTI instance is already enrolled. Do you want to re-enroll your instance ?"
+        },
+        "Unenrolled": {
+          "Title": "Instance was enrolled",
+          "Description": "Your OCTI instance was previously enrolled. Do you want to re-enroll your instance ?"
+        }
+      },
+      "AnotherOrganization": {
+        "NotAllowed": {
+          "Title": "The instance is enrolled on another organization",
+          "Description": "Your OCTI instance is already enrolled in another organization and you don't have the necessary permissions to transfer it."
+        },
+        "Allowed": {
+          "Enrolled": {
+            "Title": "Instance already enrolled",
+            "Description": "Your OCTI instance is already enrolled in another organization. Do you want to transfer your instance ?"
+          },
+          "Unenrolled": {
+            "Title": "Instance was enrolled",
+            "Description": "Your OCTI instance was previously enrolled in another organization. Do you want to re-enroll your instance ?"
+          }
+        }
+      },
+      "Back": "Back to OpenCTI",
+      "Error": {
+        "Capability": {
+          "Title": "You do not have the necessary {capability} access on the XTM Hub.",
+          "Description": "If you want to proceed with the enrollment of your OCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
+          "AdminListTitle": "The administrators of your organization are the following:"
+        }
+      },
+      "OrganizationForm": {
+        "Title": "You're about to register your OpenCTI instance into XTM Hub",
+        "Description": "In which organization space do you want to register your OpenCTI instance ?"
+      }
+    },
+    "Details": {
+      "InstanceID": "Instance ID",
+      "InstanceURL": "Instance URL",
+      "Contract": "Contract",
+      "Contracts": {
+        "CE": "Community Edition",
+        "EE": "Enterprise Edition"
+      }
+    }
+  },
+  "GenericActions": {
+    "FilterLabels": "Filter by labels...",
+    "Search": "Search..."
+  },
+  "GoToProd": "Go to production",
+  "HomePage": {
+    "Homepage": "Homepage",
+    "Manage": "Manage",
+    "OpenManagement": "Go to management page"
+  },
+  "InviteUserServiceForm": {
+    "Capabilities": "Available capabilities",
+    "CapabilitiesDescription": "You can add specific capabilities to {organizationName} users for their subscription on the {serviceName} service.",
+    "CapabilitiesPlaceholder": "Select capabilities",
+    "Description": "Additional capability: By default, your user invited to a service will have access the service. If you want to grant additional capability, select the capability/ies you want to grant to your user.",
+    "DisabledCapability": "if you want to give capabilities to your users on this service, first grant the activation on the organization level",
+    "Email": "Email",
+    "GrantCapability": "Grant capability",
+    "Organization": "Organization",
+    "Title": "Invite user to the {serviceName} service"
+  },
+  "LabelActions": {
+    "AddLabel": "Add label",
+    "SearchLabel": "Search"
+  },
+  "LabelForm": {
+    "Color": "Color",
+    "Name": "Name"
+  },
+  "LabelListPage": {
+    "Color": "Color",
+    "Name": "Name"
+  },
+  "LocaleSwitcher": {
+    "Label": "Language",
+    "en": "English",
+    "fr": "Français"
+  },
+  "LoginPage": {
+    "CreateYourAccount": "create your account",
+    "Email": "Email",
+    "Login": "Login",
+    "Logout": "Logout",
+    "OnFiligranWebsite": "on the Filigran website",
+    "Password": "Password",
+    "SignIn": "Sign in",
+    "Title": "XTM Hub login page",
+    "ToLoginPlease": "To login, please"
+  },
+  "MenuActions": {
+    "Continue": "Continue",
+    "Delete": "Delete",
+    "Details": "Details",
+    "Disable": "Disable",
+    "Download": "Download",
+    "Remove": "Remove",
+    "Update": "Update"
+  },
+  "MenuLinks": {
+    "Backoffice": "Backoffice",
+    "Home": "Home",
+    "Labels": "Labels",
+    "Organizations": "Organizations",
+    "Parameters": "Parameters",
+    "Profile": "Profile",
+    "Security": "Security",
+    "Services": "Services",
+    "Settings": "Settings",
+    "SettingsLabel": "Settings menu",
+    "Users": "Users"
+  },
+  "MenuUser": {
+    "Profile": "Profile",
+    "ToggleUser": "Open menu user"
+  },
+  "OrganizationActions": {
+    "ErrorNameAlreadyExists": "The organization {name} already exists.",
+    "OrganizationCreated": "Organization {name} has been created",
+    "OrganizationDeleted": "Organization has been deleted",
+    "OrganizationUpdated": "Organization {name} has been modified",
+    "SearchOrganizationWithEmail": "Search organization with email..."
+  },
+  "OrganizationForm": {
+    "CreateOrganization": "Create organization",
+    "DeleteOrganization": "Delete organization",
+    "Domains": "Domains",
+    "DomainsPlaceholder": "Add a domain",
+    "EditOrganization": "Edit organization",
+    "Error": {
+      "Domain": "At least one domain is required",
+      "DomainsInvalid": "The value as domain is invalid",
+      "DuplicateName": "An organization with this name already exists",
+      "Name": "Organization name is required"
+    },
+    "Name": "Name",
+    "SureDeleteOrganization": "Are you sure you want to delete this organization {organizationName}? This action can not be undone."
+  },
+  "OrganizationInServiceAction": {
+    "AddOrganization": "Subscribe organization to the",
+    "ConfirmDelete1": "Are you sure you want to delete this organization",
+    "ConfirmDelete2": "from this service ? This action cannot be undone.",
+    "DeleteOrgFromService": "Delete Organization from the service",
+    "EndDate": "End date (optional)",
+    "Organization": "Organization",
+    "RemoveOrganization": "Remove organization",
+    "SelectCapa": "Select capabilities",
+    "SelectCapaDescription": "If you select these capabilities, the administrator will be able to assign these capabilities to the users later.",
+    "SelectOrganization": "Select an organization",
+    "StartDate": "Start date"
+  },
+  "OrganizationSwitcher": {
+    "PersonalSpace": "Personal space",
+    "SelectOrganization": "Select an organization",
+    "SelectedOrganization": "SelectedOrganization"
+  },
+  "Parameters": {
+    "Version": "Version"
+  },
+  "ProfilePage": {
+    "InstancesEditionDialog": {
+      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OCTI and OBAS instances."
+    },
+    "Title": "Profile",
+    "UpdateProfile": "Update profile"
+  },
+  "RedirectPage": {
+    "ExploringOurRoad": "Hold tight—you're just 3 seconds away from exploring our roadmap and learning more.",
+    "YourFutureHub": "Your future Filigran community hub is taking shape !"
+  },
+  "RemoveUserOrgDialog": {
+    "TextRemoveThisUser": "Are you sure you want to remove this user {email} from your organization ?"
+  },
+  "Reset table": "Reset table",
+  "Rows per page": "Rows per page",
+  "Service": {
+    "Capabilities": {
+      "AccessServiceDescription": "You just have access to a service",
+      "AccessServiceName": "Access service",
+      "CapabilitiesTitle": "Capabilities",
+      "ManageAccessDescription": "You can access the service and invite users to this service",
+      "ManageAccessName": "Manage access",
+      "SelectCapabilities": "Select capabilities"
+    },
+    "ComingSoon": "Coming soon",
+    "CreationStatus": "Creation status",
+    "CsvFeed": {
+      "Actions": {
+        "Added": "The CSV {name} has been added successfully",
+        "Deleted": "The CSV {name} has been deleted successfully",
+        "Share": "Share CSV Feed",
+        "Updated": "The CSV {name} has been modified successfully"
+      },
+      "Active": "Published",
+      "AddCsvFeed": "Add new CSV Feed",
+      "DeleteCsvFeed": "Delete the CSV Feed {name}",
+      "Form": {
+        "CsvFeedFile": "Csv Feed file",
+        "CsvFeedIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the CSV Feed.",
+        "ExistingCsvFeedFile": "Existing Csv Feed file: {file_name}",
+        "UpdateJSONFile": "Update JSON file",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
+        "ExistingCsvFeedIllustration": "Existing Csv Feed illustration: {file_name}",
+        "LabelsLabel": "Labels",
+        "NameLabel": "Name",
+        "PublishedPlaceholder": "Is the CSV Feed published?",
+        "ShortDescriptionLabel": "Short Description",
+        "Author": "Author",
+        "SlugLabel": "Slug"
+      },
+      "NonActive": "Draft",
+      "SureDeleteCsvFeed": "Are you sure you want to delete the CSV Feed {name}?",
+      "UpdateCsvFeed": "Update the CSV Feed {name}"
+    },
+    "CustomDashboards": {
+      "Actions": {
+        "Added": "The custom dashboard {name} has been added successfully",
+        "Deleted": "The custom dashboard {name} has been deleted successfully",
+        "Share": "Share Custom Dashboard",
+        "Updated": "The custom dashboard {name} has been modified successfully"
+      },
+      "AddDashboard": "Add new dashboard",
+      "DeleteDashboard": "Delete the custom dashboard {name}",
+      "Form": {
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the document.",
+        "ExistingJSONFile": "Existing JSON file: ",
+        "ImageLabel": "Images",
+        "JSONFile": "JSON file",
+        "LabelsLabel": "Labels",
+        "LabelsPlaceholder": "Add labels",
+        "NameLabel": "Name",
+        "NamePlaceholder": "Dashboard name",
+        "NoImage": "No image selected",
+        "NoJSONFile": "No JSON file selected",
+        "PublishedLabel": "Publish",
+        "PublishedPlaceholder": "Is the dashboard published?",
+        "SelectImage": "Select image(s)",
+        "SelectJSONFile": "Select JSON file",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
+        "ShortDescriptionLabel": "Short Description",
+        "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
+        "SlugLabel": "Slug (url)",
+        "SlugPlaceholder": "dashboard-slug",
+        "UpdateJSONFile": "Update JSON file",
+        "UploadImage": "Upload new image(s)",
+        "productVersion": "OpenCTI version",
+        "productVersionPlaceholder": "1.0.0",
+        "Restore": "Restore",
+        "Author": "Author",
+        "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image."
+      },
+      "SureDeleteDashboard": "Are you sure you want to delete the {name} dashboard?",
+      "UpdateDashboard": "Update dashboard"
+    },
+    "ObasScenario": {
+      "Actions": {
+        "Added": "The scenario {name} has been added successfully",
+        "Deleted": "The scenario {name} has been deleted successfully",
+        "Updated": "The scenario {name} has been modified successfully",
+        "Share": "Share Scenario"
+      },
+      "Form": {
+        "NameLabel": "Name",
+        "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
+        "LabelsLabel": "Labels",
+        "ObasScenarioFile": "Scenario file",
+        "ExistingObasScenarioFile": "Existing scenario file: {file_name}",
+        "ObasScenarioIllustration": "Illustration",
+        "ExistingObasScenarioIllustration": "Existing scenario illustration: {file_name}",
+        "PublishedPlaceholder": "Is the scenario published?",
+        "Author": "Author",
+        "ProductVersionLabel": "OpenBAS Version"
+      },
+      "AddObasScenario": "Add new scenario",
+      "UpdateObasScenario": "Update the scenario {name}",
+      "DeleteObasScenario": "Delete the scenario {name}",
+      "SureDeleteObasScenario": "Are you sure you want to delete the scenario {name}?",
+      "NonActive": "Draft",
+      "Active": "Published"
+    },
+    "Description": "Description",
+    "GoTo": "Go to service page",
+    "GoToAdminLabel": "Manage",
+    "GoToLabel": "Go to",
+    "GoToManagement": "Go to service management",
+    "HighlightedServices": "To use this feature, please subscribe to one of the highlighted services first",
+    "Join": "Join",
+    "Management": {
+      "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
+      "Description": "Find below the list of organizations subscribed to this service",
+      "Email": "Email",
+      "FirstName": "First Name",
+      "InviteUser": {
+        "InviteUser": "Invite user to the service",
+        "InviteUserSubtitle": "Additional capability: By default, your user invited to a service will just have access to the service. If you want to grant additional capability, select the capability/ies you want to grant to your user  in the dropdown.",
+        "Organization": "Organization",
+        "TitleInviteUser": "Invite user"
+      },
+      "LastName": "Last Name",
+      "ManageUsers": "Manage users",
+      "ManageUsersForOrganization": "Manage {organizationName}'s users in the {serviceName} service",
+      "OneUserMax": "Add 1 user max",
+      "RemoveAccess": "Remove access",
+      "RemoveRights": "Remove rights",
+      "ShowPersonalSpaces": "Show personal spaces",
+      "Subscription": "Subscription"
+    },
+    "Name": "Name",
+    "NoOwnedService": "You don't have any services yet.",
+    "NoService": "There is no service... Yet!",
+    "ServiceName": "Service name",
+    "Subscribe": "Subscribe",
+    "SubscribeOrganization": "Subscribe organization",
+    "SubscribeService": "Subscribe to {serviceName} service",
+    "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
+    "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
+    "SureWantSubscriptionDirect": "Are you sure you want to subscribe to this service? This action cannot be undone.",
+    "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
+    "Vault": {
+      "DeleteDocument": "Delete document",
+      "DropFile": "Drop the document here",
+      "File": "Document to send",
+      "FileExtension": "The document must have an extension",
+      "FileForm": {
+        "AddFile": "Add new document",
+        "AlreadyExists": "This document already exists. The old one will be erased.",
+        "DeleteDialog": "Are you sure you want to delete this document?",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a short paragraph to describe the document.",
+        "DropDocuments": "Drop documents here",
+        "EditFile": "Edit document",
+        "File": "Document",
+        "FileAlreadyExists": "This document already exists",
+        "FileExistsDialog": "This document already exists. This document will erase the old one. Are you sure you want to continue?",
+        "NoDocument": "No document selected",
+        "SelectDocument": "Select document",
+        "ShortNameLabel": "Short name",
+        "ShortNamePlaceholder": "Filigran Pricing",
+        "UploadNewFile": "Upload a new document in Vault"
+      },
+      "FileTab": {
+        "Description": "Description",
+        "FileName": "Document name",
+        "NumberDownload": "Downloads",
+        "Search": "Search with document name...",
+        "UploadDate": "Upload date"
+      },
+      "ManageVault": "Manage vault",
+      "UpdateDocument": "Update document",
+      "Vault": "Partner Vault",
+      "VaultTitle": "Vault Administration"
+    },
+    "ShareableResources": {
+      "Share": "Share",
+      "Copied": "URL copied! You can now paste and share it.",
+      "FromVersion": "From version",
+      "Details": {
+        "Author": "Author",
+        "BasicInformation": "Basic information",
+        "Downloads": "Downloads",
+        "LastUpdatedAt": "Last updated at",
+        "ProductVersion": "Product minimum version",
+        "Overview": "Overview",
+        "Shares": "Shares"
+      }
+    }
+  },
+  "ServiceActions": {
+    "OrganizationAdded": "{name} organization subscribed to the {serviceName} service",
+    "OrganizationDeleted": "Organization {name} has been deleted",
+    "UserCapabilitiesModified": "{email}'s capabilities have been modified",
+    "UserServiceAdded": "{email} has been invited to the {serviceName}"
+  },
+  "ServiceForm": {
+    "EditService": "Edit service's pictures",
+    "Illustration": "Service's illustration",
+    "Logo": "Service's logo",
+    "PictureUpdated": "Pictures updated for service: {serviceName}",
+    "UpdatePictures": "Pictures"
+  },
+  "ServiceName": {
+    "custom_dashboards": "Custom Dashboard"
+  },
+  "Sort Asc": "Sort Asc",
+  "Sort Desc": "Sort Desc",
+  "TestEnvCallout": "You are viewing the {environnement} environment.",
+  "ThemeToggle": {
+    "Automatic": "Automatic",
+    "Dark": "Dark",
+    "Light": "Light",
+    "SetTheme": "Set theme",
+    "ToggleTheme": "Toggle Theme"
+  },
+  "UpdateUserDialog": {
+    "TextUpdatedUser": "Your account has been modified by an administrator. The behaviour of the app may change.",
+    "TextUpdatedUserTitle": "Account modified!"
+  },
+  "UserActions": {
+    "AddUser": "Add user",
+    "CreateUser": "Create a new user",
+    "DetailsUser": "Details user",
+    "Disable": "Disable",
+    "Enable": "Enable",
+    "RemoveUser": "Remove user",
+    "SearchUser": "Search user...",
+    "UpdateUser": "Update user - {email}",
+    "UserCreated": "User {email} has been created",
+    "UserDeleted": "User {email} has been deleted",
+    "UserRemoved": "User {email} has been removed",
+    "UserUpdated": "User {email} has been modified"
+  },
+  "UserForm": {
+    "AddOrganization": "Add organization",
+    "Country": "Country",
+    "Email": "Email",
+    "Error": {
+      "FirstName": "First_name is required",
+      "LastName": "Last_name is required"
+    },
+    "FirstName": "First name",
+    "LastName": "Last name",
+    "OrganizationCapabilities": "Capabilities",
+    "Organizations": "Organizations",
+    "OrganizationsCapabilitiesPlaceholder": "Additional capabilities",
+    "OrganizationsPlaceholder": "Select an organization",
+    "Password": "Password",
+    "Picture": "Picture",
+    "ResetPassword": {
+      "Action": "Reset password",
+      "Sentence": "We will send you an email to reset your password.",
+      "Success": "Reset password email successfully sent."
+    },
+    "WhoAreYou": "Who are you?",
+    "WhoAreYouDescription": "Let us know you first name and last name"
+  },
+  "UserListPage": {
+    "Country": "Country",
+    "Email": "Email",
+    "FirstName": "First name",
+    "LastLogin": "Last login",
+    "LastName": "Last name",
+    "Never": "Never",
+    "Organizations": "Organizations",
+    "Roles": "Roles",
+    "Status": "Status",
+    "Title": "Users list",
+    "UserForm": {
+      "Email": "Email",
+      "Password": "Password",
+      "SelectOrganization": "Select an organization",
+      "SelectRoles": "Select roles"
+    }
+  },
+  "Utils": {
+    "Cancel": "Cancel",
+    "Close": "Close",
+    "Clear": "Clear",
+    "Confirm": "Confirm",
+    "Continue": "Continue",
+    "Copied": "Copied",
+    "Create": "Create",
+    "Delete": "Delete",
+    "Deleted": "has been deleted",
+    "Download": "Download",
+    "Error": "Error",
+    "FailedToCopy": "Failed to copy",
+    "Form": {
+      "ResetFile": "Remove the current selected document."
+    },
+    "Inserted": "has been added",
+    "Loading": "Loading...",
+    "Modified": "has been modified",
+    "NotFound": "Not found",
+    "OpenMenu": "Open menu",
+    "Reset": "Reset",
+    "Success": "Success",
+    "Update": "Update",
+    "Validate": "Validate",
+    "ValidateForm": "Validate form",
+    "Visualize": "Visualize"
+  },
+  "VaultActions": {
+    "DocumentAdded": "{file_name} has been added",
+    "DocumentDeleted": "{file_name} has been deleted",
+    "DocumentUpdated": "{file_name} has been modified",
+    "UpdateDocument": "Update document"
+  },
+  "entitie(s)": "entitie(s)"
+}
