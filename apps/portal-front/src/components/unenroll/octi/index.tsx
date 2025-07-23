@@ -87,7 +87,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   };
 
   if (!instance) {
-    return <UnenrollOCTIInstanceNotEnrolled cancel={cancel} />;
+    return <UnenrollOCTIInstanceNotEnrolled confirm={confirm} />;
   }
 
   if (status === 'succeeded') {

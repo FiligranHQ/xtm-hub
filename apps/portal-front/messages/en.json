@@ -117,11 +117,11 @@
     "OCTI": {
       "Succeeded": {
         "Title": "OCTI instance unenrolled successfully",
-        "Description": "This tab will be closed soon"
+        "Description": "This tab will be closed soon."
       },
       "Failed": {
         "Title": "Unenrollment failed",
-        "Description": "An error occurred during the instance unenrollment"
+        "Description": "An error occurred during the instance unenrollment."
       },
       "Confirm": {
         "Title": "You are about to unregister your OpenCTI instance from the {name} organization on the Hub.",
@@ -135,7 +135,7 @@
         },
         "InstanceNotEnrolled": {
           "Title": "The instance you're trying to unenroll is not enrolled",
-          "Description": "The instance is not currently linked to any XTM Hub organization."
+          "Description": "This tab will be closed soon."
         }
       }
     }
@@ -180,7 +180,7 @@
       "Back": "Back to OpenCTI",
       "Error": {
         "Capability": {
-          "Title": "You do not have the necessary {capability} access on the XTM Hub.",
+          "Title": "You do not have the necessary {capability} access on the XTM Hub",
           "Description": "If you want to proceed with the enrollment of your OCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
           "AdminListTitle": "The administrators of your organization are the following:"
         }
