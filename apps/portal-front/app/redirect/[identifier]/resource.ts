@@ -72,7 +72,6 @@ export const redirectToResource = async (
 
     // 1. Load the user
     // ----------------
-
     const meResponse = (await serverPortalApiFetch<
       typeof MeLoaderQuery,
       meLoaderQuery
