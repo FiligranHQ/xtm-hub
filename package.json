@@ -26,6 +26,7 @@
     "eslint-config-next": "^15.3.5",
     "eslint-config-prettier": "^10.1.5",
     "nx": "21.2.3",
+    "stylus": "github:stylus/stylus#0.64.0",
     "typescript": "5.8.3"
   },
   "dependencies": {

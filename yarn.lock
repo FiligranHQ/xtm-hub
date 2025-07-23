@@ -5920,7 +5920,7 @@ __metadata:
     sass-loader: ^16.0.4
     source-map-loader: ^5.0.0
     style-loader: ^3.3.0
-    stylus: ^0.64.0
+    stylus: "github:stylus/stylus#0.64.0"
     stylus-loader: ^7.1.0
     terser-webpack-plugin: ^5.3.3
     ts-loader: ^9.3.1
@@ -23751,15 +23751,15 @@ __metadata:
     fast-glob: ^3.2.12
     normalize-path: ^3.0.0
   peerDependencies:
-    stylus: ">=0.52.4"
+    stylus: "*"
     webpack: ^5.0.0
   checksum: 5f92692f19584add370ba9dd6cdb25268ce4ba22b3703de447431be49185a8a79bb80f925b530f9cbafdd2b83420a68398e68cc0d23063d1dbbb14b465b389f2
   languageName: node
   linkType: hard
 
-"stylus@npm:^0.64.0":
+"stylus@github:stylus/stylus#0.64.0":
   version: 0.64.0
-  resolution: "stylus@npm:0.64.0"
+  resolution: "stylus@https://github.com/stylus/stylus.git#commit=1086c6c1fbd7a7fd0ce9ad94f6cf4a62fc79a6e9"
   dependencies:
     "@adobe/css-tools": ~4.3.3
     debug: ^4.3.2
@@ -23768,7 +23768,7 @@ __metadata:
     source-map: ^0.7.3
   bin:
     stylus: bin/stylus
-  checksum: e059d3142b2a7f69205b565c6fa16f0f2cbd960027f4ea9ef8a652cc6546d7c94051db32117681ba6a6af01db35bb58c45dfafe808a257b723507b8df2cb6507
+  checksum: 794cda74c64d137432c3a41e898bfa373b663efc49e2425a3a987d17b3f635041f3852d214d78de3785845e6c58905b3af499f22a8810a858fe7325ba598f205
   languageName: node
   linkType: hard
 
@@ -25955,6 +25955,7 @@ __metadata:
     eslint-config-next: ^15.3.5
     eslint-config-prettier: ^10.1.5
     nx: 21.2.3
+    stylus: "github:stylus/stylus#0.64.0"
     tsx: 4.19.4
     typescript: 5.8.3
   languageName: unknown
