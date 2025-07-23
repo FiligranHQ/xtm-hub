@@ -11,7 +11,6 @@ import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefiniti
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode } from '../../common/error-code';
-import { ServiceConfigurationStatus } from './constant';
 
 const loadServiceContractBy = async (
   context: PortalContext,

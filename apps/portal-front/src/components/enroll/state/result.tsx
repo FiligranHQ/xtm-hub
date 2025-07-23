@@ -9,6 +9,7 @@ import { EnrollStateNotAllowed } from '@/components/enroll/state/not-allowed';
 import Loader from '@/components/loader';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { enrollCanEnrollOCTIInstanceFragment$data } from '@generated/enrollCanEnrollOCTIInstanceFragment.graphql';
+import { CanEnrollStatusEnum } from '@generated/models/CanEnrollStatus.enum';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,
 } from '@generated/userListOrganizationAdministratorsQuery.graphql';
@@ -45,7 +46,7 @@ export const EnrollStateResult: React.FC<Props> = ({
   if (
     !queryRef ||
     !canEnrollState ||
-    (canEnrollState.status === 'never_enrolled' &&
+    (canEnrollState.status === CanEnrollStatusEnum.NEVER_ENROLLED &&
       enrollmentStatus === 'idle' &&
       !isMissingCapability(canEnrollState))
   ) {
