@@ -58,6 +58,20 @@ input UnenrollOCTIPlatformInput {
   platformId: String!
 }
 
+input OCTIPlatformEnrollmentStatusInput {
+  platformId: String!
+  token: String!
+}
+
+enum OCTIPlatformEnrollmentStatus {
+  active
+  inactive
+}
+
+type OCTIPlatformEnrollmentStatusResponse {
+  status: OCTIPlatformEnrollmentStatus!
+}
+
 type Query {
   canEnrollOCTIPlatform(input: CanEnrollOCTIPlatformInput!): CanEnrollResponse!
     @auth
@@ -65,6 +79,9 @@ type Query {
     input: CanUnenrollOCTIPlatformInput!
   ): CanUnenrollResponse!
   octiPlatforms: [OCTIPlatform!]! @auth
+  octiPlatformEnrollmentStatus(
+    input: OCTIPlatformEnrollmentStatusInput!
+  ): OCTIPlatformEnrollmentStatusResponse!
 }
 
 type Mutation {
