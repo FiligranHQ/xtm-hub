@@ -3,7 +3,6 @@ import {
   CanEnrollResponse,
   CanEnrollStatus,
   CanUnenrollOctiInstanceInput,
-  CanUnenrollResponse,
   EnrollOctiInstanceInput,
   OctiInstance,
   OrganizationCapability,
@@ -227,7 +226,7 @@ export const enrollmentApp = {
   canUnenrollOCTIInstance: async (
     context: PortalContext,
     { platformId }: CanUnenrollOctiInstanceInput
-  ): Promise<CanUnenrollResponse['instance']> => {
+  ): Promise<{ isAllowed: boolean; organizationId: OrganizationId }> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,

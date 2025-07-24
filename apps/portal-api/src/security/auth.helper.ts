@@ -82,7 +82,9 @@ export const loadCapabilitiesByServiceId = async (
 };
 
 export const userHasBypassCapability = (user: UserLoadUserBy): boolean => {
-  return user.capabilities.some((c) => c.name === CAPABILITY_BYPASS.name);
+  return (user.capabilities ?? []).some(
+    (c) => c.name === CAPABILITY_BYPASS.name
+  );
 };
 
 export const getCapabilityUser = (

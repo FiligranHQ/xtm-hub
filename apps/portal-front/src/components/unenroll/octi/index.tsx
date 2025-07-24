@@ -42,10 +42,11 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
       queryRef
     );
 
-  const { instance } = useFragment<enrollCanUnenrollOCTIInstanceFragment$key>(
-    CanUnenrollOCTIInstanceFragment,
-    canUnenrollPreloadedQuery.canUnenrollOCTIInstance
-  );
+  const { isAllowed, isInstanceEnrolled, organizationId } =
+    useFragment<enrollCanUnenrollOCTIInstanceFragment$key>(
+      CanUnenrollOCTIInstanceFragment,
+      canUnenrollPreloadedQuery.canUnenrollOCTIInstance
+    );
 
   const [
     organizationAdministratorsQueryRef,
@@ -54,7 +55,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     UserListOrganizationAdministratorsQueryGraphql
   );
   useMountingLoader(loadOrganizationAdministratorsQuery, {
-    organizationId: instance?.organizationId,
+    organizationId: organizationId,
   });
   const [unenrollInstance] =
     useMutation<enrollUnenrollOCTIInstanceMutation>(UnenrollOCTIInstance);
@@ -86,7 +87,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     });
   };
 
-  if (!instance) {
+  if (!isInstanceEnrolled) {
     return <UnenrollOCTIInstanceNotEnrolled confirm={confirm} />;
   }
 
@@ -108,7 +109,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     );
   }
 
-  if (!instance?.isAllowed) {
+  if (!isAllowed) {
     return organizationAdministratorsQueryRef ? (
       <UnenrollOCTIMissingCapability
         queryRef={organizationAdministratorsQueryRef}
@@ -119,11 +120,13 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     );
   }
 
-  return (
+  return organizationId ? (
     <UnenrollOCTIConfirm
       cancel={cancel}
       confirm={confirm}
-      organizationId={instance?.organizationId}
+      organizationId={organizationId}
     />
+  ) : (
+    <Loader />
   );
 };

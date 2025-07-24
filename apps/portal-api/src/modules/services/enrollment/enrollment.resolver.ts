@@ -41,15 +41,18 @@ const resolvers: Resolvers = {
         );
 
         return {
-          instance: {
-            ...response,
-            organizationId: toGlobalId('Organization', response.organizationId),
-          },
+          ...response,
+          isInstanceEnrolled: true,
+          organizationId: response.organizationId
+            ? toGlobalId('Organization', response.organizationId)
+            : undefined,
         };
       } catch (error) {
         switch (error.message) {
           case ErrorCode.InstanceNotEnrolled:
-            return {};
+            return {
+              isInstanceEnrolled: false,
+            };
         }
         throw UnknownError(ErrorCode.CanUnenrollOCTIInstanceUnknownError, {
           detail: error,

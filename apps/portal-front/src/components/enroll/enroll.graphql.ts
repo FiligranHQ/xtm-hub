@@ -20,10 +20,9 @@ export const CanEnrollOCTIInstanceQuery = graphql`
 
 export const CanUnenrollOCTIInstanceFragment = graphql`
   fragment enrollCanUnenrollOCTIInstanceFragment on CanUnenrollResponse {
-    instance {
-      isAllowed
-      organizationId
-    }
+    isInstanceEnrolled
+    isAllowed
+    organizationId
   }
 `;
 

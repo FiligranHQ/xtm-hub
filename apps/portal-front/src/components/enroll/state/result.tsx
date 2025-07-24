@@ -38,7 +38,7 @@ export const EnrollStateResult: React.FC<Props> = ({
       UserListOrganizationAdministratorsQueryGraphql
     );
 
-  useMountingLoader(loadQuery, { organizationId: organizationId });
+  useMountingLoader(loadQuery, { organizationId });
   if (!organizationId) {
     return null;
   }
