@@ -1,8 +1,7 @@
-import * as React from 'react';
-
 import ChooseInstanceForm from '@/components/service/document/one-click-deploy/choose-instance-form';
+import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no-platform-display';
 import { OctiInstancesQuery } from '@/components/service/document/one-click-deploy/octi-instances.graphql';
-import { SettingsContext } from '@/components/settings/env-portal-context';
+import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
@@ -14,18 +13,14 @@ import {
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
 
-// Component interface
 interface OneClickDeployProps {
   documentData: ShareableResource;
 }
 
-// Component
-const OneClickDeploy: React.FunctionComponent<OneClickDeployProps> = ({
-  documentData,
-}) => {
+const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   const t = useTranslations();
 
   const instancesOcti = useLazyLoadQuery<octiInstancesQuery>(
@@ -44,74 +39,18 @@ const OneClickDeploy: React.FunctionComponent<OneClickDeployProps> = ({
       '_blank'
     );
   };
-  const { settings } = useContext(SettingsContext);
 
   const alertContent = useMemo(() => {
     if (instancesOcti.octiInstances.length === 0) {
-      return (
-        <>
-          <div className="space-y-m">
-            <h1>
-              {t('Service.ShareableResources.DeployOctiDescriptionNoPlatform')}
-            </h1>
-            <p>
-              {t(
-                'Service.ShareableResources.DeployOctiDescriptionNoPlatformThen'
-              )}
-            </p>
-            <img
-              src={`${settings?.base_url_front}/RegisterInHub.png`}
-              alt="OpenCTI Register in Hub illustration"
-              style={{
-                border: '2px solid',
-                borderRadius: '4px',
-                width: '100%',
-                verticalAlign: 'middle',
-              }}
-            />
-          </div>
-          <div className="flex justify-end gap-s">
-            <Button onClick={() => setIsOpen(false)}>{t('Utils.Close')}</Button>
-          </div>
-        </>
-      );
+      return <NoPlatformDisplay setIsOpen={setIsOpen} />;
     } else if (instancesOcti.octiInstances.length === 1) {
       return (
-        <>
-          <div className="space-y-m">
-            <h1>
-              {t('Service.ShareableResources.DeployDashboardOctiDescription', {
-                dashboardName: documentData.name,
-              })}
-            </h1>
-            <p>
-              {t(
-                'Service.ShareableResources.DeployOctiDescriptionOnePlatform',
-                {
-                  platformName:
-                    instancesOcti.octiInstances[0]?.title ?? 'OpenCTI',
-                }
-              )}
-            </p>
-          </div>
-          <div className="flex justify-end gap-s">
-            <Button
-              variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsOpen(false);
-              }}>
-              {t('Utils.Cancel')}
-            </Button>
-
-            <Button
-              onClick={() =>
-                oneClickDeploy(instancesOcti.octiInstances[0]?.url ?? '')
-              }>
-              {t('Utils.Continue')}
-            </Button>
-          </div>
-        </>
+        <OnePlatformDisplay
+          documentDataName={documentData.name}
+          instancesOcti={instancesOcti}
+          oneClickDeploy={oneClickDeploy}
+          setIsOpen={setIsOpen}
+        />
       );
     } else if (instancesOcti.octiInstances.length > 1) {
       return (
@@ -131,7 +70,7 @@ const OneClickDeploy: React.FunctionComponent<OneClickDeployProps> = ({
         <AlertDialog open={isOpen}>
           <AlertDialogTrigger>
             <Button onClick={() => setIsOpen(true)}>
-              {t('Service.ShareableResources.DeployOcti')}
+              {t('Service.ShareableResources.Deploy.DeployOcti')}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent className="max-w-3xl w-full">

@@ -31,11 +31,14 @@ const ChooseInstanceForm: React.FunctionComponent<ChooseInstanceFormProps> = ({
     <div className="flex flex-col h-full justify-between gap-m">
       <div className="space-y-m">
         <h1>
-          {t('Service.ShareableResources.DeployDashboardOctiDescription', {
-            dashboardName: documentData.name,
-          })}
+          {t(
+            'Service.ShareableResources.Deploy.DeployDashboardOctiDescription',
+            {
+              dashboardName: documentData.name,
+            }
+          )}
         </h1>
-        <p>{t('Service.ShareableResources.DeployOctiQuestionTag')}</p>
+        <p>{t('Service.ShareableResources.Deploy.DeployOctiQuestionTag')}</p>
       </div>
       <AutoForm
         formSchema={selectOctiInstanceFormSchema}

@@ -481,12 +481,14 @@
     "ShareableResources": {
       "Share": "Partager",
       "Download": "Télécharger",
-      "DeployOcti": "Déployer dans OCTI",
-      "DeployDashboardOctiDescription": "Vous êtes sur le point de déployer le custom dashboard {dashboardName}.",
-      "DeployOctiQuestionTag": "Sur quelle plateforme OpenCTI voulez-vous le déployer ?",
-      "DeployOctiDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
-      "DeployOctiDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme OpenCTI.",
-      "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait dans la section suivante :",
+      "Deploy": {
+        "DeployOcti": "Déployer dans OCTI",
+        "DeployDashboardOctiDescription": "Vous êtes sur le point de déployer le custom dashboard {dashboardName}.",
+        "DeployOctiQuestionTag": "Sur quelle plateforme OpenCTI voulez-vous le déployer ?",
+        "DeployOctiDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
+        "DeployOctiDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme OpenCTI.",
+        "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait dans la section suivante :"
+      },
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
       "FromVersion": "Depuis la version",
       "Details": {
