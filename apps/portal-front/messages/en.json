@@ -336,6 +336,7 @@
         "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "ExistingCsvFeedIllustration": "Existing Csv Feed illustration: {file_name}",
         "LabelsLabel": "Labels",
+        "LabelsPlaceholder": "Add labels",
         "NameLabel": "Name",
         "PublishedPlaceholder": "Is the CSV Feed published?",
         "ShortDescriptionLabel": "Short Description",

@@ -65,7 +65,7 @@ export const CsvFeedForm = ({
         labels: csvFeed?.labels?.map((label) => label.id),
         uploader_id: csvFeed?.uploader?.id ?? me!.id,
       }) as CsvFeedFormValues,
-    [me]
+    [me, csvFeed]
   );
   const formSchema = useMemo(
     () =>
@@ -121,6 +121,7 @@ export const CsvFeedForm = ({
           labels: {
             fieldType: ({ field }) => (
               <FormItem>
+                <FormLabel>{t('Service.CsvFeed.Form.LabelsLabel')}</FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
@@ -130,7 +131,7 @@ export const CsvFeedForm = ({
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t('Service.CsvFeed.Form.LabelsLabel')}
+                    placeholder={t('Service.CsvFeed.Form.LabelsPlaceholder')}
                     variant="inverted"
                   />
                 </FormControl>
@@ -143,7 +144,7 @@ export const CsvFeedForm = ({
                 <FormLabel>{t('Service.CsvFeed.Form.Author')}</FormLabel>
                 <FormControl>
                   <SelectUsersFormField
-                    defaultValue={csvFeed?.uploader?.id ?? me!.id}
+                    defaultValue={csvFeed?.uploader?.email ?? me!.email}
                     value={field.value}
                     onValueChange={field.onChange}
                   />
