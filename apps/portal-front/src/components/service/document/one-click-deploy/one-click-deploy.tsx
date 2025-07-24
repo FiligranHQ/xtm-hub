@@ -1,11 +1,10 @@
 import ChooseInstanceForm from '@/components/service/document/one-click-deploy/choose-instance-form';
 import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no-platform-display';
-import { OctiInstancesQuery } from '@/components/service/document/one-click-deploy/octi-instances.graphql';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { octiInstancesQuery } from '@generated/octiInstancesQuery.graphql';
+import { oneClickDeployOctiInstancesQuery } from '@generated/oneClickDeployOctiInstancesQuery.graphql';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -14,7 +13,23 @@ import {
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
-import { useLazyLoadQuery } from 'react-relay';
+import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
+
+export const OneClickDeployOctiInstanceFragment = graphql`
+  fragment oneClickDeployOctiInstanceFragment on OctiInstance {
+    id
+    title
+    url
+  }
+`;
+
+export const OneClickDeployOctiInstancesQuery = graphql`
+  query oneClickDeployOctiInstancesQuery {
+    octiInstances {
+      ...oneClickDeployOctiInstanceFragment
+    }
+  }
+`;
 
 interface OneClickDeployProps {
   documentData: ShareableResource;
@@ -23,10 +38,15 @@ interface OneClickDeployProps {
 const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   const t = useTranslations();
 
-  const instancesOcti = useLazyLoadQuery<octiInstancesQuery>(
-    OctiInstancesQuery,
+  const queryData = useLazyLoadQuery<oneClickDeployOctiInstancesQuery>(
+    OneClickDeployOctiInstancesQuery,
     {}
   );
+
+  const instancesOcti = queryData.octiInstances.map((instanceRef) =>
+    useFragment(OneClickDeployOctiInstanceFragment, instanceRef)
+  );
+
   const isOneClickFeatureEnabled = useIsFeatureEnabled(
     FeatureFlag.ONECLICK_DEPLOY_DASHBOARD
   );
@@ -41,10 +61,10 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   };
 
   const alertContent = useMemo(() => {
-    if (instancesOcti.octiInstances.length === 0) {
+    if (instancesOcti.length === 0) {
       return <NoPlatformDisplay setIsOpen={setIsOpen} />;
     }
-    if (instancesOcti.octiInstances.length === 1) {
+    if (instancesOcti.length === 1) {
       return (
         <OnePlatformDisplay
           documentDataName={documentData.name}
@@ -54,7 +74,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
         />
       );
     }
-    if (instancesOcti.octiInstances.length > 1) {
+    if (instancesOcti.length > 1) {
       return (
         <ChooseInstanceForm
           documentData={documentData}

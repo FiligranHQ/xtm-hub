@@ -1,10 +1,10 @@
-import { octiInstancesQuery$data } from '@generated/octiInstancesQuery.graphql';
+import { oneClickDeployOctiInstanceFragment$data } from '@generated/oneClickDeployOctiInstanceFragment.graphql';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 
 interface OnePlatformDisplayProps {
   documentDataName: string;
-  instancesOcti: octiInstancesQuery$data;
+  instancesOcti: oneClickDeployOctiInstanceFragment$data[];
   setIsOpen: (isOpen: boolean) => void;
   oneClickDeploy: (url: string) => void;
 }
@@ -32,7 +32,7 @@ const OnePlatformDisplay = ({
           {t(
             'Service.ShareableResources.Deploy.DeployOctiDescriptionOnePlatform',
             {
-              platformName: instancesOcti.octiInstances[0]?.title ?? 'OpenCTI',
+              platformName: instancesOcti[0]?.title ?? 'OpenCTIXX',
             }
           )}
         </p>
@@ -40,17 +40,14 @@ const OnePlatformDisplay = ({
       <div className="flex justify-end gap-s">
         <Button
           variant="outline"
-          onClick={(e) => {
-            e.preventDefault();
+          type="button"
+          onClick={() => {
             setIsOpen(false);
           }}>
           {t('Utils.Cancel')}
         </Button>
 
-        <Button
-          onClick={() =>
-            oneClickDeploy(instancesOcti.octiInstances[0]?.url ?? '')
-          }>
+        <Button onClick={() => oneClickDeploy(instancesOcti[0]?.url ?? '')}>
           {t('Utils.Continue')}
         </Button>
       </div>
