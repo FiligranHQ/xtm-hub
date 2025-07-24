@@ -5,6 +5,9 @@ import {
   CanUnenrollOctiPlatformInput,
   EnrollOctiPlatformInput,
   OctiPlatform,
+  OctiPlatformEnrollmentStatus,
+  OctiPlatformEnrollmentStatusInput,
+  OctiPlatformEnrollmentStatusResponse,
   OrganizationCapability,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
@@ -72,6 +75,22 @@ export const enrollmentApp = {
       url: platform.config.platform_url,
       contract: platform.config.platform_contract,
     }));
+  },
+
+  loadOCTIPlatformEnrollmentStatus: async (
+    context: PortalContext,
+    input: OctiPlatformEnrollmentStatusInput
+  ): Promise<OctiPlatformEnrollmentStatusResponse> => {
+    const serviceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatformAndToken(
+        context,
+        input
+      );
+    return {
+      status: serviceConfiguration
+        ? OctiPlatformEnrollmentStatus.Active
+        : OctiPlatformEnrollmentStatus.Inactive,
+    };
   },
 
   enrollOCTIPlatform: async (

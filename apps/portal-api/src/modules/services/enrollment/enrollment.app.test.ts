@@ -6,6 +6,7 @@ import { contextAdminUser } from '../../../../tests/tests.const';
 import {
   CanEnrollStatus,
   OctiPlatformContract,
+  OctiPlatformEnrollmentStatus,
   OctiPlatformInput,
   ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
@@ -501,6 +502,61 @@ describe('Enrollment app', () => {
 
       expect(result.isAllowed).toBeFalsy();
       expect(result.organizationId).toBe(organizationId);
+    });
+  });
+
+  describe('loadOCTIPlatformEnrollmentStatus', () => {
+    it('should return inactive when platform is not enrolled', async () => {
+      const result = await enrollmentApp.loadOCTIPlatformEnrollmentStatus(
+        contextAdminUser,
+        { platformId: uuidv4(), token: uuidv4() }
+      );
+
+      expect(result.status).toBe(OctiPlatformEnrollmentStatus.Inactive);
+    });
+
+    it('should return active when platform is enrolled', async () => {
+      const platformId = uuidv4();
+      const token = await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform: {
+          id: platformId,
+          url: 'http://example.com',
+          contract: OctiPlatformContract.Ee,
+          title: 'Fake title',
+        },
+      });
+
+      const result = await enrollmentApp.loadOCTIPlatformEnrollmentStatus(
+        contextAdminUser,
+        { platformId, token }
+      );
+
+      expect(result.status).toBe(OctiPlatformEnrollmentStatus.Active);
+    });
+
+    it('should return inactive when platform is unenrolled', async () => {
+      const platformId = uuidv4();
+      const token = await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform: {
+          id: platformId,
+          url: 'http://example.com',
+          contract: OctiPlatformContract.Ee,
+          title: 'Fake title',
+        },
+      });
+
+      await enrollmentApp.unenrollOCTIPlatform(contextAdminUser, {
+        platformId,
+      });
+
+      const result = await enrollmentApp.loadOCTIPlatformEnrollmentStatus(
+        contextAdminUser,
+        { platformId: platformId, token }
+      );
+
+      expect(result.status).toBe(OctiPlatformEnrollmentStatus.Inactive);
     });
   });
 });
