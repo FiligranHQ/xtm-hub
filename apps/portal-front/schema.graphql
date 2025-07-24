@@ -38,7 +38,8 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
-  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): EnrollmentResponse!
+  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): EnrollmentResponse!
+  unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
@@ -109,8 +110,9 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
-  octiInstances: [OctiInstance!]!
+  canEnrollOCTIPlatform(input: CanEnrollOCTIPlatformInput!): CanEnrollResponse!
+  canUnenrollOCTIPlatform(input: CanUnenrollOCTIPlatformInput!): CanUnenrollResponse!
+  octiPlatforms: [OCTIPlatform!]!
   seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
   seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
@@ -145,6 +147,11 @@ input OrganizationInput {
 type RolePortal implements Node {
   id: ID!
   name: String!
+}
+
+enum ServiceConfigurationStatus {
+  active
+  inactive
 }
 
 type CsvFeed implements Node {
@@ -341,7 +348,7 @@ enum OCTIPlatformContract {
   EE
 }
 
-type OctiInstance implements Node {
+type OCTIPlatform implements Node {
   id: ID!
   url: String!
   title: String!
@@ -356,13 +363,17 @@ input OCTIPlatformInput {
   contract: OCTIPlatformContract!
 }
 
-input EnrollOCTIInstanceInput {
+input EnrollOCTIPlatformInput {
   organizationId: ID!
   platform: OCTIPlatformInput!
 }
 
-input CanEnrollOCTIInstanceInput {
+input CanEnrollOCTIPlatformInput {
   organizationId: ID!
+  platformId: String!
+}
+
+input CanUnenrollOCTIPlatformInput {
   platformId: String!
 }
 
@@ -380,6 +391,16 @@ type CanEnrollResponse {
   isAllowed: Boolean!
   status: CanEnrollStatus!
   isSameOrganization: Boolean
+}
+
+type CanUnenrollResponse {
+  isPlatformEnrolled: Boolean!
+  isAllowed: Boolean
+  organizationId: ID
+}
+
+input UnenrollOCTIPlatformInput {
+  platformId: String!
 }
 
 type ServiceLink implements Node {

@@ -8,6 +8,8 @@ export default interface ServiceConfiguration {
   service_instance_id: ServiceInstanceId;
 
   config: unknown;
+
+  status: string | null;
 }
 
 /** Represents the initializer for the table public.Service_Configuration */
@@ -15,6 +17,9 @@ export interface ServiceConfigurationInitializer {
   service_instance_id: ServiceInstanceId;
 
   config: unknown;
+
+  /** Default value: 'active'::text */
+  status?: string | null;
 }
 
 /** Represents the mutator for the table public.Service_Configuration */
@@ -22,4 +27,6 @@ export interface ServiceConfigurationMutator {
   service_instance_id?: ServiceInstanceId;
 
   config?: unknown;
+
+  status?: string | null;
 }

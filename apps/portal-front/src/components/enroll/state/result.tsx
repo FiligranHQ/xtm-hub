@@ -8,7 +8,8 @@ import { EnrollStateMissingCapability } from '@/components/enroll/state/missing-
 import { EnrollStateNotAllowed } from '@/components/enroll/state/not-allowed';
 import Loader from '@/components/loader';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { enrollCanEnrollOCTIInstanceFragment$data } from '@generated/enrollCanEnrollOCTIInstanceFragment.graphql';
+import { enrollCanEnrollOCTIPlatformFragment$data } from '@generated/enrollCanEnrollOCTIPlatformFragment.graphql';
+import { CanEnrollStatusEnum } from '@generated/models/CanEnrollStatus.enum';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,
 } from '@generated/userListOrganizationAdministratorsQuery.graphql';
@@ -18,7 +19,7 @@ import { useQueryLoader } from 'react-relay';
 
 interface Props {
   organizationId?: string;
-  canEnrollState: enrollCanEnrollOCTIInstanceFragment$data;
+  canEnrollState: enrollCanEnrollOCTIPlatformFragment$data;
   confirm: () => void;
   cancel: () => void;
   enrollmentStatus: EnrollmentStatus;
@@ -37,8 +38,7 @@ export const EnrollStateResult: React.FC<Props> = ({
       UserListOrganizationAdministratorsQueryGraphql
     );
 
-  useMountingLoader(loadQuery, { organizationId: organizationId });
-
+  useMountingLoader(loadQuery, { organizationId });
   if (!organizationId) {
     return null;
   }
@@ -46,7 +46,9 @@ export const EnrollStateResult: React.FC<Props> = ({
   if (
     !queryRef ||
     !canEnrollState ||
-    (canEnrollState.status === 'never_enrolled' && enrollmentStatus === 'idle')
+    (canEnrollState.status === CanEnrollStatusEnum.NEVER_ENROLLED &&
+      enrollmentStatus === 'idle' &&
+      !isMissingCapability(canEnrollState))
   ) {
     return <Loader />;
   }

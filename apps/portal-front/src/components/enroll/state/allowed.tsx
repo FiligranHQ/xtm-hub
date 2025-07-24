@@ -1,19 +1,20 @@
 import { EnrollStateLayout } from '@/components/enroll/state/layout';
-import { enrollCanEnrollOCTIInstanceFragment$data } from '@generated/enrollCanEnrollOCTIInstanceFragment.graphql';
+import { enrollCanEnrollOCTIPlatformFragment$data } from '@generated/enrollCanEnrollOCTIPlatformFragment.graphql';
+import { CanEnrollStatusEnum } from '@generated/models/CanEnrollStatus.enum';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
 interface Props {
-  state: enrollCanEnrollOCTIInstanceFragment$data;
+  state: enrollCanEnrollOCTIPlatformFragment$data;
   confirm: () => void;
   cancel: () => void;
 }
 
 const buildTranslationKey = (
-  state: enrollCanEnrollOCTIInstanceFragment$data
+  state: enrollCanEnrollOCTIPlatformFragment$data
 ): string => {
   const enrollmentKey =
-    state?.status === 'enrolled' ? 'Enrolled' : 'Unenrolled';
+    state?.status === CanEnrollStatusEnum.ENROLLED ? 'Enrolled' : 'Unenrolled';
   const organizationKey = state?.isSameOrganization
     ? 'SameOrganization'
     : 'AnotherOrganization.Allowed';

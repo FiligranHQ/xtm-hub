@@ -39,6 +39,14 @@ export const organizationItemFragment = graphql`
   }
 `;
 
+export const organizationQuery = graphql`
+  query organizationQuery($id: ID!) {
+    organization(id: $id) {
+      ...organizationItem_fragment
+    }
+  }
+`;
+
 export const organizationFetch = graphql`
   query organizationSelectQuery(
     $count: Int

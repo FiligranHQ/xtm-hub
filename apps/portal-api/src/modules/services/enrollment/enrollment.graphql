@@ -3,7 +3,7 @@ enum OCTIPlatformContract {
   EE
 }
 
-type OctiInstance implements Node {
+type OCTIPlatform implements Node {
   id: ID!
   url: String!
   title: String!
@@ -18,13 +18,17 @@ input OCTIPlatformInput {
   contract: OCTIPlatformContract!
 }
 
-input EnrollOCTIInstanceInput {
+input EnrollOCTIPlatformInput {
   organizationId: ID!
   platform: OCTIPlatformInput!
 }
 
-input CanEnrollOCTIInstanceInput {
+input CanEnrollOCTIPlatformInput {
   organizationId: ID!
+  platformId: String!
+}
+
+input CanUnenrollOCTIPlatformInput {
   platformId: String!
 }
 
@@ -44,13 +48,28 @@ type CanEnrollResponse {
   isSameOrganization: Boolean
 }
 
+type CanUnenrollResponse {
+  isPlatformEnrolled: Boolean!
+  isAllowed: Boolean
+  organizationId: ID
+}
+
+input UnenrollOCTIPlatformInput {
+  platformId: String!
+}
+
 type Query {
-  canEnrollOCTIInstance(input: CanEnrollOCTIInstanceInput!): CanEnrollResponse!
+  canEnrollOCTIPlatform(input: CanEnrollOCTIPlatformInput!): CanEnrollResponse!
     @auth
-  octiInstances: [OctiInstance!]! @auth
+  canUnenrollOCTIPlatform(
+    input: CanUnenrollOCTIPlatformInput!
+  ): CanUnenrollResponse!
+  octiPlatforms: [OCTIPlatform!]! @auth
 }
 
 type Mutation {
-  enrollOCTIInstance(input: EnrollOCTIInstanceInput!): EnrollmentResponse!
+  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): EnrollmentResponse!
+    @auth(requires: [MANAGE_OCTI_ENROLLMENT])
+  unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success!
     @auth(requires: [MANAGE_OCTI_ENROLLMENT])
 }

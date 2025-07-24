@@ -1,6 +1,5 @@
 'use client';
 
-import { EnrollOCTIInstancesQuery } from '@/components/enroll/enroll.graphql';
 import Loader from '@/components/loader';
 import { publicServiceListQuery } from '@/components/service/public-service.graphql';
 import ServiceList from '@/components/service/service-list';
@@ -11,7 +10,9 @@ import { useCallback } from 'react';
 import { useQueryLoader } from 'react-relay';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
+import EnrollOCTIPlatformsQueryGraphql, {
+  enrollOCTIPlatformsQuery,
+} from '@generated/enrollOCTIPlatformsQuery.graphql';
 import {
   OrderingMode,
   publicServiceQuery,
@@ -50,10 +51,10 @@ const Page: React.FunctionComponent = () => {
     orderMode: orderModeServiceList,
   });
 
-  // OCTI Instances
-  const [queryRefOCTIInstances, loadQueryOCTIInstances] =
-    useQueryLoader<enrollOCTIInstancesQuery>(EnrollOCTIInstancesQuery);
-  useMountingLoader(loadQueryOCTIInstances, {});
+  // OCTI Platforms
+  const [queryRefOCTIPlatforms, loadQueryOCTIPlatforms] =
+    useQueryLoader<enrollOCTIPlatformsQuery>(EnrollOCTIPlatformsQueryGraphql);
+  useMountingLoader(loadQueryOCTIPlatforms, {});
 
   const handleUpdate = useCallback(() => {
     loadQueryUserServiceOwned(
@@ -72,13 +73,13 @@ const Page: React.FunctionComponent = () => {
       },
       { fetchPolicy: 'network-only' }
     );
-    loadQueryOCTIInstances({}, { fetchPolicy: 'network-only' });
+    loadQueryOCTIPlatforms({}, { fetchPolicy: 'network-only' });
   }, []);
 
   if (
     !queryRefUserServiceOwned ||
     !queryRefPublicServiceList ||
-    !queryRefOCTIInstances
+    !queryRefOCTIPlatforms
   )
     return <Loader />;
 
@@ -86,7 +87,7 @@ const Page: React.FunctionComponent = () => {
     <ServiceList
       queryRefUserServiceOwned={queryRefUserServiceOwned}
       queryRefServiceList={queryRefPublicServiceList}
-      queryRefOCTIInstances={queryRefOCTIInstances}
+      queryRefOCTIPlatforms={queryRefOCTIPlatforms}
       onUpdate={handleUpdate}
     />
   );

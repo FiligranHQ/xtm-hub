@@ -2,7 +2,7 @@
 
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { isExternalService } from '@/utils/services';
-import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
+import { enrollOCTIPlatformsQuery } from '@generated/enrollOCTIPlatformsQuery.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
@@ -20,14 +20,14 @@ import OwnedServices from './home/owned-services';
 interface ServiceProps {
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>;
   queryRefServiceList: PreloadedQuery<publicServiceQuery>;
-  queryRefOCTIInstances: PreloadedQuery<enrollOCTIInstancesQuery>;
+  queryRefOCTIPlatforms: PreloadedQuery<enrollOCTIPlatformsQuery>;
   onUpdate: () => void;
 }
 
 const ServiceList = ({
   queryRefUserServiceOwned,
   queryRefServiceList,
-  queryRefOCTIInstances,
+  queryRefOCTIPlatforms,
   onUpdate,
 }: ServiceProps) => {
   const t = useTranslations();
@@ -53,11 +53,11 @@ const ServiceList = ({
     });
   }
 
-  const { ownedServices, publicServices, octiInstances, addSubscriptionInDb } =
+  const { ownedServices, publicServices, octiPlatforms, addSubscriptionInDb } =
     useServiceQueries(
       queryRefUserServiceOwned,
       queryRefServiceList,
-      queryRefOCTIInstances,
+      queryRefOCTIPlatforms,
       onUpdate,
       handleSuccess,
       handleError
@@ -132,7 +132,7 @@ const ServiceList = ({
       <OwnedServices
         services={regularOwnedServices}
         publicServices={publicOwnedServices}
-        octiInstances={octiInstances}
+        octiPlatforms={octiPlatforms}
       />
     </>
   );

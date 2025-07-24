@@ -3,6 +3,7 @@ import { db, QueryOpts } from '../../../../knexfile';
 import {
   OctiPlatformContract,
   OrganizationCapability,
+  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
@@ -14,14 +15,14 @@ import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowed } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import {
-  loadSubscriptionBy,
+  loadActiveSubscriptionBy,
   transferSubscription,
 } from '../../subcription/subscription.domain';
 import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
 
-export type OCTIInstanceConfiguration = {
+export type OCTIPlatformConfiguration = {
   enroller_id: string;
   platform_id: string;
   platform_url: string;
@@ -31,7 +32,7 @@ export type OCTIInstanceConfiguration = {
 };
 
 export const enrollmentDomain = {
-  enrollNewInstance: async (
+  enrollNewPlatform: async (
     context: PortalContext,
     {
       serviceDefinitionId,
@@ -40,7 +41,7 @@ export const enrollmentDomain = {
     }: {
       serviceDefinitionId: string;
       organizationId: OrganizationId;
-      configuration: OCTIInstanceConfiguration;
+      configuration: OCTIPlatformConfiguration;
     }
   ) => {
     const serviceInstanceId =
@@ -68,19 +69,19 @@ export const enrollmentDomain = {
     );
   },
 
-  transferExistingInstance: async (
+  transferExistingPlatform: async (
     context: PortalContext,
     {
       configuration,
       serviceInstanceId,
       targetOrganizationId,
     }: {
-      configuration: OCTIInstanceConfiguration;
+      configuration: OCTIPlatformConfiguration;
       serviceInstanceId: ServiceInstanceId;
       targetOrganizationId: string;
     }
   ) => {
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadActiveSubscriptionBy(context, {
       service_instance_id: serviceInstanceId,
     });
 
@@ -103,7 +104,7 @@ export const enrollmentDomain = {
     await serviceContractDomain.updateConfiguration(
       context,
       serviceInstanceId,
-      configuration
+      { config: configuration }
     );
 
     await transferSubscription(context, {
@@ -112,10 +113,10 @@ export const enrollmentDomain = {
     });
   },
 
-  loadOctiInstances: async (
+  loadOCTIPlatforms: async (
     context: PortalContext,
     opts: QueryOpts = {}
-  ): Promise<{ config: OCTIInstanceConfiguration }[]> => {
+  ): Promise<{ config: OCTIPlatformConfiguration }[]> => {
     const userSelectedOrganization = context.user.selected_organization_id;
 
     const query = await db<ServiceInstance>(context, 'ServiceInstance', opts)
@@ -144,6 +145,13 @@ export const enrollmentDomain = {
       )
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
+      .whereNot((qb) => {
+        qb.whereNotNull('Subscription.end_date').orWhere(
+          'Service_Configuration.status',
+          '=',
+          ServiceConfigurationStatus.Inactive
+        );
+      })
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .select(['Service_Configuration.config'])
       .secureQuery();

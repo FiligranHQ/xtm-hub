@@ -130,11 +130,32 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
   return userServicesData;
 };
 
+export const loadActiveSubscriptionBy = async (
+  context: PortalContext,
+  field: SubscriptionMutator
+): Promise<Subscription | null> => {
+  return db<Subscription>(context, 'Subscription')
+    .where(field)
+    .whereNull('end_date')
+    .first();
+};
+
 export const loadSubscriptionBy = async (
   context: PortalContext,
   field: SubscriptionMutator
 ): Promise<Subscription | undefined> => {
   return db<Subscription>(context, 'Subscription').where(field).first();
+};
+
+export const endSubscription = async (
+  context: PortalContext,
+  subscriptionId: SubscriptionId
+) => {
+  await db(context, 'Subscription')
+    .update({
+      end_date: new Date(),
+    })
+    .where('id', '=', subscriptionId);
 };
 
 export const transferSubscription = async (
@@ -152,6 +173,21 @@ export const transferSubscription = async (
       organization_id: targetOrganizationId,
     })
     .where('id', '=', subscriptionId);
+};
+
+export const loadLastSubscriptionByServiceInstance = async (
+  context: PortalContext,
+  serviceInstanceIds: ServiceInstanceId[]
+): Promise<Subscription | null> => {
+  return db<Subscription>(context, 'Subscription')
+    .whereRaw(
+      `service_instance_id in (${serviceInstanceIds.map(() => '?').join(',')})`,
+      serviceInstanceIds
+    )
+    .whereNotNull('end_date')
+    .orderBy('end_date', 'desc')
+    .first()
+    .select('*');
 };
 
 export const loadSubscription = async (context: PortalContext, id: string) => {

@@ -1,10 +1,14 @@
 export enum ErrorCode {
-  CanEnrollOCTIInstanceUnknownError = 'CAN_ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR',
-  EnrollOCTIInstanceUnknownError = 'ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR',
-  EnrollOCITInstanceInvalidData = 'ENROLL_OCTI_INSTANCE_INVALID_DATA',
+  CanEnrollOCTIPlatformUnknownError = 'CAN_ENROLL_OCTI_PLATFORM_UNKNOWN_ERROR',
+  CanUnenrollOCTIPlatformUnknownError = 'CAN_UNENROLL_OCTI_PLATFORM_UNKNOWN_ERROR',
+  EnrollOCTIPlatformUnknownError = 'ENROLL_OCTI_PLATFORM_UNKNOWN_ERROR',
+  EnrollOCITPlatformInvalidData = 'ENROLL_OCTI_PLATFORM_INVALID_DATA',
+  PlatformNotEnrolled = 'PLATFORM_NOT_ENROLLED',
   InvalidServiceConfiguration = 'INVALID_SERVICE_CONFIGURATION',
   MissingCapabilityOnOriginOrganization = 'MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION',
   ServiceContractNotFound = 'SERVICE_CONTRACT_NOT_FOUND',
+  ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+  UnenrollOCTIPlatformUnknownError = 'UNENROLL_OCTI_PLATFORM_UNKNOWN_ERROR',
 }

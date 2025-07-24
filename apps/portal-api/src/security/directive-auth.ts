@@ -115,7 +115,7 @@ const hasCapability = (
     return true;
   }
 
-  return user.selected_org_capabilities.some((name) =>
+  return (user.selected_org_capabilities ?? []).some((name) =>
     capabilitiesRequired.includes(name)
   );
 };

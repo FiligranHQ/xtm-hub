@@ -1,11 +1,11 @@
-import {
-  enrollOCTIInstanceListFragment,
-  EnrollOCTIInstancesQuery,
-} from '@/components/enroll/enroll.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { getServiceInstanceUrl } from '@/lib/utils';
-import { enrollOCTIInstanceListFragment$key } from '@generated/enrollOCTIInstanceListFragment.graphql';
-import { enrollOCTIInstancesQuery } from '@generated/enrollOCTIInstancesQuery.graphql';
+import enrollOCTIPlatformListFragmentGraphql, {
+  enrollOCTIPlatformListFragment$key,
+} from '@generated/enrollOCTIPlatformListFragment.graphql';
+import EnrollOCTIPlatformsQueryGraphql, {
+  enrollOCTIPlatformsQuery,
+} from '@generated/enrollOCTIPlatformsQuery.graphql';
 import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
@@ -53,19 +53,19 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
 };
 
 const getOCTIInstances = (
-  queryRef: PreloadedQuery<enrollOCTIInstancesQuery>
+  queryRef: PreloadedQuery<enrollOCTIPlatformsQuery>
 ) => {
-  const queryData = usePreloadedQuery<enrollOCTIInstancesQuery>(
-    EnrollOCTIInstancesQuery,
+  const queryData = usePreloadedQuery<enrollOCTIPlatformsQuery>(
+    EnrollOCTIPlatformsQueryGraphql,
     queryRef
   );
 
   const [data] = useRefetchableFragment<
-    enrollOCTIInstancesQuery,
-    enrollOCTIInstanceListFragment$key
-  >(enrollOCTIInstanceListFragment, queryData);
+    enrollOCTIPlatformsQuery,
+    enrollOCTIPlatformListFragment$key
+  >(enrollOCTIPlatformListFragmentGraphql, queryData);
 
-  return data.octiInstances ?? [];
+  return data.octiPlatforms ?? [];
 };
 
 const getPublicServices = (
@@ -151,7 +151,7 @@ const getPublicServices = (
 export const useServiceQueries = (
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>,
   queryRefPublicService: PreloadedQuery<publicServiceQuery>,
-  queryRefOCTIInstances: PreloadedQuery<enrollOCTIInstancesQuery>,
+  queryRefOCTIPlatforms: PreloadedQuery<enrollOCTIPlatformsQuery>,
   onUpdate: () => void,
   handleSuccess: (message: string) => void,
   handleError: (error: Error) => void
@@ -165,7 +165,7 @@ export const useServiceQueries = (
 
   return {
     ownedServices: getOwnedServices(queryRefUserServiceOwned),
-    octiInstances: getOCTIInstances(queryRefOCTIInstances),
+    octiPlatforms: getOCTIInstances(queryRefOCTIPlatforms),
     publicServices,
     addSubscriptionInDb,
   };
