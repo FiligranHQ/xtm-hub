@@ -31,7 +31,7 @@ const ChooseInstanceForm: React.FunctionComponent<ChooseInstanceFormProps> = ({
     <div className="flex flex-col h-full justify-between gap-m">
       <div className="space-y-m">
         <h1>
-          {t('Service.ShareableResources.DeployOctiDescription', {
+          {t('Service.ShareableResources.DeployDashboardOctiDescription', {
             dashboardName: documentData.name,
           })}
         </h1>

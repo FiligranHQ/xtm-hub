@@ -52,11 +52,11 @@ const OneClickDeploy: React.FunctionComponent<OneClickDeployProps> = ({
         <>
           <div className="space-y-m">
             <h1>
-              {t('Service.ShareableResources.DeployOctiDescriptionNoInstance')}
+              {t('Service.ShareableResources.DeployOctiDescriptionNoPlatform')}
             </h1>
             <p>
               {t(
-                'Service.ShareableResources.DeployOctiDescriptionNoInstanceThen'
+                'Service.ShareableResources.DeployOctiDescriptionNoPlatformThen'
               )}
             </p>
             <img
@@ -80,15 +80,15 @@ const OneClickDeploy: React.FunctionComponent<OneClickDeployProps> = ({
         <>
           <div className="space-y-m">
             <h1>
-              {t('Service.ShareableResources.DeployOctiDescription', {
+              {t('Service.ShareableResources.DeployDashboardOctiDescription', {
                 dashboardName: documentData.name,
               })}
             </h1>
             <p>
               {t(
-                'Service.ShareableResources.DeployOctiDescriptionOneInstance',
+                'Service.ShareableResources.DeployOctiDescriptionOnePlatform',
                 {
-                  instanceName:
+                  platformName:
                     instancesOcti.octiInstances[0]?.title ?? 'OpenCTI',
                 }
               )}
