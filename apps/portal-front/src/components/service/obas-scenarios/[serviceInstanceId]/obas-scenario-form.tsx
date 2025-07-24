@@ -67,7 +67,7 @@ export const ObasScenarioForm = ({
         labels: obasScenario?.labels?.map((label) => label.id),
         uploader_id: obasScenario?.uploader?.id ?? me?.id,
       }) as ObasScenarioFormValues,
-    [obasScenario]
+    [me, obasScenario]
   );
   const formSchema = useMemo(
     () =>
@@ -125,6 +125,7 @@ export const ObasScenarioForm = ({
           labels: {
             fieldType: ({ field }) => (
               <FormItem>
+                <FormLabel>{t('Service.ObasScenario.Form.LabelsLabel')}</FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
@@ -134,7 +135,7 @@ export const ObasScenarioForm = ({
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t('Service.ObasScenario.Form.LabelsLabel')}
+                    placeholder={t('Service.ObasScenario.Form.LabelsPlaceholder')}
                     variant="inverted"
                   />
                 </FormControl>
@@ -145,7 +146,7 @@ export const ObasScenarioForm = ({
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.CustomDashboards.Form.LabelsLabel')}
+                  {t('Service.ObasScenario.Form.Author')}
                 </FormLabel>
                 <FormControl>
                   <SelectUsersFormField
