@@ -1,0 +1,32 @@
+---
+
+name: Restore anonymized data on a test env
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+#      The XTM Hub namespace on staging environment
+      namespace:
+        description: 'xtmhub, xtmhub-dev, xtmhub-prerelease or xtmhub-dev-pr-[PR Number] for feature branch'
+        type: string
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.namespace }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-feature-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install AWX cli
+        run: pip install awxkit
+      - name: Restore anonymized data
+        run: |
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Restore XTM Hub prod anonymized data' \
+            --inventory eu-west-staging \
+            --extra_vars "{\"ns\":\"${{ inputs.namespace }}\"}"
