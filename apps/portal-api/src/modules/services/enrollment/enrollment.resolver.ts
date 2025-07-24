@@ -61,6 +61,8 @@ const resolvers: Resolvers = {
     },
     octiPlatforms: async (_, _z, context) =>
       enrollmentApp.loadOCTIPlatforms(context),
+    octiPlatformEnrollmentStatus: async (_, { input }, context) =>
+      enrollmentApp.loadOCTIPlatformEnrollmentStatus(context, input),
   },
   Mutation: {
     enrollOCTIPlatform: async (_, { input }, context) => {

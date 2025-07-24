@@ -15,7 +15,7 @@ export const EnrollStateLayout: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   return (
-    <div className="h-full flex flex-col justify-between">
+    <div className="h-full flex flex-col justify-between gap-xl">
       <div className="flex flex-col gap-m">{children}</div>
       <div className="flex justify-end gap-s">
         {Boolean(cancel) && (
