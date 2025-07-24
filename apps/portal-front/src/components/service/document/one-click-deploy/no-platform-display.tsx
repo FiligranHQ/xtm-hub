@@ -1,14 +1,12 @@
-import { SettingsContext } from '@/components/settings/env-portal-context';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useContext } from 'react';
+import Image from 'next/image';
 
 interface NoPlatformDisplayProps {
   setIsOpen: (isOpen: boolean) => void;
 }
 
 const NoPlatformDisplay = ({ setIsOpen }: NoPlatformDisplayProps) => {
-  const { settings } = useContext(SettingsContext);
   const t = useTranslations();
 
   return (
@@ -24,16 +22,16 @@ const NoPlatformDisplay = ({ setIsOpen }: NoPlatformDisplayProps) => {
             'Service.ShareableResources.Deploy.DeployOctiDescriptionNoPlatformThen'
           )}
         </p>
-        <img
-          src={`${settings?.base_url_front}/RegisterInHub.png`}
-          alt="OpenCTI Register in Hub illustration"
-          style={{
-            border: '2px solid',
-            borderRadius: '4px',
-            width: '100%',
-            verticalAlign: 'middle',
-          }}
-        />
+        <div className="relative border-2 border-solid rounded w-full h-36">
+          <Image
+            fill
+            objectFit="contain"
+            src={`/RegisterInHub.png`}
+            alt={t(
+              'Service.ShareableResources.Deploy.DeployOctiDescriptionNoPlatformIllustration'
+            )}
+          />
+        </div>
       </div>
       <div className="flex justify-end gap-s">
         <Button onClick={() => setIsOpen(false)}>{t('Utils.Close')}</Button>

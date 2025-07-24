@@ -43,7 +43,8 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   const alertContent = useMemo(() => {
     if (instancesOcti.octiInstances.length === 0) {
       return <NoPlatformDisplay setIsOpen={setIsOpen} />;
-    } else if (instancesOcti.octiInstances.length === 1) {
+    }
+    if (instancesOcti.octiInstances.length === 1) {
       return (
         <OnePlatformDisplay
           documentDataName={documentData.name}
@@ -52,7 +53,8 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
           setIsOpen={setIsOpen}
         />
       );
-    } else if (instancesOcti.octiInstances.length > 1) {
+    }
+    if (instancesOcti.octiInstances.length > 1) {
       return (
         <ChooseInstanceForm
           documentData={documentData}
