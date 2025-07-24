@@ -1,4 +1,5 @@
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { dbTx } from '../../../../knexfile';
@@ -8,6 +9,7 @@ import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error.util';
 import { downloadFile } from './document-storage';
+
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
 
 const corsOptions = {
@@ -18,10 +20,18 @@ const corsOptions = {
   credentials: true,
 };
 
+const documentDownloadRateLimiter = rateLimit({
+  windowMs: 180 * 1000, // 3 minutes
+  max: 10, // max 10 request per minute per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 export const documentDeployEndpoint = (app) => {
   app.get(
     `/document/deploy/:serviceInstanceId/:filename`,
     cors(corsOptions),
+    documentDownloadRateLimiter,
     async (req, res) => {
       const { user } = req.session;
       if (!user) {
