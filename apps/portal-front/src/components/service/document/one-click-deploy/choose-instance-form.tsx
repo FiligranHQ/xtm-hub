@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { octiInstancesQuery$data } from '@generated/octiInstancesQuery.graphql';
 import { AutoForm, FormItem, FormLabel, FormMessage, Input } from 'filigran-ui';
@@ -7,7 +5,6 @@ import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
-// Component interface
 interface ChooseInstanceFormProps {
   documentData: ShareableResource;
   instancesOcti: octiInstancesQuery$data;
@@ -19,13 +16,12 @@ export const selectOctiInstanceFormSchema = z.object({
   octiInstanceUrl: z.string().nonempty(),
 });
 
-// Component
-const ChooseInstanceForm: React.FunctionComponent<ChooseInstanceFormProps> = ({
+const ChooseInstanceForm = ({
   documentData,
   instancesOcti,
   oneClickDeploy,
   setIsOpen,
-}) => {
+}: ChooseInstanceFormProps) => {
   const t = useTranslations();
   return (
     <div className="flex flex-col h-full justify-between gap-m">
