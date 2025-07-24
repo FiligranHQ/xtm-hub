@@ -402,6 +402,7 @@
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le scénario.",
         "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
         "ObasScenarioFile": "Fichier de scénario",
         "ExistingObasScenarioFile": "Fichier de scénario existant : {file_name}",
         "ObasScenarioIllustration": "Illustration",

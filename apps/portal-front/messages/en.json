@@ -402,6 +402,7 @@
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
         "LabelsLabel": "Labels",
+        "LabelsPlaceholder": "Add labels",
         "ObasScenarioFile": "Scenario file",
         "ExistingObasScenarioFile": "Existing scenario file: {file_name}",
         "ObasScenarioIllustration": "Illustration",
