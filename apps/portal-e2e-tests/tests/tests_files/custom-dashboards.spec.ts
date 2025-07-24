@@ -76,15 +76,15 @@ test.describe('Custom dashboards', () => {
         .getByRole('textbox', { name: 'Name *' })
         .fill(`${UPDATED_DASHBOARD_TEST.name} // ${test_step}`);
       await page
-        .getByRole('textbox', { name: 'Short_description *' })
+        .getByRole('textbox', { name: 'Short Description *' })
         .fill(UPDATED_DASHBOARD_TEST.shortDescription);
       await page
-        .getByRole('textbox', { name: 'Product_version *' })
+        .getByRole('textbox', { name: 'OpenCTI version *' })
         .fill(UPDATED_DASHBOARD_TEST.version);
       await page
         .getByRole('textbox', { name: 'This is a paragraph to' })
         .fill(UPDATED_DASHBOARD_TEST.description);
-      await page.getByRole('checkbox', { name: 'Active' }).click();
+      await page.getByRole('checkbox', { name: 'Is the dashboard published?' }).click();
       await page.getByRole('button', { name: 'Validate' }).click();
       await waitForDrawerToClose(page);
       await expect(
