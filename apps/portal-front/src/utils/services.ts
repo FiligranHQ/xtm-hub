@@ -19,20 +19,20 @@ export const isEnrollmentService = (serviceInstance: ServiceInstanceCardData) =>
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
 
-export const octiInstanceToServiceInstanceCardData = (
-  instance: enrollOCTIInstanceListFragment$data['octiInstances'][number]
+export const octiPlatformToServiceInstanceCardData = (
+  platform: enrollOCTIInstanceListFragment$data['octiPlatforms'][number]
 ): ServiceInstanceCardData => {
   return {
-    id: instance.id,
-    platform_id: instance.platform_id,
+    id: platform.id,
+    platform_id: platform.platform_id,
     creation_status: ServiceInstanceCreationStatusEnum.CREATED,
-    name: instance.title,
-    platform_contract: instance.contract,
+    name: platform.title,
+    platform_contract: platform.contract,
     illustration_document_id: null,
     logo_document_id: null,
     service_definition_identifier:
       ServiceDefinitionIdentifierEnum.OCTI_ENROLLMENT,
-    url: instance.url,
+    url: platform.url,
     ordering: -1, // OCTI Instances are displayed at the first position
   };
 };

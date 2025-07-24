@@ -1,15 +1,13 @@
-import { EnrollOCTIInstance } from '@/components/enroll/enroll.graphql';
+import { EnrollOCTIPlatform } from '@/components/enroll/enroll.graphql';
 import { EnrollOrganizationForm } from '@/components/enroll/form/organization';
 import { isEnrollmentPossible } from '@/components/enroll/helper';
-import { canEnrollOCTIInstance } from '@/components/enroll/service';
+import { useCanEnrollOCTIPlatform } from '@/components/enroll/service';
 import { EnrollStateResult } from '@/components/enroll/state/result';
 import enrollOCTIFragmentGraphql, {
   enrollOCTIFragment$key,
 } from '@generated/enrollOCTIFragment.graphql';
-import {
-  enrollOCTIInstanceMutation,
-  OCTIPlatformContract,
-} from '@generated/enrollOCTIInstanceMutation.graphql';
+import { OCTIPlatformContract } from '@generated/enrollOCTIPlatformFragment.graphql';
+import { enrollOCTIPlatformMutation } from '@generated/enrollOCTIPlatformMutation.graphql';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
@@ -47,12 +45,12 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const [enrollmentStatus, setEnrollmentStatus] =
     useState<EnrollmentStatus>('idle');
   const [organizationId, setOrganizationId] = useState<string>();
-  const canEnrollState = canEnrollOCTIInstance({
+  const canEnrollState = useCanEnrollOCTIPlatform({
     organizationId,
     platformId: platform.id,
   });
-  const [enrollInstance] =
-    useMutation<enrollOCTIInstanceMutation>(EnrollOCTIInstance);
+  const [enrollPlatform] =
+    useMutation<enrollOCTIPlatformMutation>(EnrollOCTIPlatform);
 
   const [enrollFragmentRef, setEnrollFragmentRef] =
     useState<enrollOCTIFragment$key | null>(null);
@@ -91,12 +89,12 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
       return;
     }
 
-    enrollInstance({
+    enrollPlatform({
       variables: {
         input: { organizationId, platform },
       },
       onCompleted: (response) => {
-        setEnrollFragmentRef(response.enrollOCTIInstance);
+        setEnrollFragmentRef(response.enrollOCTIPlatform);
       },
       onError: (error) => {
         setEnrollmentStatus('failed');

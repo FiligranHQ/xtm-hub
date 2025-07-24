@@ -12,7 +12,7 @@ export const serviceInstanceDomain = {
     await db(context, 'ServiceInstance').insert([
       {
         id,
-        name: 'OpenCTI Instance',
+        name: 'OpenCTI Platform',
         description: '',
         creation_status: 'READY',
         public: false,

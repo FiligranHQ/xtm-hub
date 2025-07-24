@@ -1,8 +1,8 @@
-import { enrollCanEnrollOCTIInstanceFragment$data } from '@generated/enrollCanEnrollOCTIInstanceFragment.graphql';
+import { enrollCanEnrollOCTIPlatformFragment$data } from '@generated/enrollCanEnrollOCTIPlatformFragment.graphql';
 import { CanEnrollStatusEnum } from '@generated/models/CanEnrollStatus.enum';
 
 export const isEnrollmentPossible = (
-  state: enrollCanEnrollOCTIInstanceFragment$data
+  state: enrollCanEnrollOCTIPlatformFragment$data
 ): boolean => {
   return (
     !!state &&
@@ -12,7 +12,7 @@ export const isEnrollmentPossible = (
 };
 
 export const isMissingCapability = (
-  state: enrollCanEnrollOCTIInstanceFragment$data
+  state: enrollCanEnrollOCTIPlatformFragment$data
 ): boolean => {
   if (!state) {
     return false;

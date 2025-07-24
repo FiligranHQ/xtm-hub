@@ -2,9 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   CanEnrollResponse,
   CanEnrollStatus,
-  CanUnenrollOctiInstanceInput,
-  EnrollOctiInstanceInput,
-  OctiInstance,
+  CanUnenrollOctiPlatformInput,
+  EnrollOctiPlatformInput,
+  OctiPlatform,
   OrganizationCapability,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
@@ -24,7 +24,7 @@ import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
   enrollmentDomain,
-  OCTIInstanceConfiguration,
+  OCTIPlatformConfiguration,
 } from './enrollment.domain';
 
 const loadActiveOrLastSubscription = async (
@@ -58,26 +58,26 @@ const loadActiveOrLastSubscription = async (
 };
 
 export const enrollmentApp = {
-  loadOctiInstances: async (
+  loadOCTIPlatforms: async (
     context: PortalContext
-  ): Promise<OctiInstance[]> => {
-    const instances = await enrollmentDomain.loadOctiInstances(context);
-    return instances.map((instance) => ({
-      __typename: 'OctiInstance',
-      id: instance.config.platform_id,
-      platform_id: instance.config.platform_id,
-      title: instance.config.platform_title,
-      url: instance.config.platform_url,
-      contract: instance.config.platform_contract,
+  ): Promise<OctiPlatform[]> => {
+    const platforms = await enrollmentDomain.loadOCTIPlatforms(context);
+    return platforms.map((platform) => ({
+      __typename: 'OCTIPlatform',
+      id: platform.config.platform_id,
+      platform_id: platform.config.platform_id,
+      title: platform.config.platform_title,
+      url: platform.config.platform_url,
+      contract: platform.config.platform_contract,
     }));
   },
 
-  enrollOCTIInstance: async (
+  enrollOCTIPlatform: async (
     context: PortalContext,
-    { organizationId, platform }: EnrollOctiInstanceInput
+    { organizationId, platform }: EnrollOctiPlatformInput
   ): Promise<string> => {
     const token = uuidv4();
-    const configuration: OCTIInstanceConfiguration = {
+    const configuration: OCTIPlatformConfiguration = {
       enroller_id: context.user.id,
       platform_id: platform.id,
       platform_url: platform.url,
@@ -112,13 +112,13 @@ export const enrollmentApp = {
       );
 
     if (activeServiceConfiguration) {
-      await enrollmentDomain.transferExistingInstance(context, {
+      await enrollmentDomain.transferExistingPlatform(context, {
         serviceInstanceId: activeServiceConfiguration.service_instance_id,
         targetOrganizationId: organizationId,
         configuration,
       });
     } else {
-      await enrollmentDomain.enrollNewInstance(context, {
+      await enrollmentDomain.enrollNewPlatform(context, {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,
@@ -128,9 +128,9 @@ export const enrollmentApp = {
     return token;
   },
 
-  unenrollOCTIInstance: async (
+  unenrollOCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnenrollOctiInstanceInput
+    { platformId }: CanUnenrollOctiPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -166,7 +166,7 @@ export const enrollmentApp = {
     await endSubscription(context, subscription.id);
   },
 
-  canEnrollOCTIInstance: async (
+  canEnrollOCTIPlatform: async (
     context: PortalContext,
     {
       organizationId,
@@ -223,9 +223,9 @@ export const enrollmentApp = {
     };
   },
 
-  canUnenrollOCTIInstance: async (
+  canUnenrollOCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnenrollOctiInstanceInput
+    { platformId }: CanUnenrollOctiPlatformInput
   ): Promise<{ isAllowed: boolean; organizationId: OrganizationId }> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -234,14 +234,14 @@ export const enrollmentApp = {
         ServiceConfigurationStatus.Active
       );
     if (!serviceConfiguration) {
-      throw new Error(ErrorCode.InstanceNotEnrolled);
+      throw new Error(ErrorCode.PlatformNotEnrolled);
     }
 
     const subscription = await loadActiveSubscriptionBy(context, {
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
-      throw new Error(ErrorCode.InstanceNotEnrolled);
+      throw new Error(ErrorCode.PlatformNotEnrolled);
     }
 
     const isAllowed = await isUserAllowed(context, {
