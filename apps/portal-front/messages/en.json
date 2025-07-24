@@ -15,7 +15,7 @@
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Bypass inside of an organization",
       "MANAGE_ACCESS": "Ability to invite other users to this organization",
-      "MANAGE_OCTI_ENROLLMENT": "Ability to enroll and unenroll OCTI instances",
+      "MANAGE_OCTI_ENROLLMENT": "Ability to enroll and unenroll OpenCTI platforms",
       "MANAGE_SUBSCRIPTION": "Ability to manage and subscribe the organization to services"
     },
     "Description": "You can add specific capabilities to Filigran users",
@@ -63,8 +63,8 @@
       "ALREADY_SUBSCRIBED": "You have already subscribed to this service",
       "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "You have already subscribed this organization to this service",
       "AUTH0_USER_NOT_FOUND_ERROR": "Your user profile was not found",
-      "CAN_ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "An unknown error occurred during instance enrollment",
-      "CAN_UNENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "An unknown error occured during instance unenrollment",
+      "CAN_ENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform enrollment",
+      "CAN_UNENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unenrollment",
       "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
       "CANT_EDIT_YOURSELF_ERROR": "You cannot edit yourself",
@@ -87,8 +87,8 @@
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
-      "ENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "An unknown error occurred during instance enrollment",
-      "ENROLL_OCTI_INSTANCE_INVALID_DATA": "Data sent for OCTI instance enrollment is invalid",
+      "ENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform enrollment",
+      "ENROLL_OCTI_PLATFORM_INVALID_DATA": "Data sent for OpenCTI platform enrollment is invalid",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Error while deleting the subscription: you are not allowed to delete a subscription with billing",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
       "INVALID_IMAGE_URL": "The image URL is not valid",
@@ -103,7 +103,7 @@
       "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exist",
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
-      "UNENROLL_OCTI_INSTANCE_UNKNOWN_ERROR": "An unknown error occurred during instance unenrollment",
+      "UNENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unenrollment",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
       "OBAS_SCENARIO_INSERTION_ERROR": "An error occurred while creating the scenario.",
@@ -116,64 +116,64 @@
   "Unenroll": {
     "OCTI": {
       "Succeeded": {
-        "Title": "OCTI instance unenrolled successfully",
+        "Title": "OpenCTI platform unenrolled successfully",
         "Description": "This tab will be closed soon."
       },
       "Failed": {
         "Title": "Unenrollment failed",
-        "Description": "An error occurred during the instance unenrollment."
+        "Description": "An error occurred during the platform unenrollment."
       },
       "Confirm": {
-        "Title": "You are about to unregister your OpenCTI instance from the {name} organization on the Hub.",
+        "Title": "You are about to unenroll your OpenCTI platform from the {name} organization on the Hub.",
         "Description": "Do you want to proceed with the unenrollment ?"
       },
       "Error": {
         "Capability": {
           "Title": "You do not have the necessary {capability} access on the XTM Hub.",
-          "Description": "If you want to proceed with the unenrollment of your OCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
+          "Description": "If you want to proceed with the unenrollment of your OpenCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
           "AdminListTitle": "The administrators of your organization are the following:"
         },
-        "InstanceNotEnrolled": {
-          "Title": "The instance you're trying to unenroll is not enrolled",
+        "PlatformNotEnrolled": {
+          "Title": "The platform you're trying to unenroll is not enrolled",
           "Description": "This tab will be closed soon."
         }
       }
     }
   },
   "Enroll": {
-    "Register": "Register",
+    "Confirm": "Enroll",
     "OCTI": {
       "Succeeded": {
-        "Title": "OCTI instance enrolled successfully",
+        "Title": "OpenCTI platform enrolled successfully",
         "Description": "This tab will be closed soon"
       },
       "Failed": {
         "Title": "Enrollment failed",
-        "Description": "An error occurred during the instance enrollment"
+        "Description": "An error occurred during the platform enrollment"
       },
       "SameOrganization": {
         "Enrolled": {
-          "Title": "Instance already enrolled",
-          "Description": "Your OCTI instance is already enrolled. Do you want to re-enroll your instance ?"
+          "Title": "Platform already enrolled",
+          "Description": "Your OpenCTI platform is already enrolled. Do you want to re-enroll your platform ?"
         },
         "Unenrolled": {
-          "Title": "Instance was enrolled",
-          "Description": "Your OCTI instance was previously enrolled. Do you want to re-enroll your instance ?"
+          "Title": "Platform was enrolled",
+          "Description": "Your OpenCTI platform was previously enrolled. Do you want to re-enroll your platform ?"
         }
       },
       "AnotherOrganization": {
         "NotAllowed": {
-          "Title": "The instance is enrolled on another organization",
-          "Description": "Your OCTI instance is already enrolled in another organization and you don't have the necessary permissions to transfer it."
+          "Title": "The platform is enrolled on another organization",
+          "Description": "Your OpenCTI platform is already enrolled in another organization and you don't have the necessary permissions to transfer it."
         },
         "Allowed": {
           "Enrolled": {
-            "Title": "Instance already enrolled",
-            "Description": "Your OCTI instance is already enrolled in another organization. Do you want to transfer your instance ?"
+            "Title": "Platform already enrolled",
+            "Description": "Your OpenCTI platform is already enrolled in another organization. Do you want to transfer your platform ?"
           },
           "Unenrolled": {
-            "Title": "Instance was enrolled",
-            "Description": "Your OCTI instance was previously enrolled in another organization. Do you want to re-enroll your instance ?"
+            "Title": "Platform was enrolled",
+            "Description": "Your OpenCTI platform was previously enrolled in another organization. Do you want to re-enroll your platform ?"
           }
         }
       },
@@ -181,18 +181,18 @@
       "Error": {
         "Capability": {
           "Title": "You do not have the necessary {capability} access on the XTM Hub",
-          "Description": "If you want to proceed with the enrollment of your OCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
+          "Description": "If you want to proceed with the enrollment of your OpenCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
           "AdminListTitle": "The administrators of your organization are the following:"
         }
       },
       "OrganizationForm": {
-        "Title": "You're about to register your OpenCTI instance into XTM Hub",
-        "Description": "In which organization space do you want to register your OpenCTI instance ?"
+        "Title": "You're about to enroll your OpenCTI platform into XTM Hub",
+        "Description": "In which organization space do you want to enroll your OpenCTI platform ?"
       }
     },
     "Details": {
-      "InstanceID": "Instance ID",
-      "InstanceURL": "Instance URL",
+      "PlatformID": "Platform ID",
+      "PlatformURL": "Platform URL",
       "Contract": "Contract",
       "Contracts": {
         "CE": "Community Edition",
@@ -319,8 +319,8 @@
     "Version": "Version"
   },
   "ProfilePage": {
-    "InstancesEditionDialog": {
-      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OCTI and OBAS instances."
+    "PlatformsEditionDialog": {
+      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenBAS platforms."
     },
     "Title": "Profile",
     "UpdateProfile": "Update profile"

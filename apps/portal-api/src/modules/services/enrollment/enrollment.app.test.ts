@@ -18,17 +18,17 @@ import { serviceContractDomain } from '../contract/domain';
 import { enrollmentApp } from './enrollment.app';
 
 describe('Enrollment app', () => {
-  describe('enrollOCTIInstance', () => {
+  describe('enrollOCTIPlatform', () => {
     const platform: OctiPlatformInput = {
       id: uuidv4(),
-      title: 'My OCTI instance',
+      title: 'My OCTI platform',
       url: 'http://example.com',
       contract: OctiPlatformContract.Ee,
     };
 
     describe('invalid configuration', async () => {
       it('should throw when platformId is not valid', async () => {
-        const call = enrollmentApp.enrollOCTIInstance(contextAdminUser, {
+        const call = enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             ...platform,
@@ -40,7 +40,7 @@ describe('Enrollment app', () => {
       });
 
       it('should throw when platformUrl is not valid', async () => {
-        const call = enrollmentApp.enrollOCTIInstance(contextAdminUser, {
+        const call = enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             ...platform,
@@ -52,8 +52,8 @@ describe('Enrollment app', () => {
       });
     });
 
-    it('return token when instance is enrolled', async () => {
-      const token = await enrollmentApp.enrollOCTIInstance(contextAdminUser, {
+    it('return token when platform is enrolled', async () => {
+      const token = await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
       });
@@ -62,24 +62,24 @@ describe('Enrollment app', () => {
     });
   });
 
-  describe('unenrollOCTIInstance', () => {
+  describe('unenrollOCTIPlatform', () => {
     const platformId = uuidv4();
     const platform: OctiPlatformInput = {
       id: platformId,
-      title: 'My OCTI instance',
+      title: 'My OCTI platform',
       url: 'http://example.com',
       contract: OctiPlatformContract.Ee,
     };
 
     beforeEach(async () => {
-      await enrollmentApp.enrollOCTIInstance(contextAdminUser, {
+      await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
       });
     });
 
-    it('should unenroll instance when the instance is still active', async () => {
-      await enrollmentApp.unenrollOCTIInstance(contextAdminUser, {
+    it('should unenroll platform when the platform is still active', async () => {
+      await enrollmentApp.unenrollOCTIPlatform(contextAdminUser, {
         platformId,
       });
 
@@ -108,7 +108,7 @@ describe('Enrollment app', () => {
     });
   });
 
-  describe('canEnrollOCTIInstance', () => {
+  describe('canEnrollOCTIPlatform', () => {
     const organizationId = uuidv4();
     const platformId = uuidv4();
 
@@ -145,7 +145,7 @@ describe('Enrollment app', () => {
       it(`should allow user to enroll when he has the required capabilities`, async () => {
         isUserAllowedSpy.mockReturnValue(Promise.resolve(true));
 
-        const result = await enrollmentApp.canEnrollOCTIInstance(
+        const result = await enrollmentApp.canEnrollOCTIPlatform(
           contextAdminUser,
           {
             organizationId,
@@ -161,7 +161,7 @@ describe('Enrollment app', () => {
       it('should not allow user to enroll when he does not have the required capabilities', async () => {
         isUserAllowedSpy.mockReturnValue(Promise.resolve(false));
 
-        const result = await enrollmentApp.canEnrollOCTIInstance(
+        const result = await enrollmentApp.canEnrollOCTIPlatform(
           contextAdminUser,
           {
             organizationId,
@@ -197,7 +197,7 @@ describe('Enrollment app', () => {
         it(`should allow user to enroll when he has the required capabilities`, async () => {
           isUserAllowedSpy.mockReturnValue(Promise.resolve(true));
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -213,7 +213,7 @@ describe('Enrollment app', () => {
         it('should not allow user to enroll when he does not have the required capabilities', async () => {
           isUserAllowedSpy.mockReturnValue(Promise.resolve(false));
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -238,7 +238,7 @@ describe('Enrollment app', () => {
         it(`should allow user to enroll when he has the required capabilities on both organizations`, async () => {
           isUserAllowedSpy.mockReturnValue(Promise.resolve(true));
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -260,7 +260,7 @@ describe('Enrollment app', () => {
             }
           );
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -280,7 +280,7 @@ describe('Enrollment app', () => {
             }
           );
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -317,7 +317,7 @@ describe('Enrollment app', () => {
         it(`should allow user to enroll when he has the required capabilities`, async () => {
           isUserAllowedSpy.mockReturnValue(Promise.resolve(true));
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -333,7 +333,7 @@ describe('Enrollment app', () => {
         it('should not allow user to enroll when he does not have the required capabilities', async () => {
           isUserAllowedSpy.mockReturnValue(Promise.resolve(false));
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -358,7 +358,7 @@ describe('Enrollment app', () => {
         it(`should allow user to enroll when he has the required capabilities on both organizations`, async () => {
           isUserAllowedSpy.mockReturnValue(Promise.resolve(true));
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -380,7 +380,7 @@ describe('Enrollment app', () => {
             }
           );
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -400,7 +400,7 @@ describe('Enrollment app', () => {
             }
           );
 
-          const result = await enrollmentApp.canEnrollOCTIInstance(
+          const result = await enrollmentApp.canEnrollOCTIPlatform(
             contextAdminUser,
             {
               organizationId,
@@ -416,7 +416,7 @@ describe('Enrollment app', () => {
     });
   });
 
-  describe('canUnenrollOCTIInstance', () => {
+  describe('canUnenrollOCTIPlatform', () => {
     const platformId = uuidv4();
 
     let isUserAllowedSpy: MockInstance;
@@ -442,11 +442,11 @@ describe('Enrollment app', () => {
     it('should throw an error when configuration for platform does not exist', async () => {
       loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
 
-      const call = enrollmentApp.canUnenrollOCTIInstance(contextAdminUser, {
+      const call = enrollmentApp.canUnenrollOCTIPlatform(contextAdminUser, {
         platformId,
       });
 
-      await expect(call).rejects.toThrow(ErrorCode.InstanceNotEnrolled);
+      await expect(call).rejects.toThrow(ErrorCode.PlatformNotEnrolled);
     });
 
     it('should throw an error when subscription does not exist', async () => {
@@ -455,11 +455,11 @@ describe('Enrollment app', () => {
       );
       loadActiveSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
-      const call = enrollmentApp.canUnenrollOCTIInstance(contextAdminUser, {
+      const call = enrollmentApp.canUnenrollOCTIPlatform(contextAdminUser, {
         platformId,
       });
 
-      await expect(call).rejects.toThrow(ErrorCode.InstanceNotEnrolled);
+      await expect(call).rejects.toThrow(ErrorCode.PlatformNotEnrolled);
     });
 
     it('should allow user to enroll when he has the required capabilities', async () => {
@@ -472,7 +472,7 @@ describe('Enrollment app', () => {
         Promise.resolve({ organization_id: organizationId })
       );
 
-      const result = await enrollmentApp.canUnenrollOCTIInstance(
+      const result = await enrollmentApp.canUnenrollOCTIPlatform(
         contextAdminUser,
         { platformId }
       );
@@ -491,7 +491,7 @@ describe('Enrollment app', () => {
       );
       isUserAllowedSpy.mockReturnValue(Promise.resolve(false));
 
-      const result = await enrollmentApp.canUnenrollOCTIInstance(
+      const result = await enrollmentApp.canUnenrollOCTIPlatform(
         contextAdminUser,
         { platformId }
       );

@@ -15,9 +15,9 @@ import { enrollmentApp } from './enrollment.app';
 
 const resolvers: Resolvers = {
   Query: {
-    canEnrollOCTIInstance: async (_, { input }, context) => {
+    canEnrollOCTIPlatform: async (_, { input }, context) => {
       try {
-        const response = await enrollmentApp.canEnrollOCTIInstance(context, {
+        const response = await enrollmentApp.canEnrollOCTIPlatform(context, {
           ...input,
           organizationId: fromGlobalId(input.organizationId).id,
         });
@@ -28,42 +28,42 @@ const resolvers: Resolvers = {
           throw NotFoundError(error.message);
         }
 
-        throw UnknownError(ErrorCode.CanEnrollOCTIInstanceUnknownError, {
+        throw UnknownError(ErrorCode.CanEnrollOCTIPlatformUnknownError, {
           detail: error,
         });
       }
     },
-    canUnenrollOCTIInstance: async (_, { input }, context) => {
+    canUnenrollOCTIPlatform: async (_, { input }, context) => {
       try {
-        const response = await enrollmentApp.canUnenrollOCTIInstance(
+        const response = await enrollmentApp.canUnenrollOCTIPlatform(
           context,
           input
         );
 
         return {
           ...response,
-          isInstanceEnrolled: true,
+          isPlatformEnrolled: true,
           organizationId: response.organizationId
             ? toGlobalId('Organization', response.organizationId)
             : undefined,
         };
       } catch (error) {
         switch (error.message) {
-          case ErrorCode.InstanceNotEnrolled:
+          case ErrorCode.PlatformNotEnrolled:
             return {
-              isInstanceEnrolled: false,
+              isPlatformEnrolled: false,
             };
         }
-        throw UnknownError(ErrorCode.CanUnenrollOCTIInstanceUnknownError, {
+        throw UnknownError(ErrorCode.CanUnenrollOCTIPlatformUnknownError, {
           detail: error,
         });
       }
     },
-    octiInstances: async (_, _z, context) =>
-      enrollmentApp.loadOctiInstances(context),
+    octiPlatforms: async (_, _z, context) =>
+      enrollmentApp.loadOCTIPlatforms(context),
   },
   Mutation: {
-    enrollOCTIInstance: async (_, { input }, context) => {
+    enrollOCTIPlatform: async (_, { input }, context) => {
       const schema = z.object({
         organizationId: z.uuid().nonempty(),
         platform: z.object({
@@ -82,12 +82,12 @@ const resolvers: Resolvers = {
       const result = schema.safeParse(payload);
       if (!result.success) {
         logApp.warn(result.error);
-        throw BadRequestError(ErrorCode.EnrollOCITInstanceInvalidData);
+        throw BadRequestError(ErrorCode.EnrollOCITPlatformInvalidData);
       }
 
       const trx = await dbTx();
       try {
-        const token = await enrollmentApp.enrollOCTIInstance(
+        const token = await enrollmentApp.enrollOCTIPlatform(
           {
             ...context,
             trx,
@@ -113,15 +113,15 @@ const resolvers: Resolvers = {
           throw ForbiddenAccess(error.message);
         }
 
-        throw UnknownError(ErrorCode.EnrollOCTIInstanceUnknownError, {
+        throw UnknownError(ErrorCode.EnrollOCTIPlatformUnknownError, {
           detail: error,
         });
       }
     },
-    unenrollOCTIInstance: async (_, { input }, context) => {
+    unenrollOCTIPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        await enrollmentApp.unenrollOCTIInstance(
+        await enrollmentApp.unenrollOCTIPlatform(
           {
             ...context,
             trx,
@@ -140,7 +140,7 @@ const resolvers: Resolvers = {
             throw ForbiddenAccess(error.message);
         }
 
-        throw UnknownError(ErrorCode.UnenrollOCTIInstanceUnknownError, {
+        throw UnknownError(ErrorCode.UnenrollOCTIPlatformUnknownError, {
           detail: error,
         });
       }

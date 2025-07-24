@@ -1,18 +1,18 @@
 import {
-  CanUnenrollOCTIInstanceFragment,
-  UnenrollOCTIInstance,
+  CanUnenrollOCTIPlatformFragment,
+  UnenrollOCTIPlatform,
 } from '@/components/enroll/enroll.graphql';
 import { EnrollStateLayout } from '@/components/enroll/state/layout';
 import Loader from '@/components/loader';
 import { UnenrollOCTIConfirm } from '@/components/unenroll/octi/confirm';
-import { UnenrollOCTIInstanceNotEnrolled } from '@/components/unenroll/octi/instance-not-enrolled';
 import { UnenrollOCTIMissingCapability } from '@/components/unenroll/octi/missing-capability';
+import { UnenrollOCTIPlatformNotEnrolled } from '@/components/unenroll/octi/platform-not-enrolled';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { enrollCanUnenrollOCTIInstanceFragment$key } from '@generated/enrollCanUnenrollOCTIInstanceFragment.graphql';
-import EnrollCanUnenrollOCTIInstanceQueryGraphql, {
-  enrollCanUnenrollOCTIInstanceQuery,
-} from '@generated/enrollCanUnenrollOCTIInstanceQuery.graphql';
-import { enrollUnenrollOCTIInstanceMutation } from '@generated/enrollUnenrollOCTIInstanceMutation.graphql';
+import { enrollCanUnenrollOCTIPlatformFragment$key } from '@generated/enrollCanUnenrollOCTIPlatformFragment.graphql';
+import EnrollCanUnenrollOCTIPlatformQueryGraphql, {
+  enrollCanUnenrollOCTIPlatformQuery,
+} from '@generated/enrollCanUnenrollOCTIPlatformQuery.graphql';
+import { enrollUnenrollOCTIPlatformMutation } from '@generated/enrollUnenrollOCTIPlatformMutation.graphql';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,
 } from '@generated/userListOrganizationAdministratorsQuery.graphql';
@@ -29,7 +29,7 @@ import {
 
 interface Props {
   platformId: string;
-  queryRef: PreloadedQuery<enrollCanUnenrollOCTIInstanceQuery>;
+  queryRef: PreloadedQuery<enrollCanUnenrollOCTIPlatformQuery>;
 }
 
 type UnenrollmentStatus = 'idle' | 'succeeded' | 'failed';
@@ -37,16 +37,15 @@ type UnenrollmentStatus = 'idle' | 'succeeded' | 'failed';
 export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   const t = useTranslations();
   const canUnenrollPreloadedQuery =
-    usePreloadedQuery<enrollCanUnenrollOCTIInstanceQuery>(
-      EnrollCanUnenrollOCTIInstanceQueryGraphql,
+    usePreloadedQuery<enrollCanUnenrollOCTIPlatformQuery>(
+      EnrollCanUnenrollOCTIPlatformQueryGraphql,
       queryRef
     );
 
-  const { isAllowed, isInstanceEnrolled, organizationId } =
-    useFragment<enrollCanUnenrollOCTIInstanceFragment$key>(
-      CanUnenrollOCTIInstanceFragment,
-      canUnenrollPreloadedQuery.canUnenrollOCTIInstance
-    );
+  const { isAllowed, isPlatformEnrolled, organizationId } = useFragment<enrollCanUnenrollOCTIPlatformFragment$key>(
+    CanUnenrollOCTIPlatformFragment,
+    canUnenrollPreloadedQuery.canUnenrollOCTIPlatform
+  );
 
   const [
     organizationAdministratorsQueryRef,
@@ -55,10 +54,10 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     UserListOrganizationAdministratorsQueryGraphql
   );
   useMountingLoader(loadOrganizationAdministratorsQuery, {
-    organizationId: organizationId,
+    organizationId,
   });
-  const [unenrollInstance] =
-    useMutation<enrollUnenrollOCTIInstanceMutation>(UnenrollOCTIInstance);
+  const [unenrollPlatform] =
+    useMutation<enrollUnenrollOCTIPlatformMutation>(UnenrollOCTIPlatform);
 
   const [status, setStatus] = useState<UnenrollmentStatus>('idle');
   const cancel = () => {
@@ -66,7 +65,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   };
 
   const confirm = () => {
-    unenrollInstance({
+    unenrollPlatform({
       variables: {
         input: {
           platformId,
@@ -87,8 +86,8 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     });
   };
 
-  if (!isInstanceEnrolled) {
-    return <UnenrollOCTIInstanceNotEnrolled confirm={confirm} />;
+  if (!isPlatformEnrolled) {
+    return <UnenrollOCTIPlatformNotEnrolled confirm={confirm} />;
   }
 
   if (status === 'succeeded') {

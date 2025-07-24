@@ -13,17 +13,17 @@ import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { serviceContractDomain } from '../contract/domain';
 import {
   enrollmentDomain,
-  OCTIInstanceConfiguration,
+  OCTIPlatformConfiguration,
 } from './enrollment.domain';
 
 describe('Enrollment domain', () => {
   let platformId: string;
   const token = uuidv4();
-  const platformTitle = 'My OCTI instance';
+  const platformTitle = 'My OCTI platform';
   const platformUrl = 'http://example.com';
   const platformContract = OctiPlatformContract.Ee;
   const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
-  let configuration: OCTIInstanceConfiguration;
+  let configuration: OCTIPlatformConfiguration;
 
   beforeEach(() => {
     platformId = uuidv4();
@@ -40,7 +40,7 @@ describe('Enrollment domain', () => {
 
   describe('enrollNewInstance', () => {
     it('save enrollment data', async () => {
-      await enrollmentDomain.enrollNewInstance(contextAdminUser, {
+      await enrollmentDomain.enrollNewPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
@@ -56,7 +56,7 @@ describe('Enrollment domain', () => {
       const serviceInstance = await dbUnsecure<ServiceInstance>(
         'ServiceInstance'
       )
-        .where('name', '=', 'OpenCTI Instance')
+        .where('name', '=', 'OpenCTI Platform')
         .select('*')
         .first();
 
@@ -95,7 +95,7 @@ describe('Enrollment domain', () => {
     let serviceInstanceId: string;
     let subscriptionId: string;
     beforeEach(async () => {
-      await enrollmentDomain.enrollNewInstance(contextAdminUser, {
+      await enrollmentDomain.enrollNewPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
@@ -132,7 +132,7 @@ describe('Enrollment domain', () => {
 
     it('should update existing configuration', async () => {
       const newToken = uuidv4();
-      await enrollmentDomain.transferExistingInstance(contextAdminUser, {
+      await enrollmentDomain.transferExistingPlatform(contextAdminUser, {
         configuration: {
           ...configuration,
           token: newToken,
@@ -155,7 +155,7 @@ describe('Enrollment domain', () => {
 
     it('should transfer subscription to the other organization', async () => {
       const newToken = uuidv4();
-      await enrollmentDomain.transferExistingInstance(contextAdminUser, {
+      await enrollmentDomain.transferExistingPlatform(contextAdminUser, {
         configuration: {
           ...configuration,
           token: newToken,

@@ -43,13 +43,13 @@ const EnrollmentDetails: React.FunctionComponent<{
   return (
     <dl className="grid grid-cols-3 gap-s">
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.InstanceID')}
+        {t('Enroll.Details.PlatformID')}
       </dt>
       <dd className="txt-sub-content col-span-2">
         {serviceInstance.platform_id}
       </dd>
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.InstanceURL')}
+        {t('Enroll.Details.PlatformURL')}
       </dt>
       <dd className="txt-sub-content col-span-2">{serviceHref}</dd>
       <dt className="txt-sub-content text-muted-foreground">

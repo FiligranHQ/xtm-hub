@@ -22,7 +22,7 @@ import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
 
-export type OCTIInstanceConfiguration = {
+export type OCTIPlatformConfiguration = {
   enroller_id: string;
   platform_id: string;
   platform_url: string;
@@ -32,7 +32,7 @@ export type OCTIInstanceConfiguration = {
 };
 
 export const enrollmentDomain = {
-  enrollNewInstance: async (
+  enrollNewPlatform: async (
     context: PortalContext,
     {
       serviceDefinitionId,
@@ -41,7 +41,7 @@ export const enrollmentDomain = {
     }: {
       serviceDefinitionId: string;
       organizationId: OrganizationId;
-      configuration: OCTIInstanceConfiguration;
+      configuration: OCTIPlatformConfiguration;
     }
   ) => {
     const serviceInstanceId =
@@ -69,14 +69,14 @@ export const enrollmentDomain = {
     );
   },
 
-  transferExistingInstance: async (
+  transferExistingPlatform: async (
     context: PortalContext,
     {
       configuration,
       serviceInstanceId,
       targetOrganizationId,
     }: {
-      configuration: OCTIInstanceConfiguration;
+      configuration: OCTIPlatformConfiguration;
       serviceInstanceId: ServiceInstanceId;
       targetOrganizationId: string;
     }
@@ -113,10 +113,10 @@ export const enrollmentDomain = {
     });
   },
 
-  loadOctiInstances: async (
+  loadOCTIPlatforms: async (
     context: PortalContext,
     opts: QueryOpts = {}
-  ): Promise<{ config: OCTIInstanceConfiguration }[]> => {
+  ): Promise<{ config: OCTIPlatformConfiguration }[]> => {
     const userSelectedOrganization = context.user.selected_organization_id;
 
     const query = await db<ServiceInstance>(context, 'ServiceInstance', opts)

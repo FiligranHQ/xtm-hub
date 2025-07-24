@@ -85,7 +85,7 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
             {t('Utils.Cancel')}
           </Button>
 
-          <Button>{t('Enroll.Register')}</Button>
+          <Button>{t('Enroll.Confirm')}</Button>
         </div>
       </AutoForm>
     </div>
