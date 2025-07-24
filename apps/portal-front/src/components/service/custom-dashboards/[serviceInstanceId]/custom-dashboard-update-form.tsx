@@ -215,6 +215,9 @@ export const CustomDashboardUpdateForm = ({
                 labels: {
                   fieldType: ({ field }) => (
                     <FormItem>
+                      <FormLabel>
+                        {t('Service.CustomDashboards.Form.LabelsLabel')}
+                      </FormLabel>
                       <FormControl>
                         <MultiSelectFormField
                           noResultString={t('Utils.NotFound')}
@@ -473,6 +476,33 @@ export const CustomDashboardUpdateForm = ({
                     );
                   },
                 },
+                active: {
+                  label: t('Service.CustomDashboards.Form.PublishedPlaceholder'),
+                },
+                short_description: {
+                  label: t('Service.CustomDashboards.Form.ShortDescriptionLabel'),
+                  inputProps: {
+                    placeholder: t('Service.CustomDashboards.Form.ShortDescriptionPlaceholder'),
+                  }
+                },
+                slug: {
+                  label: t('Service.CustomDashboards.Form.SlugLabel'),
+                  inputProps: {
+                    placeholder: t('Service.CustomDashboards.Form.SlugPlaceholder'),
+                  }
+                },
+                name: {
+                  label: t('Service.CustomDashboards.Form.NameLabel'),
+                  inputProps: {
+                    placeholder: t('Service.CustomDashboards.Form.NamePlaceholder'),
+                  }
+                },
+                product_version: {
+                  label: t('Service.CustomDashboards.Form.productVersion'),
+                  inputProps: {
+                    placeholder: t('Service.CustomDashboards.Form.productVersionPlaceholder'),
+                  }
+                }
               }
             : {
                 // Used for user that have the Delete Capa but not the Upload Capa
