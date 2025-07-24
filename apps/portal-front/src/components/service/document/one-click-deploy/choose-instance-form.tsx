@@ -71,9 +71,9 @@ const ChooseInstanceForm = ({
         }}>
         <div className="flex justify-end gap-s">
           <Button
+            type="button"
             variant="outline"
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               setIsOpen(false);
             }}>
             {t('Utils.Cancel')}
