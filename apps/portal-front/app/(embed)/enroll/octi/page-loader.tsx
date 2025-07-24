@@ -4,7 +4,7 @@ import { EnrollOCTI } from '@/components/enroll/octi';
 import Loader from '@/components/loader';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { OCTIPlatformContract } from '@generated/enrollOCTIInstanceFragment.graphql';
+import { OCTIPlatformContract } from '@generated/enrollOCTIPlatformFragment.graphql';
 import OrganizationListUserOrganizationsQuery, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
