@@ -81,7 +81,7 @@ const ShareableResourceSlug: React.FunctionComponent<
                     size="icon"
                     onClick={() => {
                       incrementDownloadNumber();
-                      window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}`;
+                      window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
                     }}
                     className="z-[2] text-primary">
                     <DownloadIcon className="h-4 w-4" />
@@ -99,7 +99,7 @@ const ShareableResourceSlug: React.FunctionComponent<
             <Button
               onClick={() => {
                 incrementDownloadNumber();
-                window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}`;
+                window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
               }}>
               {t('Utils.Download')}
             </Button>

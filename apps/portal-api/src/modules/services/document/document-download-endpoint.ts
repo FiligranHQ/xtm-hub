@@ -1,4 +1,5 @@
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { dbTx } from '../../../../knexfile';
@@ -9,13 +10,28 @@ import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error.util';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow all origins except undefined (ex: curl ou Postman)
+    callback(null, true);
+  },
+  credentials: true,
+};
 
+const documentDownloadRateLimiter = rateLimit({
+  windowMs: 180 * 1000, // 3 minutes
+  max: 10, // max 10 request per minute per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 export const documentDownloadEndpoint = (app) => {
   app.get(
     `/document/get/:serviceInstanceId/:filename`,
-    cors(),
+    cors(corsOptions),
+    documentDownloadRateLimiter,
     async (req, res) => {
       const { user } = req.session;
+      const { attach } = req.query;
       if (!user) {
         res.status(401).json({ message: 'You must be logged in' });
         return;
@@ -40,7 +56,9 @@ export const documentDownloadEndpoint = (app) => {
         }
 
         const stream = (await downloadFile(document.minio_name)) as Readable;
-        res.attachment(document.file_name);
+        if (attach) {
+          res.attachment(document.file_name);
+        }
         await incrementDocumentsDownloads(context, document, trx);
         await trx.commit();
         stream.pipe(res);

@@ -4,6 +4,7 @@ import OnePlatformDisplay from '@/components/service/document/one-click-deploy/o
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { oneClickDeployOctiPlatformFragment$key } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
 import { oneClickDeployOctiPlatformsQuery } from '@generated/oneClickDeployOctiPlatformsQuery.graphql';
 import {
   AlertDialog,
@@ -44,7 +45,10 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   );
 
   const platformsOcti = queryData.octiPlatforms.map((instanceRef) =>
-    useFragment(OneClickDeployOctiPlatformFragment, instanceRef)
+    useFragment<oneClickDeployOctiPlatformFragment$key>(
+      OneClickDeployOctiPlatformFragment,
+      instanceRef
+    )
   );
 
   const isOneClickFeatureEnabled = useIsFeatureEnabled(
