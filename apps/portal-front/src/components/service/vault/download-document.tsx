@@ -31,7 +31,7 @@ export const DownloadDocument: FunctionComponent<DownloadDocumentProps> = ({
 
   return (
     <a
-      href={`/document/get/${slug}/${documentData.id}`}
+      href={`/document/get/${slug}/${documentData.id}?attach=1`}
       onClick={(e) => {
         setDownloadNumber();
         e.stopPropagation();

@@ -58,6 +58,7 @@
     "cors": "2.8.5",
     "express": "4.21.0",
     "express-prom-bundle": "8.0.0",
+    "express-rate-limit": "8.0.1",
     "express-session": "1.18.1",
     "glob": "11.0.0",
     "graphql": "16.9.0",
