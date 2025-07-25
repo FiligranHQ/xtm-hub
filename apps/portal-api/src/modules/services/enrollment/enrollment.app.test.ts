@@ -118,7 +118,7 @@ describe('Enrollment app', () => {
     let loadLastSubscriptionByServiceInstanceSpy: MockInstance;
 
     beforeEach(() => {
-      isUserAllowedSpy = vi.spyOn(authHelper, 'isUserAllowed');
+      isUserAllowedSpy = vi.spyOn(authHelper, 'isUserAllowedOnOrganization');
       loadConfigurationsByPlatformSpy = vi.spyOn(
         serviceContractDomain,
         'loadConfigurationsByPlatform'
@@ -419,12 +419,15 @@ describe('Enrollment app', () => {
   describe('canUnenrollOCTIPlatform', () => {
     const platformId = uuidv4();
 
-    let isUserAllowedSpy: MockInstance;
+    let isUserAllowedOnOrganizationSpy: MockInstance;
     let loadConfigurationByPlatformSpy: MockInstance;
     let loadActiveSubscriptionBySpy: MockInstance;
 
     beforeEach(() => {
-      isUserAllowedSpy = vi.spyOn(authHelper, 'isUserAllowed');
+      isUserAllowedOnOrganizationSpy = vi.spyOn(
+        authHelper,
+        'isUserAllowedOnOrganization'
+      );
       loadConfigurationByPlatformSpy = vi.spyOn(
         serviceContractDomain,
         'loadConfigurationByPlatform'
@@ -464,7 +467,7 @@ describe('Enrollment app', () => {
 
     it('should allow user to enroll when he has the required capabilities', async () => {
       const organizationId = uuidv4();
-      isUserAllowedSpy.mockReturnValue(Promise.resolve(true));
+      isUserAllowedOnOrganizationSpy.mockReturnValue(Promise.resolve(true));
       loadConfigurationByPlatformSpy.mockReturnValue(
         Promise.resolve({ service_instance_id: uuidv4() })
       );
@@ -489,7 +492,7 @@ describe('Enrollment app', () => {
       loadActiveSubscriptionBySpy.mockReturnValue(
         Promise.resolve({ organization_id: organizationId })
       );
-      isUserAllowedSpy.mockReturnValue(Promise.resolve(false));
+      isUserAllowedOnOrganizationSpy.mockReturnValue(Promise.resolve(false));
 
       const result = await enrollmentApp.canUnenrollOCTIPlatform(
         contextAdminUser,

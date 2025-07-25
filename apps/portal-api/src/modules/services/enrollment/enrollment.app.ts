@@ -13,7 +13,7 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import Subscription from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
-import { isUserAllowed } from '../../../security/auth.helper';
+import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import {
   endSubscription,
@@ -149,9 +149,9 @@ export const enrollmentApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const isAllowed = await isUserAllowed(context, {
+    const isAllowed = await isUserAllowedOnOrganization(context, {
       organizationId: subscription.organization_id,
-      capability: OrganizationCapability.ManageOctiEnrollment,
+      requiredCapability: OrganizationCapability.ManageOctiEnrollment,
     });
     if (!isAllowed) {
       throw new Error(ErrorCode.MissingCapabilityOnOriginOrganization);
@@ -178,10 +178,13 @@ export const enrollmentApp = {
         context,
         platformId
       );
-    const isAllowedOnTargetOrganization = await isUserAllowed(context, {
-      organizationId,
-      capability: OrganizationCapability.ManageOctiEnrollment,
-    });
+    const isAllowedOnTargetOrganization = await isUserAllowedOnOrganization(
+      context,
+      {
+        organizationId,
+        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+      }
+    );
 
     const wasEnrolledOnce = !!serviceConfigurations.length;
     if (!wasEnrolledOnce) {
@@ -208,10 +211,13 @@ export const enrollmentApp = {
         return isAllowedOnTargetOrganization;
       }
 
-      const isAllowedOnOriginOrganization = await isUserAllowed(context, {
-        organizationId: subscription.organization_id,
-        capability: OrganizationCapability.ManageOctiEnrollment,
-      });
+      const isAllowedOnOriginOrganization = await isUserAllowedOnOrganization(
+        context,
+        {
+          organizationId: subscription.organization_id,
+          requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+        }
+      );
 
       return isAllowedOnTargetOrganization && isAllowedOnOriginOrganization;
     };
@@ -244,9 +250,9 @@ export const enrollmentApp = {
       throw new Error(ErrorCode.PlatformNotEnrolled);
     }
 
-    const isAllowed = await isUserAllowed(context, {
+    const isAllowed = await isUserAllowedOnOrganization(context, {
       organizationId: subscription.organization_id,
-      capability: OrganizationCapability.ManageOctiEnrollment,
+      requiredCapability: OrganizationCapability.ManageOctiEnrollment,
     });
 
     return { isAllowed, organizationId: subscription.organization_id };
