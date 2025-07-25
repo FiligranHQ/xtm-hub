@@ -18,6 +18,7 @@ import { meUserSSESecurity, userSSESecurity } from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
 import { logApp } from '../utils/app-logger.util';
+import { isUserAllowed } from './auth.helper';
 import { userSecurityLayer } from './layer/user';
 import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
 import { userServiceSecurityLayer } from './layer/user-service';
@@ -33,15 +34,15 @@ export type SecuryQueryHandlers = {
 
 export const isUserGranted = (
   user?: UserLoadUserBy,
-  orgCapabilitities?: OrganizationCapability
+  requiredCapability?: OrganizationCapability
 ) => {
   return (
     !!user &&
-    (user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id) ||
-      user.selected_org_capabilities?.includes(orgCapabilitities) ||
-      user.selected_org_capabilities?.includes(
-        OrganizationCapability.AdministrateOrganization
-      ))
+    isUserAllowed({
+      userCapabilities: user.capabilities,
+      organizationCapabilities: user.selected_org_capabilities,
+      requiredCapability: requiredCapability,
+    })
   );
 };
 

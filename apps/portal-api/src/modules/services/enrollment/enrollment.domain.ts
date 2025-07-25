@@ -12,7 +12,7 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
-import { isUserAllowed } from '../../../security/auth.helper';
+import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import {
   loadActiveSubscriptionBy,
@@ -91,9 +91,9 @@ export const enrollmentDomain = {
 
     const originOrganizationId = subscription.organization_id;
     if (originOrganizationId !== targetOrganizationId) {
-      const isAllowed = await isUserAllowed(context, {
+      const isAllowed = await isUserAllowedOnOrganization(context, {
         organizationId: originOrganizationId,
-        capability: OrganizationCapability.ManageOctiEnrollment,
+        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
       });
 
       if (!isAllowed) {
