@@ -1,17 +1,17 @@
-import { oneClickDeployOctiInstanceFragment$data } from '@generated/oneClickDeployOctiInstanceFragment.graphql';
+import { oneClickDeployOctiPlatformFragment$data } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 
 interface OnePlatformDisplayProps {
   documentDataName: string;
-  instancesOcti: oneClickDeployOctiInstanceFragment$data[];
+  platformsOcti: oneClickDeployOctiPlatformFragment$data[];
   setIsOpen: (isOpen: boolean) => void;
   oneClickDeploy: (url: string) => void;
 }
 
 const OnePlatformDisplay = ({
   documentDataName,
-  instancesOcti,
+  platformsOcti,
   setIsOpen,
   oneClickDeploy,
 }: OnePlatformDisplayProps) => {
@@ -32,7 +32,7 @@ const OnePlatformDisplay = ({
           {t(
             'Service.ShareableResources.Deploy.DeployOctiDescriptionOnePlatform',
             {
-              platformName: instancesOcti[0]?.title ?? 'OpenCTIXX',
+              platformName: platformsOcti[0]?.title ?? 'OpenCTI',
             }
           )}
         </p>
@@ -47,7 +47,7 @@ const OnePlatformDisplay = ({
           {t('Utils.Cancel')}
         </Button>
 
-        <Button onClick={() => oneClickDeploy(instancesOcti[0]?.url ?? '')}>
+        <Button onClick={() => oneClickDeploy(platformsOcti[0]?.url ?? '')}>
           {t('Utils.Continue')}
         </Button>
       </div>

@@ -1,27 +1,27 @@
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { octiInstancesQuery$data } from '@generated/octiInstancesQuery.graphql';
+import { oneClickDeployOctiPlatformFragment$data } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
 import { AutoForm, FormItem, FormLabel, FormMessage, Input } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
-interface ChooseInstanceFormProps {
+interface ChoosePlatformFormProps {
   documentData: ShareableResource;
-  instancesOcti: octiInstancesQuery$data;
-  oneClickDeploy: (octiInstanceUrl: string) => void;
+  platformsOcti: oneClickDeployOctiPlatformFragment$data[];
+  oneClickDeploy: (octiPlatformUrl: string) => void;
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export const selectOctiInstanceFormSchema = z.object({
-  octiInstanceUrl: z.string().nonempty(),
+export const selectOctiPlatformFormSchema = z.object({
+  octiPlatformUrl: z.string().nonempty(),
 });
 
-const ChooseInstanceForm = ({
+const ChoosePlatformForm = ({
   documentData,
-  instancesOcti,
+  platformsOcti,
   oneClickDeploy,
   setIsOpen,
-}: ChooseInstanceFormProps) => {
+}: ChoosePlatformFormProps) => {
   const t = useTranslations();
   return (
     <div className="flex flex-col h-full justify-between gap-m">
@@ -37,29 +37,29 @@ const ChooseInstanceForm = ({
         <p>{t('Service.ShareableResources.Deploy.DeployOctiQuestionTag')}</p>
       </div>
       <AutoForm
-        formSchema={selectOctiInstanceFormSchema}
-        onSubmit={({ octiInstanceUrl }) => {
-          oneClickDeploy(octiInstanceUrl);
+        formSchema={selectOctiPlatformFormSchema}
+        onSubmit={({ octiPlatformUrl }) => {
+          oneClickDeploy(octiPlatformUrl);
         }}
         fieldConfig={{
-          octiInstanceUrl: {
+          octiPlatformUrl: {
             fieldType: ({ field }) => (
               <FormItem>
                 <div className="flex flex-col gap-2">
-                  {instancesOcti.octiInstances.map((instance) => (
+                  {platformsOcti.map((platform) => (
                     <div
-                      key={instance.url}
+                      key={platform.url}
                       className="flex items-center gap-2">
                       <Input
-                        id={instance.url}
+                        id={platform.url}
                         type="radio"
-                        onChange={() => field.onChange(instance.url)}
-                        checked={field.value === instance.url}
-                        value={instance.url}
+                        onChange={() => field.onChange(platform.url)}
+                        checked={field.value === platform.url}
+                        value={platform.url}
                         className="h-6 w-6 accent-primary"
                       />
-                      <FormLabel htmlFor={instance.url}>
-                        {instance.title}
+                      <FormLabel htmlFor={platform.url}>
+                        {platform.title}
                       </FormLabel>
                     </div>
                   ))}
@@ -86,4 +86,4 @@ const ChooseInstanceForm = ({
   );
 };
 
-export default ChooseInstanceForm;
+export default ChoosePlatformForm;

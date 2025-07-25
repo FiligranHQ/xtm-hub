@@ -1,10 +1,10 @@
-import ChooseInstanceForm from '@/components/service/document/one-click-deploy/choose-instance-form';
+import ChoosePlatformForm from '@/components/service/document/one-click-deploy/choose-platform-form';
 import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no-platform-display';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { oneClickDeployOctiInstancesQuery } from '@generated/oneClickDeployOctiInstancesQuery.graphql';
+import { oneClickDeployOctiPlatformsQuery } from '@generated/oneClickDeployOctiPlatformsQuery.graphql';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -15,18 +15,18 @@ import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
 
-export const OneClickDeployOctiInstanceFragment = graphql`
-  fragment oneClickDeployOctiInstanceFragment on OctiInstance {
+export const OneClickDeployOctiPlatformFragment = graphql`
+  fragment oneClickDeployOctiPlatformFragment on OCTIPlatform {
     id
     title
     url
   }
 `;
 
-export const OneClickDeployOctiInstancesQuery = graphql`
-  query oneClickDeployOctiInstancesQuery {
-    octiInstances {
-      ...oneClickDeployOctiInstanceFragment
+export const OneClickDeployOctiPlatformsQuery = graphql`
+  query oneClickDeployOctiPlatformsQuery {
+    octiPlatforms {
+      ...oneClickDeployOctiPlatformFragment
     }
   }
 `;
@@ -38,13 +38,13 @@ interface OneClickDeployProps {
 const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   const t = useTranslations();
 
-  const queryData = useLazyLoadQuery<oneClickDeployOctiInstancesQuery>(
-    OneClickDeployOctiInstancesQuery,
+  const queryData = useLazyLoadQuery<oneClickDeployOctiPlatformsQuery>(
+    OneClickDeployOctiPlatformsQuery,
     {}
   );
 
-  const instancesOcti = queryData.octiInstances.map((instanceRef) =>
-    useFragment(OneClickDeployOctiInstanceFragment, instanceRef)
+  const platformsOcti = queryData.octiPlatforms.map((instanceRef) =>
+    useFragment(OneClickDeployOctiPlatformFragment, instanceRef)
   );
 
   const isOneClickFeatureEnabled = useIsFeatureEnabled(
@@ -53,38 +53,38 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const oneClickDeploy = (instanceOctiUrl: string) => {
+  const oneClickDeploy = (platformOctiUrl: string) => {
     window.open(
-      `${instanceOctiUrl}/dashboard/xtm-hub/deploy-custom-dashboard/${documentData.service_instance?.id}/${documentData.id}`,
+      `${platformOctiUrl}/dashboard/xtm-hub/deploy-custom-dashboard/${documentData.service_instance?.id}/${documentData.id}`,
       '_blank'
     );
   };
 
   const alertContent = useMemo(() => {
-    if (instancesOcti.length === 0) {
+    if (platformsOcti.length === 0) {
       return <NoPlatformDisplay setIsOpen={setIsOpen} />;
     }
-    if (instancesOcti.length === 1) {
+    if (platformsOcti.length === 1) {
       return (
         <OnePlatformDisplay
           documentDataName={documentData.name}
-          instancesOcti={instancesOcti}
+          platformsOcti={platformsOcti}
           oneClickDeploy={oneClickDeploy}
           setIsOpen={setIsOpen}
         />
       );
     }
-    if (instancesOcti.length > 1) {
+    if (platformsOcti.length > 1) {
       return (
-        <ChooseInstanceForm
+        <ChoosePlatformForm
           documentData={documentData}
-          instancesOcti={instancesOcti}
+          platformsOcti={platformsOcti}
           oneClickDeploy={oneClickDeploy}
           setIsOpen={setIsOpen}
         />
       );
     }
-  }, [instancesOcti]);
+  }, [platformsOcti]);
 
   return (
     <>
