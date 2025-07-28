@@ -68,9 +68,9 @@ const ShareableResourceSlug: React.FunctionComponent<
           documentId={documentData.id}
           url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
-        {documentData.type === 'custom_dashboard' &&
-        isOneClickFeatureEnabled &&
-        documentData.active ? (
+        {(documentData.type === 'custom_dashboard' ||
+          documentData.type === 'csv_feed') &&
+        isOneClickFeatureEnabled ? (
           <div className="flex items-center gap-2 ml-auto">
             <TooltipProvider>
               <Tooltip
@@ -109,8 +109,10 @@ const ShareableResourceSlug: React.FunctionComponent<
         )}
 
         {isOneClickFeatureEnabled &&
-          documentData.type === 'custom_dashboard' &&
-          documentData.active && <OneClickDeploy documentData={documentData} />}
+          (documentData.type === 'custom_dashboard' ||
+            documentData.type === 'csv_feed') && (
+            <OneClickDeploy documentData={documentData} />
+          )}
       </div>
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
