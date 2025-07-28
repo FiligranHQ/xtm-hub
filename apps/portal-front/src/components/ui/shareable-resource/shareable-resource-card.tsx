@@ -42,32 +42,33 @@ const ShareableResourceCard = ({
         detailUrl={detailUrl}
         serviceInstance={serviceInstance}
       />
-      <div className="flex flex-col flex-grow p-l space-y-s">
-        <div className="flex items-center">
-          {document?.labels && (
-            <BadgeOverflowCounter
-              badges={document?.labels as BadgeOverflow[]}
-              className="z-[2]"
-            />
-          )}
-          <div className="flex items-center flex-shrink-0 ml-auto">
-            <ShareLinkButton
-              documentId={document.id}
-              url={shareLinkUrl}
-              tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
-            />
-            {extraContent}
+      <div className="flex flex-col flex-grow p-l">
+        <div className="space-y-s">
+          <div className="flex items-center">
+            {document?.labels && (
+              <BadgeOverflowCounter
+                badges={document?.labels as BadgeOverflow[]}
+                className="z-[2]"
+              />
+            )}
+            <div className="flex items-center flex-shrink-0 ml-auto">
+              <ShareLinkButton
+                documentId={document.id}
+                url={shareLinkUrl}
+                tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
+              />
+              {extraContent}
+            </div>
           </div>
+          <Link
+            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0 after:z-[1]"
+            href={detailUrl}>
+            <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
+              {document?.short_description}
+            </h3>
+          </Link>
         </div>
-        <Link
-          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0 after:z-[1]"
-          href={detailUrl}>
-          <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
-            {document?.short_description}
-          </h3>
-        </Link>
-
-        <div className="txt-mini items-center flex mt-auto">
+        <div className="txt-mini items-center flex mt-auto space-y-s">
           {docHasMetadata(document, 'product_version') &&
             document.product_version && (
               <div>
