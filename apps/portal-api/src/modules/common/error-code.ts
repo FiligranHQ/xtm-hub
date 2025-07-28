@@ -4,6 +4,7 @@ export enum ErrorCode {
   EnrollOCTIPlatformUnknownError = 'ENROLL_OCTI_PLATFORM_UNKNOWN_ERROR',
   EnrollOCITPlatformInvalidData = 'ENROLL_OCTI_PLATFORM_INVALID_DATA',
   PlatformNotEnrolled = 'PLATFORM_NOT_ENROLLED',
+  InvalidImageUrl = 'INVALID_IMAGE_URL',
   InvalidServiceConfiguration = 'INVALID_SERVICE_CONFIGURATION',
   MissingCapabilityOnOriginOrganization = 'MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION',
   ServiceContractNotFound = 'SERVICE_CONTRACT_NOT_FOUND',
