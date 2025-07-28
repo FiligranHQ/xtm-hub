@@ -69,7 +69,8 @@ const ShareableResourceSlug: React.FunctionComponent<
           url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
         {documentData.type === 'custom_dashboard' &&
-        isOneClickFeatureEnabled ? (
+        isOneClickFeatureEnabled &&
+        documentData.active ? (
           <div className="flex items-center gap-2 ml-auto">
             <TooltipProvider>
               <Tooltip
@@ -108,9 +109,8 @@ const ShareableResourceSlug: React.FunctionComponent<
         )}
 
         {isOneClickFeatureEnabled &&
-          documentData.type === 'custom_dashboard' && (
-            <OneClickDeploy documentData={documentData} />
-          )}
+          documentData.type === 'custom_dashboard' &&
+          documentData.active && <OneClickDeploy documentData={documentData} />}
       </div>
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
