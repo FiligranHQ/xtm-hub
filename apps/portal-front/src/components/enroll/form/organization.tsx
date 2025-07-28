@@ -29,65 +29,67 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
   const t = useTranslations();
 
   return (
-    <div className="flex flex-col h-full justify-between gap-m">
-      <div className="space-y-m">
-        <h1>{t('Enroll.OCTI.OrganizationForm.Title')}</h1>
-        <p>{t('Enroll.OCTI.OrganizationForm.Description')}</p>
-      </div>
-      <AutoForm
-        formSchema={selectOrganizationFormSchema}
-        values={{ organizationId: organizations[0]?.id ?? '' }}
-        onSubmit={({ organizationId }) => {
-          confirm(organizationId);
-        }}
-        fieldConfig={{
-          organizationId: {
-            fieldType: ({ field }) => (
-              <div className="flex flex-col gap-xs">
-                {organizations.map((organization) => {
-                  return (
-                    <FormItem
-                      key={organization.id}
-                      className="flex justify-start gap-xs items-center">
-                      <FormControl>
-                        <Input
-                          className="w-auto"
-                          aria-labelledby={`enroll-form-organization-${organization.name}`}
-                          type="radio"
-                          onChange={() => {
-                            field.onChange(organization.id);
-                          }}
-                          checked={field.value === organization.id}
-                          value={organization.name}
-                        />
-                      </FormControl>
-
-                      <FormLabel
-                        id={`enroll-form-organization-${organization.name}`}
-                        className="!mt-0">
-                        {organization.name}
-                      </FormLabel>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                })}
-              </div>
-            ),
-          },
-        }}>
-        <div className="flex justify-end gap-s">
-          <Button
-            variant="outline"
-            onClick={(e) => {
-              e.preventDefault();
-              cancel();
-            }}>
-            {t('Utils.Cancel')}
-          </Button>
-
-          <Button>{t('Enroll.Confirm')}</Button>
+    <div className="flex items-center justify-center">
+      <div className="flex flex-col justify-between gap-m">
+        <div className="space-y-m">
+          <h1>{t('Enroll.OCTI.OrganizationForm.Title')}</h1>
+          <p>{t('Enroll.OCTI.OrganizationForm.Description')}</p>
         </div>
-      </AutoForm>
+        <AutoForm
+          formSchema={selectOrganizationFormSchema}
+          values={{ organizationId: organizations[0]?.id ?? '' }}
+          onSubmit={({ organizationId }) => {
+            confirm(organizationId);
+          }}
+          fieldConfig={{
+            organizationId: {
+              fieldType: ({ field }) => (
+                <div className="flex flex-col">
+                  {organizations.map((organization) => {
+                    return (
+                      <FormItem
+                        key={organization.id}
+                        className="flex justify-start gap-xs items-center">
+                        <FormControl>
+                          <Input
+                            className="w-auto accent-primary"
+                            aria-labelledby={`enroll-form-organization-${organization.name}`}
+                            type="radio"
+                            onChange={() => {
+                              field.onChange(organization.id);
+                            }}
+                            checked={field.value === organization.id}
+                            value={organization.name}
+                          />
+                        </FormControl>
+
+                        <FormLabel
+                          id={`enroll-form-organization-${organization.name}`}
+                          className="!mt-0">
+                          {organization.name}
+                        </FormLabel>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  })}
+                </div>
+              ),
+            },
+          }}>
+          <div className="flex justify-end gap-s">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => {
+                cancel();
+              }}>
+              {t('Utils.Cancel')}
+            </Button>
+
+            <Button type="submit">{t('Enroll.Confirm')}</Button>
+          </div>
+        </AutoForm>
+      </div>
     </div>
   );
 };

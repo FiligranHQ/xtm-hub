@@ -187,7 +187,7 @@
       },
       "OrganizationForm": {
         "Title": "You're about to enroll your OpenCTI platform into XTM Hub",
-        "Description": "In which organization space do you want to enroll your OpenCTI platform ?"
+        "Description": "Choose which organization space to enroll to"
       }
     },
     "Details": {

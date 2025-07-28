@@ -19,6 +19,7 @@ import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
+import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
 import PageLoader from './page-loader';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -55,11 +56,14 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
     return (
       <RelayProvider>
         <PageLoader>
-          <ContentLayout>
-            <Card className="w-4/5 m-auto mt-l p-l h-auto bg-page-background">
-              {children}
-            </Card>
-          </ContentLayout>
+          <div className="flex flex-col items-center justify-center min-h-screen">
+            <div className="w-1/3">
+              <LogoXTMDark className="p-6" />
+              <ContentLayout>
+                <Card className="p-xl bg-page-background">{children}</Card>
+              </ContentLayout>
+            </div>
+          </div>
         </PageLoader>
       </RelayProvider>
     );
