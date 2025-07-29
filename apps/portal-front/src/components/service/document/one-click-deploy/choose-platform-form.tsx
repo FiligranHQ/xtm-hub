@@ -79,7 +79,12 @@ const ChoosePlatformForm = ({
             {t('Utils.Cancel')}
           </Button>
 
-          <Button>{t('Utils.Continue')}</Button>
+          <Button
+            onClick={() => {
+              setIsOpen(false);
+            }}>
+            {t('Utils.Continue')}
+          </Button>
         </div>
       </AutoForm>
     </div>
