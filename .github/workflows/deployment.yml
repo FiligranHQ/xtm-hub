@@ -19,6 +19,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      actions: write
 
     steps:
       - name: Checkout repository
@@ -46,42 +47,35 @@ jobs:
           node-version: "23"
           cache: "yarn"
           cache-dependency-path: |
-            portal-api/yarn.lock
-            portal-front/yarn.lock
+            yarn.lock
 
       - name: Verify directories exist
         run: |
-          if [ ! -d "./portal-api" ] || [ ! -d "./portal-front" ]; then
-            echo "Error: portal-api or portal-front directory does not exist"
+          if [ ! -d "./apps/portal-api" ] || [ ! -d "./apps/portal-front" ]; then
+            echo "Error: apps/portal-api or apps/portal-front directory does not exist"
             exit 1
           fi
 
-      - name: Install dependencies for portal-api
-        working-directory: ./portal-api
-        run: |
-          yarn install
-          yarn plugin import version
-
-      - name: Install dependencies for portal-front
-        working-directory: ./portal-front
+      - name: Install dependencies
+        working-directory: .
         run: |
           yarn install
           yarn plugin import version
 
       - name: Bump deployment version in portal-api
-        working-directory: ./portal-api
+        working-directory: ./apps/portal-api
         run: |
           yarn version ${{ github.event.inputs.version_type }}
           echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Sync deployment version in portal-front
-        working-directory: ./portal-front
+        working-directory: ./apps/portal-front
         run: |
           yarn version ${{ env.NEW_VERSION }}
 
       - name: Commit and tag changes
         run: |
-          git add portal-api/package.json portal-api/yarn.lock portal-front/package.json portal-front/yarn.lock
+          git add package.json yarn.lock apps/portal-api/package.json apps/portal-front/package.json
           git commit -m "chore(release): bump version to ${{ env.NEW_VERSION }}"
           git tag "v${{ env.NEW_VERSION }}"
 
@@ -91,24 +85,24 @@ jobs:
           git push origin "v${{ env.NEW_VERSION }}"
 
       - name: Trigger Docker Build Workflow
-        uses: actions/github-script@v7
-        with:
-          script: |
-            console.log('Triggering dockerbuild-ci workflow...');
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'dockerbuild-ci.yml',
-              ref: 'v${{ env.NEW_VERSION }}'
-            });
-            console.log('✅ Docker build workflow triggered successfully');
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Triggering dockerbuild-ci workflow..."
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerbuild-ci.yml/dispatches \
+            -d '{"ref":"v${{ env.NEW_VERSION }}"}'
+          echo "✅ Docker build workflow triggered successfully"
 
       - name: Summary
         run: |
           echo "## Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
           echo "- **New Version:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Version Type:** ${{ github.event.inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Components Updated:** portal-api, portal-front" >> $GITHUB_STEP_SUMMARY
+          echo "- **Components Updated:** apps/portal-api, apps/portal-front" >> $GITHUB_STEP_SUMMARY
           echo "- **Tag Created:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Deployment Workflow:** Triggered automatically" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

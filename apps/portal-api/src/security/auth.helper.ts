@@ -8,6 +8,7 @@ import {
   OrganizationCapability,
   ServiceInstance,
 } from '../__generated__/resolvers-types';
+import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
 import { SubscriptionMutator } from '../model/kanel/public/Subscription';
 import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
@@ -102,23 +103,52 @@ export const getCapabilityUser = (
         loadCapabilitiesByServiceId(user, subscription.service_instance_id)
       );
 
-export const isUserAllowed = async (
+export const isUserAllowed = ({
+  userCapabilities,
+  organizationCapabilities,
+  requiredCapability,
+}: {
+  requiredCapability: OrganizationCapability;
+  userCapabilities?: CapabilityPortal[];
+  organizationCapabilities?: OrganizationCapability[];
+}): boolean => {
+  const hasBypassCapability = (userCapabilities ?? []).some(
+    (c) => c.name === CAPABILITY_BYPASS.name
+  );
+  if (hasBypassCapability) {
+    return true;
+  }
+
+  const possibleCapabilities: string[] = [
+    requiredCapability,
+    OrganizationCapability.AdministrateOrganization,
+  ];
+
+  return (organizationCapabilities ?? []).some((organizationCapability) =>
+    possibleCapabilities.includes(organizationCapability)
+  );
+};
+
+export const isUserAllowedOnOrganization = async (
   context: PortalContext,
   {
     organizationId,
-    capability,
+    requiredCapability,
   }: {
     organizationId: string;
-    capability: OrganizationCapability;
+    requiredCapability: OrganizationCapability;
   }
 ): Promise<boolean> => {
-  const capabilities = await loadUserOrganizationCapabilities(
+  const organizationCapabilities = await loadUserOrganizationCapabilities(
     context,
     organizationId
   );
 
-  return (
-    userHasBypassCapability(context.user) ||
-    capabilities.some((c) => c.name === capability)
-  );
+  return isUserAllowed({
+    requiredCapability: requiredCapability,
+    userCapabilities: context.user.capabilities,
+    organizationCapabilities: organizationCapabilities.map(
+      ({ name }) => name as OrganizationCapability
+    ),
+  });
 };

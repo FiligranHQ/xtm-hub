@@ -69,7 +69,7 @@ type Query {
 
 type Mutation {
   enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): EnrollmentResponse!
-    @auth(requires: [MANAGE_OCTI_ENROLLMENT])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_OCTI_ENROLLMENT])
   unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success!
-    @auth(requires: [MANAGE_OCTI_ENROLLMENT])
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_OCTI_ENROLLMENT])
 }
