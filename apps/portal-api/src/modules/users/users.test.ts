@@ -6,7 +6,7 @@ import Organization from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
-import { createUserOrganizationRelationUnsecure } from '../common/user-organization.domain';
+import { createUserOrganizationRelationUnsecure } from '../common/user-organization.helper';
 import {
   deleteOrganizationByName,
   loadUnsecureOrganizationBy,

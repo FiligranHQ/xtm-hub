@@ -27,10 +27,8 @@ import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
-import {
-  createUserOrganizationRelationUnsecure,
-  loadUserOrganization,
-} from '../common/user-organization.domain';
+import { loadUserOrganization } from '../common/user-organization.domain';
+import { createUserOrganizationRelationUnsecure } from '../common/user-organization.helper';
 import {
   insertNewOrganization,
   loadOrganizationsFromEmail,
