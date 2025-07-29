@@ -49,7 +49,7 @@ RUN addgroup --system --gid 1001 nodejs && \
     mkdir .next && \
     chown nextjs:nodejs .next
 
-COPY --from=builder /app/apps/portal-front/public ./public
+COPY --from=builder /app/apps/portal-front/public ./apps/portal-front/public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

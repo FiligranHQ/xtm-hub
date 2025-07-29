@@ -47,7 +47,11 @@ const OnePlatformDisplay = ({
           {t('Utils.Cancel')}
         </Button>
 
-        <Button onClick={() => oneClickDeploy(platformsOcti[0]?.url ?? '')}>
+        <Button
+          onClick={() => {
+            setIsOpen(false);
+            oneClickDeploy(platformsOcti[0]?.url ?? '');
+          }}>
           {t('Utils.Continue')}
         </Button>
       </div>
