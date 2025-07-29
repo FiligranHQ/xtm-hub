@@ -35,6 +35,7 @@ import {
 } from '../organizations/organizations.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
+import { insertNewUserOrganizationPendingUnsecure } from '../common/user-organization-pending.domain';
 
 export const createUserWithPersonalSpace = async (
   data: Pick<
@@ -114,6 +115,23 @@ async function createOrganisationWithAdminUser(email: string) {
   return addedUser;
 }
 
+export const createNewUserWithPendingOrga = async (
+  { email, first_name, last_name, picture } : Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
+  organization: Organization ) => {
+  const addedUser = await createUserWithPersonalSpace({
+    email,
+    last_name,
+    first_name,
+    picture,
+  });
+  await insertNewUserOrganizationPendingUnsecure({
+    user_id: addedUser.id,
+    organization_id: organization.id,
+  });
+  return addedUser;
+};
+
+
 export const createNewUserFromInvitation = async ({
   email,
   first_name,
@@ -123,12 +141,13 @@ export const createNewUserFromInvitation = async ({
   const [organization] = await loadOrganizationsFromEmail(email);
   const userWithRoles: User = !organization
     ? await createOrganisationWithAdminUser(email)
-    : await createUserWithPersonalSpace({
+    : await createNewUserWithPendingOrga({
         email,
         last_name,
         first_name,
         picture,
-      });
+      },
+      organization);
 
   return loadUserBy({ 'User.id': userWithRoles.id });
 };
