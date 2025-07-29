@@ -2,6 +2,7 @@ import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { glob } from 'glob';
 import fs from 'node:fs';
+import elasticPocResolver from '../modules/elastic-poc/elastic-poc.resolver';
 import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
@@ -47,6 +48,7 @@ const resolvers = mergeResolvers([
   csvFeedsResolver,
   obasScenariosResolver,
   enrollmentResolver,
+  elasticPocResolver,
 ]);
 
 const createSchema = () => {
