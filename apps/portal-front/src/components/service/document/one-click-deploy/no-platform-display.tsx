@@ -8,7 +8,6 @@ interface NoPlatformDisplayProps {
 
 const NoPlatformDisplay = ({ setIsOpen }: NoPlatformDisplayProps) => {
   const t = useTranslations();
-
   return (
     <>
       <div className="space-y-m">
@@ -26,13 +25,14 @@ const NoPlatformDisplay = ({ setIsOpen }: NoPlatformDisplayProps) => {
           <Image
             fill
             objectFit="contain"
-            src={`/RegisterInHub.png`}
+            src={`/register-in-hub.png`}
             alt={t(
               'Service.ShareableResources.Deploy.DeployOctiDescriptionNoPlatformIllustration'
             )}
           />
         </div>
       </div>
+
       <div className="flex justify-end gap-s">
         <Button onClick={() => setIsOpen(false)}>{t('Utils.Close')}</Button>
       </div>
