@@ -44,7 +44,7 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
           fieldConfig={{
             organizationId: {
               fieldType: ({ field }) => (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-2">
                   {organizations.map((organization) => {
                     return (
                       <FormItem
@@ -52,7 +52,7 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
                         className="flex justify-start gap-xs items-center">
                         <FormControl>
                           <Input
-                            className="w-auto accent-primary"
+                            className="w-auto h-4 w-4 accent-primary"
                             aria-labelledby={`enroll-form-organization-${organization.name}`}
                             type="radio"
                             onChange={() => {

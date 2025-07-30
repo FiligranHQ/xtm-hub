@@ -56,7 +56,7 @@ const ChoosePlatformForm = ({
                         onChange={() => field.onChange(platform.url)}
                         checked={field.value === platform.url}
                         value={platform.url}
-                        className="h-6 w-6 accent-primary"
+                        className="h-4 w-4 accent-primary"
                       />
                       <FormLabel htmlFor={platform.url}>
                         {platform.title}
