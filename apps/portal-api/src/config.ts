@@ -65,7 +65,7 @@ const portalConfig: PortalConfig = {
         : 'src/seeds',
   },
   elasticsearch: {
-    protocol: config.get<string>('elasticsearch.protocol') ?? 'https',
+    protocol: config.get<string | null>('elasticsearch.protocol') ?? 'https',
     host: config.get<string>('elasticsearch.host'),
     port: config.get<number>('elasticsearch.port'),
     username: config.get<string | null>('elasticsearch.username'),

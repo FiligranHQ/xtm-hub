@@ -1,4 +1,4 @@
-import { Client } from '@elastic/elasticsearch';
+import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { v4 as uuidv4 } from 'uuid';
 import portalConfig from '../../config';
 import { logApp } from '../../utils/app-logger.util';
@@ -19,16 +19,16 @@ export class ElasticPocService {
   private indexName = 'telemetry-events';
 
   constructor() {
-    const nodeURL = new URL(
-      `${portalConfig.elasticsearch.protocol}://${portalConfig.elasticsearch.host}:${portalConfig.elasticsearch.port}`
-    );
+    const config: ClientOptions = {
+      node: `${portalConfig.elasticsearch.protocol}://${portalConfig.elasticsearch.host}:${portalConfig.elasticsearch.port}`,
+    };
     if (portalConfig.elasticsearch.username) {
-      nodeURL.username = portalConfig.elasticsearch.username;
-      nodeURL.password = portalConfig.elasticsearch.password;
+      config.auth = {
+        username: portalConfig.elasticsearch.username,
+        password: portalConfig.elasticsearch.password,
+      };
     }
-    this.elasticsearchClient = new Client({
-      node: nodeURL.toString(),
-    });
+    this.elasticsearchClient = new Client(config);
   }
 
   public generateBatchEvents(
