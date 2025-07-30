@@ -483,7 +483,7 @@
     "SubscribeService": "Subscribe to {serviceName} service",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
     "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
-    "SureWantSubscriptionDirect": "Are you sure you want to subscribe to this service? This action cannot be undone.",
+    "SureWantSubscriptionDirect": "Do you want to subscribe to the {serviceName} service ? This service is free and gives you access to resources built carefully by the Filigran Team.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Vault": {
       "DeleteDocument": "Delete document",
