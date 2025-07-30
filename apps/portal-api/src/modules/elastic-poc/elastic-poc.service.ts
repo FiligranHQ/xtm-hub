@@ -153,42 +153,36 @@ export class ElasticPocService {
   }
 
   public async bulkInsertEvents(events: TelemetryEvent[]): Promise<boolean> {
-    try {
-      // Prepare bulk operations
-      const bulkOperations = [];
-      for (const event of events) {
-        bulkOperations.push({
-          index: {
-            _index: this.indexName,
-            _id: uuidv4(),
-          },
-        });
-        bulkOperations.push(event);
-      }
-
-      // Execute bulk operation
-      const bulkResponse = await this.elasticsearchClient.bulk({
-        body: bulkOperations,
+    // Prepare bulk operations
+    const bulkOperations = [];
+    for (const event of events) {
+      bulkOperations.push({
+        index: {
+          _index: this.indexName,
+          _id: uuidv4(),
+        },
       });
+      bulkOperations.push(event);
+    }
 
-      if (bulkResponse.errors) {
-        logApp.error('Bulk operation had errors', {
-          errors: bulkResponse.items.filter((item) => item.index?.error),
-        });
-        return false;
-      }
+    // Execute bulk operation
+    const bulkResponse = await this.elasticsearchClient.bulk({
+      body: bulkOperations,
+    });
 
-      logApp.info('Successfully inserted telemetry events', {
-        count: events.length,
-        indexName: this.indexName,
+    if (bulkResponse.errors) {
+      logApp.error('Bulk operation had errors', {
+        errors: bulkResponse.items.filter((item) => item.index?.error),
       });
-
-      return true;
-    } catch (error) {
-      console.error(error);
-      logApp.error('Failed to bulk insert telemetry events', { error });
       return false;
     }
+
+    logApp.info('Successfully inserted telemetry events', {
+      count: events.length,
+      indexName: this.indexName,
+    });
+
+    return true;
   }
 
   public async processBatchTelemetryEvents(
@@ -196,42 +190,37 @@ export class ElasticPocService {
     organizationId: string,
     organizationName: string
   ): Promise<boolean> {
-    try {
-      // Generate batch events
-      const events = this.generateBatchEvents(
+    // Generate batch events
+    const events = this.generateBatchEvents(
+      userId,
+      organizationId,
+      organizationName
+    );
+
+    logApp.info('Generated batch telemetry events', {
+      count: events.length,
+      eventTypes: [...new Set(events.map((e) => e.event_type))],
+      timeRange: {
+        first: events[0]?.['@timestamp'],
+        last: events[events.length - 1]?.['@timestamp'],
+      },
+    });
+
+    // Bulk insert events
+    const success = await this.bulkInsertEvents(events);
+
+    if (success) {
+      logApp.info('Batch telemetry POC completed successfully', {
         userId,
         organizationId,
-        organizationName
-      );
-
-      logApp.info('Generated batch telemetry events', {
-        count: events.length,
-        eventTypes: [...new Set(events.map((e) => e.event_type))],
-        timeRange: {
-          first: events[0]?.['@timestamp'],
-          last: events[events.length - 1]?.['@timestamp'],
-        },
+        organizationName,
+        totalEvents: events.length,
       });
-
-      // Bulk insert events
-      const success = await this.bulkInsertEvents(events);
-
-      if (success) {
-        logApp.info('Batch telemetry POC completed successfully', {
-          userId,
-          organizationId,
-          organizationName,
-          totalEvents: events.length,
-        });
-      } else {
-        logApp.error('Batch telemetry POC failed during bulk insertion');
-      }
-
-      return success;
-    } catch (error) {
-      logApp.error('Error processing batch telemetry events', { error });
-      return false;
+    } else {
+      logApp.error('Batch telemetry POC failed during bulk insertion');
     }
+
+    return success;
   }
 }
 
