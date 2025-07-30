@@ -202,7 +202,9 @@
       "Contracts": {
         "CE": "Community Edition",
         "EE": "Enterprise Edition"
-      }
+      },
+      "PrivateInstance": "Private instance",
+      "Description": "Click here to access your Private Instance."
     }
   },
   "GenericActions": {

@@ -38,8 +38,16 @@ interface ServiceInstanceCardProps {
 const EnrollmentDetails: React.FunctionComponent<{
   serviceInstance: ServiceInstanceCardData;
   serviceHref: string;
-}> = ({ serviceInstance, serviceHref }) => {
+}> = () => {
   const t = useTranslations();
+  return (
+    <p className="txt-sub-content text-muted-foreground">
+      {t('Enroll.Details.Description')}
+    </p>
+  );
+
+  /* Temporary hidden :
+
   return (
     <dl className="grid grid-cols-3 gap-s">
       <dt className="txt-sub-content text-muted-foreground">
@@ -59,12 +67,13 @@ const EnrollmentDetails: React.FunctionComponent<{
         {t(`Enroll.Details.Contracts.${serviceInstance.platform_contract}`)}
       </dd>
     </dl>
-  );
+  );*/
 };
 
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className, seo }) => {
+  const t = useTranslations();
   const isDisabled =
     serviceInstance.creation_status ===
     ServiceInstanceCreationStatusEnum.PENDING;
@@ -75,19 +84,29 @@ const ServiceInstanceCard: React.FunctionComponent<
       ? serviceInstance.url
       : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
 
+  let backgroundImage =
+    serviceInstance.logo_document_id !== null
+      ? `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`
+      : '';
+
+  if (isEnrollmentService(serviceInstance)) {
+    backgroundImage = 'url(/octi-private-instance-logo.png)';
+  }
+
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
-        <div className="flex relative justify-center items-center flex-col gap-s bg-blue-900 overflow-hidden box-border px-s">
+        <div
+          className={cn(
+            'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
+            isEnrollmentService(serviceInstance) ? 'bg-blue-800' : 'bg-blue-900'
+          )}>
           <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-80 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
             <div
               className="w-full h-12"
               style={{
-                backgroundImage:
-                  serviceInstance.logo_document_id !== null
-                    ? `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`
-                    : '',
+                backgroundImage,
                 backgroundSize: 'contain',
                 backgroundPosition: 'left center',
                 backgroundRepeat: 'no-repeat',
@@ -96,7 +115,12 @@ const ServiceInstanceCard: React.FunctionComponent<
           </div>
           <AspectRatio
             ratio={16 / 9}
-            className="rounded-t overflow-hidden">
+            className={cn(
+              'rounded-t',
+              isEnrollmentService(serviceInstance)
+                ? 'overflow-visible'
+                : 'overflow-hidden'
+            )}>
             {serviceInstance.illustration_document_id && (
               <Image
                 fill
@@ -105,6 +129,24 @@ const ServiceInstanceCard: React.FunctionComponent<
                 objectFit="cover"
                 alt={`Illustration of ${serviceInstance.name}`}
               />
+            )}
+            {isEnrollmentService(serviceInstance) && (
+              <>
+                <Image
+                  width="580"
+                  height="281"
+                  src="/octi-private-instance-illustration.png"
+                  priority={false}
+                  loading="lazy"
+                  alt={`Illustration of ${serviceInstance.name}`}
+                  className="absolute bottom-0 right-0 translate-x-1/3 -rotate-45"
+                />
+                <h3
+                  className="text-2xl 2xl:text-4xl absolute bottom-0 -translate-y-1/2 2xl:-translate-y-20 left-0 w-full p-s"
+                  style={{ textShadow: '1px 1px 1px #000' }}>
+                  {serviceInstance.name}
+                </h3>
+              </>
             )}
           </AspectRatio>
         </div>
@@ -118,7 +160,12 @@ const ServiceInstanceCard: React.FunctionComponent<
                 target={serviceHref.startsWith('http') ? '_blank' : '_self'}
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
                 aria-disabled={isDisabled}>
-                <h2>{serviceInstance.name}</h2>
+                <h2>
+                  {serviceInstance.name}
+                  {isEnrollmentService(serviceInstance) && (
+                    <> - {t('Enroll.Details.PrivateInstance')}</>
+                  )}
+                </h2>
               </Link>
             )}
 

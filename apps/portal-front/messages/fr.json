@@ -202,7 +202,9 @@
       "Contracts": {
         "CE": "Edition Communautaire",
         "EE": "Edition Entreprise"
-      }
+      },
+      "PrivateInstance": "Instance privée",
+      "Description": "Cliquez ici pour accéder à votre instance privée"
     }
   },
   "GenericActions": {
