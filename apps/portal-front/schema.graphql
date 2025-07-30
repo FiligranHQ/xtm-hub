@@ -24,6 +24,7 @@ type Success {
 }
 
 type Mutation {
+  elasticPoc: Boolean
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
