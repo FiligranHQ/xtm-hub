@@ -92,7 +92,7 @@
     "@types/node": "22.16.0",
     "@types/nodemailer": "6.4.16",
     "@types/passport": "1.0.17",
-    "@types/uuid": "^10.0.0",
+    "@types/uuid": "10.0.0",
     "@typescript-eslint/eslint-plugin": "8.37.0",
     "@typescript-eslint/parser": "8.37.0",
     "chokidar": "3.6.0",

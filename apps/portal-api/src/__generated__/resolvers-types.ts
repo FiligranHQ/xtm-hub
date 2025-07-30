@@ -286,6 +286,12 @@ export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type ElasticPocResponse = {
+  __typename?: 'ElasticPocResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  result: Scalars['Boolean']['output'];
+};
+
 export type EnrollOctiPlatformInput = {
   organizationId: Scalars['ID']['input'];
   platform: OctiPlatformInput;
@@ -394,7 +400,7 @@ export type Mutation = {
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
   editUserCapabilities: User;
-  elasticPoc?: Maybe<Scalars['Boolean']['output']>;
+  elasticPoc?: Maybe<ElasticPocResponse>;
   enrollOCTIPlatform: EnrollmentResponse;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
@@ -1570,6 +1576,7 @@ export type ResolversTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  ElasticPocResponse: ResolverTypeWrapper<ElasticPocResponse>;
   EnrollOCTIPlatformInput: EnrollOctiPlatformInput;
   EnrollmentResponse: ResolverTypeWrapper<EnrollmentResponse>;
   Filter: Filter;
@@ -1684,6 +1691,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  ElasticPocResponse: ElasticPocResponse;
   EnrollOCTIPlatformInput: EnrollOctiPlatformInput;
   EnrollmentResponse: EnrollmentResponse;
   Filter: Filter;
@@ -1912,6 +1920,12 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ElasticPocResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ElasticPocResponse'] = ResolversParentTypes['ElasticPocResponse']> = ResolversObject<{
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  result?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type EnrollmentResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EnrollmentResponse'] = ResolversParentTypes['EnrollmentResponse']> = ResolversObject<{
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2002,7 +2016,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
-  elasticPoc?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  elasticPoc?: Resolver<Maybe<ResolversTypes['ElasticPocResponse']>, ParentType, ContextType>;
   enrollOCTIPlatform?: Resolver<ResolversTypes['EnrollmentResponse'], ParentType, ContextType, RequireFields<MutationEnrollOctiPlatformArgs, 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
@@ -2413,6 +2427,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
+  ElasticPocResponse?: ElasticPocResponseResolvers<ContextType>;
   EnrollmentResponse?: EnrollmentResponseResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   JSON?: GraphQLScalarType;

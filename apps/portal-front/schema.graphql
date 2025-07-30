@@ -23,8 +23,13 @@ type Success {
   success: Boolean!
 }
 
+type ElasticPocResponse {
+  result: Boolean!
+  message: String
+}
+
 type Mutation {
-  elasticPoc: Boolean
+  elasticPoc: ElasticPocResponse
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization

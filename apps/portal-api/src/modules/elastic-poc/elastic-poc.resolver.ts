@@ -13,24 +13,28 @@ const elasticPocResolver: Resolvers = {
 
       if (!organization) {
         logApp.error('No organization found for user', { userId: user.id });
-        return false;
+        return { result: false, message: 'No organization found for user' };
       }
 
       try {
         const elasticPocService = new ElasticPocService();
-        const success = await elasticPocService.processBatchTelemetryEvents(
+        const result = await elasticPocService.processBatchTelemetryEvents(
           user.id,
           organization.id,
           organization.name
         );
 
-        return success;
+        return { result };
       } catch (error) {
         logApp.error('Error in elasticPoc resolver', {
           error,
           userId: user.id,
         });
-        return false;
+        return {
+          result: false,
+          message:
+            error.message || 'An error occurred while processing Elastic POC',
+        };
       }
     },
   },
