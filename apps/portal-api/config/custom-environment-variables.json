@@ -39,7 +39,7 @@
     "protocol": "ELASTIC_PROTOCOL",
     "host": "ELASTIC_HOST",
     "port": "ELASTIC_PORT",
-    "username": "ELASTIC_USERNAME",
+    "username": "ELASTIC_USER",
     "password": "ELASTIC_PASSWORD"
   }
 }
