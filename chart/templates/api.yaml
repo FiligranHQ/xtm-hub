@@ -98,10 +98,17 @@ spec:
               key: secretKey
               optional: false
         {{ if .Values.elasticsearch.enabled }}
+        {{ if .Values.elasticsearch.ingress.enabled }}
+        - name: ELASTIC_HOST
+          value: "{{ .Values.elasticsearch.ingress.host }}"
+        - name: ELASTIC_PORT
+          value: "443"
+        {{ else }}
         - name: ELASTIC_HOST
           value: "elasticsearch-es-http"
         - name: ELASTIC_PORT
           value: "9200"
+        {{ end }}
         - name: ELASTIC_USER
           value: "elastic"
         - name: ELASTIC_PASSWORD
