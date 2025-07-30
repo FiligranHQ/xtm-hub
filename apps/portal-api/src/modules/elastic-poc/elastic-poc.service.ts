@@ -22,12 +22,26 @@ export class ElasticPocService {
     const config: ClientOptions = {
       node: `${portalConfig.elasticsearch.protocol}://${portalConfig.elasticsearch.host}:${portalConfig.elasticsearch.port}`,
     };
+
+    // Debug logging for Elasticsearch config
+    logApp.info('Elasticsearch configuration', {
+      node: config.node,
+      hasUsername: !!portalConfig.elasticsearch.username,
+      hasPassword: !!portalConfig.elasticsearch.password,
+    });
+
     if (portalConfig.elasticsearch.username) {
       config.auth = {
         username: portalConfig.elasticsearch.username,
         password: portalConfig.elasticsearch.password,
       };
+      logApp.info('Elasticsearch auth configured', {
+        username: portalConfig.elasticsearch.username,
+      });
+    } else {
+      logApp.warn('No Elasticsearch authentication configured');
     }
+
     this.elasticsearchClient = new Client(config);
   }
 
