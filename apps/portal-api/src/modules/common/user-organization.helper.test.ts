@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { createUserOrganizationRelationUnsecure } from './user-organization.helper';
+import { createUserOrganizationRelationAndRemovePending } from './user-organization.helper';
 import { v4 as uuidv4 } from 'uuid';
 import { createNewUserFromInvitation, removeUser } from '../users/users.helper';
-import { loadUserOrganizationPendingUnsecure } from './user-organization-pending.domain';
+import { loadUserOrganizationPending } from './user-organization-pending.domain';
 import { UserLoadUserBy } from '../../model/user';
 
 
@@ -23,14 +23,18 @@ describe('UserOrganizationHelper', () => {
       user = await createNewUserFromInvitation({
         email: testMail,
       });
-      const initialPendingOrg = await loadUserOrganizationPendingUnsecure({user_id: user.id});
+      const initialPendingOrg = await loadUserOrganizationPending(contextAdminUser, {user_id: user.id});
       expect(initialPendingOrg.length).toBe(1);
 
 
-      const user_orgs = await createUserOrganizationRelationUnsecure({user_id: user.id, organizations_id: [PLATFORM_ORGANIZATION_UUID]});
+      const user_orgs = await createUserOrganizationRelationAndRemovePending(
+        contextAdminUser,
+        {user_id: user.id, organizations_id: [PLATFORM_ORGANIZATION_UUID] }
+      );
+
 
       expect(user_orgs.length).toBe(1);
-      const finalPendingOrg = await loadUserOrganizationPendingUnsecure({user_id: user.id});
+      const finalPendingOrg = await loadUserOrganizationPending(contextAdminUser, {user_id: user.id});
       expect(finalPendingOrg.length).toBe(0);
     });
 
@@ -39,11 +43,13 @@ describe('UserOrganizationHelper', () => {
       const user = await createNewUserFromInvitation({
         email: testMail,
       });
-      const initialPendingOrg = await loadUserOrganizationPendingUnsecure({user_id: user.id});
+      const initialPendingOrg = await loadUserOrganizationPending(contextAdminUser,{user_id: user.id});
       expect(initialPendingOrg.length).toBe(0);
 
-
-      const user_orgs = await createUserOrganizationRelationUnsecure({user_id: user.id, organizations_id: [PLATFORM_ORGANIZATION_UUID]});
+      const user_orgs = await createUserOrganizationRelationAndRemovePending(
+        contextAdminUser,
+        {user_id: user.id, organizations_id: [PLATFORM_ORGANIZATION_UUID]}
+      );
 
       expect(user_orgs.length).toBe(1);
     });

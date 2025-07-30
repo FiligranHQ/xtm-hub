@@ -28,7 +28,10 @@ import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
 import { loadUserOrganization } from '../common/user-organization.domain';
-import { createUserOrganizationRelationUnsecure } from '../common/user-organization.helper';
+import {
+  createUserOrganizationRelation,
+  createUserOrganizationRelationAndRemovePending,
+} from '../common/user-organization.helper';
 import {
   insertNewOrganization,
   loadOrganizationsFromEmail,
@@ -70,7 +73,7 @@ export const createUserWithPersonalSpace = async (
     .returning('*');
 
   // Insert relation UserOrganization
-  const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
+  const [userOrgRelation] = await createUserOrganizationRelation({
     user_id: addedUser.id,
     organizations_id: [personalSpaceOrganization.id],
   });
@@ -102,7 +105,7 @@ async function createOrganisationWithAdminUser(email: string) {
   });
 
   // Insert relation UserOrganization
-  const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
+  const [userOrgRelation] = await createUserOrganizationRelation({
     user_id: addedUser.id,
     organizations_id: [newOrganization.id],
   });
@@ -200,7 +203,9 @@ export const insertUserIntoOrganization = async (
     );
   }
   if (isEmpty(userOrganization)) {
-    const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
+    const [userOrgRelation] = await createUserOrganizationRelationAndRemovePending(
+      context,
+      {
       user_id: user.id,
       organizations_id: [organization.id],
     });

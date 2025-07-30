@@ -1,9 +1,10 @@
 import UserOrganizationPending, {
   UserOrganizationPendingInitializer, UserOrganizationPendingMutator,
 } from '../../model/kanel/public/UserOrganizationPending';
-import { dbUnsecure } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import { UserId } from '../../model/kanel/public/User';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { PortalContext } from '../../model/portal-context';
 
 export const insertNewUserOrganizationPendingUnsecure = (
   field: UserOrganizationPendingInitializer
@@ -13,17 +14,20 @@ export const insertNewUserOrganizationPendingUnsecure = (
     .returning('*');
 };
 
-export const loadUserOrganizationPendingUnsecure = (
+export const loadUserOrganizationPending = (
+  context: PortalContext,
   field: UserOrganizationPendingMutator
 ): Promise<UserOrganizationPending[]> => {
-  return dbUnsecure<UserOrganizationPending>('User_Organization_Pending').where(field);
+  return db<UserOrganizationPending>(context,'User_Organization_Pending').where(field).secureQuery();
 };
 
-export const removeUserFromOrganizationPendingUnsecure = async (
+export const removeUserFromOrganizationPending = async (
+  context: PortalContext,
   user_id: UserId,
   organization_id: OrganizationId
 ) => {
-  return dbUnsecure<UserOrganizationPending>('User_Organization_Pending')
+  return db<UserOrganizationPending>(context, 'User_Organization_Pending')
     .where({ user_id, organization_id })
-    .delete('*');
+    .delete('*')
+    .secureQuery();
 };
