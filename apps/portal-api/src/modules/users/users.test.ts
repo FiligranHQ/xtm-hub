@@ -85,8 +85,6 @@ describe('User helpers', async () => {
 
       expect(newUserPendingOrg.length).toBe(0);
 
-      // Delete corresponding in order to avoid issue with other tests
-      await removeUser(contextAdminUser, { email: newUser.email });
     });
 
   });

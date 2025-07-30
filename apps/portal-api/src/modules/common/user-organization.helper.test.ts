@@ -1,26 +1,18 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { createUserOrganizationRelationAndRemovePending } from './user-organization.helper';
 import { v4 as uuidv4 } from 'uuid';
-import { createNewUserFromInvitation, removeUser } from '../users/users.helper';
+import { createNewUserFromInvitation } from '../users/users.helper';
 import { loadUserOrganizationPending } from './user-organization-pending.domain';
-import { UserLoadUserBy } from '../../model/user';
 
 
-let user:UserLoadUserBy | null;
 
 describe('UserOrganizationHelper', () => {
   describe('createUserOrganizationRelationUnsecure', () => {
-    afterEach(async () => {
-      if (user) {
-        await removeUser(contextAdminUser, { email: user.email });
-        user = null;
-      }
-    });
     it('should delete pending organization before adding an organization', async () => {
       const testMail = `createUserOrganizationRelationUnsecure${uuidv4()}@filigran.io`;
-      user = await createNewUserFromInvitation({
+      const user = await createNewUserFromInvitation({
         email: testMail,
       });
       const initialPendingOrg = await loadUserOrganizationPending(contextAdminUser, {user_id: user.id});
