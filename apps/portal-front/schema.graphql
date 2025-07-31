@@ -154,14 +154,15 @@ enum ServiceConfigurationStatus {
   inactive
 }
 
-type CsvFeed implements Node {
+type CsvFeed implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User
   uploader_organization: Organization
+  service_instance_id: String!
   name: String!
-  short_description: String
-  description: String
+  short_description: String!
+  description: String!
   file_name: String!
   minio_name: String!
   active: Boolean!
@@ -170,13 +171,12 @@ type CsvFeed implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
-  slug: String
-  labels: [Label!]
-  service_instance_id: String!
+  children_documents: [ShareableResourceImage!]
+  slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
   remover_id: ID
+  labels: [Label!]
 }
 
 input CreateCsvFeedInput {
@@ -234,14 +234,15 @@ input UpdateCustomDashboardInput {
   product_version: String
 }
 
-type CustomDashboard implements Node {
+type CustomDashboard implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User
   uploader_organization: Organization
+  service_instance_id: String!
   name: String!
-  short_description: String
-  description: String
+  short_description: String!
+  description: String!
   file_name: String!
   minio_name: String!
   active: Boolean!
@@ -250,12 +251,11 @@ type CustomDashboard implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
+  children_documents: [ShareableResourceImage!]
   slug: String!
-  labels: [Label!]
-  service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  labels: [Label!]
   product_version: String
 }
 
@@ -300,15 +300,15 @@ enum DocumentOrdering {
   download_number
 }
 
-type Document implements Node {
+interface DocumentBase implements Node {
   id: ID!
   type: String!
   uploader: User
   uploader_organization: Organization
   service_instance_id: String!
-  name: String
-  short_description: String
-  description: String
+  name: String!
+  short_description: String!
+  description: String!
   file_name: String!
   minio_name: String!
   active: Boolean!
@@ -317,8 +317,31 @@ type Document implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
-  children_documents: [Document!]
-  slug: String
+  children_documents: [ShareableResourceImage!]
+  slug: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+}
+
+type Document implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  service_instance_id: String!
+  name: String
+  short_description: String!
+  description: String!
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  children_documents: [ShareableResourceImage!]
+  slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
 }
@@ -433,14 +456,15 @@ input UpdateObasScenarioInput {
   product_version: String
 }
 
-type ObasScenario implements Node {
+type ObasScenario implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User
   uploader_organization: Organization
+  service_instance_id: String!
   name: String!
-  short_description: String
-  description: String
+  short_description: String!
+  description: String!
   file_name: String!
   minio_name: String!
   active: Boolean!
@@ -449,12 +473,11 @@ type ObasScenario implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
+  children_documents: [ShareableResourceImage!]
   slug: String!
-  labels: [Label!]
-  service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  labels: [Label!]
   product_version: String
 }
 
