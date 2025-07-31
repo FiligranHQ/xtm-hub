@@ -23,6 +23,14 @@ export const insertNewUserOrganization = (
   return db(context, 'User_Organization').insert(field).returning('*');
 };
 
+export const insertNewUserOrganizationUnsecure = (
+  field: UserOrganizationInitializer | UserOrganizationInitializer[]
+): Promise<UserOrganization[]> => {
+  return dbUnsecure<UserOrganization>('User_Organization')
+    .insert(field)
+    .returning('*');
+};
+
 export const loadUserOrganization = (
   context: PortalContext,
   field: UserOrganizationMutator
@@ -49,23 +57,6 @@ export const createUserOrganizationRelation = async (
   await insertNewUserOrganization(context, usersOrganization);
 };
 
-export const createUserOrganizationRelationUnsecure = async ({
-  user_id,
-  organizations_id = [],
-}: {
-  user_id: UserId;
-  organizations_id: OrganizationId[];
-}): Promise<UserOrganization[]> => {
-  const usersOrganization: UserOrganizationInitializer[] = organizations_id.map(
-    (organization_id) => ({
-      user_id,
-      organization_id,
-    })
-  );
-  return dbUnsecure<UserOrganization>('User_Organization')
-    .insert(usersOrganization)
-    .returning('*');
-};
 
 export const updateMultipleUserOrgWithCapabilities = async (
   context: PortalContext,

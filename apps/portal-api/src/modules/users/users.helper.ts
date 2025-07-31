@@ -27,16 +27,18 @@ import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
+import { loadUserOrganization } from '../common/user-organization.domain';
 import {
-  createUserOrganizationRelationUnsecure,
-  loadUserOrganization,
-} from '../common/user-organization.domain';
+  createUserOrganizationRelation,
+  createUserOrganizationRelationAndRemovePending,
+} from '../common/user-organization.helper';
 import {
   insertNewOrganization,
   loadOrganizationsFromEmail,
 } from '../organizations/organizations.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
+import { insertNewUserOrganizationPendingUnsecure } from '../common/user-organization-pending.domain';
 
 export const createUserWithPersonalSpace = async (
   data: Pick<
@@ -71,7 +73,7 @@ export const createUserWithPersonalSpace = async (
     .returning('*');
 
   // Insert relation UserOrganization
-  const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
+  const [userOrgRelation] = await createUserOrganizationRelation({
     user_id: addedUser.id,
     organizations_id: [personalSpaceOrganization.id],
   });
@@ -103,7 +105,7 @@ async function createOrganisationWithAdminUser(email: string) {
   });
 
   // Insert relation UserOrganization
-  const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
+  const [userOrgRelation] = await createUserOrganizationRelation({
     user_id: addedUser.id,
     organizations_id: [newOrganization.id],
   });
@@ -116,6 +118,23 @@ async function createOrganisationWithAdminUser(email: string) {
   return addedUser;
 }
 
+export const createNewUserWithPendingOrga = async (
+  { email, first_name, last_name, picture } : Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
+  organization: Organization ) => {
+  const addedUser = await createUserWithPersonalSpace({
+    email,
+    last_name,
+    first_name,
+    picture,
+  });
+  await insertNewUserOrganizationPendingUnsecure({
+    user_id: addedUser.id,
+    organization_id: organization.id,
+  });
+  return addedUser;
+};
+
+
 export const createNewUserFromInvitation = async ({
   email,
   first_name,
@@ -125,12 +144,13 @@ export const createNewUserFromInvitation = async ({
   const [organization] = await loadOrganizationsFromEmail(email);
   const userWithRoles: User = !organization
     ? await createOrganisationWithAdminUser(email)
-    : await createUserWithPersonalSpace({
+    : await createNewUserWithPendingOrga({
         email,
         last_name,
         first_name,
         picture,
-      });
+      },
+      organization);
 
   return loadUserBy({ 'User.id': userWithRoles.id });
 };
@@ -183,7 +203,9 @@ export const insertUserIntoOrganization = async (
     );
   }
   if (isEmpty(userOrganization)) {
-    const [userOrgRelation] = await createUserOrganizationRelationUnsecure({
+    const [userOrgRelation] = await createUserOrganizationRelationAndRemovePending(
+      context,
+      {
       user_id: user.id,
       organizations_id: [organization.id],
     });
