@@ -203,8 +203,8 @@
         "CE": "Edition Communautaire",
         "EE": "Edition Entreprise"
       },
-      "PrivateInstance": "Instance privée",
-      "Description": "Cliquez ici pour accéder à votre instance privée"
+      "PrivatePlatform": "Plateforme privée",
+      "Description": "Cliquez ici pour accéder à votre plateforme privée"
     }
   },
   "GenericActions": {

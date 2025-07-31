@@ -203,8 +203,8 @@
         "CE": "Community Edition",
         "EE": "Enterprise Edition"
       },
-      "PrivateInstance": "Private instance",
-      "Description": "Click here to access your Private Instance."
+      "PrivatePlatform": "Private platform",
+      "Description": "Click here to access your Private Platform."
     }
   },
   "GenericActions": {

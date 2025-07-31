@@ -163,7 +163,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 <h2>
                   {serviceInstance.name}
                   {isEnrollmentService(serviceInstance) && (
-                    <> - {t('Enroll.Details.PrivateInstance')}</>
+                    <> - {t('Enroll.Details.PrivatePlatform')}</>
                   )}
                 </h2>
               </Link>
