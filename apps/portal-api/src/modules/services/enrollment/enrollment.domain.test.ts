@@ -10,6 +10,7 @@ import ServiceConfiguration from '../../../model/kanel/public/ServiceConfigurati
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import Subscription from '../../../model/kanel/public/Subscription';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import { ErrorCode } from '../../common/error-code';
 import { serviceContractDomain } from '../contract/domain';
 import {
   enrollmentDomain,
@@ -91,7 +92,7 @@ describe('Enrollment domain', () => {
     });
   });
 
-  describe('transferExistingInstance', () => {
+  describe('refreshExistingPlatform', () => {
     let serviceInstanceId: string;
     let subscriptionId: string;
     beforeEach(async () => {
@@ -130,16 +131,21 @@ describe('Enrollment domain', () => {
       serviceInstanceId = undefined;
     });
 
-    it('should update existing configuration', async () => {
+    it('should refresh existing platform configuration', async () => {
       const newToken = uuidv4();
-      await enrollmentDomain.transferExistingPlatform(contextAdminUser, {
+      await enrollmentDomain.refreshExistingPlatform(contextAdminUser, {
         configuration: {
           ...configuration,
           token: newToken,
         },
         serviceInstanceId,
-        targetOrganizationId: THALES_ORGA_ID,
+        targetOrganizationId: PLATFORM_ORGANIZATION_UUID,
       });
+
+      const updatedSubscription = await dbUnsecure<Subscription>('Subscription')
+        .where('id', '=', subscriptionId)
+        .select('*')
+        .first();
 
       const existingServiceConfiguration =
         await serviceContractDomain.loadConfigurationByPlatform(
@@ -151,26 +157,30 @@ describe('Enrollment domain', () => {
         JSON.stringify(existingServiceConfiguration.config as string)
       );
       expect(parsedConfiguration.token).toBe(newToken);
-    });
-
-    it('should transfer subscription to the other organization', async () => {
-      const newToken = uuidv4();
-      await enrollmentDomain.transferExistingPlatform(contextAdminUser, {
-        configuration: {
-          ...configuration,
-          token: newToken,
-        },
-        serviceInstanceId,
-        targetOrganizationId: THALES_ORGA_ID,
-      });
-
-      const updatedSubscription = await dbUnsecure<Subscription>('Subscription')
-        .where('id', '=', subscriptionId)
-        .select('*')
-        .first();
 
       expect(updatedSubscription).toBeDefined();
-      expect(updatedSubscription.organization_id).toBe(THALES_ORGA_ID);
+      expect(updatedSubscription.organization_id).toBe(
+        PLATFORM_ORGANIZATION_UUID
+      );
+
+      it('should prevent registration on another organization', async () => {
+        const newToken = uuidv4();
+        const call = enrollmentDomain.refreshExistingPlatform(
+          contextAdminUser,
+          {
+            configuration: {
+              ...configuration,
+              token: newToken,
+            },
+            serviceInstanceId,
+            targetOrganizationId: THALES_ORGA_ID,
+          }
+        );
+
+        await expect(call).rejects.toThrow(
+          ErrorCode.RegistrationOnAnotherOrganizationForbidden
+        );
+      });
     });
   });
 });

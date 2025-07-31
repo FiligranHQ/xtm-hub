@@ -23,11 +23,6 @@ input EnrollOCTIPlatformInput {
   platform: OCTIPlatformInput!
 }
 
-input CanEnrollOCTIPlatformInput {
-  organizationId: ID!
-  platformId: String!
-}
-
 input CanUnenrollOCTIPlatformInput {
   platformId: String!
 }
@@ -36,16 +31,19 @@ type EnrollmentResponse {
   token: String!
 }
 
-enum CanEnrollStatus {
-  enrolled
-  unenrolled
-  never_enrolled
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
 }
 
-type CanEnrollResponse {
-  isAllowed: Boolean!
-  status: CanEnrollStatus!
-  isSameOrganization: Boolean
+input IsOCTIPlatformRegisteredInput {
+  platformId: String!
+}
+
+type IsOCTIPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  organizationId: ID
 }
 
 type CanUnenrollResponse {
@@ -73,8 +71,9 @@ type OCTIPlatformEnrollmentStatusResponse {
 }
 
 type Query {
-  canEnrollOCTIPlatform(input: CanEnrollOCTIPlatformInput!): CanEnrollResponse!
-    @auth
+  isOCTIPlatformRegistered(
+    input: IsOCTIPlatformRegisteredInput!
+  ): IsOCTIPlatformRegisteredResponse!
   canUnenrollOCTIPlatform(
     input: CanUnenrollOCTIPlatformInput!
   ): CanUnenrollResponse!

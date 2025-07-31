@@ -1,16 +1,19 @@
 import { EnrollOCTIPlatform } from '@/components/enroll/enroll.graphql';
-import { EnrollOrganizationForm } from '@/components/enroll/form/organization';
-import { isEnrollmentPossible } from '@/components/enroll/helper';
-import { useCanEnrollOCTIPlatform } from '@/components/enroll/service';
-import { EnrollStateResult } from '@/components/enroll/state/result';
+import { EnrollNeverEnrolled } from '@/components/enroll/never-enrolled';
+import { EnrollStateLayout } from '@/components/enroll/state/layout';
+import Loader from '@/components/loader';
+import enrollIsOCTIPlatformRegisteredFragmentGraphql, {
+  enrollIsOCTIPlatformRegisteredFragment$key,
+} from '@generated/enrollIsOCTIPlatformRegisteredFragment.graphql';
+import EnrollIsOCTIPlatformRegisteredQueryGraphql, {
+  enrollIsOCTIPlatformRegisteredQuery,
+} from '@generated/enrollIsOCTIPlatformRegisteredQuery.graphql';
 import enrollOCTIFragmentGraphql, {
   enrollOCTIFragment$key,
 } from '@generated/enrollOCTIFragment.graphql';
 import { OCTIPlatformContract } from '@generated/enrollOCTIPlatformFragment.graphql';
 import { enrollOCTIPlatformMutation } from '@generated/enrollOCTIPlatformMutation.graphql';
-import OrganizationListUserOrganizationsQueryGraphql, {
-  organizationListUserOrganizationsQuery,
-} from '@generated/organizationListUserOrganizationsQuery.graphql';
+import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
@@ -28,27 +31,41 @@ interface Props {
     title: string;
     contract: OCTIPlatformContract;
   };
-  queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
+  queryRef: PreloadedQuery<enrollIsOCTIPlatformRegisteredQuery>;
 }
 
-export type EnrollmentStatus = 'idle' | 'succeeded' | 'failed';
+export type RegistrationRequestStatus = 'idle' | 'succeeded' | 'failed';
 
 export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
 
-  const userOrganizationsPreloadedQuery =
-    usePreloadedQuery<organizationListUserOrganizationsQuery>(
-      OrganizationListUserOrganizationsQueryGraphql,
+  const isOCTIPlatformRegisteredPreloadedQuery =
+    usePreloadedQuery<enrollIsOCTIPlatformRegisteredQuery>(
+      EnrollIsOCTIPlatformRegisteredQueryGraphql,
       queryRef
     );
 
-  const [enrollmentStatus, setEnrollmentStatus] =
-    useState<EnrollmentStatus>('idle');
-  const [organizationId, setOrganizationId] = useState<string>();
-  const canEnrollState = useCanEnrollOCTIPlatform({
-    organizationId,
-    platformId: platform.id,
-  });
+  const isPlatformRegistered =
+    useFragment<enrollIsOCTIPlatformRegisteredFragment$key>(
+      enrollIsOCTIPlatformRegisteredFragmentGraphql,
+      isOCTIPlatformRegisteredPreloadedQuery.isOCTIPlatformRegistered
+    );
+
+  useEffect(() => {
+    const shouldRefreshToken =
+      isPlatformRegistered.status ===
+        PlatformRegistrationStatusEnum.REGISTERED ||
+      isPlatformRegistered.status ===
+        PlatformRegistrationStatusEnum.UNREGISTERED;
+
+    if (shouldRefreshToken && isPlatformRegistered.organizationId) {
+      enroll(isPlatformRegistered.organizationId);
+    }
+  }, [isPlatformRegistered]);
+
+  const [registrationRequestStatus, setRegistrationRequestStatus] =
+    useState<RegistrationRequestStatus>('idle');
+
   const [enrollPlatform] =
     useMutation<enrollOCTIPlatformMutation>(EnrollOCTIPlatform);
 
@@ -59,16 +76,12 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
     enrollFragmentRef
   );
 
-  const cancel = () => {
-    window.opener?.postMessage({ action: 'cancel' }, '*');
-  };
-
   useEffect(() => {
     if (!enrollDataResponse?.token) {
       return;
     }
 
-    setEnrollmentStatus('succeeded');
+    setRegistrationRequestStatus('succeeded');
     window.opener?.postMessage(
       {
         action: 'enroll',
@@ -78,17 +91,11 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
     );
   }, [enrollDataResponse]);
 
-  useEffect(() => {
-    if (canEnrollState && isEnrollmentPossible(canEnrollState)) {
-      enroll();
-    }
-  }, [canEnrollState]);
+  const cancel = () => {
+    window.opener?.postMessage({ action: 'cancel' }, '*');
+  };
 
-  const enroll = () => {
-    if (!organizationId) {
-      return;
-    }
-
+  const enroll = (organizationId: string) => {
     enrollPlatform({
       variables: {
         input: { organizationId, platform },
@@ -97,7 +104,7 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
         setEnrollFragmentRef(response.enrollOCTIPlatform);
       },
       onError: (error) => {
-        setEnrollmentStatus('failed');
+        setRegistrationRequestStatus('failed');
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
@@ -107,19 +114,35 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
     });
   };
 
-  return canEnrollState ? (
-    <EnrollStateResult
-      enrollmentStatus={enrollmentStatus}
-      canEnrollState={canEnrollState}
-      organizationId={organizationId}
-      cancel={cancel}
-      confirm={enroll}
-    />
-  ) : (
-    <EnrollOrganizationForm
-      cancel={cancel}
-      confirm={setOrganizationId}
-      organizations={userOrganizationsPreloadedQuery.userOrganizations}
-    />
-  );
+  if (registrationRequestStatus === 'succeeded') {
+    return (
+      <EnrollStateLayout>
+        <h1>{t('Enroll.OCTI.Succeeded.Title')}</h1>
+        <p>{t('Enroll.OCTI.Succeeded.Description')}</p>
+      </EnrollStateLayout>
+    );
+  }
+
+  if (registrationRequestStatus === 'failed') {
+    return (
+      <EnrollStateLayout cancel={cancel}>
+        <h1>{t('Enroll.OCTI.Failed.Title')}</h1>
+        <p>{t('Enroll.OCTI.Failed.Description')}</p>
+      </EnrollStateLayout>
+    );
+  }
+
+  if (
+    isPlatformRegistered.status ===
+    PlatformRegistrationStatusEnum.NEVER_REGISTERED
+  ) {
+    return (
+      <EnrollNeverEnrolled
+        cancel={cancel}
+        confirm={enroll}
+      />
+    );
+  }
+
+  return <Loader />;
 };
