@@ -63,45 +63,11 @@ export const CustomDashboardDeleteMutation = graphql`
 
 export const customDashboardsItem = graphql`
   fragment customDashboardsItem_fragment on CustomDashboard @inline {
-    id
-    type
-    file_name
-    created_at
-    name
-    short_description
-    description
-    download_number
-    share_number
-    active
-    slug
-    updated_at
+    ...documentBase_fragment
     labels {
       id
       name
       color
-    }
-    uploader {
-      id
-      email
-      first_name
-      last_name
-      picture
-    }
-    uploader_organization {
-      id
-      name
-      personal_space
-    }
-    children_documents {
-      id
-      file_name
-    }
-    service_instance {
-      id
-      slug
-    }
-    subscription {
-      id
     }
     # Specific fields
     product_version
