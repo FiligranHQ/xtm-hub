@@ -10,6 +10,10 @@ export interface NewUserOrganizationMailModel {
   invitedName: string;
 }
 
+export interface PlatformRegisteredModel {
+  adminName: string;
+}
+
 // ATTENTION, the key should be the same as the template file
 export type MailTemplates = {
   welcome: WelcomeMailModel;
@@ -17,6 +21,7 @@ export type MailTemplates = {
   custom_dashboards: GenericServiceMailModel;
   csv_feeds: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
+  opencti_platform_registered: PlatformRegisteredModel;
 };
 
 export const templateSubjects: {
@@ -31,4 +36,6 @@ export const templateSubjects: {
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   new_user_organization: (params: NewUserOrganizationMailModel) =>
     `XTM Hub - You've been added to the ${params.organizationName} organization`,
+  opencti_platform_registered: () =>
+    `OpenCTI Successfully Linked to XTM Hub – Integration Now Active`,
 };
