@@ -77,7 +77,8 @@ export const Profile: React.FC = () => {
       },
       onCompleted() {
         toast({
-          title: t('UserForm.ResetPassword.Success'),
+          title: t('Utils.Success'),
+          description: t('UserForm.ResetPassword.Success'),
         });
       },
     });
