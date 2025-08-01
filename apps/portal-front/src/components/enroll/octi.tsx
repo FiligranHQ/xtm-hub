@@ -1,6 +1,7 @@
 import { EnrollOCTIPlatform } from '@/components/enroll/enroll.graphql';
 import { EnrollNeverEnrolled } from '@/components/enroll/never-enrolled';
 import { EnrollStateLayout } from '@/components/enroll/state/layout';
+import { EnrollStateMissingCapability } from '@/components/enroll/state/missing-capability';
 import Loader from '@/components/loader';
 import enrollIsOCTIPlatformRegisteredFragmentGraphql, {
   enrollIsOCTIPlatformRegisteredFragment$key,
@@ -34,10 +35,15 @@ interface Props {
   queryRef: PreloadedQuery<enrollIsOCTIPlatformRegisteredQuery>;
 }
 
-export type RegistrationRequestStatus = 'idle' | 'succeeded' | 'failed';
+export type RegistrationRequestStatus =
+  | 'idle'
+  | 'succeeded'
+  | 'failed'
+  | 'missed-capability';
 
 export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
+  const [chosenOrganizationId, setChosenOrganizationId] = useState<string>();
 
   const isOCTIPlatformRegisteredPreloadedQuery =
     usePreloadedQuery<enrollIsOCTIPlatformRegisteredQuery>(
@@ -96,6 +102,7 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
   };
 
   const enroll = (organizationId: string) => {
+    setChosenOrganizationId(organizationId);
     enrollPlatform({
       variables: {
         input: { organizationId, platform },
@@ -104,6 +111,11 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
         setEnrollFragmentRef(response.enrollOCTIPlatform);
       },
       onError: (error) => {
+        if (error.message === 'MISSING_CAPABILITY_ON_ORGANIZATION') {
+          setRegistrationRequestStatus('missed-capability');
+          return;
+        }
+
         setRegistrationRequestStatus('failed');
         toast({
           variant: 'destructive',
@@ -113,6 +125,17 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
       },
     });
   };
+
+  if (registrationRequestStatus === 'missed-capability') {
+    return chosenOrganizationId ? (
+      <EnrollStateMissingCapability
+        organizationId={chosenOrganizationId}
+        cancel={cancel}
+      />
+    ) : (
+      <Loader />
+    );
+  }
 
   if (registrationRequestStatus === 'succeeded') {
     return (

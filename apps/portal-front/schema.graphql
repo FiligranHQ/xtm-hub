@@ -395,6 +395,7 @@ type IsOCTIPlatformRegisteredResponse {
 type CanUnenrollResponse {
   isPlatformEnrolled: Boolean!
   isAllowed: Boolean
+  isInOrganization: Boolean
   organizationId: ID
 }
 

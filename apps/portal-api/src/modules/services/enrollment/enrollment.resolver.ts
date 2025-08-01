@@ -113,6 +113,7 @@ const resolvers: Resolvers = {
             throw NotFoundError(error.message);
           case ErrorCode.MissingCapabilityOnOrganization:
           case ErrorCode.RegistrationOnAnotherOrganizationForbidden:
+          case ErrorCode.UserIsNotInOrganization:
             throw ForbiddenAccess(error.message);
         }
 
@@ -144,6 +145,7 @@ const resolvers: Resolvers = {
           case ErrorCode.SubscriptionNotFound:
             throw NotFoundError(error.message);
           case ErrorCode.MissingCapabilityOnOrganization:
+          case ErrorCode.UserIsNotInOrganization:
             throw ForbiddenAccess(error.message);
         }
 

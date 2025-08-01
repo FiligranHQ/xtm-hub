@@ -21,6 +21,7 @@ export const CanUnenrollOCTIPlatformFragment = graphql`
   fragment enrollCanUnenrollOCTIPlatformFragment on CanUnenrollResponse {
     isPlatformEnrolled
     isAllowed
+    isInOrganization
     organizationId
   }
 `;

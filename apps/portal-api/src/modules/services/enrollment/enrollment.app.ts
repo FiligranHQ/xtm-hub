@@ -90,19 +90,26 @@ export const enrollmentApp = {
       throw new Error(ErrorCode.InvalidServiceConfiguration);
     }
 
+    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
+      context,
+      {
+        organizationId,
+        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+      }
+    );
+
+    if (!isAllowed) {
+      const errorCode = isInOrganization
+        ? ErrorCode.MissingCapabilityOnOrganization
+        : ErrorCode.UserIsNotInOrganization;
+      throw new Error(errorCode);
+    }
+
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
         platform.id
       );
-
-    const isAllowed = await isUserAllowedOnOrganization(context, {
-      organizationId,
-      requiredCapability: OrganizationCapability.ManageOctiEnrollment,
-    });
-    if (!isAllowed) {
-      throw new Error(ErrorCode.MissingCapabilityOnOrganization);
-    }
 
     if (serviceConfiguration) {
       await enrollmentDomain.refreshExistingPlatform(context, {
@@ -156,12 +163,20 @@ export const enrollmentApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const isAllowed = await isUserAllowedOnOrganization(context, {
-      organizationId: subscription.organization_id,
-      requiredCapability: OrganizationCapability.ManageOctiEnrollment,
-    });
+    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
+      context,
+      {
+        organizationId: subscription.organization_id,
+        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+      }
+    );
+
     if (!isAllowed) {
-      throw new Error(ErrorCode.MissingCapabilityOnOrganization);
+      if (isInOrganization) {
+        throw new Error(ErrorCode.MissingCapabilityOnOrganization);
+      } else {
+        throw new Error(ErrorCode.UserIsNotInOrganization);
+      }
     }
 
     await serviceContractDomain.updateConfiguration(
@@ -203,7 +218,11 @@ export const enrollmentApp = {
   canUnenrollOCTIPlatform: async (
     context: PortalContext,
     { platformId }: CanUnenrollOctiPlatformInput
-  ): Promise<{ isAllowed: boolean; organizationId: OrganizationId }> => {
+  ): Promise<{
+    isAllowed: boolean;
+    organizationId: OrganizationId;
+    isInOrganization: boolean;
+  }> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
@@ -221,11 +240,18 @@ export const enrollmentApp = {
       throw new Error(ErrorCode.PlatformNotEnrolled);
     }
 
-    const isAllowed = await isUserAllowedOnOrganization(context, {
-      organizationId: subscription.organization_id,
-      requiredCapability: OrganizationCapability.ManageOctiEnrollment,
-    });
+    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
+      context,
+      {
+        organizationId: subscription.organization_id,
+        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+      }
+    );
 
-    return { isAllowed, organizationId: subscription.organization_id };
+    return {
+      isAllowed,
+      isInOrganization,
+      organizationId: subscription.organization_id,
+    };
   },
 };

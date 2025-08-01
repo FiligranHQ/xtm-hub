@@ -13,16 +13,10 @@ describe('UserOrganizationCapabilityDomain', () => {
         PLATFORM_ORGANIZATION_UUID
       );
 
-      expect(capabilities.length).toBe(3);
-      const expectedCapabilities = [
-        OrganizationCapability.AdministrateOrganization,
-        OrganizationCapability.ManageAccess,
-        OrganizationCapability.ManageSubscription,
-      ];
-
-      for (const capability of expectedCapabilities) {
-        expect(capabilities.some(({ name }) => name === capability));
-      }
+      expect(capabilities.length).toBe(1);
+      expect(capabilities?.[0]?.name).toBe(
+        OrganizationCapability.AdministrateOrganization
+      );
     });
 
     it('should return an empty array when organization does not exist', async () => {

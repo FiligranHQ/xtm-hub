@@ -9,10 +9,12 @@ import {
   ServiceInstance,
 } from '../__generated__/resolvers-types';
 import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
+import { OrganizationId } from '../model/kanel/public/Organization';
 import { SubscriptionMutator } from '../model/kanel/public/Subscription';
 import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
 import { loadUserOrganizationCapabilities } from '../modules/common/user-organization-capability.domain';
+import { loadUserOrganization } from '../modules/common/user-organization.domain';
 import { extractId } from '../utils/utils';
 
 export const loadCapabilitiesByServiceId = async (
@@ -138,17 +140,34 @@ export const isUserAllowedOnOrganization = async (
     organizationId: string;
     requiredCapability: OrganizationCapability;
   }
-): Promise<boolean> => {
+): Promise<{ isAllowed: boolean; isInOrganization: boolean }> => {
   const organizationCapabilities = await loadUserOrganizationCapabilities(
     context,
     organizationId
   );
 
-  return isUserAllowed({
+  const isAllowed = isUserAllowed({
     requiredCapability: requiredCapability,
     userCapabilities: context.user.capabilities,
     organizationCapabilities: organizationCapabilities.map(
       ({ name }) => name as OrganizationCapability
     ),
   });
+
+  if (isAllowed) {
+    return {
+      isAllowed,
+      isInOrganization: true,
+    };
+  }
+
+  const [userOrganization] = await loadUserOrganization(context, {
+    user_id: context.user.id,
+    organization_id: organizationId as OrganizationId,
+  });
+
+  return {
+    isAllowed,
+    isInOrganization: !!userOrganization,
+  };
 };

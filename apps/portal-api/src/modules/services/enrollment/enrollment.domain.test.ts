@@ -162,25 +162,22 @@ describe('Enrollment domain', () => {
       expect(updatedSubscription.organization_id).toBe(
         PLATFORM_ORGANIZATION_UUID
       );
+    });
 
-      it('should prevent registration on another organization', async () => {
-        const newToken = uuidv4();
-        const call = enrollmentDomain.refreshExistingPlatform(
-          contextAdminUser,
-          {
-            configuration: {
-              ...configuration,
-              token: newToken,
-            },
-            serviceInstanceId,
-            targetOrganizationId: THALES_ORGA_ID,
-          }
-        );
-
-        await expect(call).rejects.toThrow(
-          ErrorCode.RegistrationOnAnotherOrganizationForbidden
-        );
+    it('should prevent registration on another organization', async () => {
+      const newToken = uuidv4();
+      const call = enrollmentDomain.refreshExistingPlatform(contextAdminUser, {
+        configuration: {
+          ...configuration,
+          token: newToken,
+        },
+        serviceInstanceId,
+        targetOrganizationId: THALES_ORGA_ID,
       });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.RegistrationOnAnotherOrganizationForbidden
+      );
     });
   });
 });
