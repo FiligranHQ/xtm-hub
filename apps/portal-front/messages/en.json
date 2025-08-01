@@ -107,6 +107,7 @@
       "UNENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unenrollment",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
+      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
       "OBAS_SCENARIO_INSERTION_ERROR": "An error occurred while creating the scenario.",
       "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "The scenario slug is already in use.",
       "OBAS_SCENARIO_UPDATE_ERROR": "An error occurred while updating the scenario."
@@ -133,6 +134,9 @@
           "Title": "You do not have the necessary {capability} access on the XTM Hub.",
           "Description": "If you want to proceed with the unenrollment of your OpenCTI platform in XTM Hub, you need to contact an admininistrator from your organization on XTM Hub who has the appropriate permissions to proceed.",
           "AdminListTitle": "The administrators of your organization are the following:"
+        },
+        "NotInOrganization": {
+          "Title": "You lack the required permissions for the organization where this platform is registered"
         },
         "PlatformNotEnrolled": {
           "Title": "The platform you're trying to unenroll is not enrolled",

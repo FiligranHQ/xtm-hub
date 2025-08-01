@@ -49,6 +49,7 @@ type IsOCTIPlatformRegisteredResponse {
 type CanUnenrollResponse {
   isPlatformEnrolled: Boolean!
   isAllowed: Boolean
+  isInOrganization: Boolean
   organizationId: ID
 }
 
@@ -73,10 +74,10 @@ type OCTIPlatformEnrollmentStatusResponse {
 type Query {
   isOCTIPlatformRegistered(
     input: IsOCTIPlatformRegisteredInput!
-  ): IsOCTIPlatformRegisteredResponse!
+  ): IsOCTIPlatformRegisteredResponse! @auth
   canUnenrollOCTIPlatform(
     input: CanUnenrollOCTIPlatformInput!
-  ): CanUnenrollResponse!
+  ): CanUnenrollResponse! @auth
   octiPlatforms: [OCTIPlatform!]! @auth
   octiPlatformEnrollmentStatus(
     input: OCTIPlatformEnrollmentStatusInput!
@@ -84,8 +85,6 @@ type Query {
 }
 
 type Mutation {
-  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): EnrollmentResponse!
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_OCTI_ENROLLMENT])
-  unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success!
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_OCTI_ENROLLMENT])
+  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): EnrollmentResponse! @auth
+  unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success! @auth
 }

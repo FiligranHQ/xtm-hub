@@ -74,6 +74,7 @@ export type CanUnenrollOctiPlatformInput = {
 export type CanUnenrollResponse = {
   __typename?: 'CanUnenrollResponse';
   isAllowed?: Maybe<Scalars['Boolean']['output']>;
+  isInOrganization?: Maybe<Scalars['Boolean']['output']>;
   isPlatformEnrolled: Scalars['Boolean']['output'];
   organizationId?: Maybe<Scalars['ID']['output']>;
 };
@@ -1798,6 +1799,7 @@ export type ActionTrackingResolvers<ContextType = PortalContext, ParentType exte
 
 export type CanUnenrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnenrollResponse'] = ResolversParentTypes['CanUnenrollResponse']> = ResolversObject<{
   isAllowed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isInOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isPlatformEnrolled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   organizationId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

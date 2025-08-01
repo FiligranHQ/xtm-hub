@@ -13,4 +13,5 @@ export enum ErrorCode {
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   UnenrollOCTIPlatformUnknownError = 'UNENROLL_OCTI_PLATFORM_UNKNOWN_ERROR',
+  UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
 }
