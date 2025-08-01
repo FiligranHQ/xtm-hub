@@ -103,7 +103,7 @@ const ServiceInstanceCard: React.FunctionComponent<
               ? 'bg-darkblue-800'
               : 'bg-blue-900'
           )}>
-          <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-80 rotate-45 -translate-x-24 -translate-y-12" />
+          <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
             <div
               className="w-full h-12"
