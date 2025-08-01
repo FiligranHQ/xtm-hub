@@ -24,6 +24,11 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
       lang={locale}
       className={`${geologica.variable} ${ibmPlexSans.variable}`}>
       <Head>
+        <link
+          rel="icon"
+          href="/favicon.svg"
+          type="image/svg+xml"
+        />
         <title>{t('App.Title')}</title>
         <meta
           name="viewport"
