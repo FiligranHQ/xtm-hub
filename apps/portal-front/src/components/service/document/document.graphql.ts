@@ -120,11 +120,45 @@ export const documentItem = graphql`
     children_documents {
       id
       file_name
-      created_at
+    }
+    slug
+    service_instance {
+      id
+      slug
+    }
+    subscription {
+      id
+    }
+  }
+`;
+export const documentBase = graphql`
+  fragment documentBase_fragment on DocumentBase @inline {
+    id
+    type
+    uploader {
+      id
+      email
+      first_name
+      last_name
+      picture
+    }
+    uploader_organization {
+      id
       name
-      description
-      download_number
-      active
+      personal_space
+    }
+    name
+    short_description
+    description
+    file_name
+    active
+    created_at
+    updated_at
+    download_number
+    share_number
+    children_documents {
+      id
+      file_name
     }
     slug
     service_instance {

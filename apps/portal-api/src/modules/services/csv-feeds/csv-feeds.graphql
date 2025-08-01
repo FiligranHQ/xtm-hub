@@ -1,11 +1,13 @@
-type CsvFeed implements Node {
+
+type CsvFeed implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User
   uploader_organization: Organization
+  service_instance_id: String!
   name: String!
-  short_description: String
-  description: String
+  short_description: String!
+  description: String!
   file_name: String!
   minio_name: String!
   active: Boolean!
@@ -14,13 +16,13 @@ type CsvFeed implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
-  slug: String
-  labels: [Label!]
-  service_instance_id: String!
+  children_documents: [ShareableResourceImage!]
+  slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  #Specific fields for csv-feeds
   remover_id: ID
+  labels: [Label!]
 }
 
 input CreateCsvFeedInput {

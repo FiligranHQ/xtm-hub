@@ -23,14 +23,15 @@ input UpdateObasScenarioInput {
   product_version: String
 }
 
-type ObasScenario implements Node {
+type ObasScenario implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User
   uploader_organization: Organization
+  service_instance_id: String!
   name: String!
-  short_description: String
-  description: String
+  short_description: String!
+  description: String!
   file_name: String!
   minio_name: String!
   active: Boolean!
@@ -39,13 +40,12 @@ type ObasScenario implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
+  children_documents: [ShareableResourceImage!]
   slug: String!
-  labels: [Label!]
-  service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
   # Specific fields for obas scenarios
+  labels: [Label!]
   product_version: String
 }
 
