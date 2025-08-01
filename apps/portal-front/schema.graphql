@@ -113,6 +113,7 @@ type Query {
   canEnrollOCTIPlatform(input: CanEnrollOCTIPlatformInput!): CanEnrollResponse!
   canUnenrollOCTIPlatform(input: CanUnenrollOCTIPlatformInput!): CanUnenrollResponse!
   octiPlatforms: [OCTIPlatform!]!
+  octiPlatformEnrollmentStatus(input: OCTIPlatformEnrollmentStatusInput!): OCTIPlatformEnrollmentStatusResponse!
   seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
   seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
@@ -401,6 +402,20 @@ type CanUnenrollResponse {
 
 input UnenrollOCTIPlatformInput {
   platformId: String!
+}
+
+input OCTIPlatformEnrollmentStatusInput {
+  platformId: String!
+  token: String!
+}
+
+enum OCTIPlatformEnrollmentStatus {
+  active
+  inactive
+}
+
+type OCTIPlatformEnrollmentStatusResponse {
+  status: OCTIPlatformEnrollmentStatus!
 }
 
 type ServiceLink implements Node {
