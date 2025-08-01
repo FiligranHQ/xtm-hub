@@ -50,12 +50,12 @@ const resolvers: Resolvers = {
         };
       } catch (error) {
         switch (error.message) {
-          case ErrorCode.PlatformNotEnrolled:
+          case ErrorCode.PlatformNotRegistered:
             return {
               isPlatformEnrolled: false,
             };
         }
-        throw UnknownError(ErrorCode.CanUnenrollOCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.CanUnregisterOCTIPlatformUnknownError, {
           detail: error,
         });
       }
@@ -85,7 +85,7 @@ const resolvers: Resolvers = {
       const result = schema.safeParse(payload);
       if (!result.success) {
         logApp.warn(result.error);
-        throw BadRequestError(ErrorCode.EnrollOCITPlatformInvalidData);
+        throw BadRequestError(ErrorCode.RegisterOCITPlatformInvalidData);
       }
 
       const trx = await dbTx();
@@ -118,7 +118,7 @@ const resolvers: Resolvers = {
           throw ForbiddenAccess(error.message);
         }
 
-        throw UnknownError(ErrorCode.EnrollOCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.RegisterOCTIPlatformUnknownError, {
           detail: error,
         });
       }
@@ -146,7 +146,7 @@ const resolvers: Resolvers = {
             throw ForbiddenAccess(error.message);
         }
 
-        throw UnknownError(ErrorCode.UnenrollOCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.UnregisterOCTIPlatformUnknownError, {
           detail: error,
         });
       }
