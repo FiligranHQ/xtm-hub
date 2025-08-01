@@ -135,6 +135,9 @@
           "Description": "Si vous voulez procéder à la désinscription de votre plateforme OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
           "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
         },
+        "NotInOrganization": {
+          "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+        },
         "PlatformNotEnrolled": {
           "Title": "La plateforme que vous essayez de désinscrire n'est pas inscrite",
           "Description": "Cet onglet sera bientôt fermé."
