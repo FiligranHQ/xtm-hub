@@ -230,14 +230,14 @@ export const enrollmentApp = {
         ServiceConfigurationStatus.Active
       );
     if (!serviceConfiguration) {
-      throw new Error(ErrorCode.PlatformNotEnrolled);
+      throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
     const subscription = await loadSubscriptionBy(context, {
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
-      throw new Error(ErrorCode.PlatformNotEnrolled);
+      throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
