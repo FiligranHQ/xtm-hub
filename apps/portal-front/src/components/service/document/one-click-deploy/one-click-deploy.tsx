@@ -32,6 +32,11 @@ export const OneClickDeployOctiPlatformsQuery = graphql`
   }
 `;
 
+const URL_CONFIGS = {
+  custom_dashboard: 'deploy-custom-dashboard',
+  csv_feed: 'deploy-csv-feed',
+};
+
 interface OneClickDeployProps {
   documentData: ShareableResource;
 }
@@ -59,7 +64,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
 
   const oneClickDeploy = (platformOctiUrl: string) => {
     window.open(
-      `${platformOctiUrl}/dashboard/xtm-hub/deploy-custom-dashboard/${documentData.service_instance?.id}/${documentData.id}`,
+      `${platformOctiUrl}/dashboard/xtm-hub/${URL_CONFIGS[documentData.type as keyof typeof URL_CONFIGS]}/${documentData.service_instance?.id}/${documentData.id}`,
       '_blank'
     );
   };

@@ -13,7 +13,7 @@ import {
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
@@ -52,9 +52,25 @@ const ShareableResourceSlug: React.FunctionComponent<
   const incrementDownloadNumber = () => {
     setDocumentDownloadNumber(documentDownloadNumber + 1);
   };
-  const isOneClickFeatureEnabled = useIsFeatureEnabled(
+  const isOneClickDeployDashboardFeatureEnabled = useIsFeatureEnabled(
     FeatureFlag.ONECLICK_DEPLOY_DASHBOARD
   );
+  const isOneClickDeployCsvFeedFeatureEnabled = useIsFeatureEnabled(
+    FeatureFlag.ONECLICK_DEPLOY_CSV_FEED
+  );
+
+  const shouldShowOneClickDeployComponent = useMemo(() => {
+    if (!documentData.active) return false;
+
+    const typeConditions = {
+      custom_dashboard: isOneClickDeployDashboardFeatureEnabled,
+      csv_feed: isOneClickDeployCsvFeedFeatureEnabled,
+    };
+
+    return (
+      typeConditions[documentData.type as keyof typeof typeConditions] || false
+    );
+  }, [documentData.active, documentData.type]);
 
   return (
     <>
@@ -68,9 +84,7 @@ const ShareableResourceSlug: React.FunctionComponent<
           documentId={documentData.id}
           url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
         />
-        {documentData.type === 'custom_dashboard' &&
-        isOneClickFeatureEnabled &&
-        documentData.active ? (
+        {shouldShowOneClickDeployComponent ? (
           <div className="flex items-center gap-2 ml-auto">
             <TooltipProvider>
               <Tooltip
@@ -108,9 +122,9 @@ const ShareableResourceSlug: React.FunctionComponent<
           </>
         )}
 
-        {isOneClickFeatureEnabled &&
-          documentData.type === 'custom_dashboard' &&
-          documentData.active && <OneClickDeploy documentData={documentData} />}
+        {shouldShowOneClickDeployComponent && (
+          <OneClickDeploy documentData={documentData} />
+        )}
       </div>
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
