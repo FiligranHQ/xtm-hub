@@ -7,15 +7,11 @@ import Loader from '@/components/loader';
 import { UnenrollOCTIConfirm } from '@/components/unenroll/octi/confirm';
 import { UnenrollOCTIMissingCapability } from '@/components/unenroll/octi/missing-capability';
 import { UnenrollOCTIPlatformNotEnrolled } from '@/components/unenroll/octi/platform-not-enrolled';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { enrollCanUnenrollOCTIPlatformFragment$key } from '@generated/enrollCanUnenrollOCTIPlatformFragment.graphql';
 import EnrollCanUnenrollOCTIPlatformQueryGraphql, {
   enrollCanUnenrollOCTIPlatformQuery,
 } from '@generated/enrollCanUnenrollOCTIPlatformQuery.graphql';
 import { enrollUnenrollOCTIPlatformMutation } from '@generated/enrollUnenrollOCTIPlatformMutation.graphql';
-import UserListOrganizationAdministratorsQueryGraphql, {
-  userListOrganizationAdministratorsQuery,
-} from '@generated/userListOrganizationAdministratorsQuery.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
@@ -24,7 +20,6 @@ import {
   useFragment,
   useMutation,
   usePreloadedQuery,
-  useQueryLoader,
 } from 'react-relay';
 
 interface Props {
@@ -42,20 +37,12 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
       queryRef
     );
 
-  const { isAllowed, isPlatformEnrolled, organizationId } = useFragment<enrollCanUnenrollOCTIPlatformFragment$key>(
-    CanUnenrollOCTIPlatformFragment,
-    canUnenrollPreloadedQuery.canUnenrollOCTIPlatform
-  );
+  const { isAllowed, isPlatformEnrolled, isInOrganization, organizationId } =
+    useFragment<enrollCanUnenrollOCTIPlatformFragment$key>(
+      CanUnenrollOCTIPlatformFragment,
+      canUnenrollPreloadedQuery.canUnenrollOCTIPlatform
+    );
 
-  const [
-    organizationAdministratorsQueryRef,
-    loadOrganizationAdministratorsQuery,
-  ] = useQueryLoader<userListOrganizationAdministratorsQuery>(
-    UserListOrganizationAdministratorsQueryGraphql
-  );
-  useMountingLoader(loadOrganizationAdministratorsQuery, {
-    organizationId,
-  });
   const [unenrollPlatform] =
     useMutation<enrollUnenrollOCTIPlatformMutation>(UnenrollOCTIPlatform);
 
@@ -86,10 +73,6 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     });
   };
 
-  if (!isPlatformEnrolled) {
-    return <UnenrollOCTIPlatformNotEnrolled confirm={confirm} />;
-  }
-
   if (status === 'succeeded') {
     return (
       <EnrollStateLayout>
@@ -108,10 +91,22 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
     );
   }
 
+  if (!isPlatformEnrolled) {
+    return <UnenrollOCTIPlatformNotEnrolled confirm={confirm} />;
+  }
+
   if (!isAllowed) {
-    return organizationAdministratorsQueryRef ? (
+    if (!isInOrganization) {
+      return (
+        <EnrollStateLayout cancel={cancel}>
+          <h1>{t('Unenroll.OCTI.Error.NotInOrganization.Title')}</h1>
+        </EnrollStateLayout>
+      );
+    }
+
+    return organizationId ? (
       <UnenrollOCTIMissingCapability
-        queryRef={organizationAdministratorsQueryRef}
+        organizationId={organizationId}
         cancel={cancel}
       />
     ) : (

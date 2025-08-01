@@ -68,6 +68,7 @@ export const loadUserOrganizationCapabilities = async (
       'User_Organization.id'
     )
     .where('User_Organization.organization_id', '=', organizationId)
+    .where('User_Organization.user_id', '=', context.user.id)
     .select('UserOrganization_Capability.*');
 
   return capabilities;

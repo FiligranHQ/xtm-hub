@@ -37,7 +37,7 @@ export const serviceContractDomain = {
     return success;
   },
 
-  loadConfigurationByPlatformAndToken: async (
+  loadActiveConfigurationByPlatformAndToken: async (
     context: PortalContext,
     { platformId, token }: { platformId: string; token: string }
   ): Promise<ServiceConfiguration | null> => {
@@ -46,15 +46,6 @@ export const serviceContractDomain = {
       .whereRaw("config->>'platform_id' = ?", platformId)
       .whereRaw("config->>'token' = ?", token)
       .first();
-  },
-
-  loadConfigurationsByPlatform: async (
-    context: PortalContext,
-    platformId: string
-  ): Promise<ServiceConfiguration[]> => {
-    return db(context, 'Service_Configuration')
-      .whereRaw("config->>'platform_id' = ?", platformId)
-      .select('*');
   },
 
   loadConfigurationByPlatform: async (
