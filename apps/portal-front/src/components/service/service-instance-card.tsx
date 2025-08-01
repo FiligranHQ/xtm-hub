@@ -90,7 +90,7 @@ const ServiceInstanceCard: React.FunctionComponent<
       : '';
 
   if (isEnrollmentService(serviceInstance)) {
-    backgroundImage = 'url(/octi-private-instance-logo.png)';
+    backgroundImage = 'url(/octi-private-platform-logo.png)';
   }
 
   return (
@@ -137,7 +137,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 <Image
                   width="580"
                   height="281"
-                  src="/octi-private-instance-illustration.png"
+                  src="/octi-private-platform-illustration.png"
                   priority={false}
                   loading="lazy"
                   alt={`Illustration of ${serviceInstance.name}`}
