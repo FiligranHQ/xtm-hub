@@ -203,7 +203,7 @@ describe('Enrollment app', () => {
         platformId,
       });
 
-      await expect(call).rejects.toThrow(ErrorCode.PlatformNotEnrolled);
+      await expect(call).rejects.toThrow(ErrorCode.PlatformNotRegistered);
     });
 
     it('should throw an error when subscription does not exist', async () => {
@@ -216,7 +216,7 @@ describe('Enrollment app', () => {
         platformId,
       });
 
-      await expect(call).rejects.toThrow(ErrorCode.PlatformNotEnrolled);
+      await expect(call).rejects.toThrow(ErrorCode.PlatformNotRegistered);
     });
 
     it('should allow user to enroll when he has the required capabilities', async () => {
