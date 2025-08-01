@@ -277,7 +277,8 @@ export const loadOrganizationAdministrators = async (
         OrganizationCapability.ManageOctiEnrollment
       );
     })
-    .select('User.*');
+    .select('User.*')
+    .distinct();
 
   return users;
 };
