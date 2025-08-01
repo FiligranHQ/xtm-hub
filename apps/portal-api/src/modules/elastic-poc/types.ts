@@ -43,6 +43,7 @@ export interface EnrollEvent extends BaseTelemetryEvent {
   target_product: string;
   platform_id: string;
   organization_type: string;
+  platform_contract: 'EE' | 'CE';
 }
 
 export interface OneClickDeployEvent extends BaseTelemetryEvent {

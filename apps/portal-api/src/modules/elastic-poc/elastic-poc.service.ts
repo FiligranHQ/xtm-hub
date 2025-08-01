@@ -134,6 +134,7 @@ export class ElasticPocService {
               target_product: products[i % products.length],
               platform_id: `${products[i % products.length]}-${458 + i}`,
               organization_type: orgTypes[i % orgTypes.length],
+              platform_contract: 'EE',
             } as EnrollEvent);
             break;
 
