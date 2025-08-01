@@ -99,7 +99,9 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div
           className={cn(
             'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
-            isEnrollmentService(serviceInstance) ? 'bg-blue-800' : 'bg-blue-900'
+            isEnrollmentService(serviceInstance)
+              ? 'bg-darkblue-800'
+              : 'bg-blue-900'
           )}>
           <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-80 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
@@ -139,10 +141,10 @@ const ServiceInstanceCard: React.FunctionComponent<
                   priority={false}
                   loading="lazy"
                   alt={`Illustration of ${serviceInstance.name}`}
-                  className="absolute bottom-0 right-0 translate-x-1/3 -rotate-45"
+                  className="absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45"
                 />
                 <h3
-                  className="text-2xl 2xl:text-4xl absolute bottom-0 -translate-y-1/2 2xl:-translate-y-20 left-0 w-full p-s"
+                  className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-s max-w-[80%]"
                   style={{ textShadow: '1px 1px 1px #000' }}>
                   {serviceInstance.name}
                 </h3>
@@ -151,7 +153,7 @@ const ServiceInstanceCard: React.FunctionComponent<
           </AspectRatio>
         </div>
         <div className="min-h-40 flex flex-col p-l gap-xs flex-1 bg-page-background group-hover:bg-hover">
-          <div className="flex items-center h-12 w-full">
+          <div className="flex items-start h-12 w-full">
             {rightAction ? (
               <h2>{serviceInstance.name}</h2>
             ) : (
