@@ -34,5 +34,12 @@
     }
   },
   "base_url_front": "BASE_URL_FRONT",
-  "hubspot_webhook_url": "HUBSPOT_WEBHOOK_URL"
+  "hubspot_webhook_url": "HUBSPOT_WEBHOOK_URL",
+  "elasticsearch": {
+    "protocol": "ELASTIC_PROTOCOL",
+    "host": "ELASTIC_HOST",
+    "port": "ELASTIC_PORT",
+    "username": "ELASTIC_USER",
+    "password": "ELASTIC_PASSWORD"
+  }
 }

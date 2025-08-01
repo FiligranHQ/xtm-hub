@@ -1,0 +1,8 @@
+type ElasticPocResponse {
+  result: Boolean!
+  message: String
+}
+
+type Mutation {
+  elasticPoc: ElasticPocResponse @auth
+}

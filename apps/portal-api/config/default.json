@@ -80,5 +80,12 @@
     "logs_level": "info",
     "extended_error_message": true
   },
+  "elasticsearch": {
+    "protocol": "http",
+    "host": "localhost",
+    "port": 9202,
+    "username": null,
+    "password": null
+  },
   "hubspot_webhook_url": "changeMe"
 }
