@@ -5,13 +5,13 @@ import DashboardDetails from '@/components/service/custom-dashboards/[slug]/cust
 import { CustomDashboardQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
 
 // Component interface
 interface PreloaderProps {
   documentId: string;
-  service: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  service: serviceInstance_fragment$data;
 }
 
 // Component

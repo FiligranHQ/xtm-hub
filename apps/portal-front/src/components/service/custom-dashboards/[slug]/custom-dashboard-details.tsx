@@ -4,7 +4,7 @@ import ShareableResourceSlug from '@/components/service/document/shareable-resou
 import { APP_PATH } from '@/utils/path/constant';
 import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
 import { customDashboardsItem_fragment$key } from '@generated/customDashboardsItem_fragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 import {
   CustomDashboardQuery,
@@ -14,7 +14,7 @@ import {
 // Component interface
 interface DashboardSlugProps {
   queryRef: PreloadedQuery<customDashboardQuery>;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 // Component

@@ -12,7 +12,7 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -20,7 +20,7 @@ import { useMutation } from 'react-relay';
 
 interface CSVFeedAddSheetProps {
   connectionId: string;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 export const CSVFeedAddSheet = ({

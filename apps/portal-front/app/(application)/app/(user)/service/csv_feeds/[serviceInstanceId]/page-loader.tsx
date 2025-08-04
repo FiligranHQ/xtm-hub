@@ -4,13 +4,13 @@ import CsvFeedsList from '@/components/service/csv-feeds/[serviceInstanceId]/csv
 import { csvFeedListLocalStorage } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feeds-list-localstorage';
 import { CsvFeedsListQuery } from '@/components/service/csv-feeds/csv-feed.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 
 interface PageLoaderProps {
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {

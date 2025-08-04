@@ -1,11 +1,11 @@
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import useAdminByPass from '@/hooks/useAdminByPass';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useMemo } from 'react';
 
 const useServiceCapability = (
   capability: ServiceCapabilityName,
-  serviceInstance?: NonNullable<serviceByIdQuery$data['serviceInstanceById']>
+  serviceInstance?: serviceInstance_fragment$data
 ) => {
   const canBypass = useAdminByPass();
   return useMemo(() => {

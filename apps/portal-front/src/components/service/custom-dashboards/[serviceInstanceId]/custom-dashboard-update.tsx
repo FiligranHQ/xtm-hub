@@ -17,7 +17,7 @@ import {
 import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -32,7 +32,7 @@ import {
 // Component interface
 interface DashboardUpdateProps {
   customDashboard: customDashboardsItem_fragment$data;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   connectionId?: string;
   variant?: 'menu' | 'button';
 }

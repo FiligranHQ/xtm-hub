@@ -14,7 +14,7 @@ import {
 } from '@generated/customDashboardsItem_fragment.graphql';
 import { customDashboardsList$key } from '@generated/customDashboardsList.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
@@ -34,7 +34,7 @@ import CustomDashboardsListButtons from './custom-dashboards-list-buttons';
 
 interface CustomDashboardsListProps {
   queryRef: PreloadedQuery<customDashboardsQuery>;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;

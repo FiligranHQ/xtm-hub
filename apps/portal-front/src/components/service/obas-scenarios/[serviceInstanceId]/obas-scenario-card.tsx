@@ -5,14 +5,14 @@ import { IconActions } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { obasScenariosItem_fragment$data } from '@generated/obasScenariosItem_fragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { MoreVertIcon } from 'filigran-icon';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
 interface ObasScenarioCardProps {
   obasScenario: obasScenariosItem_fragment$data;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   detailUrl: string;
   shareLinkUrl: string;
   connectionId: string;

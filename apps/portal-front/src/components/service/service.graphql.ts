@@ -32,18 +32,22 @@ export const ServiceAddPicture = graphql`
 export const ServiceById = graphql`
   query serviceByIdQuery($service_instance_id: ID) {
     serviceInstanceById(service_instance_id: $service_instance_id) {
-      id
-      name
-      description
-      slug
-      capabilities
-      service_definition {
-        identifier
-      }
+      ...serviceInstance_fragment
     }
   }
 `;
-
+export const serviceInstanceFragment = graphql`
+  fragment serviceInstance_fragment on ServiceInstance @inline {
+    id
+    name
+    description
+    slug
+    capabilities
+    service_definition {
+      identifier
+    }
+  }
+`;
 export const serviceListFragment = graphql`
   fragment serviceList_fragment on ServiceInstance {
     id
@@ -154,10 +158,7 @@ export const serviceWithSubscriptionsFragment = graphql`
 export const ServiceSelfJoinMutation = graphql`
   mutation serviceSelfJoinMutation($service_instance_id: ID!) {
     selfJoinServiceInstance(service_instance_id: $service_instance_id) {
-      id
-      name
-      description
-      capabilities
+      ...serviceInstance_fragment
     }
   }
 `;

@@ -7,7 +7,7 @@ import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { customDashboardsCreateMutation } from '@generated/customDashboardsCreateMutation.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -20,7 +20,7 @@ import {
 
 interface CustomDashboardSheetProps {
   connectionId: string;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 export const CustomDashboardSheet = ({

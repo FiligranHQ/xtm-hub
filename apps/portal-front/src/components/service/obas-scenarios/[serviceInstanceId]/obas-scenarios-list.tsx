@@ -24,7 +24,7 @@ import { SettingsContext } from '@/components/settings/env-portal-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { obasScenariosList$key } from '@generated/obasScenariosList.graphql';
 import { obasScenariosQuery } from '@generated/obasScenariosQuery.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import {
@@ -36,7 +36,7 @@ import {
 
 interface ObasScenariosListProps {
   queryRef: PreloadedQuery<obasScenariosQuery>;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;
