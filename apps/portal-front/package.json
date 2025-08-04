@@ -82,7 +82,7 @@
     "typescript": "5.8.3",
     "vite-plugin-relay": "2.1.0",
     "vite-tsconfig-paths": "4.3.2",
-    "vitest": "2.1.8"
+    "vitest": "2.1.9"
   },
   "tsConfig": "apps/portal-front/tsconfig.json",
   "packageManager": "yarn@3.8.7",
