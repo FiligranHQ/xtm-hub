@@ -9,7 +9,7 @@ export const useOrganizationCapabilities = () => {
 
   return Object.values(OrganizationCapabilityEnum).filter((value) => {
     const isCapabilityFeatureFlagged =
-      value === OrganizationCapabilityEnum.MANAGE_OCTI_ENROLLMENT;
+      value === OrganizationCapabilityEnum.MANAGE_OPENCTI_REGISTRATION;
 
     return !isCapabilityFeatureFlagged || isOCTIEnrollmentFeatureEnabled;
   });

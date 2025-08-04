@@ -9,7 +9,7 @@ describe('AuthHelper', () => {
       const result = isUserAllowed({
         userCapabilities: [CAPABILITY_BYPASS],
         organizationCapabilities: [],
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
       });
 
       expect(result).toBeTruthy();
@@ -18,8 +18,10 @@ describe('AuthHelper', () => {
     it('should allow user if he has the required capability', async () => {
       const result = isUserAllowed({
         userCapabilities: [],
-        organizationCapabilities: [OrganizationCapability.ManageOctiEnrollment],
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+        organizationCapabilities: [
+          OrganizationCapability.ManageOpenctiRegistration,
+        ],
+        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
       });
 
       expect(result).toBeTruthy();
@@ -31,7 +33,7 @@ describe('AuthHelper', () => {
         organizationCapabilities: [
           OrganizationCapability.AdministrateOrganization,
         ],
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
       });
 
       expect(result).toBeTruthy();
@@ -41,7 +43,7 @@ describe('AuthHelper', () => {
       const result = isUserAllowed({
         userCapabilities: [],
         organizationCapabilities: [],
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
       });
 
       expect(result).toBeFalsy();
