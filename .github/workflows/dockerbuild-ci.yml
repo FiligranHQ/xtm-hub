@@ -188,8 +188,12 @@ jobs:
       - name: Launch docker compose
         run: |
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
+          mkdir -p coverage
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-front-test
-
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   run-api-unit-tests:
     needs: build-images-tests
@@ -213,8 +217,13 @@ jobs:
         uses: docker/setup-docker-action@v4
       - name: Launch docker compose
         run: |
+          mkdir -p coverage
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   deploy-feature-branch:
     needs: build-images-tests

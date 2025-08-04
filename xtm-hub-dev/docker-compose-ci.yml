@@ -40,7 +40,8 @@ services:
         - type=registry,ref=filigran/portal-front:development
     environment:
       - SERVER_HTTP_API=http://portal-api:4001
-
+    volumes:
+      - "./coverage:/app/apps/portal-front/coverage"
   portal-api-test:
     container_name: portal-api-test
     logging:
@@ -75,7 +76,8 @@ services:
       - MINIO_ACCESS_KEY=minio
       - MINIO_SECRET_KEY=password
       - MINIO_USE_SSL=false
-
+    volumes:
+      - "./coverage:/app/apps/portal-api/coverage"
   portal-api:
     container_name: portal-api
     logging:
