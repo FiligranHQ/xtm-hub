@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.53.2-noble
+FROM mcr.microsoft.com/playwright:v1.54.2-noble
 
 WORKDIR /app
 
@@ -22,4 +22,4 @@ COPY ./apps/portal-e2e-tests/seeds ./apps/portal-e2e-tests/seeds
 
 WORKDIR /app/apps/portal-e2e-tests
 
-CMD ["yarn", "playwright", "test"]
+CMD ["yarn", "test:e2e"]

@@ -172,7 +172,7 @@ services:
         - type=registry,ref=filigran/portal-e2e-tests:main
         - type=registry,ref=filigran/portal-e2e-tests:development
     volumes:
-      - "./test-results:/app/test-results"
+      - "./ctrf:/app/apps/portal-e2e-tests/ctrf"
     depends_on:
       portal-front:
         condition: service_healthy

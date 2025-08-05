@@ -6,7 +6,6 @@ import { beforeEach } from './hooks';
 const test = testBase.extend({
   autoTestFixture: [
     async ({ page }, use) => {
-      // NOTE: it depends on your project name
       const activateCoverage = process.env.E2E_COVERAGE;
 
       // console.log('autoTestFixture setup...');
@@ -34,7 +33,9 @@ const test = testBase.extend({
         ]);
         const coverageList = [...jsCoverage, ...cssCoverage];
         // console.log(coverageList.map((item) => item.url));
-        await addCoverageReport(coverageList, test.info());
+        if (coverageList.length) {
+          await addCoverageReport(coverageList, test.info());
+        }
       }
     },
     {

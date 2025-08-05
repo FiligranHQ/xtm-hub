@@ -109,13 +109,21 @@ jobs:
           cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
       - name: Launch docker compose
         run: |
+          mkdir -p ctrf
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
            TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
            GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
            GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
            GITHUB_RUN_ID="${{ github.run_id }}"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests
-
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: './ctrf/*.json'
+          flaky-rate-report: true
+          pull-request: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Collect service logs on failure
         if: failure()
         run: |

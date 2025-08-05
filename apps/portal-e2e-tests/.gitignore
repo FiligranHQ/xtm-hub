@@ -51,3 +51,4 @@ next-env.d.ts
 /tests_e2e/.setup/
 
 *~
+/ctrf/
