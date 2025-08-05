@@ -1,8 +1,6 @@
 import ChoosePlatformForm from '@/components/service/document/one-click-deploy/choose-platform-form';
 import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no-platform-display';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { oneClickDeployOctiPlatformFragment$key } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
 import { oneClickDeployOctiPlatformsQuery } from '@generated/oneClickDeployOctiPlatformsQuery.graphql';
@@ -55,11 +53,6 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
       instanceRef
     )
   );
-
-  const isOneClickFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.ONECLICK_DEPLOY_DASHBOARD
-  );
-
   const [isOpen, setIsOpen] = useState(false);
 
   const oneClickDeploy = (platformOctiUrl: string) => {
@@ -96,20 +89,16 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   }, [platformsOcti]);
 
   return (
-    <>
-      {isOneClickFeatureEnabled && (
-        <AlertDialog open={isOpen}>
-          <AlertDialogTrigger>
-            <Button onClick={() => setIsOpen(true)}>
-              {t('Service.ShareableResources.Deploy.DeployOcti')}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent className="max-w-3xl w-full">
-            {alertContent}
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-    </>
+    <AlertDialog open={isOpen}>
+      <AlertDialogTrigger>
+        <Button onClick={() => setIsOpen(true)}>
+          {t('Service.ShareableResources.Deploy.DeployOcti')}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="max-w-3xl w-full">
+        {alertContent}
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
