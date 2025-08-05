@@ -69,7 +69,9 @@ export default function useGetAction(
               </Button>
             }
             onClickContinue={() => addSubscriptionInDb(service)}>
-            {t('Service.SureWantSubscriptionDirect')}
+            {t('Service.SureWantSubscriptionDirect', {
+              serviceName: service.name,
+            })}
           </AlertDialogComponent>
         </GuardCapacityComponent>
       )

@@ -128,3 +128,7 @@ elasticsearch:
     # Used to define which namespace ES will connect as a snapshot repository. Required
     # namespace: customer-example-minio
     port: 9000
+  ingress:
+    enabled: false
+    host: localhost
+    annotations: {}

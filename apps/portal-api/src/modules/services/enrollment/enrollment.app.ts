@@ -14,12 +14,14 @@ import ServiceConfiguration from '../../../model/kanel/public/ServiceConfigurati
 import Subscription from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
+import { sendMail } from '../../../server/mail-service';
 import { ErrorCode } from '../../common/error-code';
 import {
   endSubscription,
   loadActiveSubscriptionBy,
   loadLastSubscriptionByServiceInstance,
 } from '../../subcription/subscription.domain';
+import { loadOrganizationAdministrators } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
@@ -124,6 +126,20 @@ export const enrollmentApp = {
         configuration,
       });
     }
+
+    const users = await loadOrganizationAdministrators(context, organizationId);
+
+    await Promise.all(
+      users.map((user) =>
+        sendMail({
+          to: user.email,
+          template: 'opencti_platform_registered',
+          params: {
+            adminName: `${user.first_name ?? ''}`,
+          },
+        })
+      )
+    );
 
     return token;
   },

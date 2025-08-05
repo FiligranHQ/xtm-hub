@@ -52,6 +52,7 @@ export type DatabaseType =
   | 'UserService'
   | 'Document'
   | 'User_Organization'
+  | 'User_Organization_Pending'
   | 'Label'
   | 'Object_Label'
   | 'UserOrganization_Capability'
