@@ -4,7 +4,9 @@
 import type { ServiceDefinitionId } from './ServiceDefinition';
 
 /** Identifier type for public.Service_Capability */
-export type ServiceCapabilityId = string & { __brand: 'ServiceCapabilityId' };
+export type ServiceCapabilityId = string & {
+  __brand: 'public.Service_Capability';
+};
 
 /** Represents the table public.Service_Capability */
 export default interface ServiceCapability {

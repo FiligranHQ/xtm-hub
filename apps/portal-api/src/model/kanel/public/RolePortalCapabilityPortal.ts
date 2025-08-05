@@ -6,7 +6,7 @@ import type { RolePortalId } from './RolePortal';
 
 /** Identifier type for public.RolePortal_CapabilityPortal */
 export type RolePortalCapabilityPortalId = number & {
-  __brand: 'RolePortalCapabilityPortalId';
+  __brand: 'public.RolePortal_CapabilityPortal';
 };
 
 /** Represents the table public.RolePortal_CapabilityPortal */

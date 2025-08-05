@@ -5,7 +5,7 @@ import type { RolePortalId } from './RolePortal';
 import type { UserId } from './User';
 
 /** Identifier type for public.User_RolePortal */
-export type UserRolePortalId = number & { __brand: 'UserRolePortalId' };
+export type UserRolePortalId = number & { __brand: 'public.User_RolePortal' };
 
 /** Represents the table public.User_RolePortal */
 export default interface UserRolePortal {

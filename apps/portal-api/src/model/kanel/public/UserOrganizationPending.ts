@@ -6,7 +6,7 @@ import type { UserId } from './User';
 
 /** Identifier type for public.User_Organization_Pending */
 export type UserOrganizationPendingId = number & {
-  __brand: 'User_Organization_Pending';
+  __brand: 'public.User_Organization_Pending';
 };
 
 /** Represents the table public.User_Organization_Pending */

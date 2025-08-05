@@ -6,7 +6,7 @@ import type { SubscriptionId } from './Subscription';
 
 /** Identifier type for public.Subscription_Capability */
 export type SubscriptionCapabilityId = string & {
-  __brand: 'SubscriptionCapabilityId';
+  __brand: 'public.Subscription_Capability';
 };
 
 /** Represents the table public.Subscription_Capability */

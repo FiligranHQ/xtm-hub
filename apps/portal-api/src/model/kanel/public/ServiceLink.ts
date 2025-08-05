@@ -4,7 +4,7 @@
 import type { ServiceInstanceId } from './ServiceInstance';
 
 /** Identifier type for public.Service_Link */
-export type ServiceLinkId = string & { __brand: 'ServiceLinkId' };
+export type ServiceLinkId = string & { __brand: 'public.Service_Link' };
 
 /** Represents the table public.Service_Link */
 export default interface ServiceLink {

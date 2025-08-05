@@ -3,7 +3,7 @@
 
 /** Identifier type for public.Generic_Service_Capability */
 export type GenericServiceCapabilityId = string & {
-  __brand: 'GenericServiceCapabilityId';
+  __brand: 'public.Generic_Service_Capability';
 };
 
 /** Represents the table public.Generic_Service_Capability */
