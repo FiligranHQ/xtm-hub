@@ -1,12 +1,12 @@
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { APP_PATH } from '@/utils/path/constant';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { CustomDashboardSheet } from './custom-dashboard-sheet';
 interface CustomDashboardsListButtonsProps {
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   subscriptionId: string;
   connectionId: string;
 }

@@ -7,7 +7,7 @@ import ShareableResourceSlug from '@/components/service/document/shareable-resou
 import { APP_PATH } from '@/utils/path/constant';
 import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
 import { csvFeedsItem_fragment$key } from '@generated/csvFeedsItem_fragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -16,7 +16,7 @@ import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 // Component interface
 interface CsvFeedSlugProps {
   queryRef: PreloadedQuery<csvFeedQuery>;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 // Component

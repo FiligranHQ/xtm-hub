@@ -19,7 +19,7 @@ import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { csvFeedUpdateMutation } from '@generated/csvFeedUpdateMutation.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Button, toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -27,7 +27,7 @@ import { useMutation } from 'react-relay';
 
 interface CSVFeedUpdateSheetProps {
   connectionId?: string;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   csvFeed: csvFeedsItem_fragment$data;
   onDelete?: () => void;
   variant?: 'menu' | 'button';

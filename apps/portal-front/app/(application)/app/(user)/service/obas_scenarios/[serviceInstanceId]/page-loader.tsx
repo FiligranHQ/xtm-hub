@@ -4,13 +4,13 @@ import ObasScenariosList from '@/components/service/obas-scenarios/[serviceInsta
 import { obasScenarioListLocalStorage } from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenarios-list-localstorage';
 import { ObasScenariosListQuery } from '@/components/service/obas-scenarios/obas-scenario.graphql';
 import { obasScenariosQuery } from '@generated/obasScenariosQuery.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 
 interface PageLoaderProps {
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {

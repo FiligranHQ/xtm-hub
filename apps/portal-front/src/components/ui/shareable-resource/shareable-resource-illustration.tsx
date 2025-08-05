@@ -1,7 +1,7 @@
 'use client';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Carousel, CarouselItem } from 'filigran-ui/clients';
 import { AspectRatio } from 'filigran-ui/servers';
 import Image from 'next/image';
@@ -12,7 +12,7 @@ interface ShareableResourceCardIllustrationProps {
   document: ShareableResource;
   detailUrl: string;
   serviceInstance:
-    | NonNullable<serviceByIdQuery$data['serviceInstanceById']>
+    | serviceInstance_fragment$data
     | seoServiceInstanceFragment$data;
 }
 

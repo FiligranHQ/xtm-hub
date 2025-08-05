@@ -1,13 +1,13 @@
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { CSVFeedAddSheet } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-add-sheet';
 import { APP_PATH } from '@/utils/path/constant';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface CsvFeedButtonsProps {
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   firstCsvFeedSubscriptionId: string;
   connectionId: string;
 }

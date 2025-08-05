@@ -1,13 +1,13 @@
 import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { ObasScenarioAddSheet } from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-add-sheet';
 import { APP_PATH } from '@/utils/path/constant';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface ObasScenarioButtonsProps {
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   firstObasScenarioSubscriptionId: string;
   connectionId: string;
 }

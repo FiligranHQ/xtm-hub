@@ -24,7 +24,7 @@ import { SettingsContext } from '@/components/settings/env-portal-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { csvFeedsList$key } from '@generated/csvFeedsList.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import {
@@ -36,7 +36,7 @@ import {
 
 interface CsvFeedsListProps {
   queryRef: PreloadedQuery<csvFeedsQuery>;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
   labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;
@@ -138,7 +138,7 @@ const CsvFeedsList = ({
                 key={csvFeed.id}
                 csvFeed={csvFeed}
                 serviceInstance={serviceInstance}
-                detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${csvFeed.id}`}
+                detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${csvFeed.id}`}
                 shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
               />
             ))}
@@ -158,7 +158,7 @@ const CsvFeedsList = ({
             csvFeed={csvFeed}
             connectionId={data.csvFeeds!.__id}
             serviceInstance={serviceInstance}
-            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${csvFeed.id}`}
+            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${csvFeed.id}`}
             shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${csvFeed.slug}`}
           />
         ))}

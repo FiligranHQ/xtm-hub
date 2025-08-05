@@ -9,7 +9,7 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Badge } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ interface ShareableResourceCardProps {
   shareLinkUrl: string;
   extraContent?: ReactNode;
   serviceInstance:
-    | NonNullable<serviceByIdQuery$data['serviceInstanceById']>
+    | serviceInstance_fragment$data
     | seoServiceInstanceFragment$data;
 }
 

@@ -8,7 +8,10 @@ import {
   documentItem,
   documentsFragment,
 } from '@/components/service/document/document.graphql';
-import { ServiceById } from '@/components/service/service.graphql';
+import {
+  ServiceById,
+  serviceInstanceFragment,
+} from '@/components/service/service.graphql';
 import DeleteDocument from '@/components/service/vault/delete-document';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import DownloadDocument from '@/components/service/vault/download-document';
@@ -38,10 +41,11 @@ import {
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
+import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
 import {
-  serviceByIdQuery,
-  serviceByIdQuery$data,
-} from '@generated/serviceByIdQuery.graphql';
+  serviceInstance_fragment$data,
+  serviceInstance_fragment$key,
+} from '@generated/serviceInstance_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import {
@@ -89,10 +93,13 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     queryRefService
   );
 
-  const canManageService =
-    queryDataService.serviceInstanceById?.capabilities.includes(
-      GenericCapabilityName.MANAGE_ACCESS
-    );
+  const serviceData = readInlineData<serviceInstance_fragment$key>(
+    serviceInstanceFragment,
+    queryDataService.serviceInstanceById
+  );
+  const canManageService = serviceData?.capabilities.includes(
+    GenericCapabilityName.MANAGE_ACCESS
+  );
 
   const documentData: documentItem_fragment$data[] = data.documents.edges.map(
     ({ node }) => readInlineData<documentItem_fragment$key>(documentItem, node)
@@ -158,7 +165,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
             <GuardCapacityComponent displayError={false}>
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
-            {queryDataService.serviceInstanceById?.capabilities.some(
+            {serviceData?.capabilities.some(
               (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
             ) && <EditDocument documentData={row.original} />}
             <DownloadDocument documentData={row.original} />
@@ -169,7 +176,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                 connectionId={data.documents.__id}
               />
             </GuardCapacityComponent>
-            {queryDataService.serviceInstanceById?.capabilities.some(
+            {serviceData?.capabilities.some(
               (capa) => capa?.toUpperCase() === ServiceCapabilityName.Delete
             ) && (
               <DeleteDocument
@@ -259,20 +266,18 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       href: `/${APP_PATH}`,
     },
     {
-      label: queryDataService.serviceInstanceById!.name,
+      label: serviceData!.name,
       original: true,
     },
   ];
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
-    queryDataService.serviceInstanceById as NonNullable<
-      serviceByIdQuery$data['serviceInstanceById']
-    >
+    serviceData as serviceInstance_fragment$data
   );
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <h1 className="pb-s">{queryDataService.serviceInstanceById?.name}</h1>
+      <h1 className="pb-s">{serviceData?.name}</h1>
 
       <DataTable
         i18nKey={i18nKey(t)}
@@ -289,7 +294,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           rowCount: data.documents.totalCount,
         }}
         onClickRow={(row) => {
-          const url = `/document/visualize/${queryDataService.serviceInstanceById?.id}/${row.id}`;
+          const url = `/document/visualize/${serviceData?.id}/${row.id}`;
           window.open(url, '_blank', 'noopener,noreferrer');
         }}
         toolbar={

@@ -6,8 +6,8 @@ import {
 import { APP_PATH } from '@/utils/path/constant';
 import ServiceByIdQuery, {
   serviceByIdQuery,
-  serviceByIdQuery$data,
 } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import ServiceSelfJoinMutation, {
   serviceSelfJoinMutation,
 } from '@generated/serviceSelfJoinMutation.graphql';
@@ -20,10 +20,7 @@ interface ServiceCustomDashboardsPageProps {
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   const { serviceInstanceId } = await params;
   const service_instance_id = decodeURIComponent(serviceInstanceId);
-  let serviceInstance:
-    | serviceByIdQuery$data['serviceInstanceById']
-    | null
-    | undefined = null;
+  let serviceInstance: serviceInstance_fragment$data | null | undefined = null;
   try {
     const response = await serverFetchGraphQL<serviceByIdQuery>(
       ServiceByIdQuery,
@@ -32,7 +29,8 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       }
     );
 
-    serviceInstance = response.data.serviceInstanceById;
+    serviceInstance = response.data
+      .serviceInstanceById as unknown as serviceInstance_fragment$data;
   } catch (error) {
     // The user must self join the service before accessing it
     if (
@@ -47,7 +45,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       );
 
       serviceInstance = response.data
-        .selfJoinServiceInstance as serviceByIdQuery$data['serviceInstanceById'];
+        .selfJoinServiceInstance as unknown as serviceInstance_fragment$data;
     }
   }
 

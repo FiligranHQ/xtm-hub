@@ -7,7 +7,7 @@ import {
 import { APP_PATH } from '@/utils/path/constant';
 import { obasScenarioQuery } from '@generated/obasScenarioQuery.graphql';
 import { obasScenariosItem_fragment$key } from '@generated/obasScenariosItem_fragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -16,7 +16,7 @@ import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 // Component interface
 interface ObasScenarioSlugProps {
   queryRef: PreloadedQuery<obasScenarioQuery>;
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 // Component

@@ -5,7 +5,7 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 
 const SlugDocument = async ({
@@ -32,9 +32,7 @@ const SlugDocument = async ({
       return (
         <DashboardCarousel
           serviceInstance={
-            serviceInstance as unknown as NonNullable<
-              serviceByIdQuery$data['serviceInstanceById']
-            >
+            serviceInstance as unknown as serviceInstance_fragment$data
           }
           documentData={
             document as unknown as customDashboardsItem_fragment$data
