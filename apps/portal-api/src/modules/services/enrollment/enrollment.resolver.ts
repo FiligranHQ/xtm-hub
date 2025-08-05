@@ -21,16 +21,13 @@ const resolvers: Resolvers = {
           context,
           input
         );
-
-        const organizationId = response.organizationId
-          ? toGlobalId('Organization', response.organizationId)
-          : undefined;
-
-        return {
-          ...response,
-          organizationId,
-        };
+        return response;
       } catch (error) {
+        switch (error.message) {
+          case ErrorCode.SubscriptionNotFound:
+            throw NotFoundError(error.message);
+        }
+
         throw UnknownError(ErrorCode.IsOCTIPlatformRegisteredUnknownError, {
           detail: error.message,
         });

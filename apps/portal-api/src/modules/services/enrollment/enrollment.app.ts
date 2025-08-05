@@ -211,7 +211,7 @@ export const enrollmentApp = {
         serviceConfiguration.status === ServiceConfigurationStatus.Active
           ? PlatformRegistrationStatus.Registered
           : PlatformRegistrationStatus.Unregistered,
-      organizationId: subscription.organization_id,
+      organization: { id: subscription.organization_id },
     };
   },
 

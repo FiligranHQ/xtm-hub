@@ -3,7 +3,9 @@ import { graphql } from 'react-relay';
 export const IsOCTIPlatformRegisteredFragment = graphql`
   fragment enrollIsOCTIPlatformRegisteredFragment on IsOCTIPlatformRegisteredResponse {
     status
-    organizationId
+    organization {
+      id
+    }
   }
 `;
 

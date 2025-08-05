@@ -387,9 +387,13 @@ input IsOCTIPlatformRegisteredInput {
   platformId: String!
 }
 
+type IsOCTIPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
 type IsOCTIPlatformRegisteredResponse {
   status: PlatformRegistrationStatus!
-  organizationId: ID
+  organization: IsOCTIPlatformRegisteredOrganization
 }
 
 type CanUnenrollResponse {

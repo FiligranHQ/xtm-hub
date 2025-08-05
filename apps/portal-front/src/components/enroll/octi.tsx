@@ -64,8 +64,8 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
       isPlatformRegistered.status ===
         PlatformRegistrationStatusEnum.UNREGISTERED;
 
-    if (shouldRefreshToken && isPlatformRegistered.organizationId) {
-      enroll(isPlatformRegistered.organizationId);
+    if (shouldRefreshToken && isPlatformRegistered.organization) {
+      enroll(isPlatformRegistered.organization.id);
     }
   }, [isPlatformRegistered]);
 
