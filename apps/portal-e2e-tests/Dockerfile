@@ -22,4 +22,4 @@ COPY ./apps/portal-e2e-tests/seeds ./apps/portal-e2e-tests/seeds
 
 WORKDIR /app/apps/portal-e2e-tests
 
-CMD ["yarn", "playwright", "test"]
+CMD ["yarn", "test:e2e"]

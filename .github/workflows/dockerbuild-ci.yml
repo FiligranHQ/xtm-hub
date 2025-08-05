@@ -91,6 +91,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -109,13 +110,31 @@ jobs:
           cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
       - name: Launch docker compose
         run: |
+          mkdir -p ctrf
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
            TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
            GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
            GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
            GITHUB_RUN_ID="${{ github.run_id }}"
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests || TEST_EXIT_CODE=$?
+          CONTAINER_ID=$(docker ps -a --filter "name=portal-e2e-tests-run" --format "{{.ID}}" | head -1)
+          docker cp $CONTAINER_ID:/app/apps/portal-e2e-tests/ctrf/. ./ctrf/
+          exit ${TEST_EXIT_CODE:-0}
 
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: './ctrf/*.json'
+          pull-request: true
+          summary-report: true
+          failed-report: true
+          flaky-report: true
+          insights-report: true
+          suite-folded-report: true
+          overwrite-comment: true
+          report-order: 'summary-report,failed-report,flaky-report,insights-report,test-report'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Collect service logs on failure
         if: failure()
         run: |

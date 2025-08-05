@@ -171,8 +171,6 @@ services:
         - type=registry,ref=filigran/portal-e2e-tests:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-e2e-tests:main
         - type=registry,ref=filigran/portal-e2e-tests:development
-    volumes:
-      - "./test-results:/app/test-results"
     depends_on:
       portal-front:
         condition: service_healthy

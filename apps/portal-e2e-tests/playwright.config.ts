@@ -17,7 +17,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: 2, // Retry in order to check the flaky test
   /* Parallel test is breaking tests */
   workers: 1,
   expect: {
@@ -29,6 +29,14 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
+    [
+      'playwright-ctrf-json-reporter',
+      {
+        minimal: false,
+        screenshot: true,
+        annotations: true,
+      },
+    ],
     [
       'monocart-reporter',
       {
