@@ -21,7 +21,6 @@
     "@nx/react": "21.2.3",
     "@nx/web": "^21.2.3",
     "@nx/workspace": "21.2.3",
-    "@playwright/test": "1.54.2",
     "eslint": "^9.30.1",
     "eslint-config-next": "^15.3.5",
     "eslint-config-prettier": "^10.1.5",

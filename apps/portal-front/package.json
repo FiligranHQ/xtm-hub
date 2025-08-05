@@ -13,7 +13,6 @@
     "format": "prettier . --write",
     "test": "vitest run",
     "test:w": "vitest",
-    "test:coverage": "yarn test --coverage",
     "test:ci": "yarn lint && yarn test --coverage --coverage.clean=false",
     "prepare": "cd .. && husky ./.husky",
     "auto-translation": "i18n-auto-translation -a deepl-free -p ./messages/en.json -t fr -k $SUBSCRIPTION_KEY",
@@ -51,7 +50,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
-    "@playwright/test": "1.54.2",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.0",

@@ -8980,6 +8980,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:24.2.0":
+  version: 24.2.0
+  resolution: "@types/node@npm:24.2.0"
+  dependencies:
+    undici-types: ~7.10.0
+  checksum: f5abd0c74312e758711a51ab26858426a2fc6de4576d930759aa645b530db354116049497d0a20ed504ddfc6c3b85dee9253b9bae42be19f1a788c18393123e6
+  languageName: node
+  linkType: hard
+
 "@types/nodemailer@npm:6.4.16":
   version: 6.4.16
   resolution: "@types/nodemailer@npm:6.4.16"
@@ -9967,7 +9976,6 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": 3.3.1
     "@hookform/resolvers": 3.10.0
-    "@playwright/test": 1.54.2
     "@svgr/webpack": 8.1.0
     "@testing-library/dom": 10.4.0
     "@testing-library/jest-dom": 6.6.3
@@ -10036,14 +10044,15 @@ __metadata:
   resolution: "@xtm-hub/test_e2e@workspace:apps/portal-e2e-tests"
   dependencies:
     "@playwright/test": 1.54.2
-    "@types/node": 22.16.0
+    "@types/node": 24.2.0
     graphql: 16.11.0
     graphql-tag: 2.12.6
     knex: 3.1.0
     monocart-reporter: 2.9.21
     pg: 8.16.3
+    playwright-ctrf-json-reporter: 0.0.22
     prettier: 3.6.2
-    react: 19.1.0
+    react: 19.1.1
     uuid: 11.1.0
   languageName: unknown
   linkType: soft
@@ -20492,6 +20501,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-ctrf-json-reporter@npm:0.0.22":
+  version: 0.0.22
+  resolution: "playwright-ctrf-json-reporter@npm:0.0.22"
+  checksum: 3f915e4baea2f5f007539e0bdb0f79928ea514706c0c43be86d05991b266ba5cdf132c49e01446eb14e6202fb1ace16475f48cc9e0c1a0b32b1e71dbf350aae3
+  languageName: node
+  linkType: hard
+
 "playwright@npm:1.54.2":
   version: 1.54.2
   resolution: "playwright@npm:1.54.2"
@@ -21640,6 +21656,13 @@ __metadata:
   version: 19.1.0
   resolution: "react@npm:19.1.0"
   checksum: c0905f8cfb878b0543a5522727e5ed79c67c8111dc16ceee135b7fe19dce77b2c1c19293513061a8934e721292bfc1517e0487e262d1906f306bdf95fa54d02f
+  languageName: node
+  linkType: hard
+
+"react@npm:19.1.1":
+  version: 19.1.1
+  resolution: "react@npm:19.1.1"
+  checksum: f2f18fea5deac87b1167365bd5160bcba64d383c26a37afa905b714ca424f423ef97d8daf53f041ab9ac25a06357fafcf0b5d3b6b84c9d1eace0e621bfeae629
   languageName: node
   linkType: hard
 
@@ -24707,6 +24730,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:~7.10.0":
+  version: 7.10.0
+  resolution: "undici-types@npm:7.10.0"
+  checksum: 6917fcd8c80963919fe918952f9243a6749af0e3f759a39f8d2c2486144a66c86ae4125aebbce700b636cb1dcd45e85eb8c49c60d60738a97b63f0e89ef9b053
+  languageName: node
+  linkType: hard
+
 "undici-types@npm:~7.8.0":
   version: 7.8.0
   resolution: "undici-types@npm:7.8.0"
@@ -25970,7 +26000,6 @@ __metadata:
     "@nx/react": 21.2.3
     "@nx/web": ^21.2.3
     "@nx/workspace": 21.2.3
-    "@playwright/test": 1.54.2
     "@types/node": 24.0.12
     eslint: ^9.30.1
     eslint-config-next: ^15.3.5
