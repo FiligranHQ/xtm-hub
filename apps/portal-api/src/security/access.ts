@@ -20,11 +20,11 @@ import { setDeleteSecurityForUserServiceCapability } from './user-service-capabi
 import { logApp } from '../utils/app-logger.util';
 import { isUserAllowed } from './auth.helper';
 import { userSecurityLayer } from './layer/user';
+import { userOrganizationSecurityLayer } from './layer/user-organization';
 import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
+import { userOrganizationPendingSecurityLayer } from './layer/user-organization-pending';
 import { userServiceSecurityLayer } from './layer/user-service';
 import { userServiceCapabilitySecurityLayer } from './layer/user-service-capability';
-import { userOrganizationPendingSecurityLayer } from './layer/user-organization-pending';
-import { userOrganizationSecurityLayer } from './layer/user-organization';
 
 export type SecuryQueryHandlers = {
   [key in MethodType]: (

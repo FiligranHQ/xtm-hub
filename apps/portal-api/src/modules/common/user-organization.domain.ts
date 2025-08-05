@@ -57,7 +57,6 @@ export const createUserOrganizationRelation = async (
   await insertNewUserOrganization(context, usersOrganization);
 };
 
-
 export const updateMultipleUserOrgWithCapabilities = async (
   context: PortalContext,
   userId: UserId,

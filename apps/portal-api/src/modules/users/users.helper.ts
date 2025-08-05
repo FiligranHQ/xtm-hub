@@ -27,6 +27,7 @@ import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
+import { insertNewUserOrganizationPendingUnsecure } from '../common/user-organization-pending.domain';
 import { loadUserOrganization } from '../common/user-organization.domain';
 import {
   createUserOrganizationRelation,
@@ -38,7 +39,6 @@ import {
 } from '../organizations/organizations.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
-import { insertNewUserOrganizationPendingUnsecure } from '../common/user-organization-pending.domain';
 
 export const createUserWithPersonalSpace = async (
   data: Pick<
@@ -119,8 +119,14 @@ async function createOrganisationWithAdminUser(email: string) {
 }
 
 export const createNewUserWithPendingOrga = async (
-  { email, first_name, last_name, picture } : Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
-  organization: Organization ) => {
+  {
+    email,
+    first_name,
+    last_name,
+    picture,
+  }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
+  organization: Organization
+) => {
   const addedUser = await createUserWithPersonalSpace({
     email,
     last_name,
@@ -134,7 +140,6 @@ export const createNewUserWithPendingOrga = async (
   return addedUser;
 };
 
-
 export const createNewUserFromInvitation = async ({
   email,
   first_name,
@@ -144,13 +149,15 @@ export const createNewUserFromInvitation = async ({
   const [organization] = await loadOrganizationsFromEmail(email);
   const userWithRoles: User = !organization
     ? await createOrganisationWithAdminUser(email)
-    : await createNewUserWithPendingOrga({
-        email,
-        last_name,
-        first_name,
-        picture,
-      },
-      organization);
+    : await createNewUserWithPendingOrga(
+        {
+          email,
+          last_name,
+          first_name,
+          picture,
+        },
+        organization
+      );
 
   return loadUserBy({ 'User.id': userWithRoles.id });
 };
@@ -203,12 +210,11 @@ export const insertUserIntoOrganization = async (
     );
   }
   if (isEmpty(userOrganization)) {
-    const [userOrgRelation] = await createUserOrganizationRelationAndRemovePending(
-      context,
-      {
-      user_id: user.id,
-      organizations_id: [organization.id],
-    });
+    const [userOrgRelation] =
+      await createUserOrganizationRelationAndRemovePending(context, {
+        user_id: user.id,
+        organizations_id: [organization.id],
+      });
     const shouldBeAdminOrga = await isFirstInOrganization(
       context,
       organization.id
