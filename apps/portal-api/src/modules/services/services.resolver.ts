@@ -28,7 +28,6 @@ import {
   getIsSubscribed,
   getLinks,
   getServiceDefinition,
-  getServiceDefinitionCapabilities,
   getUserJoined,
   loadPublicServiceInstances,
   loadSeoServiceInstanceBySlug,
@@ -63,10 +62,6 @@ const resolvers: Resolvers = {
         context.user.selected_organization_id
       ),
     user_joined: ({ id }, _, context) => getUserJoined(context, id),
-  },
-  ServiceDefinition: {
-    service_capability: ({ id }, _, context) =>
-      getServiceDefinitionCapabilities(context, id),
   },
   Query: {
     serviceInstances: async (_, opt, context) => {
