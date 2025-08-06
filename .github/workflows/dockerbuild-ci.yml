@@ -116,6 +116,10 @@ jobs:
            GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
            GITHUB_RUN_ID="${{ github.run_id }}"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests
+      - name: List CTRF directory contents
+        run: |
+          echo "📁 Contents of CTRF directory:"
+          ls -la ctrf/
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
         with:

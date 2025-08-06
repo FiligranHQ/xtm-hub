@@ -29,7 +29,12 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
-    ['playwright-ctrf-json-reporter', {}],
+    [
+      'playwright-ctrf-json-reporter',
+      {
+        minimal: false,
+      },
+    ],
     [
       'monocart-reporter',
       {
