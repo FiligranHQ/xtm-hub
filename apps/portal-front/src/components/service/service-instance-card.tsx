@@ -152,8 +152,8 @@ const ServiceInstanceCard: React.FunctionComponent<
             )}
           </AspectRatio>
         </div>
-        <div className="min-h-40 flex flex-col p-l gap-xs flex-1 bg-page-background group-hover:bg-hover">
-          <div className="flex items-start h-12 w-full">
+        <div className="min-h-40 flex flex-col p-l gap-l flex-1 bg-page-background group-hover:bg-hover">
+          <div className="flex items-start min-h-12 w-full text-ellipsis overflow-hidden">
             {rightAction ? (
               <h2>{serviceInstance.name}</h2>
             ) : (
