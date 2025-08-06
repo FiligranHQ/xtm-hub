@@ -202,7 +202,9 @@
       "Contracts": {
         "CE": "Community Edition",
         "EE": "Enterprise Edition"
-      }
+      },
+      "PrivatePlatform": "Private platform",
+      "Description": "Click here to access your Private Platform."
     }
   },
   "GenericActions": {
