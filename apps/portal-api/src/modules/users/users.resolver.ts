@@ -19,12 +19,15 @@ import {
 } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import { ErrorCode } from '../common/error-code';
+import { removeUserFromOrganizationPending } from '../common/user-organization-pending.domain';
 import {
   createUserOrgCapabilities,
+  loadUserOrganization,
   removeUserFromOrganization,
   updateMultipleUserOrgWithCapabilities,
   updateUserOrgCapabilities,
 } from '../common/user-organization.domain';
+import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
 import {
   loadOrganizationBy,
   loadOrganizationsFromEmail,
@@ -35,6 +38,7 @@ import {
   getOrganizations,
   getRolesPortal,
   loadOrganizationAdministrators,
+  loadPendingUsers,
   loadUnsecureUser,
   loadUserBy,
   loadUserDetails,
@@ -89,6 +93,20 @@ const resolvers: Resolvers = {
       context
     ) => {
       return loadUsers(context, {
+        first,
+        after,
+        orderMode,
+        orderBy,
+        filters,
+        searchTerm,
+      });
+    },
+    pendingUsers: async (
+      _,
+      { first, after, orderMode, orderBy, searchTerm, filters },
+      context
+    ) => {
+      return loadPendingUsers(context, {
         first,
         after,
         orderMode,
@@ -253,15 +271,28 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const userId = id as UserId;
+        const organization_id = context.user.selected_organization_id;
         await preventAdministratorRemovalOfOneOrganization(
           userId,
-          context.user.selected_organization_id,
+          organization_id,
           input.capabilities
         );
 
+        const [userOrganization] = await loadUserOrganization(context, {
+          user_id: userId,
+          organization_id,
+        });
+
+        if (!userOrganization) {
+          await createUserOrganizationRelationAndRemovePending(context, {
+            user_id: userId,
+            organizations_id: [organization_id],
+          });
+        }
+
         await updateUserOrgCapabilities(context, {
           user_id: userId,
-          organization_id: context.user.selected_organization_id,
+          organization_id,
           orgCapabilities: input.capabilities,
         });
         const user = await loadUserDetails({
@@ -358,6 +389,27 @@ const resolvers: Resolvers = {
           throw ForbiddenAccess('CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR');
         }
         throw UnknownError('REMOVE_USER_FROM_ORGA_ERROR', { detail: error });
+      }
+    },
+    removePendingUserFromOrganization: async (
+      _,
+      { user_id, organization_id },
+      context
+    ) => {
+      try {
+        await removeUserFromOrganizationPending(
+          context,
+          extractId(user_id),
+          extractId(organization_id)
+        );
+        const user = await loadUserBy({
+          'User.id': extractId(user_id),
+        });
+        return mapUserToGraphqlUser(user);
+      } catch (error) {
+        throw UnknownError('REMOVE_USER_FROM_PENDING_ORGA_ERROR', {
+          detail: error,
+        });
       }
     },
     login: async (_, { email, password }, context) => {

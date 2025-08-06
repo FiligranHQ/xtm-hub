@@ -58,6 +58,14 @@ type Query {
     searchTerm: String
     filters: [Filter!]
   ): UserConnection! @auth
+  pendingUsers(
+    first: Int!
+    after: ID
+    orderBy: UserOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+  ): UserConnection! @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   userHasOrganizationWithSubscription: Boolean! @auth
 }
 
@@ -111,6 +119,8 @@ type Mutation {
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   editMeUser(input: EditMeUserInput!): User! @auth
   changeSelectedOrganization(organization_id: ID!): User @auth
+  removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   resetPassword: Success! @auth

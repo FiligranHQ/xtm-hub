@@ -350,6 +350,45 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
   );
 };
 
+export const loadPendingUsers = (
+  context: PortalContext,
+  opts: QueryUsersArgs
+) => {
+  const { filters } = opts;
+  const loadPendingUserQuery = db<UserGenerated>(context, 'User', opts);
+  loadPendingUserQuery
+    .leftJoin(
+      'User_Organization_Pending as UserOrgPendingFilter',
+      'User.id',
+      'UserOrgPendingFilter.user_id'
+    )
+    .select('User.*');
+
+  loadPendingUserQuery.where(
+    'UserOrgPendingFilter.organization_id',
+    context.user.selected_organization_id
+  );
+
+  return paginate<UserGenerated, UserConnection>(
+    context,
+    'User',
+    {
+      ...opts,
+      filters: filters?.map(({ key, value }) => {
+        if (key === FilterKey.OrganizationId) {
+          return {
+            key: 'UserOrgPendingFilter.organization_id',
+            value,
+          } as unknown as Filter;
+        }
+        return { key, value };
+      }),
+    },
+    { unsecured: true },
+    loadPendingUserQuery
+  );
+};
+
 export const loadUnsecureUserBy = async (field: UserMutator) => {
   return dbUnsecure<User>('User').where(field);
 };
