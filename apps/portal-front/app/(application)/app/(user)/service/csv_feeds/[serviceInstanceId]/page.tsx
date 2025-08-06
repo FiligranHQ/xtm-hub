@@ -1,16 +1,10 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import {
-  serverFetchGraphQL,
-  serverMutateGraphQL,
-} from '@/relay/serverPortalApiFetch';
+import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { APP_PATH } from '@/utils/path/constant';
 import ServiceByIdQuery, {
   serviceByIdQuery,
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import ServiceSelfJoinMutation, {
-  serviceSelfJoinMutation,
-} from '@generated/serviceSelfJoinMutation.graphql';
 import PageLoader from './page-loader';
 
 interface ServiceCustomDashboardsPageProps {
@@ -19,35 +13,13 @@ interface ServiceCustomDashboardsPageProps {
 
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   const { serviceInstanceId } = await params;
-  const service_instance_id = decodeURIComponent(serviceInstanceId);
-  let serviceInstance: serviceInstance_fragment$data | null | undefined = null;
-  try {
-    const response = await serverFetchGraphQL<serviceByIdQuery>(
-      ServiceByIdQuery,
-      {
-        service_instance_id,
-      }
-    );
-
-    serviceInstance = response.data
-      .serviceInstanceById as unknown as serviceInstance_fragment$data;
-  } catch (error) {
-    // The user must self join the service before accessing it
-    if (
-      (error as Error).message ===
-      'ERROR_SERVICE_INSTANCE_USER_MUST_JOIN_SERVICE'
-    ) {
-      const response = await serverMutateGraphQL<serviceSelfJoinMutation>(
-        ServiceSelfJoinMutation,
-        {
-          service_instance_id,
-        }
-      );
-
-      serviceInstance = response.data
-        .selfJoinServiceInstance as unknown as serviceInstance_fragment$data;
+  const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
+  const response = await serverFetchGraphQL<serviceByIdQuery>(
+    ServiceByIdQuery,
+    {
+      service_instance_id: decodedServiceInstanceId,
     }
-  }
+  );
 
   const breadcrumbs = [
     {
@@ -55,17 +27,26 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       href: `/${APP_PATH}`,
     },
     {
-      label: serviceInstance!.name,
+      label:
+        (
+          response?.data
+            .serviceInstanceById as unknown as serviceInstance_fragment$data
+        )?.name ?? '',
       original: true,
     },
   ];
 
   return (
     <>
-      {serviceInstance ? (
+      {response ? (
         <>
           <BreadcrumbNav value={breadcrumbs} />
-          <PageLoader serviceInstance={serviceInstance} />
+          <PageLoader
+            serviceInstance={
+              response.data
+                .serviceInstanceById as unknown as serviceInstance_fragment$data
+            }
+          />
         </>
       ) : (
         <h1>Service not found</h1>

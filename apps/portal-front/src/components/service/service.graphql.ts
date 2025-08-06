@@ -37,7 +37,7 @@ export const ServiceById = graphql`
   }
 `;
 export const serviceInstanceFragment = graphql`
-  fragment serviceInstance_fragment on ServiceInstance @inline {
+  fragment serviceInstance_fragment on ServiceInstance {
     id
     name
     description

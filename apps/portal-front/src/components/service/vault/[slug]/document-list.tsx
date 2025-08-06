@@ -8,10 +8,6 @@ import {
   documentItem,
   documentsFragment,
 } from '@/components/service/document/document.graphql';
-import {
-  ServiceById,
-  serviceInstanceFragment,
-} from '@/components/service/service.graphql';
 import DeleteDocument from '@/components/service/vault/delete-document';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import DownloadDocument from '@/components/service/vault/download-document';
@@ -41,11 +37,7 @@ import {
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
-import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
-import {
-  serviceInstance_fragment$data,
-  serviceInstance_fragment$key,
-} from '@generated/serviceInstance_fragment.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
 import {
@@ -71,12 +63,12 @@ import { useDebounceCallback } from 'usehooks-ts';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;
-  queryRefService: PreloadedQuery<serviceByIdQuery>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 const DocumentList: React.FunctionComponent<ServiceProps> = ({
   queryRef,
-  queryRefService,
+  serviceInstance,
 }) => {
   const queryData = usePreloadedQuery<documentsQuery>(
     DocumentsListQuery,
@@ -88,16 +80,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     documentsList$key
   >(documentsFragment, queryData);
 
-  const queryDataService = usePreloadedQuery<serviceByIdQuery>(
-    ServiceById,
-    queryRefService
-  );
-
-  const serviceData = readInlineData<serviceInstance_fragment$key>(
-    serviceInstanceFragment,
-    queryDataService.serviceInstanceById
-  );
-  const canManageService = serviceData?.capabilities.includes(
+  const canManageService = serviceInstance?.capabilities.includes(
     GenericCapabilityName.MANAGE_ACCESS
   );
 
@@ -165,7 +148,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
             <GuardCapacityComponent displayError={false}>
               <EditDocument documentData={row.original} />
             </GuardCapacityComponent>
-            {serviceData?.capabilities.some(
+            {serviceInstance?.capabilities.some(
               (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
             ) && <EditDocument documentData={row.original} />}
             <DownloadDocument documentData={row.original} />
@@ -176,7 +159,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
                 connectionId={data.documents.__id}
               />
             </GuardCapacityComponent>
-            {serviceData?.capabilities.some(
+            {serviceInstance?.capabilities.some(
               (capa) => capa?.toUpperCase() === ServiceCapabilityName.Delete
             ) && (
               <DeleteDocument
@@ -266,18 +249,18 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
       href: `/${APP_PATH}`,
     },
     {
-      label: serviceData!.name,
+      label: serviceInstance!.name,
       original: true,
     },
   ];
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
-    serviceData as serviceInstance_fragment$data
+    serviceInstance
   );
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <h1 className="pb-s">{serviceData?.name}</h1>
+      <h1 className="pb-s">{serviceInstance?.name}</h1>
 
       <DataTable
         i18nKey={i18nKey(t)}
@@ -294,7 +277,7 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           rowCount: data.documents.totalCount,
         }}
         onClickRow={(row) => {
-          const url = `/document/visualize/${serviceData?.id}/${row.id}`;
+          const url = `/document/visualize/${serviceInstance?.id}/${row.id}`;
           window.open(url, '_blank', 'noopener,noreferrer');
         }}
         toolbar={
