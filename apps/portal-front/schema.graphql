@@ -110,7 +110,7 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  canEnrollOCTIPlatform(input: CanEnrollOCTIPlatformInput!): CanEnrollResponse!
+  isOCTIPlatformRegistered(input: IsOCTIPlatformRegisteredInput!): IsOCTIPlatformRegisteredResponse!
   canUnenrollOCTIPlatform(input: CanUnenrollOCTIPlatformInput!): CanUnenrollResponse!
   octiPlatforms: [OCTIPlatform!]!
   octiPlatformEnrollmentStatus(input: OCTIPlatformEnrollmentStatusInput!): OCTIPlatformEnrollmentStatusResponse!
@@ -369,11 +369,6 @@ input EnrollOCTIPlatformInput {
   platform: OCTIPlatformInput!
 }
 
-input CanEnrollOCTIPlatformInput {
-  organizationId: ID!
-  platformId: String!
-}
-
 input CanUnenrollOCTIPlatformInput {
   platformId: String!
 }
@@ -382,21 +377,29 @@ type EnrollmentResponse {
   token: String!
 }
 
-enum CanEnrollStatus {
-  enrolled
-  unenrolled
-  never_enrolled
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
 }
 
-type CanEnrollResponse {
-  isAllowed: Boolean!
-  status: CanEnrollStatus!
-  isSameOrganization: Boolean
+input IsOCTIPlatformRegisteredInput {
+  platformId: String!
+}
+
+type IsOCTIPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
+type IsOCTIPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  organization: IsOCTIPlatformRegisteredOrganization
 }
 
 type CanUnenrollResponse {
   isPlatformEnrolled: Boolean!
   isAllowed: Boolean
+  isInOrganization: Boolean
   organizationId: ID
 }
 

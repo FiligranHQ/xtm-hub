@@ -1,19 +1,20 @@
 import { graphql } from 'react-relay';
 
-export const CanEnrollOCTIPlatformFragment = graphql`
-  fragment enrollCanEnrollOCTIPlatformFragment on CanEnrollResponse {
+export const IsOCTIPlatformRegisteredFragment = graphql`
+  fragment enrollIsOCTIPlatformRegisteredFragment on IsOCTIPlatformRegisteredResponse {
     status
-    isAllowed
-    isSameOrganization
+    organization {
+      id
+    }
   }
 `;
-export const CanEnrollOCTIPlatformQuery = graphql`
-  query enrollCanEnrollOCTIPlatformQuery(
-    $input: CanEnrollOCTIPlatformInput!
-    $skip: Boolean!
+
+export const IsOCTIPlatformRegisteredQuery = graphql`
+  query enrollIsOCTIPlatformRegisteredQuery(
+    $input: IsOCTIPlatformRegisteredInput!
   ) {
-    canEnrollOCTIPlatform(input: $input) @skip(if: $skip) {
-      ...enrollCanEnrollOCTIPlatformFragment
+    isOCTIPlatformRegistered(input: $input) {
+      ...enrollIsOCTIPlatformRegisteredFragment
     }
   }
 `;
@@ -22,6 +23,7 @@ export const CanUnenrollOCTIPlatformFragment = graphql`
   fragment enrollCanUnenrollOCTIPlatformFragment on CanUnenrollResponse {
     isPlatformEnrolled
     isAllowed
+    isInOrganization
     organizationId
   }
 `;

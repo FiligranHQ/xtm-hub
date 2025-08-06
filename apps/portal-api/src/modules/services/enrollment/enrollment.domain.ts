@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, QueryOpts } from '../../../../knexfile';
 import {
   OctiPlatformContract,
-  OrganizationCapability,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -12,12 +11,8 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
-import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
-import {
-  loadActiveSubscriptionBy,
-  transferSubscription,
-} from '../../subcription/subscription.domain';
+import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
@@ -69,7 +64,7 @@ export const enrollmentDomain = {
     );
   },
 
-  transferExistingPlatform: async (
+  refreshExistingPlatform: async (
     context: PortalContext,
     {
       configuration,
@@ -81,36 +76,22 @@ export const enrollmentDomain = {
       targetOrganizationId: string;
     }
   ) => {
-    const subscription = await loadActiveSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy(context, {
       service_instance_id: serviceInstanceId,
     });
-
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const originOrganizationId = subscription.organization_id;
-    if (originOrganizationId !== targetOrganizationId) {
-      const isAllowed = await isUserAllowedOnOrganization(context, {
-        organizationId: originOrganizationId,
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
-      });
-
-      if (!isAllowed) {
-        throw new Error(ErrorCode.MissingCapabilityOnOriginOrganization);
-      }
+    if (subscription.organization_id !== targetOrganizationId) {
+      throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
     }
 
     await serviceContractDomain.updateConfiguration(
       context,
       serviceInstanceId,
-      { config: configuration }
+      { config: configuration, status: ServiceConfigurationStatus.Active }
     );
-
-    await transferSubscription(context, {
-      subscriptionId: subscription.id,
-      targetOrganizationId,
-    });
   },
 
   loadOCTIPlatforms: async (

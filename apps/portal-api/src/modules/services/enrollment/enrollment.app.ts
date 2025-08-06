@@ -1,29 +1,24 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  CanEnrollResponse,
-  CanEnrollStatus,
   CanUnenrollOctiPlatformInput,
   EnrollOctiPlatformInput,
+  IsOctiPlatformRegisteredInput,
+  IsOctiPlatformRegisteredResponse,
   OctiPlatform,
   OctiPlatformEnrollmentStatus,
   OctiPlatformEnrollmentStatusInput,
   OctiPlatformEnrollmentStatusResponse,
   OrganizationCapability,
+  PlatformRegistrationStatus,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
-import Subscription from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { sendMail } from '../../../server/mail-service';
 import { ErrorCode } from '../../common/error-code';
-import {
-  endSubscription,
-  loadActiveSubscriptionBy,
-  loadLastSubscriptionByServiceInstance,
-} from '../../subcription/subscription.domain';
+import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { loadOrganizationAdministrators } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
@@ -31,36 +26,6 @@ import {
   enrollmentDomain,
   OCTIPlatformConfiguration,
 } from './enrollment.domain';
-
-const loadActiveOrLastSubscription = async (
-  context: PortalContext,
-  serviceConfigurations: ServiceConfiguration[]
-): Promise<{ subscription?: Subscription; isActive: boolean }> => {
-  const activeConfiguration = serviceConfigurations.find(
-    (configuration) =>
-      configuration.status === ServiceConfigurationStatus.Active
-  );
-  if (activeConfiguration) {
-    const subscription = await loadActiveSubscriptionBy(context, {
-      service_instance_id: activeConfiguration.service_instance_id,
-    });
-    return {
-      subscription,
-      isActive: true,
-    };
-  }
-
-  const subscription = await loadLastSubscriptionByServiceInstance(
-    context,
-    serviceConfigurations.map(
-      (configuration) => configuration.service_instance_id
-    )
-  );
-  return {
-    subscription,
-    isActive: false,
-  };
-};
 
 export const enrollmentApp = {
   loadOCTIPlatforms: async (
@@ -81,13 +46,13 @@ export const enrollmentApp = {
     context: PortalContext,
     input: OctiPlatformEnrollmentStatusInput
   ): Promise<OctiPlatformEnrollmentStatusResponse> => {
-    const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatformAndToken(
+    const activeServiceConfiguration =
+      await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
         context,
         input
       );
     return {
-      status: serviceConfiguration
+      status: activeServiceConfiguration
         ? OctiPlatformEnrollmentStatus.Active
         : OctiPlatformEnrollmentStatus.Inactive,
     };
@@ -125,16 +90,30 @@ export const enrollmentApp = {
       throw new Error(ErrorCode.InvalidServiceConfiguration);
     }
 
-    const activeServiceConfiguration =
+    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
+      context,
+      {
+        organizationId,
+        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+      }
+    );
+
+    if (!isAllowed) {
+      const errorCode = isInOrganization
+        ? ErrorCode.MissingCapabilityOnOrganization
+        : ErrorCode.UserIsNotInOrganization;
+      throw new Error(errorCode);
+    }
+
+    const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
-        platform.id,
-        ServiceConfigurationStatus.Active
+        platform.id
       );
 
-    if (activeServiceConfiguration) {
-      await enrollmentDomain.transferExistingPlatform(context, {
-        serviceInstanceId: activeServiceConfiguration.service_instance_id,
+    if (serviceConfiguration) {
+      await enrollmentDomain.refreshExistingPlatform(context, {
+        serviceInstanceId: serviceConfiguration.service_instance_id,
         targetOrganizationId: organizationId,
         configuration,
       });
@@ -177,19 +156,27 @@ export const enrollmentApp = {
       return;
     }
 
-    const subscription = await loadActiveSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy(context, {
       service_instance_id: activeServiceConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const isAllowed = await isUserAllowedOnOrganization(context, {
-      organizationId: subscription.organization_id,
-      requiredCapability: OrganizationCapability.ManageOctiEnrollment,
-    });
+    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
+      context,
+      {
+        organizationId: subscription.organization_id,
+        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+      }
+    );
+
     if (!isAllowed) {
-      throw new Error(ErrorCode.MissingCapabilityOnOriginOrganization);
+      if (isInOrganization) {
+        throw new Error(ErrorCode.MissingCapabilityOnOrganization);
+      } else {
+        throw new Error(ErrorCode.UserIsNotInOrganization);
+      }
     }
 
     await serviceContractDomain.updateConfiguration(
@@ -197,77 +184,45 @@ export const enrollmentApp = {
       activeServiceConfiguration.service_instance_id,
       { status: ServiceConfigurationStatus.Inactive }
     );
-
-    await endSubscription(context, subscription.id);
   },
 
-  canEnrollOCTIPlatform: async (
+  isOCTIPlatformRegistered: async (
     context: PortalContext,
-    {
-      organizationId,
-      platformId,
-    }: { organizationId: string; platformId: string }
-  ): Promise<CanEnrollResponse> => {
-    const serviceConfigurations =
-      await serviceContractDomain.loadConfigurationsByPlatform(
+    input: IsOctiPlatformRegisteredInput
+  ): Promise<IsOctiPlatformRegisteredResponse> => {
+    const serviceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatform(
         context,
-        platformId
+        input.platformId
       );
-    const isAllowedOnTargetOrganization = await isUserAllowedOnOrganization(
-      context,
-      {
-        organizationId,
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
-      }
-    );
-
-    const wasEnrolledOnce = !!serviceConfigurations.length;
-    if (!wasEnrolledOnce) {
-      return {
-        status: CanEnrollStatus.NeverEnrolled,
-        isAllowed: isAllowedOnTargetOrganization,
-      };
+    if (!serviceConfiguration) {
+      return { status: PlatformRegistrationStatus.NeverRegistered };
     }
 
-    const { subscription, isActive } = await loadActiveOrLastSubscription(
-      context,
-      serviceConfigurations
-    );
+    const subscription = await loadSubscriptionBy(context, {
+      service_instance_id: serviceConfiguration.service_instance_id,
+    });
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const enrolledStatus = isActive
-      ? CanEnrollStatus.Enrolled
-      : CanEnrollStatus.Unenrolled;
-    const isSameOrganization = subscription.organization_id === organizationId;
-    const isAllowed = async () => {
-      if (isSameOrganization) {
-        return isAllowedOnTargetOrganization;
-      }
-
-      const isAllowedOnOriginOrganization = await isUserAllowedOnOrganization(
-        context,
-        {
-          organizationId: subscription.organization_id,
-          requiredCapability: OrganizationCapability.ManageOctiEnrollment,
-        }
-      );
-
-      return isAllowedOnTargetOrganization && isAllowedOnOriginOrganization;
-    };
-
     return {
-      status: enrolledStatus,
-      isSameOrganization,
-      isAllowed: await isAllowed(),
+      status:
+        serviceConfiguration.status === ServiceConfigurationStatus.Active
+          ? PlatformRegistrationStatus.Registered
+          : PlatformRegistrationStatus.Unregistered,
+      organization: { id: subscription.organization_id },
     };
   },
 
   canUnenrollOCTIPlatform: async (
     context: PortalContext,
     { platformId }: CanUnenrollOctiPlatformInput
-  ): Promise<{ isAllowed: boolean; organizationId: OrganizationId }> => {
+  ): Promise<{
+    isAllowed: boolean;
+    organizationId: OrganizationId;
+    isInOrganization: boolean;
+  }> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
@@ -278,18 +233,25 @@ export const enrollmentApp = {
       throw new Error(ErrorCode.PlatformNotEnrolled);
     }
 
-    const subscription = await loadActiveSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy(context, {
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.PlatformNotEnrolled);
     }
 
-    const isAllowed = await isUserAllowedOnOrganization(context, {
-      organizationId: subscription.organization_id,
-      requiredCapability: OrganizationCapability.ManageOctiEnrollment,
-    });
+    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
+      context,
+      {
+        organizationId: subscription.organization_id,
+        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+      }
+    );
 
-    return { isAllowed, organizationId: subscription.organization_id };
+    return {
+      isAllowed,
+      isInOrganization,
+      organizationId: subscription.organization_id,
+    };
   },
 };

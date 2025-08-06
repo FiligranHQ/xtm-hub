@@ -1,4 +1,6 @@
-import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
+import OrganizationListUserOrganizationsQueryGraphql, {
+  organizationListUserOrganizationsQuery,
+} from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { AutoForm } from 'filigran-ui';
 import {
   FormControl,
@@ -9,10 +11,11 @@ import {
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import React from 'react';
+import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
 
 interface Props {
-  organizations: organizationListUserOrganizationsQuery$data['userOrganizations'];
+  queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
   cancel: () => void;
   confirm: (organizationId: string) => void;
 }
@@ -24,8 +27,14 @@ export const selectOrganizationFormSchema = z.object({
 export const EnrollOrganizationForm: React.FC<Props> = ({
   cancel,
   confirm,
-  organizations,
+  queryRef,
 }) => {
+  const userOrganizationsPreloadedQuery =
+    usePreloadedQuery<organizationListUserOrganizationsQuery>(
+      OrganizationListUserOrganizationsQueryGraphql,
+      queryRef
+    );
+  const organizations = userOrganizationsPreloadedQuery.userOrganizations;
   const t = useTranslations();
 
   return (

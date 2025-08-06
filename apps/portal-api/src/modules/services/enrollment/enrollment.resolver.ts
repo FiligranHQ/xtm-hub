@@ -15,24 +15,25 @@ import { enrollmentApp } from './enrollment.app';
 
 const resolvers: Resolvers = {
   Query: {
-    canEnrollOCTIPlatform: async (_, { input }, context) => {
+    isOCTIPlatformRegistered: async (_, { input }, context) => {
       try {
-        const response = await enrollmentApp.canEnrollOCTIPlatform(context, {
-          ...input,
-          organizationId: fromGlobalId(input.organizationId).id,
-        });
-
+        const response = await enrollmentApp.isOCTIPlatformRegistered(
+          context,
+          input
+        );
         return response;
       } catch (error) {
-        if (error.message.includes(ErrorCode.SubscriptionNotFound)) {
-          throw NotFoundError(error.message);
+        switch (error.message) {
+          case ErrorCode.SubscriptionNotFound:
+            throw NotFoundError(error.message);
         }
 
-        throw UnknownError(ErrorCode.CanEnrollOCTIPlatformUnknownError, {
-          detail: error,
+        throw UnknownError(ErrorCode.IsOCTIPlatformRegisteredUnknownError, {
+          detail: error.message,
         });
       }
     },
+
     canUnenrollOCTIPlatform: async (_, { input }, context) => {
       try {
         const response = await enrollmentApp.canUnenrollOCTIPlatform(
@@ -107,7 +108,9 @@ const resolvers: Resolvers = {
           case ErrorCode.SubscriptionNotFound:
           case ErrorCode.ServiceContractNotFound:
             throw NotFoundError(error.message);
-          case ErrorCode.MissingCapabilityOnOriginOrganization:
+          case ErrorCode.MissingCapabilityOnOrganization:
+          case ErrorCode.RegistrationOnAnotherOrganizationForbidden:
+          case ErrorCode.UserIsNotInOrganization:
             throw ForbiddenAccess(error.message);
         }
 
@@ -138,7 +141,8 @@ const resolvers: Resolvers = {
           case ErrorCode.ServiceConfigurationNotFound:
           case ErrorCode.SubscriptionNotFound:
             throw NotFoundError(error.message);
-          case ErrorCode.MissingCapabilityOnOriginOrganization:
+          case ErrorCode.MissingCapabilityOnOrganization:
+          case ErrorCode.UserIsNotInOrganization:
             throw ForbiddenAccess(error.message);
         }
 

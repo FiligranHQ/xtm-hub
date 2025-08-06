@@ -67,24 +67,6 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
-export type CanEnrollOctiPlatformInput = {
-  organizationId: Scalars['ID']['input'];
-  platformId: Scalars['String']['input'];
-};
-
-export type CanEnrollResponse = {
-  __typename?: 'CanEnrollResponse';
-  isAllowed: Scalars['Boolean']['output'];
-  isSameOrganization?: Maybe<Scalars['Boolean']['output']>;
-  status: CanEnrollStatus;
-};
-
-export enum CanEnrollStatus {
-  Enrolled = 'enrolled',
-  NeverEnrolled = 'never_enrolled',
-  Unenrolled = 'unenrolled'
-}
-
 export type CanUnenrollOctiPlatformInput = {
   platformId: Scalars['String']['input'];
 };
@@ -92,6 +74,7 @@ export type CanUnenrollOctiPlatformInput = {
 export type CanUnenrollResponse = {
   __typename?: 'CanUnenrollResponse';
   isAllowed?: Maybe<Scalars['Boolean']['output']>;
+  isInOrganization?: Maybe<Scalars['Boolean']['output']>;
   isPlatformEnrolled: Scalars['Boolean']['output'];
   organizationId?: Maybe<Scalars['ID']['output']>;
 };
@@ -311,6 +294,21 @@ export type GenericServiceCapability = Node & {
   __typename?: 'GenericServiceCapability';
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
+};
+
+export type IsOctiPlatformRegisteredInput = {
+  platformId: Scalars['String']['input'];
+};
+
+export type IsOctiPlatformRegisteredOrganization = Node & {
+  __typename?: 'IsOCTIPlatformRegisteredOrganization';
+  id: Scalars['ID']['output'];
+};
+
+export type IsOctiPlatformRegisteredResponse = {
+  __typename?: 'IsOCTIPlatformRegisteredResponse';
+  organization?: Maybe<IsOctiPlatformRegisteredOrganization>;
+  status: PlatformRegistrationStatus;
 };
 
 export type Label = Node & {
@@ -821,9 +819,14 @@ export type PlatformProvider = {
   type: Scalars['String']['output'];
 };
 
+export enum PlatformRegistrationStatus {
+  NeverRegistered = 'never_registered',
+  Registered = 'registered',
+  Unregistered = 'unregistered'
+}
+
 export type Query = {
   __typename?: 'Query';
-  canEnrollOCTIPlatform: CanEnrollResponse;
   canUnenrollOCTIPlatform: CanUnenrollResponse;
   csvFeed?: Maybe<CsvFeed>;
   csvFeeds: CsvFeedConnection;
@@ -832,6 +835,7 @@ export type Query = {
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
+  isOCTIPlatformRegistered: IsOctiPlatformRegisteredResponse;
   label?: Maybe<Label>;
   labels?: Maybe<LabelConnection>;
   me?: Maybe<User>;
@@ -867,11 +871,6 @@ export type Query = {
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
-};
-
-
-export type QueryCanEnrollOctiPlatformArgs = {
-  input: CanEnrollOctiPlatformInput;
 };
 
 
@@ -935,6 +934,11 @@ export type QueryDocumentsArgs = {
   parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryIsOctiPlatformRegisteredArgs = {
+  input: IsOctiPlatformRegisteredInput;
 };
 
 
@@ -1553,7 +1557,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( OctiPlatform ) | ( ObasScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( IsOctiPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( OctiPlatform ) | ( ObasScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -1565,9 +1569,6 @@ export type ResolversTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  CanEnrollOCTIPlatformInput: CanEnrollOctiPlatformInput;
-  CanEnrollResponse: ResolverTypeWrapper<CanEnrollResponse>;
-  CanEnrollStatus: CanEnrollStatus;
   CanUnenrollOCTIPlatformInput: CanUnenrollOctiPlatformInput;
   CanUnenrollResponse: ResolverTypeWrapper<CanUnenrollResponse>;
   Capability: ResolverTypeWrapper<Capability>;
@@ -1597,6 +1598,9 @@ export type ResolversTypes = ResolversObject<{
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  IsOCTIPlatformRegisteredInput: IsOctiPlatformRegisteredInput;
+  IsOCTIPlatformRegisteredOrganization: ResolverTypeWrapper<IsOctiPlatformRegisteredOrganization>;
+  IsOCTIPlatformRegisteredResponse: ResolverTypeWrapper<IsOctiPlatformRegisteredResponse>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   Label: ResolverTypeWrapper<Label>;
   LabelConnection: ResolverTypeWrapper<LabelConnection>;
@@ -1627,6 +1631,7 @@ export type ResolversTypes = ResolversObject<{
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
+  PlatformRegistrationStatus: PlatformRegistrationStatus;
   Query: ResolverTypeWrapper<{}>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
@@ -1684,8 +1689,6 @@ export type ResolversParentTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
-  CanEnrollOCTIPlatformInput: CanEnrollOctiPlatformInput;
-  CanEnrollResponse: CanEnrollResponse;
   CanUnenrollOCTIPlatformInput: CanUnenrollOctiPlatformInput;
   CanUnenrollResponse: CanUnenrollResponse;
   Capability: Capability;
@@ -1713,6 +1716,9 @@ export type ResolversParentTypes = ResolversObject<{
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  IsOCTIPlatformRegisteredInput: IsOctiPlatformRegisteredInput;
+  IsOCTIPlatformRegisteredOrganization: IsOctiPlatformRegisteredOrganization;
+  IsOCTIPlatformRegisteredResponse: IsOctiPlatformRegisteredResponse;
   JSON: Scalars['JSON']['output'];
   Label: Label;
   LabelConnection: LabelConnection;
@@ -1798,15 +1804,9 @@ export type ActionTrackingResolvers<ContextType = PortalContext, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type CanEnrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanEnrollResponse'] = ResolversParentTypes['CanEnrollResponse']> = ResolversObject<{
-  isAllowed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  isSameOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['CanEnrollStatus'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type CanUnenrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnenrollResponse'] = ResolversParentTypes['CanUnenrollResponse']> = ResolversObject<{
   isAllowed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isInOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isPlatformEnrolled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   organizationId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1948,6 +1948,17 @@ export type GenericServiceCapabilityResolvers<ContextType = PortalContext, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type IsOctiPlatformRegisteredOrganizationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IsOCTIPlatformRegisteredOrganization'] = ResolversParentTypes['IsOCTIPlatformRegisteredOrganization']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type IsOctiPlatformRegisteredResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IsOCTIPlatformRegisteredResponse'] = ResolversParentTypes['IsOCTIPlatformRegisteredResponse']> = ResolversObject<{
+  organization?: Resolver<Maybe<ResolversTypes['IsOCTIPlatformRegisteredOrganization']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['PlatformRegistrationStatus'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -2043,7 +2054,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'OCTIPlatform' | 'ObasScenario' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'IsOCTIPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'OCTIPlatform' | 'ObasScenario' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -2145,7 +2156,6 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  canEnrollOCTIPlatform?: Resolver<ResolversTypes['CanEnrollResponse'], ParentType, ContextType, RequireFields<QueryCanEnrollOctiPlatformArgs, 'input'>>;
   canUnenrollOCTIPlatform?: Resolver<ResolversTypes['CanUnenrollResponse'], ParentType, ContextType, RequireFields<QueryCanUnenrollOctiPlatformArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
   csvFeeds?: Resolver<ResolversTypes['CsvFeedConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2154,6 +2164,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  isOCTIPlatformRegistered?: Resolver<ResolversTypes['IsOCTIPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsOctiPlatformRegisteredArgs, 'input'>>;
   label?: Resolver<Maybe<ResolversTypes['Label']>, ParentType, ContextType, RequireFields<QueryLabelArgs, 'id'>>;
   labels?: Resolver<Maybe<ResolversTypes['LabelConnection']>, ParentType, ContextType, RequireFields<QueryLabelsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -2430,7 +2441,6 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
-  CanEnrollResponse?: CanEnrollResponseResolvers<ContextType>;
   CanUnenrollResponse?: CanUnenrollResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
@@ -2445,6 +2455,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
   EnrollmentResponse?: EnrollmentResponseResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
+  IsOCTIPlatformRegisteredOrganization?: IsOctiPlatformRegisteredOrganizationResolvers<ContextType>;
+  IsOCTIPlatformRegisteredResponse?: IsOctiPlatformRegisteredResponseResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Label?: LabelResolvers<ContextType>;
   LabelConnection?: LabelConnectionResolvers<ContextType>;

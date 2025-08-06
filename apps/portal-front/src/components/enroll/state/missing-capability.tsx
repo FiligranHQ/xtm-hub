@@ -5,22 +5,23 @@ import UserListOrganizationAdministratorsQueryGraphql, {
 } from '@generated/userListOrganizationAdministratorsQuery.graphql';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
+import { useLazyLoadQuery } from 'react-relay';
 
 interface Props {
-  queryRef: PreloadedQuery<userListOrganizationAdministratorsQuery>;
   cancel: () => void;
+  organizationId: string;
 }
 
 export const EnrollStateMissingCapability: React.FC<Props> = ({
-  queryRef,
+  organizationId,
   cancel,
 }) => {
   const t = useTranslations();
-  const query = usePreloadedQuery<userListOrganizationAdministratorsQuery>(
-    UserListOrganizationAdministratorsQueryGraphql,
-    queryRef
-  );
+  const { organizationAdministrators } =
+    useLazyLoadQuery<userListOrganizationAdministratorsQuery>(
+      UserListOrganizationAdministratorsQueryGraphql,
+      { organizationId }
+    );
 
   return (
     <EnrollStateLayout cancel={cancel}>
@@ -36,7 +37,7 @@ export const EnrollStateMissingCapability: React.FC<Props> = ({
       <p>{t('Enroll.OCTI.Error.Capability.Description')}</p>
       <p>{t('Enroll.OCTI.Error.Capability.AdminListTitle')}</p>
       <ul className="list-disc ml-l">
-        {query.organizationAdministrators.map((administrator) => (
+        {organizationAdministrators.map((administrator) => (
           <li key={administrator.id}>
             {administrator.first_name} {administrator.last_name} -{' '}
             {administrator.email}
