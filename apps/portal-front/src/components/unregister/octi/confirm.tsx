@@ -1,5 +1,5 @@
-import { EnrollStateLayout } from '@/components/enroll/state/layout';
 import { getOrganization } from '@/components/organization/organization.service';
+import { EnrollStateLayout } from '@/components/register/state/layout';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 

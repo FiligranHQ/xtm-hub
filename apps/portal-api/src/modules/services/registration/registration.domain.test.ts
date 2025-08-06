@@ -15,7 +15,7 @@ import { serviceContractDomain } from '../contract/domain';
 import {
   enrollmentDomain,
   OCTIPlatformConfiguration,
-} from './enrollment.domain';
+} from './registration.domain';
 
 describe('Enrollment domain', () => {
   let platformId: string;

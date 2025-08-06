@@ -1,4 +1,4 @@
-import { EnrollStateLayout } from '@/components/enroll/state/layout';
+import { EnrollStateLayout } from '@/components/register/state/layout';
 import { useTranslations } from 'next-intl';
 import React, { useEffect } from 'react';
 

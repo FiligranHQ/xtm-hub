@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { redirectToOCTIEnrollment } from './enroll-octi';
+import { redirectToOCTIEnrollment } from './register-octi';
 import { redirectToResource } from './resource';
-import { redirectToOCTIUnenrollment } from './unenroll-octi';
+import { redirectToOCTIUnenrollment } from './unregister-octi';
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{

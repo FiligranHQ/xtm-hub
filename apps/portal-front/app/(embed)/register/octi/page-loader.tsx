@@ -1,7 +1,7 @@
 'use client';
 
-import { EnrollOCTI } from '@/components/enroll/octi';
 import Loader from '@/components/loader';
+import { EnrollOCTI } from '@/components/register/octi';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import EnrollIsOCTIPlatformRegisteredQueryGraphql, {

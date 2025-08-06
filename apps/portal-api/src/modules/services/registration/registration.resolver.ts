@@ -11,7 +11,7 @@ import {
   UnknownError,
 } from '../../../utils/error.util';
 import { ErrorCode } from '../../common/error-code';
-import { enrollmentApp } from './enrollment.app';
+import { enrollmentApp } from './registration.app';
 
 const resolvers: Resolvers = {
   Query: {

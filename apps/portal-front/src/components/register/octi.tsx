@@ -1,8 +1,8 @@
-import { EnrollOCTIPlatform } from '@/components/enroll/enroll.graphql';
-import { EnrollNeverEnrolled } from '@/components/enroll/never-enrolled';
-import { EnrollStateLayout } from '@/components/enroll/state/layout';
-import { EnrollStateMissingCapability } from '@/components/enroll/state/missing-capability';
 import Loader from '@/components/loader';
+import { EnrollNeverEnrolled } from '@/components/register/never-registered';
+import { EnrollOCTIPlatform } from '@/components/register/register.graphql';
+import { EnrollStateLayout } from '@/components/register/state/layout';
+import { EnrollStateMissingCapability } from '@/components/register/state/missing-capability';
 import enrollIsOCTIPlatformRegisteredFragmentGraphql, {
   enrollIsOCTIPlatformRegisteredFragment$key,
 } from '@generated/enrollIsOCTIPlatformRegisteredFragment.graphql';

@@ -25,7 +25,7 @@ import { serviceDefinitionDomain } from '../definition/domain';
 import {
   enrollmentDomain,
   OCTIPlatformConfiguration,
-} from './enrollment.domain';
+} from './registration.domain';
 
 export const enrollmentApp = {
   loadOCTIPlatforms: async (

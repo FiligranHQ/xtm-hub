@@ -1,4 +1,4 @@
-import { EnrollStateLayout } from '@/components/enroll/state/layout';
+import { EnrollStateLayout } from '@/components/register/state/layout';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,

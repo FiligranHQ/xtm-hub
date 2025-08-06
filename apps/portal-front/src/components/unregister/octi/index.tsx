@@ -1,12 +1,12 @@
+import Loader from '@/components/loader';
 import {
   CanUnenrollOCTIPlatformFragment,
   UnenrollOCTIPlatform,
-} from '@/components/enroll/enroll.graphql';
-import { EnrollStateLayout } from '@/components/enroll/state/layout';
-import Loader from '@/components/loader';
-import { UnenrollOCTIConfirm } from '@/components/unenroll/octi/confirm';
-import { UnenrollOCTIMissingCapability } from '@/components/unenroll/octi/missing-capability';
-import { UnenrollOCTIPlatformNotEnrolled } from '@/components/unenroll/octi/platform-not-enrolled';
+} from '@/components/register/register.graphql';
+import { EnrollStateLayout } from '@/components/register/state/layout';
+import { UnenrollOCTIConfirm } from '@/components/unregister/octi/confirm';
+import { UnenrollOCTIMissingCapability } from '@/components/unregister/octi/missing-capability';
+import { UnenrollOCTIPlatformNotEnrolled } from '@/components/unregister/octi/platform-not-registered';
 import { enrollCanUnenrollOCTIPlatformFragment$key } from '@generated/enrollCanUnenrollOCTIPlatformFragment.graphql';
 import EnrollCanUnenrollOCTIPlatformQueryGraphql, {
   enrollCanUnenrollOCTIPlatformQuery,

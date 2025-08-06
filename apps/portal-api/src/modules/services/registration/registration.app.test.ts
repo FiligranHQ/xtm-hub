@@ -20,7 +20,7 @@ import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
-import { enrollmentApp } from './enrollment.app';
+import { enrollmentApp } from './registration.app';
 
 describe('Enrollment app', () => {
   describe('enrollOCTIPlatform', () => {

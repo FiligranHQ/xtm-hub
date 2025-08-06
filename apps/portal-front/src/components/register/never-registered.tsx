@@ -1,5 +1,5 @@
-import { EnrollOrganizationForm } from '@/components/enroll/form/organization';
 import Loader from '@/components/loader';
+import { EnrollOrganizationForm } from '@/components/register/form/organization';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
