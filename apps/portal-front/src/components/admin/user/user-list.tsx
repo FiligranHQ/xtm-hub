@@ -1,7 +1,6 @@
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
-import { AddUser } from '@/components/admin/user/add-user';
-import { AdminAddUser } from '@/components/admin/user/admin-add-user';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { PortalContext } from '@/components/me/app-portal-context';
 import {
   handleSortingChange,
@@ -26,13 +25,7 @@ import {
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import {
-  createContext,
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { FunctionComponent, useContext, useEffect, useState } from 'react';
 import {
   graphql,
   readInlineData,
@@ -98,8 +91,6 @@ export const UserFragment = graphql`
   }
 `;
 
-export const UserListContext = createContext<{ connectionID?: string }>({});
-
 interface UserListProps {
   organization?: string;
 }
@@ -155,6 +146,9 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     userListQuery,
     userList_users$key
   >(userListFragment, queryData);
+
+  const { setConnectionId } = getUserListContext();
+  setConnectionId(data.users.__id);
 
   const columns: ColumnDef<userList_fragment$data>[] = [
     {
@@ -308,7 +302,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   );
 
   return (
-    <UserListContext.Provider value={{ connectionID: data.users.__id }}>
+    <div>
       <DataTable
         columns={columns}
         data={userData}
@@ -334,11 +328,6 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">
               <DataTableHeadBarOptions />
-              {isAdminPath ? (
-                <AdminAddUser connectionId={data?.users?.__id} />
-              ) : (
-                <AddUser connectionId={data?.users?.__id} />
-              )}
             </div>
           </div>
         }
@@ -359,7 +348,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           }
         />
       )}
-    </UserListContext.Provider>
+    </div>
   );
 };
 

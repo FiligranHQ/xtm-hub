@@ -622,6 +622,7 @@
     "Roles": "Rôles",
     "Status": "Statut",
     "Title": "Liste des utilisateurs",
+    "TabTitle": "Utilisateurs",
     "UserForm": {
       "Email": "Email",
       "Password": "Mot de passe",

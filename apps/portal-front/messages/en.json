@@ -623,6 +623,7 @@
     "Roles": "Roles",
     "Status": "Status",
     "Title": "Users list",
+    "TabTitle": "Users",
     "UserForm": {
       "Email": "Email",
       "Password": "Password",
