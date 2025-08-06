@@ -24,7 +24,7 @@
     "start-tsx": "LOCAL_DEV=true tsx --watch src/index.ts --clear-screen=false",
     "dev:tsc": "tsc --watch --preserveWatchOutput",
     "dev:node": "node --watch dist/index.js",
-    "start-dev": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\"",
+    "start-dev": "yarn generate-pg-to-ts && concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\"",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "lint-staged": "lint-staged",
