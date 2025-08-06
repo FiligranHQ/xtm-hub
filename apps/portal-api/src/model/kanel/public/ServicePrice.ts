@@ -4,7 +4,7 @@
 import type { ServiceDefinitionId } from './ServiceDefinition';
 
 /** Identifier type for public.Service_Price */
-export type ServicePriceId = string & { __brand: 'ServicePriceId' };
+export type ServicePriceId = string & { __brand: 'public.Service_Price' };
 
 /** Represents the table public.Service_Price */
 export default interface ServicePrice {
@@ -12,11 +12,11 @@ export default interface ServicePrice {
 
   fee_type: string | null;
 
-  start_date: Date | null;
-
   price: number | null;
 
   service_definition_id: ServiceDefinitionId | null;
+
+  start_date: Date | null;
 }
 
 /** Represents the initializer for the table public.Service_Price */
@@ -27,11 +27,11 @@ export interface ServicePriceInitializer {
   /** Default value: 'MONTHLY'::text */
   fee_type?: string | null;
 
-  start_date?: Date | null;
-
   price?: number | null;
 
   service_definition_id?: ServiceDefinitionId | null;
+
+  start_date?: Date | null;
 }
 
 /** Represents the mutator for the table public.Service_Price */
@@ -40,9 +40,9 @@ export interface ServicePriceMutator {
 
   fee_type?: string | null;
 
-  start_date?: Date | null;
-
   price?: number | null;
 
   service_definition_id?: ServiceDefinitionId | null;
+
+  start_date?: Date | null;
 }

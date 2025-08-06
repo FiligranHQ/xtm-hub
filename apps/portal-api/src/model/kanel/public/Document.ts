@@ -4,7 +4,7 @@
 import type { ServiceInstanceId } from './ServiceInstance';
 
 /** Identifier type for public.Document */
-export type DocumentId = string & { __brand: 'DocumentId' };
+export type DocumentId = string & { __brand: 'public.Document' };
 
 /** Represents the table public.Document */
 export default interface Document {

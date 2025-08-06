@@ -5,7 +5,7 @@ import type { OrganizationId } from './Organization';
 import type { ServiceInstanceId } from './ServiceInstance';
 
 /** Identifier type for public.Subscription */
-export type SubscriptionId = string & { __brand: 'SubscriptionId' };
+export type SubscriptionId = string & { __brand: 'public.Subscription' };
 
 /** Represents the table public.Subscription */
 export default interface Subscription {
@@ -15,10 +15,6 @@ export default interface Subscription {
 
   service_instance_id: ServiceInstanceId | null;
 
-  start_date: Date | null;
-
-  end_date: Date | null;
-
   status: string | null;
 
   joining: string | null;
@@ -26,6 +22,10 @@ export default interface Subscription {
   billing: number | null;
 
   justification: string | null;
+
+  start_date: Date | null;
+
+  end_date: Date | null;
 }
 
 /** Represents the initializer for the table public.Subscription */
@@ -35,10 +35,6 @@ export interface SubscriptionInitializer {
   organization_id?: OrganizationId | null;
 
   service_instance_id?: ServiceInstanceId | null;
-
-  start_date?: Date | null;
-
-  end_date?: Date | null;
 
   /** Default value: 'ACCEPTED'::text */
   status?: string | null;
@@ -50,6 +46,10 @@ export interface SubscriptionInitializer {
   billing?: number | null;
 
   justification?: string | null;
+
+  start_date?: Date | null;
+
+  end_date?: Date | null;
 }
 
 /** Represents the mutator for the table public.Subscription */
@@ -60,10 +60,6 @@ export interface SubscriptionMutator {
 
   service_instance_id?: ServiceInstanceId | null;
 
-  start_date?: Date | null;
-
-  end_date?: Date | null;
-
   status?: string | null;
 
   joining?: string | null;
@@ -71,4 +67,8 @@ export interface SubscriptionMutator {
   billing?: number | null;
 
   justification?: string | null;
+
+  start_date?: Date | null;
+
+  end_date?: Date | null;
 }

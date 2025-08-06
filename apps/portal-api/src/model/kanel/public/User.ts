@@ -4,7 +4,7 @@
 import type { OrganizationId } from './Organization';
 
 /** Identifier type for public.User */
-export type UserId = string & { __brand: 'UserId' };
+export type UserId = string & { __brand: 'public.User' };
 
 /** Represents the table public.User */
 export default interface User {
