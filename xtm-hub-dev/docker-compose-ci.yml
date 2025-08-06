@@ -171,8 +171,6 @@ services:
         - type=registry,ref=filigran/portal-e2e-tests:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-e2e-tests:main
         - type=registry,ref=filigran/portal-e2e-tests:development
-    volumes:
-      - "./ctrf:/app/apps/portal-e2e-tests/ctrf"
     depends_on:
       portal-front:
         condition: service_healthy
@@ -194,3 +192,5 @@ services:
       - GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}
       - GITHUB_PR_TITLE=${GITHUB_PR_TITLE}
       - GITHUB_RUN_ID=${GITHUB_RUN_ID}
+    volumes:
+      - "./ctrf:/app/ctrf"
