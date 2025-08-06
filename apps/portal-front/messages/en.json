@@ -15,7 +15,7 @@
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Bypass inside of an organization",
       "MANAGE_ACCESS": "Ability to invite other users to this organization",
-      "MANAGE_OCTI_ENROLLMENT": "Ability to register and unregister OpenCTI platforms",
+      "MANAGE_OPENCTI_REGISTRATION": "Ability to register and unregister OpenCTI platforms",
       "MANAGE_SUBSCRIPTION": "Ability to manage and subscribe the organization to services"
     },
     "Description": "You can add specific capabilities to Filigran users",

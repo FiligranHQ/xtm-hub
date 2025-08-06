@@ -28,7 +28,7 @@ export const UnenrollOCTIMissingCapability: React.FC<Props> = ({
       <h1>
         {t('Unenroll.OCTI.Error.Capability.Title', {
           capability:
-            OrganizationCapabilityEnum.MANAGE_OCTI_ENROLLMENT.replaceAll(
+            OrganizationCapabilityEnum.MANAGE_OPENCTI_REGISTRATION.replaceAll(
               '_',
               ' '
             ),

@@ -94,7 +94,7 @@ export const enrollmentApp = {
       context,
       {
         organizationId,
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
       }
     );
 
@@ -167,7 +167,7 @@ export const enrollmentApp = {
       context,
       {
         organizationId: subscription.organization_id,
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
       }
     );
 
@@ -244,7 +244,7 @@ export const enrollmentApp = {
       context,
       {
         organizationId: subscription.organization_id,
-        requiredCapability: OrganizationCapability.ManageOctiEnrollment,
+        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
       }
     );
 

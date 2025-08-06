@@ -28,7 +28,7 @@ export const EnrollStateMissingCapability: React.FC<Props> = ({
       <h1>
         {t('Enroll.OCTI.Error.Capability.Title', {
           capability:
-            OrganizationCapabilityEnum.MANAGE_OCTI_ENROLLMENT.replaceAll(
+            OrganizationCapabilityEnum.MANAGE_OPENCTI_REGISTRATION.replaceAll(
               '_',
               ' '
             ),
