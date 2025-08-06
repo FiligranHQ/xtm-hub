@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MeResponse, SettingsResponse } from './response';
 import { getLoginRedirectionURL } from './url';
 
-export const redirectToOCTIUnenrollment = async (request: NextRequest) => {
+export const redirectToOCTIUnregistration = async (request: NextRequest) => {
   const settingsResponse = (await serverPortalApiFetch<
     typeof SettingsQuery,
     settingsQuery

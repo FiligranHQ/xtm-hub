@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { redirectToOCTIEnrollment } from './register-octi';
 import { redirectToResource } from './resource';
-import { redirectToOCTIUnenrollment } from './unregister-octi';
+import { redirectToOCTIUnregistration } from './unregister-octi';
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{
@@ -19,7 +19,7 @@ export async function GET(
   }
 
   if (awaitedParams.identifier === 'unenroll-octi') {
-    return redirectToOCTIUnenrollment(request);
+    return redirectToOCTIUnregistration(request);
   }
 
   return redirectToResource(awaitedParams, request);

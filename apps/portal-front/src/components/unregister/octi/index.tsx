@@ -27,7 +27,7 @@ interface Props {
   queryRef: PreloadedQuery<enrollCanUnenrollOCTIPlatformQuery>;
 }
 
-type UnenrollmentStatus = 'idle' | 'succeeded' | 'failed';
+type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
 
 export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   const t = useTranslations();
@@ -46,7 +46,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   const [unenrollPlatform] =
     useMutation<enrollUnenrollOCTIPlatformMutation>(UnenrollOCTIPlatform);
 
-  const [status, setStatus] = useState<UnenrollmentStatus>('idle');
+  const [status, setStatus] = useState<UnregistrationStatus>('idle');
   const cancel = () => {
     window.opener?.postMessage({ action: 'cancel' }, '*');
   };
