@@ -27,7 +27,7 @@ input CanUnenrollOCTIPlatformInput {
   platformId: String!
 }
 
-type EnrollmentResponse {
+type RegistrationResponse {
   token: String!
 }
 
@@ -61,18 +61,18 @@ input UnenrollOCTIPlatformInput {
   platformId: String!
 }
 
-input OCTIPlatformEnrollmentStatusInput {
+input OCTIPlatformRegistrationStatusInput {
   platformId: String!
   token: String!
 }
 
-enum OCTIPlatformEnrollmentStatus {
+enum OCTIPlatformRegistrationStatus {
   active
   inactive
 }
 
-type OCTIPlatformEnrollmentStatusResponse {
-  status: OCTIPlatformEnrollmentStatus!
+type OCTIPlatformRegistrationStatusResponse {
+  status: OCTIPlatformRegistrationStatus!
 }
 
 type Query {
@@ -83,12 +83,13 @@ type Query {
     input: CanUnenrollOCTIPlatformInput!
   ): CanUnenrollResponse! @auth
   octiPlatforms: [OCTIPlatform!]! @auth
-  octiPlatformEnrollmentStatus(
-    input: OCTIPlatformEnrollmentStatusInput!
-  ): OCTIPlatformEnrollmentStatusResponse!
+  octiPlatformRegistrationStatus(
+    input: OCTIPlatformRegistrationStatusInput!
+  ): OCTIPlatformRegistrationStatusResponse!
 }
 
 type Mutation {
-  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): EnrollmentResponse! @auth
+  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): RegistrationResponse!
+    @auth
   unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success! @auth
 }

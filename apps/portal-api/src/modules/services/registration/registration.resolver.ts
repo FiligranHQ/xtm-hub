@@ -11,13 +11,13 @@ import {
   UnknownError,
 } from '../../../utils/error.util';
 import { ErrorCode } from '../../common/error-code';
-import { enrollmentApp } from './registration.app';
+import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {
   Query: {
     isOCTIPlatformRegistered: async (_, { input }, context) => {
       try {
-        const response = await enrollmentApp.isOCTIPlatformRegistered(
+        const response = await registrationApp.isOCTIPlatformRegistered(
           context,
           input
         );
@@ -36,7 +36,7 @@ const resolvers: Resolvers = {
 
     canUnenrollOCTIPlatform: async (_, { input }, context) => {
       try {
-        const response = await enrollmentApp.canUnenrollOCTIPlatform(
+        const response = await registrationApp.canUnenrollOCTIPlatform(
           context,
           input
         );
@@ -61,9 +61,9 @@ const resolvers: Resolvers = {
       }
     },
     octiPlatforms: async (_, _z, context) =>
-      enrollmentApp.loadOCTIPlatforms(context),
-    octiPlatformEnrollmentStatus: async (_, { input }, context) =>
-      enrollmentApp.loadOCTIPlatformEnrollmentStatus(context, input),
+      registrationApp.loadOCTIPlatforms(context),
+    octiPlatformRegistrationStatus: async (_, { input }, context) =>
+      registrationApp.loadOCTIPlatformRegistrationStatus(context, input),
   },
   Mutation: {
     enrollOCTIPlatform: async (_, { input }, context) => {
@@ -90,7 +90,7 @@ const resolvers: Resolvers = {
 
       const trx = await dbTx();
       try {
-        const token = await enrollmentApp.enrollOCTIPlatform(
+        const token = await registrationApp.enrollOCTIPlatform(
           {
             ...context,
             trx,
@@ -126,7 +126,7 @@ const resolvers: Resolvers = {
     unenrollOCTIPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        await enrollmentApp.unenrollOCTIPlatform(
+        await registrationApp.unenrollOCTIPlatform(
           {
             ...context,
             trx,

@@ -11,11 +11,13 @@ export const isExternalService = (
 ) =>
   [
     ServiceDefinitionIdentifierEnum.LINK,
-    ServiceDefinitionIdentifierEnum.OCTI_ENROLLMENT,
+    ServiceDefinitionIdentifierEnum.OCTI_REGISTRATION,
   ].includes(service_definition_identifier);
 
-export const isEnrollmentService = (serviceInstance: ServiceInstanceCardData) =>
-  [ServiceDefinitionIdentifierEnum.OCTI_ENROLLMENT].includes(
+export const isRegistrationService = (
+  serviceInstance: ServiceInstanceCardData
+) =>
+  [ServiceDefinitionIdentifierEnum.OCTI_REGISTRATION].includes(
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
 
@@ -31,7 +33,7 @@ export const octiPlatformToServiceInstanceCardData = (
     illustration_document_id: null,
     logo_document_id: null,
     service_definition_identifier:
-      ServiceDefinitionIdentifierEnum.OCTI_ENROLLMENT,
+      ServiceDefinitionIdentifierEnum.OCTI_REGISTRATION,
     url: platform.url,
     ordering: -1, // OCTI Instances are displayed at the first position
   };

@@ -3,7 +3,7 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { isEnrollmentService, isExternalService } from '@/utils/services';
+import { isExternalService, isRegistrationService } from '@/utils/services';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
@@ -35,7 +35,7 @@ interface ServiceInstanceCardProps {
   className?: string;
 }
 
-const EnrollmentDetails: React.FunctionComponent<{
+const RegistrationDetails: React.FunctionComponent<{
   serviceInstance: ServiceInstanceCardData;
   serviceHref: string;
 }> = () => {
@@ -175,8 +175,8 @@ const ServiceInstanceCard: React.FunctionComponent<
               serviceInstance.service_definition_identifier
             ) && <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />}
           </div>
-          {(isEnrollmentService(serviceInstance) && (
-            <EnrollmentDetails
+          {(isRegistrationService(serviceInstance) && (
+            <RegistrationDetails
               serviceInstance={serviceInstance}
               serviceHref={serviceHref}
             />

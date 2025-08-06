@@ -274,8 +274,8 @@ export type EnrollOctiPlatformInput = {
   platform: OctiPlatformInput;
 };
 
-export type EnrollmentResponse = {
-  __typename?: 'EnrollmentResponse';
+export type RegistrationResponse = {
+  __typename?: 'RegistrationResponse';
   token: Scalars['String']['output'];
 };
 
@@ -392,7 +392,7 @@ export type Mutation = {
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
   editUserCapabilities: User;
-  enrollOCTIPlatform: EnrollmentResponse;
+  enrollOCTIPlatform: RegistrationResponse;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
@@ -688,19 +688,19 @@ export enum OctiPlatformContract {
   Ee = 'EE'
 }
 
-export enum OctiPlatformEnrollmentStatus {
+export enum OctiPlatformRegistrationStatus {
   Active = 'active',
   Inactive = 'inactive'
 }
 
-export type OctiPlatformEnrollmentStatusInput = {
+export type OctiPlatformRegistrationStatusInput = {
   platformId: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
 
-export type OctiPlatformEnrollmentStatusResponse = {
-  __typename?: 'OCTIPlatformEnrollmentStatusResponse';
-  status: OctiPlatformEnrollmentStatus;
+export type OctiPlatformRegistrationStatusResponse = {
+  __typename?: 'OCTIPlatformRegistrationStatusResponse';
+  status: OctiPlatformRegistrationStatus;
 };
 
 export type OctiPlatformInput = {
@@ -842,7 +842,7 @@ export type Query = {
   node?: Maybe<Node>;
   obasScenario?: Maybe<ObasScenario>;
   obasScenarios: ObasScenarioConnection;
-  octiPlatformEnrollmentStatus: OctiPlatformEnrollmentStatusResponse;
+  octiPlatformRegistrationStatus: OctiPlatformRegistrationStatusResponse;
   octiPlatforms: Array<OctiPlatform>;
   organization?: Maybe<Organization>;
   organizationAdministrators: Array<User>;
@@ -978,8 +978,8 @@ export type QueryObasScenariosArgs = {
 };
 
 
-export type QueryOctiPlatformEnrollmentStatusArgs = {
-  input: OctiPlatformEnrollmentStatusInput;
+export type QueryOctiPlatformRegistrationStatusArgs = {
+  input: OctiPlatformRegistrationStatusInput;
 };
 
 
@@ -1187,7 +1187,7 @@ export enum ServiceDefinitionIdentifier {
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
   ObasScenarios = 'obas_scenarios',
-  OctiEnrollment = 'octi_enrollment',
+  OctiRegistration = 'octi_registration',
   Vault = 'vault'
 }
 
@@ -1592,7 +1592,7 @@ export type ResolversTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   EnrollOCTIPlatformInput: EnrollOctiPlatformInput;
-  EnrollmentResponse: ResolverTypeWrapper<EnrollmentResponse>;
+  RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   Filter: Filter;
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
@@ -1613,9 +1613,9 @@ export type ResolversTypes = ResolversObject<{
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OCTIPlatform: ResolverTypeWrapper<OctiPlatform>;
   OCTIPlatformContract: OctiPlatformContract;
-  OCTIPlatformEnrollmentStatus: OctiPlatformEnrollmentStatus;
-  OCTIPlatformEnrollmentStatusInput: OctiPlatformEnrollmentStatusInput;
-  OCTIPlatformEnrollmentStatusResponse: ResolverTypeWrapper<OctiPlatformEnrollmentStatusResponse>;
+  OCTIPlatformRegistrationStatus: OctiPlatformRegistrationStatus;
+  OCTIPlatformRegistrationStatusInput: OctiPlatformRegistrationStatusInput;
+  OCTIPlatformRegistrationStatusResponse: ResolverTypeWrapper<OctiPlatformRegistrationStatusResponse>;
   OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ResolverTypeWrapper<ObasScenario>;
   ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
@@ -1711,7 +1711,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   EnrollOCTIPlatformInput: EnrollOctiPlatformInput;
-  EnrollmentResponse: EnrollmentResponse;
+  RegistrationResponse: RegistrationResponse;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -1729,8 +1729,8 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   OCTIPlatform: OctiPlatform;
-  OCTIPlatformEnrollmentStatusInput: OctiPlatformEnrollmentStatusInput;
-  OCTIPlatformEnrollmentStatusResponse: OctiPlatformEnrollmentStatusResponse;
+  OCTIPlatformRegistrationStatusInput: OctiPlatformRegistrationStatusInput;
+  OCTIPlatformRegistrationStatusResponse: OctiPlatformRegistrationStatusResponse;
   OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ObasScenario;
   ObasScenarioConnection: ObasScenarioConnection;
@@ -1937,7 +1937,7 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type EnrollmentResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EnrollmentResponse'] = ResolversParentTypes['EnrollmentResponse']> = ResolversObject<{
+export type RegistrationResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegistrationResponse'] = ResolversParentTypes['RegistrationResponse']> = ResolversObject<{
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2038,7 +2038,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
-  enrollOCTIPlatform?: Resolver<ResolversTypes['EnrollmentResponse'], ParentType, ContextType, RequireFields<MutationEnrollOctiPlatformArgs, 'input'>>;
+  enrollOCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationEnrollOctiPlatformArgs, 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
@@ -2067,8 +2067,8 @@ export type OctiPlatformResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OctiPlatformEnrollmentStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OCTIPlatformEnrollmentStatusResponse'] = ResolversParentTypes['OCTIPlatformEnrollmentStatusResponse']> = ResolversObject<{
-  status?: Resolver<ResolversTypes['OCTIPlatformEnrollmentStatus'], ParentType, ContextType>;
+export type OctiPlatformRegistrationStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OCTIPlatformRegistrationStatusResponse'] = ResolversParentTypes['OCTIPlatformRegistrationStatusResponse']> = ResolversObject<{
+  status?: Resolver<ResolversTypes['OCTIPlatformRegistrationStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2171,7 +2171,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
   obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  octiPlatformEnrollmentStatus?: Resolver<ResolversTypes['OCTIPlatformEnrollmentStatusResponse'], ParentType, ContextType, RequireFields<QueryOctiPlatformEnrollmentStatusArgs, 'input'>>;
+  octiPlatformRegistrationStatus?: Resolver<ResolversTypes['OCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOctiPlatformRegistrationStatusArgs, 'input'>>;
   octiPlatforms?: Resolver<Array<ResolversTypes['OCTIPlatform']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizationAdministrators?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryOrganizationAdministratorsArgs, 'organizationId'>>;
@@ -2453,7 +2453,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
-  EnrollmentResponse?: EnrollmentResponseResolvers<ContextType>;
+  RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   IsOCTIPlatformRegisteredOrganization?: IsOctiPlatformRegisteredOrganizationResolvers<ContextType>;
   IsOCTIPlatformRegisteredResponse?: IsOctiPlatformRegisteredResponseResolvers<ContextType>;
@@ -2467,7 +2467,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   OCTIPlatform?: OctiPlatformResolvers<ContextType>;
-  OCTIPlatformEnrollmentStatusResponse?: OctiPlatformEnrollmentStatusResponseResolvers<ContextType>;
+  OCTIPlatformRegistrationStatusResponse?: OctiPlatformRegistrationStatusResponseResolvers<ContextType>;
   ObasScenario?: ObasScenarioResolvers<ContextType>;
   ObasScenarioConnection?: ObasScenarioConnectionResolvers<ContextType>;
   ObasScenarioEdge?: ObasScenarioEdgeResolvers<ContextType>;

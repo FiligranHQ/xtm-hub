@@ -39,7 +39,7 @@ export const CanUnenrollOCTIPlatformQuery = graphql`
 `;
 
 export const EnrollOCTIFragment = graphql`
-  fragment enrollOCTIFragment on EnrollmentResponse {
+  fragment enrollOCTIFragment on RegistrationResponse {
     token
   }
 `;

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { redirectToOCTIEnrollment } from './register-octi';
+import { redirectToOCTIRegistration } from './register-octi';
 import { redirectToResource } from './resource';
 import { redirectToOCTIUnregistration } from './unregister-octi';
 
@@ -15,7 +15,7 @@ export async function GET(
 ) {
   const awaitedParams = await params;
   if (awaitedParams.identifier === 'enroll-octi') {
-    return redirectToOCTIEnrollment(request);
+    return redirectToOCTIRegistration(request);
   }
 
   if (awaitedParams.identifier === 'unenroll-octi') {

@@ -5,9 +5,9 @@ import {
   IsOctiPlatformRegisteredInput,
   IsOctiPlatformRegisteredResponse,
   OctiPlatform,
-  OctiPlatformEnrollmentStatus,
-  OctiPlatformEnrollmentStatusInput,
-  OctiPlatformEnrollmentStatusResponse,
+  OctiPlatformRegistrationStatus,
+  OctiPlatformRegistrationStatusInput,
+  OctiPlatformRegistrationStatusResponse,
   OrganizationCapability,
   PlatformRegistrationStatus,
   ServiceConfigurationStatus,
@@ -23,15 +23,15 @@ import { loadOrganizationAdministrators } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
-  enrollmentDomain,
   OCTIPlatformConfiguration,
+  registrationDomain,
 } from './registration.domain';
 
-export const enrollmentApp = {
+export const registrationApp = {
   loadOCTIPlatforms: async (
     context: PortalContext
   ): Promise<OctiPlatform[]> => {
-    const platforms = await enrollmentDomain.loadOCTIPlatforms(context);
+    const platforms = await registrationDomain.loadOCTIPlatforms(context);
     return platforms.map((platform) => ({
       __typename: 'OCTIPlatform',
       id: platform.config.platform_id,
@@ -42,10 +42,10 @@ export const enrollmentApp = {
     }));
   },
 
-  loadOCTIPlatformEnrollmentStatus: async (
+  loadOCTIPlatformRegistrationStatus: async (
     context: PortalContext,
-    input: OctiPlatformEnrollmentStatusInput
-  ): Promise<OctiPlatformEnrollmentStatusResponse> => {
+    input: OctiPlatformRegistrationStatusInput
+  ): Promise<OctiPlatformRegistrationStatusResponse> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
         context,
@@ -53,8 +53,8 @@ export const enrollmentApp = {
       );
     return {
       status: activeServiceConfiguration
-        ? OctiPlatformEnrollmentStatus.Active
-        : OctiPlatformEnrollmentStatus.Inactive,
+        ? OctiPlatformRegistrationStatus.Active
+        : OctiPlatformRegistrationStatus.Inactive,
     };
   },
 
@@ -74,7 +74,7 @@ export const enrollmentApp = {
 
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-        identifier: ServiceDefinitionIdentifier.OctiEnrollment,
+        identifier: ServiceDefinitionIdentifier.OctiRegistration,
       });
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
@@ -112,13 +112,13 @@ export const enrollmentApp = {
       );
 
     if (serviceConfiguration) {
-      await enrollmentDomain.refreshExistingPlatform(context, {
+      await registrationDomain.refreshExistingPlatform(context, {
         serviceInstanceId: serviceConfiguration.service_instance_id,
         targetOrganizationId: organizationId,
         configuration,
       });
     } else {
-      await enrollmentDomain.enrollNewPlatform(context, {
+      await registrationDomain.enrollNewPlatform(context, {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,

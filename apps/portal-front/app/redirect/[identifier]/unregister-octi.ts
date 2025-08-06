@@ -40,8 +40,11 @@ export const redirectToOCTIUnregistration = async (request: NextRequest) => {
       return NextResponse.redirect('/');
     }
 
-    const enrollmentUrl = new URL(`/unenroll/octi?${params[1]}`, baseUrlFront);
-    return NextResponse.redirect(enrollmentUrl);
+    const registrationUrl = new URL(
+      `/unenroll/octi?${params[1]}`,
+      baseUrlFront
+    );
+    return NextResponse.redirect(registrationUrl);
   } catch (error) {
     if ((error as Error).message === 'UNAUTHENTICATED') {
       return NextResponse.redirect(redirectionUrl);

@@ -26,7 +26,7 @@ export type OCTIPlatformConfiguration = {
   token: string;
 };
 
-export const enrollmentDomain = {
+export const registrationDomain = {
   enrollNewPlatform: async (
     context: PortalContext,
     {
@@ -122,7 +122,7 @@ export const enrollmentDomain = {
       .where(
         'ServiceDefinition.identifier',
         '=',
-        ServiceDefinitionIdentifier.OctiEnrollment
+        ServiceDefinitionIdentifier.OctiRegistration
       )
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')

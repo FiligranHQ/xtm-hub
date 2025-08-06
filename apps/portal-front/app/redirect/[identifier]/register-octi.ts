@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MeResponse, SettingsResponse } from './response';
 import { getLoginRedirectionURL } from './url';
 
-export const redirectToOCTIEnrollment = async (request: NextRequest) => {
+export const redirectToOCTIRegistration = async (request: NextRequest) => {
   const settingsResponse = (await serverPortalApiFetch<
     typeof SettingsQuery,
     settingsQuery
@@ -40,8 +40,8 @@ export const redirectToOCTIEnrollment = async (request: NextRequest) => {
       return NextResponse.redirect('/');
     }
 
-    const enrollmentUrl = new URL(`/enroll/octi?${params[1]}`, baseUrlFront);
-    return NextResponse.redirect(enrollmentUrl);
+    const registrationUrl = new URL(`/enroll/octi?${params[1]}`, baseUrlFront);
+    return NextResponse.redirect(registrationUrl);
   } catch (error) {
     if ((error as Error).message === 'UNAUTHENTICATED') {
       return NextResponse.redirect(redirectionUrl);

@@ -38,7 +38,7 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
-  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): EnrollmentResponse!
+  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): RegistrationResponse!
   unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
@@ -113,7 +113,7 @@ type Query {
   isOCTIPlatformRegistered(input: IsOCTIPlatformRegisteredInput!): IsOCTIPlatformRegisteredResponse!
   canUnenrollOCTIPlatform(input: CanUnenrollOCTIPlatformInput!): CanUnenrollResponse!
   octiPlatforms: [OCTIPlatform!]!
-  octiPlatformEnrollmentStatus(input: OCTIPlatformEnrollmentStatusInput!): OCTIPlatformEnrollmentStatusResponse!
+  octiPlatformRegistrationStatus(input: OCTIPlatformRegistrationStatusInput!): OCTIPlatformRegistrationStatusResponse!
   seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
   seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
@@ -277,7 +277,7 @@ enum ServiceDefinitionIdentifier {
   custom_dashboards
   csv_feeds
   obas_scenarios
-  octi_enrollment
+  octi_registration
 }
 
 type ServiceDefinition implements Node {
@@ -373,7 +373,7 @@ input CanUnenrollOCTIPlatformInput {
   platformId: String!
 }
 
-type EnrollmentResponse {
+type RegistrationResponse {
   token: String!
 }
 
@@ -407,18 +407,18 @@ input UnenrollOCTIPlatformInput {
   platformId: String!
 }
 
-input OCTIPlatformEnrollmentStatusInput {
+input OCTIPlatformRegistrationStatusInput {
   platformId: String!
   token: String!
 }
 
-enum OCTIPlatformEnrollmentStatus {
+enum OCTIPlatformRegistrationStatus {
   active
   inactive
 }
 
-type OCTIPlatformEnrollmentStatusResponse {
-  status: OCTIPlatformEnrollmentStatus!
+type OCTIPlatformRegistrationStatusResponse {
+  status: OCTIPlatformRegistrationStatus!
 }
 
 type ServiceLink implements Node {
