@@ -57,7 +57,6 @@ type Mutation {
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
-  selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   adminAddUser(input: AdminAddUserInput!): User
