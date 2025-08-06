@@ -18,7 +18,7 @@ export async function GET(
     return redirectToOCTIRegistration(request);
   }
 
-  if (awaitedParams.identifier === 'unenroll-octi') {
+  if (awaitedParams.identifier === 'unregister-octi') {
     return redirectToOCTIUnregistration(request);
   }
 

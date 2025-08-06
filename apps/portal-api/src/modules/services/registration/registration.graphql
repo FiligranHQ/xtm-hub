@@ -23,7 +23,7 @@ input EnrollOCTIPlatformInput {
   platform: OCTIPlatformInput!
 }
 
-input CanUnenrollOCTIPlatformInput {
+input CanUnregisterOCTIPlatformInput {
   platformId: String!
 }
 
@@ -50,14 +50,14 @@ type IsOCTIPlatformRegisteredResponse {
   organization: IsOCTIPlatformRegisteredOrganization
 }
 
-type CanUnenrollResponse {
+type CanUnregisterResponse {
   isPlatformEnrolled: Boolean!
   isAllowed: Boolean
   isInOrganization: Boolean
   organizationId: ID
 }
 
-input UnenrollOCTIPlatformInput {
+input UnregisterOCTIPlatformInput {
   platformId: String!
 }
 
@@ -79,9 +79,9 @@ type Query {
   isOCTIPlatformRegistered(
     input: IsOCTIPlatformRegisteredInput!
   ): IsOCTIPlatformRegisteredResponse! @auth
-  canUnenrollOCTIPlatform(
-    input: CanUnenrollOCTIPlatformInput!
-  ): CanUnenrollResponse! @auth
+  canUnregisterOCTIPlatform(
+    input: CanUnregisterOCTIPlatformInput!
+  ): CanUnregisterResponse! @auth
   octiPlatforms: [OCTIPlatform!]! @auth
   octiPlatformRegistrationStatus(
     input: OCTIPlatformRegistrationStatusInput!
@@ -91,5 +91,5 @@ type Query {
 type Mutation {
   enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): RegistrationResponse!
     @auth
-  unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success! @auth
+  unregisterOCTIPlatform(input: UnregisterOCTIPlatformInput): Success! @auth
 }

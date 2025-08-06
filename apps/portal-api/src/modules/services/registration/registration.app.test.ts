@@ -93,7 +93,7 @@ describe('Registration app', () => {
     });
   });
 
-  describe('unenrollOCTIPlatform', () => {
+  describe('unregisterOCTIPlatform', () => {
     let platformId: string;
     let platform: OctiPlatformInput;
 
@@ -113,7 +113,7 @@ describe('Registration app', () => {
         platform,
       });
 
-      const call = registrationApp.unenrollOCTIPlatform(
+      const call = registrationApp.unregisterOCTIPlatform(
         contextAdminOrgaThales,
         {
           platformId,
@@ -129,7 +129,7 @@ describe('Registration app', () => {
         platform,
       });
 
-      const call = registrationApp.unenrollOCTIPlatform(
+      const call = registrationApp.unregisterOCTIPlatform(
         contextSimpleUserThales,
         {
           platformId,
@@ -141,13 +141,13 @@ describe('Registration app', () => {
       );
     });
 
-    it('should unenroll platform when the platform is still active', async () => {
+    it('should unregister platform when the platform is still active', async () => {
       await registrationApp.enrollOCTIPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
       });
 
-      await registrationApp.unenrollOCTIPlatform(contextAdminUser, {
+      await registrationApp.unregisterOCTIPlatform(contextAdminUser, {
         platformId,
       });
 
@@ -176,7 +176,7 @@ describe('Registration app', () => {
     });
   });
 
-  describe('canUnenrollOCTIPlatform', () => {
+  describe('canUnregisterOCTIPlatform', () => {
     const platformId = uuidv4();
 
     let isUserAllowedOnOrganizationSpy: MockInstance;
@@ -205,7 +205,7 @@ describe('Registration app', () => {
     it('should throw an error when configuration for platform does not exist', async () => {
       loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
 
-      const call = registrationApp.canUnenrollOCTIPlatform(contextAdminUser, {
+      const call = registrationApp.canUnregisterOCTIPlatform(contextAdminUser, {
         platformId,
       });
 
@@ -218,7 +218,7 @@ describe('Registration app', () => {
       );
       loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
-      const call = registrationApp.canUnenrollOCTIPlatform(contextAdminUser, {
+      const call = registrationApp.canUnregisterOCTIPlatform(contextAdminUser, {
         platformId,
       });
 
@@ -237,7 +237,7 @@ describe('Registration app', () => {
         Promise.resolve({ organization_id: organizationId })
       );
 
-      const result = await registrationApp.canUnenrollOCTIPlatform(
+      const result = await registrationApp.canUnregisterOCTIPlatform(
         contextAdminUser,
         { platformId }
       );
@@ -258,7 +258,7 @@ describe('Registration app', () => {
         Promise.resolve({ isAllowed: false, isInOrganization: false })
       );
 
-      const result = await registrationApp.canUnenrollOCTIPlatform(
+      const result = await registrationApp.canUnregisterOCTIPlatform(
         contextAdminUser,
         { platformId }
       );
@@ -299,7 +299,7 @@ describe('Registration app', () => {
       expect(result.status).toBe(OctiPlatformRegistrationStatus.Active);
     });
 
-    it('should return inactive when platform is unenrolled', async () => {
+    it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
       const token = await registrationApp.enrollOCTIPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
@@ -311,7 +311,7 @@ describe('Registration app', () => {
         },
       });
 
-      await registrationApp.unenrollOCTIPlatform(contextAdminUser, {
+      await registrationApp.unregisterOCTIPlatform(contextAdminUser, {
         platformId,
       });
 

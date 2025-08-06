@@ -6,7 +6,7 @@ interface Props {
   confirm: () => void;
 }
 
-export const UnenrollOCTIPlatformNotEnrolled: React.FC<Props> = ({
+export const UnregisterOCTIPlatformNotEnrolled: React.FC<Props> = ({
   confirm,
 }) => {
   const t = useTranslations();
@@ -17,8 +17,8 @@ export const UnenrollOCTIPlatformNotEnrolled: React.FC<Props> = ({
 
   return (
     <EnrollStateLayout>
-      <h1>{t('Unenroll.OCTI.Error.PlatformNotEnrolled.Title')}</h1>
-      <p>{t('Unenroll.OCTI.Error.PlatformNotEnrolled.Description')}</p>
+      <h1>{t('Unregister.OCTI.Error.PlatformNotEnrolled.Title')}</h1>
+      <p>{t('Unregister.OCTI.Error.PlatformNotEnrolled.Description')}</p>
     </EnrollStateLayout>
   );
 };

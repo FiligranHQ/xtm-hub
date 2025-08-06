@@ -67,12 +67,12 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
-export type CanUnenrollOctiPlatformInput = {
+export type CanUnregisterOctiPlatformInput = {
   platformId: Scalars['String']['input'];
 };
 
-export type CanUnenrollResponse = {
-  __typename?: 'CanUnenrollResponse';
+export type CanUnregisterResponse = {
+  __typename?: 'CanUnregisterResponse';
   isAllowed?: Maybe<Scalars['Boolean']['output']>;
   isInOrganization?: Maybe<Scalars['Boolean']['output']>;
   isPlatformEnrolled: Scalars['Boolean']['output'];
@@ -401,7 +401,7 @@ export type Mutation = {
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
   selfJoinServiceInstance?: Maybe<ServiceInstance>;
-  unenrollOCTIPlatform: Success;
+  unregisterOCTIPlatform: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
   updateObasScenario: ObasScenario;
@@ -636,8 +636,8 @@ export type MutationSelfJoinServiceInstanceArgs = {
 };
 
 
-export type MutationUnenrollOctiPlatformArgs = {
-  input?: InputMaybe<UnenrollOctiPlatformInput>;
+export type MutationUnregisterOctiPlatformArgs = {
+  input?: InputMaybe<UnregisterOctiPlatformInput>;
 };
 
 
@@ -827,7 +827,7 @@ export enum PlatformRegistrationStatus {
 
 export type Query = {
   __typename?: 'Query';
-  canUnenrollOCTIPlatform: CanUnenrollResponse;
+  canUnregisterOCTIPlatform: CanUnregisterResponse;
   csvFeed?: Maybe<CsvFeed>;
   csvFeeds: CsvFeedConnection;
   customDashboard?: Maybe<CustomDashboard>;
@@ -874,8 +874,8 @@ export type Query = {
 };
 
 
-export type QueryCanUnenrollOctiPlatformArgs = {
-  input: CanUnenrollOctiPlatformInput;
+export type QueryCanUnregisterOctiPlatformArgs = {
+  input: CanUnregisterOctiPlatformInput;
 };
 
 
@@ -1340,7 +1340,7 @@ export type TrackingSubscription = {
   edit?: Maybe<ActionTracking>;
 };
 
-export type UnenrollOctiPlatformInput = {
+export type UnregisterOctiPlatformInput = {
   platformId: Scalars['String']['input'];
 };
 
@@ -1569,8 +1569,8 @@ export type ResolversTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  CanUnenrollOCTIPlatformInput: CanUnenrollOctiPlatformInput;
-  CanUnenrollResponse: ResolverTypeWrapper<CanUnenrollResponse>;
+  CanUnregisterOCTIPlatformInput: CanUnregisterOctiPlatformInput;
+  CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
@@ -1660,7 +1660,7 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
-  UnenrollOCTIPlatformInput: UnenrollOctiPlatformInput;
+  UnregisterOCTIPlatformInput: UnregisterOctiPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateObasScenarioInput: UpdateObasScenarioInput;
@@ -1689,8 +1689,8 @@ export type ResolversParentTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
-  CanUnenrollOCTIPlatformInput: CanUnenrollOctiPlatformInput;
-  CanUnenrollResponse: CanUnenrollResponse;
+  CanUnregisterOCTIPlatformInput: CanUnregisterOctiPlatformInput;
+  CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
@@ -1763,7 +1763,7 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionModel: SubscriptionModel;
   Success: Success;
   TrackingSubscription: TrackingSubscription;
-  UnenrollOCTIPlatformInput: UnenrollOctiPlatformInput;
+  UnregisterOCTIPlatformInput: UnregisterOctiPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateObasScenarioInput: UpdateObasScenarioInput;
@@ -1804,7 +1804,7 @@ export type ActionTrackingResolvers<ContextType = PortalContext, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type CanUnenrollResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnenrollResponse'] = ResolversParentTypes['CanUnenrollResponse']> = ResolversObject<{
+export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnregisterResponse'] = ResolversParentTypes['CanUnregisterResponse']> = ResolversObject<{
   isAllowed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isInOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isPlatformEnrolled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -2047,7 +2047,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
-  unenrollOCTIPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnenrollOctiPlatformArgs>>;
+  unregisterOCTIPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterOctiPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateObasScenario?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType, RequireFields<MutationUpdateObasScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
@@ -2156,7 +2156,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  canUnenrollOCTIPlatform?: Resolver<ResolversTypes['CanUnenrollResponse'], ParentType, ContextType, RequireFields<QueryCanUnenrollOctiPlatformArgs, 'input'>>;
+  canUnregisterOCTIPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterOctiPlatformArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
   csvFeeds?: Resolver<ResolversTypes['CsvFeedConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
@@ -2441,7 +2441,7 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ActionTracking?: ActionTrackingResolvers<ContextType>;
-  CanUnenrollResponse?: CanUnenrollResponseResolvers<ContextType>;
+  CanUnregisterResponse?: CanUnregisterResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CsvFeedConnection?: CsvFeedConnectionResolvers<ContextType>;

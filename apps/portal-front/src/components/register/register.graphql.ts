@@ -19,8 +19,8 @@ export const IsOCTIPlatformRegisteredQuery = graphql`
   }
 `;
 
-export const CanUnenrollOCTIPlatformFragment = graphql`
-  fragment enrollCanUnenrollOCTIPlatformFragment on CanUnenrollResponse {
+export const CanUnregisterOCTIPlatformFragment = graphql`
+  fragment enrollCanUnregisterOCTIPlatformFragment on CanUnregisterResponse {
     isPlatformEnrolled
     isAllowed
     isInOrganization
@@ -28,12 +28,12 @@ export const CanUnenrollOCTIPlatformFragment = graphql`
   }
 `;
 
-export const CanUnenrollOCTIPlatformQuery = graphql`
-  query enrollCanUnenrollOCTIPlatformQuery(
-    $input: CanUnenrollOCTIPlatformInput!
+export const CanUnregisterOCTIPlatformQuery = graphql`
+  query enrollCanUnregisterOCTIPlatformQuery(
+    $input: CanUnregisterOCTIPlatformInput!
   ) {
-    canUnenrollOCTIPlatform(input: $input) {
-      ...enrollCanUnenrollOCTIPlatformFragment
+    canUnregisterOCTIPlatform(input: $input) {
+      ...enrollCanUnregisterOCTIPlatformFragment
     }
   }
 `;
@@ -52,18 +52,18 @@ export const EnrollOCTIPlatform = graphql`
   }
 `;
 
-export const UnenrollOCTIFragment = graphql`
-  fragment enrollUnenrollOCTIFragment on Success {
+export const UnregisterOCTIFragment = graphql`
+  fragment enrollUnregisterOCTIFragment on Success {
     success
   }
 `;
 
-export const UnenrollOCTIPlatform = graphql`
-  mutation enrollUnenrollOCTIPlatformMutation(
-    $input: UnenrollOCTIPlatformInput!
+export const UnregisterOCTIPlatform = graphql`
+  mutation enrollUnregisterOCTIPlatformMutation(
+    $input: UnregisterOCTIPlatformInput!
   ) {
-    unenrollOCTIPlatform(input: $input) {
-      ...enrollUnenrollOCTIFragment
+    unregisterOCTIPlatform(input: $input) {
+      ...enrollUnregisterOCTIFragment
     }
   }
 `;

@@ -1,17 +1,17 @@
 import Loader from '@/components/loader';
 import {
-  CanUnenrollOCTIPlatformFragment,
-  UnenrollOCTIPlatform,
+  CanUnregisterOCTIPlatformFragment,
+  UnregisterOCTIPlatform,
 } from '@/components/register/register.graphql';
 import { EnrollStateLayout } from '@/components/register/state/layout';
-import { UnenrollOCTIConfirm } from '@/components/unregister/octi/confirm';
-import { UnenrollOCTIMissingCapability } from '@/components/unregister/octi/missing-capability';
-import { UnenrollOCTIPlatformNotEnrolled } from '@/components/unregister/octi/platform-not-registered';
-import { enrollCanUnenrollOCTIPlatformFragment$key } from '@generated/enrollCanUnenrollOCTIPlatformFragment.graphql';
-import EnrollCanUnenrollOCTIPlatformQueryGraphql, {
-  enrollCanUnenrollOCTIPlatformQuery,
-} from '@generated/enrollCanUnenrollOCTIPlatformQuery.graphql';
-import { enrollUnenrollOCTIPlatformMutation } from '@generated/enrollUnenrollOCTIPlatformMutation.graphql';
+import { UnregisterOCTIConfirm } from '@/components/unregister/octi/confirm';
+import { UnregisterOCTIMissingCapability } from '@/components/unregister/octi/missing-capability';
+import { UnregisterOCTIPlatformNotEnrolled } from '@/components/unregister/octi/platform-not-registered';
+import { enrollCanUnregisterOCTIPlatformFragment$key } from '@generated/enrollCanUnregisterOCTIPlatformFragment.graphql';
+import EnrollCanUnregisterOCTIPlatformQueryGraphql, {
+  enrollCanUnregisterOCTIPlatformQuery,
+} from '@generated/enrollCanUnregisterOCTIPlatformQuery.graphql';
+import { enrollUnregisterOCTIPlatformMutation } from '@generated/enrollUnregisterOCTIPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
@@ -24,27 +24,27 @@ import {
 
 interface Props {
   platformId: string;
-  queryRef: PreloadedQuery<enrollCanUnenrollOCTIPlatformQuery>;
+  queryRef: PreloadedQuery<enrollCanUnregisterOCTIPlatformQuery>;
 }
 
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
 
-export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
+export const UnregisterOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   const t = useTranslations();
-  const canUnenrollPreloadedQuery =
-    usePreloadedQuery<enrollCanUnenrollOCTIPlatformQuery>(
-      EnrollCanUnenrollOCTIPlatformQueryGraphql,
+  const canUnregisterPreloadedQuery =
+    usePreloadedQuery<enrollCanUnregisterOCTIPlatformQuery>(
+      EnrollCanUnregisterOCTIPlatformQueryGraphql,
       queryRef
     );
 
   const { isAllowed, isPlatformEnrolled, isInOrganization, organizationId } =
-    useFragment<enrollCanUnenrollOCTIPlatformFragment$key>(
-      CanUnenrollOCTIPlatformFragment,
-      canUnenrollPreloadedQuery.canUnenrollOCTIPlatform
+    useFragment<enrollCanUnregisterOCTIPlatformFragment$key>(
+      CanUnregisterOCTIPlatformFragment,
+      canUnregisterPreloadedQuery.canUnregisterOCTIPlatform
     );
 
-  const [unenrollPlatform] =
-    useMutation<enrollUnenrollOCTIPlatformMutation>(UnenrollOCTIPlatform);
+  const [unregisterPlatform] =
+    useMutation<enrollUnregisterOCTIPlatformMutation>(UnregisterOCTIPlatform);
 
   const [status, setStatus] = useState<UnregistrationStatus>('idle');
   const cancel = () => {
@@ -52,14 +52,14 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   };
 
   const confirm = () => {
-    unenrollPlatform({
+    unregisterPlatform({
       variables: {
         input: {
           platformId,
         },
       },
       onCompleted: () => {
-        window.opener?.postMessage({ action: 'unenroll' }, '*');
+        window.opener?.postMessage({ action: 'unregister' }, '*');
         setStatus('succeeded');
       },
       onError: (error) => {
@@ -76,8 +76,8 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   if (status === 'succeeded') {
     return (
       <EnrollStateLayout>
-        <h1>{t('Unenroll.OCTI.Succeeded.Title')}</h1>
-        <p>{t('Unenroll.OCTI.Succeeded.Description')}</p>
+        <h1>{t('Unregister.OCTI.Succeeded.Title')}</h1>
+        <p>{t('Unregister.OCTI.Succeeded.Description')}</p>
       </EnrollStateLayout>
     );
   }
@@ -85,27 +85,27 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   if (status === 'failed') {
     return (
       <EnrollStateLayout>
-        <h1>{t('Unenroll.OCTI.Failed.Title')}</h1>
-        <p>{t('Unenroll.OCTI.Failed.Description')}</p>
+        <h1>{t('Unregister.OCTI.Failed.Title')}</h1>
+        <p>{t('Unregister.OCTI.Failed.Description')}</p>
       </EnrollStateLayout>
     );
   }
 
   if (!isPlatformEnrolled) {
-    return <UnenrollOCTIPlatformNotEnrolled confirm={confirm} />;
+    return <UnregisterOCTIPlatformNotEnrolled confirm={confirm} />;
   }
 
   if (!isAllowed) {
     if (!isInOrganization) {
       return (
         <EnrollStateLayout cancel={cancel}>
-          <h1>{t('Unenroll.OCTI.Error.NotInOrganization.Title')}</h1>
+          <h1>{t('Unregister.OCTI.Error.NotInOrganization.Title')}</h1>
         </EnrollStateLayout>
       );
     }
 
     return organizationId ? (
-      <UnenrollOCTIMissingCapability
+      <UnregisterOCTIMissingCapability
         organizationId={organizationId}
         cancel={cancel}
       />
@@ -115,7 +115,7 @@ export const UnenrollOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   }
 
   return organizationId ? (
-    <UnenrollOCTIConfirm
+    <UnregisterOCTIConfirm
       cancel={cancel}
       confirm={confirm}
       organizationId={organizationId}

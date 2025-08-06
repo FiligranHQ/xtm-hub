@@ -12,7 +12,7 @@ interface Props {
   organizationId: string;
 }
 
-export const UnenrollOCTIMissingCapability: React.FC<Props> = ({
+export const UnregisterOCTIMissingCapability: React.FC<Props> = ({
   cancel,
   organizationId,
 }) => {
@@ -26,7 +26,7 @@ export const UnenrollOCTIMissingCapability: React.FC<Props> = ({
   return (
     <EnrollStateLayout cancel={cancel}>
       <h1>
-        {t('Unenroll.OCTI.Error.Capability.Title', {
+        {t('Unregister.OCTI.Error.Capability.Title', {
           capability:
             OrganizationCapabilityEnum.MANAGE_OPENCTI_REGISTRATION.replaceAll(
               '_',
@@ -34,8 +34,8 @@ export const UnenrollOCTIMissingCapability: React.FC<Props> = ({
             ),
         })}
       </h1>
-      <p>{t('Unenroll.OCTI.Error.Capability.Description')}</p>
-      <p>{t('Unenroll.OCTI.Error.Capability.AdminListTitle')}</p>
+      <p>{t('Unregister.OCTI.Error.Capability.Description')}</p>
+      <p>{t('Unregister.OCTI.Error.Capability.AdminListTitle')}</p>
       <ul className="list-disc ml-l">
         {organizationAdministrators.map((administrator) => (
           <li key={administrator.id}>

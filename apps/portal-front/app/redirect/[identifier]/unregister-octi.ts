@@ -41,7 +41,7 @@ export const redirectToOCTIUnregistration = async (request: NextRequest) => {
     }
 
     const registrationUrl = new URL(
-      `/unenroll/octi?${params[1]}`,
+      `/unregister/octi?${params[1]}`,
       baseUrlFront
     );
     return NextResponse.redirect(registrationUrl);

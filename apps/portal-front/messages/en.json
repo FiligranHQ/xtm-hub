@@ -115,7 +115,7 @@
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
   },
-  "Unenroll": {
+  "Unregister": {
     "OCTI": {
       "Succeeded": {
         "Title": "OpenCTI platform unregistered successfully",
@@ -161,7 +161,7 @@
           "Title": "Platform already registered",
           "Description": "Your OpenCTI platform is already registered. Do you want to re-register your platform ?"
         },
-        "Unenrolled": {
+        "Unregistered": {
           "Title": "Platform was registered",
           "Description": "Your OpenCTI platform was previously registered. Do you want to re-register your platform ?"
         }
@@ -176,7 +176,7 @@
             "Title": "Platform already registered",
             "Description": "Your OpenCTI platform is already registered in another organization. Do you want to transfer your platform ?"
           },
-          "Unenrolled": {
+          "Unregistered": {
             "Title": "Platform was registered",
             "Description": "Your OpenCTI platform was previously registered in another organization. Do you want to re-register your platform ?"
           }

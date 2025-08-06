@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  CanUnenrollOctiPlatformInput,
+  CanUnregisterOctiPlatformInput,
   EnrollOctiPlatformInput,
   IsOctiPlatformRegisteredInput,
   IsOctiPlatformRegisteredResponse,
@@ -142,9 +142,9 @@ export const registrationApp = {
     return token;
   },
 
-  unenrollOCTIPlatform: async (
+  unregisterOCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnenrollOctiPlatformInput
+    { platformId }: CanUnregisterOctiPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -215,9 +215,9 @@ export const registrationApp = {
     };
   },
 
-  canUnenrollOCTIPlatform: async (
+  canUnregisterOCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnenrollOctiPlatformInput
+    { platformId }: CanUnregisterOctiPlatformInput
   ): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId;

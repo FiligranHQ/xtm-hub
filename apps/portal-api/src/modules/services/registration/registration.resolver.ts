@@ -34,9 +34,9 @@ const resolvers: Resolvers = {
       }
     },
 
-    canUnenrollOCTIPlatform: async (_, { input }, context) => {
+    canUnregisterOCTIPlatform: async (_, { input }, context) => {
       try {
-        const response = await registrationApp.canUnenrollOCTIPlatform(
+        const response = await registrationApp.canUnregisterOCTIPlatform(
           context,
           input
         );
@@ -123,10 +123,10 @@ const resolvers: Resolvers = {
         });
       }
     },
-    unenrollOCTIPlatform: async (_, { input }, context) => {
+    unregisterOCTIPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        await registrationApp.unenrollOCTIPlatform(
+        await registrationApp.unregisterOCTIPlatform(
           {
             ...context,
             trx,
