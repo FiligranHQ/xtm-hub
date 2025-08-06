@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 import { dbRaw } from '../../knexfile';
 import { ServiceRestriction } from '../__generated__/resolvers-types';
 import { PortalContext } from '../model/portal-context';
-import { getServiceDefinition } from '../modules/services/service-instance.domain';
+import { loadServiceDefinition } from '../modules/services/service-instance.domain';
 import { loadCapabilities } from '../modules/user_service/user-service-capability/user-service-capability.helper';
 export const setQueryForDocument = <T>(
   context: PortalContext,
@@ -14,7 +14,7 @@ export const setQueryForDocument = <T>(
     context.user.id,
     context.user.selected_organization_id
   ).then((capabilities) => {
-    return getServiceDefinition(context, context.serviceInstanceId).then(
+    return loadServiceDefinition(context, context.serviceInstanceId).then(
       (serviceDef) => {
         if (
           !capabilities?.includes(ServiceRestriction.Upload) &&

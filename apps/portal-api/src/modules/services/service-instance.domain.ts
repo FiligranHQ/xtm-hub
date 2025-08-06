@@ -3,7 +3,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
-  ServiceCapability,
+  SeoServiceInstance,
   ServiceConnection,
   ServiceDefinition,
   ServiceInstance,
@@ -156,17 +156,6 @@ export const getIsSubscribed = async (context, id) => {
   return organization_subscribed;
 };
 
-export const getServiceDefinitionCapabilities = (context, id) => {
-  return db<ServiceCapability>(context, 'Service_Capability')
-    .leftJoin(
-      'ServiceDefinition',
-      'ServiceDefinition.id',
-      '=',
-      'Service_Capability.service_definition_id'
-    )
-    .where('ServiceDefinition.id', '=', id)
-    .select('Service_Capability.*');
-};
 export const loadServiceInstances = async (context: PortalContext, opts) =>
   paginate<ServiceInstance, ServiceConnection>(
     context,
@@ -493,7 +482,7 @@ export const grantServiceAccess = async (
       subscription.service_instance_id
     );
 
-    const service_definition = await getServiceDefinition(
+    const service_definition = await loadServiceDefinition(
       context,
       serviceInstance.id
     );
@@ -528,8 +517,11 @@ export const loadLinks = (context, id) => {
     .select('*');
 };
 
-export const getServiceDefinition = (context, id) =>
-  db<ServiceDefinition>(context, 'ServiceInstance')
+export const loadServiceDefinition = async (context, id) => {
+  const serviceDefinition = await db<ServiceDefinition>(
+    context,
+    'ServiceInstance'
+  )
     .where('ServiceInstance.id', '=', id)
     .leftJoin(
       'ServiceDefinition as service_def',
@@ -538,10 +530,15 @@ export const getServiceDefinition = (context, id) =>
       'ServiceInstance.service_definition_id'
     )
     .select('service_def.*')
-    .first();
+    .first()
+    .secureQuery();
+  return serviceDefinition;
+};
 
-export const loadSeoServiceInstances = (context: PortalContext) => {
-  return db<ServiceInstance>(context, 'ServiceInstance')
+export const loadSeoServiceInstances = async (
+  context: PortalContext
+): Promise<SeoServiceInstance[]> => {
+  const serviceInstance = await db<ServiceInstance>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link',
       'Service_Link.service_instance_id',
@@ -574,14 +571,16 @@ export const loadSeoServiceInstances = (context: PortalContext) => {
     )
     .where('ServiceInstance.public', '=', true)
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
-    .orderBy('ServiceInstance.ordering', 'asc');
+    .orderBy('ServiceInstance.ordering', 'asc')
+    .secureQuery();
+  return serviceInstance;
 };
 
-export const loadSeoServiceInstanceBySlug = (
+export const loadSeoServiceInstanceBySlug = async (
   context: PortalContext,
   slug: string
-) => {
-  return db<ServiceInstance>(context, 'ServiceInstance')
+): Promise<ServiceInstance> => {
+  const serviceInstance = await db<ServiceInstance>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link',
       'Service_Link.service_instance_id',
@@ -613,7 +612,9 @@ export const loadSeoServiceInstanceBySlug = (
     )
     .where('ServiceInstance.slug', '=', slug)
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
-    .first();
+    .first()
+    .secureQuery();
+  return serviceInstance;
 };
 
 export const getServiceInstance = async (context, id) => {
