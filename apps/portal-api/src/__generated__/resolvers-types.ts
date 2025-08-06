@@ -390,7 +390,6 @@ export type Mutation = {
   registerOpenCTIPlatform: RegistrationResponse;
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
-  selfJoinServiceInstance?: Maybe<ServiceInstance>;
   unregisterOpenCTIPlatform: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
@@ -618,11 +617,6 @@ export type MutationRegisterOpenCtiPlatformArgs = {
 export type MutationRemoveUserFromOrganizationArgs = {
   organization_id: Scalars['ID']['input'];
   user_id: Scalars['ID']['input'];
-};
-
-
-export type MutationSelfJoinServiceInstanceArgs = {
-  service_instance_id: Scalars['ID']['input'];
 };
 
 
@@ -2053,7 +2047,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   registerOpenCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterOpenCtiPlatformArgs, 'input'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
-  selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
   unregisterOpenCTIPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterOpenCtiPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;

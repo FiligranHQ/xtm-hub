@@ -154,11 +154,3 @@ export const serviceWithSubscriptionsFragment = graphql`
     }
   }
 `;
-
-export const ServiceSelfJoinMutation = graphql`
-  mutation serviceSelfJoinMutation($service_instance_id: ID!) {
-    selfJoinServiceInstance(service_instance_id: $service_instance_id) {
-      ...serviceInstance_fragment
-    }
-  }
-`;
