@@ -9,16 +9,15 @@ enum DocumentOrdering {
   created_at
   download_number
 }
-
-type Document implements Node {
+interface DocumentBase implements Node {
   id: ID!
   type: String!
   uploader: User
   uploader_organization: Organization
   service_instance_id: String!
-  name: String
-  short_description: String
-  description: String
+  name: String!
+  short_description: String!
+  description: String!
   file_name: String!
   minio_name: String!
   active: Boolean!
@@ -27,8 +26,30 @@ type Document implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
-  children_documents: [Document!]
-  slug: String
+  children_documents: [ShareableResourceImage!]
+  slug: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+}
+type Document implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  service_instance_id: String!
+  name: String
+  short_description: String!
+  description: String!
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  children_documents: [ShareableResourceImage!]
+  slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
 }
