@@ -17,7 +17,6 @@ import fs from 'node:fs';
 import { dbMigration } from '../knexfile';
 import { initAuthPlatform } from './auth/auth-platform';
 import portalConfig from './config';
-import { awxEndpoint } from './managers/awx/awx-endpoint';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
@@ -178,7 +177,6 @@ await initAuthPlatform(app);
 // Therefore, we have to handle it through this route instead.
 documentDownloadEndpoint(app);
 documentVisualizeEndpoint(app);
-awxEndpoint(app);
 healthEndpoint(app);
 
 // Modified server startup
