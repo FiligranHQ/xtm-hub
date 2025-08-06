@@ -23,6 +23,7 @@ import { setDeleteSecurityForUserServiceCapability } from './user-service-capabi
 
 import { logApp } from '../utils/app-logger.util';
 import { isUserAllowed } from './auth.helper';
+import { serviceInstanceSecurityLayer } from './layer/service-instance';
 import { userSecurityLayer } from './layer/user';
 import { userOrganizationSecurityLayer } from './layer/user-organization';
 import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
@@ -188,6 +189,7 @@ export const applyDbSecurityLayer = async (
     User_Organization_Pending: userOrganizationPendingSecurityLayer,
     UserOrganization_Capability: userOrganizationCapabilitySecurityLayer,
     User_Service: userServiceSecurityLayer,
+    ServiceInstance: serviceInstanceSecurityLayer,
   };
 
   if (tableSecurityMap[table]) {

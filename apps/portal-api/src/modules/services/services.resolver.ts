@@ -26,13 +26,12 @@ import { uploadNewFile } from './document/document.helper';
 import { serviceInstanceApp } from './service-instance.app';
 import {
   getIsSubscribed,
-  getServiceDefinition,
-  getServiceDefinitionCapabilities,
   getUserJoined,
   loadLinks,
   loadPublicServiceInstances,
   loadSeoServiceInstanceBySlug,
   loadSeoServiceInstances,
+  loadServiceDefinition,
   loadServiceInstances,
   loadServiceWithSubscriptions,
   loadSubscribedServiceInstancesByIdentifier,
@@ -52,7 +51,7 @@ const resolvers: Resolvers = {
     },
     links: ({ id }, _, context) => loadLinks(context, id),
     service_definition: ({ id }, _, context) =>
-      getServiceDefinition(context, id),
+      loadServiceDefinition(context, id),
     organization_subscribed: ({ id }, _, context) =>
       getIsSubscribed(context, id),
     capabilities: ({ id }, _, context) =>
@@ -63,10 +62,6 @@ const resolvers: Resolvers = {
         context.user.selected_organization_id
       ),
     user_joined: ({ id }, _, context) => getUserJoined(context, id),
-  },
-  ServiceDefinition: {
-    service_capability: ({ id }, _, context) =>
-      getServiceDefinitionCapabilities(context, id),
   },
   Query: {
     serviceInstances: async (_, opt, context) => {
