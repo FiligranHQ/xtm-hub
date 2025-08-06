@@ -269,16 +269,6 @@ export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
-export type RegisterOctiPlatformInput = {
-  organizationId: Scalars['ID']['input'];
-  platform: OctiPlatformInput;
-};
-
-export type RegistrationResponse = {
-  __typename?: 'RegistrationResponse';
-  token: Scalars['String']['output'];
-};
-
 export type Filter = {
   key?: InputMaybe<FilterKey>;
   value: Array<Scalars['String']['input']>;
@@ -392,12 +382,12 @@ export type Mutation = {
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
   editUserCapabilities: User;
-  registerOCTIPlatform: RegistrationResponse;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
+  registerOCTIPlatform: RegistrationResponse;
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
   selfJoinServiceInstance?: Maybe<ServiceInstance>;
@@ -596,11 +586,6 @@ export type MutationEditUserCapabilitiesArgs = {
 };
 
 
-export type MutationRegisterOctiPlatformArgs = {
-  input: RegisterOctiPlatformInput;
-};
-
-
 export type MutationFrontendErrorLogArgs = {
   codeStack?: InputMaybe<Scalars['String']['input']>;
   componentStack?: InputMaybe<Scalars['String']['input']>;
@@ -622,6 +607,11 @@ export type MutationLoginArgs = {
 export type MutationMergeTestArgs = {
   from: Scalars['ID']['input'];
   target: Scalars['ID']['input'];
+};
+
+
+export type MutationRegisterOctiPlatformArgs = {
+  input: RegisterOctiPlatformInput;
 };
 
 
@@ -688,6 +678,13 @@ export enum OctiPlatformContract {
   Ee = 'EE'
 }
 
+export type OctiPlatformInput = {
+  contract: OctiPlatformContract;
+  id: Scalars['ID']['input'];
+  title: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+};
+
 export enum OctiPlatformRegistrationStatus {
   Active = 'active',
   Inactive = 'inactive'
@@ -701,13 +698,6 @@ export type OctiPlatformRegistrationStatusInput = {
 export type OctiPlatformRegistrationStatusResponse = {
   __typename?: 'OCTIPlatformRegistrationStatusResponse';
   status: OctiPlatformRegistrationStatus;
-};
-
-export type OctiPlatformInput = {
-  contract: OctiPlatformContract;
-  id: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
-  url: Scalars['String']['input'];
 };
 
 export type ObasScenario = Node & {
@@ -1116,6 +1106,16 @@ export type QueryUsersArgs = {
   orderBy: UserOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type RegisterOctiPlatformInput = {
+  organizationId: Scalars['ID']['input'];
+  platform: OctiPlatformInput;
+};
+
+export type RegistrationResponse = {
+  __typename?: 'RegistrationResponse';
+  token: Scalars['String']['output'];
 };
 
 export enum Restriction {
@@ -1591,8 +1591,6 @@ export type ResolversTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
-  RegisterOCTIPlatformInput: RegisterOctiPlatformInput;
-  RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   Filter: Filter;
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
@@ -1613,10 +1611,10 @@ export type ResolversTypes = ResolversObject<{
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OCTIPlatform: ResolverTypeWrapper<OctiPlatform>;
   OCTIPlatformContract: OctiPlatformContract;
+  OCTIPlatformInput: OctiPlatformInput;
   OCTIPlatformRegistrationStatus: OctiPlatformRegistrationStatus;
   OCTIPlatformRegistrationStatusInput: OctiPlatformRegistrationStatusInput;
   OCTIPlatformRegistrationStatusResponse: ResolverTypeWrapper<OctiPlatformRegistrationStatusResponse>;
-  OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ResolverTypeWrapper<ObasScenario>;
   ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
   ObasScenarioEdge: ResolverTypeWrapper<ObasScenarioEdge>;
@@ -1633,6 +1631,8 @@ export type ResolversTypes = ResolversObject<{
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   Query: ResolverTypeWrapper<{}>;
+  RegisterOCTIPlatformInput: RegisterOctiPlatformInput;
+  RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
@@ -1710,8 +1710,6 @@ export type ResolversParentTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
-  RegisterOCTIPlatformInput: RegisterOctiPlatformInput;
-  RegistrationResponse: RegistrationResponse;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -1729,9 +1727,9 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   OCTIPlatform: OctiPlatform;
+  OCTIPlatformInput: OctiPlatformInput;
   OCTIPlatformRegistrationStatusInput: OctiPlatformRegistrationStatusInput;
   OCTIPlatformRegistrationStatusResponse: OctiPlatformRegistrationStatusResponse;
-  OCTIPlatformInput: OctiPlatformInput;
   ObasScenario: ObasScenario;
   ObasScenarioConnection: ObasScenarioConnection;
   ObasScenarioEdge: ObasScenarioEdge;
@@ -1744,6 +1742,8 @@ export type ResolversParentTypes = ResolversObject<{
   PageInfo: PageInfo;
   PlatformProvider: PlatformProvider;
   Query: {};
+  RegisterOCTIPlatformInput: RegisterOctiPlatformInput;
+  RegistrationResponse: RegistrationResponse;
   RolePortal: RolePortal;
   SeoServiceInstance: SeoServiceInstance;
   ServiceCapability: ServiceCapability;
@@ -1937,11 +1937,6 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type RegistrationResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegistrationResponse'] = ResolversParentTypes['RegistrationResponse']> = ResolversObject<{
-  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type GenericServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['GenericServiceCapability'] = ResolversParentTypes['GenericServiceCapability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2038,12 +2033,12 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
-  registerOCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterOctiPlatformArgs, 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
+  registerOCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterOctiPlatformArgs, 'input'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
@@ -2200,6 +2195,11 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   userServiceOwned?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
+}>;
+
+export type RegistrationResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegistrationResponse'] = ResolversParentTypes['RegistrationResponse']> = ResolversObject<{
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type RolePortalResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RolePortal'] = ResolversParentTypes['RolePortal']> = ResolversObject<{
@@ -2453,7 +2453,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
-  RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   IsOCTIPlatformRegisteredOrganization?: IsOctiPlatformRegisteredOrganizationResolvers<ContextType>;
   IsOCTIPlatformRegisteredResponse?: IsOctiPlatformRegisteredResponseResolvers<ContextType>;
@@ -2478,6 +2477,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;

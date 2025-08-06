@@ -38,11 +38,11 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
-  registerOCTIPlatform(input: RegisterOCTIPlatformInput!): RegistrationResponse!
-  unregisterOCTIPlatform(input: UnregisterOCTIPlatformInput): Success!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
+  registerOCTIPlatform(input: RegisterOCTIPlatformInput!): RegistrationResponse!
+  unregisterOCTIPlatform(input: UnregisterOCTIPlatformInput): Success!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -110,14 +110,14 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  isOCTIPlatformRegistered(input: IsOCTIPlatformRegisteredInput!): IsOCTIPlatformRegisteredResponse!
-  canUnregisterOCTIPlatform(input: CanUnregisterOCTIPlatformInput!): CanUnregisterResponse!
-  octiPlatforms: [OCTIPlatform!]!
-  octiPlatformRegistrationStatus(input: OCTIPlatformRegistrationStatusInput!): OCTIPlatformRegistrationStatusResponse!
   seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
   seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
   obasScenario(id: ID, serviceInstanceId: ID): ObasScenario
+  isOCTIPlatformRegistered(input: IsOCTIPlatformRegisteredInput!): IsOCTIPlatformRegisteredResponse!
+  canUnregisterOCTIPlatform(input: CanUnregisterOCTIPlatformInput!): CanUnregisterResponse!
+  octiPlatforms: [OCTIPlatform!]!
+  octiPlatformRegistrationStatus(input: OCTIPlatformRegistrationStatusInput!): OCTIPlatformRegistrationStatusResponse!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
@@ -344,6 +344,72 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
+type ServiceLink implements Node {
+  id: ID!
+  service_instance_id: ID
+  url: String
+  name: String
+}
+
+input CreateObasScenarioInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+  uploader_id: String!
+  product_version: String!
+}
+
+input UpdateObasScenarioInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  uploader_organization_id: String
+  uploader_id: String
+  product_version: String
+}
+
+type ObasScenario implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResourceImage!]
+  product_version: String
+}
+
+type ObasScenarioEdge {
+  cursor: String!
+  node: ObasScenario!
+}
+
+type ObasScenarioConnection {
+  totalCount: Int!
+  edges: [ObasScenarioEdge!]!
+  pageInfo: PageInfo!
+}
+
 enum OCTIPlatformContract {
   CE
   EE
@@ -419,72 +485,6 @@ enum OCTIPlatformRegistrationStatus {
 
 type OCTIPlatformRegistrationStatusResponse {
   status: OCTIPlatformRegistrationStatus!
-}
-
-type ServiceLink implements Node {
-  id: ID!
-  service_instance_id: ID
-  url: String
-  name: String
-}
-
-input CreateObasScenarioInput {
-  name: String!
-  slug: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-  uploader_id: String!
-  product_version: String!
-}
-
-input UpdateObasScenarioInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
-  product_version: String
-}
-
-type ObasScenario implements Node {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String!
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int!
-  share_number: Int!
-  slug: String!
-  labels: [Label!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
-  product_version: String
-}
-
-type ObasScenarioEdge {
-  cursor: String!
-  node: ObasScenario!
-}
-
-type ObasScenarioConnection {
-  totalCount: Int!
-  edges: [ObasScenarioEdge!]!
-  pageInfo: PageInfo!
 }
 
 enum ServiceInstanceOrdering {

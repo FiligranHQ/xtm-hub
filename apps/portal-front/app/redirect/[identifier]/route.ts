@@ -14,11 +14,17 @@ export async function GET(
   { params }: RedirectIdentifierGetRouteProps
 ) {
   const awaitedParams = await params;
-  if (awaitedParams.identifier === 'register-octi') {
+  if (
+    awaitedParams.identifier === 'enroll-octi' ||
+    awaitedParams.identifier === 'register-octi'
+  ) {
     return redirectToOCTIRegistration(request);
   }
 
-  if (awaitedParams.identifier === 'unregister-octi') {
+  if (
+    awaitedParams.identifier === 'unenroll-octi' ||
+    awaitedParams.identifier === 'unregister-octi'
+  ) {
     return redirectToOCTIUnregistration(request);
   }
 
