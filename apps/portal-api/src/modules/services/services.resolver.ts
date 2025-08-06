@@ -23,6 +23,7 @@ import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { uploadNewFile } from './document/document.helper';
+import { serviceInstanceApp } from './service-instance.app';
 import {
   getIsSubscribed,
   getServiceDefinition,
@@ -32,7 +33,6 @@ import {
   loadPublicServiceInstances,
   loadSeoServiceInstanceBySlug,
   loadSeoServiceInstances,
-  loadServiceInstanceByIdWithCapabilities,
   loadServiceInstances,
   loadServiceWithSubscriptions,
   loadSubscribedServiceInstancesByIdentifier,
@@ -76,15 +76,10 @@ const resolvers: Resolvers = {
       return loadPublicServiceInstances(context, opt);
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
-      const serviceInstance = await loadServiceInstanceByIdWithCapabilities(
+      const serviceInstance = await serviceInstanceApp.loadServiceInstance(
         context,
-        fromGlobalId(service_instance_id).id
+        extractId<ServiceInstanceId>(service_instance_id)
       );
-
-      // Not found
-      if (!serviceInstance) {
-        return null;
-      }
 
       return serviceInstance;
     },

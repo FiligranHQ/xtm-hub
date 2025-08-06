@@ -200,7 +200,7 @@ export const getUserJoined = async (context, id) => {
   return result?.user_joined === true;
 };
 
-export const loadServiceInstanceByIdWithCapabilities = async (
+export const loadServiceInstanceById = async (
   context: PortalContext,
   service_instance_id: string
 ): Promise<ServiceInstance> => {
@@ -242,6 +242,17 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     .groupBy(['ServiceInstance.id', 'Subscription.id', 'service_def.id'])
     .first();
 
+  return serviceInstanceQuery;
+};
+
+export const loadServiceInstanceByIdWithCapabilities = async (
+  context: PortalContext,
+  service_instance_id: string
+): Promise<ServiceInstance> => {
+  const serviceInstanceQuery = await loadServiceInstanceById(
+    context,
+    service_instance_id
+  );
   const capabilities = await loadCapabilities(
     context,
     service_instance_id,
