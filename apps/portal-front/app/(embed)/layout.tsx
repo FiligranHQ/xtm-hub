@@ -58,8 +58,9 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
         <PageLoader>
           <div className="flex flex-col items-center justify-center min-h-screen">
             <div className="w-1/3">
-              <LogoXTMDark className="p-6" />
               <ContentLayout>
+                <LogoXTMDark className="pb-6" />
+
                 <Card className="p-xl bg-page-background">{children}</Card>
               </ContentLayout>
             </div>
