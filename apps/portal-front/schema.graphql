@@ -38,7 +38,7 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
-  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): RegistrationResponse!
+  registerOCTIPlatform(input: RegisterOCTIPlatformInput!): RegistrationResponse!
   unregisterOCTIPlatform(input: UnregisterOCTIPlatformInput): Success!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
@@ -364,7 +364,7 @@ input OCTIPlatformInput {
   contract: OCTIPlatformContract!
 }
 
-input EnrollOCTIPlatformInput {
+input RegisterOCTIPlatformInput {
   organizationId: ID!
   platform: OCTIPlatformInput!
 }
@@ -397,7 +397,7 @@ type IsOCTIPlatformRegisteredResponse {
 }
 
 type CanUnregisterResponse {
-  isPlatformEnrolled: Boolean!
+  isPlatformRegistered: Boolean!
   isAllowed: Boolean
   isInOrganization: Boolean
   organizationId: ID

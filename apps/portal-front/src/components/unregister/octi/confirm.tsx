@@ -1,5 +1,5 @@
 import { getOrganization } from '@/components/organization/organization.service';
-import { EnrollStateLayout } from '@/components/register/state/layout';
+import { RegisterStateLayout } from '@/components/register/state/layout';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
@@ -18,13 +18,13 @@ export const UnregisterOCTIConfirm: React.FC<Props> = ({
   const organization = getOrganization(organizationId);
 
   return (
-    <EnrollStateLayout
+    <RegisterStateLayout
       confirm={confirm}
       cancel={cancel}>
       <h1>
         {t('Unregister.OCTI.Confirm.Title', { name: organization?.name ?? '' })}
       </h1>
       <p>{t('Unregister.OCTI.Confirm.Description')}</p>
-    </EnrollStateLayout>
+    </RegisterStateLayout>
   );
 };

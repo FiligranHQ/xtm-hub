@@ -75,7 +75,7 @@ export type CanUnregisterResponse = {
   __typename?: 'CanUnregisterResponse';
   isAllowed?: Maybe<Scalars['Boolean']['output']>;
   isInOrganization?: Maybe<Scalars['Boolean']['output']>;
-  isPlatformEnrolled: Scalars['Boolean']['output'];
+  isPlatformRegistered: Scalars['Boolean']['output'];
   organizationId?: Maybe<Scalars['ID']['output']>;
 };
 
@@ -269,7 +269,7 @@ export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
-export type EnrollOctiPlatformInput = {
+export type RegisterOctiPlatformInput = {
   organizationId: Scalars['ID']['input'];
   platform: OctiPlatformInput;
 };
@@ -392,7 +392,7 @@ export type Mutation = {
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
   editUserCapabilities: User;
-  enrollOCTIPlatform: RegistrationResponse;
+  registerOCTIPlatform: RegistrationResponse;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
@@ -596,8 +596,8 @@ export type MutationEditUserCapabilitiesArgs = {
 };
 
 
-export type MutationEnrollOctiPlatformArgs = {
-  input: EnrollOctiPlatformInput;
+export type MutationRegisterOctiPlatformArgs = {
+  input: RegisterOctiPlatformInput;
 };
 
 
@@ -1591,7 +1591,7 @@ export type ResolversTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
-  EnrollOCTIPlatformInput: EnrollOctiPlatformInput;
+  RegisterOCTIPlatformInput: RegisterOctiPlatformInput;
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   Filter: Filter;
   FilterKey: FilterKey;
@@ -1710,7 +1710,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
-  EnrollOCTIPlatformInput: EnrollOctiPlatformInput;
+  RegisterOCTIPlatformInput: RegisterOctiPlatformInput;
   RegistrationResponse: RegistrationResponse;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
@@ -1807,7 +1807,7 @@ export type ActionTrackingResolvers<ContextType = PortalContext, ParentType exte
 export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnregisterResponse'] = ResolversParentTypes['CanUnregisterResponse']> = ResolversObject<{
   isAllowed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isInOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  isPlatformEnrolled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isPlatformRegistered?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   organizationId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2038,7 +2038,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
-  enrollOCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationEnrollOctiPlatformArgs, 'input'>>;
+  registerOCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterOctiPlatformArgs, 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;

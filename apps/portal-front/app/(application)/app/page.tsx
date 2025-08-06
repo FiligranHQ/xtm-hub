@@ -10,14 +10,14 @@ import { useCallback } from 'react';
 import { useQueryLoader } from 'react-relay';
 import { useLocalStorage } from 'usehooks-ts';
 
-import EnrollOCTIPlatformsQueryGraphql, {
-  enrollOCTIPlatformsQuery,
-} from '@generated/enrollOCTIPlatformsQuery.graphql';
 import {
   OrderingMode,
   publicServiceQuery,
   ServiceInstanceOrdering,
 } from '@generated/publicServiceQuery.graphql';
+import RegisterOCTIPlatformsQueryGraphql, {
+  registerOCTIPlatformsQuery,
+} from '@generated/registerOCTIPlatformsQuery.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 
 export const dynamic = 'force-dynamic';
@@ -53,7 +53,9 @@ const Page: React.FunctionComponent = () => {
 
   // OCTI Platforms
   const [queryRefOCTIPlatforms, loadQueryOCTIPlatforms] =
-    useQueryLoader<enrollOCTIPlatformsQuery>(EnrollOCTIPlatformsQueryGraphql);
+    useQueryLoader<registerOCTIPlatformsQuery>(
+      RegisterOCTIPlatformsQueryGraphql
+    );
   useMountingLoader(loadQueryOCTIPlatforms, {});
 
   const handleUpdate = useCallback(() => {

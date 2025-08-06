@@ -1,4 +1,4 @@
-import { EnrollStateLayout } from '@/components/register/state/layout';
+import { RegisterStateLayout } from '@/components/register/state/layout';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,
@@ -24,7 +24,7 @@ export const UnregisterOCTIMissingCapability: React.FC<Props> = ({
     );
 
   return (
-    <EnrollStateLayout cancel={cancel}>
+    <RegisterStateLayout cancel={cancel}>
       <h1>
         {t('Unregister.OCTI.Error.Capability.Title', {
           capability:
@@ -44,6 +44,6 @@ export const UnregisterOCTIMissingCapability: React.FC<Props> = ({
           </li>
         ))}
       </ul>
-    </EnrollStateLayout>
+    </RegisterStateLayout>
   );
 };

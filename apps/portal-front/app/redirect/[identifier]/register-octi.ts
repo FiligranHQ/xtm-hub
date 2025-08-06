@@ -40,7 +40,10 @@ export const redirectToOCTIRegistration = async (request: NextRequest) => {
       return NextResponse.redirect('/');
     }
 
-    const registrationUrl = new URL(`/enroll/octi?${params[1]}`, baseUrlFront);
+    const registrationUrl = new URL(
+      `/register/octi?${params[1]}`,
+      baseUrlFront
+    );
     return NextResponse.redirect(registrationUrl);
   } catch (error) {
     if ((error as Error).message === 'UNAUTHENTICATED') {

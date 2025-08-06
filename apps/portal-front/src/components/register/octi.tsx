@@ -1,20 +1,20 @@
 import Loader from '@/components/loader';
-import { EnrollNeverEnrolled } from '@/components/register/never-registered';
-import { EnrollOCTIPlatform } from '@/components/register/register.graphql';
-import { EnrollStateLayout } from '@/components/register/state/layout';
-import { EnrollStateMissingCapability } from '@/components/register/state/missing-capability';
-import enrollIsOCTIPlatformRegisteredFragmentGraphql, {
-  enrollIsOCTIPlatformRegisteredFragment$key,
-} from '@generated/enrollIsOCTIPlatformRegisteredFragment.graphql';
-import EnrollIsOCTIPlatformRegisteredQueryGraphql, {
-  enrollIsOCTIPlatformRegisteredQuery,
-} from '@generated/enrollIsOCTIPlatformRegisteredQuery.graphql';
-import enrollOCTIFragmentGraphql, {
-  enrollOCTIFragment$key,
-} from '@generated/enrollOCTIFragment.graphql';
-import { OCTIPlatformContract } from '@generated/enrollOCTIPlatformFragment.graphql';
-import { enrollOCTIPlatformMutation } from '@generated/enrollOCTIPlatformMutation.graphql';
+import { RegisterNeverRegistered } from '@/components/register/never-registered';
+import { RegisterOCTIPlatform } from '@/components/register/register.graphql';
+import { RegisterStateLayout } from '@/components/register/state/layout';
+import { RegisterStateMissingCapability } from '@/components/register/state/missing-capability';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
+import registerIsOCTIPlatformRegisteredFragmentGraphql, {
+  registerIsOCTIPlatformRegisteredFragment$key,
+} from '@generated/registerIsOCTIPlatformRegisteredFragment.graphql';
+import RegisterIsOCTIPlatformRegisteredQueryGraphql, {
+  registerIsOCTIPlatformRegisteredQuery,
+} from '@generated/registerIsOCTIPlatformRegisteredQuery.graphql';
+import registerOCTIFragmentGraphql, {
+  registerOCTIFragment$key,
+} from '@generated/registerOCTIFragment.graphql';
+import { OCTIPlatformContract } from '@generated/registerOCTIPlatformFragment.graphql';
+import { registerOCTIPlatformMutation } from '@generated/registerOCTIPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
@@ -32,7 +32,7 @@ interface Props {
     title: string;
     contract: OCTIPlatformContract;
   };
-  queryRef: PreloadedQuery<enrollIsOCTIPlatformRegisteredQuery>;
+  queryRef: PreloadedQuery<registerIsOCTIPlatformRegisteredQuery>;
 }
 
 export type RegistrationRequestStatus =
@@ -41,19 +41,19 @@ export type RegistrationRequestStatus =
   | 'failed'
   | 'missed-capability';
 
-export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
+export const RegisterOCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
   const [chosenOrganizationId, setChosenOrganizationId] = useState<string>();
 
   const isOCTIPlatformRegisteredPreloadedQuery =
-    usePreloadedQuery<enrollIsOCTIPlatformRegisteredQuery>(
-      EnrollIsOCTIPlatformRegisteredQueryGraphql,
+    usePreloadedQuery<registerIsOCTIPlatformRegisteredQuery>(
+      RegisterIsOCTIPlatformRegisteredQueryGraphql,
       queryRef
     );
 
   const isPlatformRegistered =
-    useFragment<enrollIsOCTIPlatformRegisteredFragment$key>(
-      enrollIsOCTIPlatformRegisteredFragmentGraphql,
+    useFragment<registerIsOCTIPlatformRegisteredFragment$key>(
+      registerIsOCTIPlatformRegisteredFragmentGraphql,
       isOCTIPlatformRegisteredPreloadedQuery.isOCTIPlatformRegistered
     );
 
@@ -65,50 +65,50 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
         PlatformRegistrationStatusEnum.UNREGISTERED;
 
     if (shouldRefreshToken && isPlatformRegistered.organization) {
-      enroll(isPlatformRegistered.organization.id);
+      register(isPlatformRegistered.organization.id);
     }
   }, [isPlatformRegistered]);
 
   const [registrationRequestStatus, setRegistrationRequestStatus] =
     useState<RegistrationRequestStatus>('idle');
 
-  const [enrollPlatform] =
-    useMutation<enrollOCTIPlatformMutation>(EnrollOCTIPlatform);
+  const [registerPlatform] =
+    useMutation<registerOCTIPlatformMutation>(RegisterOCTIPlatform);
 
-  const [enrollFragmentRef, setEnrollFragmentRef] =
-    useState<enrollOCTIFragment$key | null>(null);
-  const enrollDataResponse = useFragment<enrollOCTIFragment$key>(
-    enrollOCTIFragmentGraphql,
-    enrollFragmentRef
+  const [registerFragmentRef, setRegisterFragmentRef] =
+    useState<registerOCTIFragment$key | null>(null);
+  const registerDataResponse = useFragment<registerOCTIFragment$key>(
+    registerOCTIFragmentGraphql,
+    registerFragmentRef
   );
 
   useEffect(() => {
-    if (!enrollDataResponse?.token) {
+    if (!registerDataResponse?.token) {
       return;
     }
 
     setRegistrationRequestStatus('succeeded');
     window.opener?.postMessage(
       {
-        action: 'enroll',
-        token: enrollDataResponse.token,
+        action: 'register',
+        token: registerDataResponse.token,
       },
       '*'
     );
-  }, [enrollDataResponse]);
+  }, [registerDataResponse]);
 
   const cancel = () => {
     window.opener?.postMessage({ action: 'cancel' }, '*');
   };
 
-  const enroll = (organizationId: string) => {
+  const register = (organizationId: string) => {
     setChosenOrganizationId(organizationId);
-    enrollPlatform({
+    registerPlatform({
       variables: {
         input: { organizationId, platform },
       },
       onCompleted: (response) => {
-        setEnrollFragmentRef(response.enrollOCTIPlatform);
+        setRegisterFragmentRef(response.registerOCTIPlatform);
       },
       onError: (error) => {
         if (error.message === 'MISSING_CAPABILITY_ON_ORGANIZATION') {
@@ -128,7 +128,7 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
 
   if (registrationRequestStatus === 'missed-capability') {
     return chosenOrganizationId ? (
-      <EnrollStateMissingCapability
+      <RegisterStateMissingCapability
         organizationId={chosenOrganizationId}
         cancel={cancel}
       />
@@ -139,19 +139,19 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
 
   if (registrationRequestStatus === 'succeeded') {
     return (
-      <EnrollStateLayout>
-        <h1>{t('Enroll.OCTI.Succeeded.Title')}</h1>
-        <p>{t('Enroll.OCTI.Succeeded.Description')}</p>
-      </EnrollStateLayout>
+      <RegisterStateLayout>
+        <h1>{t('Register.OCTI.Succeeded.Title')}</h1>
+        <p>{t('Register.OCTI.Succeeded.Description')}</p>
+      </RegisterStateLayout>
     );
   }
 
   if (registrationRequestStatus === 'failed') {
     return (
-      <EnrollStateLayout cancel={cancel}>
-        <h1>{t('Enroll.OCTI.Failed.Title')}</h1>
-        <p>{t('Enroll.OCTI.Failed.Description')}</p>
-      </EnrollStateLayout>
+      <RegisterStateLayout cancel={cancel}>
+        <h1>{t('Register.OCTI.Failed.Title')}</h1>
+        <p>{t('Register.OCTI.Failed.Description')}</p>
+      </RegisterStateLayout>
     );
   }
 
@@ -160,9 +160,9 @@ export const EnrollOCTI: React.FC<Props> = ({ queryRef, platform }) => {
     PlatformRegistrationStatusEnum.NEVER_REGISTERED
   ) {
     return (
-      <EnrollNeverEnrolled
+      <RegisterNeverRegistered
         cancel={cancel}
-        confirm={enroll}
+        confirm={register}
       />
     );
   }

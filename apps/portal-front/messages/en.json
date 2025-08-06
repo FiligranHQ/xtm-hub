@@ -138,14 +138,14 @@
         "NotInOrganization": {
           "Title": "You lack the required permissions for the organization where this platform is registered"
         },
-        "PlatformNotEnrolled": {
+        "PlatformNotRegistered": {
           "Title": "The platform you're trying to unregister is not registered",
           "Description": "This tab will be closed soon."
         }
       }
     }
   },
-  "Enroll": {
+  "Register": {
     "Confirm": "Register",
     "OCTI": {
       "Succeeded": {
@@ -157,7 +157,7 @@
         "Description": "An error occurred during the platform registration"
       },
       "SameOrganization": {
-        "Enrolled": {
+        "Registered": {
           "Title": "Platform already registered",
           "Description": "Your OpenCTI platform is already registered. Do you want to re-register your platform ?"
         },
@@ -172,7 +172,7 @@
           "Description": "Your OpenCTI platform is already registered in another organization and you don't have the necessary permissions to transfer it."
         },
         "Allowed": {
-          "Enrolled": {
+          "Registered": {
             "Title": "Platform already registered",
             "Description": "Your OpenCTI platform is already registered in another organization. Do you want to transfer your platform ?"
           },

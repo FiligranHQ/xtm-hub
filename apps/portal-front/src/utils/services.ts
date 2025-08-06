@@ -1,7 +1,7 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
-import { enrollOCTIPlatformListFragment$data } from '@generated/enrollOCTIPlatformListFragment.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
+import { registerOCTIPlatformListFragment$data } from '@generated/registerOCTIPlatformListFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -22,7 +22,7 @@ export const isRegistrationService = (
   );
 
 export const octiPlatformToServiceInstanceCardData = (
-  platform: enrollOCTIPlatformListFragment$data['octiPlatforms'][number]
+  platform: registerOCTIPlatformListFragment$data['octiPlatforms'][number]
 ): ServiceInstanceCardData => {
   return {
     id: platform.id,

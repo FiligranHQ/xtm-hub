@@ -51,20 +51,20 @@ const RegistrationDetails: React.FunctionComponent<{
   return (
     <dl className="grid grid-cols-3 gap-s">
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.PlatformID')}
+        {t('Register.Details.PlatformID')}
       </dt>
       <dd className="txt-sub-content col-span-2">
         {serviceInstance.platform_id}
       </dd>
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.PlatformURL')}
+        {t('Register.Details.PlatformURL')}
       </dt>
       <dd className="txt-sub-content col-span-2">{serviceHref}</dd>
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.Contract')}
+        {t('Register.Details.Contract')}
       </dt>
       <dd className="txt-sub-content col-span-2">
-        {t(`Enroll.Details.Contracts.${serviceInstance.platform_contract}`)}
+        {t(`Register.Details.Contracts.${serviceInstance.platform_contract}`)}
       </dd>
     </dl>
   );*/

@@ -27,7 +27,7 @@ describe('Service Contract Domain', () => {
       expect(serviceDefinition).toBeDefined();
 
       const configuration = {
-        enroller_id: context.user.id,
+        registerer_id: context.user.id,
         platform_id: uuidv4(),
         platform_url: 'http://example.com/',
         platform_title: 'Platform title',

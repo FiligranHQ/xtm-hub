@@ -138,14 +138,14 @@
         "NotInOrganization": {
           "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
         },
-        "PlatformNotEnrolled": {
+        "PlatformNotRegistered": {
           "Title": "La plateforme que vous essayez de désinscrire n'est pas inscrite",
           "Description": "Cet onglet sera bientôt fermé."
         }
       }
     }
   },
-  "Enroll": {
+  "Register": {
     "Confirm": "Inscrire",
     "OCTI": {
       "Succeeded": {
@@ -157,7 +157,7 @@
         "Description": "Une erreur s'est produite lors de l'inscription de la plateforme."
       },
       "SameOrganization": {
-        "Enrolled": {
+        "Registered": {
           "Title": "Plateforme déjà inscrite",
           "Description": "Votre plateforme OpenCTI est déjà inscrite. Voulez-vous inscrire votre plateforme à nouveau ?"
         },
@@ -172,7 +172,7 @@
           "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer."
         },
         "Allowed": {
-          "Enrolled": {
+          "Registered": {
             "Title": "Plateforme déjà inscrite",
             "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation. Voulez-vous transférer votre plateforme ?"
           },

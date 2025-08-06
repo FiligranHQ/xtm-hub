@@ -1,14 +1,14 @@
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { getServiceInstanceUrl } from '@/lib/utils';
-import enrollOCTIPlatformListFragmentGraphql, {
-  enrollOCTIPlatformListFragment$key,
-} from '@generated/enrollOCTIPlatformListFragment.graphql';
-import EnrollOCTIPlatformsQueryGraphql, {
-  enrollOCTIPlatformsQuery,
-} from '@generated/enrollOCTIPlatformsQuery.graphql';
 import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
+import registerOCTIPlatformListFragmentGraphql, {
+  registerOCTIPlatformListFragment$key,
+} from '@generated/registerOCTIPlatformListFragment.graphql';
+import RegisterOCTIPlatformsQueryGraphql, {
+  registerOCTIPlatformsQuery,
+} from '@generated/registerOCTIPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { subscriptionCreateMutation } from '@generated/subscriptionCreateMutation.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
@@ -53,17 +53,17 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
 };
 
 const getOCTIInstances = (
-  queryRef: PreloadedQuery<enrollOCTIPlatformsQuery>
+  queryRef: PreloadedQuery<registerOCTIPlatformsQuery>
 ) => {
-  const queryData = usePreloadedQuery<enrollOCTIPlatformsQuery>(
-    EnrollOCTIPlatformsQueryGraphql,
+  const queryData = usePreloadedQuery<registerOCTIPlatformsQuery>(
+    RegisterOCTIPlatformsQueryGraphql,
     queryRef
   );
 
   const [data] = useRefetchableFragment<
-    enrollOCTIPlatformsQuery,
-    enrollOCTIPlatformListFragment$key
-  >(enrollOCTIPlatformListFragmentGraphql, queryData);
+    registerOCTIPlatformsQuery,
+    registerOCTIPlatformListFragment$key
+  >(registerOCTIPlatformListFragmentGraphql, queryData);
 
   return data.octiPlatforms ?? [];
 };
@@ -151,7 +151,7 @@ const getPublicServices = (
 export const useServiceQueries = (
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>,
   queryRefPublicService: PreloadedQuery<publicServiceQuery>,
-  queryRefOCTIPlatforms: PreloadedQuery<enrollOCTIPlatformsQuery>,
+  queryRefOCTIPlatforms: PreloadedQuery<registerOCTIPlatformsQuery>,
   onUpdate: () => void,
   handleSuccess: (message: string) => void,
   handleError: (error: Error) => void

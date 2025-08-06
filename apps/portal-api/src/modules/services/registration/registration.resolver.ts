@@ -43,7 +43,7 @@ const resolvers: Resolvers = {
 
         return {
           ...response,
-          isPlatformEnrolled: true,
+          isPlatformRegistered: true,
           organizationId: response.organizationId
             ? toGlobalId('Organization', response.organizationId)
             : undefined,
@@ -52,7 +52,7 @@ const resolvers: Resolvers = {
         switch (error.message) {
           case ErrorCode.PlatformNotRegistered:
             return {
-              isPlatformEnrolled: false,
+              isPlatformRegistered: false,
             };
         }
         throw UnknownError(ErrorCode.CanUnregisterOCTIPlatformUnknownError, {
@@ -66,7 +66,7 @@ const resolvers: Resolvers = {
       registrationApp.loadOCTIPlatformRegistrationStatus(context, input),
   },
   Mutation: {
-    enrollOCTIPlatform: async (_, { input }, context) => {
+    registerOCTIPlatform: async (_, { input }, context) => {
       const schema = z.object({
         organizationId: z.uuid().nonempty(),
         platform: z.object({
@@ -90,7 +90,7 @@ const resolvers: Resolvers = {
 
       const trx = await dbTx();
       try {
-        const token = await registrationApp.enrollOCTIPlatform(
+        const token = await registrationApp.registerOCTIPlatform(
           {
             ...context,
             trx,

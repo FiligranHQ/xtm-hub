@@ -18,7 +18,7 @@ import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
 
 export type OCTIPlatformConfiguration = {
-  enroller_id: string;
+  registerer_id: string;
   platform_id: string;
   platform_url: string;
   platform_title: string;
@@ -27,7 +27,7 @@ export type OCTIPlatformConfiguration = {
 };
 
 export const registrationDomain = {
-  enrollNewPlatform: async (
+  registerNewPlatform: async (
     context: PortalContext,
     {
       serviceDefinitionId,

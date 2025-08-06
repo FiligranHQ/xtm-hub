@@ -14,7 +14,7 @@ export async function GET(
   { params }: RedirectIdentifierGetRouteProps
 ) {
   const awaitedParams = await params;
-  if (awaitedParams.identifier === 'enroll-octi') {
+  if (awaitedParams.identifier === 'register-octi') {
     return redirectToOCTIRegistration(request);
   }
 

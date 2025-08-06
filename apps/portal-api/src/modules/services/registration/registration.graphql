@@ -18,7 +18,7 @@ input OCTIPlatformInput {
   contract: OCTIPlatformContract!
 }
 
-input EnrollOCTIPlatformInput {
+input RegisterOCTIPlatformInput {
   organizationId: ID!
   platform: OCTIPlatformInput!
 }
@@ -51,7 +51,7 @@ type IsOCTIPlatformRegisteredResponse {
 }
 
 type CanUnregisterResponse {
-  isPlatformEnrolled: Boolean!
+  isPlatformRegistered: Boolean!
   isAllowed: Boolean
   isInOrganization: Boolean
   organizationId: ID
@@ -89,7 +89,8 @@ type Query {
 }
 
 type Mutation {
-  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): RegistrationResponse!
-    @auth
+  registerOCTIPlatform(
+    input: RegisterOCTIPlatformInput!
+  ): RegistrationResponse! @auth
   unregisterOCTIPlatform(input: UnregisterOCTIPlatformInput): Success! @auth
 }

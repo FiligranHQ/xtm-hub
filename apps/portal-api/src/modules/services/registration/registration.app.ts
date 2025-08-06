@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   CanUnregisterOctiPlatformInput,
-  EnrollOctiPlatformInput,
   IsOctiPlatformRegisteredInput,
   IsOctiPlatformRegisteredResponse,
   OctiPlatform,
@@ -10,6 +9,7 @@ import {
   OctiPlatformRegistrationStatusResponse,
   OrganizationCapability,
   PlatformRegistrationStatus,
+  RegisterOctiPlatformInput,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -58,13 +58,13 @@ export const registrationApp = {
     };
   },
 
-  enrollOCTIPlatform: async (
+  registerOCTIPlatform: async (
     context: PortalContext,
-    { organizationId, platform }: EnrollOctiPlatformInput
+    { organizationId, platform }: RegisterOctiPlatformInput
   ): Promise<string> => {
     const token = uuidv4();
     const configuration: OCTIPlatformConfiguration = {
-      enroller_id: context.user.id,
+      registerer_id: context.user.id,
       platform_id: platform.id,
       platform_url: platform.url,
       platform_title: platform.title,
@@ -118,7 +118,7 @@ export const registrationApp = {
         configuration,
       });
     } else {
-      await registrationDomain.enrollNewPlatform(context, {
+      await registrationDomain.registerNewPlatform(context, {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,

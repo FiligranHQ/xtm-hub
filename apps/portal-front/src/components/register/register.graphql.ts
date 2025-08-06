@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
 export const IsOCTIPlatformRegisteredFragment = graphql`
-  fragment enrollIsOCTIPlatformRegisteredFragment on IsOCTIPlatformRegisteredResponse {
+  fragment registerIsOCTIPlatformRegisteredFragment on IsOCTIPlatformRegisteredResponse {
     status
     organization {
       id
@@ -10,18 +10,18 @@ export const IsOCTIPlatformRegisteredFragment = graphql`
 `;
 
 export const IsOCTIPlatformRegisteredQuery = graphql`
-  query enrollIsOCTIPlatformRegisteredQuery(
+  query registerIsOCTIPlatformRegisteredQuery(
     $input: IsOCTIPlatformRegisteredInput!
   ) {
     isOCTIPlatformRegistered(input: $input) {
-      ...enrollIsOCTIPlatformRegisteredFragment
+      ...registerIsOCTIPlatformRegisteredFragment
     }
   }
 `;
 
 export const CanUnregisterOCTIPlatformFragment = graphql`
-  fragment enrollCanUnregisterOCTIPlatformFragment on CanUnregisterResponse {
-    isPlatformEnrolled
+  fragment registerCanUnregisterOCTIPlatformFragment on CanUnregisterResponse {
+    isPlatformRegistered
     isAllowed
     isInOrganization
     organizationId
@@ -29,47 +29,47 @@ export const CanUnregisterOCTIPlatformFragment = graphql`
 `;
 
 export const CanUnregisterOCTIPlatformQuery = graphql`
-  query enrollCanUnregisterOCTIPlatformQuery(
+  query registerCanUnregisterOCTIPlatformQuery(
     $input: CanUnregisterOCTIPlatformInput!
   ) {
     canUnregisterOCTIPlatform(input: $input) {
-      ...enrollCanUnregisterOCTIPlatformFragment
+      ...registerCanUnregisterOCTIPlatformFragment
     }
   }
 `;
 
-export const EnrollOCTIFragment = graphql`
-  fragment enrollOCTIFragment on RegistrationResponse {
+export const RegisterOCTIFragment = graphql`
+  fragment registerOCTIFragment on RegistrationResponse {
     token
   }
 `;
 
-export const EnrollOCTIPlatform = graphql`
-  mutation enrollOCTIPlatformMutation($input: EnrollOCTIPlatformInput!) {
-    enrollOCTIPlatform(input: $input) {
-      ...enrollOCTIFragment
+export const RegisterOCTIPlatform = graphql`
+  mutation registerOCTIPlatformMutation($input: RegisterOCTIPlatformInput!) {
+    registerOCTIPlatform(input: $input) {
+      ...registerOCTIFragment
     }
   }
 `;
 
 export const UnregisterOCTIFragment = graphql`
-  fragment enrollUnregisterOCTIFragment on Success {
+  fragment registerUnregisterOCTIFragment on Success {
     success
   }
 `;
 
 export const UnregisterOCTIPlatform = graphql`
-  mutation enrollUnregisterOCTIPlatformMutation(
+  mutation registerUnregisterOCTIPlatformMutation(
     $input: UnregisterOCTIPlatformInput!
   ) {
     unregisterOCTIPlatform(input: $input) {
-      ...enrollUnregisterOCTIFragment
+      ...registerUnregisterOCTIFragment
     }
   }
 `;
 
-export const enrollOCTIPlatformFragment = graphql`
-  fragment enrollOCTIPlatformFragment on OCTIPlatform {
+export const registerOCTIPlatformFragment = graphql`
+  fragment registerOCTIPlatformFragment on OCTIPlatform {
     id
     platform_id
     title
@@ -78,17 +78,17 @@ export const enrollOCTIPlatformFragment = graphql`
   }
 `;
 
-export const enrollOCTIPlatformListFragment = graphql`
-  fragment enrollOCTIPlatformListFragment on Query
-  @refetchable(queryName: "EnrollOCTIPlatformListQuery") {
+export const registerOCTIPlatformListFragment = graphql`
+  fragment registerOCTIPlatformListFragment on Query
+  @refetchable(queryName: "RegisterOCTIPlatformListQuery") {
     octiPlatforms {
-      ...enrollOCTIPlatformFragment @relay(mask: false, plural: true)
+      ...registerOCTIPlatformFragment @relay(mask: false, plural: true)
     }
   }
 `;
 
-export const EnrollOCTIPlatformsQuery = graphql`
-  query enrollOCTIPlatformsQuery {
-    ...enrollOCTIPlatformListFragment
+export const RegisterOCTIPlatformsQuery = graphql`
+  query registerOCTIPlatformsQuery {
+    ...registerOCTIPlatformListFragment
   }
 `;

@@ -30,7 +30,7 @@ describe('Registration domain', () => {
     platformId = uuidv4();
 
     configuration = {
-      enroller_id: contextAdminUser.user.id,
+      registerer_id: contextAdminUser.user.id,
       platform_id: platformId,
       platform_url: platformUrl,
       platform_title: platformTitle,
@@ -39,13 +39,13 @@ describe('Registration domain', () => {
     };
   });
 
-  describe('enrollNewInstance', () => {
+  describe('registerNewInstance', () => {
     it('save registration data', async () => {
-      await registrationDomain.enrollNewPlatform(contextAdminUser, {
+      await registrationDomain.registerNewPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
-          enroller_id: contextAdminUser.user.id,
+          registerer_id: contextAdminUser.user.id,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,
@@ -84,7 +84,7 @@ describe('Registration domain', () => {
       );
 
       expect(configuration.token).toBe(token);
-      expect(configuration.enroller_id).toBe(contextAdminUser.user.id);
+      expect(configuration.registerer_id).toBe(contextAdminUser.user.id);
       expect(configuration.platform_id).toBe(platformId);
       expect(configuration.platform_title).toBe(platformTitle);
       expect(configuration.platform_url).toBe(platformUrl);
@@ -96,11 +96,11 @@ describe('Registration domain', () => {
     let serviceInstanceId: string;
     let subscriptionId: string;
     beforeEach(async () => {
-      await registrationDomain.enrollNewPlatform(contextAdminUser, {
+      await registrationDomain.registerNewPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
-          enroller_id: contextAdminUser.user.id,
+          registerer_id: contextAdminUser.user.id,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,

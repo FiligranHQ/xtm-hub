@@ -1,4 +1,4 @@
-import { EnrollStateLayout } from '@/components/register/state/layout';
+import { RegisterStateLayout } from '@/components/register/state/layout';
 import { useTranslations } from 'next-intl';
 import React, { useEffect } from 'react';
 
@@ -6,7 +6,7 @@ interface Props {
   confirm: () => void;
 }
 
-export const UnregisterOCTIPlatformNotEnrolled: React.FC<Props> = ({
+export const UnregisterOCTIPlatformNotRegistered: React.FC<Props> = ({
   confirm,
 }) => {
   const t = useTranslations();
@@ -16,9 +16,9 @@ export const UnregisterOCTIPlatformNotEnrolled: React.FC<Props> = ({
   }, []);
 
   return (
-    <EnrollStateLayout>
-      <h1>{t('Unregister.OCTI.Error.PlatformNotEnrolled.Title')}</h1>
-      <p>{t('Unregister.OCTI.Error.PlatformNotEnrolled.Description')}</p>
-    </EnrollStateLayout>
+    <RegisterStateLayout>
+      <h1>{t('Unregister.OCTI.Error.PlatformNotRegistered.Title')}</h1>
+      <p>{t('Unregister.OCTI.Error.PlatformNotRegistered.Description')}</p>
+    </RegisterStateLayout>
   );
 };
