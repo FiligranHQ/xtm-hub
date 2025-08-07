@@ -104,7 +104,7 @@ elasticsearch:
   secretNameSuffix: -es-elastic-user
   image:
     repository: elasticsearch
-    tag: 8.17.3
+    tag: 8.18.3
   replicas: 2
   storage:
     size: 5Gi
