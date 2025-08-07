@@ -3,7 +3,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
-  ServiceCapability,
+  SeoServiceInstance,
   ServiceConnection,
   ServiceDefinition,
   ServiceInstance,
@@ -147,17 +147,6 @@ export const getIsSubscribed = async (context, id) => {
   return organization_subscribed;
 };
 
-export const getServiceDefinitionCapabilities = (context, id) => {
-  return db<ServiceCapability>(context, 'Service_Capability')
-    .leftJoin(
-      'ServiceDefinition',
-      'ServiceDefinition.id',
-      '=',
-      'Service_Capability.service_definition_id'
-    )
-    .where('ServiceDefinition.id', '=', id)
-    .select('Service_Capability.*');
-};
 export const loadServiceInstances = async (context: PortalContext, opts) =>
   paginate<ServiceInstance, ServiceConnection>(
     context,
@@ -191,7 +180,7 @@ export const getUserJoined = async (context, id) => {
   return result?.user_joined === true;
 };
 
-export const loadServiceInstanceByIdWithCapabilities = async (
+export const loadServiceInstanceById = async (
   context: PortalContext,
   service_instance_id: string
 ): Promise<ServiceInstance> => {
@@ -233,6 +222,17 @@ export const loadServiceInstanceByIdWithCapabilities = async (
     .groupBy(['ServiceInstance.id', 'Subscription.id', 'service_def.id'])
     .first();
 
+  return serviceInstanceQuery;
+};
+
+export const loadServiceInstanceByIdWithCapabilities = async (
+  context: PortalContext,
+  service_instance_id: string
+): Promise<ServiceInstance> => {
+  const serviceInstanceQuery = await loadServiceInstanceById(
+    context,
+    service_instance_id
+  );
   const capabilities = await loadCapabilities(
     context,
     service_instance_id,
@@ -502,8 +502,8 @@ export const grantServiceAccess = async (
   return insertedUserServices;
 };
 
-export const getLinks = (context, id) =>
-  db<ServiceLink>(context, 'ServiceInstance')
+export const getLinks = async (context, id) => {
+  const links = await db<ServiceLink>(context, 'ServiceInstance')
     .where('ServiceInstance.id', '=', id)
     .leftJoin(
       'Service_Link as serviceLinks',
@@ -513,9 +513,14 @@ export const getLinks = (context, id) =>
     )
     .select('serviceLinks.*')
     .returning('*');
+  return links;
+};
 
-export const getServiceDefinition = (context, id) =>
-  db<ServiceDefinition>(context, 'ServiceInstance')
+export const getServiceDefinition = async (context, id) => {
+  const serviceDefinition = await db<ServiceDefinition>(
+    context,
+    'ServiceInstance'
+  )
     .where('ServiceInstance.id', '=', id)
     .leftJoin(
       'ServiceDefinition as service_def',
@@ -525,9 +530,13 @@ export const getServiceDefinition = (context, id) =>
     )
     .select('service_def.*')
     .first();
+  return serviceDefinition;
+};
 
-export const loadSeoServiceInstances = (context: PortalContext) => {
-  return db<ServiceInstance>(context, 'ServiceInstance')
+export const loadSeoServiceInstances = async (
+  context: PortalContext
+): Promise<SeoServiceInstance[]> => {
+  const serviceInstance = await db<ServiceInstance>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link',
       'Service_Link.service_instance_id',
@@ -561,13 +570,14 @@ export const loadSeoServiceInstances = (context: PortalContext) => {
     .where('ServiceInstance.public', '=', true)
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
     .orderBy('ServiceInstance.ordering', 'asc');
+  return serviceInstance;
 };
 
-export const loadSeoServiceInstanceBySlug = (
+export const loadSeoServiceInstanceBySlug = async (
   context: PortalContext,
   slug: string
-) => {
-  return db<ServiceInstance>(context, 'ServiceInstance')
+): Promise<ServiceInstance> => {
+  const serviceInstance = await db<ServiceInstance>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link',
       'Service_Link.service_instance_id',
@@ -600,6 +610,7 @@ export const loadSeoServiceInstanceBySlug = (
     .where('ServiceInstance.slug', '=', slug)
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
     .first();
+  return serviceInstance;
 };
 
 export const getServiceInstance = async (context, id) => {
