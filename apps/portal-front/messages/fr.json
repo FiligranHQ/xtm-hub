@@ -630,6 +630,14 @@
       "SelectRoles": "Sélectionner rôles"
     }
   },
+  "PendingUserListPage": {
+    "TabTitle": "Requêtes utilisateurs",
+    "WarningUserRejection": {
+      "Title": "Êtes-vous sûr?",
+      "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
+      "Confirm": "Confirmer"
+    }
+  },
   "Utils": {
     "Cancel": "Annuler",
     "Close": "Fermer",

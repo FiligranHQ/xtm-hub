@@ -1,5 +1,6 @@
 import { AddUser } from '@/components/admin/user/add-user';
 import { AdminAddUser } from '@/components/admin/user/admin-add-user';
+import PendingUserList from '@/components/admin/user/pending-user-list';
 import UserList from '@/components/admin/user/user-list';
 import useAdminPath from '@/hooks/useAdminPath';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
@@ -44,16 +45,30 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
           {isAdminPath ? <AdminAddUser /> : <AddUser />}
         </div>
       </div>
-      <Tabs
-        defaultValue="users"
-        className="">
-        <TabsList>
-          <TabsTrigger value="users">{t('UserListPage.TabTitle')}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="users">
+      {isAdminPath ? (
+        <div className="mt-4">
           <UserList organization={organization} />
-        </TabsContent>
-      </Tabs>
+        </div>
+      ) : (
+        <Tabs
+          defaultValue="users"
+          className="">
+          <TabsList>
+            <TabsTrigger value="users">
+              {t('UserListPage.TabTitle')}
+            </TabsTrigger>
+            <TabsTrigger value="pendingUsers">
+              {t('PendingUserListPage.TabTitle')}
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="users">
+            <UserList organization={organization} />
+          </TabsContent>
+          <TabsContent value="pendingUsers">
+            <PendingUserList organization={organization} />
+          </TabsContent>
+        </Tabs>
+      )}
     </UserListContext.Provider>
   );
 };
