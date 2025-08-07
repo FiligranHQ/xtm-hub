@@ -22,7 +22,7 @@ export const RegisterStateLayout: React.FC<Props> = ({
           <Button
             variant="outline"
             onClick={cancel}>
-            {t('Register.OCTI.Back')}
+            {t('Register.OpenCTI.Back')}
           </Button>
         )}
         {Boolean(confirm) && (

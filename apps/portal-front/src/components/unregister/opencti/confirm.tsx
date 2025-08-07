@@ -9,7 +9,7 @@ interface Props {
   organizationId: string;
 }
 
-export const UnregisterOCTIConfirm: React.FC<Props> = ({
+export const UnregisterOpenCTIConfirm: React.FC<Props> = ({
   confirm,
   cancel,
   organizationId,
@@ -22,9 +22,11 @@ export const UnregisterOCTIConfirm: React.FC<Props> = ({
       confirm={confirm}
       cancel={cancel}>
       <h1>
-        {t('Unregister.OCTI.Confirm.Title', { name: organization?.name ?? '' })}
+        {t('Unregister.OpenCTI.Confirm.Title', {
+          name: organization?.name ?? '',
+        })}
       </h1>
-      <p>{t('Unregister.OCTI.Confirm.Description')}</p>
+      <p>{t('Unregister.OpenCTI.Confirm.Description')}</p>
     </RegisterStateLayout>
   );
 };

@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MeResponse, SettingsResponse } from './response';
 import { getLoginRedirectionURL } from './url';
 
-export const redirectToOCTIRegistration = async (request: NextRequest) => {
+export const redirectToOpenCTIUnregistration = async (request: NextRequest) => {
   const settingsResponse = (await serverPortalApiFetch<
     typeof SettingsQuery,
     settingsQuery
@@ -41,7 +41,7 @@ export const redirectToOCTIRegistration = async (request: NextRequest) => {
     }
 
     const registrationUrl = new URL(
-      `/register/octi?${params[1]}`,
+      `/unregister/opencti?${params[1]}`,
       baseUrlFront
     );
     return NextResponse.redirect(registrationUrl);

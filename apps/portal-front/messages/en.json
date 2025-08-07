@@ -63,8 +63,8 @@
       "ALREADY_SUBSCRIBED": "You have already subscribed to this service",
       "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "You have already subscribed this organization to this service",
       "AUTH0_USER_NOT_FOUND_ERROR": "Your user profile was not found",
-      "IS_OCTI_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
-      "CAN_UNREGISTER_OCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
+      "IS_OPENCTI_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
+      "CAN_UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
       "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
       "CANT_EDIT_YOURSELF_ERROR": "You cannot edit yourself",
@@ -87,8 +87,8 @@
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
-      "REGISTER_OCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
-      "REGISTER_OCTI_PLATFORM_INVALID_DATA": "Data sent for OpenCTI platform registration is invalid",
+      "REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
+      "REGISTER_OPENCTI_PLATFORM_INVALID_DATA": "Data sent for OpenCTI platform registration is invalid",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Error while deleting the subscription: you are not allowed to delete a subscription with billing",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
       "INVALID_IMAGE_URL": "The image URL is not valid",
@@ -104,7 +104,7 @@
       "SUBSCRIPTION_NOT_FOUND_ERROR": "The subscription does not exist",
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
-      "UNREGISTER_OCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
+      "UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
@@ -116,7 +116,7 @@
     "YouAreNotAuthorized": "You are not authorized to get this page."
   },
   "Unregister": {
-    "OCTI": {
+    "OpenCTI": {
       "Succeeded": {
         "Title": "OpenCTI platform unregistered successfully",
         "Description": "This tab will be closed soon."
@@ -147,7 +147,7 @@
   },
   "Register": {
     "Confirm": "Register",
-    "OCTI": {
+    "OpenCTI": {
       "Succeeded": {
         "Title": "OpenCTI platform registered successfully",
         "Description": "This tab will be closed soon"

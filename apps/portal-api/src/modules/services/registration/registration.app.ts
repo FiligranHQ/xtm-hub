@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  CanUnregisterOctiPlatformInput,
-  IsOctiPlatformRegisteredInput,
-  IsOctiPlatformRegisteredResponse,
-  OctiPlatform,
-  OctiPlatformRegistrationStatus,
-  OctiPlatformRegistrationStatusInput,
-  OctiPlatformRegistrationStatusResponse,
+  CanUnregisterOpenCtiPlatformInput,
+  IsOpenCtiPlatformRegisteredInput,
+  IsOpenCtiPlatformRegisteredResponse,
+  OpenCtiPlatform,
+  OpenCtiPlatformRegistrationStatus,
+  OpenCtiPlatformRegistrationStatusInput,
+  OpenCtiPlatformRegistrationStatusResponse,
   OrganizationCapability,
   PlatformRegistrationStatus,
-  RegisterOctiPlatformInput,
+  RegisterOpenCtiPlatformInput,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -23,17 +23,17 @@ import { loadOrganizationAdministrators } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
-  OCTIPlatformConfiguration,
+  OpenCTIPlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
 
 export const registrationApp = {
-  loadOCTIPlatforms: async (
+  loadOpenCTIPlatforms: async (
     context: PortalContext
-  ): Promise<OctiPlatform[]> => {
-    const platforms = await registrationDomain.loadOCTIPlatforms(context);
+  ): Promise<OpenCtiPlatform[]> => {
+    const platforms = await registrationDomain.loadOpenCTIPlatforms(context);
     return platforms.map((platform) => ({
-      __typename: 'OCTIPlatform',
+      __typename: 'OpenCTIPlatform',
       id: platform.config.platform_id,
       platform_id: platform.config.platform_id,
       title: platform.config.platform_title,
@@ -42,10 +42,10 @@ export const registrationApp = {
     }));
   },
 
-  loadOCTIPlatformRegistrationStatus: async (
+  loadOpenCTIPlatformRegistrationStatus: async (
     context: PortalContext,
-    input: OctiPlatformRegistrationStatusInput
-  ): Promise<OctiPlatformRegistrationStatusResponse> => {
+    input: OpenCtiPlatformRegistrationStatusInput
+  ): Promise<OpenCtiPlatformRegistrationStatusResponse> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
         context,
@@ -53,17 +53,17 @@ export const registrationApp = {
       );
     return {
       status: activeServiceConfiguration
-        ? OctiPlatformRegistrationStatus.Active
-        : OctiPlatformRegistrationStatus.Inactive,
+        ? OpenCtiPlatformRegistrationStatus.Active
+        : OpenCtiPlatformRegistrationStatus.Inactive,
     };
   },
 
-  registerOCTIPlatform: async (
+  registerOpenCTIPlatform: async (
     context: PortalContext,
-    { organizationId, platform }: RegisterOctiPlatformInput
+    { organizationId, platform }: RegisterOpenCtiPlatformInput
   ): Promise<string> => {
     const token = uuidv4();
-    const configuration: OCTIPlatformConfiguration = {
+    const configuration: OpenCTIPlatformConfiguration = {
       registerer_id: context.user.id,
       platform_id: platform.id,
       platform_url: platform.url,
@@ -74,7 +74,7 @@ export const registrationApp = {
 
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-        identifier: ServiceDefinitionIdentifier.OctiRegistration,
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       });
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
@@ -142,9 +142,9 @@ export const registrationApp = {
     return token;
   },
 
-  unregisterOCTIPlatform: async (
+  unregisterOpenCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnregisterOctiPlatformInput
+    { platformId }: CanUnregisterOpenCtiPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -186,10 +186,10 @@ export const registrationApp = {
     );
   },
 
-  isOCTIPlatformRegistered: async (
+  isOpenCTIPlatformRegistered: async (
     context: PortalContext,
-    input: IsOctiPlatformRegisteredInput
-  ): Promise<IsOctiPlatformRegisteredResponse> => {
+    input: IsOpenCtiPlatformRegisteredInput
+  ): Promise<IsOpenCtiPlatformRegisteredResponse> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
@@ -215,9 +215,9 @@ export const registrationApp = {
     };
   },
 
-  canUnregisterOCTIPlatform: async (
+  canUnregisterOpenCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnregisterOctiPlatformInput
+    { platformId }: CanUnregisterOpenCtiPlatformInput
   ): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId;

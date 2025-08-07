@@ -26,7 +26,7 @@ export const RegisterStateMissingCapability: React.FC<Props> = ({
   return (
     <RegisterStateLayout cancel={cancel}>
       <h1>
-        {t('Register.OCTI.Error.Capability.Title', {
+        {t('Register.OpenCTI.Error.Capability.Title', {
           capability:
             OrganizationCapabilityEnum.MANAGE_OPENCTI_REGISTRATION.replaceAll(
               '_',
@@ -34,8 +34,8 @@ export const RegisterStateMissingCapability: React.FC<Props> = ({
             ),
         })}
       </h1>
-      <p>{t('Register.OCTI.Error.Capability.Description')}</p>
-      <p>{t('Register.OCTI.Error.Capability.AdminListTitle')}</p>
+      <p>{t('Register.OpenCTI.Error.Capability.Description')}</p>
+      <p>{t('Register.OpenCTI.Error.Capability.AdminListTitle')}</p>
       <ul className="list-disc ml-l">
         {organizationAdministrators.map((administrator) => (
           <li key={administrator.id}>

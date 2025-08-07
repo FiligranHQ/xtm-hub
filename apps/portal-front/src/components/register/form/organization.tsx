@@ -41,8 +41,8 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
     <div className="flex items-center justify-center">
       <div className="flex flex-col justify-between gap-m">
         <div className="space-y-m">
-          <h1>{t('Register.OCTI.OrganizationForm.Title')}</h1>
-          <p>{t('Register.OCTI.OrganizationForm.Description')}</p>
+          <h1>{t('Register.OpenCTI.OrganizationForm.Title')}</h1>
+          <p>{t('Register.OpenCTI.OrganizationForm.Description')}</p>
         </div>
         <AutoForm
           formSchema={selectOrganizationFormSchema}

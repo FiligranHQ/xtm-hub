@@ -1,12 +1,12 @@
 'use client';
 
 import Loader from '@/components/loader';
-import { UnregisterOCTI } from '@/components/unregister/octi';
+import { UnregisterOpenCTI } from '@/components/unregister/opencti';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import RegisterCanUnregisterOCTIPlatformQueryGraphql, {
-  registerCanUnregisterOCTIPlatformQuery,
-} from '@generated/registerCanUnregisterOCTIPlatformQuery.graphql';
+import RegisterCanUnregisterOpenCTIPlatformQueryGraphql, {
+  registerCanUnregisterOpenCTIPlatformQuery,
+} from '@generated/registerCanUnregisterOpenCTIPlatformQuery.graphql';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -15,8 +15,8 @@ export const PageLoader: React.FC = () => {
   const { platform_id: platformId } = useDecodedQuery();
 
   const [queryRef, loadQuery] =
-    useQueryLoader<registerCanUnregisterOCTIPlatformQuery>(
-      RegisterCanUnregisterOCTIPlatformQueryGraphql
+    useQueryLoader<registerCanUnregisterOpenCTIPlatformQuery>(
+      RegisterCanUnregisterOpenCTIPlatformQueryGraphql
     );
   useMountingLoader(loadQuery, { input: { platformId } });
   if (!platformId) {
@@ -24,7 +24,7 @@ export const PageLoader: React.FC = () => {
   }
 
   return queryRef ? (
-    <UnregisterOCTI
+    <UnregisterOpenCTI
       queryRef={queryRef}
       platformId={platformId}
     />

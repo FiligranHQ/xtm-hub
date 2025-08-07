@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
-export const IsOCTIPlatformRegisteredFragment = graphql`
-  fragment registerIsOCTIPlatformRegisteredFragment on IsOCTIPlatformRegisteredResponse {
+export const IsOpenCTIPlatformRegisteredFragment = graphql`
+  fragment registerIsOpenCTIPlatformRegisteredFragment on IsOpenCTIPlatformRegisteredResponse {
     status
     organization {
       id
@@ -9,18 +9,18 @@ export const IsOCTIPlatformRegisteredFragment = graphql`
   }
 `;
 
-export const IsOCTIPlatformRegisteredQuery = graphql`
-  query registerIsOCTIPlatformRegisteredQuery(
-    $input: IsOCTIPlatformRegisteredInput!
+export const IsOpenCTIPlatformRegisteredQuery = graphql`
+  query registerIsOpenCTIPlatformRegisteredQuery(
+    $input: IsOpenCTIPlatformRegisteredInput!
   ) {
-    isOCTIPlatformRegistered(input: $input) {
-      ...registerIsOCTIPlatformRegisteredFragment
+    isOpenCTIPlatformRegistered(input: $input) {
+      ...registerIsOpenCTIPlatformRegisteredFragment
     }
   }
 `;
 
-export const CanUnregisterOCTIPlatformFragment = graphql`
-  fragment registerCanUnregisterOCTIPlatformFragment on CanUnregisterResponse {
+export const CanUnregisterOpenCTIPlatformFragment = graphql`
+  fragment registerCanUnregisterOpenCTIPlatformFragment on CanUnregisterResponse {
     isPlatformRegistered
     isAllowed
     isInOrganization
@@ -28,48 +28,50 @@ export const CanUnregisterOCTIPlatformFragment = graphql`
   }
 `;
 
-export const CanUnregisterOCTIPlatformQuery = graphql`
-  query registerCanUnregisterOCTIPlatformQuery(
-    $input: CanUnregisterOCTIPlatformInput!
+export const CanUnregisterOpenCTIPlatformQuery = graphql`
+  query registerCanUnregisterOpenCTIPlatformQuery(
+    $input: CanUnregisterOpenCTIPlatformInput!
   ) {
-    canUnregisterOCTIPlatform(input: $input) {
-      ...registerCanUnregisterOCTIPlatformFragment
+    canUnregisterOpenCTIPlatform(input: $input) {
+      ...registerCanUnregisterOpenCTIPlatformFragment
     }
   }
 `;
 
-export const RegisterOCTIFragment = graphql`
-  fragment registerOCTIFragment on RegistrationResponse {
+export const RegisterOpenCTIFragment = graphql`
+  fragment registerOpenCTIFragment on RegistrationResponse {
     token
   }
 `;
 
-export const RegisterOCTIPlatform = graphql`
-  mutation registerOCTIPlatformMutation($input: RegisterOCTIPlatformInput!) {
-    registerOCTIPlatform(input: $input) {
-      ...registerOCTIFragment
+export const RegisterOpenCTIPlatform = graphql`
+  mutation registerOpenCTIPlatformMutation(
+    $input: RegisterOpenCTIPlatformInput!
+  ) {
+    registerOpenCTIPlatform(input: $input) {
+      ...registerOpenCTIFragment
     }
   }
 `;
 
-export const UnregisterOCTIFragment = graphql`
-  fragment registerUnregisterOCTIFragment on Success {
+export const UnregisterOpenCTIFragment = graphql`
+  fragment registerUnregisterOpenCTIFragment on Success {
     success
   }
 `;
 
-export const UnregisterOCTIPlatform = graphql`
-  mutation registerUnregisterOCTIPlatformMutation(
-    $input: UnregisterOCTIPlatformInput!
+export const UnregisterOpenCTIPlatform = graphql`
+  mutation registerUnregisterOpenCTIPlatformMutation(
+    $input: UnregisterOpenCTIPlatformInput!
   ) {
-    unregisterOCTIPlatform(input: $input) {
-      ...registerUnregisterOCTIFragment
+    unregisterOpenCTIPlatform(input: $input) {
+      ...registerUnregisterOpenCTIFragment
     }
   }
 `;
 
-export const registerOCTIPlatformFragment = graphql`
-  fragment registerOCTIPlatformFragment on OCTIPlatform {
+export const registerOpenCTIPlatformFragment = graphql`
+  fragment registerOpenCTIPlatformFragment on OpenCTIPlatform {
     id
     platform_id
     title
@@ -78,17 +80,17 @@ export const registerOCTIPlatformFragment = graphql`
   }
 `;
 
-export const registerOCTIPlatformListFragment = graphql`
-  fragment registerOCTIPlatformListFragment on Query
-  @refetchable(queryName: "RegisterOCTIPlatformListQuery") {
-    octiPlatforms {
-      ...registerOCTIPlatformFragment @relay(mask: false, plural: true)
+export const registerOpenCTIPlatformListFragment = graphql`
+  fragment registerOpenCTIPlatformListFragment on Query
+  @refetchable(queryName: "RegisterOpenCTIPlatformListQuery") {
+    openCTIPlatforms {
+      ...registerOpenCTIPlatformFragment @relay(mask: false, plural: true)
     }
   }
 `;
 
-export const RegisterOCTIPlatformsQuery = graphql`
-  query registerOCTIPlatformsQuery {
-    ...registerOCTIPlatformListFragment
+export const RegisterOpenCTIPlatformsQuery = graphql`
+  query registerOpenCTIPlatformsQuery {
+    ...registerOpenCTIPlatformListFragment
   }
 `;

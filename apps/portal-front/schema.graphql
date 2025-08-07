@@ -41,8 +41,8 @@ type Mutation {
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
-  registerOCTIPlatform(input: RegisterOCTIPlatformInput!): RegistrationResponse!
-  unregisterOCTIPlatform(input: UnregisterOCTIPlatformInput): Success!
+  registerOpenCTIPlatform(input: RegisterOpenCTIPlatformInput!): RegistrationResponse!
+  unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -114,10 +114,10 @@ type Query {
   seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
   obasScenario(id: ID, serviceInstanceId: ID): ObasScenario
-  isOCTIPlatformRegistered(input: IsOCTIPlatformRegisteredInput!): IsOCTIPlatformRegisteredResponse!
-  canUnregisterOCTIPlatform(input: CanUnregisterOCTIPlatformInput!): CanUnregisterResponse!
-  octiPlatforms: [OCTIPlatform!]!
-  octiPlatformRegistrationStatus(input: OCTIPlatformRegistrationStatusInput!): OCTIPlatformRegistrationStatusResponse!
+  isOpenCTIPlatformRegistered(input: IsOpenCTIPlatformRegisteredInput!): IsOpenCTIPlatformRegisteredResponse!
+  canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
+  openCTIPlatforms: [OpenCTIPlatform!]!
+  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
@@ -277,7 +277,7 @@ enum ServiceDefinitionIdentifier {
   custom_dashboards
   csv_feeds
   obas_scenarios
-  octi_registration
+  opencti_registration
 }
 
 type ServiceDefinition implements Node {
@@ -410,32 +410,32 @@ type ObasScenarioConnection {
   pageInfo: PageInfo!
 }
 
-enum OCTIPlatformContract {
+enum OpenCTIPlatformContract {
   CE
   EE
 }
 
-type OCTIPlatform implements Node {
+type OpenCTIPlatform implements Node {
   id: ID!
   url: String!
   title: String!
-  contract: OCTIPlatformContract!
+  contract: OpenCTIPlatformContract!
   platform_id: String!
 }
 
-input OCTIPlatformInput {
+input OpenCTIPlatformInput {
   id: ID!
   url: String!
   title: String!
-  contract: OCTIPlatformContract!
+  contract: OpenCTIPlatformContract!
 }
 
-input RegisterOCTIPlatformInput {
+input RegisterOpenCTIPlatformInput {
   organizationId: ID!
-  platform: OCTIPlatformInput!
+  platform: OpenCTIPlatformInput!
 }
 
-input CanUnregisterOCTIPlatformInput {
+input CanUnregisterOpenCTIPlatformInput {
   platformId: String!
 }
 
@@ -449,17 +449,17 @@ enum PlatformRegistrationStatus {
   never_registered
 }
 
-input IsOCTIPlatformRegisteredInput {
+input IsOpenCTIPlatformRegisteredInput {
   platformId: String!
 }
 
-type IsOCTIPlatformRegisteredOrganization implements Node {
+type IsOpenCTIPlatformRegisteredOrganization implements Node {
   id: ID!
 }
 
-type IsOCTIPlatformRegisteredResponse {
+type IsOpenCTIPlatformRegisteredResponse {
   status: PlatformRegistrationStatus!
-  organization: IsOCTIPlatformRegisteredOrganization
+  organization: IsOpenCTIPlatformRegisteredOrganization
 }
 
 type CanUnregisterResponse {
@@ -469,22 +469,22 @@ type CanUnregisterResponse {
   organizationId: ID
 }
 
-input UnregisterOCTIPlatformInput {
+input UnregisterOpenCTIPlatformInput {
   platformId: String!
 }
 
-input OCTIPlatformRegistrationStatusInput {
+input OpenCTIPlatformRegistrationStatusInput {
   platformId: String!
   token: String!
 }
 
-enum OCTIPlatformRegistrationStatus {
+enum OpenCTIPlatformRegistrationStatus {
   active
   inactive
 }
 
-type OCTIPlatformRegistrationStatusResponse {
-  status: OCTIPlatformRegistrationStatus!
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: OpenCTIPlatformRegistrationStatus!
 }
 
 enum ServiceInstanceOrdering {

@@ -3,12 +3,12 @@ import { getServiceInstanceUrl } from '@/lib/utils';
 import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
-import registerOCTIPlatformListFragmentGraphql, {
-  registerOCTIPlatformListFragment$key,
-} from '@generated/registerOCTIPlatformListFragment.graphql';
-import RegisterOCTIPlatformsQueryGraphql, {
-  registerOCTIPlatformsQuery,
-} from '@generated/registerOCTIPlatformsQuery.graphql';
+import registerOpenCTIPlatformListFragmentGraphql, {
+  registerOpenCTIPlatformListFragment$key,
+} from '@generated/registerOpenCTIPlatformListFragment.graphql';
+import RegisterOpenCTIPlatformsQueryGraphql, {
+  registerOpenCTIPlatformsQuery,
+} from '@generated/registerOpenCTIPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { subscriptionCreateMutation } from '@generated/subscriptionCreateMutation.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
@@ -52,20 +52,20 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
   return ownedServices;
 };
 
-const getOCTIInstances = (
-  queryRef: PreloadedQuery<registerOCTIPlatformsQuery>
+const getOpenCTIInstances = (
+  queryRef: PreloadedQuery<registerOpenCTIPlatformsQuery>
 ) => {
-  const queryData = usePreloadedQuery<registerOCTIPlatformsQuery>(
-    RegisterOCTIPlatformsQueryGraphql,
+  const queryData = usePreloadedQuery<registerOpenCTIPlatformsQuery>(
+    RegisterOpenCTIPlatformsQueryGraphql,
     queryRef
   );
 
   const [data] = useRefetchableFragment<
-    registerOCTIPlatformsQuery,
-    registerOCTIPlatformListFragment$key
-  >(registerOCTIPlatformListFragmentGraphql, queryData);
+    registerOpenCTIPlatformsQuery,
+    registerOpenCTIPlatformListFragment$key
+  >(registerOpenCTIPlatformListFragmentGraphql, queryData);
 
-  return data.octiPlatforms ?? [];
+  return data.openCTIPlatforms ?? [];
 };
 
 const getPublicServices = (
@@ -151,7 +151,7 @@ const getPublicServices = (
 export const useServiceQueries = (
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>,
   queryRefPublicService: PreloadedQuery<publicServiceQuery>,
-  queryRefOCTIPlatforms: PreloadedQuery<registerOCTIPlatformsQuery>,
+  queryRefOpenCTIPlatforms: PreloadedQuery<registerOpenCTIPlatformsQuery>,
   onUpdate: () => void,
   handleSuccess: (message: string) => void,
   handleError: (error: Error) => void
@@ -165,7 +165,7 @@ export const useServiceQueries = (
 
   return {
     ownedServices: getOwnedServices(queryRefUserServiceOwned),
-    octiPlatforms: getOCTIInstances(queryRefOCTIPlatforms),
+    openCTIPlatforms: getOpenCTIInstances(queryRefOpenCTIPlatforms),
     publicServices,
     addSubscriptionInDb,
   };

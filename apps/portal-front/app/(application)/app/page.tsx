@@ -15,9 +15,9 @@ import {
   publicServiceQuery,
   ServiceInstanceOrdering,
 } from '@generated/publicServiceQuery.graphql';
-import RegisterOCTIPlatformsQueryGraphql, {
-  registerOCTIPlatformsQuery,
-} from '@generated/registerOCTIPlatformsQuery.graphql';
+import RegisterOpenCTIPlatformsQueryGraphql, {
+  registerOpenCTIPlatformsQuery,
+} from '@generated/registerOpenCTIPlatformsQuery.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 
 export const dynamic = 'force-dynamic';
@@ -51,12 +51,12 @@ const Page: React.FunctionComponent = () => {
     orderMode: orderModeServiceList,
   });
 
-  // OCTI Platforms
-  const [queryRefOCTIPlatforms, loadQueryOCTIPlatforms] =
-    useQueryLoader<registerOCTIPlatformsQuery>(
-      RegisterOCTIPlatformsQueryGraphql
+  // OpenCTI Platforms
+  const [queryRefOpenCTIPlatforms, loadQueryOpenCTIPlatforms] =
+    useQueryLoader<registerOpenCTIPlatformsQuery>(
+      RegisterOpenCTIPlatformsQueryGraphql
     );
-  useMountingLoader(loadQueryOCTIPlatforms, {});
+  useMountingLoader(loadQueryOpenCTIPlatforms, {});
 
   const handleUpdate = useCallback(() => {
     loadQueryUserServiceOwned(
@@ -75,13 +75,13 @@ const Page: React.FunctionComponent = () => {
       },
       { fetchPolicy: 'network-only' }
     );
-    loadQueryOCTIPlatforms({}, { fetchPolicy: 'network-only' });
+    loadQueryOpenCTIPlatforms({}, { fetchPolicy: 'network-only' });
   }, []);
 
   if (
     !queryRefUserServiceOwned ||
     !queryRefPublicServiceList ||
-    !queryRefOCTIPlatforms
+    !queryRefOpenCTIPlatforms
   )
     return <Loader />;
 
@@ -89,7 +89,7 @@ const Page: React.FunctionComponent = () => {
     <ServiceList
       queryRefUserServiceOwned={queryRefUserServiceOwned}
       queryRefServiceList={queryRefPublicServiceList}
-      queryRefOCTIPlatforms={queryRefOCTIPlatforms}
+      queryRefOpenCTIPlatforms={queryRefOpenCTIPlatforms}
       onUpdate={handleUpdate}
     />
   );

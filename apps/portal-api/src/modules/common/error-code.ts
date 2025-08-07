@@ -1,8 +1,8 @@
 export enum ErrorCode {
-  IsOCTIPlatformRegisteredUnknownError = 'IS_OCTI_PLATFORM_REGISTERED_UNKNOWN_ERROR',
-  CanUnregisterOCTIPlatformUnknownError = 'CAN_UNREGISTER_OCTI_PLATFORM_UNKNOWN_ERROR',
-  RegisterOCTIPlatformUnknownError = 'REGISTER_OCTI_PLATFORM_UNKNOWN_ERROR',
-  RegisterOCITPlatformInvalidData = 'REGISTER_OCTI_PLATFORM_INVALID_DATA',
+  IsOpenCTIPlatformRegisteredUnknownError = 'IS_OPENCTI_PLATFORM_REGISTERED_UNKNOWN_ERROR',
+  CanUnregisterOpenCTIPlatformUnknownError = 'CAN_UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR',
+  RegisterOpenCTIPlatformUnknownError = 'REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR',
+  RegisterOCITPlatformInvalidData = 'REGISTER_OPENCTI_PLATFORM_INVALID_DATA',
   PlatformNotRegistered = 'PLATFORM_NOT_REGISTERED',
   InvalidImageUrl = 'INVALID_IMAGE_URL',
   InvalidServiceConfiguration = 'INVALID_SERVICE_CONFIGURATION',
@@ -12,6 +12,6 @@ export enum ErrorCode {
   ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
-  UnregisterOCTIPlatformUnknownError = 'UNREGISTER_OCTI_PLATFORM_UNKNOWN_ERROR',
+  UnregisterOpenCTIPlatformUnknownError = 'UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR',
   UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
 }

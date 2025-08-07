@@ -1,17 +1,17 @@
 import Loader from '@/components/loader';
 import {
-  CanUnregisterOCTIPlatformFragment,
-  UnregisterOCTIPlatform,
+  CanUnregisterOpenCTIPlatformFragment,
+  UnregisterOpenCTIPlatform,
 } from '@/components/register/register.graphql';
 import { RegisterStateLayout } from '@/components/register/state/layout';
-import { UnregisterOCTIConfirm } from '@/components/unregister/octi/confirm';
-import { UnregisterOCTIMissingCapability } from '@/components/unregister/octi/missing-capability';
-import { UnregisterOCTIPlatformNotRegistered } from '@/components/unregister/octi/platform-not-registered';
-import { registerCanUnregisterOCTIPlatformFragment$key } from '@generated/registerCanUnregisterOCTIPlatformFragment.graphql';
-import RegisterCanUnregisterOCTIPlatformQueryGraphql, {
-  registerCanUnregisterOCTIPlatformQuery,
-} from '@generated/registerCanUnregisterOCTIPlatformQuery.graphql';
-import { registerUnregisterOCTIPlatformMutation } from '@generated/registerUnregisterOCTIPlatformMutation.graphql';
+import { UnregisterOpenCTIConfirm } from '@/components/unregister/opencti/confirm';
+import { UnregisterOpenCTIMissingCapability } from '@/components/unregister/opencti/missing-capability';
+import { UnregisterOpenCTIPlatformNotRegistered } from '@/components/unregister/opencti/platform-not-registered';
+import { registerCanUnregisterOpenCTIPlatformFragment$key } from '@generated/registerCanUnregisterOpenCTIPlatformFragment.graphql';
+import RegisterCanUnregisterOpenCTIPlatformQueryGraphql, {
+  registerCanUnregisterOpenCTIPlatformQuery,
+} from '@generated/registerCanUnregisterOpenCTIPlatformQuery.graphql';
+import { registerUnregisterOpenCTIPlatformMutation } from '@generated/registerUnregisterOpenCTIPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
@@ -24,27 +24,32 @@ import {
 
 interface Props {
   platformId: string;
-  queryRef: PreloadedQuery<registerCanUnregisterOCTIPlatformQuery>;
+  queryRef: PreloadedQuery<registerCanUnregisterOpenCTIPlatformQuery>;
 }
 
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
 
-export const UnregisterOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
+export const UnregisterOpenCTI: React.FC<Props> = ({
+  queryRef,
+  platformId,
+}) => {
   const t = useTranslations();
   const canUnregisterPreloadedQuery =
-    usePreloadedQuery<registerCanUnregisterOCTIPlatformQuery>(
-      RegisterCanUnregisterOCTIPlatformQueryGraphql,
+    usePreloadedQuery<registerCanUnregisterOpenCTIPlatformQuery>(
+      RegisterCanUnregisterOpenCTIPlatformQueryGraphql,
       queryRef
     );
 
   const { isAllowed, isPlatformRegistered, isInOrganization, organizationId } =
-    useFragment<registerCanUnregisterOCTIPlatformFragment$key>(
-      CanUnregisterOCTIPlatformFragment,
-      canUnregisterPreloadedQuery.canUnregisterOCTIPlatform
+    useFragment<registerCanUnregisterOpenCTIPlatformFragment$key>(
+      CanUnregisterOpenCTIPlatformFragment,
+      canUnregisterPreloadedQuery.canUnregisterOpenCTIPlatform
     );
 
   const [unregisterPlatform] =
-    useMutation<registerUnregisterOCTIPlatformMutation>(UnregisterOCTIPlatform);
+    useMutation<registerUnregisterOpenCTIPlatformMutation>(
+      UnregisterOpenCTIPlatform
+    );
 
   const [status, setStatus] = useState<UnregistrationStatus>('idle');
   const cancel = () => {
@@ -76,8 +81,8 @@ export const UnregisterOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   if (status === 'succeeded') {
     return (
       <RegisterStateLayout>
-        <h1>{t('Unregister.OCTI.Succeeded.Title')}</h1>
-        <p>{t('Unregister.OCTI.Succeeded.Description')}</p>
+        <h1>{t('Unregister.OpenCTI.Succeeded.Title')}</h1>
+        <p>{t('Unregister.OpenCTI.Succeeded.Description')}</p>
       </RegisterStateLayout>
     );
   }
@@ -85,27 +90,27 @@ export const UnregisterOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   if (status === 'failed') {
     return (
       <RegisterStateLayout>
-        <h1>{t('Unregister.OCTI.Failed.Title')}</h1>
-        <p>{t('Unregister.OCTI.Failed.Description')}</p>
+        <h1>{t('Unregister.OpenCTI.Failed.Title')}</h1>
+        <p>{t('Unregister.OpenCTI.Failed.Description')}</p>
       </RegisterStateLayout>
     );
   }
 
   if (!isPlatformRegistered) {
-    return <UnregisterOCTIPlatformNotRegistered confirm={confirm} />;
+    return <UnregisterOpenCTIPlatformNotRegistered confirm={confirm} />;
   }
 
   if (!isAllowed) {
     if (!isInOrganization) {
       return (
         <RegisterStateLayout cancel={cancel}>
-          <h1>{t('Unregister.OCTI.Error.NotInOrganization.Title')}</h1>
+          <h1>{t('Unregister.OpenCTI.Error.NotInOrganization.Title')}</h1>
         </RegisterStateLayout>
       );
     }
 
     return organizationId ? (
-      <UnregisterOCTIMissingCapability
+      <UnregisterOpenCTIMissingCapability
         organizationId={organizationId}
         cancel={cancel}
       />
@@ -115,7 +120,7 @@ export const UnregisterOCTI: React.FC<Props> = ({ queryRef, platformId }) => {
   }
 
   return organizationId ? (
-    <UnregisterOCTIConfirm
+    <UnregisterOpenCTIConfirm
       cancel={cancel}
       confirm={confirm}
       organizationId={organizationId}
