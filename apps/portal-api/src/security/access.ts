@@ -192,7 +192,7 @@ export const applyDbSecurityLayer = async (
     if (method && tableSecurityMap[table][method]) {
       // We could perform the verification earlier, but I want to be able to check everything in development.
       // By default, we're in ADMIN_PLTFM in dev, so this helps ensure the security is properly implemented.
-      if (isUserAdminPlatform(context.user)) {
+      if (isUserAdminPlatform(context.user) || opts?.unsecured) {
         return qb;
       }
       // Check the promise and then if it not throwing error we return qb.
