@@ -6,6 +6,7 @@ import { logApp } from '../src/utils/app-logger.util';
 const DATABASE_TEST: string =
   config.get('database-test.database') || 'test_database';
 
+let testDbInstance: Knex | null = null;
 const getDbConnection = () => {
   return pkg({
     client: 'pg',
@@ -39,7 +40,17 @@ const configTest: Knex.Config = {
   },
 };
 export const getDbTestConnection = () => {
-  return pkg(configTest);
+  if (!testDbInstance) {
+    testDbInstance = pkg(configTest);
+  }
+  return testDbInstance;
+};
+
+export const closeDbTestConnection = async () => {
+  if (testDbInstance) {
+    await testDbInstance.destroy();
+    testDbInstance = null;
+  }
 };
 
 export async function createDatabase() {
@@ -77,4 +88,8 @@ export async function cleanDatabase() {
 
 export async function setup() {
   await createDatabase();
+}
+export async function teardown() {
+  console.log('🛑 Global teardown - Closing all connections');
+  await closeDbTestConnection();
 }
