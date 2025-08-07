@@ -9,9 +9,9 @@ import {
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
 import {
-  OctiPlatformContract,
-  OctiPlatformInput,
-  OctiPlatformRegistrationStatus,
+  OpenCtiPlatformContract,
+  OpenCtiPlatformInput,
+  OpenCtiPlatformRegistrationStatus,
   ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
 import Subscription from '../../../model/kanel/public/Subscription';
@@ -24,11 +24,11 @@ import { registrationApp } from './registration.app';
 
 describe('Registration app', () => {
   describe('registerOpenCTIPlatform', () => {
-    const platform: OctiPlatformInput = {
+    const platform: OpenCtiPlatformInput = {
       id: uuidv4(),
       title: 'My OpenCTI platform',
       url: 'http://example.com',
-      contract: OctiPlatformContract.Ee,
+      contract: OpenCtiPlatformContract.Ee,
     };
 
     describe('invalid configuration', async () => {
@@ -101,7 +101,7 @@ describe('Registration app', () => {
 
   describe('unregisterOpenCTIPlatform', () => {
     let platformId: string;
-    let platform: OctiPlatformInput;
+    let platform: OpenCtiPlatformInput;
 
     beforeEach(() => {
       platformId = uuidv4();
@@ -109,7 +109,7 @@ describe('Registration app', () => {
         id: platformId,
         title: 'My OpenCTI platform',
         url: 'http://example.com',
-        contract: OctiPlatformContract.Ee,
+        contract: OpenCtiPlatformContract.Ee,
       };
     });
 
@@ -289,7 +289,7 @@ describe('Registration app', () => {
           { platformId: uuidv4(), token: uuidv4() }
         );
 
-      expect(result.status).toBe(OctiPlatformRegistrationStatus.Inactive);
+      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Inactive);
     });
 
     it('should return active when platform is registered', async () => {
@@ -301,7 +301,7 @@ describe('Registration app', () => {
           platform: {
             id: platformId,
             url: 'http://example.com',
-            contract: OctiPlatformContract.Ee,
+            contract: OpenCtiPlatformContract.Ee,
             title: 'Fake title',
           },
         }
@@ -313,7 +313,7 @@ describe('Registration app', () => {
           { platformId, token }
         );
 
-      expect(result.status).toBe(OctiPlatformRegistrationStatus.Active);
+      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Active);
     });
 
     it('should return inactive when platform is unregistered', async () => {
@@ -325,7 +325,7 @@ describe('Registration app', () => {
           platform: {
             id: platformId,
             url: 'http://example.com',
-            contract: OctiPlatformContract.Ee,
+            contract: OpenCtiPlatformContract.Ee,
             title: 'Fake title',
           },
         }
@@ -341,7 +341,7 @@ describe('Registration app', () => {
           { platformId: platformId, token }
         );
 
-      expect(result.status).toBe(OctiPlatformRegistrationStatus.Inactive);
+      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Inactive);
     });
   });
 });

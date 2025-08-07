@@ -42,7 +42,7 @@ const RegistrationDetails: React.FunctionComponent<{
   const t = useTranslations();
   return (
     <p className="txt-sub-content text-muted-foreground">
-      {t('Enroll.Details.Description')}
+      {t('Register.Details.Description')}
     </p>
   );
 
@@ -89,7 +89,7 @@ const ServiceInstanceCard: React.FunctionComponent<
       ? `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`
       : '';
 
-  if (isEnrollmentService(serviceInstance)) {
+  if (isRegistrationService(serviceInstance)) {
     backgroundImage = 'url(/octi-private-platform-logo.png)';
   }
 
@@ -99,7 +99,7 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div
           className={cn(
             'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
-            isEnrollmentService(serviceInstance)
+            isRegistrationService(serviceInstance)
               ? 'bg-darkblue-800'
               : 'bg-blue-900'
           )}>
@@ -119,7 +119,7 @@ const ServiceInstanceCard: React.FunctionComponent<
             ratio={16 / 9}
             className={cn(
               'rounded-t',
-              isEnrollmentService(serviceInstance)
+              isRegistrationService(serviceInstance)
                 ? 'overflow-visible'
                 : 'overflow-hidden'
             )}>
@@ -132,7 +132,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 alt={`Illustration of ${serviceInstance.name}`}
               />
             )}
-            {isEnrollmentService(serviceInstance) && (
+            {isRegistrationService(serviceInstance) && (
               <>
                 <Image
                   width="580"
@@ -164,8 +164,8 @@ const ServiceInstanceCard: React.FunctionComponent<
                 aria-disabled={isDisabled}>
                 <h2>
                   {serviceInstance.name}
-                  {isEnrollmentService(serviceInstance) && (
-                    <> - {t('Enroll.Details.PrivatePlatform')}</>
+                  {isRegistrationService(serviceInstance) && (
+                    <> - {t('Register.Details.PrivatePlatform')}</>
                   )}
                 </h2>
               </Link>

@@ -15,6 +15,7 @@ export async function GET(
 ) {
   const awaitedParams = await params;
   if (
+    // TODO: remove after OpenCTI PR is merged
     awaitedParams.identifier === 'enroll-octi' ||
     awaitedParams.identifier === 'register-opencti'
   ) {
@@ -22,6 +23,7 @@ export async function GET(
   }
 
   if (
+    // TODO: remove after OpenCTI PR is merged
     awaitedParams.identifier === 'unenroll-octi' ||
     awaitedParams.identifier === 'unregister-opencti'
   ) {

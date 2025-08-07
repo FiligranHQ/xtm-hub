@@ -5,21 +5,24 @@ import {
   contextAdminUser,
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
-import { OctiPlatformContract } from '../../../__generated__/resolvers-types';
+import { OpenCtiPlatformContract } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import Subscription from '../../../model/kanel/public/Subscription';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { ErrorCode } from '../../common/error-code';
 import { serviceContractDomain } from '../contract/domain';
-import { registrationDomain } from './registration.domain';
+import {
+  OpenCTIPlatformConfiguration,
+  registrationDomain,
+} from './registration.domain';
 
 describe('Registration domain', () => {
   let platformId: string;
   const token = uuidv4();
   const platformTitle = 'My OpenCTI platform';
   const platformUrl = 'http://example.com';
-  const platformContract = OctiPlatformContract.Ee;
+  const platformContract = OpenCtiPlatformContract.Ee;
   const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
   let configuration: OpenCTIPlatformConfiguration;
 

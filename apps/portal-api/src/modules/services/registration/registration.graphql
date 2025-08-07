@@ -66,6 +66,12 @@ input OpenCTIPlatformRegistrationStatusInput {
   token: String!
 }
 
+# TODO: remove after OpenCTI PR is merged
+input OCTIPlatformEnrollmentStatusInput {
+  platformId: String!
+  token: String!
+}
+
 enum OpenCTIPlatformRegistrationStatus {
   active
   inactive
@@ -85,6 +91,11 @@ type Query {
   openCTIPlatforms: [OpenCTIPlatform!]! @auth
   openCTIPlatformRegistrationStatus(
     input: OpenCTIPlatformRegistrationStatusInput!
+  ): OpenCTIPlatformRegistrationStatusResponse!
+
+  # TODO: remove after OpenCTI PR is merged
+  octiPlatformEnrollmentStatus(
+    input: OCTIPlatformEnrollmentStatusInput!
   ): OpenCTIPlatformRegistrationStatusResponse!
 }
 
