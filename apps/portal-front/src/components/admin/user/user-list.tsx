@@ -25,12 +25,19 @@ import {
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useEffect, useState } from 'react';
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   graphql,
   readInlineData,
   useLazyLoadQuery,
   useRefetchableFragment,
+  useSubscription,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -147,8 +154,28 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     userList_users$key
   >(userListFragment, queryData);
 
+  const connectionID = data?.users?.__id;
   const { setConnectionId } = getUserListContext();
-  setConnectionId(data.users.__id);
+  setConnectionId(connectionID);
+
+  const userListSubscription = graphql`
+    subscription userListSubscription($connections: [ID!]!) {
+      User {
+        add @appendNode(connections: $connections, edgeTypeName: "UserEdge") {
+          ...userList_fragment
+        }
+      }
+    }
+  `;
+
+  const userListSubscriptionConfig = useMemo(
+    () => ({
+      variables: { connections: [connectionID] },
+      subscription: userListSubscription,
+    }),
+    [connectionID, userListSubscription]
+  );
+  useSubscription(userListSubscriptionConfig);
 
   const columns: ColumnDef<userList_fragment$data>[] = [
     {

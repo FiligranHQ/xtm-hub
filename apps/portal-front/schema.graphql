@@ -576,6 +576,7 @@ type Subscription {
   ActionTracking: TrackingSubscription
   User: UserSubscription
   MeUser: MeUserSubscription
+  UserPending: UserPendingSubscription
 }
 
 type Label implements Node {
@@ -853,6 +854,10 @@ type UserSubscription {
 
 type MeUserSubscription {
   edit: User
+  delete: User
+}
+
+type UserPendingSubscription {
   delete: User
 }
 

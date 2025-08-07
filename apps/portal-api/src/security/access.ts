@@ -14,7 +14,11 @@ import { TypedNode } from '../pub';
 import { OrganizationCapability } from '../__generated__/resolvers-types';
 import { UserLoadUserBy } from '../model/user';
 import { setQueryForDocument } from './document-security-access';
-import { meUserSSESecurity, userSSESecurity } from './user-security-access';
+import {
+  meUserSSESecurity,
+  userPendingSSESecurity,
+  userSSESecurity,
+} from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
 import { logApp } from '../utils/app-logger.util';
@@ -67,7 +71,7 @@ export const applySSESecurity = (opt: {
   return opt.type === opt.topic;
 };
 
-export type AccessibleTopics = 'MeUser' | DatabaseType;
+export type AccessibleTopics = 'MeUser' | 'UserPending' | DatabaseType;
 export const isNodeAccessible = async (
   user: UserLoadUserBy,
   topic: string,
@@ -88,6 +92,7 @@ export const isNodeAccessible = async (
   const mapping: Partial<Record<AccessibleTopics, AccessibilityChecker>> = {
     User: userSSESecurity,
     MeUser: meUserSSESecurity,
+    UserPending: userPendingSSESecurity,
   };
   const node = Object.values(data)[0];
   const type = node.__typename;

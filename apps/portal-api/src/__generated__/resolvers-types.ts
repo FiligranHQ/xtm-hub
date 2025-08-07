@@ -1302,6 +1302,7 @@ export type Subscription = {
   MeUser?: Maybe<MeUserSubscription>;
   ServiceInstance?: Maybe<ServiceInstanceSubscription>;
   User?: Maybe<UserSubscription>;
+  UserPending?: Maybe<UserPendingSubscription>;
 };
 
 export type SubscriptionCapability = Node & {
@@ -1432,6 +1433,11 @@ export enum UserOrdering {
   LastLogin = 'last_login',
   LastName = 'last_name'
 }
+
+export type UserPendingSubscription = {
+  __typename?: 'UserPendingSubscription';
+  delete?: Maybe<User>;
+};
 
 export type UserService = Node & {
   __typename?: 'UserService';
@@ -1682,6 +1688,7 @@ export type ResolversTypes = ResolversObject<{
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
   UserOrdering: UserOrdering;
+  UserPendingSubscription: ResolverTypeWrapper<UserPendingSubscription>;
   UserService: ResolverTypeWrapper<UserService>;
   UserServiceAddInput: UserServiceAddInput;
   UserServiceCapability: ResolverTypeWrapper<UserServiceCapability>;
@@ -1783,6 +1790,7 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
+  UserPendingSubscription: UserPendingSubscription;
   UserService: UserService;
   UserServiceAddInput: UserServiceAddInput;
   UserServiceCapability: UserServiceCapability;
@@ -2325,6 +2333,7 @@ export type SubscriptionResolvers<ContextType = PortalContext, ParentType extend
   MeUser?: SubscriptionResolver<Maybe<ResolversTypes['MeUserSubscription']>, "MeUser", ParentType, ContextType>;
   ServiceInstance?: SubscriptionResolver<Maybe<ResolversTypes['ServiceInstanceSubscription']>, "ServiceInstance", ParentType, ContextType>;
   User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType>;
+  UserPending?: SubscriptionResolver<Maybe<ResolversTypes['UserPendingSubscription']>, "UserPending", ParentType, ContextType>;
 }>;
 
 export type SubscriptionCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscriptionCapability'] = ResolversParentTypes['SubscriptionCapability']> = ResolversObject<{
@@ -2398,6 +2407,11 @@ export type UserConnectionResolvers<ContextType = PortalContext, ParentType exte
 export type UserEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserEdge'] = ResolversParentTypes['UserEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UserPendingSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserPendingSubscription'] = ResolversParentTypes['UserPendingSubscription']> = ResolversObject<{
+  delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2508,6 +2522,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;
+  UserPendingSubscription?: UserPendingSubscriptionResolvers<ContextType>;
   UserService?: UserServiceResolvers<ContextType>;
   UserServiceCapability?: UserServiceCapabilityResolvers<ContextType>;
   UserServiceConnection?: UserServiceConnectionResolvers<ContextType>;

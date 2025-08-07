@@ -272,6 +272,8 @@ const resolvers: Resolvers = {
       try {
         const userId = id as UserId;
         const organization_id = context.user.selected_organization_id;
+        let pendingUserAddedToOrga = false;
+
         await preventAdministratorRemovalOfOneOrganization(
           userId,
           organization_id,
@@ -288,6 +290,7 @@ const resolvers: Resolvers = {
             user_id: userId,
             organizations_id: [organization_id],
           });
+          pendingUserAddedToOrga = true;
         }
 
         await updateUserOrgCapabilities(context, {
@@ -307,6 +310,10 @@ const resolvers: Resolvers = {
         await dispatch('MeUser', 'edit', userMapped, 'User');
 
         await trx.commit();
+        if (pendingUserAddedToOrga) {
+          await dispatch('UserPending', 'delete', user, 'User');
+          await dispatch('User', 'add', user);
+        }
         return user;
       } catch (error) {
         await trx.rollback();
@@ -405,6 +412,7 @@ const resolvers: Resolvers = {
         const user = await loadUserBy({
           'User.id': extractId(user_id),
         });
+        await dispatch('UserPending', 'delete', user, 'User');
         return mapUserToGraphqlUser(user);
       } catch (error) {
         throw UnknownError('REMOVE_USER_FROM_PENDING_ORGA_ERROR', {
@@ -455,6 +463,11 @@ const resolvers: Resolvers = {
     MeUser: {
       subscribe: (_, __, context) => ({
         [Symbol.asyncIterator]: () => listen(context, ['MeUser']),
+      }),
+    },
+    UserPending: {
+      subscribe: (_, __, context) => ({
+        [Symbol.asyncIterator]: () => listen(context, ['UserPending']),
       }),
     },
   },

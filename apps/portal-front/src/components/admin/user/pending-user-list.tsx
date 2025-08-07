@@ -27,13 +27,20 @@ import { CheckIcon, CloseIcon } from 'filigran-icon';
 import { DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useEffect, useState } from 'react';
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   graphql,
   readInlineData,
   useLazyLoadQuery,
   useMutation,
   useRefetchableFragment,
+  useSubscription,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -149,6 +156,27 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
     pendingUserListQuery,
     pendingUserList_users$key
   >(pendingUserListFragment, queryData);
+
+  const pendingUserListSubscription = graphql`
+    subscription pendingUserListSubscription($connections: [ID!]!) {
+      UserPending {
+        delete {
+          id @deleteEdge(connections: $connections)
+        }
+      }
+    }
+  `;
+
+  const connectionID = data?.pendingUsers?.__id;
+
+  const pendingUserListSubscriptionConfig = useMemo(
+    () => ({
+      variables: { connections: [connectionID] },
+      subscription: pendingUserListSubscription,
+    }),
+    [connectionID, pendingUserListSubscription]
+  );
+  useSubscription(pendingUserListSubscriptionConfig);
 
   function rejectUser(row: userList_fragment$data) {
     removeUserMutation({

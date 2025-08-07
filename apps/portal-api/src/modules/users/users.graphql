@@ -142,7 +142,12 @@ type MeUserSubscription {
   delete: User
 }
 
+type UserPendingSubscription {
+  delete: User
+}
+
 type Subscription {
   User: UserSubscription @auth
   MeUser: MeUserSubscription @auth
+  UserPending: UserPendingSubscription @auth
 }
