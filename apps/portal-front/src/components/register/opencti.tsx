@@ -91,14 +91,6 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     }
 
     setRegistrationRequestStatus('succeeded');
-    // TODO: remove after OpenCTI PR is merged
-    window.opener?.postMessage(
-      {
-        action: 'enroll',
-        token: registerDataResponse.token,
-      },
-      '*'
-    );
     window.opener?.postMessage(
       {
         action: 'register',

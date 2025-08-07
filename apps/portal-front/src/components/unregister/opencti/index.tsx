@@ -65,8 +65,6 @@ export const UnregisterOpenCTI: React.FC<Props> = ({
       },
       onCompleted: () => {
         window.opener?.postMessage({ action: 'unregister' }, '*');
-        // TODO: remove after OpenCTI PR is merged
-        window.opener?.postMessage({ action: 'unenroll' }, '*');
         setStatus('succeeded');
       },
       onError: (error) => {

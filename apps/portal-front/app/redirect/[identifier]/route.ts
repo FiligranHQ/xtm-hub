@@ -14,19 +14,11 @@ export async function GET(
   { params }: RedirectIdentifierGetRouteProps
 ) {
   const awaitedParams = await params;
-  if (
-    // TODO: remove after OpenCTI PR is merged
-    awaitedParams.identifier === 'enroll-octi' ||
-    awaitedParams.identifier === 'register-opencti'
-  ) {
+  if (awaitedParams.identifier === 'register-opencti') {
     return redirectToOpenCTIRegistration(request);
   }
 
-  if (
-    // TODO: remove after OpenCTI PR is merged
-    awaitedParams.identifier === 'unenroll-octi' ||
-    awaitedParams.identifier === 'unregister-opencti'
-  ) {
+  if (awaitedParams.identifier === 'unregister-opencti') {
     return redirectToOpenCTIUnregistration(request);
   }
 
