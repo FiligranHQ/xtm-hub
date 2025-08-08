@@ -223,7 +223,7 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
       header: undefined,
       cell: ({ row }) => {
         return (
-          <div>
+          <>
             <AlertDialogComponent
               AlertTitle={t('PendingUserListPage.WarningUserRejection.Title')}
               // description={t('PendingUserListPage.WarningUserRejectionDescription')}
@@ -248,7 +248,7 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
               onClick={() => setUserEdit(row.original)}>
               <CheckIcon className="h-4 w-4" />
             </Button>
-          </div>
+          </>
         );
       },
     },
@@ -322,7 +322,7 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
   );
 
   return (
-    <div>
+    <>
       <DataTable
         columns={columns}
         data={userData}
@@ -370,7 +370,7 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
           }
         />
       )}
-    </div>
+    </>
   );
 };
 
