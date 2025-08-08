@@ -1,8 +1,6 @@
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
-import { z } from 'zod/v4';
 import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { logApp } from '../../../utils/app-logger.util';
 import {
   BadRequestError,
   FORBIDDEN_ACCESS,
@@ -67,29 +65,12 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     registerOpenCTIPlatform: async (_, { input }, context) => {
-      const schema = z.object({
-        organizationId: z.uuid().nonempty(),
-        platform: z.object({
-          id: z.uuid().nonempty(),
-          url: z.url().nonempty(),
-          title: z.string().nonempty(),
-          contract: z.string().nonempty(),
-        }),
-      });
-
-      const payload = {
-        ...input,
-        organizationId: fromGlobalId(input.organizationId).id,
-      };
-
-      const result = schema.safeParse(payload);
-      if (!result.success) {
-        logApp.warn(result.error);
-        throw BadRequestError(ErrorCode.RegisterOCITPlatformInvalidData);
-      }
-
       const trx = await dbTx();
       try {
+        const payload = {
+          ...input,
+          organizationId: fromGlobalId(input.organizationId).id,
+        };
         const token = await registrationApp.registerOpenCTIPlatform(
           {
             ...context,
