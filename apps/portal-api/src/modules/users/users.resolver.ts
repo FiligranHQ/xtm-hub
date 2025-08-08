@@ -10,7 +10,6 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
-import { updateUserSession } from '../../sessionStoreManager';
 import {
   BadRequestError,
   FORBIDDEN_ACCESS,
@@ -22,12 +21,9 @@ import { ErrorCode } from '../common/error-code';
 import { removeUserFromOrganizationPending } from '../common/user-organization-pending.domain';
 import {
   createUserOrgCapabilities,
-  loadUserOrganization,
   removeUserFromOrganization,
   updateMultipleUserOrgWithCapabilities,
-  updateUserOrgCapabilities,
 } from '../common/user-organization.domain';
-import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
 import {
   loadOrganizationBy,
   loadOrganizationsFromEmail,
@@ -51,7 +47,6 @@ import {
 import {
   createUserWithPersonalSpace,
   mapUserToGraphqlUser,
-  preventAdministratorRemovalOfOneOrganization,
 } from './users.helper';
 import { usersProfileApp } from './users.profile.app';
 
@@ -268,55 +263,12 @@ const resolvers: Resolvers = {
       }
     },
     editUserCapabilities: async (_, { id, input }, context) => {
-      const trx = await dbTx();
       try {
-        const userId = id as UserId;
-        const organization_id = context.user.selected_organization_id;
-        let pendingUserAddedToOrga = false;
-
-        await preventAdministratorRemovalOfOneOrganization(
-          userId,
-          organization_id,
-          input.capabilities
-        );
-
-        const [userOrganization] = await loadUserOrganization(context, {
-          user_id: userId,
-          organization_id,
+        return await usersAdminApp.editUserCapabilities(context, {
+          userId: id as UserId,
+          input,
         });
-
-        if (!userOrganization) {
-          await createUserOrganizationRelationAndRemovePending(context, {
-            user_id: userId,
-            organizations_id: [organization_id],
-          });
-          pendingUserAddedToOrga = true;
-        }
-
-        await updateUserOrgCapabilities(context, {
-          user_id: userId,
-          organization_id,
-          orgCapabilities: input.capabilities,
-        });
-        const user = await loadUserDetails({
-          'User.id': id as UserId,
-        });
-
-        updateUserSession(user);
-
-        await dispatch('User', 'edit', user);
-
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
-        await trx.commit();
-        if (pendingUserAddedToOrga) {
-          await dispatch('UserPending', 'delete', user, 'User');
-          await dispatch('User', 'add', user);
-        }
-        return user;
       } catch (error) {
-        await trx.rollback();
         if (error.message === 'CANT_REMOVE_LAST_ADMINISTRATOR') {
           throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
         }

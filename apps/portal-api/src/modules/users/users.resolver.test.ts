@@ -133,7 +133,53 @@ describe('User query resolver', () => {
 
       await removeUser(contextAdminUser, { email: pendingUser.email });
     });
-    it('should list pending users only the correct organization', async () => {
+    it('should list pending users from the orga if orga filter exists', async () => {
+      const testContext = {
+        ...contextAdminOrgaThales,
+        user: {
+          ...contextAdminOrgaThales.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      const pendingUserThales = await loginFromProvider({
+        email: `testPending${uuidv4()}@thales.com`,
+        first_name: 'thales',
+        last_name: 'pending',
+        roles: [],
+      });
+      const pendingUserFiligran = await loginFromProvider({
+        email: `testPending${uuidv4()}@filigran.io`,
+        first_name: 'filigran',
+        last_name: 'pending',
+        roles: [],
+      });
+
+      const options = {
+        first: 50,
+        orderMode: OrderingMode.Asc,
+        orderBy: UserOrdering.FirstName,
+        filters: [
+          {
+            key: 'organization_id',
+            value: [toGlobalId('Organization', THALES_ORGA_ID)],
+          },
+        ],
+      };
+
+      const response = await usersResolver.Query.pendingUsers(
+        undefined,
+        options,
+        testContext,
+        undefined
+      );
+
+      expect(response.totalCount).toBe('1');
+      expect(response.edges[0].node.id).toBe(pendingUserThales.id);
+
+      await removeUser(contextAdminUser, { email: pendingUserThales.email });
+      await removeUser(contextAdminUser, { email: pendingUserFiligran.email });
+    });
+    it('should list pending users in the user orga even if no filter is specified', async () => {
       const testContext = {
         ...contextAdminOrgaThales,
         user: {

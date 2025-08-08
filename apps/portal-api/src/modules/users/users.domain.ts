@@ -362,28 +362,16 @@ export const loadPendingUsers = (
       'User.id',
       'UserOrgPendingFilter.user_id'
     )
-    .select('User.*');
-
-  loadPendingUserQuery.where(
-    'UserOrgPendingFilter.organization_id',
-    context.user.selected_organization_id
-  );
+    .select('User.*')
+    .where(
+      'UserOrgPendingFilter.organization_id',
+      context.user.selected_organization_id
+    );
 
   return paginate<UserGenerated, UserConnection>(
     context,
     'User',
-    {
-      ...opts,
-      filters: filters?.map(({ key, value }) => {
-        if (key === FilterKey.OrganizationId) {
-          return {
-            key: 'UserOrgPendingFilter.organization_id',
-            value,
-          } as unknown as Filter;
-        }
-        return { key, value };
-      }),
-    },
+    opts,
     { unsecured: true },
     loadPendingUserQuery
   );
