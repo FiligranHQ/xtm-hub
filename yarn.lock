@@ -8962,12 +8962,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.16.0":
-  version: 22.16.0
-  resolution: "@types/node@npm:22.16.0"
+"@types/node@npm:22.17.1":
+  version: 22.17.1
+  resolution: "@types/node@npm:22.17.1"
   dependencies:
     undici-types: ~6.21.0
-  checksum: fccc24b9cfa95e165fb6a22871c812c9b021b0c686ced9b1572e1bd79ac3f8c78b36c04edfb2c96e10a8a1247c026d1dcad91c0c3e62dccf414057a37bac729d
+  checksum: 5cbf016267f5deadf3d279836a8294a8b9a294d78d912788c98ea35ab92ef2e923d4b0e7b85e83a4391a9d6cb64d616bd9cf62b3edd85be1a04c4f88425b072b
   languageName: node
   linkType: hard
 
@@ -9910,7 +9910,7 @@ __metadata:
     "@types/express-serve-static-core": 5.0.7
     "@types/express-session": 1.18.2
     "@types/graphql-upload": 16.0.7
-    "@types/node": 22.16.0
+    "@types/node": 22.17.1
     "@types/nodemailer": 6.4.16
     "@types/passport": 1.0.17
     "@types/uuid": 10.0.0
@@ -9975,7 +9975,7 @@ __metadata:
     "@testing-library/react-hooks": 8.0.1
     "@testing-library/user-event": 14.6.1
     "@types/config": 3.3.5
-    "@types/node": 22.16.0
+    "@types/node": 22.17.1
     "@types/react": 19.1.6
     "@types/react-dom": 19.1.5
     "@types/react-relay": 18.2.1
@@ -10036,7 +10036,7 @@ __metadata:
   resolution: "@xtm-hub/test_e2e@workspace:apps/portal-e2e-tests"
   dependencies:
     "@playwright/test": 1.54.2
-    "@types/node": 22.16.0
+    "@types/node": 22.17.1
     graphql: 16.11.0
     graphql-tag: 2.12.6
     knex: 3.1.0
