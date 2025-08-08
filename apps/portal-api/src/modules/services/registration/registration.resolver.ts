@@ -118,13 +118,17 @@ const resolvers: Resolvers = {
         return { success: true };
       } catch (error) {
         await trx.rollback();
-        switch (error.message) {
-          case ErrorCode.ServiceConfigurationNotFound:
-          case ErrorCode.SubscriptionNotFound:
-            throw NotFoundError(error.message);
-          case ErrorCode.MissingCapabilityOnOrganization:
-          case ErrorCode.UserIsNotInOrganization:
-            throw ForbiddenAccess(error.message);
+
+        const errorMapping = {
+          [ErrorCode.ServiceConfigurationNotFound]: NotFoundError,
+          [ErrorCode.SubscriptionNotFound]: NotFoundError,
+          [ErrorCode.MissingCapabilityOnOrganization]: ForbiddenAccess,
+          [ErrorCode.UserIsNotInOrganization]: ForbiddenAccess,
+        };
+
+        const customError = errorMapping[error.message];
+        if (customError) {
+          throw customError(error.message);
         }
 
         throw UnknownError(ErrorCode.UnregisterOpenCTIPlatformUnknownError, {
