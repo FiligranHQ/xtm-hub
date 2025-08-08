@@ -329,7 +329,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   );
 
   return (
-    <div>
+    <>
       <DataTable
         columns={columns}
         data={userData}
@@ -375,7 +375,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           }
         />
       )}
-    </div>
+    </>
   );
 };
 

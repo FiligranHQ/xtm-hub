@@ -24,7 +24,7 @@ const PageLoader: React.FunctionComponent = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <UserListPage organization={me?.selected_organization_id}></UserListPage>
+      <UserListPage organization={me?.selected_organization_id} />
     </>
   );
 };
