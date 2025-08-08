@@ -664,11 +664,6 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
-export type OctiPlatformEnrollmentStatusInput = {
-  platformId: Scalars['String']['input'];
-  token: Scalars['String']['input'];
-};
-
 export type ObasScenario = Node & {
   __typename?: 'ObasScenario';
   active: Scalars['Boolean']['output'];
@@ -837,7 +832,6 @@ export type Query = {
   node?: Maybe<Node>;
   obasScenario?: Maybe<ObasScenario>;
   obasScenarios: ObasScenarioConnection;
-  octiPlatformEnrollmentStatus: OpenCtiPlatformRegistrationStatusResponse;
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   openCTIPlatforms: Array<OpenCtiPlatform>;
   organization?: Maybe<Organization>;
@@ -971,11 +965,6 @@ export type QueryObasScenariosArgs = {
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryOctiPlatformEnrollmentStatusArgs = {
-  input: OctiPlatformEnrollmentStatusInput;
 };
 
 
@@ -1620,7 +1609,6 @@ export type ResolversTypes = ResolversObject<{
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
-  OCTIPlatformEnrollmentStatusInput: OctiPlatformEnrollmentStatusInput;
   ObasScenario: ResolverTypeWrapper<ObasScenario>;
   ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
   ObasScenarioEdge: ResolverTypeWrapper<ObasScenarioEdge>;
@@ -1738,7 +1726,6 @@ export type ResolversParentTypes = ResolversObject<{
   MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
-  OCTIPlatformEnrollmentStatusInput: OctiPlatformEnrollmentStatusInput;
   ObasScenario: ObasScenario;
   ObasScenarioConnection: ObasScenarioConnection;
   ObasScenarioEdge: ObasScenarioEdge;
@@ -2179,7 +2166,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
   obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  octiPlatformEnrollmentStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOctiPlatformEnrollmentStatusArgs, 'input'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   openCTIPlatforms?: Resolver<Array<ResolversTypes['OpenCTIPlatform']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;

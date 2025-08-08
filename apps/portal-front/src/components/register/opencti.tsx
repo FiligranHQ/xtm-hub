@@ -19,7 +19,7 @@ import {
 } from '@generated/registerOpenCTIPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   PreloadedQuery,
   useFragment,
@@ -59,6 +59,8 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
       isOpenCTIPlatformRegisteredPreloadedQuery.isOpenCTIPlatformRegistered
     );
 
+  // required to prevent React strict mode double registration
+  const hasRun = useRef(false);
   useEffect(() => {
     const shouldRefreshToken =
       isPlatformRegistered.status ===
@@ -66,7 +68,12 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
       isPlatformRegistered.status ===
         PlatformRegistrationStatusEnum.UNREGISTERED;
 
-    if (shouldRefreshToken && isPlatformRegistered.organization) {
+    if (
+      shouldRefreshToken &&
+      isPlatformRegistered.organization &&
+      !hasRun.current
+    ) {
+      hasRun.current = true;
       register(isPlatformRegistered.organization.id);
     }
   }, [isPlatformRegistered]);
@@ -91,14 +98,6 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     }
 
     setRegistrationRequestStatus('succeeded');
-    // TODO: remove after OpenCTI PR is merged
-    window.opener?.postMessage(
-      {
-        action: 'enroll',
-        token: registerDataResponse.token,
-      },
-      '*'
-    );
     window.opener?.postMessage(
       {
         action: 'register',

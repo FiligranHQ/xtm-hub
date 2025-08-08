@@ -118,7 +118,6 @@ type Query {
   canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
   openCTIPlatforms: [OpenCTIPlatform!]!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
-  octiPlatformEnrollmentStatus(input: OCTIPlatformEnrollmentStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
@@ -475,11 +474,6 @@ input UnregisterOpenCTIPlatformInput {
 }
 
 input OpenCTIPlatformRegistrationStatusInput {
-  platformId: String!
-  token: String!
-}
-
-input OCTIPlatformEnrollmentStatusInput {
   platformId: String!
   token: String!
 }

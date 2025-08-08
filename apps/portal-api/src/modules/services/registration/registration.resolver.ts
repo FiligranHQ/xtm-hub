@@ -64,9 +64,6 @@ const resolvers: Resolvers = {
       registrationApp.loadOpenCTIPlatforms(context),
     openCTIPlatformRegistrationStatus: async (_, { input }, context) =>
       registrationApp.loadOpenCTIPlatformRegistrationStatus(context, input),
-    // TODO: remove after OpenCTI PR is merged
-    octiPlatformEnrollmentStatus: async (_, { input }, context) =>
-      registrationApp.loadOpenCTIPlatformRegistrationStatus(context, input),
   },
   Mutation: {
     registerOpenCTIPlatform: async (_, { input }, context) => {
