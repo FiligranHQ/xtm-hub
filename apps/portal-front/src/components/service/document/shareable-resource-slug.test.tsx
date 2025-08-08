@@ -1,7 +1,5 @@
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 import { SettingsContext } from '@/components/settings/env-portal-context';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import testRender from '@/utils/test/test-render';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { screen } from '@testing-library/react';
@@ -13,10 +11,6 @@ vi.mock('@/hooks/useDecodedParams', () => ({
   default: () => ({
     serviceInstanceId: 'test-service-id',
   }),
-}));
-
-vi.mock('@/hooks/useIsFeatureEnabled', () => ({
-  useIsFeatureEnabled: vi.fn(),
 }));
 
 vi.mock('next-intl', async () => {
@@ -74,43 +68,22 @@ vi.mock('filigran-icon', () => ({
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////// Mocks values /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const mockUseIsFeatureEnabled = vi.mocked(useIsFeatureEnabled);
 const mockSettings = {
   base_url_front: 'https://test.com',
 };
 
 describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
   it.each`
-    shouldShowOneClickComponent | documentType          | documentActive | featureFlagDashboardEnabled | featureFlagCsvFeedEnabled
-    ${true}                     | ${'custom_dashboard'} | ${true}        | ${true}                     | ${true}
-    ${true}                     | ${'custom_dashboard'} | ${true}        | ${true}                     | ${false}
-    ${false}                    | ${'custom_dashboard'} | ${true}        | ${false}                    | ${true}
-    ${false}                    | ${'custom_dashboard'} | ${false}       | ${true}                     | ${true}
-    ${true}                     | ${'csv_feed'}         | ${true}        | ${true}                     | ${true}
-    ${false}                    | ${'csv_feed'}         | ${false}       | ${true}                     | ${true}
-    ${true}                     | ${'csv_feed'}         | ${true}        | ${false}                    | ${true}
-    ${false}                    | ${'csv_feed'}         | ${true}        | ${true}                     | ${false}
-    ${false}                    | ${'obas_scenario'}    | ${false}       | ${true}                     | ${true}
-    ${false}                    | ${'obas_scenario'}    | ${true}        | ${false}                    | ${true}
-    ${false}                    | ${'obas_scenario'}    | ${true}        | ${true}                     | ${false}
-    ${false}                    | ${'obas_scenario'}    | ${true}        | ${true}                     | ${true}
+    shouldShowOneClickComponent | documentType          | documentActive
+    ${true}                     | ${'custom_dashboard'} | ${true}
+    ${false}                    | ${'custom_dashboard'} | ${false}
+    ${true}                     | ${'csv_feed'}         | ${true}
+    ${false}                    | ${'csv_feed'}         | ${false}
+    ${false}                    | ${'obas_scenario'}    | ${false}
+    ${false}                    | ${'obas_scenario'}    | ${true}
   `(
-    'should show OneClickDeploy=$shouldShowOneClickComponent when document is $documentType is $documentActive and featureFlagDashboardEnabled $featureFlagDashboardEnabled and featureFlagCsvFeedEnabled $featureFlagCsvFeedEnabled',
-    ({
-      shouldShowOneClickComponent,
-      documentType,
-      documentActive,
-      featureFlagDashboardEnabled,
-      featureFlagCsvFeedEnabled,
-    }) => {
-      mockUseIsFeatureEnabled.mockImplementation((flag: FeatureFlag) => {
-        if (flag === FeatureFlag.ONECLICK_DEPLOY_DASHBOARD)
-          return featureFlagDashboardEnabled;
-        if (flag === FeatureFlag.ONECLICK_DEPLOY_CSV_FEED)
-          return featureFlagCsvFeedEnabled;
-        return false;
-      });
-
+    'should show OneClickDeploy=$shouldShowOneClickComponent when document is $documentType is $documentActive',
+    ({ shouldShowOneClickComponent, documentType, documentActive }) => {
       const testDocumentData = {
         active: documentActive,
         description: 'description',
