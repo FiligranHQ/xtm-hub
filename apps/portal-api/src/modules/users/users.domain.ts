@@ -354,7 +354,6 @@ export const loadPendingUsers = (
   context: PortalContext,
   opts: QueryUsersArgs
 ) => {
-  const { filters } = opts;
   const loadPendingUserQuery = db<UserGenerated>(context, 'User', opts);
   loadPendingUserQuery
     .leftJoin(
