@@ -69,7 +69,7 @@ export const registrationApp = {
       platform_url: platform.url,
       platform_title: platform.title,
       platform_contract: platform.contract,
-      token: token,
+      token,
     };
 
     const serviceDefinition =
