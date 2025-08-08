@@ -24,19 +24,24 @@ import {
 import {
   AddUserInput,
   AdminEditUserInput,
+  OrderingMode,
   Organization,
   OrganizationCapability,
+  UserOrdering,
 } from '../../__generated__/resolvers-types';
+import { loginFromProvider } from '../../auth/auth-user';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
+import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
 } from '../subcription/subscription.helper';
 import { deleteUserById, loadUnsecureUserBy, loadUserBy } from './users.domain';
+import { removeUser } from './users.helper';
 import usersResolver from './users.resolver';
 
 const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
@@ -92,6 +97,129 @@ describe('User query resolver', () => {
       contextAdminUser
     );
     expect(response).toBeTruthy();
+  });
+  describe('listPendingUser', () => {
+    it('should list pending users from any organization for bypass', async () => {
+      const testContext = {
+        ...contextAdminUser,
+        user: {
+          ...contextAdminUser.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      const email = `testPending${uuidv4()}@thales.com`;
+      const pendingUser = await loginFromProvider({
+        email: email,
+        first_name: 'test',
+        last_name: 'pending',
+        roles: [],
+      });
+
+      const options = {
+        first: 50,
+        orderMode: OrderingMode.Asc,
+        orderBy: UserOrdering.FirstName,
+        filters: [],
+      };
+
+      const response = await usersResolver.Query.pendingUsers(
+        undefined,
+        options,
+        testContext,
+        undefined
+      );
+      expect(response.totalCount).toBe('1');
+      expect(response.edges[0].node.id).toBe(pendingUser.id);
+
+      await removeUser(contextAdminUser, { email: pendingUser.email });
+    });
+    it('should list pending users from the orga if orga filter exists', async () => {
+      const testContext = {
+        ...contextAdminOrgaThales,
+        user: {
+          ...contextAdminOrgaThales.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      const pendingUserThales = await loginFromProvider({
+        email: `testPending${uuidv4()}@thales.com`,
+        first_name: 'thales',
+        last_name: 'pending',
+        roles: [],
+      });
+      const pendingUserFiligran = await loginFromProvider({
+        email: `testPending${uuidv4()}@filigran.io`,
+        first_name: 'filigran',
+        last_name: 'pending',
+        roles: [],
+      });
+
+      const options = {
+        first: 50,
+        orderMode: OrderingMode.Asc,
+        orderBy: UserOrdering.FirstName,
+        filters: [
+          {
+            key: 'organization_id',
+            value: [toGlobalId('Organization', THALES_ORGA_ID)],
+          },
+        ],
+      };
+
+      const response = await usersResolver.Query.pendingUsers(
+        undefined,
+        options,
+        testContext,
+        undefined
+      );
+
+      expect(response.totalCount).toBe('1');
+      expect(response.edges[0].node.id).toBe(pendingUserThales.id);
+
+      await removeUser(contextAdminUser, { email: pendingUserThales.email });
+      await removeUser(contextAdminUser, { email: pendingUserFiligran.email });
+    });
+    it('should list pending users in the user orga even if no filter is specified', async () => {
+      const testContext = {
+        ...contextAdminOrgaThales,
+        user: {
+          ...contextAdminOrgaThales.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      const pendingUserThales = await loginFromProvider({
+        email: `testPending${uuidv4()}@thales.com`,
+        first_name: 'thales',
+        last_name: 'pending',
+        roles: [],
+      });
+      const pendingUserFiligran = await loginFromProvider({
+        email: `testPending${uuidv4()}@filigran.io`,
+        first_name: 'filigran',
+        last_name: 'pending',
+        roles: [],
+      });
+
+      const options = {
+        first: 50,
+        orderMode: OrderingMode.Asc,
+        orderBy: UserOrdering.FirstName,
+        filters: [],
+      };
+
+      const response = await usersResolver.Query.pendingUsers(
+        undefined,
+        options,
+        testContext,
+        undefined
+      );
+
+      expect(response.totalCount).toBe('1');
+      expect(response.edges[0].node.id).toBe(pendingUserThales.id);
+
+      await removeUser(contextAdminUser, { email: pendingUserThales.email });
+      await removeUser(contextAdminUser, { email: pendingUserFiligran.email });
+    });
   });
 });
 
@@ -534,6 +662,49 @@ describe('User mutation resolver', () => {
         undefined
       );
     });
+    it('should accept a pending user to the organization', async () => {
+      const testContext = {
+        ...contextAdminUser,
+        user: {
+          ...contextAdminUser.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+
+      const pendingUser = await loginFromProvider({
+        email: `testPending${uuidv4()}@thales.com`,
+        first_name: 'test',
+        last_name: 'pending',
+        roles: [],
+      });
+
+      await usersResolver.Mutation.editUserCapabilities(
+        undefined,
+        {
+          id: pendingUser.id,
+          input: {
+            capabilities: [
+              'MANAGE_OCTI_ENROLLMENT',
+              'ADMINISTRATE_ORGANIZATION',
+            ],
+          },
+        },
+        testContext,
+        undefined
+      );
+      const updatedUser = await loadUserBy({ email: pendingUser.email });
+
+      expect(updatedUser.selected_org_capabilities).to.includes(
+        'ADMINISTRATE_ORGANIZATION'
+      );
+      const usersPendingOrg = await loadUserOrganizationPending(
+        contextAdminUser,
+        { user_id: updatedUser.id }
+      );
+      expect(usersPendingOrg.length).toBe(0);
+
+      await removeUser(contextAdminUser, { email: pendingUser.email });
+    });
   });
   describe('editMeUser', () => {
     let adminUser: UserLoadUserBy;
@@ -634,6 +805,46 @@ describe('User mutation resolver', () => {
 
     afterAll(() => {
       auth0Spy.mockReset();
+    });
+  });
+
+  describe('removePendingUserFromOrganization', () => {
+    it('should remove a pending user from organization', async () => {
+      const testContext = {
+        ...contextAdminUser,
+        user: {
+          ...contextAdminUser.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      const email = `testPending${uuidv4()}@thales.com`;
+      const pendingUser = await loginFromProvider({
+        email: email,
+        first_name: 'testToRemove',
+        last_name: 'pending',
+        roles: [],
+      });
+
+      const userId = toGlobalId('User', pendingUser.id);
+      const organizationId = toGlobalId('Organization', THALES_ORGA_ID);
+
+      await usersResolver.Mutation.removePendingUserFromOrganization(
+        undefined,
+        {
+          user_id: userId,
+          organization_id: organizationId,
+        },
+        testContext,
+        undefined
+      );
+
+      const usersPendingOrg = await loadUserOrganizationPending(
+        contextAdminUser,
+        { user_id: pendingUser.id }
+      );
+
+      expect(usersPendingOrg.length).toBe(0);
+      await removeUser(contextAdminUser, { email: pendingUser.email });
     });
   });
 });

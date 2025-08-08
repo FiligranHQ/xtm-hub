@@ -21,5 +21,15 @@ export const meUserSSESecurity = (opt: {
 // Used to check access in SSE
 
 export const userSSESecurity = (opt: { user: UserLoadUserBy }) => {
-  return isUserGranted(opt.user, OrganizationCapability.ManageAccess);
+  return (
+    isUserGranted(opt.user, OrganizationCapability.ManageAccess) ||
+    isUserGranted(opt.user, OrganizationCapability.AdministrateOrganization)
+  );
+};
+
+export const userPendingSSESecurity = (opt: { user: UserLoadUserBy }) => {
+  return (
+    isUserGranted(opt.user, OrganizationCapability.ManageAccess) ||
+    isUserGranted(opt.user, OrganizationCapability.AdministrateOrganization)
+  );
 };

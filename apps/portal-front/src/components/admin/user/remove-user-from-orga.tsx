@@ -1,4 +1,4 @@
-import { UserListContext } from '@/components/admin/user/user-list';
+import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
@@ -33,7 +33,7 @@ export const RemoveUserFromOrga: FunctionComponent<RemoveUserFromOrgaProps> = ({
   user,
 }) => {
   const { me } = useContext(PortalContext);
-  const { connectionID } = useContext(UserListContext);
+  const { connectionID } = getUserListContext();
   const { setOpenSheet } = useDialogContext();
   const { toast } = useToast();
   const t = useTranslations();

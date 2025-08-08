@@ -62,6 +62,7 @@ const UserSlug: React.FunctionComponent<UserSlugProps> = ({ queryRef }) => {
           disabled,
         },
         id: user!.id,
+        userListConnections: [],
       },
       onError: (error) => {
         toast({

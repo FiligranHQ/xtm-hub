@@ -1,5 +1,6 @@
 import { UserAdminForm } from '@/components/admin/user/user-admin-form';
 import { userAdminFormSchema } from '@/components/admin/user/user-form.schema';
+import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { adminAddUserMutation } from '@generated/adminAddUserMutation.graphql';
 import { Button, useToast } from 'filigran-ui';
@@ -7,10 +8,6 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
-
-interface AdminAddUserProps {
-  connectionId: string;
-}
 
 export const AdminAddUserMutation = graphql`
   mutation adminAddUserMutation(
@@ -24,9 +21,7 @@ export const AdminAddUserMutation = graphql`
   }
 `;
 
-export const AdminAddUser: FunctionComponent<AdminAddUserProps> = ({
-  connectionId,
-}) => {
+export const AdminAddUser: FunctionComponent = () => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
 
@@ -34,13 +29,15 @@ export const AdminAddUser: FunctionComponent<AdminAddUserProps> = ({
   const [commitUserMutation] =
     useMutation<adminAddUserMutation>(AdminAddUserMutation);
 
+  const { connectionID } = getUserListContext();
+
   const handleSubmit = (values: z.infer<typeof userAdminFormSchema>) => {
     commitUserMutation({
       variables: {
         input: {
           ...values,
         },
-        connections: [connectionId],
+        connections: [connectionID],
       },
       onCompleted: () => {
         setOpenSheet(false);

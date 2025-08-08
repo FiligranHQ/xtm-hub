@@ -1,4 +1,7 @@
-import { AdminEditUserInput } from '../../__generated__/resolvers-types';
+import {
+  AdminEditUserInput,
+  EditUserCapabilitiesInput,
+} from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
@@ -7,11 +10,17 @@ import { updateUserSession } from '../../sessionStoreManager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
-import { updateMultipleUserOrgWithCapabilities } from '../common/user-organization.domain';
+import {
+  loadUserOrganization,
+  updateMultipleUserOrgWithCapabilities,
+} from '../common/user-organization.domain';
 import { loadUserDetails, updateUser } from './users.domain';
 import {
+  acceptPendingUserWithCapabilities,
   mapUserToGraphqlUser,
   preventAdministratorRemovalOfAllOrganizations,
+  preventAdministratorRemovalOfOneOrganization,
+  updateUserOrgCapabilitiesAndDispatch,
 } from './users.helper';
 
 export const usersAdminApp = {
@@ -67,5 +76,34 @@ export const usersAdminApp = {
     }
 
     return user;
+  },
+
+  editUserCapabilities: async (
+    context: PortalContext,
+    { userId, input }: { userId: UserId; input: EditUserCapabilitiesInput }
+  ) => {
+    const organization_id = context.user.selected_organization_id;
+    await preventAdministratorRemovalOfOneOrganization(
+      userId,
+      organization_id,
+      input.capabilities
+    );
+
+    const [userOrganization] = await loadUserOrganization(context, {
+      user_id: userId,
+      organization_id,
+    });
+
+    return userOrganization
+      ? await updateUserOrgCapabilitiesAndDispatch(context, {
+          user_id: userId,
+          organization_id,
+          orgCapabilities: input.capabilities,
+        })
+      : await acceptPendingUserWithCapabilities(context, {
+          user_id: userId,
+          organization_id,
+          orgCapabilities: input.capabilities,
+        });
   },
 };

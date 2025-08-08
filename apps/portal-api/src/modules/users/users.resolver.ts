@@ -10,7 +10,6 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
-import { updateUserSession } from '../../sessionStoreManager';
 import {
   BadRequestError,
   FORBIDDEN_ACCESS,
@@ -19,11 +18,11 @@ import {
 } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import { ErrorCode } from '../common/error-code';
+import { removeUserFromOrganizationPending } from '../common/user-organization-pending.domain';
 import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
   updateMultipleUserOrgWithCapabilities,
-  updateUserOrgCapabilities,
 } from '../common/user-organization.domain';
 import {
   loadOrganizationBy,
@@ -35,6 +34,7 @@ import {
   getOrganizations,
   getRolesPortal,
   loadOrganizationAdministrators,
+  loadPendingUsers,
   loadUnsecureUser,
   loadUserBy,
   loadUserDetails,
@@ -47,7 +47,6 @@ import {
 import {
   createUserWithPersonalSpace,
   mapUserToGraphqlUser,
-  preventAdministratorRemovalOfOneOrganization,
 } from './users.helper';
 import { usersProfileApp } from './users.profile.app';
 
@@ -89,6 +88,20 @@ const resolvers: Resolvers = {
       context
     ) => {
       return loadUsers(context, {
+        first,
+        after,
+        orderMode,
+        orderBy,
+        filters,
+        searchTerm,
+      });
+    },
+    pendingUsers: async (
+      _,
+      { first, after, orderMode, orderBy, searchTerm, filters },
+      context
+    ) => {
+      return loadPendingUsers(context, {
         first,
         after,
         orderMode,
@@ -250,35 +263,12 @@ const resolvers: Resolvers = {
       }
     },
     editUserCapabilities: async (_, { id, input }, context) => {
-      const trx = await dbTx();
       try {
-        const userId = id as UserId;
-        await preventAdministratorRemovalOfOneOrganization(
-          userId,
-          context.user.selected_organization_id,
-          input.capabilities
-        );
-
-        await updateUserOrgCapabilities(context, {
-          user_id: userId,
-          organization_id: context.user.selected_organization_id,
-          orgCapabilities: input.capabilities,
+        return await usersAdminApp.editUserCapabilities(context, {
+          userId: id as UserId,
+          input,
         });
-        const user = await loadUserDetails({
-          'User.id': id as UserId,
-        });
-
-        updateUserSession(user);
-
-        await dispatch('User', 'edit', user);
-
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
-        await trx.commit();
-        return user;
       } catch (error) {
-        await trx.rollback();
         if (error.message === 'CANT_REMOVE_LAST_ADMINISTRATOR') {
           throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
         }
@@ -360,6 +350,28 @@ const resolvers: Resolvers = {
         throw UnknownError('REMOVE_USER_FROM_ORGA_ERROR', { detail: error });
       }
     },
+    removePendingUserFromOrganization: async (
+      _,
+      { user_id, organization_id },
+      context
+    ) => {
+      try {
+        await removeUserFromOrganizationPending(
+          context,
+          extractId(user_id),
+          extractId(organization_id)
+        );
+        const user = await loadUserBy({
+          'User.id': extractId(user_id),
+        });
+        await dispatch('UserPending', 'delete', user, 'User');
+        return mapUserToGraphqlUser(user);
+      } catch (error) {
+        throw UnknownError('REMOVE_USER_FROM_PENDING_ORGA_ERROR', {
+          detail: error,
+        });
+      }
+    },
     login: async (_, { email, password }, context) => {
       const { req } = context;
       try {
@@ -403,6 +415,11 @@ const resolvers: Resolvers = {
     MeUser: {
       subscribe: (_, __, context) => ({
         [Symbol.asyncIterator]: () => listen(context, ['MeUser']),
+      }),
+    },
+    UserPending: {
+      subscribe: (_, __, context) => ({
+        [Symbol.asyncIterator]: () => listen(context, ['UserPending']),
       }),
     },
   },
