@@ -7,7 +7,7 @@ import type { UserServiceId } from './UserService';
 
 /** Identifier type for public.UserService_Capability */
 export type UserServiceCapabilityId = string & {
-  __brand: 'UserServiceCapabilityId';
+  __brand: 'public.UserService_Capability';
 };
 
 /** Represents the table public.UserService_Capability */

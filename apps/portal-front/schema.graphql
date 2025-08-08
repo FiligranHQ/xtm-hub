@@ -38,11 +38,11 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
-  enrollOCTIPlatform(input: EnrollOCTIPlatformInput!): EnrollmentResponse!
-  unenrollOCTIPlatform(input: UnenrollOCTIPlatformInput): Success!
   createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
   updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
+  registerOpenCTIPlatform(input: RegisterOpenCTIPlatformInput!): RegistrationResponse!
+  unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -111,14 +111,14 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  canEnrollOCTIPlatform(input: CanEnrollOCTIPlatformInput!): CanEnrollResponse!
-  canUnenrollOCTIPlatform(input: CanUnenrollOCTIPlatformInput!): CanUnenrollResponse!
-  octiPlatforms: [OCTIPlatform!]!
-  octiPlatformEnrollmentStatus(input: OCTIPlatformEnrollmentStatusInput!): OCTIPlatformEnrollmentStatusResponse!
   seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
   seoObasScenarioBySlug(slug: String): ObasScenario
   obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
   obasScenario(id: ID, serviceInstanceId: ID): ObasScenario
+  isOpenCTIPlatformRegistered(input: IsOpenCTIPlatformRegisteredInput!): IsOpenCTIPlatformRegisteredResponse!
+  canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
+  openCTIPlatforms: [OpenCTIPlatform!]!
+  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
@@ -279,7 +279,7 @@ enum ServiceDefinitionIdentifier {
   custom_dashboards
   csv_feeds
   obas_scenarios
-  octi_enrollment
+  opencti_registration
 }
 
 type ServiceDefinition implements Node {
@@ -346,80 +346,6 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
-enum OCTIPlatformContract {
-  CE
-  EE
-}
-
-type OCTIPlatform implements Node {
-  id: ID!
-  url: String!
-  title: String!
-  contract: OCTIPlatformContract!
-  platform_id: String!
-}
-
-input OCTIPlatformInput {
-  id: ID!
-  url: String!
-  title: String!
-  contract: OCTIPlatformContract!
-}
-
-input EnrollOCTIPlatformInput {
-  organizationId: ID!
-  platform: OCTIPlatformInput!
-}
-
-input CanEnrollOCTIPlatformInput {
-  organizationId: ID!
-  platformId: String!
-}
-
-input CanUnenrollOCTIPlatformInput {
-  platformId: String!
-}
-
-type EnrollmentResponse {
-  token: String!
-}
-
-enum CanEnrollStatus {
-  enrolled
-  unenrolled
-  never_enrolled
-}
-
-type CanEnrollResponse {
-  isAllowed: Boolean!
-  status: CanEnrollStatus!
-  isSameOrganization: Boolean
-}
-
-type CanUnenrollResponse {
-  isPlatformEnrolled: Boolean!
-  isAllowed: Boolean
-  organizationId: ID
-}
-
-input UnenrollOCTIPlatformInput {
-  platformId: String!
-}
-
-input OCTIPlatformEnrollmentStatusInput {
-  platformId: String!
-  token: String!
-}
-
-enum OCTIPlatformEnrollmentStatus {
-  active
-  inactive
-}
-
-type OCTIPlatformEnrollmentStatusResponse {
-  status: OCTIPlatformEnrollmentStatus!
-}
-
 type ServiceLink implements Node {
   id: ID!
   service_instance_id: ID
@@ -484,6 +410,83 @@ type ObasScenarioConnection {
   totalCount: Int!
   edges: [ObasScenarioEdge!]!
   pageInfo: PageInfo!
+}
+
+enum OpenCTIPlatformContract {
+  CE
+  EE
+}
+
+type OpenCTIPlatform implements Node {
+  id: ID!
+  url: String!
+  title: String!
+  contract: OpenCTIPlatformContract!
+  platform_id: String!
+}
+
+input OpenCTIPlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: OpenCTIPlatformContract!
+}
+
+input RegisterOpenCTIPlatformInput {
+  organizationId: ID!
+  platform: OpenCTIPlatformInput!
+}
+
+input CanUnregisterOpenCTIPlatformInput {
+  platformId: String!
+}
+
+type RegistrationResponse {
+  token: String!
+}
+
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
+}
+
+input IsOpenCTIPlatformRegisteredInput {
+  platformId: String!
+}
+
+type IsOpenCTIPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
+type IsOpenCTIPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  organization: IsOpenCTIPlatformRegisteredOrganization
+}
+
+type CanUnregisterResponse {
+  isPlatformRegistered: Boolean!
+  isAllowed: Boolean
+  isInOrganization: Boolean
+  organizationId: ID
+}
+
+input UnregisterOpenCTIPlatformInput {
+  platformId: String!
+}
+
+input OpenCTIPlatformRegistrationStatusInput {
+  platformId: String!
+  token: String!
+}
+
+enum OpenCTIPlatformRegistrationStatus {
+  active
+  inactive
+}
+
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: OpenCTIPlatformRegistrationStatus!
 }
 
 enum ServiceInstanceOrdering {
@@ -873,14 +876,14 @@ enum Restriction {
   FRT_ACCESS_BILLING
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
-  MANAGE_OCTI_ENROLLMENT
+  MANAGE_OPENCTI_REGISTRATION
 }
 
 enum OrganizationCapability {
   ADMINISTRATE_ORGANIZATION
   MANAGE_ACCESS
   MANAGE_SUBSCRIPTION
-  MANAGE_OCTI_ENROLLMENT
+  MANAGE_OPENCTI_REGISTRATION
 }
 
 enum ServiceRestriction {

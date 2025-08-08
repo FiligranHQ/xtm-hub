@@ -5,7 +5,9 @@ import type { OrganizationId } from './Organization';
 import type { UserId } from './User';
 
 /** Identifier type for public.User_Organization */
-export type UserOrganizationId = number & { __brand: 'UserOrganizationId' };
+export type UserOrganizationId = number & {
+  __brand: 'public.User_Organization';
+};
 
 /** Represents the table public.User_Organization */
 export default interface UserOrganization {

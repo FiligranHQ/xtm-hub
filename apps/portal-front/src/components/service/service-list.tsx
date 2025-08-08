@@ -2,9 +2,9 @@
 
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { isExternalService } from '@/utils/services';
-import { enrollOCTIPlatformsQuery } from '@generated/enrollOCTIPlatformsQuery.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
+import { registerOpenCTIPlatformsQuery } from '@generated/registerOpenCTIPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -20,14 +20,14 @@ import OwnedServices from './home/owned-services';
 interface ServiceProps {
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>;
   queryRefServiceList: PreloadedQuery<publicServiceQuery>;
-  queryRefOCTIPlatforms: PreloadedQuery<enrollOCTIPlatformsQuery>;
+  queryRefOpenCTIPlatforms: PreloadedQuery<registerOpenCTIPlatformsQuery>;
   onUpdate: () => void;
 }
 
 const ServiceList = ({
   queryRefUserServiceOwned,
   queryRefServiceList,
-  queryRefOCTIPlatforms,
+  queryRefOpenCTIPlatforms,
   onUpdate,
 }: ServiceProps) => {
   const t = useTranslations();
@@ -53,15 +53,19 @@ const ServiceList = ({
     });
   }
 
-  const { ownedServices, publicServices, octiPlatforms, addSubscriptionInDb } =
-    useServiceQueries(
-      queryRefUserServiceOwned,
-      queryRefServiceList,
-      queryRefOCTIPlatforms,
-      onUpdate,
-      handleSuccess,
-      handleError
-    );
+  const {
+    ownedServices,
+    publicServices,
+    openCTIPlatforms,
+    addSubscriptionInDb,
+  } = useServiceQueries(
+    queryRefUserServiceOwned,
+    queryRefServiceList,
+    queryRefOpenCTIPlatforms,
+    onUpdate,
+    handleSuccess,
+    handleError
+  );
 
   const {
     owned: publicOwnedServices,
@@ -132,7 +136,7 @@ const ServiceList = ({
       <OwnedServices
         services={regularOwnedServices}
         publicServices={publicOwnedServices}
-        octiPlatforms={octiPlatforms}
+        openCTIPlatforms={openCTIPlatforms}
       />
     </>
   );

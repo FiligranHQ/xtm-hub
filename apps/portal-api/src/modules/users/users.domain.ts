@@ -265,7 +265,7 @@ export const loadOrganizationAdministrators = async (
       ).orWhere(
         'UserOrganization_Capability.name',
         '=',
-        OrganizationCapability.ManageOctiEnrollment
+        OrganizationCapability.ManageOpenctiRegistration
       );
     })
     .select('User.*')

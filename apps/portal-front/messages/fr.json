@@ -15,7 +15,7 @@
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Contournement à l'intérieur d'une organisation",
       "MANAGE_ACCESS": "Possibilité d'inviter d'autres utilisateurs dans cette organisation",
-      "MANAGE_OCTI_ENROLLMENT": "Possibilité d'inscrire et de désinscrire des plateformes OpenCTI",
+      "MANAGE_OPENCTI_REGISTRATION": "Possibilité d'inscrire et de désinscrire des plateformes OpenCTI",
       "MANAGE_SUBSCRIPTION": "Possibilité de gérer et d'abonner l'organisation à des services"
     },
     "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
@@ -63,8 +63,8 @@
       "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
       "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation est déjà abonnée à ce service",
       "AUTH0_USER_NOT_FOUND_ERROR": "Votre profile utilisateur est introuvable",
-      "CAN_ENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enrôlement de la plateforme",
-      "CAN_UNENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
+      "IS_OPENCTI_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'inscription de la plateforme",
+      "CAN_UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
       "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "Vous ne pouvez pas ajouter un utilisateur à votre espace personnel",
       "CANT_EDIT_YOURSELF_ERROR": "Vous ne pouvez pas vous modifier vous-même",
@@ -87,15 +87,16 @@
       "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
-      "ENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enrôlement de la plateforme",
-      "ENROLL_OCTI_PLATFORM_INVALID_DATA": "Les données envoyées pour l'enrôlement de la plateforme OpenCTI ne sont pas valides",
+      "REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'inscription de la plateforme",
+      "REGISTER_OPENCTI_PLATFORM_INVALID_DATA": "Les données envoyées pour l'inscription de la plateforme OpenCTI ne sont pas valides",
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
-      "MISSING_CAPABILITY_ON_ORIGIN_ORGANIZATION": "Permissions manquantes",
+      "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
+      "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",
       "SERVICE_CONTRACT_NOT_FOUND": "Le contrat de service n'a pas été trouvé",
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
       "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas",
@@ -103,9 +104,10 @@
       "SUBSCRIPTION_NOT_FOUND_ERROR": "La souscription n'existe pas",
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins une souscription y est toujours affiliée. Supprimez la/les souscription(s) d'abord.",
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
-      "UNENROLL_OCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
+      "UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
+      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
       "OBAS_SCENARIO_INSERTION_ERROR": "Erreur lors de la création du scénario.",
       "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "Le slug du scénario est déjà utilisé.",
       "OBAS_SCENARIO_UPDATE_ERROR": "Erreur lors de la mise à jour du scénario."
@@ -113,8 +115,8 @@
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
   },
-  "Unenroll": {
-    "OCTI": {
+  "Unregister": {
+    "OpenCTI": {
       "Succeeded": {
         "Title": "La plateforme OpenCTI a été désinscrite avec succès",
         "Description": "Cet onglet sera bientôt fermé."
@@ -133,47 +135,50 @@
           "Description": "Si vous voulez procéder à la désinscription de votre plateforme OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
           "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
         },
-        "PlatformNotEnrolled": {
+        "NotInOrganization": {
+          "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+        },
+        "PlatformNotRegistered": {
           "Title": "La plateforme que vous essayez de désinscrire n'est pas inscrite",
           "Description": "Cet onglet sera bientôt fermé."
         }
       }
     }
   },
-  "Enroll": {
-    "Confirm": "Enrôler",
-    "OCTI": {
+  "Register": {
+    "Confirm": "Inscrire",
+    "OpenCTI": {
       "Succeeded": {
-        "Title": "La plateforme OpenCTI a été enrôlée avec succès",
+        "Title": "La plateforme OpenCTI a été inscrite avec succès",
         "Description": "Cet onglet sera bientôt fermé."
       },
       "Failed": {
-        "Title": "L'enrôlement a échoué",
-        "Description": "Une erreur s'est produite lors de l'enrôlement de la plateforme."
+        "Title": "L'inscription a échoué",
+        "Description": "Une erreur s'est produite lors de l'inscription de la plateforme."
       },
       "SameOrganization": {
-        "Enrolled": {
-          "Title": "Plateforme déjà enrôlée",
-          "Description": "Votre plateforme OpenCTI est déjà enrôlée. Voulez-vous enrôler votre plateforme à nouveau ?"
+        "Registered": {
+          "Title": "Plateforme déjà inscrite",
+          "Description": "Votre plateforme OpenCTI est déjà inscrite. Voulez-vous inscrire votre plateforme à nouveau ?"
         },
-        "Unenrolled": {
-          "Title": "La plateforme était enrôlée",
-          "Description": "Votre plateforme OpenCTI a déjà été enrôlée. Voulez-vous enrôler votre plateforme à nouveau  ?"
+        "Unregistered": {
+          "Title": "La plateforme était inscrite",
+          "Description": "Votre plateforme OpenCTI a déjà été inscrite. Voulez-vous inscrire votre plateforme à nouveau  ?"
         }
       },
       "AnotherOrganization": {
         "NotAllowed": {
-          "Title": "La plateforme est enrôlée dans une autre organisation",
-          "Description": "Votre plateforme OpenCTI est déjà enrôlée dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer."
+          "Title": "La plateforme est inscrite dans une autre organisation",
+          "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer."
         },
         "Allowed": {
-          "Enrolled": {
-            "Title": "Plateforme déjà enrôlée",
+          "Registered": {
+            "Title": "Plateforme déjà inscrite",
             "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation. Voulez-vous transférer votre plateforme ?"
           },
-          "Unenrolled": {
-            "Title": "La plateforme était enrôlée",
-            "Description": "Votre plateforme OpenCTI a déjà été enrôlée dans une autre organisation. Souhaitez-vous enrôler votre plateforme à nouveau ?"
+          "Unregistered": {
+            "Title": "La plateforme était inscrite",
+            "Description": "Votre plateforme OpenCTI a déjà été inscrite dans une autre organisation. Souhaitez-vous inscrire votre plateforme à nouveau ?"
           }
         }
       },
@@ -181,13 +186,13 @@
       "Error": {
         "Capability": {
           "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",
-          "Description": "Si vous souhaitez procéder à l'enrôlement de votre plateforme OpenCTI dans le XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
+          "Description": "Si vous souhaitez procéder à l'inscription de votre plateforme OpenCTI dans le XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
           "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
         }
       },
       "OrganizationForm": {
-        "Title": "Vous êtes sur le point d'enrôler votre plateforme OpenCTI dans XTM Hub",
-        "Description": "Dans quel espace souhaitez-vous enrôler votre plateforme OpenCTI ?"
+        "Title": "Vous êtes sur le point d'inscrire votre plateforme OpenCTI dans XTM Hub",
+        "Description": "Dans quel espace souhaitez-vous inscrire votre plateforme OpenCTI ?"
       }
     },
     "Details": {
@@ -197,7 +202,9 @@
       "Contracts": {
         "CE": "Edition Communautaire",
         "EE": "Edition Entreprise"
-      }
+      },
+      "PrivatePlatform": "Plateforme privée",
+      "Description": "Cliquez ici pour accéder à votre plateforme privée"
     }
   },
   "GenericActions": {
@@ -482,7 +489,7 @@
       "Share": "Partager",
       "Download": "Télécharger",
       "Deploy": {
-        "DeployOcti": "Déployer dans OCTI",
+        "DeployOcti": "Déployer dans OpenCTI",
         "DeployDashboardOctiDescription": "Vous êtes sur le point de déployer le custom dashboard {dashboardName}.",
         "DeployOctiQuestionTag": "Sur quelle plateforme OpenCTI voulez-vous le déployer ?",
         "DeployOctiDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",

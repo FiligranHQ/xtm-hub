@@ -4,7 +4,7 @@
 import type { LabelId } from './Label';
 
 /** Identifier type for public.Object_Label */
-export type ObjectLabelObjectId = string & { __brand: 'ObjectLabelObjectId' };
+export type ObjectLabelObjectId = string & { __brand: 'public.Object_Label' };
 
 /** Represents the table public.Object_Label */
 export default interface ObjectLabel {

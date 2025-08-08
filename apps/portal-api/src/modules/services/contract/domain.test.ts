@@ -21,13 +21,13 @@ describe('Service Contract Domain', () => {
     it('should return true when configuration match the schema specifications', async () => {
       const serviceDefinition =
         await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-          identifier: ServiceDefinitionIdentifier.OctiEnrollment,
+          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 
       expect(serviceDefinition).toBeDefined();
 
       const configuration = {
-        enroller_id: context.user.id,
+        registerer_id: context.user.id,
         platform_id: uuidv4(),
         platform_url: 'http://example.com/',
         platform_title: 'Platform title',
@@ -47,7 +47,7 @@ describe('Service Contract Domain', () => {
     it('should return false when configuration does not match the schema specifications', async () => {
       const serviceDefinition =
         await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-          identifier: ServiceDefinitionIdentifier.OctiEnrollment,
+          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 
       expect(serviceDefinition).toBeDefined();
