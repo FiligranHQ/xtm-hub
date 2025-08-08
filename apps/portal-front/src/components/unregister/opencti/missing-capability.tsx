@@ -1,4 +1,4 @@
-import { EnrollStateLayout } from '@/components/enroll/state/layout';
+import { RegisterStateLayout } from '@/components/register/state/layout';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,
@@ -12,7 +12,7 @@ interface Props {
   organizationId: string;
 }
 
-export const UnenrollOCTIMissingCapability: React.FC<Props> = ({
+export const UnregisterOpenCTIMissingCapability: React.FC<Props> = ({
   cancel,
   organizationId,
 }) => {
@@ -24,9 +24,9 @@ export const UnenrollOCTIMissingCapability: React.FC<Props> = ({
     );
 
   return (
-    <EnrollStateLayout cancel={cancel}>
+    <RegisterStateLayout cancel={cancel}>
       <h1>
-        {t('Unenroll.OCTI.Error.Capability.Title', {
+        {t('Unregister.OpenCTI.Error.Capability.Title', {
           capability:
             OrganizationCapabilityEnum.MANAGE_OPENCTI_REGISTRATION.replaceAll(
               '_',
@@ -34,8 +34,8 @@ export const UnenrollOCTIMissingCapability: React.FC<Props> = ({
             ),
         })}
       </h1>
-      <p>{t('Unenroll.OCTI.Error.Capability.Description')}</p>
-      <p>{t('Unenroll.OCTI.Error.Capability.AdminListTitle')}</p>
+      <p>{t('Unregister.OpenCTI.Error.Capability.Description')}</p>
+      <p>{t('Unregister.OpenCTI.Error.Capability.AdminListTitle')}</p>
       <ul className="list-disc ml-l">
         {organizationAdministrators.map((administrator) => (
           <li key={administrator.id}>
@@ -44,6 +44,6 @@ export const UnenrollOCTIMissingCapability: React.FC<Props> = ({
           </li>
         ))}
       </ul>
-    </EnrollStateLayout>
+    </RegisterStateLayout>
   );
 };

@@ -3,7 +3,7 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { isEnrollmentService, isExternalService } from '@/utils/services';
+import { isExternalService, isRegistrationService } from '@/utils/services';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
@@ -35,14 +35,14 @@ interface ServiceInstanceCardProps {
   className?: string;
 }
 
-const EnrollmentDetails: React.FunctionComponent<{
+const RegistrationDetails: React.FunctionComponent<{
   serviceInstance: ServiceInstanceCardData;
   serviceHref: string;
 }> = () => {
   const t = useTranslations();
   return (
     <p className="txt-sub-content text-muted-foreground">
-      {t('Enroll.Details.Description')}
+      {t('Register.Details.Description')}
     </p>
   );
 
@@ -51,20 +51,20 @@ const EnrollmentDetails: React.FunctionComponent<{
   return (
     <dl className="grid grid-cols-3 gap-s">
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.PlatformID')}
+        {t('Register.Details.PlatformID')}
       </dt>
       <dd className="txt-sub-content col-span-2">
         {serviceInstance.platform_id}
       </dd>
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.PlatformURL')}
+        {t('Register.Details.PlatformURL')}
       </dt>
       <dd className="txt-sub-content col-span-2">{serviceHref}</dd>
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.Contract')}
+        {t('Register.Details.Contract')}
       </dt>
       <dd className="txt-sub-content col-span-2">
-        {t(`Enroll.Details.Contracts.${serviceInstance.platform_contract}`)}
+        {t(`Register.Details.Contracts.${serviceInstance.platform_contract}`)}
       </dd>
     </dl>
   );*/
@@ -89,7 +89,7 @@ const ServiceInstanceCard: React.FunctionComponent<
       ? `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`
       : '';
 
-  if (isEnrollmentService(serviceInstance)) {
+  if (isRegistrationService(serviceInstance)) {
     backgroundImage = 'url(/octi-private-platform-logo.png)';
   }
 
@@ -99,7 +99,7 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div
           className={cn(
             'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
-            isEnrollmentService(serviceInstance)
+            isRegistrationService(serviceInstance)
               ? 'bg-darkblue-800'
               : 'bg-blue-900'
           )}>
@@ -119,7 +119,7 @@ const ServiceInstanceCard: React.FunctionComponent<
             ratio={16 / 9}
             className={cn(
               'rounded-t',
-              isEnrollmentService(serviceInstance)
+              isRegistrationService(serviceInstance)
                 ? 'overflow-visible'
                 : 'overflow-hidden'
             )}>
@@ -132,7 +132,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 alt={`Illustration of ${serviceInstance.name}`}
               />
             )}
-            {isEnrollmentService(serviceInstance) && (
+            {isRegistrationService(serviceInstance) && (
               <>
                 <Image
                   width="580"
@@ -164,8 +164,8 @@ const ServiceInstanceCard: React.FunctionComponent<
                 aria-disabled={isDisabled}>
                 <h2>
                   {serviceInstance.name}
-                  {isEnrollmentService(serviceInstance) && (
-                    <> - {t('Enroll.Details.PrivatePlatform')}</>
+                  {isRegistrationService(serviceInstance) && (
+                    <> - {t('Register.Details.PrivatePlatform')}</>
                   )}
                 </h2>
               </Link>
@@ -175,8 +175,8 @@ const ServiceInstanceCard: React.FunctionComponent<
               serviceInstance.service_definition_identifier
             ) && <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />}
           </div>
-          {(isEnrollmentService(serviceInstance) && (
-            <EnrollmentDetails
+          {(isRegistrationService(serviceInstance) && (
+            <RegistrationDetails
               serviceInstance={serviceInstance}
               serviceHref={serviceHref}
             />

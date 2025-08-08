@@ -5,7 +5,7 @@ import {
   contextAdminUser,
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
-import { OctiPlatformContract } from '../../../__generated__/resolvers-types';
+import { OpenCtiPlatformContract } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import Subscription from '../../../model/kanel/public/Subscription';
@@ -13,24 +13,24 @@ import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { ErrorCode } from '../../common/error-code';
 import { serviceContractDomain } from '../contract/domain';
 import {
-  enrollmentDomain,
-  OCTIPlatformConfiguration,
-} from './enrollment.domain';
+  OpenCTIPlatformConfiguration,
+  registrationDomain,
+} from './registration.domain';
 
-describe('Enrollment domain', () => {
+describe('Registration domain', () => {
   let platformId: string;
   const token = uuidv4();
-  const platformTitle = 'My OCTI platform';
+  const platformTitle = 'My OpenCTI platform';
   const platformUrl = 'http://example.com';
-  const platformContract = OctiPlatformContract.Ee;
+  const platformContract = OpenCtiPlatformContract.Ee;
   const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
-  let configuration: OCTIPlatformConfiguration;
+  let configuration: OpenCTIPlatformConfiguration;
 
   beforeEach(() => {
     platformId = uuidv4();
 
     configuration = {
-      enroller_id: contextAdminUser.user.id,
+      registerer_id: contextAdminUser.user.id,
       platform_id: platformId,
       platform_url: platformUrl,
       platform_title: platformTitle,
@@ -39,13 +39,13 @@ describe('Enrollment domain', () => {
     };
   });
 
-  describe('enrollNewInstance', () => {
-    it('save enrollment data', async () => {
-      await enrollmentDomain.enrollNewPlatform(contextAdminUser, {
+  describe('registerNewInstance', () => {
+    it('save registration data', async () => {
+      await registrationDomain.registerNewPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
-          enroller_id: contextAdminUser.user.id,
+          registerer_id: contextAdminUser.user.id,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,
@@ -84,7 +84,7 @@ describe('Enrollment domain', () => {
       );
 
       expect(configuration.token).toBe(token);
-      expect(configuration.enroller_id).toBe(contextAdminUser.user.id);
+      expect(configuration.registerer_id).toBe(contextAdminUser.user.id);
       expect(configuration.platform_id).toBe(platformId);
       expect(configuration.platform_title).toBe(platformTitle);
       expect(configuration.platform_url).toBe(platformUrl);
@@ -96,11 +96,11 @@ describe('Enrollment domain', () => {
     let serviceInstanceId: string;
     let subscriptionId: string;
     beforeEach(async () => {
-      await enrollmentDomain.enrollNewPlatform(contextAdminUser, {
+      await registrationDomain.registerNewPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
-          enroller_id: contextAdminUser.user.id,
+          registerer_id: contextAdminUser.user.id,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,
@@ -133,7 +133,7 @@ describe('Enrollment domain', () => {
 
     it('should refresh existing platform configuration', async () => {
       const newToken = uuidv4();
-      await enrollmentDomain.refreshExistingPlatform(contextAdminUser, {
+      await registrationDomain.refreshExistingPlatform(contextAdminUser, {
         configuration: {
           ...configuration,
           token: newToken,
@@ -166,14 +166,17 @@ describe('Enrollment domain', () => {
 
     it('should prevent registration on another organization', async () => {
       const newToken = uuidv4();
-      const call = enrollmentDomain.refreshExistingPlatform(contextAdminUser, {
-        configuration: {
-          ...configuration,
-          token: newToken,
-        },
-        serviceInstanceId,
-        targetOrganizationId: THALES_ORGA_ID,
-      });
+      const call = registrationDomain.refreshExistingPlatform(
+        contextAdminUser,
+        {
+          configuration: {
+            ...configuration,
+            token: newToken,
+          },
+          serviceInstanceId,
+          targetOrganizationId: THALES_ORGA_ID,
+        }
+      );
 
       await expect(call).rejects.toThrow(
         ErrorCode.RegistrationOnAnotherOrganizationForbidden

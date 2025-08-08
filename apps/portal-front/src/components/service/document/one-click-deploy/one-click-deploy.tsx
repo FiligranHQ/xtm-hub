@@ -17,7 +17,7 @@ import { useMemo, useState } from 'react';
 import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
 
 export const OneClickDeployOctiPlatformFragment = graphql`
-  fragment oneClickDeployOctiPlatformFragment on OCTIPlatform {
+  fragment oneClickDeployOctiPlatformFragment on OpenCTIPlatform {
     id
     title
     url
@@ -26,7 +26,7 @@ export const OneClickDeployOctiPlatformFragment = graphql`
 
 export const OneClickDeployOctiPlatformsQuery = graphql`
   query oneClickDeployOctiPlatformsQuery {
-    octiPlatforms {
+    openCTIPlatforms {
       ...oneClickDeployOctiPlatformFragment
     }
   }
@@ -49,7 +49,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
     {}
   );
 
-  const platformsOcti = queryData.octiPlatforms.map((instanceRef) =>
+  const platformsOcti = queryData.openCTIPlatforms.map((instanceRef) =>
     useFragment<oneClickDeployOctiPlatformFragment$key>(
       OneClickDeployOctiPlatformFragment,
       instanceRef

@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  CanUnenrollOctiPlatformInput,
-  EnrollOctiPlatformInput,
-  IsOctiPlatformRegisteredInput,
-  IsOctiPlatformRegisteredResponse,
-  OctiPlatform,
-  OctiPlatformEnrollmentStatus,
-  OctiPlatformEnrollmentStatusInput,
-  OctiPlatformEnrollmentStatusResponse,
+  CanUnregisterOpenCtiPlatformInput,
+  IsOpenCtiPlatformRegisteredInput,
+  IsOpenCtiPlatformRegisteredResponse,
+  OpenCtiPlatform,
+  OpenCtiPlatformRegistrationStatus,
+  OpenCtiPlatformRegistrationStatusInput,
+  OpenCtiPlatformRegistrationStatusResponse,
   OrganizationCapability,
   PlatformRegistrationStatus,
+  RegisterOpenCtiPlatformInput,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -23,17 +23,17 @@ import { loadOrganizationAdministrators } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
-  enrollmentDomain,
-  OCTIPlatformConfiguration,
-} from './enrollment.domain';
+  OpenCTIPlatformConfiguration,
+  registrationDomain,
+} from './registration.domain';
 
-export const enrollmentApp = {
-  loadOCTIPlatforms: async (
+export const registrationApp = {
+  loadOpenCTIPlatforms: async (
     context: PortalContext
-  ): Promise<OctiPlatform[]> => {
-    const platforms = await enrollmentDomain.loadOCTIPlatforms(context);
+  ): Promise<OpenCtiPlatform[]> => {
+    const platforms = await registrationDomain.loadOpenCTIPlatforms(context);
     return platforms.map((platform) => ({
-      __typename: 'OCTIPlatform',
+      __typename: 'OpenCTIPlatform',
       id: platform.config.platform_id,
       platform_id: platform.config.platform_id,
       title: platform.config.platform_title,
@@ -42,10 +42,10 @@ export const enrollmentApp = {
     }));
   },
 
-  loadOCTIPlatformEnrollmentStatus: async (
+  loadOpenCTIPlatformRegistrationStatus: async (
     context: PortalContext,
-    input: OctiPlatformEnrollmentStatusInput
-  ): Promise<OctiPlatformEnrollmentStatusResponse> => {
+    input: OpenCtiPlatformRegistrationStatusInput
+  ): Promise<OpenCtiPlatformRegistrationStatusResponse> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
         context,
@@ -53,28 +53,28 @@ export const enrollmentApp = {
       );
     return {
       status: activeServiceConfiguration
-        ? OctiPlatformEnrollmentStatus.Active
-        : OctiPlatformEnrollmentStatus.Inactive,
+        ? OpenCtiPlatformRegistrationStatus.Active
+        : OpenCtiPlatformRegistrationStatus.Inactive,
     };
   },
 
-  enrollOCTIPlatform: async (
+  registerOpenCTIPlatform: async (
     context: PortalContext,
-    { organizationId, platform }: EnrollOctiPlatformInput
+    { organizationId, platform }: RegisterOpenCtiPlatformInput
   ): Promise<string> => {
     const token = uuidv4();
-    const configuration: OCTIPlatformConfiguration = {
-      enroller_id: context.user.id,
+    const configuration: OpenCTIPlatformConfiguration = {
+      registerer_id: context.user.id,
       platform_id: platform.id,
       platform_url: platform.url,
       platform_title: platform.title,
       platform_contract: platform.contract,
-      token: token,
+      token,
     };
 
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-        identifier: ServiceDefinitionIdentifier.OctiEnrollment,
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       });
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
@@ -112,13 +112,13 @@ export const enrollmentApp = {
       );
 
     if (serviceConfiguration) {
-      await enrollmentDomain.refreshExistingPlatform(context, {
+      await registrationDomain.refreshExistingPlatform(context, {
         serviceInstanceId: serviceConfiguration.service_instance_id,
         targetOrganizationId: organizationId,
         configuration,
       });
     } else {
-      await enrollmentDomain.enrollNewPlatform(context, {
+      await registrationDomain.registerNewPlatform(context, {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,
@@ -142,9 +142,9 @@ export const enrollmentApp = {
     return token;
   },
 
-  unenrollOCTIPlatform: async (
+  unregisterOpenCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnenrollOctiPlatformInput
+    { platformId }: CanUnregisterOpenCtiPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -186,10 +186,10 @@ export const enrollmentApp = {
     );
   },
 
-  isOCTIPlatformRegistered: async (
+  isOpenCTIPlatformRegistered: async (
     context: PortalContext,
-    input: IsOctiPlatformRegisteredInput
-  ): Promise<IsOctiPlatformRegisteredResponse> => {
+    input: IsOpenCtiPlatformRegisteredInput
+  ): Promise<IsOpenCtiPlatformRegisteredResponse> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
@@ -215,9 +215,9 @@ export const enrollmentApp = {
     };
   },
 
-  canUnenrollOCTIPlatform: async (
+  canUnregisterOpenCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnenrollOctiPlatformInput
+    { platformId }: CanUnregisterOpenCtiPlatformInput
   ): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId;

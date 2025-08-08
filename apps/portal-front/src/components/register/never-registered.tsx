@@ -1,5 +1,5 @@
-import { EnrollOrganizationForm } from '@/components/enroll/form/organization';
 import Loader from '@/components/loader';
+import { RegisterOrganizationForm } from '@/components/register/form/organization';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
@@ -12,7 +12,10 @@ interface Props {
   confirm: (organizationId: string) => void;
 }
 
-export const EnrollNeverEnrolled: React.FC<Props> = ({ cancel, confirm }) => {
+export const RegisterNeverRegistered: React.FC<Props> = ({
+  cancel,
+  confirm,
+}) => {
   const [queryRef, loadQuery] =
     useQueryLoader<organizationListUserOrganizationsQuery>(
       OrganizationListUserOrganizationsQueryGraphql
@@ -20,7 +23,7 @@ export const EnrollNeverEnrolled: React.FC<Props> = ({ cancel, confirm }) => {
   useMountingLoader(loadQuery, {});
 
   return queryRef ? (
-    <EnrollOrganizationForm
+    <RegisterOrganizationForm
       cancel={cancel}
       confirm={confirm}
       queryRef={queryRef}

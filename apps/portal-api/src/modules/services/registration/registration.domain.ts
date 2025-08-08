@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, QueryOpts } from '../../../../knexfile';
 import {
-  OctiPlatformContract,
+  OpenCtiPlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -17,17 +17,17 @@ import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
 
-export type OCTIPlatformConfiguration = {
-  enroller_id: string;
+export type OpenCTIPlatformConfiguration = {
+  registerer_id: string;
   platform_id: string;
   platform_url: string;
   platform_title: string;
-  platform_contract: OctiPlatformContract;
+  platform_contract: OpenCtiPlatformContract;
   token: string;
 };
 
-export const enrollmentDomain = {
-  enrollNewPlatform: async (
+export const registrationDomain = {
+  registerNewPlatform: async (
     context: PortalContext,
     {
       serviceDefinitionId,
@@ -36,11 +36,11 @@ export const enrollmentDomain = {
     }: {
       serviceDefinitionId: string;
       organizationId: OrganizationId;
-      configuration: OCTIPlatformConfiguration;
+      configuration: OpenCTIPlatformConfiguration;
     }
   ) => {
     const serviceInstanceId =
-      await serviceInstanceDomain.createOCTIServiceInstance(
+      await serviceInstanceDomain.createOpenCTIServiceInstance(
         context,
         serviceDefinitionId
       );
@@ -71,7 +71,7 @@ export const enrollmentDomain = {
       serviceInstanceId,
       targetOrganizationId,
     }: {
-      configuration: OCTIPlatformConfiguration;
+      configuration: OpenCTIPlatformConfiguration;
       serviceInstanceId: ServiceInstanceId;
       targetOrganizationId: string;
     }
@@ -94,10 +94,10 @@ export const enrollmentDomain = {
     );
   },
 
-  loadOCTIPlatforms: async (
+  loadOpenCTIPlatforms: async (
     context: PortalContext,
     opts: QueryOpts = {}
-  ): Promise<{ config: OCTIPlatformConfiguration }[]> => {
+  ): Promise<{ config: OpenCTIPlatformConfiguration }[]> => {
     const userSelectedOrganization = context.user.selected_organization_id;
 
     const query = await db<ServiceInstance>(context, 'ServiceInstance', opts)
@@ -122,7 +122,7 @@ export const enrollmentDomain = {
       .where(
         'ServiceDefinition.identifier',
         '=',
-        ServiceDefinitionIdentifier.OctiEnrollment
+        ServiceDefinitionIdentifier.OpenctiRegistration
       )
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')

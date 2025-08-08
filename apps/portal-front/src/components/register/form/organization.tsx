@@ -24,7 +24,7 @@ export const selectOrganizationFormSchema = z.object({
   organizationId: z.string().nonempty(),
 });
 
-export const EnrollOrganizationForm: React.FC<Props> = ({
+export const RegisterOrganizationForm: React.FC<Props> = ({
   cancel,
   confirm,
   queryRef,
@@ -41,8 +41,8 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
     <div className="flex items-center justify-center">
       <div className="flex flex-col justify-between gap-m">
         <div className="space-y-m">
-          <h1>{t('Enroll.OCTI.OrganizationForm.Title')}</h1>
-          <p>{t('Enroll.OCTI.OrganizationForm.Description')}</p>
+          <h1>{t('Register.OpenCTI.OrganizationForm.Title')}</h1>
+          <p>{t('Register.OpenCTI.OrganizationForm.Description')}</p>
         </div>
         <AutoForm
           formSchema={selectOrganizationFormSchema}
@@ -62,7 +62,7 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
                         <FormControl>
                           <Input
                             className="w-auto h-4 w-4 accent-primary"
-                            aria-labelledby={`enroll-form-organization-${organization.name}`}
+                            aria-labelledby={`register-form-organization-${organization.name}`}
                             type="radio"
                             onChange={() => {
                               field.onChange(organization.id);
@@ -73,7 +73,7 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
                         </FormControl>
 
                         <FormLabel
-                          id={`enroll-form-organization-${organization.name}`}
+                          id={`register-form-organization-${organization.name}`}
                           className="!mt-0">
                           {organization.name}
                         </FormLabel>
@@ -95,7 +95,7 @@ export const EnrollOrganizationForm: React.FC<Props> = ({
               {t('Utils.Cancel')}
             </Button>
 
-            <Button type="submit">{t('Enroll.Confirm')}</Button>
+            <Button type="submit">{t('Register.Confirm')}</Button>
           </div>
         </AutoForm>
       </div>

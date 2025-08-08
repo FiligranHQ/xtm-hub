@@ -8,7 +8,7 @@ interface Props {
   confirm?: () => void;
 }
 
-export const EnrollStateLayout: React.FC<Props> = ({
+export const RegisterStateLayout: React.FC<Props> = ({
   children,
   cancel,
   confirm,
@@ -22,7 +22,7 @@ export const EnrollStateLayout: React.FC<Props> = ({
           <Button
             variant="outline"
             onClick={cancel}>
-            {t('Enroll.OCTI.Back')}
+            {t('Register.OpenCTI.Back')}
           </Button>
         )}
         {Boolean(confirm) && (

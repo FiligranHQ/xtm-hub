@@ -1,11 +1,11 @@
 'use client';
 
 import {
-  octiPlatformToServiceInstanceCardData,
+  openCTIPlatformToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
-import { enrollOCTIPlatformListFragment$data } from '@generated/enrollOCTIPlatformListFragment.graphql';
+import { registerOpenCTIPlatformListFragment$data } from '@generated/registerOpenCTIPlatformListFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { Suspense } from 'react';
@@ -14,19 +14,19 @@ import ServiceInstanceCard from '../service-instance-card';
 interface OwnedServicesProps {
   services: userServicesOwned_fragment$data[];
   publicServices: serviceList_fragment$data[];
-  octiPlatforms: enrollOCTIPlatformListFragment$data['octiPlatforms'];
+  openCTIPlatforms: registerOpenCTIPlatformListFragment$data['openCTIPlatforms'];
 }
 
 const OwnedServices = ({
   services,
   publicServices,
-  octiPlatforms,
+  openCTIPlatforms,
 }: OwnedServicesProps) => {
   // Merge and sort by ordering property
   const sortedServices = [
     ...services.map(userServicesOwnedServiceToInstanceCardData),
     ...publicServices.map(publicServiceInstanceToInstanceCardData),
-    ...octiPlatforms.map(octiPlatformToServiceInstanceCardData),
+    ...openCTIPlatforms.map(openCTIPlatformToServiceInstanceCardData),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
   if (sortedServices.length > 0) {

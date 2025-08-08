@@ -9,9 +9,9 @@ import {
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
 import {
-  OctiPlatformContract,
-  OctiPlatformEnrollmentStatus,
-  OctiPlatformInput,
+  OpenCtiPlatformContract,
+  OpenCtiPlatformInput,
+  OpenCtiPlatformRegistrationStatus,
   ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
 import Subscription from '../../../model/kanel/public/Subscription';
@@ -20,20 +20,20 @@ import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
-import { enrollmentApp } from './enrollment.app';
+import { registrationApp } from './registration.app';
 
-describe('Enrollment app', () => {
-  describe('enrollOCTIPlatform', () => {
-    const platform: OctiPlatformInput = {
+describe('Registration app', () => {
+  describe('registerOpenCTIPlatform', () => {
+    const platform: OpenCtiPlatformInput = {
       id: uuidv4(),
-      title: 'My OCTI platform',
+      title: 'My OpenCTI platform',
       url: 'http://example.com',
-      contract: OctiPlatformContract.Ee,
+      contract: OpenCtiPlatformContract.Ee,
     };
 
     describe('invalid configuration', async () => {
       it('should throw when platformId is not valid', async () => {
-        const call = enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
+        const call = registrationApp.registerOpenCTIPlatform(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             ...platform,
@@ -45,7 +45,7 @@ describe('Enrollment app', () => {
       });
 
       it('should throw when platformUrl is not valid', async () => {
-        const call = enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
+        const call = registrationApp.registerOpenCTIPlatform(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             ...platform,
@@ -58,7 +58,7 @@ describe('Enrollment app', () => {
     });
 
     it('should throw when user does not belong to the organization', async () => {
-      const call = enrollmentApp.enrollOCTIPlatform(
+      const call = registrationApp.registerOpenCTIPlatform(
         {
           ...contextAdminUser,
           user: {
@@ -73,75 +73,87 @@ describe('Enrollment app', () => {
     });
 
     it('should throw when user does not have the required capabilities', async () => {
-      const call = enrollmentApp.enrollOCTIPlatform(contextSimpleUserThales, {
-        organizationId: THALES_ORGA_ID,
-        platform,
-      });
+      const call = registrationApp.registerOpenCTIPlatform(
+        contextSimpleUserThales,
+        {
+          organizationId: THALES_ORGA_ID,
+          platform,
+        }
+      );
 
       await expect(call).rejects.toThrow(
         ErrorCode.MissingCapabilityOnOrganization
       );
     });
 
-    it('return token when platform is enrolled', async () => {
-      const token = await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
-        organizationId: PLATFORM_ORGANIZATION_UUID,
-        platform,
-      });
+    it('return token when platform is registered', async () => {
+      const token = await registrationApp.registerOpenCTIPlatform(
+        contextAdminUser,
+        {
+          organizationId: PLATFORM_ORGANIZATION_UUID,
+          platform,
+        }
+      );
 
       expect(token).toBeDefined();
     });
   });
 
-  describe('unenrollOCTIPlatform', () => {
+  describe('unregisterOpenCTIPlatform', () => {
     let platformId: string;
-    let platform: OctiPlatformInput;
+    let platform: OpenCtiPlatformInput;
 
     beforeEach(() => {
       platformId = uuidv4();
       platform = {
         id: platformId,
-        title: 'My OCTI platform',
+        title: 'My OpenCTI platform',
         url: 'http://example.com',
-        contract: OctiPlatformContract.Ee,
+        contract: OpenCtiPlatformContract.Ee,
       };
     });
 
     it('should throw when user does not belong to the organization', async () => {
-      await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
+      await registrationApp.registerOpenCTIPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
       });
 
-      const call = enrollmentApp.unenrollOCTIPlatform(contextAdminOrgaThales, {
-        platformId,
-      });
+      const call = registrationApp.unregisterOpenCTIPlatform(
+        contextAdminOrgaThales,
+        {
+          platformId,
+        }
+      );
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
 
     it('should throw when user does not have the required capabilities', async () => {
-      await enrollmentApp.enrollOCTIPlatform(contextAdminOrgaThales, {
+      await registrationApp.registerOpenCTIPlatform(contextAdminOrgaThales, {
         organizationId: THALES_ORGA_ID,
         platform,
       });
 
-      const call = enrollmentApp.unenrollOCTIPlatform(contextSimpleUserThales, {
-        platformId,
-      });
+      const call = registrationApp.unregisterOpenCTIPlatform(
+        contextSimpleUserThales,
+        {
+          platformId,
+        }
+      );
 
       await expect(call).rejects.toThrow(
         ErrorCode.MissingCapabilityOnOrganization
       );
     });
 
-    it('should unenroll platform when the platform is still active', async () => {
-      await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
+    it('should unregister platform when the platform is still active', async () => {
+      await registrationApp.registerOpenCTIPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
       });
 
-      await enrollmentApp.unenrollOCTIPlatform(contextAdminUser, {
+      await registrationApp.unregisterOpenCTIPlatform(contextAdminUser, {
         platformId,
       });
 
@@ -170,7 +182,7 @@ describe('Enrollment app', () => {
     });
   });
 
-  describe('canUnenrollOCTIPlatform', () => {
+  describe('canUnregisterOpenCTIPlatform', () => {
     const platformId = uuidv4();
 
     let isUserAllowedOnOrganizationSpy: MockInstance;
@@ -199,9 +211,12 @@ describe('Enrollment app', () => {
     it('should throw an error when configuration for platform does not exist', async () => {
       loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
 
-      const call = enrollmentApp.canUnenrollOCTIPlatform(contextAdminUser, {
-        platformId,
-      });
+      const call = registrationApp.canUnregisterOpenCTIPlatform(
+        contextAdminUser,
+        {
+          platformId,
+        }
+      );
 
       await expect(call).rejects.toThrow(ErrorCode.PlatformNotRegistered);
     });
@@ -212,14 +227,17 @@ describe('Enrollment app', () => {
       );
       loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
-      const call = enrollmentApp.canUnenrollOCTIPlatform(contextAdminUser, {
-        platformId,
-      });
+      const call = registrationApp.canUnregisterOpenCTIPlatform(
+        contextAdminUser,
+        {
+          platformId,
+        }
+      );
 
       await expect(call).rejects.toThrow(ErrorCode.PlatformNotRegistered);
     });
 
-    it('should allow user to enroll when he has the required capabilities', async () => {
+    it('should allow user to register when he has the required capabilities', async () => {
       const organizationId = uuidv4();
       isUserAllowedOnOrganizationSpy.mockReturnValue(
         Promise.resolve({ isAllowed: true })
@@ -231,7 +249,7 @@ describe('Enrollment app', () => {
         Promise.resolve({ organization_id: organizationId })
       );
 
-      const result = await enrollmentApp.canUnenrollOCTIPlatform(
+      const result = await registrationApp.canUnregisterOpenCTIPlatform(
         contextAdminUser,
         { platformId }
       );
@@ -240,7 +258,7 @@ describe('Enrollment app', () => {
       expect(result.organizationId).toBe(organizationId);
     });
 
-    it('should not allow user to enroll when he does not have the required capabilities', async () => {
+    it('should not allow user to register when he does not have the required capabilities', async () => {
       const organizationId = uuidv4();
       loadConfigurationByPlatformSpy.mockReturnValue(
         Promise.resolve({ service_instance_id: uuidv4() })
@@ -252,7 +270,7 @@ describe('Enrollment app', () => {
         Promise.resolve({ isAllowed: false, isInOrganization: false })
       );
 
-      const result = await enrollmentApp.canUnenrollOCTIPlatform(
+      const result = await registrationApp.canUnregisterOpenCTIPlatform(
         contextAdminUser,
         { platformId }
       );
@@ -263,58 +281,67 @@ describe('Enrollment app', () => {
     });
   });
 
-  describe('loadOCTIPlatformEnrollmentStatus', () => {
-    it('should return inactive when platform is not enrolled', async () => {
-      const result = await enrollmentApp.loadOCTIPlatformEnrollmentStatus(
-        contextAdminUser,
-        { platformId: uuidv4(), token: uuidv4() }
-      );
+  describe('loadOpenCTIPlatformRegistrationStatus', () => {
+    it('should return inactive when platform is not registered', async () => {
+      const result =
+        await registrationApp.loadOpenCTIPlatformRegistrationStatus(
+          contextAdminUser,
+          { platformId: uuidv4(), token: uuidv4() }
+        );
 
-      expect(result.status).toBe(OctiPlatformEnrollmentStatus.Inactive);
+      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Inactive);
     });
 
-    it('should return active when platform is enrolled', async () => {
+    it('should return active when platform is registered', async () => {
       const platformId = uuidv4();
-      const token = await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
-        organizationId: PLATFORM_ORGANIZATION_UUID,
-        platform: {
-          id: platformId,
-          url: 'http://example.com',
-          contract: OctiPlatformContract.Ee,
-          title: 'Fake title',
-        },
-      });
-
-      const result = await enrollmentApp.loadOCTIPlatformEnrollmentStatus(
+      const token = await registrationApp.registerOpenCTIPlatform(
         contextAdminUser,
-        { platformId, token }
+        {
+          organizationId: PLATFORM_ORGANIZATION_UUID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: OpenCtiPlatformContract.Ee,
+            title: 'Fake title',
+          },
+        }
       );
 
-      expect(result.status).toBe(OctiPlatformEnrollmentStatus.Active);
+      const result =
+        await registrationApp.loadOpenCTIPlatformRegistrationStatus(
+          contextAdminUser,
+          { platformId, token }
+        );
+
+      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Active);
     });
 
-    it('should return inactive when platform is unenrolled', async () => {
+    it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
-      const token = await enrollmentApp.enrollOCTIPlatform(contextAdminUser, {
-        organizationId: PLATFORM_ORGANIZATION_UUID,
-        platform: {
-          id: platformId,
-          url: 'http://example.com',
-          contract: OctiPlatformContract.Ee,
-          title: 'Fake title',
-        },
-      });
+      const token = await registrationApp.registerOpenCTIPlatform(
+        contextAdminUser,
+        {
+          organizationId: PLATFORM_ORGANIZATION_UUID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: OpenCtiPlatformContract.Ee,
+            title: 'Fake title',
+          },
+        }
+      );
 
-      await enrollmentApp.unenrollOCTIPlatform(contextAdminUser, {
+      await registrationApp.unregisterOpenCTIPlatform(contextAdminUser, {
         platformId,
       });
 
-      const result = await enrollmentApp.loadOCTIPlatformEnrollmentStatus(
-        contextAdminUser,
-        { platformId: platformId, token }
-      );
+      const result =
+        await registrationApp.loadOpenCTIPlatformRegistrationStatus(
+          contextAdminUser,
+          { platformId: platformId, token }
+        );
 
-      expect(result.status).toBe(OctiPlatformEnrollmentStatus.Inactive);
+      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Inactive);
     });
   });
 });

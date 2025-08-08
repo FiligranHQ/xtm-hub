@@ -1,5 +1,5 @@
-import { EnrollStateLayout } from '@/components/enroll/state/layout';
 import { getOrganization } from '@/components/organization/organization.service';
+import { RegisterStateLayout } from '@/components/register/state/layout';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
@@ -9,7 +9,7 @@ interface Props {
   organizationId: string;
 }
 
-export const UnenrollOCTIConfirm: React.FC<Props> = ({
+export const UnregisterOpenCTIConfirm: React.FC<Props> = ({
   confirm,
   cancel,
   organizationId,
@@ -18,13 +18,15 @@ export const UnenrollOCTIConfirm: React.FC<Props> = ({
   const organization = getOrganization(organizationId);
 
   return (
-    <EnrollStateLayout
+    <RegisterStateLayout
       confirm={confirm}
       cancel={cancel}>
       <h1>
-        {t('Unenroll.OCTI.Confirm.Title', { name: organization?.name ?? '' })}
+        {t('Unregister.OpenCTI.Confirm.Title', {
+          name: organization?.name ?? '',
+        })}
       </h1>
-      <p>{t('Unenroll.OCTI.Confirm.Description')}</p>
-    </EnrollStateLayout>
+      <p>{t('Unregister.OpenCTI.Confirm.Description')}</p>
+    </RegisterStateLayout>
   );
 };

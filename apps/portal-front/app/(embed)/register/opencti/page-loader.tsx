@@ -1,13 +1,13 @@
 'use client';
 
-import { EnrollOCTI } from '@/components/enroll/octi';
 import Loader from '@/components/loader';
+import { RegisterOpenCTI } from '@/components/register/opencti';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import EnrollIsOCTIPlatformRegisteredQueryGraphql, {
-  enrollIsOCTIPlatformRegisteredQuery,
-} from '@generated/enrollIsOCTIPlatformRegisteredQuery.graphql';
-import { OCTIPlatformContract } from '@generated/enrollOCTIPlatformFragment.graphql';
+import RegisterIsOpenCTIPlatformRegisteredQueryGraphql, {
+  registerIsOpenCTIPlatformRegisteredQuery,
+} from '@generated/registerIsOpenCTIPlatformRegisteredQuery.graphql';
+import { OpenCTIPlatformContract } from '@generated/registerOpenCTIPlatformFragment.graphql';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -23,8 +23,8 @@ export const PageLoader: React.FC = () => {
   }
 
   const [queryRef, loadQuery] =
-    useQueryLoader<enrollIsOCTIPlatformRegisteredQuery>(
-      EnrollIsOCTIPlatformRegisteredQueryGraphql
+    useQueryLoader<registerIsOpenCTIPlatformRegisteredQuery>(
+      RegisterIsOpenCTIPlatformRegisteredQueryGraphql
     );
   useMountingLoader(loadQuery, { input: { platformId: platform_id } });
 
@@ -32,11 +32,11 @@ export const PageLoader: React.FC = () => {
     id: platform_id,
     title: platform_title,
     url: platform_url,
-    contract: platform_contract as OCTIPlatformContract,
+    contract: platform_contract as OpenCTIPlatformContract,
   };
 
   return queryRef ? (
-    <EnrollOCTI
+    <RegisterOpenCTI
       queryRef={queryRef}
       platform={platform}
     />
