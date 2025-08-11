@@ -33,10 +33,19 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Ensure we're on main branch
+      - name: Checkout and pull development branch
+        run: |
+          git checkout development
+          git pull origin development
+
+      - name: Checkout and pull main branch
         run: |
           git checkout main
           git pull origin main
+
+      - name: Merge development into main
+        run: |
+          git merge development -m "chore(release): prepare release"
 
       - name: Enable Corepack
         run: corepack enable
