@@ -387,8 +387,8 @@ export type Mutation = {
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
-  removePendingUserFromOrganization?: Maybe<User>;
   registerOpenCTIPlatform: RegistrationResponse;
+  removePendingUserFromOrganization?: Maybe<User>;
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
   selfJoinServiceInstance?: Maybe<ServiceInstance>;
@@ -611,14 +611,14 @@ export type MutationMergeTestArgs = {
 };
 
 
-export type MutationRemovePendingUserFromOrganizationArgs = {
-  organization_id: Scalars['ID']['input'];
-  user_id: Scalars['ID']['input'];
+export type MutationRegisterOpenCtiPlatformArgs = {
+  input: RegisterOpenCtiPlatformInput;
 };
 
 
-export type MutationRegisterOpenCtiPlatformArgs = {
-  input: RegisterOpenCtiPlatformInput;
+export type MutationRemovePendingUserFromOrganizationArgs = {
+  organization_id: Scalars['ID']['input'];
+  user_id: Scalars['ID']['input'];
 };
 
 
@@ -2064,8 +2064,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
-  removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   registerOpenCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterOpenCtiPlatformArgs, 'input'>>;
+  removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   selfJoinServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationSelfJoinServiceInstanceArgs, 'service_instance_id'>>;
