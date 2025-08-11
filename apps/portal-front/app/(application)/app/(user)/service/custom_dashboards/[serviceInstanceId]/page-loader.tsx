@@ -4,13 +4,13 @@ import { customDashboardListLocalStorage } from '@/components/service/custom-das
 import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
 import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
-import { serviceByIdQuery$data } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 
 interface PageLoaderProps {
-  serviceInstance: NonNullable<serviceByIdQuery$data['serviceInstanceById']>;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {

@@ -17,7 +17,7 @@ import { useMemo, useState } from 'react';
 import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
 
 export const OneClickDeployOctiPlatformFragment = graphql`
-  fragment oneClickDeployOctiPlatformFragment on OCTIPlatform {
+  fragment oneClickDeployOctiPlatformFragment on OpenCTIPlatform {
     id
     title
     url
@@ -26,11 +26,16 @@ export const OneClickDeployOctiPlatformFragment = graphql`
 
 export const OneClickDeployOctiPlatformsQuery = graphql`
   query oneClickDeployOctiPlatformsQuery {
-    octiPlatforms {
+    openCTIPlatforms {
       ...oneClickDeployOctiPlatformFragment
     }
   }
 `;
+
+const URL_CONFIGS = {
+  custom_dashboard: 'deploy-custom-dashboard',
+  csv_feed: 'deploy-csv-feed',
+};
 
 interface OneClickDeployProps {
   documentData: ShareableResource;
@@ -44,7 +49,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
     {}
   );
 
-  const platformsOcti = queryData.octiPlatforms.map((instanceRef) =>
+  const platformsOcti = queryData.openCTIPlatforms.map((instanceRef) =>
     useFragment<oneClickDeployOctiPlatformFragment$key>(
       OneClickDeployOctiPlatformFragment,
       instanceRef
@@ -59,7 +64,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
 
   const oneClickDeploy = (platformOctiUrl: string) => {
     window.open(
-      `${platformOctiUrl}/dashboard/xtm-hub/deploy-custom-dashboard/${documentData.service_instance?.id}/${documentData.id}`,
+      `${platformOctiUrl}/dashboard/xtm-hub/${URL_CONFIGS[documentData.type as keyof typeof URL_CONFIGS]}/${documentData.service_instance?.id}/${documentData.id}`,
       '_blank'
     );
   };

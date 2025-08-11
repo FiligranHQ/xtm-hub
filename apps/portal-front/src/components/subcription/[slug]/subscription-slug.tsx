@@ -27,7 +27,10 @@ import { useMutation } from 'react-relay';
 
 import { PortalContext } from '@/components/me/app-portal-context';
 import { UserServiceForm } from '@/components/service/[slug]/userservice-form';
-import { ServiceById } from '@/components/service/service.graphql';
+import {
+  ServiceById,
+  serviceInstanceFragment,
+} from '@/components/service/service.graphql';
 import { EditUserService } from '@/components/subcription/[slug]/edit-user-service';
 import { SubscriptionById } from '@/components/subcription/subscription.graphql';
 import {
@@ -38,6 +41,7 @@ import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing
 import { APP_PATH } from '@/utils/path/constant';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$key } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
 import { useEffect } from 'react';
@@ -86,13 +90,17 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       ServiceById,
       queryRefService
     );
-    if (queryDataService && queryDataService.serviceInstanceById) {
+    const serviceData = readInlineData<serviceInstance_fragment$key>(
+      serviceInstanceFragment,
+      queryDataService.serviceInstanceById
+    );
+    if (serviceData) {
       breadcrumbValue = [
         { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
         {
-          label: `${queryDataService.serviceInstanceById.name}`,
+          label: `${serviceData.name}`,
           original: true,
-          href: `/${APP_PATH}/service/${queryDataService.serviceInstanceById.service_definition!.identifier}/${queryDataService.serviceInstanceById.id}`,
+          href: `/${APP_PATH}/service/${serviceData.service_definition!.identifier}/${serviceData.id}`,
         },
         {
           label: t('Service.Management.ManageUsers'),

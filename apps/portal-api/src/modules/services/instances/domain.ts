@@ -4,7 +4,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 
 export const serviceInstanceDomain = {
-  createOCTIServiceInstance: async (
+  createOpenCTIServiceInstance: async (
     context: PortalContext,
     serviceDefinitionId: string
   ): Promise<ServiceInstanceId> => {

@@ -5,7 +5,9 @@ import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import Organization from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
+import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
+import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
 import {
   deleteOrganizationByName,
@@ -18,8 +20,6 @@ import {
   preventAdministratorRemovalOfOneOrganization,
   removeUser,
 } from './users.helper';
-import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
-import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 
 describe('User helpers', async () => {
   describe('createNewUserFromInvitation', () => {
@@ -29,12 +29,17 @@ describe('User helpers', async () => {
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await  loadUserOrganizationPending(contextAdminUser, {user_id: newUser.id});
+      const newUserPendingOrg = await loadUserOrganizationPending(
+        contextAdminUser,
+        { user_id: newUser.id }
+      );
       expect(newUser).toBeTruthy();
       expect(newUser.selected_org_capabilities.length).toBe(1);
       expect(newUser.organizations[0].personal_space).toBe(true);
       expect(newUserPendingOrg.length).toBe(1);
-      expect(newUserPendingOrg[0].organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
+      expect(newUserPendingOrg[0].organization_id).toBe(
+        PLATFORM_ORGANIZATION_UUID
+      );
 
       // Delete corresponding in order to avoid issue with other tests
       await removeUser(contextAdminUser, { email: newUser.email });
@@ -45,7 +50,10 @@ describe('User helpers', async () => {
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await  loadUserOrganizationPending(contextAdminUser, {user_id: newUser.id});
+      const newUserPendingOrg = await loadUserOrganizationPending(
+        contextAdminUser,
+        { user_id: newUser.id }
+      );
 
       expect(newUser).toBeTruthy();
       expect(newUserPendingOrg.length).toBe(0);
@@ -72,21 +80,21 @@ describe('User helpers', async () => {
       await deleteOrganizationByName('test-new-organization');
     });
 
-
     it('should create a new user with Role USER and should not add it to pending organization if orga does not exist', async () => {
       const testMail = `testCreateNewUserFromInvitation${uuidv4()}@whatever.io`;
       await createNewUserFromInvitation({
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await  loadUserOrganizationPending(contextAdminUser, {user_id: newUser.id});
+      const newUserPendingOrg = await loadUserOrganizationPending(
+        contextAdminUser,
+        { user_id: newUser.id }
+      );
       expect(newUser).toBeTruthy();
       expect(newUser.selected_org_capabilities.length).toBe(1);
 
       expect(newUserPendingOrg.length).toBe(0);
-
     });
-
   });
 
   describe('delete last administrator prevention', () => {
@@ -146,9 +154,10 @@ describe('User helpers', async () => {
           await createUserOrganizationRelationAndRemovePending(
             contextAdminUser,
             {
-            user_id: anotherUser.id,
-            organizations_id: [organization.id],
-          });
+              user_id: anotherUser.id,
+              organizations_id: [organization.id],
+            }
+          );
         expect(anotherUserOrgRelation).toBeTruthy();
 
         await createUserOrganizationCapability({
@@ -205,9 +214,10 @@ describe('User helpers', async () => {
           await createUserOrganizationRelationAndRemovePending(
             contextAdminUser,
             {
-            user_id: anotherUser.id,
-            organizations_id: [organization.id],
-          });
+              user_id: anotherUser.id,
+              organizations_id: [organization.id],
+            }
+          );
         expect(anotherUserOrgRelation).toBeTruthy();
 
         await createUserOrganizationCapability({

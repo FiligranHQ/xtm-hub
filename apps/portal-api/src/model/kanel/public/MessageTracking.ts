@@ -4,7 +4,7 @@
 import type { ActionTrackingId } from './ActionTracking';
 
 /** Identifier type for public.MessageTracking */
-export type MessageTrackingId = string & { __brand: 'MessageTrackingId' };
+export type MessageTrackingId = string & { __brand: 'public.MessageTracking' };
 
 /** Represents the table public.MessageTracking */
 export default interface MessageTracking {

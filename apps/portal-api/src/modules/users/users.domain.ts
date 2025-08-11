@@ -1,11 +1,4 @@
-import {
-  db,
-  dbRaw,
-  dbTx,
-  dbUnsecure,
-  paginate,
-  QueryOpts,
-} from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
 import {
   Filter,
   FilterKey,
@@ -22,10 +15,8 @@ import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
-import { dispatch } from '../../pub';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
-import { logApp } from '../../utils/app-logger.util';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
@@ -274,7 +265,7 @@ export const loadOrganizationAdministrators = async (
       ).orWhere(
         'UserOrganization_Capability.name',
         '=',
-        OrganizationCapability.ManageOctiEnrollment
+        OrganizationCapability.ManageOpenctiRegistration
       );
     })
     .select('User.*')
@@ -370,47 +361,19 @@ export const resetPassword = async (context: PortalContext): Promise<void> => {
 export const updateUser = async (
   context: PortalContext,
   id: UserId,
-  input: UserMutator,
-  secure: boolean = true
+  input: UserMutator
 ): Promise<User> => {
   if (isEmpty(input)) {
     return;
   }
-  const trx = await dbTx();
-  try {
-    const [updatedUser] = secure
-      ? await db<User>(context, 'User')
-          .where({ id })
-          .update(input)
-          .returning('*')
-          .transacting(trx)
-          .secureQuery()
-      : await dbUnsecure<User>('User')
-          .where({ id })
-          .update(input)
-          .returning('*')
-          .transacting(trx);
 
-    if (input.disabled) {
-      await dispatch('User', 'delete', updatedUser);
-      await dispatch('MeUser', 'delete', updatedUser, 'User');
-    }
+  const [updatedUser] = await db<User>(context, 'User')
+    .where({ id })
+    .update(input)
+    .returning('*')
+    .secureQuery();
 
-    try {
-      await auth0Client.updateUser({
-        ...input,
-        email: updatedUser.email,
-      });
-    } catch (err) {
-      logApp.error(err);
-    }
-
-    await trx.commit();
-    return updatedUser;
-  } catch (err) {
-    await trx.rollback();
-    throw err;
-  }
+  return updatedUser;
 };
 
 export const deleteUserById = async (userId: UserId) => {
@@ -529,8 +492,11 @@ export const updateUserAtLogin = async (
     fields.selected_organization_id = organizations[0].id;
   }
 
-  // TODO: Refactor, this function has mixed responsibilities and needs to be separated.
-  const updatedUser = await updateUser(context, user.id, fields, false);
+  const [updatedUser] = await dbUnsecure<User>('User')
+    .where({ id: user.id })
+    .update(fields)
+    .returning('*');
+
   return {
     ...user,
     selected_organization_id: updatedUser.selected_organization_id,

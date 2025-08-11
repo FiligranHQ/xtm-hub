@@ -17,7 +17,8 @@ import {
   ForbiddenAccess,
   UnknownError,
 } from '../../utils/error.util';
-import { extractId, isImgUrl } from '../../utils/utils';
+import { extractId } from '../../utils/utils';
+import { ErrorCode } from '../common/error-code';
 import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
@@ -28,6 +29,7 @@ import {
   loadOrganizationBy,
   loadOrganizationsFromEmail,
 } from '../organizations/organizations.helper';
+import { usersAdminApp } from './users.admin.app';
 import {
   getCapabilities,
   getOrganizations,
@@ -45,9 +47,9 @@ import {
 import {
   createUserWithPersonalSpace,
   mapUserToGraphqlUser,
-  preventAdministratorRemovalOfAllOrganizations,
   preventAdministratorRemovalOfOneOrganization,
 } from './users.helper';
+import { usersProfileApp } from './users.profile.app';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   const hash = crypto
@@ -290,45 +292,12 @@ const resolvers: Resolvers = {
       }
     },
     adminEditUser: async (_, { id, input }, context) => {
-      const trx = await dbTx();
       try {
-        const { organization_capabilities, ...userInput } = input;
-        const userId = id as UserId;
-        const mappedCapabilities = (organization_capabilities ?? []).map(
-          (orgCapability) => ({
-            organizationId: extractId<OrganizationId>(
-              orgCapability.organization_id
-            ),
-            capabilities: orgCapability.capabilities,
-          })
-        );
-        if (!input.disabled) {
-          await preventAdministratorRemovalOfAllOrganizations(
-            context,
-            userId,
-            mappedCapabilities
-          );
-        }
-        await updateUser(context, userId, userInput);
-        await updateMultipleUserOrgWithCapabilities(
-          context,
-          userId,
-          organization_capabilities
-        );
-        const user = await loadUserDetails({
-          'User.id': userId,
+        return await usersAdminApp.editUser(context, {
+          userId: id as UserId,
+          input,
         });
-        updateUserSession(user);
-
-        await dispatch('User', 'edit', user);
-
-        const userMapped = mapUserToGraphqlUser(user);
-        await dispatch('MeUser', 'edit', userMapped, 'User');
-
-        await trx.commit();
-        return user;
       } catch (error) {
-        await trx.rollback();
         if (error.message.includes('CANT_REMOVE_LAST_ADMINISTRATOR')) {
           throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
         }
@@ -340,26 +309,13 @@ const resolvers: Resolvers = {
     },
 
     editMeUser: async (_, { input }, context) => {
-      if (input.picture) {
-        const isPictureImgUrl = await isImgUrl(input.picture);
-        if (!isPictureImgUrl) {
-          throw BadRequestError('INVALID_IMAGE_URL');
-        }
-      }
-
       try {
-        await updateUser(context, context.user.id, input);
-        const user = await loadUserDetails({
-          'User.id': context.user.id,
-        });
-
-        updateUserSession(user);
-
-        const mappedUser = mapUserToGraphqlUser(user);
-        await dispatch('User', 'edit', mappedUser);
-
-        return mappedUser;
+        return await usersProfileApp.editMeUser(context, input);
       } catch (error) {
+        if (error.message.includes(ErrorCode.InvalidImageUrl)) {
+          throw BadRequestError(error.message);
+        }
+
         throw UnknownError('EDIT_ME_USER_ERROR', {
           detail: error,
         });

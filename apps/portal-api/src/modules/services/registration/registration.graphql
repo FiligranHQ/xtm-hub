@@ -1,0 +1,97 @@
+enum OpenCTIPlatformContract {
+  CE
+  EE
+}
+
+type OpenCTIPlatform implements Node {
+  id: ID!
+  url: String!
+  title: String!
+  contract: OpenCTIPlatformContract!
+  platform_id: String!
+}
+
+input OpenCTIPlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: OpenCTIPlatformContract!
+}
+
+input RegisterOpenCTIPlatformInput {
+  organizationId: ID!
+  platform: OpenCTIPlatformInput!
+}
+
+input CanUnregisterOpenCTIPlatformInput {
+  platformId: String!
+}
+
+type RegistrationResponse {
+  token: String!
+}
+
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
+}
+
+input IsOpenCTIPlatformRegisteredInput {
+  platformId: String!
+}
+
+type IsOpenCTIPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
+type IsOpenCTIPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  organization: IsOpenCTIPlatformRegisteredOrganization
+}
+
+type CanUnregisterResponse {
+  isPlatformRegistered: Boolean!
+  isAllowed: Boolean
+  isInOrganization: Boolean
+  organizationId: ID
+}
+
+input UnregisterOpenCTIPlatformInput {
+  platformId: String!
+}
+
+input OpenCTIPlatformRegistrationStatusInput {
+  platformId: String!
+  token: String!
+}
+
+enum OpenCTIPlatformRegistrationStatus {
+  active
+  inactive
+}
+
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: OpenCTIPlatformRegistrationStatus!
+}
+
+type Query {
+  isOpenCTIPlatformRegistered(
+    input: IsOpenCTIPlatformRegisteredInput!
+  ): IsOpenCTIPlatformRegisteredResponse! @auth
+  canUnregisterOpenCTIPlatform(
+    input: CanUnregisterOpenCTIPlatformInput!
+  ): CanUnregisterResponse! @auth
+  openCTIPlatforms: [OpenCTIPlatform!]! @auth
+  openCTIPlatformRegistrationStatus(
+    input: OpenCTIPlatformRegistrationStatusInput!
+  ): OpenCTIPlatformRegistrationStatusResponse!
+}
+
+type Mutation {
+  registerOpenCTIPlatform(
+    input: RegisterOpenCTIPlatformInput!
+  ): RegistrationResponse! @auth
+  unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
+    @auth
+}

@@ -3,7 +3,7 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { isEnrollmentService, isExternalService } from '@/utils/services';
+import { isExternalService, isRegistrationService } from '@/utils/services';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
@@ -35,36 +35,45 @@ interface ServiceInstanceCardProps {
   className?: string;
 }
 
-const EnrollmentDetails: React.FunctionComponent<{
+const RegistrationDetails: React.FunctionComponent<{
   serviceInstance: ServiceInstanceCardData;
   serviceHref: string;
-}> = ({ serviceInstance, serviceHref }) => {
+}> = () => {
   const t = useTranslations();
+  return (
+    <p className="txt-sub-content text-muted-foreground">
+      {t('Register.Details.Description')}
+    </p>
+  );
+
+  /* Temporary hidden :
+
   return (
     <dl className="grid grid-cols-3 gap-s">
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.PlatformID')}
+        {t('Register.Details.PlatformID')}
       </dt>
       <dd className="txt-sub-content col-span-2">
         {serviceInstance.platform_id}
       </dd>
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.PlatformURL')}
+        {t('Register.Details.PlatformURL')}
       </dt>
       <dd className="txt-sub-content col-span-2">{serviceHref}</dd>
       <dt className="txt-sub-content text-muted-foreground">
-        {t('Enroll.Details.Contract')}
+        {t('Register.Details.Contract')}
       </dt>
       <dd className="txt-sub-content col-span-2">
-        {t(`Enroll.Details.Contracts.${serviceInstance.platform_contract}`)}
+        {t(`Register.Details.Contracts.${serviceInstance.platform_contract}`)}
       </dd>
     </dl>
-  );
+  );*/
 };
 
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className, seo }) => {
+  const t = useTranslations();
   const isDisabled =
     serviceInstance.creation_status ===
     ServiceInstanceCreationStatusEnum.PENDING;
@@ -75,19 +84,31 @@ const ServiceInstanceCard: React.FunctionComponent<
       ? serviceInstance.url
       : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
 
+  let backgroundImage =
+    serviceInstance.logo_document_id !== null
+      ? `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`
+      : '';
+
+  if (isRegistrationService(serviceInstance)) {
+    backgroundImage = 'url(/octi-private-platform-logo.png)';
+  }
+
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
-        <div className="flex relative justify-center items-center flex-col gap-s bg-blue-900 overflow-hidden box-border px-s">
-          <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-80 rotate-45 -translate-x-24 -translate-y-12" />
+        <div
+          className={cn(
+            'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
+            isRegistrationService(serviceInstance)
+              ? 'bg-darkblue-800'
+              : 'bg-blue-900'
+          )}>
+          <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
             <div
               className="w-full h-12"
               style={{
-                backgroundImage:
-                  serviceInstance.logo_document_id !== null
-                    ? `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`
-                    : '',
+                backgroundImage,
                 backgroundSize: 'contain',
                 backgroundPosition: 'left center',
                 backgroundRepeat: 'no-repeat',
@@ -96,7 +117,12 @@ const ServiceInstanceCard: React.FunctionComponent<
           </div>
           <AspectRatio
             ratio={16 / 9}
-            className="rounded-t overflow-hidden">
+            className={cn(
+              'rounded-t',
+              isRegistrationService(serviceInstance)
+                ? 'overflow-visible'
+                : 'overflow-hidden'
+            )}>
             {serviceInstance.illustration_document_id && (
               <Image
                 fill
@@ -106,10 +132,28 @@ const ServiceInstanceCard: React.FunctionComponent<
                 alt={`Illustration of ${serviceInstance.name}`}
               />
             )}
+            {isRegistrationService(serviceInstance) && (
+              <>
+                <Image
+                  width="580"
+                  height="281"
+                  src="/octi-private-platform-illustration.png"
+                  priority={false}
+                  loading="lazy"
+                  alt={`Illustration of ${serviceInstance.name}`}
+                  className="absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45"
+                />
+                <h3
+                  className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-s max-w-[80%]"
+                  style={{ textShadow: '1px 1px 1px #000' }}>
+                  {serviceInstance.name}
+                </h3>
+              </>
+            )}
           </AspectRatio>
         </div>
-        <div className="min-h-40 flex flex-col p-l gap-xs flex-1 bg-page-background group-hover:bg-hover">
-          <div className="flex items-center h-12 w-full">
+        <div className="min-h-40 flex flex-col p-l gap-l flex-1 bg-page-background group-hover:bg-hover">
+          <div className="flex items-start min-h-12 w-full text-ellipsis overflow-hidden">
             {rightAction ? (
               <h2>{serviceInstance.name}</h2>
             ) : (
@@ -118,7 +162,12 @@ const ServiceInstanceCard: React.FunctionComponent<
                 target={serviceHref.startsWith('http') ? '_blank' : '_self'}
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
                 aria-disabled={isDisabled}>
-                <h2>{serviceInstance.name}</h2>
+                <h2>
+                  {serviceInstance.name}
+                  {isRegistrationService(serviceInstance) && (
+                    <> - {t('Register.Details.PrivatePlatform')}</>
+                  )}
+                </h2>
               </Link>
             )}
 
@@ -126,8 +175,8 @@ const ServiceInstanceCard: React.FunctionComponent<
               serviceInstance.service_definition_identifier
             ) && <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />}
           </div>
-          {(isEnrollmentService(serviceInstance) && (
-            <EnrollmentDetails
+          {(isRegistrationService(serviceInstance) && (
+            <RegistrationDetails
               serviceInstance={serviceInstance}
               serviceHref={serviceHref}
             />

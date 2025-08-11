@@ -9,7 +9,6 @@ metadata:
     cert-manager.io/cluster-issuer: {{ .Values.tls_issuer }}
     external-dns.alpha.kubernetes.io/hostname: {{ tpl .Values.elasticsearch.ingress.host . }}
     external-dns.alpha.kubernetes.io/ttl: "120"
-    prometheus.io/probe: "true"
     {{- with .Values.elasticsearch.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}

@@ -5,7 +5,7 @@ import type { DocumentId } from './Document';
 import type { ServiceDefinitionId } from './ServiceDefinition';
 
 /** Identifier type for public.ServiceInstance */
-export type ServiceInstanceId = string & { __brand: 'ServiceInstanceId' };
+export type ServiceInstanceId = string & { __brand: 'public.ServiceInstance' };
 
 /** Represents the table public.ServiceInstance */
 export default interface ServiceInstance {

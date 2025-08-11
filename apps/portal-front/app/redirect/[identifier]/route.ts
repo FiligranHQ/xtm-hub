@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { redirectToOCTIEnrollment } from './enroll-octi';
+import { redirectToOpenCTIRegistration } from './register-opencti';
 import { redirectToResource } from './resource';
-import { redirectToOCTIUnenrollment } from './unenroll-octi';
+import { redirectToOpenCTIUnregistration } from './unregister-opencti';
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{
@@ -14,12 +14,12 @@ export async function GET(
   { params }: RedirectIdentifierGetRouteProps
 ) {
   const awaitedParams = await params;
-  if (awaitedParams.identifier === 'enroll-octi') {
-    return redirectToOCTIEnrollment(request);
+  if (awaitedParams.identifier === 'register-opencti') {
+    return redirectToOpenCTIRegistration(request);
   }
 
-  if (awaitedParams.identifier === 'unenroll-octi') {
-    return redirectToOCTIUnenrollment(request);
+  if (awaitedParams.identifier === 'unregister-opencti') {
+    return redirectToOpenCTIUnregistration(request);
   }
 
   return redirectToResource(awaitedParams, request);

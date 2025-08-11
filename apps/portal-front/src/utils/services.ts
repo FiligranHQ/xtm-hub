@@ -1,7 +1,7 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
-import { enrollOCTIPlatformListFragment$data } from '@generated/enrollOCTIPlatformListFragment.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
+import { registerOpenCTIPlatformListFragment$data } from '@generated/registerOpenCTIPlatformListFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -11,16 +11,18 @@ export const isExternalService = (
 ) =>
   [
     ServiceDefinitionIdentifierEnum.LINK,
-    ServiceDefinitionIdentifierEnum.OCTI_ENROLLMENT,
+    ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
   ].includes(service_definition_identifier);
 
-export const isEnrollmentService = (serviceInstance: ServiceInstanceCardData) =>
-  [ServiceDefinitionIdentifierEnum.OCTI_ENROLLMENT].includes(
+export const isRegistrationService = (
+  serviceInstance: ServiceInstanceCardData
+) =>
+  [ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION].includes(
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
 
-export const octiPlatformToServiceInstanceCardData = (
-  platform: enrollOCTIPlatformListFragment$data['octiPlatforms'][number]
+export const openCTIPlatformToServiceInstanceCardData = (
+  platform: registerOpenCTIPlatformListFragment$data['openCTIPlatforms'][number]
 ): ServiceInstanceCardData => {
   return {
     id: platform.id,
@@ -31,9 +33,9 @@ export const octiPlatformToServiceInstanceCardData = (
     illustration_document_id: null,
     logo_document_id: null,
     service_definition_identifier:
-      ServiceDefinitionIdentifierEnum.OCTI_ENROLLMENT,
+      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
     url: platform.url,
-    ordering: -1, // OCTI Instances are displayed at the first position
+    ordering: -1, // OpenCTI Instances are displayed at the first position
   };
 };
 

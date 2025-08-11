@@ -4,7 +4,9 @@
 import type { DocumentId } from './Document';
 
 /** Identifier type for public.Document_Metadata */
-export type DocumentMetadataKey = string & { __brand: 'DocumentMetadataKey' };
+export type DocumentMetadataKey = string & {
+  __brand: 'public.Document_Metadata';
+};
 
 /** Represents the table public.Document_Metadata */
 export default interface DocumentMetadata {
