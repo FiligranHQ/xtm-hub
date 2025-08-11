@@ -24,8 +24,6 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { ReactNode, useContext } from 'react';
@@ -52,24 +50,11 @@ const ShareableResourceSlug: React.FunctionComponent<
   const incrementDownloadNumber = () => {
     setDocumentDownloadNumber(documentDownloadNumber + 1);
   };
-  const isOneClickDeployDashboardFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.ONECLICK_DEPLOY_DASHBOARD
-  );
-  const isOneClickDeployCsvFeedFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.ONECLICK_DEPLOY_CSV_FEED
-  );
 
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
-    const typeConditions = {
-      custom_dashboard: isOneClickDeployDashboardFeatureEnabled,
-      csv_feed: isOneClickDeployCsvFeedFeatureEnabled,
-    };
-
-    return (
-      typeConditions[documentData.type as keyof typeof typeConditions] || false
-    );
+    return ['custom_dashboard', 'csv_feed'].includes(documentData.type);
   }, [documentData.active, documentData.type]);
 
   return (
