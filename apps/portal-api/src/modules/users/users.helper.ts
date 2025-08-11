@@ -149,24 +149,28 @@ export const createNewUserWithPendingOrga = async (
   return addedUser;
 };
 
-export const createNewUserFromInvitation = async ({
-  email,
-  first_name,
-  last_name,
-  picture,
-}: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>) => {
+export const createNewUserFromInvitation = async (
+  {
+    email,
+    first_name,
+    last_name,
+    picture,
+  }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
+  isAdmin: boolean
+) => {
   const [organization] = await loadOrganizationsFromEmail(email);
-  const userWithRoles: User = !organization
-    ? await createOrganisationWithAdminUser(email)
-    : await createNewUserWithPendingOrga(
-        {
-          email,
-          last_name,
-          first_name,
-          picture,
-        },
-        organization
-      );
+  const userWithRoles: User =
+    !organization || isAdmin
+      ? await createOrganisationWithAdminUser(email)
+      : await createNewUserWithPendingOrga(
+          {
+            email,
+            last_name,
+            first_name,
+            picture,
+          },
+          organization
+        );
 
   return loadUserBy({ 'User.id': userWithRoles.id });
 };
@@ -176,7 +180,8 @@ export const getOrCreateUser = async (
     UserInitializer,
     'email' | 'first_name' | 'last_name' | 'picture'
   >,
-  upsert = false
+  upsert = false,
+  isAdmin = false
 ) => {
   const user = await loadUserBy({ email: userInfo.email });
   if (user && upsert) {
@@ -193,7 +198,7 @@ export const getOrCreateUser = async (
         picture: isEmpty(user.picture) ? userInfo.picture : user.picture,
       });
   }
-  return user ? user : await createNewUserFromInvitation(userInfo);
+  return user ? user : await createNewUserFromInvitation(userInfo, isAdmin);
 };
 
 export const insertUserIntoOrganization = async (

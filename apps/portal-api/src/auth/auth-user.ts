@@ -8,23 +8,27 @@ import {
   ensureUserOrganizationExist,
   ensureUserRoleExist,
 } from '../server/initialize.helper';
+import { logApp } from '../utils/app-logger.util';
 import { ForbiddenAccess } from '../utils/error.util';
 import { isEmptyField } from '../utils/utils';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {
   // region test the groups existence and eventually auto create groups
   // endregion
+  logApp.info('UserID', { userInfo });
+  // logApp.info('roles', { userInfo.roles });
   const { email } = userInfo;
   if (isEmptyField(email)) {
     throw ForbiddenAccess('User email not provided');
   }
+  const isAdmin = userInfo.roles.includes(ROLE_ADMIN.name);
 
-  const user = await getOrCreateUser(userInfo, true);
+  const user = await getOrCreateUser(userInfo, true, isAdmin);
   if (user.disabled) {
     throw ForbiddenAccess('You are not allowed to log in');
   }
   // Check if the user has the admin role, so in creation we create user then add admin role
-  if (userInfo.roles.includes(ROLE_ADMIN.name)) {
+  if (isAdmin) {
     await ensureUserRoleExist(user.id, ROLE_ADMIN.id);
     await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
     return loadUserBy({ 'User.id': user.id });
