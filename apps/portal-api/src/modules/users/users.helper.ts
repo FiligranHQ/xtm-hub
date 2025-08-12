@@ -159,18 +159,27 @@ export const createNewUserFromInvitation = async (
   isAdmin: boolean
 ) => {
   const [organization] = await loadOrganizationsFromEmail(email);
-  const userWithRoles: User =
-    !organization || isAdmin
-      ? await createOrganisationWithAdminUser(email)
-      : await createNewUserWithPendingOrga(
-          {
-            email,
-            last_name,
-            first_name,
-            picture,
-          },
-          organization
-        );
+  let userWithRoles: User;
+  if (!organization) {
+    userWithRoles = await createOrganisationWithAdminUser(email);
+  } else if (isAdmin) {
+    userWithRoles = await createUserWithPersonalSpace({
+      email,
+      last_name,
+      first_name,
+      picture,
+    });
+  } else {
+    userWithRoles = await createNewUserWithPendingOrga(
+      {
+        email,
+        last_name,
+        first_name,
+        picture,
+      },
+      organization
+    );
+  }
 
   return loadUserBy({ 'User.id': userWithRoles.id });
 };
