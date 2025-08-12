@@ -184,6 +184,23 @@ export const registrationApp = {
       activeServiceConfiguration.service_instance_id,
       { status: ServiceConfigurationStatus.Inactive }
     );
+
+    const users = await loadOrganizationAdministrators(
+      context,
+      subscription.organization_id
+    );
+
+    await Promise.all(
+      users.map((user) =>
+        sendMail({
+          to: user.email,
+          template: 'opencti_platform_unregistered',
+          params: {
+            adminName: `${user.first_name ?? ''}`,
+          },
+        })
+      )
+    );
   },
 
   isOpenCTIPlatformRegistered: async (
