@@ -8,7 +8,7 @@ export async function up(knex) {
     .from('User')
     .join(
       knex.raw(
-        '"Organization" as org ON split_part("User".email, \'@\', 2) = ANY(org.domains)'
+        '"Organization" as org ON LOWER(split_part("User".email, \'@\', 2)) = ANY(SELECT LOWER(unnest(org.domains)))'
       )
     )
     .whereNotExists(function () {
