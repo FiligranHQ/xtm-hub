@@ -123,9 +123,9 @@ export const redirectToResource = async (
       if (instance.service_instance_id === service_instance_id) {
         // We found the service instance associated with the requested service
         organizationId = instance.organization_id;
-      } else if (instance.links) {
-        for (const link of instance.links) {
-          if (link && link.url === octi_instance_id) {
+      } else if (instance.configurations) {
+        for (const configuration of instance.configurations) {
+          if (configuration && configuration.platform_id === octi_instance_id) {
             // We found the organization associated with the OpenCTI instance
             organizationId = instance.organization_id;
             break;

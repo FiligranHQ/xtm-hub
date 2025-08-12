@@ -108,11 +108,20 @@ type Query {
   seoServiceInstance(slug: String!): SeoServiceInstance!
 }
 
+type SubscribedServiceInstanceConfiguration {
+  token: String!
+  platform_id: String!
+  platform_url: String!
+  registerer_id: String!
+  platform_title: String!
+  platform_contract: OpenCTIPlatformContract!
+}
+
 type SubscribedServiceInstance {
   service_instance_id: ID!
   organization_id: ID!
   is_personal_space: Boolean!
-  links: [ServiceLink]
+  configurations: [SubscribedServiceInstanceConfiguration]
 }
 
 type ServiceInstanceSubscription {

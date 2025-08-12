@@ -1276,10 +1276,20 @@ export type ShareableResourceImage = {
 
 export type SubscribedServiceInstance = {
   __typename?: 'SubscribedServiceInstance';
+  configurations?: Maybe<Array<Maybe<SubscribedServiceInstanceConfiguration>>>;
   is_personal_space: Scalars['Boolean']['output'];
-  links?: Maybe<Array<Maybe<ServiceLink>>>;
   organization_id: Scalars['ID']['output'];
   service_instance_id: Scalars['ID']['output'];
+};
+
+export type SubscribedServiceInstanceConfiguration = {
+  __typename?: 'SubscribedServiceInstanceConfiguration';
+  platform_contract: OpenCtiPlatformContract;
+  platform_id: Scalars['String']['output'];
+  platform_title: Scalars['String']['output'];
+  platform_url: Scalars['String']['output'];
+  registerer_id: Scalars['String']['output'];
+  token: Scalars['String']['output'];
 };
 
 export type Subscription = {
@@ -1653,6 +1663,7 @@ export type ResolversTypes = ResolversObject<{
   ShareableResourceImage: ResolverTypeWrapper<ShareableResourceImage>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   SubscribedServiceInstance: ResolverTypeWrapper<SubscribedServiceInstance>;
+  SubscribedServiceInstanceConfiguration: ResolverTypeWrapper<SubscribedServiceInstanceConfiguration>;
   Subscription: ResolverTypeWrapper<{}>;
   SubscriptionCapability: ResolverTypeWrapper<SubscriptionCapability>;
   SubscriptionEdge: ResolverTypeWrapper<SubscriptionEdge>;
@@ -1757,6 +1768,7 @@ export type ResolversParentTypes = ResolversObject<{
   ShareableResourceImage: ShareableResourceImage;
   String: Scalars['String']['output'];
   SubscribedServiceInstance: SubscribedServiceInstance;
+  SubscribedServiceInstanceConfiguration: SubscribedServiceInstanceConfiguration;
   Subscription: {};
   SubscriptionCapability: SubscriptionCapability;
   SubscriptionEdge: SubscriptionEdge;
@@ -2304,10 +2316,20 @@ export type ShareableResourceImageResolvers<ContextType = PortalContext, ParentT
 }>;
 
 export type SubscribedServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscribedServiceInstance'] = ResolversParentTypes['SubscribedServiceInstance']> = ResolversObject<{
+  configurations?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscribedServiceInstanceConfiguration']>>>, ParentType, ContextType>;
   is_personal_space?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SubscribedServiceInstanceConfigurationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscribedServiceInstanceConfiguration'] = ResolversParentTypes['SubscribedServiceInstanceConfiguration']> = ResolversObject<{
+  platform_contract?: Resolver<ResolversTypes['OpenCTIPlatformContract'], ParentType, ContextType>;
+  platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  platform_title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  platform_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  registerer_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2490,6 +2512,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Settings?: SettingsResolvers<ContextType>;
   ShareableResourceImage?: ShareableResourceImageResolvers<ContextType>;
   SubscribedServiceInstance?: SubscribedServiceInstanceResolvers<ContextType>;
+  SubscribedServiceInstanceConfiguration?: SubscribedServiceInstanceConfigurationResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SubscriptionCapability?: SubscriptionCapabilityResolvers<ContextType>;
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
