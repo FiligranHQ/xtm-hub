@@ -25,10 +25,10 @@ import { loadCapabilities } from '../user_service/user-service-capability/user-s
 import { uploadNewFile } from './document/document.helper';
 import {
   getIsSubscribed,
-  getLinks,
   getServiceDefinition,
   getServiceDefinitionCapabilities,
   getUserJoined,
+  loadLinks,
   loadPublicServiceInstances,
   loadSeoServiceInstanceBySlug,
   loadSeoServiceInstances,
@@ -50,7 +50,7 @@ const resolvers: Resolvers = {
         return toGlobalId('Document', illustration_document_id);
       }
     },
-    links: ({ id }, _, context) => getLinks(context, id),
+    links: ({ id }, _, context) => loadLinks(context, id),
     service_definition: ({ id }, _, context) =>
       getServiceDefinition(context, id),
     organization_subscribed: ({ id }, _, context) =>

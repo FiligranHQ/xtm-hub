@@ -502,17 +502,11 @@ export const grantServiceAccess = async (
   return insertedUserServices;
 };
 
-export const getLinks = (context, id) =>
-  db<ServiceLink>(context, 'ServiceInstance')
-    .where('ServiceInstance.id', '=', id)
-    .leftJoin(
-      'Service_Link as serviceLinks',
-      'serviceLinks.service_instance_id',
-      '=',
-      'ServiceInstance.id'
-    )
-    .select('serviceLinks.*')
-    .returning('*');
+export const loadLinks = (context, id) => {
+  return db<ServiceLink[]>(context, 'Service_Link')
+    .where('Service_Link.service_instance_id', '=', id)
+    .select('*');
+};
 
 export const getServiceDefinition = (context, id) =>
   db<ServiceDefinition>(context, 'ServiceInstance')
