@@ -35,12 +35,6 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
 ) => {
   const subServiceInstance = await db<UserService>(context, 'ServiceInstance')
     .leftJoin(
-      'Service_Link',
-      'Service_Link.service_instance_id',
-      '=',
-      'ServiceInstance.id'
-    )
-    .leftJoin(
       'ServiceDefinition',
       'ServiceDefinition.id',
       '=',
@@ -64,6 +58,18 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
       '=',
       'Organization.id'
     )
+    .leftJoin(
+      'Subscription AS Organization_Subscriptions',
+      'Organization_Subscriptions.organization_id',
+      '=',
+      'Organization.id'
+    )
+    .leftJoin(
+      'Service_Configuration',
+      'Service_Configuration.service_instance_id',
+      '=',
+      'Organization_Subscriptions.service_instance_id'
+    )
     .where('User_Organization.user_id', context.user.id)
     .where('ServiceDefinition.identifier', identifier)
     .groupBy(['ServiceInstance.id', 'Organization.id'])
@@ -71,7 +77,9 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
       'ServiceInstance.id AS service_instance_id',
       'Organization.id AS organization_id',
       'Organization.personal_space AS is_personal_space',
-      dbRaw('COALESCE(json_agg("Service_Link"), \'[]\'::json) AS links'),
+      dbRaw(
+        'COALESCE(json_agg("Service_Configuration"."config"), \'[]\'::json) AS configurations'
+      ),
     ]);
 
   return subServiceInstance.map((sub) => {
@@ -82,6 +90,7 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
         'ServiceInstance',
         sub.service_instance_id
       ),
+      configurations: sub.configurations.filter((config) => !!config),
     };
   });
 };
@@ -502,17 +511,11 @@ export const grantServiceAccess = async (
   return insertedUserServices;
 };
 
-export const getLinks = (context, id) =>
-  db<ServiceLink>(context, 'ServiceInstance')
-    .where('ServiceInstance.id', '=', id)
-    .leftJoin(
-      'Service_Link as serviceLinks',
-      'serviceLinks.service_instance_id',
-      '=',
-      'ServiceInstance.id'
-    )
-    .select('serviceLinks.*')
-    .returning('*');
+export const loadLinks = (context, id) => {
+  return db<ServiceLink[]>(context, 'Service_Link')
+    .where('Service_Link.service_instance_id', '=', id)
+    .select('*');
+};
 
 export const getServiceDefinition = (context, id) =>
   db<ServiceDefinition>(context, 'ServiceInstance')

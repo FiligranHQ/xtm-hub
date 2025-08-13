@@ -8,8 +8,8 @@ export const ServiceInstancesSubscribedByIdentifierQuery = graphql`
       service_instance_id
       organization_id
       is_personal_space
-      links {
-        url
+      configurations {
+        platform_id
       }
     }
   }
