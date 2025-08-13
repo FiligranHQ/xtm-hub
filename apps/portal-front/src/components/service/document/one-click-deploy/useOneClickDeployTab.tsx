@@ -55,6 +55,7 @@ export const useOneClickDeployTab = ({
     url: `${openCTIBasePath}/dashboard/xtm-hub/${URL_CONFIGS[documentData.type as keyof typeof URL_CONFIGS]}/${documentData.service_instance?.id}/${documentData.id}`,
     tabName: 'opencti-one-click-deploy',
     onMessage: handleMessage,
+    preventUnload: false,
   });
 
   const onCompleted = (
