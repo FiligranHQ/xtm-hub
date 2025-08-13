@@ -5,6 +5,7 @@ interface UseExternalTabProps {
   tabName: string;
   onMessage?: (event: MessageEvent) => void;
   onClosingTab?: () => void;
+  preventUnload: boolean;
 }
 
 interface UseExternalTabReturn {
@@ -20,6 +21,7 @@ const useExternalTab = ({
   tabName,
   onMessage,
   onClosingTab,
+  preventUnload,
 }: UseExternalTabProps): UseExternalTabReturn => {
   const tabRef = useRef<WindowProxy | null>(null);
   const [isTabOpen, setIsTabOpen] = useState(false);
@@ -54,7 +56,9 @@ const useExternalTab = ({
     };
     if (isTabOpen) {
       window.addEventListener('message', handleMessage);
-      window.addEventListener('beforeunload', beforeUnloadHandler);
+      if (preventUnload) {
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+      }
       const checkInterval = setInterval(() => {
         if (tabRef.current?.closed) {
           if (onClosingTab) {
@@ -68,7 +72,10 @@ const useExternalTab = ({
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      window.removeEventListener('beforeunload', beforeUnloadHandler);
+
+      if (preventUnload) {
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+      }
     };
   }, [isTabOpen]);
 
