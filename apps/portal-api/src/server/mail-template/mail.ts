@@ -14,6 +14,10 @@ export interface PlatformRegisteredModel {
   adminName: string;
 }
 
+export interface PlatformUnregisteredModel {
+  adminName: string;
+}
+
 // ATTENTION, the key should be the same as the template file
 export type MailTemplates = {
   welcome: WelcomeMailModel;
@@ -22,6 +26,7 @@ export type MailTemplates = {
   csv_feeds: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
   opencti_platform_registered: PlatformRegisteredModel;
+  opencti_platform_unregistered: PlatformUnregisteredModel;
 };
 
 export const templateSubjects: {
@@ -37,5 +42,7 @@ export const templateSubjects: {
   new_user_organization: (params: NewUserOrganizationMailModel) =>
     `XTM Hub - You've been added to the ${params.organizationName} organization`,
   opencti_platform_registered: () =>
-    `OpenCTI Successfully Linked to XTM Hub – Integration Now Active`,
+    `OpenCTI Platform Successfully Registered to XTM Hub – Integration Now Active`,
+  opencti_platform_unregistered: () =>
+    `OpenCTI Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
 };

@@ -17,6 +17,7 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { sendMail } from '../../../server/mail-service';
+import { formatName } from '../../../utils/format';
 import { ErrorCode } from '../../common/error-code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { loadOrganizationAdministrators } from '../../users/users.domain';
@@ -133,7 +134,7 @@ export const registrationApp = {
           to: user.email,
           template: 'opencti_platform_registered',
           params: {
-            adminName: `${user.first_name ?? ''}`,
+            adminName: formatName(user.first_name ?? ''),
           },
         })
       )
@@ -183,6 +184,23 @@ export const registrationApp = {
       context,
       activeServiceConfiguration.service_instance_id,
       { status: ServiceConfigurationStatus.Inactive }
+    );
+
+    const users = await loadOrganizationAdministrators(
+      context,
+      subscription.organization_id
+    );
+
+    await Promise.all(
+      users.map((user) =>
+        sendMail({
+          to: user.email,
+          template: 'opencti_platform_unregistered',
+          params: {
+            adminName: formatName(user.first_name ?? ''),
+          },
+        })
+      )
     );
   },
 

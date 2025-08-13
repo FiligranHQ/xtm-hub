@@ -3,7 +3,7 @@ export const formatName = (name: string): string => {
     .toLowerCase()
     .trim()
     .replace(
-      /(^|[\s\-])([a-z])/g,
+      /(^|[\s-])([a-z])/g,
       (_, separator, letter) => separator + letter.toUpperCase()
     );
 };
