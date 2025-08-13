@@ -536,7 +536,7 @@
         "DeployOctiDescriptionOnePlatform": "Do you want to deploy it in the {platformName} platform?",
         "DeployOctiDescriptionNoPlatform": "You must be an administrator, or contact your administrator, to register your OpenCTI platform",
         "DeployOctiDescriptionNoPlatformIllustration": "OpenCTI Register in XTM Hub illustration",
-        "DeployOctiDescriptionNoPlatformThen": "The registration can be completed through the Settings in the section below:"
+        "DeployOctiDescriptionNoPlatformThen": "The registration can be completed through the Filigran Experience page in the section below:"
       },
       "Copied": "URL copied! You can now paste and share it.",
       "FromVersion": "From version",

@@ -21,7 +21,7 @@ const NoPlatformDisplay = ({ setIsOpen }: NoPlatformDisplayProps) => {
             'Service.ShareableResources.Deploy.DeployOctiDescriptionNoPlatformThen'
           )}
         </p>
-        <div className="relative border-2 border-solid rounded w-full h-36">
+        <div className="relative border-2 border-solid rounded w-full h-96">
           <Image
             fill
             objectFit="contain"
