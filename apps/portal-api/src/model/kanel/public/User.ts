@@ -29,6 +29,8 @@ export default interface User {
   last_login: Date | null;
 
   country: string | null;
+
+  platform_token: string | null;
 }
 
 /** Represents the initializer for the table public.User */
@@ -54,6 +56,8 @@ export interface UserInitializer {
   last_login?: Date | null;
 
   country?: string | null;
+
+  platform_token?: string | null;
 }
 
 /** Represents the mutator for the table public.User */
@@ -79,4 +83,6 @@ export interface UserMutator {
   last_login?: Date | null;
 
   country?: string | null;
+
+  platform_token?: string | null;
 }

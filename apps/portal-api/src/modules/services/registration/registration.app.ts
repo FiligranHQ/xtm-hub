@@ -9,6 +9,7 @@ import {
   OpenCtiPlatformRegistrationStatusResponse,
   OrganizationCapability,
   PlatformRegistrationStatus,
+  RefreshUserPlatformTokenResponse,
   RegisterOpenCtiPlatformInput,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
@@ -20,7 +21,10 @@ import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { ErrorCode } from '../../common/error-code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import { loadOrganizationAdministrators } from '../../users/users.domain';
+import {
+  loadOrganizationAdministrators,
+  updateUser,
+} from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
@@ -271,5 +275,15 @@ export const registrationApp = {
       isInOrganization,
       organizationId: subscription.organization_id,
     };
+  },
+
+  refreshUserPlatformToken: async (
+    context: PortalContext
+  ): Promise<RefreshUserPlatformTokenResponse> => {
+    const token = uuidv4();
+
+    await updateUser(context, context.user.id, { platform_token: token });
+
+    return { token };
   },
 };
