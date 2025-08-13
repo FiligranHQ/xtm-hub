@@ -1,6 +1,7 @@
 import ChoosePlatformForm from '@/components/service/document/one-click-deploy/choose-platform-form';
 import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no-platform-display';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
+import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { oneClickDeployOctiPlatformFragment$key } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
 import { oneClickDeployOctiPlatformsQuery } from '@generated/oneClickDeployOctiPlatformsQuery.graphql';
@@ -30,37 +31,37 @@ export const OneClickDeployOctiPlatformsQuery = graphql`
   }
 `;
 
-const URL_CONFIGS = {
-  custom_dashboard: 'deploy-custom-dashboard',
-  csv_feed: 'deploy-csv-feed',
-};
-
 interface OneClickDeployProps {
   documentData: ShareableResource;
 }
 
 const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   const t = useTranslations();
-
   const queryData = useLazyLoadQuery<oneClickDeployOctiPlatformsQuery>(
     OneClickDeployOctiPlatformsQuery,
     {}
   );
-
   const platformsOcti = queryData.openCTIPlatforms.map((instanceRef) =>
     useFragment<oneClickDeployOctiPlatformFragment$key>(
       OneClickDeployOctiPlatformFragment,
       instanceRef
     )
   );
-  const [isOpen, setIsOpen] = useState(false);
 
-  const oneClickDeploy = (platformOctiUrl: string) => {
-    window.open(
-      `${platformOctiUrl}/dashboard/xtm-hub/${URL_CONFIGS[documentData.type as keyof typeof URL_CONFIGS]}/${documentData.service_instance?.id}/${documentData.id}`,
-      '_blank'
-    );
+  const [isOpen, setIsOpen] = useState(false);
+  const [openCTIBasePath, setOpenCTIBasePath] = useState('');
+  const [shouldOpenTab, setShouldOpenTab] = useState(false);
+  const { openTab } = useOneClickDeployTab({ openCTIBasePath, documentData });
+
+  const onOneClickDeploy = (basePath: string) => {
+    setOpenCTIBasePath(basePath);
+    setShouldOpenTab(true);
   };
+
+  if (shouldOpenTab) {
+    openTab();
+    setShouldOpenTab(false);
+  }
 
   const alertContent = useMemo(() => {
     if (platformsOcti.length === 0) {
@@ -71,7 +72,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
         <OnePlatformDisplay
           documentDataName={documentData.name}
           platformsOcti={platformsOcti}
-          oneClickDeploy={oneClickDeploy}
+          oneClickDeploy={onOneClickDeploy}
           setIsOpen={setIsOpen}
         />
       );
@@ -81,7 +82,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
         <ChoosePlatformForm
           documentData={documentData}
           platformsOcti={platformsOcti}
-          oneClickDeploy={oneClickDeploy}
+          oneClickDeploy={onOneClickDeploy}
           setIsOpen={setIsOpen}
         />
       );
