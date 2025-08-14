@@ -9,8 +9,6 @@ import {
 import { PortalContext } from '@/components/me/app-portal-context';
 import { notificationPendingUserQueryFilters } from '@/components/notification/notification-button';
 import useAdminPath from '@/hooks/useAdminPath';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { userPendingListQuery } from '@generated/userPendingListQuery.graphql';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
@@ -48,8 +46,6 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
   const isAdminPath = useAdminPath();
   const { me } = useContext(PortalContext);
 
-  const isPendingUsersEnabled = useIsFeatureEnabled(FeatureFlag.PENDING_USERS);
-
   const [connectionID, setConnectionId] = useState<string>('');
 
   const searchParams = useSearchParams();
@@ -77,7 +73,7 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
           {isAdminPath ? <AdminAddUser /> : <AddUser />}
         </div>
       </div>
-      {isAdminPath || !isPendingUsersEnabled ? (
+      {isAdminPath ? (
         <div className="mt-4">
           <UserList organization={organization} />
         </div>
