@@ -88,3 +88,48 @@ export const ListOrganizationAdministratorsQuery = graphql`
     }
   }
 `;
+
+export const UserPendingListQuery = graphql`
+  query userPendingListQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: UserOrdering!
+    $orderMode: OrderingMode!
+    $filters: [Filter!]
+    $searchTerm: String
+  ) {
+    ...userPendingList_users
+  }
+`;
+
+export const UserPendingListFragment = graphql`
+  fragment userPendingList_users on Query
+  @refetchable(queryName: "PendingUsersPaginationQuery") {
+    pendingUsers(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+      searchTerm: $searchTerm
+      filters: $filters
+    ) {
+      __id
+      totalCount
+      edges {
+        node {
+          ...userList_fragment
+        }
+      }
+    }
+  }
+`;
+
+export const UserPendingListSubscription = graphql`
+  subscription userPendingListSubscription($connections: [ID!]!) {
+    UserPending {
+      delete {
+        id @deleteEdge(connections: $connections)
+      }
+    }
+  }
+`;

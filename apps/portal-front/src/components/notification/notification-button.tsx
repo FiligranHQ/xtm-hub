@@ -1,7 +1,22 @@
 import { NotificationsIcon } from 'filigran-icon';
 
+import { UserFragment } from '@/components/admin/user/user-list';
+import {
+  UserPendingListFragment,
+  UserPendingListQuery,
+  UserPendingListSubscription,
+} from '@/components/admin/user/user.graphql';
+import { PortalContext } from '@/components/me/app-portal-context';
 import { APP_PATH } from '@/utils/path/constant';
-import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import {
+  userList_fragment$data,
+  userList_fragment$key,
+} from '@generated/userList_fragment.graphql';
+import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
+import {
+  userPendingListQuery,
+  userPendingListQuery$variables,
+} from '@generated/userPendingListQuery.graphql';
 import {
   Popover,
   PopoverContent,
@@ -12,15 +27,68 @@ import { Button } from 'filigran-ui/servers';
 import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
+import {
+  commitLocalUpdate,
+  readInlineData,
+  useLazyLoadQuery,
+  useRefetchableFragment,
+  useRelayEnvironment,
+  useSubscription,
+} from 'react-relay';
 
 export const NotificationButton: React.FC = () => {
   const t = useTranslations();
+  const { me } = useContext(PortalContext);
   const [openPopover, setOpenPopover] = useState(false);
 
-  const users: userList_fragment$data[] = [];
+  const notificationFilters: userPendingListQuery$variables = {
+    count: 20,
+    orderMode: 'asc',
+    orderBy: 'last_login',
+    filters: [
+      { key: 'organization_id', value: [me!.selected_organization_id] },
+    ],
+  };
 
-  const nbUsers = 0;
+  const queryData = useLazyLoadQuery<userPendingListQuery>(
+    UserPendingListQuery,
+    notificationFilters
+  );
+
+  const [data] = useRefetchableFragment<
+    userPendingListQuery,
+    userPendingList_users$key
+  >(UserPendingListFragment, queryData);
+
+  const connectionID = data?.pendingUsers?.__id;
+
+  const environment = useRelayEnvironment();
+
+  const pendingUserListSubscriptionConfig = useMemo(
+    () => ({
+      variables: { connections: [connectionID] },
+      subscription: UserPendingListSubscription,
+      onNext: () => {
+        commitLocalUpdate(environment, (store) => {
+          const connection = store.get(connectionID);
+
+          const totalCount = connection?.getValue('totalCount');
+          if (totalCount) {
+            connection?.setValue((totalCount as number) - 1, 'totalCount');
+          }
+        });
+      },
+    }),
+    [connectionID, environment]
+  );
+  useSubscription(pendingUserListSubscriptionConfig);
+
+  const users: userList_fragment$data[] = data.pendingUsers.edges.map(
+    ({ node }) => readInlineData<userList_fragment$key>(UserFragment, node)
+  );
+
+  const nbUsers = data.pendingUsers.totalCount;
 
   return (
     <Popover

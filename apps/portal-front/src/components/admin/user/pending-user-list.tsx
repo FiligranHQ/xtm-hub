@@ -1,6 +1,11 @@
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
 import { useUserListLocalstorage } from '@/components/admin/user/pending-user-list-localstorage';
 import { UserFragment } from '@/components/admin/user/user-list';
+import {
+  UserPendingListFragment,
+  UserPendingListQuery,
+  UserPendingListSubscription,
+} from '@/components/admin/user/user.graphql';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import {
@@ -12,16 +17,16 @@ import { SearchInput } from '@/components/ui/search-input';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
-import { pendingUserList_users$key } from '@generated/pendingUserList_users.graphql';
-import {
-  pendingUserListQuery,
-  pendingUserListQuery$variables,
-} from '@generated/pendingUserListQuery.graphql';
 import { pendingUserListRemoveUserMutation } from '@generated/pendingUserListRemoveUserMutation.graphql';
 import {
   userList_fragment$data,
   userList_fragment$key,
 } from '@generated/userList_fragment.graphql';
+import {
+  userPendingListQuery,
+  userPendingListQuery$variables,
+} from '@generated/userPendingListQuery.graphql';
+import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { CheckIcon, CloseIcon } from 'filigran-icon';
 import { DataTable, DataTableHeadBarOptions } from 'filigran-ui';
@@ -45,41 +50,6 @@ import {
 import { useDebounceCallback } from 'usehooks-ts';
 
 // Configuration or Preloader Query
-export const PendingUserListQuery = graphql`
-  query pendingUserListQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: UserOrdering!
-    $orderMode: OrderingMode!
-    $filters: [Filter!]
-    $searchTerm: String
-  ) {
-    ...pendingUserList_users
-  }
-`;
-
-export const pendingUserListFragment = graphql`
-  fragment pendingUserList_users on Query
-  @refetchable(queryName: "PendingUsersPaginationQuery") {
-    pendingUsers(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-      searchTerm: $searchTerm
-      filters: $filters
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          ...userList_fragment
-        }
-      }
-    }
-  }
-`;
-
 const removePendingUser = graphql`
   mutation pendingUserListRemoveUserMutation(
     $user_id: ID!
@@ -134,8 +104,8 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
     organization,
   });
 
-  const queryData = useLazyLoadQuery<pendingUserListQuery>(
-    PendingUserListQuery,
+  const queryData = useLazyLoadQuery<userPendingListQuery>(
+    UserPendingListQuery,
     {
       count: pageSize,
       orderMode: orderMode,
@@ -153,28 +123,18 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
   });
 
   const [data, refetch] = useRefetchableFragment<
-    pendingUserListQuery,
-    pendingUserList_users$key
-  >(pendingUserListFragment, queryData);
-
-  const pendingUserListSubscription = graphql`
-    subscription pendingUserListSubscription($connections: [ID!]!) {
-      UserPending {
-        delete {
-          id @deleteEdge(connections: $connections)
-        }
-      }
-    }
-  `;
+    userPendingListQuery,
+    userPendingList_users$key
+  >(UserPendingListFragment, queryData);
 
   const connectionID = data?.pendingUsers?.__id;
 
   const pendingUserListSubscriptionConfig = useMemo(
     () => ({
       variables: { connections: [connectionID] },
-      subscription: pendingUserListSubscription,
+      subscription: UserPendingListSubscription,
     }),
-    [connectionID, pendingUserListSubscription]
+    [connectionID]
   );
   useSubscription(pendingUserListSubscriptionConfig);
 
@@ -266,7 +226,7 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
   );
 
   const handleRefetchData = (
-    args?: Partial<pendingUserListQuery$variables>
+    args?: Partial<userPendingListQuery$variables>
   ) => {
     const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
