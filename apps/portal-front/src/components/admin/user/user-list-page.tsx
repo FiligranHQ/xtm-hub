@@ -7,6 +7,7 @@ import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { createContext, FunctionComponent, useContext, useState } from 'react';
 
 interface UserListPageProps {
@@ -41,6 +42,11 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
 
   const [connectionID, setConnectionId] = useState<string>('');
 
+  const searchParams = useSearchParams();
+  const selectedTab = searchParams.has('pendingUsers')
+    ? 'pendingUsers'
+    : 'users';
+
   return (
     <UserListContext.Provider value={{ connectionID, setConnectionId }}>
       <div className="flex justify-between">
@@ -55,7 +61,7 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
         </div>
       ) : (
         <Tabs
-          defaultValue="users"
+          defaultValue={selectedTab}
           className="">
           <TabsList>
             <TabsTrigger value="users">
