@@ -282,6 +282,13 @@
     "Profile": "Profile",
     "ToggleUser": "Open menu user"
   },
+  "Notifications": {
+    "Title": "Notifications ({count})",
+    "UserNotification": {
+      "Title": "User Request",
+      "Text": "<nameFormat>{name}</nameFormat> wants to join your organization"
+    }
+  },
   "OrganizationActions": {
     "ErrorNameAlreadyExists": "The organization {name} already exists.",
     "OrganizationCreated": "Organization {name} has been created",
