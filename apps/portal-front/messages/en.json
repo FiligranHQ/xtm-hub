@@ -646,7 +646,7 @@
     }
   },
   "PendingUserListPage": {
-    "TabTitle": "Users Requests",
+    "TabTitle": "Users Requests ({usersCount})",
     "WarningUserRejection": {
       "Title": "Are you sure?",
       "Description": "You are about to refuse this person from your organization. There is no way of going back. Are you sure ?",
