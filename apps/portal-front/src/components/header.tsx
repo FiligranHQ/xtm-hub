@@ -9,8 +9,10 @@ import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions } from '@/components/ui/icon-actions';
 import { cn, isDevelopment } from '@/lib/utils';
 
+import { NotificationButton } from '@/components/notification/notification-button';
 import { ProfileMenuButton } from '@/components/profile/menu/button';
 import { formatPersonNames } from '@/utils/format/name';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { Avatar, Skeleton } from 'filigran-ui';
 import {
   Sheet,
@@ -34,11 +36,18 @@ interface HeaderComponentProps {
 const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   displayLogo,
 }) => {
-  const { me } = useContext(PortalContext);
+  const { me, hasOrganizationCapability } = useContext(PortalContext);
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
   const t = useTranslations();
   useEffect(() => setOpen(false), [currentPath]);
+
+  const canManageUser =
+    hasOrganizationCapability &&
+    (hasOrganizationCapability(
+      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+    ) ||
+      hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
 
   const User = () =>
     me ? (
@@ -61,9 +70,9 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       />
 
       <div className="mobile:hidden flex items-center gap-s">
+        {canManageUser && <NotificationButton />}
         <IconActions
           className="rounded-full"
-          label={<User />}
           icon={
             <>
               <div className="my-auto size-10">

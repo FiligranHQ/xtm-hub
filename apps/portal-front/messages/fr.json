@@ -282,6 +282,13 @@
     "Profile": "Profile",
     "ToggleUser": "Ouvrir menu utilisateur"
   },
+  "Notifications": {
+    "Title": "Notifications ({number})",
+    "UserNotification": {
+      "Title": "Requête Utilisateur",
+      "Text": "<nameFormat>{name}</nameFormat> veut rejoindre votre organisation"
+    }
+  },
   "OrganizationActions": {
     "ErrorNameAlreadyExists": "L'organisation {name} existe déjà.",
     "OrganizationCreated": "L'organisation {name} a été créée",
@@ -638,7 +645,7 @@
     }
   },
   "PendingUserListPage": {
-    "TabTitle": "Requêtes utilisateurs",
+    "TabTitle": "Requêtes utilisateurs ({nbUsers})",
     "WarningUserRejection": {
       "Title": "Êtes-vous sûr?",
       "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
