@@ -37,23 +37,25 @@ import {
   useSubscription,
 } from 'react-relay';
 
+export function notificationPendingUserQueryFilters(
+  organization_id: string
+): userPendingListQuery$variables {
+  return {
+    count: 20,
+    orderMode: 'asc',
+    orderBy: 'last_login',
+    filters: [{ key: 'organization_id', value: [organization_id] }],
+  };
+}
+
 export const NotificationButton: React.FC = () => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
   const [openPopover, setOpenPopover] = useState(false);
 
-  const notificationFilters: userPendingListQuery$variables = {
-    count: 20,
-    orderMode: 'asc',
-    orderBy: 'last_login',
-    filters: [
-      { key: 'organization_id', value: [me!.selected_organization_id] },
-    ],
-  };
-
   const queryData = useLazyLoadQuery<userPendingListQuery>(
     UserPendingListQuery,
-    notificationFilters
+    notificationPendingUserQueryFilters(me!.selected_organization_id)
   );
 
   const [data] = useRefetchableFragment<
@@ -89,7 +91,6 @@ export const NotificationButton: React.FC = () => {
   );
 
   const nbUsers = data.pendingUsers.totalCount;
-
   return (
     <Popover
       open={openPopover}
