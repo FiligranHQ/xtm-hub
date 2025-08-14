@@ -64,6 +64,7 @@ type Mutation {
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   editMeUser(input: EditMeUserInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
+  removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   resetPassword: Success!
   login(email: String!, password: String): User
@@ -136,6 +137,7 @@ type Query {
   user(id: ID!): User
   organizationAdministrators(organizationId: ID!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
   node(id: ID!): Node
 }
@@ -586,6 +588,7 @@ type Subscription {
   ActionTracking: TrackingSubscription
   User: UserSubscription
   MeUser: MeUserSubscription
+  UserPending: UserPendingSubscription
 }
 
 type Label implements Node {
@@ -863,6 +866,10 @@ type UserSubscription {
 
 type MeUserSubscription {
   edit: User
+  delete: User
+}
+
+type UserPendingSubscription {
   delete: User
 }
 

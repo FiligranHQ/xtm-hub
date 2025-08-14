@@ -1,6 +1,6 @@
 'use client';
 
-import UserList from '@/components/admin/user/user-list';
+import UserListPage from '@/components/admin/user/user-list-page';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -21,7 +21,7 @@ const PageLoader: React.FunctionComponent = () => {
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <h1 className="sr-only">{t('MenuLinks.Security')}</h1>
-      <UserList />
+      <UserListPage />
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbUnsecure } from '../../../knexfile';
+import { db, dbTx, dbUnsecure } from '../../../knexfile';
 import {
   Capability,
   User as GraphqlUser,
@@ -21,14 +21,19 @@ import User, {
 } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
+import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
+import { updateUserSession } from '../../sessionStoreManager';
 import { logApp } from '../../utils/app-logger.util';
 import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
 import { insertNewUserOrganizationPendingUnsecure } from '../common/user-organization-pending.domain';
-import { loadUserOrganization } from '../common/user-organization.domain';
+import {
+  loadUserOrganization,
+  updateUserOrgCapabilities,
+} from '../common/user-organization.domain';
 import {
   createUserOrganizationRelation,
   createUserOrganizationRelationAndRemovePending,
@@ -38,7 +43,11 @@ import {
   loadOrganizationsFromEmail,
 } from '../organizations/organizations.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
-import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
+import {
+  loadUserBy,
+  loadUserCapabilitiesByOrganization,
+  loadUserDetails,
+} from './users.domain';
 
 export const createUserWithPersonalSpace = async (
   data: Pick<
@@ -140,24 +149,37 @@ export const createNewUserWithPendingOrga = async (
   return addedUser;
 };
 
-export const createNewUserFromInvitation = async ({
-  email,
-  first_name,
-  last_name,
-  picture,
-}: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>) => {
+export const createNewUserFromInvitation = async (
+  {
+    email,
+    first_name,
+    last_name,
+    picture,
+  }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
+  isAdminFiligran: boolean = false
+) => {
   const [organization] = await loadOrganizationsFromEmail(email);
-  const userWithRoles: User = !organization
-    ? await createOrganisationWithAdminUser(email)
-    : await createNewUserWithPendingOrga(
-        {
-          email,
-          last_name,
-          first_name,
-          picture,
-        },
-        organization
-      );
+  let userWithRoles: User;
+  if (!organization) {
+    userWithRoles = await createOrganisationWithAdminUser(email);
+  } else if (isAdminFiligran) {
+    userWithRoles = await createUserWithPersonalSpace({
+      email,
+      last_name,
+      first_name,
+      picture,
+    });
+  } else {
+    userWithRoles = await createNewUserWithPendingOrga(
+      {
+        email,
+        last_name,
+        first_name,
+        picture,
+      },
+      organization
+    );
+  }
 
   return loadUserBy({ 'User.id': userWithRoles.id });
 };
@@ -167,7 +189,8 @@ export const getOrCreateUser = async (
     UserInitializer,
     'email' | 'first_name' | 'last_name' | 'picture'
   >,
-  upsert = false
+  upsert = false,
+  isAdminFiligran = false
 ) => {
   const user = await loadUserBy({ email: userInfo.email });
   if (user && upsert) {
@@ -184,7 +207,9 @@ export const getOrCreateUser = async (
         picture: isEmpty(user.picture) ? userInfo.picture : user.picture,
       });
   }
-  return user ? user : await createNewUserFromInvitation(userInfo);
+  return user
+    ? user
+    : await createNewUserFromInvitation(userInfo, isAdminFiligran);
 };
 
 export const insertUserIntoOrganization = async (
@@ -379,4 +404,101 @@ const countOrganizationAdministrators = async (
     .groupBy('Organization.id');
 
   return administratorsCount?.count ?? 0;
+};
+
+export const acceptPendingUserWithCapabilities = async (
+  context: PortalContext,
+  {
+    user_id,
+    organization_id,
+    orgCapabilities,
+  }: {
+    user_id: UserId;
+    organization_id: OrganizationId;
+    orgCapabilities?: string[];
+  }
+) => {
+  const trx = await dbTx();
+  try {
+    await createUserOrganizationRelationAndRemovePending(context, {
+      user_id,
+      organizations_id: [organization_id],
+    });
+
+    const { user, userMapped } = await updateUserCapabilities(context, {
+      user_id,
+      organization_id,
+      orgCapabilities,
+    });
+
+    await trx.commit();
+
+    await dispatch('User', 'edit', user);
+    await dispatch('MeUser', 'edit', userMapped, 'User');
+    await dispatch('UserPending', 'delete', user, 'User');
+    await dispatch('User', 'add', user);
+    return user;
+  } catch (e) {
+    trx.rollback();
+    throw e;
+  }
+};
+
+export const updateUserOrgCapabilitiesAndDispatch = async (
+  context: PortalContext,
+  {
+    user_id,
+    organization_id,
+    orgCapabilities,
+  }: {
+    user_id: UserId;
+    organization_id: OrganizationId;
+    orgCapabilities?: string[];
+  }
+) => {
+  const trx = await dbTx();
+  try {
+    const { user, userMapped } = await updateUserCapabilities(context, {
+      user_id,
+      organization_id,
+      orgCapabilities,
+    });
+
+    await trx.commit();
+
+    await dispatch('User', 'edit', user);
+    await dispatch('MeUser', 'edit', userMapped, 'User');
+
+    return user;
+  } catch (e) {
+    trx.rollback();
+    throw e;
+  }
+};
+
+const updateUserCapabilities = async (
+  context: PortalContext,
+  {
+    user_id,
+    organization_id,
+    orgCapabilities,
+  }: {
+    user_id: UserId;
+    organization_id: OrganizationId;
+    orgCapabilities?: string[];
+  }
+) => {
+  await updateUserOrgCapabilities(context, {
+    user_id,
+    organization_id,
+    orgCapabilities,
+  });
+
+  const user = await loadUserDetails({
+    'User.id': user_id,
+  });
+
+  updateUserSession(user);
+  const userMapped = mapUserToGraphqlUser(user);
+  return { user, userMapped };
 };

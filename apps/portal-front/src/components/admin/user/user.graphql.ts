@@ -10,8 +10,16 @@ export const UserListCreateMutation = graphql`
 `;
 
 export const UserSlugEditMutation = graphql`
-  mutation userSlugEditMutation($id: ID!, $input: EditUserCapabilitiesInput!) {
-    editUserCapabilities(id: $id, input: $input) {
+  mutation userSlugEditMutation(
+    $id: ID!
+    $input: EditUserCapabilitiesInput!
+    $userListConnections: [ID!]!
+  ) {
+    editUserCapabilities(id: $id, input: $input)
+      @prependNode(
+        connections: $userListConnections
+        edgeTypeName: "UserEdge"
+      ) {
       ...userList_fragment
     }
   }
