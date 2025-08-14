@@ -27,10 +27,6 @@ import { useMutation } from 'react-relay';
 
 import { PortalContext } from '@/components/me/app-portal-context';
 import { UserServiceForm } from '@/components/service/[slug]/userservice-form';
-import {
-  ServiceById,
-  serviceInstanceFragment,
-} from '@/components/service/service.graphql';
 import { EditUserService } from '@/components/subcription/[slug]/edit-user-service';
 import { SubscriptionById } from '@/components/subcription/subscription.graphql';
 import {
@@ -40,8 +36,7 @@ import {
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { APP_PATH } from '@/utils/path/constant';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
-import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
-import { serviceInstance_fragment$key } from '@generated/serviceInstance_fragment.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
 import { useEffect } from 'react';
@@ -55,14 +50,14 @@ import {
 interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
   queryRefSubscription: PreloadedQuery<subscriptionByIdQuery>;
-  queryRefService?: PreloadedQuery<serviceByIdQuery>;
+  serviceInstance?: serviceInstance_fragment$data;
   subscriptionId: string;
 }
 
 const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
   queryRef,
   queryRefSubscription,
-  queryRefService,
+  serviceInstance,
   subscriptionId,
 }) => {
   const t = useTranslations();
@@ -85,28 +80,18 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     queryRefSubscription
   );
   let breadcrumbValue: BreadcrumbNavLink[] = [];
-  if (queryRefService) {
-    const queryDataService = usePreloadedQuery<serviceByIdQuery>(
-      ServiceById,
-      queryRefService
-    );
-    const serviceData = readInlineData<serviceInstance_fragment$key>(
-      serviceInstanceFragment,
-      queryDataService.serviceInstanceById
-    );
-    if (serviceData) {
-      breadcrumbValue = [
-        { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
-        {
-          label: `${serviceData.name}`,
-          original: true,
-          href: `/${APP_PATH}/service/${serviceData.service_definition!.identifier}/${serviceData.id}`,
-        },
-        {
-          label: t('Service.Management.ManageUsers'),
-        },
-      ];
-    }
+  if (serviceInstance) {
+    breadcrumbValue = [
+      { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
+      {
+        label: `${serviceInstance.name}`,
+        original: true,
+        href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
+      },
+      {
+        label: t('Service.Management.ManageUsers'),
+      },
+    ];
   } else {
     breadcrumbValue = [
       { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
