@@ -387,6 +387,7 @@ export type Mutation = {
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse;
   registerOpenCTIPlatform: RegistrationResponse;
   removePendingUserFromOrganization?: Maybe<User>;
   removeUserFromOrganization?: Maybe<User>;
@@ -1126,6 +1127,11 @@ export type QueryUsersArgs = {
   searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type RefreshUserPlatformTokenResponse = {
+  __typename?: 'RefreshUserPlatformTokenResponse';
+  token: Scalars['String']['output'];
+};
+
 export type RegisterOpenCtiPlatformInput = {
   organizationId: Scalars['ID']['input'];
   platform: OpenCtiPlatformInput;
@@ -1665,6 +1671,7 @@ export type ResolversTypes = ResolversObject<{
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   Query: ResolverTypeWrapper<{}>;
+  RefreshUserPlatformTokenResponse: ResolverTypeWrapper<RefreshUserPlatformTokenResponse>;
   RegisterOpenCTIPlatformInput: RegisterOpenCtiPlatformInput;
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   Restriction: Restriction;
@@ -1778,6 +1785,7 @@ export type ResolversParentTypes = ResolversObject<{
   PageInfo: PageInfo;
   PlatformProvider: PlatformProvider;
   Query: {};
+  RefreshUserPlatformTokenResponse: RefreshUserPlatformTokenResponse;
   RegisterOpenCTIPlatformInput: RegisterOpenCtiPlatformInput;
   RegistrationResponse: RegistrationResponse;
   RolePortal: RolePortal;
@@ -2076,6 +2084,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
+  refreshUserPlatformToken?: Resolver<ResolversTypes['RefreshUserPlatformTokenResponse'], ParentType, ContextType>;
   registerOpenCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterOpenCtiPlatformArgs, 'input'>>;
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
@@ -2235,6 +2244,11 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   userServiceOwned?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
+}>;
+
+export type RefreshUserPlatformTokenResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshUserPlatformTokenResponse'] = ResolversParentTypes['RefreshUserPlatformTokenResponse']> = ResolversObject<{
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type RegistrationResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegistrationResponse'] = ResolversParentTypes['RegistrationResponse']> = ResolversObject<{
@@ -2533,6 +2547,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RefreshUserPlatformTokenResponse?: RefreshUserPlatformTokenResponseResolvers<ContextType>;
   RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;

@@ -1,4 +1,5 @@
 import { oneClickDeployOctiPlatformFragment$data } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
+import { AlertDialogTitle } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 
@@ -20,14 +21,14 @@ const OnePlatformDisplay = ({
   return (
     <>
       <div className="space-y-m">
-        <h1>
+        <AlertDialogTitle>
           {t(
             'Service.ShareableResources.Deploy.DeployDashboardOctiDescription',
             {
               dashboardName: documentDataName,
             }
           )}
-        </h1>
+        </AlertDialogTitle>
         <p>
           {t(
             'Service.ShareableResources.Deploy.DeployOctiDescriptionOnePlatform',

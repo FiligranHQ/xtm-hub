@@ -43,6 +43,7 @@ type Mutation {
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
   registerOpenCTIPlatform(input: RegisterOpenCTIPlatformInput!): RegistrationResponse!
   unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -487,6 +488,10 @@ enum OpenCTIPlatformRegistrationStatus {
 
 type OpenCTIPlatformRegistrationStatusResponse {
   status: OpenCTIPlatformRegistrationStatus!
+}
+
+type RefreshUserPlatformTokenResponse {
+  token: String!
 }
 
 enum ServiceInstanceOrdering {

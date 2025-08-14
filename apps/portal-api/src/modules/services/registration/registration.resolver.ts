@@ -136,6 +136,15 @@ const resolvers: Resolvers = {
         });
       }
     },
+    refreshUserPlatformToken: async (_, __, context) => {
+      try {
+        return await registrationApp.refreshUserPlatformToken(context);
+      } catch (error) {
+        throw UnknownError(ErrorCode.RefreshUserPlatformTokenUnknownError, {
+          detail: error,
+        });
+      }
+    },
   },
 };
 

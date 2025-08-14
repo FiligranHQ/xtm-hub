@@ -147,7 +147,9 @@ type UserPendingSubscription {
 }
 
 type Subscription {
-  User: UserSubscription @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  User: UserSubscription
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   MeUser: MeUserSubscription @auth
-  UserPending: UserPendingSubscription @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  UserPending: UserPendingSubscription
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
 }
