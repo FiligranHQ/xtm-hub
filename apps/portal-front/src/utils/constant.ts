@@ -4,4 +4,5 @@ export const ANIMATION_TIME = 300;
 export enum FeatureFlag {
   // dummy feature flag used for testing purposes
   DUMMY = 'DUMMY',
+  PENDING_USERS = 'PENDING_USERS',
 }

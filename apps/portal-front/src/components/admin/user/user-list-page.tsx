@@ -3,6 +3,8 @@ import { AdminAddUser } from '@/components/admin/user/admin-add-user';
 import PendingUserList from '@/components/admin/user/pending-user-list';
 import UserList from '@/components/admin/user/user-list';
 import useAdminPath from '@/hooks/useAdminPath';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
+import { FeatureFlag } from '@/utils/constant';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { createContext, FunctionComponent, useContext, useState } from 'react';
@@ -35,6 +37,8 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
   const t = useTranslations();
   const isAdminPath = useAdminPath();
 
+  const isPendingUsersEnabled = useIsFeatureEnabled(FeatureFlag.PENDING_USERS);
+
   const [connectionID, setConnectionId] = useState<string>('');
 
   return (
@@ -45,7 +49,7 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
           {isAdminPath ? <AdminAddUser /> : <AddUser />}
         </div>
       </div>
-      {isAdminPath ? (
+      {isAdminPath || !isPendingUsersEnabled ? (
         <div className="mt-4">
           <UserList organization={organization} />
         </div>
