@@ -840,6 +840,7 @@ export type Query = {
   node?: Maybe<Node>;
   obasScenario?: Maybe<ObasScenario>;
   obasScenarios: ObasScenarioConnection;
+  openCTIPlatformAssociatedOrganization: Organization;
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   openCTIPlatforms: Array<OpenCtiPlatform>;
   organization?: Maybe<Organization>;
@@ -974,6 +975,11 @@ export type QueryObasScenariosArgs = {
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryOpenCtiPlatformAssociatedOrganizationArgs = {
+  platformId: Scalars['String']['input'];
 };
 
 
@@ -2214,6 +2220,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
   obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  openCTIPlatformAssociatedOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformAssociatedOrganizationArgs, 'platformId'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   openCTIPlatforms?: Resolver<Array<ResolversTypes['OpenCTIPlatform']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;

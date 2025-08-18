@@ -62,6 +62,20 @@ const resolvers: Resolvers = {
       registrationApp.loadOpenCTIPlatforms(context),
     openCTIPlatformRegistrationStatus: async (_, { input }, context) =>
       registrationApp.loadOpenCTIPlatformRegistrationStatus(context, input),
+    openCTIPlatformAssociatedOrganization: async (
+      _,
+      { platformId },
+      context
+    ) => {
+      try {
+        return await registrationApp.loadOpenCTIPlatformAssociatedOrganization(
+          context,
+          platformId
+        );
+      } catch (error) {
+        throw UnknownError(ErrorCode.UnknownError, { detail: error });
+      }
+    },
   },
   Mutation: {
     registerOpenCTIPlatform: async (_, { input }, context) => {

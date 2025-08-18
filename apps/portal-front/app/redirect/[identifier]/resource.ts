@@ -1,26 +1,19 @@
 import { getServiceInstanceUrl } from '@/lib/utils';
-import serverPortalApiFetch, {
-  serverMutateGraphQL,
-} from '@/relay/serverPortalApiFetch';
+import { serverMutateGraphQL } from '@/relay/serverPortalApiFetch';
 import { isValueInEnum } from '@/utils/isValueInEnum';
 import { APP_PATH } from '@/utils/path/constant';
-import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import OrganizationSwitcherMutation, {
   organizationSwitcherMutation,
 } from '@generated/organizationSwitcherMutation.graphql';
-import ServiceInstancesSubscribedByIdentifierQuery, {
-  serviceInstancesSubscribedByIdentifierQuery,
-  serviceInstancesSubscribedByIdentifierQuery$data,
-} from '@generated/serviceInstancesSubscribedByIdentifierQuery.graphql';
-import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { NextRequest, NextResponse } from 'next/server';
-import { MeResponse, SettingsResponse } from './response';
-import { getLoginRedirectionURL } from './url';
-
-interface UserServiceOwnedResponse {
-  data: serviceInstancesSubscribedByIdentifierQuery$data;
-}
+import {
+  loadBaseUrlFront,
+  loadMeUser,
+  loadOwnedUserServices,
+  loadPlatformOrganizationId,
+} from './utils/load';
+import { getLoginRedirectionURL } from './utils/url';
 
 async function switchOrganization(organization_id: string) {
   await serverMutateGraphQL<organizationSwitcherMutation>(
@@ -30,6 +23,7 @@ async function switchOrganization(organization_id: string) {
     }
   );
 }
+
 // temporary fix will be fixed in the next release https://github.com/FiligranHQ/xtm-hub/issues/650
 const mapNewIdentifierToOldIdentifier = (
   identifier: string
@@ -49,7 +43,7 @@ export const redirectToResource = async (
 ) => {
   const searchParams = request.nextUrl.searchParams;
   const identifier = mapNewIdentifierToOldIdentifier(params.identifier);
-  const octi_instance_id = searchParams.get('octi_instance_id');
+  const opencti_platform_id = searchParams.get('opencti_platform_id');
   const service_instance_id = searchParams.get('service_instance_id');
   const document_id = searchParams.get('document_id');
 
@@ -59,11 +53,7 @@ export const redirectToResource = async (
   }
 
   // Fetch settings to have the base URL for the frontend
-  const settingsResponse = (await serverPortalApiFetch<
-    typeof SettingsQuery,
-    settingsQuery
-  >(SettingsQuery)) as SettingsResponse;
-  const baseUrlFront = settingsResponse.data.settings.base_url_front;
+  const baseUrlFront = await loadBaseUrlFront();
 
   // Build the login URL from the settings and the curent URL
   try {
@@ -72,91 +62,50 @@ export const redirectToResource = async (
 
     // 1. Load the user
     // ----------------
-    const meResponse = (await serverPortalApiFetch<
-      typeof MeLoaderQuery,
-      meLoaderQuery
-    >(MeLoaderQuery)) as MeResponse;
-
-    const user = meResponse.data.me;
-
-    // The user must be authenticated to access the service
+    const user = await loadMeUser();
     if (!user) {
       return NextResponse.redirect(
         getLoginRedirectionURL(baseUrlFront, request)
       );
     }
 
-    // Find the personal space organization
+    let organizationId: string | undefined =
+      await loadPlatformOrganizationId(opencti_platform_id);
+
+    // 2. Load the services instances subscribed by the user's organizations
+    // ----------------------------------------------------------------------
+    const servicesInstances = await loadOwnedUserServices(identifier);
+    if (!organizationId) {
+      organizationId = servicesInstances.find(
+        (instance) => instance.service_instance_id === service_instance_id
+      )?.organization_id;
+    }
+
     const personalSpaceGlobalId = user.organizations.find(
       (o) => o.personal_space
     )!.id;
 
-    // 2. Load the services instances subscribed by the user's organizations
-    // ----------------------------------------------------------------------
-
-    const response = (await serverPortalApiFetch<
-      typeof ServiceInstancesSubscribedByIdentifierQuery,
-      serviceInstancesSubscribedByIdentifierQuery
-    >(ServiceInstancesSubscribedByIdentifierQuery, {
-      identifier,
-    })) as UserServiceOwnedResponse;
-
-    const servicesInstances = Array.from(
-      response.data.subscribedServiceInstancesByIdentifier
-    );
+    // 3. Switch to the found organization
+    await switchOrganization(organizationId ?? personalSpaceGlobalId);
 
     // No subscribed services for any organization of the user,
     // redirect to the personal space homepage with highlighting the services
     if (servicesInstances.length === 0) {
-      await switchOrganization(personalSpaceGlobalId);
       return NextResponse.redirect(highlightUrl);
     }
 
-    // 3. Try to find the right organization to switch to
-    // --------------------------------------------------
-
-    // We check if :
-    //   - there is a corresponding requested `service_instance_id` in the URL to directly redirect to the service
-    //   - the the OpenCTI instance is associated with any user's organization thanks to the services links
-    let organizationId: string | undefined;
-    for (const instance of servicesInstances) {
-      if (instance.service_instance_id === service_instance_id) {
-        // We found the service instance associated with the requested service
-        organizationId = instance.organization_id;
-      } else if (instance.configurations) {
-        for (const configuration of instance.configurations) {
-          if (configuration && configuration.platform_id === octi_instance_id) {
-            // We found the organization associated with the OpenCTI instance
-            organizationId = instance.organization_id;
-            break;
-          }
-        }
-      }
-    }
-
-    // No organization found, fallback to the personal space
-    if (!organizationId) {
-      organizationId = personalSpaceGlobalId;
-    }
-
-    // 4. Switch to the found organization
-    await switchOrganization(organizationId);
-
-    // 6. Redirect the user
+    // 4. Redirect the user
     // --------------------
 
-    // Get the organization service instances
     const organizationServiceInstances = servicesInstances.filter(
       (serviceInstance) => serviceInstance.organization_id === organizationId
     );
 
-    // We have the requested service instance in the available services in the organization
-    if (
-      organizationServiceInstances.some(
-        (serviceInstance) =>
-          serviceInstance.service_instance_id === service_instance_id
-      )
-    ) {
+    const isRequestedServiceAvailable = organizationServiceInstances.some(
+      (serviceInstance) =>
+        serviceInstance.service_instance_id === service_instance_id
+    );
+    if (isRequestedServiceAvailable) {
       return NextResponse.redirect(
         getServiceInstanceUrl(
           baseUrlFront,
@@ -167,17 +116,15 @@ export const redirectToResource = async (
       );
     }
 
-    // If we have only one service corresponding to the request,
-    // we can directly redirect to the service
-    if (
+    const isOnlyOneServiceAvailable =
       organizationServiceInstances.length === 1 &&
-      organizationServiceInstances[0]
-    ) {
+      organizationServiceInstances[0];
+    if (isOnlyOneServiceAvailable) {
       return NextResponse.redirect(
         getServiceInstanceUrl(
           baseUrlFront,
           identifier,
-          organizationServiceInstances[0].service_instance_id
+          organizationServiceInstances[0]!.service_instance_id
         )
       );
     }

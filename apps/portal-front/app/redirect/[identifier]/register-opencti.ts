@@ -1,24 +1,12 @@
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
-import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
-import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { NextRequest, NextResponse } from 'next/server';
-import { MeResponse, SettingsResponse } from './response';
-import { getLoginRedirectionURL } from './url';
+import { loadBaseUrlFront, loadMeUser } from './utils/load';
+import { getLoginRedirectionURL } from './utils/url';
 
 export const redirectToOpenCTIRegistration = async (request: NextRequest) => {
-  const settingsResponse = (await serverPortalApiFetch<
-    typeof SettingsQuery,
-    settingsQuery
-  >(SettingsQuery)) as SettingsResponse;
-  const baseUrlFront = settingsResponse.data.settings.base_url_front;
+  const baseUrlFront = await loadBaseUrlFront();
   const redirectionUrl = getLoginRedirectionURL(baseUrlFront, request);
   try {
-    const meResponse = (await serverPortalApiFetch<
-      typeof MeLoaderQuery,
-      meLoaderQuery
-    >(MeLoaderQuery)) as MeResponse;
-
-    const user = meResponse.data.me;
+    const user = await loadMeUser();
     if (!user) {
       return NextResponse.redirect(redirectionUrl);
     }

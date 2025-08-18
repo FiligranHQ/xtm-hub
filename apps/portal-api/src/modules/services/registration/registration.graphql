@@ -90,6 +90,8 @@ type Query {
   openCTIPlatformRegistrationStatus(
     input: OpenCTIPlatformRegistrationStatusInput!
   ): OpenCTIPlatformRegistrationStatusResponse!
+  openCTIPlatformAssociatedOrganization(platformId: String!): Organization!
+    @auth
 }
 
 type Mutation {
