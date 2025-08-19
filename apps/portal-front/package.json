@@ -61,7 +61,7 @@
     "@types/react-dom": "19.1.5",
     "@types/react-relay": "18.2.1",
     "@types/relay-test-utils": "18.0.0",
-    "@vitejs/plugin-react": "4.6.0",
+    "@vitejs/plugin-react": "4.7.0",
     "@vitest/coverage-v8": "3.2.4",
     "babel-plugin-relay": "18.2.0",
     "concurrently": "9.2.0",
