@@ -120,6 +120,7 @@ type Query {
   canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
   openCTIPlatforms: [OpenCTIPlatform!]!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
+  openCTIPlatformAssociatedOrganization(platformId: String!): Organization!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance

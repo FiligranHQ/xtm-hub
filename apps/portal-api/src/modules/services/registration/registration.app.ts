@@ -14,12 +14,16 @@ import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { ErrorCode } from '../../common/error-code';
+import { loadUserOrganization } from '../../common/user-organization.domain';
+import { loadOrganizationBy } from '../../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import {
   loadOrganizationAdministrators,
@@ -33,6 +37,38 @@ import {
 } from './registration.domain';
 
 export const registrationApp = {
+  loadOpenCTIPlatformAssociatedOrganization: async (
+    context: PortalContext,
+    platformId: string
+  ): Promise<Organization> => {
+    const serviceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatform(
+        context,
+        platformId
+      );
+    if (!serviceConfiguration) {
+      throw new Error(ErrorCode.ServiceConfigurationNotFound);
+    }
+
+    const subscription = await loadSubscriptionBy(context, {
+      service_instance_id: serviceConfiguration.service_instance_id,
+    });
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
+
+    const userOrganization = await loadUserOrganization(context, {
+      organization_id: subscription.organization_id,
+      user_id: context.user.id,
+    });
+
+    if (!userOrganization) {
+      throw new Error(ErrorCode.UserIsNotInOrganization);
+    }
+
+    return loadOrganizationBy(context, 'id', subscription.organization_id);
+  },
+
   loadOpenCTIPlatforms: async (
     context: PortalContext
   ): Promise<OpenCtiPlatform[]> => {

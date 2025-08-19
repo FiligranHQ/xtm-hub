@@ -14,4 +14,5 @@ export enum ErrorCode {
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   UnregisterOpenCTIPlatformUnknownError = 'UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR',
   UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
+  UnknownError = 'UNKNOWN_ERROR',
 }
