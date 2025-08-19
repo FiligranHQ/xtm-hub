@@ -6,7 +6,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error.util';
-import { getServiceDefinition } from '../service-instance.domain';
+import { loadServiceDefinition } from '../service-instance.domain';
 import { downloadFile } from './document-storage';
 import { loadDocumentBy } from './document.domain';
 
@@ -61,7 +61,7 @@ export const documentVisualizeEndpoint = (app) => {
     async (req, res) => {
       try {
         // Check if the user is authorized to access the document
-        const serviceDefinition = (await getServiceDefinition(
+        const serviceDefinition = (await loadServiceDefinition(
           { req, res } as PortalContext,
           fromGlobalId(req.params.serviceInstanceId).id
         )) as ServiceDefinition;

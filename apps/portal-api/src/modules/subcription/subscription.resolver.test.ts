@@ -1,4 +1,4 @@
-import { toGlobalId } from 'graphql-relay/node/node';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterAll, describe, expect, it } from 'vitest';
 import {
   contextAdminUser,

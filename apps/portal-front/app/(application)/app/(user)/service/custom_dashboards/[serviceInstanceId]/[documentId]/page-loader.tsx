@@ -11,24 +11,24 @@ import { useQueryLoader } from 'react-relay';
 // Component interface
 interface PreloaderProps {
   documentId: string;
-  service: serviceInstance_fragment$data;
+  serviceInstance: serviceInstance_fragment$data;
 }
 
 // Component
 const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   documentId,
-  service,
+  serviceInstance,
 }) => {
   const [queryRef, loadQuery] =
     useQueryLoader<customDashboardQuery>(CustomDashboardQuery);
   useMountingLoader(loadQuery, {
     documentId,
-    serviceInstanceId: service?.id,
+    serviceInstanceId: serviceInstance?.id,
   });
 
-  return queryRef && service ? (
+  return queryRef && serviceInstance ? (
     <DashboardDetails
-      serviceInstance={service}
+      serviceInstance={serviceInstance}
       queryRef={queryRef}
     />
   ) : (

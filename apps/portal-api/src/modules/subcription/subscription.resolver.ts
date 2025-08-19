@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 
+import config from 'config';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
@@ -10,6 +12,7 @@ import {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
+import { sendMail } from '../../server/mail-service';
 import { logApp } from '../../utils/app-logger.util';
 import {
   FORBIDDEN_ACCESS,
@@ -19,6 +22,7 @@ import {
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import {
+  loadServiceDefinition,
   loadServiceInstanceBy,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
@@ -97,6 +101,21 @@ const resolvers: Resolvers = {
           filledSubscription.id as SubscriptionId,
           selectedOrga.personal_space
         );
+
+        const serviceDefinition = await loadServiceDefinition(
+          context,
+          filledSubscription.service_instance_id
+        );
+
+        await sendMail({
+          to: context.user.email,
+          template: serviceDefinition.identifier,
+          params: {
+            name: context.user.email,
+            serviceLink: `${config.get('base_url_front')}/service/${serviceDefinition.identifier}/${toGlobalId('ServiceInstance', filledSubscription.service_instance.id)}`,
+            serviceName: filledSubscription.service_instance.name,
+          },
+        });
 
         // TODO If Service is AUTO_JOIN
         // await grantServiceAccessUsers(
