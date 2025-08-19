@@ -494,7 +494,7 @@
         "DeployOctiQuestionTag": "Sur quelle plateforme OpenCTI voulez-vous le déployer ?",
         "DeployOctiDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
         "DeployOctiDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme OpenCTI.",
-        "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait dans la section suivante :"
+        "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait sur la page Filigran Experience dans la section suivante :"
       },
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
       "FromVersion": "Depuis la version",
