@@ -2,12 +2,20 @@ import { AddUser } from '@/components/admin/user/add-user';
 import { AdminAddUser } from '@/components/admin/user/admin-add-user';
 import PendingUserList from '@/components/admin/user/pending-user-list';
 import UserList from '@/components/admin/user/user-list';
+import {
+  UserPendingListFragment,
+  UserPendingListQuery,
+} from '@/components/admin/user/user.graphql';
+import { PortalContext } from '@/components/me/app-portal-context';
+import { notificationPendingUserQueryFilters } from '@/components/notification/notification-button';
 import useAdminPath from '@/hooks/useAdminPath';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
+import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
+import { userPendingListQuery } from '@generated/userPendingListQuery.graphql';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { createContext, FunctionComponent, useContext, useState } from 'react';
+import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
 interface UserListPageProps {
   organization?: string;
@@ -36,10 +44,26 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
 }) => {
   const t = useTranslations();
   const isAdminPath = useAdminPath();
-
-  const isPendingUsersEnabled = useIsFeatureEnabled(FeatureFlag.PENDING_USERS);
+  const { me } = useContext(PortalContext);
 
   const [connectionID, setConnectionId] = useState<string>('');
+
+  const searchParams = useSearchParams();
+  const selectedTab = searchParams.has('pendingUsers')
+    ? 'pendingUsers'
+    : 'users';
+
+  const queryData = useLazyLoadQuery<userPendingListQuery>(
+    UserPendingListQuery,
+    notificationPendingUserQueryFilters(me!.selected_organization_id)
+  );
+
+  const [data] = useRefetchableFragment<
+    userPendingListQuery,
+    userPendingList_users$key
+  >(UserPendingListFragment, queryData);
+
+  const nbPendingUsers = data.pendingUsers.totalCount;
 
   return (
     <UserListContext.Provider value={{ connectionID, setConnectionId }}>
@@ -49,20 +73,24 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
           {isAdminPath ? <AdminAddUser /> : <AddUser />}
         </div>
       </div>
-      {isAdminPath || !isPendingUsersEnabled ? (
+      {isAdminPath ? (
         <div className="mt-4">
           <UserList organization={organization} />
         </div>
       ) : (
         <Tabs
-          defaultValue="users"
+          defaultValue={selectedTab}
           className="">
           <TabsList>
             <TabsTrigger value="users">
               {t('UserListPage.TabTitle')}
             </TabsTrigger>
-            <TabsTrigger value="pendingUsers">
-              {t('PendingUserListPage.TabTitle')}
+            <TabsTrigger
+              value="pendingUsers"
+              disabled={!nbPendingUsers}>
+              {t('PendingUserListPage.TabTitle', {
+                usersCount: nbPendingUsers,
+              })}
             </TabsTrigger>
           </TabsList>
           <TabsContent value="users">
