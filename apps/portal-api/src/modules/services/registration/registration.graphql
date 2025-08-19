@@ -75,6 +75,10 @@ type OpenCTIPlatformRegistrationStatusResponse {
   status: OpenCTIPlatformRegistrationStatus!
 }
 
+type RefreshUserPlatformTokenResponse {
+  token: String!
+}
+
 type Query {
   isOpenCTIPlatformRegistered(
     input: IsOpenCTIPlatformRegisteredInput!
@@ -94,4 +98,5 @@ type Mutation {
   ): RegistrationResponse! @auth
   unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
     @auth
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth
 }

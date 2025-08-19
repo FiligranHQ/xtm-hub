@@ -1,5 +1,13 @@
 import { graphql } from 'react-relay';
 
+export const RefreshUserPlatformTokenMutation = graphql`
+  mutation registerRefreshUserPlatformTokenMutation {
+    refreshUserPlatformToken {
+      token
+    }
+  }
+`;
+
 export const IsOpenCTIPlatformRegisteredFragment = graphql`
   fragment registerIsOpenCTIPlatformRegisteredFragment on IsOpenCTIPlatformRegisteredResponse {
     status
