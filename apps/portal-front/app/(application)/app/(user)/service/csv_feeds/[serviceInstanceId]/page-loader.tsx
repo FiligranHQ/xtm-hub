@@ -1,7 +1,7 @@
 'use client';
 
+import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
 import CsvFeedsList from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feeds-list';
-import { csvFeedListLocalStorage } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feeds-list-localstorage';
 import { CsvFeedsListQuery } from '@/components/service/csv-feeds/csv-feed.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -17,7 +17,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] =
     useQueryLoader<csvFeedsQuery>(CsvFeedsListQuery);
   const { count, search, labels, setSearch, setLabels } =
-    csvFeedListLocalStorage();
+    serviceListLocalStorage('csvFeed');
 
   useEffect(() => {
     loadQuery(
