@@ -368,7 +368,7 @@
         "Updated": "The CSV {name} has been modified successfully"
       },
       "Active": "Published",
-      "AddCsvFeed": "Add new CSV Feed",
+      "AddService": "Add new CSV Feed",
       "DeleteService": "Delete the CSV Feed {name}",
       "Form": {
         "CsvFeedFile": "Csv Feed file",
@@ -389,7 +389,7 @@
       },
       "NonActive": "Draft",
       "SureDeleteService": "Are you sure you want to delete the CSV Feed {name}?",
-      "UpdateCsvFeed": "Update the CSV Feed {name}"
+      "UpdateService": "Update the CSV Feed {name}"
     },
     "CustomDashboards": {
       "Actions": {
