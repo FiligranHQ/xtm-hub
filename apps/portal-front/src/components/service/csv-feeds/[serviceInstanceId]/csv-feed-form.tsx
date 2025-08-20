@@ -1,6 +1,6 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { CsvFeedDelete } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-delete';
+import { ServiceDelete } from '@/components/service/components/service-delete';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -214,10 +214,11 @@ export const CsvFeedForm = ({
         }}>
         <SheetFooter className="sm:justify-between pt-2">
           {csvFeed && (
-            <CsvFeedDelete
+            <ServiceDelete
               userCanDelete={userCanDelete}
               onDelete={onDelete}
-              csvFeed={csvFeed}
+              serviceName={csvFeed.name}
+              translationKey="Service.CsvFeed"
             />
           )}
           <div className="ml-auto flex gap-s">

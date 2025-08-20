@@ -369,7 +369,7 @@
       },
       "Active": "Published",
       "AddCsvFeed": "Add new CSV Feed",
-      "DeleteCsvFeed": "Delete the CSV Feed {name}",
+      "DeleteService": "Delete the CSV Feed {name}",
       "Form": {
         "CsvFeedFile": "Csv Feed file",
         "CsvFeedIllustration": "Illustration",
@@ -388,7 +388,7 @@
         "SlugLabel": "Slug"
       },
       "NonActive": "Draft",
-      "SureDeleteCsvFeed": "Are you sure you want to delete the CSV Feed {name}?",
+      "SureDeleteService": "Are you sure you want to delete the CSV Feed {name}?",
       "UpdateCsvFeed": "Update the CSV Feed {name}"
     },
     "CustomDashboards": {

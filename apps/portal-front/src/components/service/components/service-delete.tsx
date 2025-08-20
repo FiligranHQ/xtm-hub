@@ -1,20 +1,21 @@
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
-interface CsvFeedDeleteProps {
+interface ServiceDeleteProps {
   userCanDelete?: boolean;
   onDelete?: () => void;
-  csvFeed: csvFeedsItem_fragment$data;
+  serviceName: string;
+  translationKey: string;
 }
 
-export const CsvFeedDelete = ({
+export const ServiceDelete = ({
   userCanDelete,
   onDelete,
-  csvFeed,
-}: CsvFeedDeleteProps) => {
+  serviceName,
+  translationKey,
+}: ServiceDeleteProps) => {
   const t = useTranslations();
   const { handleCloseSheet } = useDialogContext();
 
@@ -23,15 +24,15 @@ export const CsvFeedDelete = ({
       <AlertDialogComponent
         actionButtonText={t('Utils.Delete')}
         variantName={'destructive'}
-        AlertTitle={t('Service.CsvFeed.DeleteCsvFeed', {
-          name: csvFeed.name,
+        AlertTitle={t(`${translationKey}.DeleteService`, {
+          name: serviceName,
         })}
         triggerElement={
           <Button
             variant="outline-destructive"
             className=""
-            aria-label={t('Service.CsvFeed.DeleteCsvFeed', {
-              name: csvFeed.name,
+            aria-label={t(`${translationKey}.DeleteService`, {
+              name: serviceName,
             })}>
             {t('Utils.Delete')}
           </Button>
@@ -40,8 +41,8 @@ export const CsvFeedDelete = ({
           onDelete?.();
           handleCloseSheet(e);
         }}>
-        {t('Service.CsvFeed.SureDeleteCsvFeed', {
-          name: csvFeed.name,
+        {t(`${translationKey}.SureDeleteService`, {
+          name: serviceName,
         })}
       </AlertDialogComponent>
     )
