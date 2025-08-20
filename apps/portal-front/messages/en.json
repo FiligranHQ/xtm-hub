@@ -455,10 +455,10 @@
         "Author": "Author",
         "ProductVersionLabel": "OpenBAS Version"
       },
-      "AddObasScenario": "Add new scenario",
-      "UpdateObasScenario": "Update the scenario {name}",
-      "DeleteObasScenario": "Delete the scenario {name}",
-      "SureDeleteObasScenario": "Are you sure you want to delete the scenario {name}?",
+      "AddService": "Add new scenario",
+      "UpdateService": "Update the scenario {name}",
+      "DeleteService": "Delete the scenario {name}",
+      "SureDeleteService": "Are you sure you want to delete the scenario {name}?",
       "NonActive": "Draft",
       "Active": "Published"
     },
