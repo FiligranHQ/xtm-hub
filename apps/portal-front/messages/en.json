@@ -368,8 +368,8 @@
         "Updated": "The CSV {name} has been modified successfully"
       },
       "Active": "Published",
-      "AddCsvFeed": "Add new CSV Feed",
-      "DeleteCsvFeed": "Delete the CSV Feed {name}",
+      "AddService": "Add new CSV Feed",
+      "DeleteService": "Delete the CSV Feed {name}",
       "Form": {
         "CsvFeedFile": "Csv Feed file",
         "CsvFeedIllustration": "Illustration",
@@ -388,8 +388,8 @@
         "SlugLabel": "Slug"
       },
       "NonActive": "Draft",
-      "SureDeleteCsvFeed": "Are you sure you want to delete the CSV Feed {name}?",
-      "UpdateCsvFeed": "Update the CSV Feed {name}"
+      "SureDeleteService": "Are you sure you want to delete the CSV Feed {name}?",
+      "UpdateService": "Update the CSV Feed {name}"
     },
     "CustomDashboards": {
       "Actions": {
@@ -455,10 +455,10 @@
         "Author": "Author",
         "ProductVersionLabel": "OpenBAS Version"
       },
-      "AddObasScenario": "Add new scenario",
-      "UpdateObasScenario": "Update the scenario {name}",
-      "DeleteObasScenario": "Delete the scenario {name}",
-      "SureDeleteObasScenario": "Are you sure you want to delete the scenario {name}?",
+      "AddService": "Add new scenario",
+      "UpdateService": "Update the scenario {name}",
+      "DeleteService": "Delete the scenario {name}",
+      "SureDeleteService": "Are you sure you want to delete the scenario {name}?",
       "NonActive": "Draft",
       "Active": "Published"
     },

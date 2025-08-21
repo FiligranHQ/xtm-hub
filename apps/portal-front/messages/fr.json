@@ -368,8 +368,8 @@
         "Updated": "{name} a été modifié"
       },
       "Active": "Publié",
-      "AddCsvFeed": "Ajouter un CSV Feed",
-      "DeleteCsvFeed": "Supprimer le CSV Feed {name}",
+      "AddService": "Ajouter un CSV Feed",
+      "DeleteService": "Supprimer le CSV Feed {name}",
       "Form": {
         "CsvFeedFile": "Fichier Csv Feed",
         "CsvFeedIllustration": "Illustration",
@@ -388,8 +388,8 @@
         "SlugLabel": "Slug"
       },
       "NonActive": "Brouillon",
-      "SureDeleteCsvFeed": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
-      "UpdateCsvFeed": "Editer le CSV Feed {name}"
+      "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
+      "UpdateService": "Editer le CSV Feed {name}"
     },
     "CustomDashboards": {
       "Actions": {
@@ -455,10 +455,10 @@
         "Author": "Auteur",
         "ProductVersionLabel": "Version OpenBAS"
       },
-      "AddObasScenario": "Ajouter un nouveau scénario",
-      "UpdateObasScenario": "Mettre à jour le scénario {name}",
-      "DeleteObasScenario": "Supprimer le scénario {name}",
-      "SureDeleteObasScenario": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
+      "AddService": "Ajouter un nouveau scénario",
+      "UpdateService": "Mettre à jour le scénario {name}",
+      "DeleteService": "Supprimer le scénario {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
       "NonActive": "Brouillon",
       "Active": "Publié"
     },

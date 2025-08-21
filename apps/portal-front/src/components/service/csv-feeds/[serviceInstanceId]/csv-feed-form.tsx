@@ -1,11 +1,12 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { CsvFeedDelete } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-delete';
+import { useServiceContext } from '@/components/service/components/service-context';
+import { ServiceDelete } from '@/components/service/components/service-delete';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
+import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   AutoForm,
   Button,
@@ -39,18 +40,20 @@ interface CsvFeedFormProps {
   userCanDelete?: boolean;
   handleSubmit?: (values: CsvFeedFormValues) => void;
   onDelete?: () => void;
-  csvFeed?: csvFeedsItem_fragment$data;
+  document: SubscribableResource | undefined;
 }
 
 export const CsvFeedForm = ({
   userCanDelete,
   handleSubmit,
   onDelete,
-  csvFeed,
+  document,
 }: CsvFeedFormProps) => {
+  const csvFeed = document;
   const t = useTranslations();
   const { me } = useContext(PortalContext);
   const { handleCloseSheet } = useDialogContext();
+  const { translationKey } = useServiceContext();
 
   const isCreation = !csvFeed;
 
@@ -214,10 +217,11 @@ export const CsvFeedForm = ({
         }}>
         <SheetFooter className="sm:justify-between pt-2">
           {csvFeed && (
-            <CsvFeedDelete
+            <ServiceDelete
               userCanDelete={userCanDelete}
               onDelete={onDelete}
-              csvFeed={csvFeed}
+              serviceName={csvFeed.name}
+              translationKey={translationKey}
             />
           )}
           <div className="ml-auto flex gap-s">

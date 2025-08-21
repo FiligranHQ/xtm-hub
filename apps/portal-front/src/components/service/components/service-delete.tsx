@@ -1,20 +1,21 @@
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { obasScenariosItem_fragment$data } from '@generated/obasScenariosItem_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
-interface ObasScenarioDeleteProps {
+interface ServiceDeleteProps {
   userCanDelete?: boolean;
   onDelete?: () => void;
-  obasScenario: obasScenariosItem_fragment$data;
+  serviceName: string;
+  translationKey: string;
 }
 
-export const ObasScenarioDelete = ({
+export const ServiceDelete = ({
   userCanDelete,
   onDelete,
-  obasScenario,
-}: ObasScenarioDeleteProps) => {
+  serviceName,
+  translationKey,
+}: ServiceDeleteProps) => {
   const t = useTranslations();
   const { handleCloseSheet } = useDialogContext();
 
@@ -23,15 +24,15 @@ export const ObasScenarioDelete = ({
       <AlertDialogComponent
         actionButtonText={t('Utils.Delete')}
         variantName={'destructive'}
-        AlertTitle={t('Service.ObasScenario.DeleteObasScenario', {
-          name: obasScenario.name,
+        AlertTitle={t(`${translationKey}.DeleteService`, {
+          name: serviceName,
         })}
         triggerElement={
           <Button
             variant="outline-destructive"
             className=""
-            aria-label={t('Service.ObasScenario.DeleteObasScenario', {
-              name: obasScenario.name,
+            aria-label={t(`${translationKey}.DeleteService`, {
+              name: serviceName,
             })}>
             {t('Utils.Delete')}
           </Button>
@@ -40,8 +41,8 @@ export const ObasScenarioDelete = ({
           onDelete?.();
           handleCloseSheet(e);
         }}>
-        {t('Service.ObasScenario.SureDeleteObasScenario', {
-          name: obasScenario.name,
+        {t(`${translationKey}.SureDeleteService`, {
+          name: serviceName,
         })}
       </AlertDialogComponent>
     )

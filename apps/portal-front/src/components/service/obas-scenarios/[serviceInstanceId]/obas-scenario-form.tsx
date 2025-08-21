@@ -1,10 +1,11 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { ObasScenarioDelete } from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-delete';
+import { useServiceContext } from '@/components/service/components/service-context';
+import { ServiceDelete } from '@/components/service/components/service-delete';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { obasScenariosItem_fragment$data } from '@generated/obasScenariosItem_fragment.graphql';
+import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   AutoForm,
   Button,
@@ -38,22 +39,24 @@ const obasScenarioFormSchema = z.object({
 });
 export type ObasScenarioFormValues = z.infer<typeof obasScenarioFormSchema>;
 
-interface ObasScenarioFormProps {
+export interface ObasScenarioFormProps {
   userCanDelete?: boolean;
   handleSubmit?: (values: ObasScenarioFormValues) => void;
   onDelete?: () => void;
-  obasScenario?: obasScenariosItem_fragment$data;
+  document?: SubscribableResource;
 }
 
 export const ObasScenarioForm = ({
   userCanDelete,
   handleSubmit,
   onDelete,
-  obasScenario,
+  document,
 }: ObasScenarioFormProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
+  const { translationKey } = useServiceContext();
 
+  const obasScenario = document;
   const { handleCloseSheet } = useDialogContext();
 
   const values = useMemo(
@@ -125,7 +128,9 @@ export const ObasScenarioForm = ({
           labels: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t('Service.ObasScenario.Form.LabelsLabel')}</FormLabel>
+                <FormLabel>
+                  {t('Service.ObasScenario.Form.LabelsLabel')}
+                </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
@@ -135,7 +140,9 @@ export const ObasScenarioForm = ({
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t('Service.ObasScenario.Form.LabelsPlaceholder')}
+                    placeholder={t(
+                      'Service.ObasScenario.Form.LabelsPlaceholder'
+                    )}
                     variant="inverted"
                   />
                 </FormControl>
@@ -145,9 +152,7 @@ export const ObasScenarioForm = ({
           uploader_id: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {t('Service.ObasScenario.Form.Author')}
-                </FormLabel>
+                <FormLabel>{t('Service.ObasScenario.Form.Author')}</FormLabel>
                 <FormControl>
                   <SelectUsersFormField
                     defaultValue={obasScenario?.uploader?.email ?? me!.email}
@@ -195,10 +200,11 @@ export const ObasScenarioForm = ({
         }}>
         <SheetFooter className="sm:justify-between pt-2">
           {obasScenario && (
-            <ObasScenarioDelete
+            <ServiceDelete
               userCanDelete={userCanDelete}
               onDelete={onDelete}
-              obasScenario={obasScenario}
+              serviceName={obasScenario.name}
+              translationKey={translationKey}
             />
           )}
           <div className="ml-auto flex gap-s">

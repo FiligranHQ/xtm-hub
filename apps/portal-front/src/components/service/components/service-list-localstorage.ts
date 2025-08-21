@@ -1,8 +1,8 @@
 import { useLocalStorage } from 'usehooks-ts';
 
-export const csvFeedListLocalStorage = () => {
+export const serviceListLocalStorage = (serviceName: string) => {
   const [count, setCount, removeCount] = useLocalStorage(
-    'countCsvFeedList',
+    `count${serviceName}List`,
     50
   );
   const [search, setSearch, removeSearch] = useLocalStorage<string>(
@@ -16,7 +16,7 @@ export const csvFeedListLocalStorage = () => {
   );
 
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
-    'countCsvFeedList',
+    `count${serviceName}List`,
     50
   );
 
