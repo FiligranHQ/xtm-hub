@@ -13,7 +13,8 @@ COPY apps/portal-front/package.json ./apps/portal-front/package.json
 
 # Install all dependencies at the workspace level
 RUN corepack enable && \
-    yarn install
+    yarn install && \
+    nx build apps/portal-api
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -26,6 +27,7 @@ RUN corepack enable
 
 # Copy root node_modules for proper dependencies resolution
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages ./packages
 
 # Run tests from the portal-api directory
 WORKDIR /app/apps/portal-api
