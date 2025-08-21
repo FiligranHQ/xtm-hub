@@ -1,3 +1,4 @@
+import { logApp } from '@xtm-hub/logger';
 import {
   AdminEditUserInput,
   EditUserCapabilitiesInput,
@@ -8,7 +9,6 @@ import { PortalContext } from '../../model/portal-context';
 import { dispatch } from '../../pub';
 import { updateUserSession } from '../../sessionStoreManager';
 import { auth0Client } from '../../thirdparty/auth0/client';
-import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import {
   loadUserOrganization,

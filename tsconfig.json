@@ -20,10 +20,11 @@
         "name": "next"
       }
     ],
-
-    // Path mapping for monorepo
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "error": ["packages/error/src/index.ts"],
+      "logger": ["packages/logger/src/index.ts"]
+    }
   },
   "include": [],
   "exclude": ["node_modules"]

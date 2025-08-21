@@ -1,4 +1,4 @@
-import { logApp } from '../../utils/app-logger.util';
+import { logApp } from '@xtm-hub/logger';
 import { auth0ClientImplementation } from './implementation';
 import { auth0ClientMock } from './mock';
 

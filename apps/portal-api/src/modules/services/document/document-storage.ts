@@ -6,9 +6,9 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Upload as S3Upload } from '@aws-sdk/lib-storage';
+import { logApp } from '@xtm-hub/logger';
 import config from 'config';
 import { Readable } from 'stream';
-import { logApp } from '../../../utils/app-logger.util';
 const getEndpoint = () => {
   // If using AWS S3, unset the endpoint to let the library choose the best endpoint
   if (config.get('minio.endpoint') === 's3.amazonaws.com') {

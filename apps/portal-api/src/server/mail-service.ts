@@ -1,8 +1,8 @@
+import { logApp } from '@xtm-hub/logger';
 import config from 'config';
 import * as fsPromises from 'fs/promises';
 import nodemailer from 'nodemailer';
 import * as path from 'path';
-import { logApp } from '../utils/app-logger.util';
 import { MailTemplates, templateSubjects } from './mail-template/mail';
 
 const smtpOptions = config.get('smtp_options');

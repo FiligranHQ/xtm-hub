@@ -1,7 +1,7 @@
+import { logApp } from '@xtm-hub/logger';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { z } from 'zod';
 import { DatabaseType } from '../../knexfile';
-import { logApp } from './app-logger.util';
 
 export const extractId = <T extends string>(id: string) => {
   const { id: databaseId } = fromGlobalId(id) as {
