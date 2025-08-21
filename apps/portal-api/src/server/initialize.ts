@@ -1,3 +1,4 @@
+import { logApp } from '@xtm-hub/logger';
 import { dbTx, dbUnsecure } from '../../knexfile';
 import { User } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
@@ -9,7 +10,6 @@ import {
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
 } from '../portal.const';
-import { logApp } from '../utils/app-logger.util';
 import { hashPassword } from '../utils/hash-password.util';
 import {
   ensureCapabilityExists,

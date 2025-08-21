@@ -1,3 +1,4 @@
+import { logApp } from '@xtm-hub/logger';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import crypto from 'node:crypto';
 import { dbTx } from '../../../knexfile';
@@ -8,14 +9,13 @@ import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
-import { logApp } from '../../utils/app-logger.util';
 
 import {
   BadRequestError,
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   UnknownError,
-} from '../../utils/error.util';
+} from '@xtm-hub/error';
 import { extractId } from '../../utils/utils';
 import { ErrorCode } from '../common/error-code';
 import { removeUserFromOrganizationPending } from '../common/user-organization-pending.domain';

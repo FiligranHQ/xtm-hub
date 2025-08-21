@@ -1,7 +1,7 @@
 import { ApolloServerPlugin, BaseContext } from '@apollo/server';
+import { AppLogsCategory, logApp } from '@xtm-hub/logger';
 import type { Request, Response } from 'express';
 import type { UserLoadUserBy } from '../../model/user';
-import { AppLogsCategory, logApp } from '../../utils/app-logger.util';
 
 export interface Context extends BaseContext {
   user: UserLoadUserBy;

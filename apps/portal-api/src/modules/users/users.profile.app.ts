@@ -1,8 +1,8 @@
+import { logApp } from '@xtm-hub/logger';
 import { EditMeUserInput } from '../../__generated__/resolvers-types';
 import { dispatch } from '../../pub';
 import { updateUserSession } from '../../sessionStoreManager';
 import { auth0Client } from '../../thirdparty/auth0/client';
-import { logApp } from '../../utils/app-logger.util';
 import { isImgUrl } from '../../utils/utils';
 import { ErrorCode } from '../common/error-code';
 import { loadUserDetails, updateUser } from './users.domain';

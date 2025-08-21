@@ -3,9 +3,9 @@ import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { PortalContext } from '../model/portal-context';
 import { getCapabilityUser, userHasBypassCapability } from './auth.helper';
 
+import { logApp } from '@xtm-hub/logger';
 import { UserLoadUserBy } from '../model/user';
 import { getCapabilities } from '../modules/users/users.domain';
-import { logApp } from '../utils/app-logger.util';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
 export const SERVICE_DIRECTIVE_NAME = 'service_capa';

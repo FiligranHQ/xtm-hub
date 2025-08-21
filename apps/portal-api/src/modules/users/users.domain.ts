@@ -1,3 +1,4 @@
+import { ForbiddenAccess } from '@xtm-hub/error';
 import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
 import {
   Filter,
@@ -17,7 +18,6 @@ import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
-import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { isEmpty } from '../../utils/utils';

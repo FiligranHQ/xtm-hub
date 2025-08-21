@@ -21,7 +21,7 @@ import {
 } from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
-import { logApp } from '../utils/app-logger.util';
+import { logApp } from '@xtm-hub/logger';
 import { isUserAllowed } from './auth.helper';
 import { serviceInstanceSecurityLayer } from './layer/service-instance';
 import { userSecurityLayer } from './layer/user';

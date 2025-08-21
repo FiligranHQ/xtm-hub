@@ -1,240 +1,176 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "neverConnectToCloud": true,
   "targetDefaults": {
     "copy": {
-      "dependsOn": [
-        "^copy"
-      ],
+      "dependsOn": ["^copy"],
       "cache": true
     },
     "check-ts": {
-      "dependsOn": [
-        "^check-ts"
-      ],
+      "dependsOn": ["^check-ts"],
       "cache": true
     },
     "generate:ts": {
-      "dependsOn": [
-        "^generate:ts"
-      ],
+      "dependsOn": ["^generate:ts"],
       "cache": true
     },
     "knex:run": {
-      "dependsOn": [
-        "^knex:run"
-      ],
+      "dependsOn": ["^knex:run"],
       "cache": true
     },
     "migrate:make": {
-      "dependsOn": [
-        "^migrate:make"
-      ],
+      "dependsOn": ["^migrate:make"],
       "cache": true
     },
     "migrate:latest": {
-      "dependsOn": [
-        "^migrate:latest"
-      ],
+      "dependsOn": ["^migrate:latest"],
       "cache": true
     },
     "migrate:up": {
-      "dependsOn": [
-        "^migrate:up"
-      ],
+      "dependsOn": ["^migrate:up"],
       "cache": true
     },
     "migrate:down": {
-      "dependsOn": [
-        "^migrate:down"
-      ],
+      "dependsOn": ["^migrate:down"],
       "cache": true
     },
     "seed:make": {
-      "dependsOn": [
-        "^seed:make"
-      ],
+      "dependsOn": ["^seed:make"],
       "cache": true
     },
     "generate-pg-to-ts": {
-      "dependsOn": [
-        "^generate-pg-to-ts"
-      ],
+      "dependsOn": ["^generate-pg-to-ts"],
       "cache": true
     },
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "cache": true
     },
     "start": {
-      "dependsOn": [
-        "^start"
-      ],
+      "dependsOn": ["^start"],
       "cache": true
     },
     "start-tsx": {
-      "dependsOn": [
-        "^start-tsx"
-      ],
+      "dependsOn": ["^start-tsx"],
       "cache": true
     },
     "dev:tsc": {
-      "dependsOn": [
-        "^dev:tsc"
-      ],
+      "dependsOn": ["^dev:tsc"],
       "cache": true
     },
     "dev:node": {
-      "dependsOn": [
-        "^dev:node"
-      ],
+      "dependsOn": ["^dev:node"],
       "cache": true
     },
     "start-dev": {
-      "dependsOn": [
-        "^start-dev"
-      ],
+      "dependsOn": ["^start-dev"],
       "cache": true
     },
     "lint": {
-      "dependsOn": [
-        "^lint"
-      ],
+      "dependsOn": ["^lint"],
       "cache": true
     },
     "lint:fix": {
-      "dependsOn": [
-        "^lint:fix"
-      ],
+      "dependsOn": ["^lint:fix"],
       "cache": true
     },
     "format:check": {
-      "dependsOn": [
-        "^format:check"
-      ],
+      "dependsOn": ["^format:check"],
       "cache": true
     },
     "format": {
-      "dependsOn": [
-        "^format"
-      ],
+      "dependsOn": ["^format"],
       "cache": true
     },
     "test": {
-      "dependsOn": [
-        "^test"
-      ],
+      "dependsOn": ["^test"],
       "cache": true
     },
     "test:ci": {
-      "dependsOn": [
-        "^test:ci"
-      ],
+      "dependsOn": ["^test:ci"],
       "cache": true
     },
     "prepare": {
-      "dependsOn": [
-        "^prepare"
-      ],
+      "dependsOn": ["^prepare"],
       "cache": true
     },
     "seed:make:test": {
-      "dependsOn": [
-        "^seed:make:test"
-      ],
+      "dependsOn": ["^seed:make:test"],
       "cache": true
     },
     "start-dev-test": {
-      "dependsOn": [
-        "^start-dev-test"
-      ],
+      "dependsOn": ["^start-dev-test"],
       "cache": true
     },
     "start-dev-e2e-test": {
-      "dependsOn": [
-        "^start-dev-e2e-test"
-      ],
+      "dependsOn": ["^start-dev-e2e-test"],
       "cache": true
     },
     "test:w": {
-      "dependsOn": [
-        "^test:w"
-      ],
+      "dependsOn": ["^test:w"],
       "cache": true
     },
     "init-db-test": {
-      "dependsOn": [
-        "^init-db-test"
-      ],
+      "dependsOn": ["^init-db-test"],
       "cache": true
     },
     "clean-db-test": {
-      "dependsOn": [
-        "^clean-db-test"
-      ],
+      "dependsOn": ["^clean-db-test"],
       "cache": true
     },
     "lint-staged": {
-      "dependsOn": [
-        "^lint-staged"
-      ],
+      "dependsOn": ["^lint-staged"],
       "cache": true
     },
     "watch:graphql": {
-      "dependsOn": [
-        "^watch:graphql"
-      ],
+      "dependsOn": ["^watch:graphql"],
       "cache": true
     },
     "test:e2e": {
-      "dependsOn": [
-        "^test:e2e"
-      ],
+      "dependsOn": ["^test:e2e"],
       "cache": true
     },
     "test:e2e:ui": {
-      "dependsOn": [
-        "^test:e2e:ui"
-      ],
+      "dependsOn": ["^test:e2e:ui"],
       "cache": true
     },
     "generate-test-e2e": {
-      "dependsOn": [
-        "^generate-test-e2e"
-      ],
+      "dependsOn": ["^generate-test-e2e"],
       "cache": true
     },
     "dev": {
-      "dependsOn": [
-        "^dev"
-      ],
+      "dependsOn": ["^dev"],
       "cache": true
     },
     "check-ts-test": {
-      "dependsOn": [
-        "^check-ts-test"
-      ],
+      "dependsOn": ["^check-ts-test"],
       "cache": true
     },
     "relay": {
-      "dependsOn": [
-        "^relay"
-      ],
+      "dependsOn": ["^relay"],
       "cache": true
     },
     "auto-translation": {
-      "dependsOn": [
-        "^auto-translation"
-      ],
+      "dependsOn": ["^auto-translation"],
       "cache": true
     },
     "generate:enum": {
-      "dependsOn": [
-        "^generate:enum"
-      ],
+      "dependsOn": ["^generate:enum"],
       "cache": true
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
     }
   },
-  "nxCloudId": "687667e386e38579c882078f"
+  "nxCloudId": "687667e386e38579c882078f",
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "eslint:lint"
+      }
+    }
+  ]
 }

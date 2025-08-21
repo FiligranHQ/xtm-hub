@@ -1,4 +1,4 @@
-import { AppLogsCategory, logApp } from '../../utils/app-logger.util';
+import { AppLogsCategory, logApp } from '@xtm-hub/logger';
 
 const logResolver = {
   Mutation: {

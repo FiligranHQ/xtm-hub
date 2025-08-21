@@ -1,3 +1,12 @@
+import {
+  ALREADY_EXISTS,
+  AlreadyExistsError,
+  FORBIDDEN_ACCESS,
+  ForbiddenAccess,
+  NOT_FOUND,
+  NotFoundError,
+  UnknownError,
+} from '@xtm-hub/error';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
@@ -9,15 +18,6 @@ import { UserId } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
-import {
-  ALREADY_EXISTS,
-  AlreadyExistsError,
-  FORBIDDEN_ACCESS,
-  ForbiddenAccess,
-  NOT_FOUND,
-  NotFoundError,
-  UnknownError,
-} from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserDetails } from '../users/users.domain';

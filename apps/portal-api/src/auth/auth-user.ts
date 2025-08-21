@@ -1,3 +1,4 @@
+import { ForbiddenAccess } from '@xtm-hub/error';
 import type { Request, Response } from 'express';
 import { PortalContext } from '../model/portal-context';
 import { UserInfo } from '../model/user';
@@ -8,7 +9,6 @@ import {
   ensureUserOrganizationExist,
   ensureUserRoleExist,
 } from '../server/initialize.helper';
-import { ForbiddenAccess } from '../utils/error.util';
 import { isEmptyField } from '../utils/utils';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {

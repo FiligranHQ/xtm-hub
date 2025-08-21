@@ -1,3 +1,4 @@
+import { UnknownError } from '@xtm-hub/error';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw } from '../../../../knexfile';
@@ -8,7 +9,6 @@ import UserService from '../../../model/kanel/public/UserService';
 import UserServiceCapability, {
   UserServiceCapabilityId,
 } from '../../../model/kanel/public/UserServiceCapability';
-import { UnknownError } from '../../../utils/error.util';
 import { loadSubscriptionCapabilitiesBy } from '../../services/instances/service-capabilities/service_capabilities.helper';
 import { loadGenericServiceCapabilityBy } from '../service-capability/generic_service_capability.helper';
 import { loadServiceCapabilityBy } from '../service-capability/service_capability.helper';

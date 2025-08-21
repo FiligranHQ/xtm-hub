@@ -1,8 +1,8 @@
+import { logApp } from '@xtm-hub/logger';
 import config from 'config';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import { UserId } from '../../model/kanel/public/User';
 import { loadUserBy } from '../../modules/users/users.domain';
-import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';
 
 export const hubspotLoginHook = async (userId: string) => {

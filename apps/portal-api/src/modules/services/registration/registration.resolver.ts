@@ -1,13 +1,13 @@
-import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
-import { dbTx } from '../../../../knexfile';
-import { Resolvers } from '../../../__generated__/resolvers-types';
 import {
   BadRequestError,
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   NotFoundError,
   UnknownError,
-} from '../../../utils/error.util';
+} from '@xtm-hub/error';
+import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
+import { dbTx } from '../../../../knexfile';
+import { Resolvers } from '../../../__generated__/resolvers-types';
 import { ErrorCode } from '../../common/error-code';
 import { registrationApp } from './registration.app';
 

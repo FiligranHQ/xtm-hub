@@ -1,5 +1,5 @@
+import { logApp } from '@xtm-hub/logger';
 import { URL } from 'node:url';
-import { logApp } from './app-logger.util';
 import { isNotEmptyField } from './utils';
 
 export const extractRefererPathFromReq = (req) => {

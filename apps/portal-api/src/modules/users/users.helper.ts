@@ -1,3 +1,4 @@
+import { logApp } from '@xtm-hub/logger';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +25,6 @@ import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../sessionStoreManager';
-import { logApp } from '../../utils/app-logger.util';
 import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';

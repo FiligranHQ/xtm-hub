@@ -1,9 +1,9 @@
+import { ForbiddenAccess } from '@xtm-hub/error';
 import { Knex } from 'knex';
 import { dbUnsecure, QueryOpts } from '../../knexfile';
 import Subscription from '../model/kanel/public/Subscription';
 import { PortalContext } from '../model/portal-context';
 import { GenericServiceCapabilityName } from '../modules/user_service/service-capability/generic_service_capability.const';
-import { ForbiddenAccess } from '../utils/error.util';
 
 export const setDeleteSecurityForUserServiceCapability = <T>(
   context: PortalContext,
