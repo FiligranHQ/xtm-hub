@@ -336,7 +336,10 @@
   },
   "ProfilePage": {
     "PlateformsEditionDialog": {
-      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OBAS."
+      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OBAS.",
+      "ConfirmSentenceEmail": "Vous allez être retiré de votre organisation ainsi que de toutes les souscriptions liées à celle-ci. Vous garderez accès à votre Espace Personnel. Attention, votre email pour vous connecter à OpenCTI et/ou OpenBAS pourra également être modifié. Pour rejoindre votre nouvelle organisation, un administrateur devra approuver vos accès.",
+      "ConfirmSentenceEmailWithoutDomain": "Attention, votre email pour vous connecter à OpenCTI et/ou OpenBAS pourra également être modifié.",
+      "ConfirmTitleEmail": "Vous allez changer votre email"
     },
     "Title": "Profile",
     "UpdateProfile": "Mise à jour du profil"

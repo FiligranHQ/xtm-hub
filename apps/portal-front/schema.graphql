@@ -63,6 +63,7 @@ type Mutation {
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   editMeUser(input: EditMeUserInput!): User!
+  editMeUserEmail(newEmail: String!): User!
   changeSelectedOrganization(organization_id: ID!): User
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User

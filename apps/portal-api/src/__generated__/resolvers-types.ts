@@ -378,6 +378,7 @@ export type Mutation = {
   editDocument: Document;
   editLabel: Label;
   editMeUser: User;
+  editMeUserEmail: User;
   editOrganization?: Maybe<Organization>;
   editServiceCapability?: Maybe<SubscriptionModel>;
   editServiceInstance?: Maybe<ServiceInstance>;
@@ -560,6 +561,11 @@ export type MutationEditLabelArgs = {
 
 export type MutationEditMeUserArgs = {
   input: EditMeUserInput;
+};
+
+
+export type MutationEditMeUserEmailArgs = {
+  newEmail: Scalars['String']['input'];
 };
 
 
@@ -2075,6 +2081,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationEditDocumentArgs, 'input'>>;
   editLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationEditLabelArgs, 'id' | 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
+  editMeUserEmail?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserEmailArgs, 'newEmail'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;

@@ -51,6 +51,13 @@ export const MeEditUserMutation = graphql`
     }
   }
 `;
+export const MeEditUserEmailMutation = graphql`
+  mutation meEditUserEmailMutation($newEmail: String!) {
+    editMeUserEmail(newEmail: $newEmail) {
+      ...meContext_fragment
+    }
+  }
+`;
 
 // Configuration or Preloader Query
 export const MeQuery = graphql`

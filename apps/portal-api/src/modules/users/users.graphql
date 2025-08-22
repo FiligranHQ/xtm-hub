@@ -118,6 +118,7 @@ type Mutation {
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   editMeUser(input: EditMeUserInput!): User! @auth
+  editMeUserEmail(newEmail: String!): User! @auth
   changeSelectedOrganization(organization_id: ID!): User @auth
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])

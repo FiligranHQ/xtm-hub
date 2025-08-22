@@ -311,6 +311,19 @@ const resolvers: Resolvers = {
         });
       }
     },
+    editMeUserEmail: async (_, { newEmail }, context) => {
+      try {
+        return await usersProfileApp.editMeUserEmail(context, newEmail);
+      } catch (error) {
+        if (error.message.includes(ErrorCode.InvalidImageUrl)) {
+          throw BadRequestError(error.message);
+        }
+
+        throw UnknownError('EDIT_ME_USER_ERROR', {
+          detail: error,
+        });
+      }
+    },
     resetPassword: async (_, __, context) => {
       await resetPassword(context);
       return { success: true };
