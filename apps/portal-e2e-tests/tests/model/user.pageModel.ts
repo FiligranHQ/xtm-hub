@@ -8,18 +8,18 @@ export default class UserPage {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Security' }).first().click();
 
-    await expect(this.page.getByRole('heading', { level: 1 })).toContainText(
-      'Security'
-    );
+    await expect(
+      this.page.getByRole('heading', { level: 1 }).locator(':scope.sr-only')
+    ).toContainText('Security');
   }
 
   async navigateToUserManageAccess() {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Users' }).click();
 
-    await expect(this.page.getByRole('heading', { level: 1 })).toContainText(
-      'Security'
-    );
+    await expect(
+      this.page.getByRole('heading', { level: 1 }).locator(':scope.sr-only')
+    ).toContainText('Security');
   }
 
   async addUser(userEmail: string, userOrganizationName: string) {

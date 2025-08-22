@@ -1,31 +1,28 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import { ObasScenarioUpdateSheet } from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-update-sheet';
+import { useServiceContext } from '@/components/service/components/service-context';
+import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import { IconActions } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { obasScenariosItem_fragment$data } from '@generated/obasScenariosItem_fragment.graphql';
-import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { MoreVertIcon } from 'filigran-icon';
-import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
-interface ObasScenarioCardProps {
-  obasScenario: obasScenariosItem_fragment$data;
-  serviceInstance: serviceInstance_fragment$data;
+interface ServiceCardProps {
+  document: SubscribableResource;
   detailUrl: string;
   shareLinkUrl: string;
-  connectionId: string;
 }
 
-const ObasScenarioCard = ({
-  obasScenario,
-  serviceInstance,
+const ServiceCard = ({
+  document,
   detailUrl,
   shareLinkUrl,
-  connectionId,
-}: ObasScenarioCardProps) => {
+}: ServiceCardProps) => {
   const t = useTranslations();
+
+  const { serviceInstance } = useServiceContext();
 
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
@@ -36,19 +33,10 @@ const ObasScenarioCard = ({
     serviceInstance
   );
 
-  const onDelete = () => {
-    toast({
-      title: t('Utils.Success'),
-      description: t('Service.ObasScenario.Actions.Deleted', {
-        name: obasScenario.name,
-      }),
-    });
-  };
-
   return (
     <ShareableResourceCard
-      key={obasScenario.id}
-      document={obasScenario}
+      key={document.id}
+      document={document}
       detailUrl={detailUrl}
       shareLinkUrl={shareLinkUrl}
       serviceInstance={serviceInstance}
@@ -62,12 +50,9 @@ const ObasScenarioCard = ({
                 <span className="sr-only">{t('Utils.OpenMenu')}</span>
               </>
             }>
-            <ObasScenarioUpdateSheet
-              onDelete={onDelete}
-              connectionId={connectionId}
+            <ServiceManageSheet
               variant="menu"
-              obasScenario={obasScenario}
-              serviceInstance={serviceInstance}
+              document={document}
             />
           </IconActions>
         )
@@ -76,4 +61,4 @@ const ObasScenarioCard = ({
   );
 };
 
-export default ObasScenarioCard;
+export default ServiceCard;

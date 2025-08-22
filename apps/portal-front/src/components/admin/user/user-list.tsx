@@ -1,7 +1,6 @@
 import { EditUser } from '@/components/admin/user/[slug]/user-edit';
-import { AddUser } from '@/components/admin/user/add-user';
-import { AdminAddUser } from '@/components/admin/user/admin-add-user';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { PortalContext } from '@/components/me/app-portal-context';
 import {
   handleSortingChange,
@@ -27,10 +26,10 @@ import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import {
-  createContext,
   FunctionComponent,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import {
@@ -38,6 +37,7 @@ import {
   readInlineData,
   useLazyLoadQuery,
   useRefetchableFragment,
+  useSubscription,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -98,8 +98,6 @@ export const UserFragment = graphql`
   }
 `;
 
-export const UserListContext = createContext<{ connectionID?: string }>({});
-
 interface UserListProps {
   organization?: string;
 }
@@ -155,6 +153,29 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     userListQuery,
     userList_users$key
   >(userListFragment, queryData);
+
+  const connectionID = data?.users?.__id;
+  const { setConnectionId } = getUserListContext();
+  setConnectionId(connectionID);
+
+  const userListSubscription = graphql`
+    subscription userListSubscription($connections: [ID!]!) {
+      User {
+        add @appendNode(connections: $connections, edgeTypeName: "UserEdge") {
+          ...userList_fragment
+        }
+      }
+    }
+  `;
+
+  const userListSubscriptionConfig = useMemo(
+    () => ({
+      variables: { connections: [connectionID] },
+      subscription: userListSubscription,
+    }),
+    [connectionID, userListSubscription]
+  );
+  useSubscription(userListSubscriptionConfig);
 
   const columns: ColumnDef<userList_fragment$data>[] = [
     {
@@ -308,7 +329,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   );
 
   return (
-    <UserListContext.Provider value={{ connectionID: data.users.__id }}>
+    <>
       <DataTable
         columns={columns}
         data={userData}
@@ -334,11 +355,6 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">
               <DataTableHeadBarOptions />
-              {isAdminPath ? (
-                <AdminAddUser connectionId={data?.users?.__id} />
-              ) : (
-                <AddUser connectionId={data?.users?.__id} />
-              )}
             </div>
           </div>
         }
@@ -359,7 +375,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
           }
         />
       )}
-    </UserListContext.Provider>
+    </>
   );
 };
 

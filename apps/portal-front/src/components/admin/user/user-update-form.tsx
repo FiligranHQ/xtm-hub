@@ -1,6 +1,7 @@
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
 import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
+import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
@@ -57,6 +58,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
 
   const [updateUserMutation] = useMutation(UserSlugEditMutation);
 
+  const { connectionID } = getUserListContext();
   const updateUser = (values: z.infer<typeof userEditFormSchema>) => {
     const variables = isAdminPath
       ? values
@@ -67,6 +69,7 @@ export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
           ...variables,
         },
         id: user.id,
+        userListConnections: [connectionID ?? ''],
       },
       onCompleted: () => {
         toast({

@@ -1,7 +1,7 @@
 'use client';
 
+import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
 import ObasScenariosList from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenarios-list';
-import { obasScenarioListLocalStorage } from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenarios-list-localstorage';
 import { ObasScenariosListQuery } from '@/components/service/obas-scenarios/obas-scenario.graphql';
 import { obasScenariosQuery } from '@generated/obasScenariosQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -18,7 +18,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     ObasScenariosListQuery
   );
   const { count, search, labels, setSearch, setLabels } =
-    obasScenarioListLocalStorage();
+    serviceListLocalStorage('ObasScenario');
 
   useEffect(() => {
     loadQuery(

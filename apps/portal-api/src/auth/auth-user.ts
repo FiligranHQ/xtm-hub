@@ -18,13 +18,14 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   if (isEmptyField(email)) {
     throw ForbiddenAccess('User email not provided');
   }
+  const isAdminFiligran = userInfo.roles.includes(ROLE_ADMIN.name);
 
-  const user = await getOrCreateUser(userInfo, true);
+  const user = await getOrCreateUser(userInfo, true, isAdminFiligran);
   if (user.disabled) {
     throw ForbiddenAccess('You are not allowed to log in');
   }
   // Check if the user has the admin role, so in creation we create user then add admin role
-  if (userInfo.roles.includes(ROLE_ADMIN.name)) {
+  if (isAdminFiligran) {
     await ensureUserRoleExist(user.id, ROLE_ADMIN.id);
     await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
     return loadUserBy({ 'User.id': user.id });

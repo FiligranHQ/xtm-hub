@@ -11,6 +11,10 @@ export type ShareableResource =
   | SeoCustomDashboard
   | SeoObasScenario;
 
+export type SubscribableResource =
+  | csvFeedsItem_fragment$data
+  | obasScenariosItem_fragment$data;
+
 export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoObasScenario;
 
 export interface SeoCustomDashboard {

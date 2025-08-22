@@ -10,8 +10,16 @@ export const UserListCreateMutation = graphql`
 `;
 
 export const UserSlugEditMutation = graphql`
-  mutation userSlugEditMutation($id: ID!, $input: EditUserCapabilitiesInput!) {
-    editUserCapabilities(id: $id, input: $input) {
+  mutation userSlugEditMutation(
+    $id: ID!
+    $input: EditUserCapabilitiesInput!
+    $userListConnections: [ID!]!
+  ) {
+    editUserCapabilities(id: $id, input: $input)
+      @prependNode(
+        connections: $userListConnections
+        edgeTypeName: "UserEdge"
+      ) {
       ...userList_fragment
     }
   }
@@ -77,6 +85,51 @@ export const ListOrganizationAdministratorsQuery = graphql`
       email
       first_name
       last_name
+    }
+  }
+`;
+
+export const UserPendingListQuery = graphql`
+  query userPendingListQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: UserOrdering!
+    $orderMode: OrderingMode!
+    $filters: [Filter!]
+    $searchTerm: String
+  ) {
+    ...userPendingList_users
+  }
+`;
+
+export const UserPendingListFragment = graphql`
+  fragment userPendingList_users on Query
+  @refetchable(queryName: "PendingUsersPaginationQuery") {
+    pendingUsers(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+      searchTerm: $searchTerm
+      filters: $filters
+    ) {
+      __id
+      totalCount
+      edges {
+        node {
+          ...userList_fragment
+        }
+      }
+    }
+  }
+`;
+
+export const UserPendingListSubscription = graphql`
+  subscription userPendingListSubscription($connections: [ID!]!) {
+    UserPending {
+      delete {
+        id @deleteEdge(connections: $connections)
+      }
     }
   }
 `;

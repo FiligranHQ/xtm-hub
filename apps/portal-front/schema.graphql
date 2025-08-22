@@ -43,6 +43,7 @@ type Mutation {
   deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
   registerOpenCTIPlatform(input: RegisterOpenCTIPlatformInput!): RegistrationResponse!
   unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -56,7 +57,6 @@ type Mutation {
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
-  selfJoinServiceInstance(service_instance_id: ID!): ServiceInstance
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   adminAddUser(input: AdminAddUserInput!): User
@@ -64,6 +64,7 @@ type Mutation {
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   editMeUser(input: EditMeUserInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
+  removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   resetPassword: Success!
   login(email: String!, password: String): User
@@ -118,6 +119,7 @@ type Query {
   canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
   openCTIPlatforms: [OpenCTIPlatform!]!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
+  openCTIPlatformAssociatedOrganization(platformId: String!): Organization!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
@@ -136,6 +138,7 @@ type Query {
   user(id: ID!): User
   organizationAdministrators(organizationId: ID!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
   node(id: ID!): Node
 }
@@ -487,6 +490,10 @@ type OpenCTIPlatformRegistrationStatusResponse {
   status: OpenCTIPlatformRegistrationStatus!
 }
 
+type RefreshUserPlatformTokenResponse {
+  token: String!
+}
+
 enum ServiceInstanceOrdering {
   name
   description
@@ -586,6 +593,7 @@ type Subscription {
   ActionTracking: TrackingSubscription
   User: UserSubscription
   MeUser: MeUserSubscription
+  UserPending: UserPendingSubscription
 }
 
 type Label implements Node {
@@ -863,6 +871,10 @@ type UserSubscription {
 
 type MeUserSubscription {
   edit: User
+  delete: User
+}
+
+type UserPendingSubscription {
   delete: User
 }
 

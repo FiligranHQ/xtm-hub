@@ -1,25 +1,23 @@
 'use client';
 
 import { DocumentsListQuery } from '@/components/service/document/document.graphql';
-import { ServiceById } from '@/components/service/service.graphql';
 import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-import useDecodedParams from '@/hooks/useDecodedParams';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
-import { serviceByIdQuery } from '@generated/serviceByIdQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
-
-const PageLoader: React.FunctionComponent = ({}) => {
+interface PreloaderProps {
+  serviceInstance: serviceInstance_fragment$data;
+}
+const PageLoader = ({ serviceInstance }: PreloaderProps) => {
   const t = useTranslations();
 
   const columns: ColumnDef<documentItem_fragment$data>[] = [
@@ -47,41 +45,27 @@ const PageLoader: React.FunctionComponent = ({}) => {
     },
   ];
 
-  const { slug } = useDecodedParams();
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, orderBy, orderMode } = documentListLocalStorage(columns);
-  const [readyToLoad, setReadyToLoad] = useState(false);
-
-  const [queryRefService, loadQueryService] =
-    useQueryLoader<serviceByIdQuery>(ServiceById);
-  useMountingLoader(loadQueryService, { service_instance_id: slug });
 
   useEffect(() => {
-    if (slug) {
-      setReadyToLoad(true);
-    }
-  }, [slug]);
-
-  useEffect(() => {
-    if (readyToLoad) {
-      const variablesValues = JSON.stringify({
-        count,
-        orderBy,
-        orderMode,
-        serviceInstanceId: slug,
-      });
-      loadQuery(JSON.parse(variablesValues), {
-        fetchPolicy: 'store-and-network',
-      });
-    }
-  }, [readyToLoad, loadQuery, count, orderBy, orderMode, slug]);
+    const variablesValues = JSON.stringify({
+      count,
+      orderBy,
+      orderMode,
+      serviceInstanceId: serviceInstance.id,
+    });
+    loadQuery(JSON.parse(variablesValues), {
+      fetchPolicy: 'store-and-network',
+    });
+  }, [loadQuery, count, orderBy, orderMode, serviceInstance.id]);
 
   return (
     <>
-      {queryRef && slug && queryRefService ? (
+      {queryRef ? (
         <DocumentList
-          queryRefService={queryRefService}
+          serviceInstance={serviceInstance}
           queryRef={queryRef}
         />
       ) : (

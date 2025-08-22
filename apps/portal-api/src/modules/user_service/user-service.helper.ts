@@ -18,7 +18,7 @@ import {
 import { sendMail } from '../../server/mail-service';
 import { loadUserOrganization } from '../common/user-organization.domain';
 import {
-  getServiceDefinition,
+  loadServiceDefinition,
   loadServiceInstanceBy,
 } from '../services/service-instance.domain';
 import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
@@ -191,7 +191,7 @@ export const createUserServiceAccess = async (
     'ServiceInstance.id',
     subscription.service_instance_id
   );
-  const service_definition = await getServiceDefinition(context, service.id);
+  const service_definition = await loadServiceDefinition(context, service.id);
   await sendMail({
     to: user.email,
     template: service_definition.identifier,

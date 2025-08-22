@@ -105,6 +105,7 @@
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Erreur lors de la suppression de l'organisation. L'organisation n'a pas pu être supprimée car au moins une souscription y est toujours affiliée. Supprimez la/les souscription(s) d'abord.",
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
+      "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
       "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
@@ -282,6 +283,13 @@
     "Profile": "Profile",
     "ToggleUser": "Ouvrir menu utilisateur"
   },
+  "Notifications": {
+    "Title": "Notifications ({count})",
+    "UserNotification": {
+      "Title": "Requête Utilisateur",
+      "Text": "<nameFormat>{name}</nameFormat> veut rejoindre votre organisation"
+    }
+  },
   "OrganizationActions": {
     "ErrorNameAlreadyExists": "L'organisation {name} existe déjà.",
     "OrganizationCreated": "L'organisation {name} a été créée",
@@ -360,8 +368,8 @@
         "Updated": "{name} a été modifié"
       },
       "Active": "Publié",
-      "AddCsvFeed": "Ajouter un CSV Feed",
-      "DeleteCsvFeed": "Supprimer le CSV Feed {name}",
+      "AddService": "Ajouter un CSV Feed",
+      "DeleteService": "Supprimer le CSV Feed {name}",
       "Form": {
         "CsvFeedFile": "Fichier Csv Feed",
         "CsvFeedIllustration": "Illustration",
@@ -380,8 +388,8 @@
         "SlugLabel": "Slug"
       },
       "NonActive": "Brouillon",
-      "SureDeleteCsvFeed": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
-      "UpdateCsvFeed": "Editer le CSV Feed {name}"
+      "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
+      "UpdateService": "Editer le CSV Feed {name}"
     },
     "CustomDashboards": {
       "Actions": {
@@ -447,10 +455,10 @@
         "Author": "Auteur",
         "ProductVersionLabel": "Version OpenBAS"
       },
-      "AddObasScenario": "Ajouter un nouveau scénario",
-      "UpdateObasScenario": "Mettre à jour le scénario {name}",
-      "DeleteObasScenario": "Supprimer le scénario {name}",
-      "SureDeleteObasScenario": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
+      "AddService": "Ajouter un nouveau scénario",
+      "UpdateService": "Mettre à jour le scénario {name}",
+      "DeleteService": "Supprimer le scénario {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
       "NonActive": "Brouillon",
       "Active": "Publié"
     },
@@ -494,7 +502,7 @@
         "DeployOctiQuestionTag": "Sur quelle plateforme OpenCTI voulez-vous le déployer ?",
         "DeployOctiDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
         "DeployOctiDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme OpenCTI.",
-        "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait dans la section suivante :"
+        "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait sur la page Filigran Experience dans la section suivante :"
       },
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
       "FromVersion": "Depuis la version",
@@ -629,11 +637,20 @@
     "Roles": "Rôles",
     "Status": "Statut",
     "Title": "Liste des utilisateurs",
+    "TabTitle": "Utilisateurs",
     "UserForm": {
       "Email": "Email",
       "Password": "Mot de passe",
       "SelectOrganization": "Sélectionner une organisation",
       "SelectRoles": "Sélectionner rôles"
+    }
+  },
+  "PendingUserListPage": {
+    "TabTitle": "Requêtes utilisateurs ({usersCount})",
+    "WarningUserRejection": {
+      "Title": "Êtes-vous sûr?",
+      "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
+      "Confirm": "Confirmer"
     }
   },
   "Utils": {

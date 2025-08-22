@@ -1,5 +1,6 @@
 import { UserForm } from '@/components/admin/user/user-form';
 import { userFormSchema } from '@/components/admin/user/user-form.schema';
+import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { userListCreateMutation } from '@generated/userListCreateMutation.graphql';
@@ -9,13 +10,7 @@ import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
-interface CreateUserProps {
-  connectionId: string;
-}
-
-export const AddUser: FunctionComponent<CreateUserProps> = ({
-  connectionId,
-}) => {
+export const AddUser: FunctionComponent = () => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
 
@@ -24,13 +19,14 @@ export const AddUser: FunctionComponent<CreateUserProps> = ({
     UserListCreateMutation
   );
 
+  const { connectionID } = getUserListContext();
   const handleSubmit = (values: z.infer<typeof userFormSchema>) => {
     commitUserMutation({
       variables: {
         input: {
           ...values,
         },
-        connections: [connectionId],
+        connections: [connectionID],
       },
       onCompleted: () => {
         setOpenSheet(false);

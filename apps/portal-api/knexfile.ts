@@ -8,7 +8,7 @@ import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 
 export interface SecuryQueryOpts {
-  [key: string]: string | number | boolean;
+  [key: string]: string | number | boolean | string[] | MethodType | Filter[];
 }
 
 export interface KnexQueryBuilder extends Knex.QueryBuilder {
@@ -263,13 +263,13 @@ export const paginate = async <T, U>(
     .clearGroup()
     .countDistinct(`${type}.id as totalCount`)
     .first()
-    .secureQuery();
+    .secureQuery({ ...opts });
 
   queryContext
     .orderBy([{ column: orderBy, order: orderMode }])
     .offset(currentOffset)
     .limit(first)
-    .secureQuery();
+    .secureQuery({ ...opts });
 
   const [query, { totalCount }] = await Promise.all([
     queryContext,

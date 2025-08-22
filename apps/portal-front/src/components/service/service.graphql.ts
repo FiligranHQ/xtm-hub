@@ -37,7 +37,7 @@ export const ServiceById = graphql`
   }
 `;
 export const serviceInstanceFragment = graphql`
-  fragment serviceInstance_fragment on ServiceInstance @inline {
+  fragment serviceInstance_fragment on ServiceInstance {
     id
     name
     description
@@ -151,14 +151,6 @@ export const serviceWithSubscriptionsFragment = graphql`
     }
     subscriptions {
       ...subscriptionWithUserService_fragment @relay(mask: false)
-    }
-  }
-`;
-
-export const ServiceSelfJoinMutation = graphql`
-  mutation serviceSelfJoinMutation($service_instance_id: ID!) {
-    selfJoinServiceInstance(service_instance_id: $service_instance_id) {
-      ...serviceInstance_fragment
     }
   }
 `;

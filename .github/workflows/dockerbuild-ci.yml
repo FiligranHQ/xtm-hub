@@ -212,6 +212,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
+          fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
   run-api-unit-tests:
@@ -242,6 +243,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
+          fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
   deploy-feature-branch:

@@ -9,17 +9,26 @@ import {
   OpenCtiPlatformRegistrationStatusResponse,
   OrganizationCapability,
   PlatformRegistrationStatus,
+  RefreshUserPlatformTokenResponse,
   RegisterOpenCtiPlatformInput,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { sendMail } from '../../../server/mail-service';
+import { formatName } from '../../../utils/format';
 import { ErrorCode } from '../../common/error-code';
+import { loadUserOrganization } from '../../common/user-organization.domain';
+import { loadOrganizationBy } from '../../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import { loadOrganizationAdministrators } from '../../users/users.domain';
+import {
+  loadOrganizationAdministrators,
+  updateUser,
+} from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
@@ -28,6 +37,38 @@ import {
 } from './registration.domain';
 
 export const registrationApp = {
+  loadOpenCTIPlatformAssociatedOrganization: async (
+    context: PortalContext,
+    platformId: string
+  ): Promise<Organization> => {
+    const serviceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatform(
+        context,
+        platformId
+      );
+    if (!serviceConfiguration) {
+      throw new Error(ErrorCode.ServiceConfigurationNotFound);
+    }
+
+    const subscription = await loadSubscriptionBy(context, {
+      service_instance_id: serviceConfiguration.service_instance_id,
+    });
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
+
+    const userOrganization = await loadUserOrganization(context, {
+      organization_id: subscription.organization_id,
+      user_id: context.user.id,
+    });
+
+    if (!userOrganization) {
+      throw new Error(ErrorCode.UserIsNotInOrganization);
+    }
+
+    return loadOrganizationBy(context, 'id', subscription.organization_id);
+  },
+
   loadOpenCTIPlatforms: async (
     context: PortalContext
   ): Promise<OpenCtiPlatform[]> => {
@@ -133,7 +174,7 @@ export const registrationApp = {
           to: user.email,
           template: 'opencti_platform_registered',
           params: {
-            adminName: `${user.first_name ?? ''}`,
+            adminName: formatName(user.first_name ?? ''),
           },
         })
       )
@@ -183,6 +224,23 @@ export const registrationApp = {
       context,
       activeServiceConfiguration.service_instance_id,
       { status: ServiceConfigurationStatus.Inactive }
+    );
+
+    const users = await loadOrganizationAdministrators(
+      context,
+      subscription.organization_id
+    );
+
+    await Promise.all(
+      users.map((user) =>
+        sendMail({
+          to: user.email,
+          template: 'opencti_platform_unregistered',
+          params: {
+            adminName: formatName(user.first_name ?? ''),
+          },
+        })
+      )
     );
   },
 
@@ -253,5 +311,15 @@ export const registrationApp = {
       isInOrganization,
       organizationId: subscription.organization_id,
     };
+  },
+
+  refreshUserPlatformToken: async (
+    context: PortalContext
+  ): Promise<RefreshUserPlatformTokenResponse> => {
+    const token = uuidv4();
+
+    await updateUser(context, context.user.id, { platform_token: token });
+
+    return { token };
   },
 };

@@ -105,6 +105,7 @@
       "SUBSCRIPTION_STILL_IN_ORGANIZATION": "Error while deleting the organization. The organization could not be deleted because at least one subscription is still affiliated with it. Remove the subscription(s) first.",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
+      "UNKNOWN_ERROR": "An unknown error occurred",
       "USER_ALREADY_EXISTS_ERROR": "The user already has access",
       "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first.",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
@@ -282,6 +283,13 @@
     "Profile": "Profile",
     "ToggleUser": "Open menu user"
   },
+  "Notifications": {
+    "Title": "Notifications ({count})",
+    "UserNotification": {
+      "Title": "User Request",
+      "Text": "<nameFormat>{name}</nameFormat> wants to join your organization"
+    }
+  },
   "OrganizationActions": {
     "ErrorNameAlreadyExists": "The organization {name} already exists.",
     "OrganizationCreated": "Organization {name} has been created",
@@ -360,8 +368,8 @@
         "Updated": "The CSV {name} has been modified successfully"
       },
       "Active": "Published",
-      "AddCsvFeed": "Add new CSV Feed",
-      "DeleteCsvFeed": "Delete the CSV Feed {name}",
+      "AddService": "Add new CSV Feed",
+      "DeleteService": "Delete the CSV Feed {name}",
       "Form": {
         "CsvFeedFile": "Csv Feed file",
         "CsvFeedIllustration": "Illustration",
@@ -380,8 +388,8 @@
         "SlugLabel": "Slug"
       },
       "NonActive": "Draft",
-      "SureDeleteCsvFeed": "Are you sure you want to delete the CSV Feed {name}?",
-      "UpdateCsvFeed": "Update the CSV Feed {name}"
+      "SureDeleteService": "Are you sure you want to delete the CSV Feed {name}?",
+      "UpdateService": "Update the CSV Feed {name}"
     },
     "CustomDashboards": {
       "Actions": {
@@ -447,10 +455,10 @@
         "Author": "Author",
         "ProductVersionLabel": "OpenBAS Version"
       },
-      "AddObasScenario": "Add new scenario",
-      "UpdateObasScenario": "Update the scenario {name}",
-      "DeleteObasScenario": "Delete the scenario {name}",
-      "SureDeleteObasScenario": "Are you sure you want to delete the scenario {name}?",
+      "AddService": "Add new scenario",
+      "UpdateService": "Update the scenario {name}",
+      "DeleteService": "Delete the scenario {name}",
+      "SureDeleteService": "Are you sure you want to delete the scenario {name}?",
       "NonActive": "Draft",
       "Active": "Published"
     },
@@ -536,7 +544,7 @@
         "DeployOctiDescriptionOnePlatform": "Do you want to deploy it in the {platformName} platform?",
         "DeployOctiDescriptionNoPlatform": "You must be an administrator, or contact your administrator, to register your OpenCTI platform",
         "DeployOctiDescriptionNoPlatformIllustration": "OpenCTI Register in XTM Hub illustration",
-        "DeployOctiDescriptionNoPlatformThen": "The registration can be completed through the Settings in the section below:"
+        "DeployOctiDescriptionNoPlatformThen": "The registration can be completed through the Filigran Experience page in the section below:"
       },
       "Copied": "URL copied! You can now paste and share it.",
       "FromVersion": "From version",
@@ -630,11 +638,20 @@
     "Roles": "Roles",
     "Status": "Status",
     "Title": "Users list",
+    "TabTitle": "Users",
     "UserForm": {
       "Email": "Email",
       "Password": "Password",
       "SelectOrganization": "Select an organization",
       "SelectRoles": "Select roles"
+    }
+  },
+  "PendingUserListPage": {
+    "TabTitle": "Users Requests ({usersCount})",
+    "WarningUserRejection": {
+      "Title": "Are you sure?",
+      "Description": "You are about to refuse this person from your organization. There is no way of going back. Are you sure ?",
+      "Confirm": "Confirm"
     }
   },
   "Utils": {

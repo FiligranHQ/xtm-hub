@@ -15,6 +15,7 @@ import {
   ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
 import Subscription from '../../../model/kanel/public/Subscription';
+import { UserLoadUserBy } from '../../../model/user';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
@@ -342,6 +343,27 @@ describe('Registration app', () => {
         );
 
       expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Inactive);
+    });
+  });
+
+  describe('refreshUserPlatformToken', () => {
+    it('should generate a token and add it to the user each time it is called', async () => {
+      const { token } =
+        await registrationApp.refreshUserPlatformToken(contextAdminUser);
+      const user = await dbUnsecure<UserLoadUserBy>('User')
+        .where({ id: contextAdminUser.user.id })
+        .first();
+
+      expect(token).toBe(user.platform_token);
+
+      const { token: anotherToken } =
+        await registrationApp.refreshUserPlatformToken(contextAdminUser);
+      const updatedUser = await dbUnsecure<UserLoadUserBy>('User')
+        .where({ id: contextAdminUser.user.id })
+        .first();
+
+      expect(anotherToken).toBe(updatedUser.platform_token);
+      expect(anotherToken === token).toBeFalsy();
     });
   });
 });
