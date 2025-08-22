@@ -94,6 +94,7 @@
       "INVALID_IMAGE_URL": "The image URL is not valid",
       "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
+      "NO_ADMIN_LEFT": "You are the only admin. You must define another admin before leaving your organization",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "Registration on another organization is forbidden",

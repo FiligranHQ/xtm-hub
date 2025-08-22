@@ -1,4 +1,5 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { Knex } from 'knex';
+import { db, dbTx, dbUnsecure } from '../../../knexfile';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import UserOrganizationPending, {
@@ -7,11 +8,16 @@ import UserOrganizationPending, {
 } from '../../model/kanel/public/UserOrganizationPending';
 import { PortalContext } from '../../model/portal-context';
 
-export const insertNewUserOrganizationPendingUnsecure = (
-  field: UserOrganizationPendingInitializer
+export const insertNewUserOrganizationPendingUnsecure = async (
+  field: UserOrganizationPendingInitializer,
+  trx?: Knex.Transaction
 ): Promise<UserOrganizationPending[]> => {
+  if (!trx) {
+    trx = await dbTx();
+  }
   return dbUnsecure<UserOrganizationPending>('User_Organization_Pending')
     .insert(field)
+    .transacting(trx)
     .returning('*');
 };
 

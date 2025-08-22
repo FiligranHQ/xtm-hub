@@ -7,6 +7,11 @@ export const auth0ClientMock: Auth0Client = {
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  updateUserEmail(newEmail: string, originalEmail: string): Promise<void> {
+    return Promise.resolve();
+  },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   resetPassword(email: string): Promise<void> {
     return Promise.resolve();
   },

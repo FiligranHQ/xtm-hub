@@ -1,4 +1,12 @@
-import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
+import { Knex } from 'knex';
+import {
+  db,
+  dbRaw,
+  dbTx,
+  dbUnsecure,
+  paginate,
+  QueryOpts,
+} from '../../../knexfile';
 import {
   Filter,
   FilterKey,
@@ -387,16 +395,21 @@ export const resetPassword = async (context: PortalContext): Promise<void> => {
 export const updateUser = async (
   context: PortalContext,
   id: UserId,
-  input: UserMutator
+  input: UserMutator,
+  trx?: Knex.Transaction
 ): Promise<User> => {
   if (isEmpty(input)) {
     return;
+  }
+  if (!trx) {
+    trx = await dbTx();
   }
 
   const [updatedUser] = await db<User>(context, 'User')
     .where({ id })
     .update(input)
     .returning('*')
+    .transacting(trx)
     .secureQuery();
 
   return updatedUser;

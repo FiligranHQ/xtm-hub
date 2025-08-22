@@ -12,6 +12,7 @@ export interface Auth0UpdateUser {
 
 export interface Auth0Client {
   updateUser(user: Auth0UpdateUser): Promise<void>;
+  updateUserEmail(newEmail: string, originalEmail: string): Promise<void>;
   resetPassword(email: string): Promise<void>;
 }
 

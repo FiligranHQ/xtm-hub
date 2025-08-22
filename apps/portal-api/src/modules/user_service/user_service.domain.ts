@@ -1,5 +1,6 @@
+import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, paginate } from '../../../knexfile';
+import { db, dbRaw, dbTx, paginate } from '../../../knexfile';
 import {
   Subscription,
   UserServiceCapability,
@@ -22,6 +23,19 @@ export const insertUserService = async (context, userServiceData) => {
   return db<UserService>(context, 'User_Service')
     .insert(userServiceData)
     .returning('*');
+};
+export const deleteUserServiceBy = async (
+  context: PortalContext,
+  field: UserServiceMutator,
+  trx?: Knex.Transaction
+) => {
+  if (!trx) {
+    trx = await dbTx();
+  }
+  return db<UserService>(context, 'User_Service')
+    .where(field)
+    .delete('*')
+    .transacting(trx);
 };
 
 export const loadUserServiceById = async (

@@ -37,6 +37,25 @@ export const auth0ClientImplementation: Auth0Client = {
       }
     );
   },
+  updateUserEmail: async (
+    newEmail: string,
+    originalEmail: string
+  ): Promise<void> => {
+    const users_response = await managementClient.usersByEmail.getByEmail({
+      email: originalEmail,
+    });
+    const auth0_user = users_response.data[0];
+    if (!auth0_user) {
+      throw new Error('AUTH0_USER_NOT_FOUND_ERROR');
+    }
+
+    await managementClient.users.update(
+      { id: auth0_user.user_id },
+      {
+        email: newEmail,
+      }
+    );
+  },
   resetPassword: async (email: string): Promise<void> => {
     await authenticationClient.database.changePassword({
       email,

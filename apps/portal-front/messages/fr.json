@@ -94,6 +94,7 @@
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
+      "NO_ADMIN_LEFT": "Vous êtes le seul administrateur. Vous devez en définir un autre avant de quitter votre organisation",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",

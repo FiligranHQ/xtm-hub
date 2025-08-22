@@ -1,4 +1,5 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { Knex } from 'knex';
+import { db, dbTx, dbUnsecure } from '../../../knexfile';
 import { OrganizationCapabilitiesInput } from '../../__generated__/resolvers-types';
 import Organization, {
   OrganizationId,
@@ -147,9 +148,14 @@ export const createUserOrgCapabilities = async (
 export const removeUserFromOrganization = async (
   context: PortalContext,
   user_id: UserId,
-  organization_id: OrganizationId
+  organization_id: OrganizationId,
+  trx?: Knex.Transaction
 ) => {
+  if (!trx) {
+    trx = await dbTx();
+  }
   return db<UserOrganization>(context, 'User_Organization')
     .where({ user_id, organization_id })
+    .transacting(trx)
     .delete('*');
 };
