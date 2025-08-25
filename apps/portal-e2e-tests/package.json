@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.54.2",
-    "@types/node": "22.16.0",
+    "@types/node": "22.18.0",
     "graphql": "16.11.0",
     "graphql-tag": "2.12.6",
     "monocart-reporter": "2.9.21",
