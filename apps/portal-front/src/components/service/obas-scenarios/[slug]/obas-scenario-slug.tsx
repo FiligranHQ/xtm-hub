@@ -1,20 +1,21 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
+
 import {
-  ObasScenarioQuery,
-  obasScenariosItem,
-} from '@/components/service/obas-scenarios/obas-scenario.graphql';
+  OpenAEVScenarioQuery,
+  openAEVScenariosItem,
+} from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
 import { useObasScenarioContext } from '@/components/service/obas-scenarios/use-obas-scenario-context';
 import { APP_PATH } from '@/utils/path/constant';
-import { obasScenarioQuery } from '@generated/obasScenarioQuery.graphql';
-import { obasScenariosItem_fragment$key } from '@generated/obasScenariosItem_fragment.graphql';
+import { openAEVScenarioQuery } from '@generated/openAEVScenarioQuery.graphql';
+import { openAEVScenariosItem_fragment$key } from '@generated/openAEVScenariosItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
 interface ObasScenarioSlugProps {
-  queryRef: PreloadedQuery<obasScenarioQuery>;
+  queryRef: PreloadedQuery<openAEVScenarioQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
@@ -23,13 +24,13 @@ const ObasScenarioSlug: React.FunctionComponent<ObasScenarioSlugProps> = ({
   queryRef,
   serviceInstance,
 }) => {
-  const data = usePreloadedQuery<obasScenarioQuery>(
-    ObasScenarioQuery,
+  const data = usePreloadedQuery<openAEVScenarioQuery>(
+    OpenAEVScenarioQuery,
     queryRef
   );
 
-  const documentData = readInlineData<obasScenariosItem_fragment$key>(
-    obasScenariosItem,
+  const documentData = readInlineData<openAEVScenariosItem_fragment$key>(
+    openAEVScenariosItem,
     data.openAEVScenario
   );
 

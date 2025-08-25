@@ -1,19 +1,20 @@
 import {
-  obasScenariosFragment,
-  obasScenariosItem,
-  ObasScenariosListQuery,
-} from '@/components/service/obas-scenarios/obas-scenario.graphql';
+  openAEVScenariosFragment,
+  openAEVScenariosItem,
+  OpenAEVScenariosListQuery,
+} from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
 
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { useObasScenarioContext } from '@/components/service/obas-scenarios/use-obas-scenario-context';
+
 import {
-  obasScenariosItem_fragment$data,
-  obasScenariosItem_fragment$key,
-} from '@generated/obasScenariosItem_fragment.graphql';
-import { obasScenariosList$key } from '@generated/obasScenariosList.graphql';
-import { obasScenariosQuery } from '@generated/obasScenariosQuery.graphql';
+  openAEVScenariosItem_fragment$data,
+  openAEVScenariosItem_fragment$key,
+} from '@generated/openAEVScenariosItem_fragment.graphql';
+import { openAEVScenariosList$key } from '@generated/openAEVScenariosList.graphql';
+import { openAEVScenariosQuery } from '@generated/openAEVScenariosQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   PreloadedQuery,
@@ -22,7 +23,7 @@ import {
 } from 'react-relay';
 
 interface ObasScenariosListProps {
-  queryRef: PreloadedQuery<obasScenariosQuery>;
+  queryRef: PreloadedQuery<openAEVScenariosQuery>;
   serviceInstance: serviceInstance_fragment$data;
   labels?: string[];
   search: string;
@@ -38,20 +39,20 @@ const ObasScenariosList = ({
   onLabelFilterChange,
   labels,
 }: ObasScenariosListProps) => {
-  const queryData = usePreloadedQuery<obasScenariosQuery>(
-    ObasScenariosListQuery,
+  const queryData = usePreloadedQuery<openAEVScenariosQuery>(
+    OpenAEVScenariosListQuery,
     queryRef
   );
 
   const [data] = useRefetchableFragment<
-    obasScenariosQuery,
-    obasScenariosList$key
-  >(obasScenariosFragment, queryData);
+    openAEVScenariosQuery,
+    openAEVScenariosList$key
+  >(openAEVScenariosFragment, queryData);
 
   const [active, draft] = useActiveAndDraftSplit<
-    obasScenariosItem_fragment$data,
-    obasScenariosItem_fragment$key
-  >(data?.openAEVScenarios.edges, obasScenariosItem);
+    openAEVScenariosItem_fragment$data,
+    openAEVScenariosItem_fragment$key
+  >(data?.openAEVScenarios.edges, openAEVScenariosItem);
 
   const connectionId = data?.openAEVScenarios.__id;
 
