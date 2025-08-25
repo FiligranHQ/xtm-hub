@@ -25,7 +25,7 @@ export const useGoToServiceLink = () => {
         break;
       default:
         router.push(
-          `/${APP_PATH}/service/${serviceInstance.service_definition.identifier}/${id}`
+          `/${APP_PATH}/service/${serviceInstance.service_definition.identifier !== 'openaev_scenarios' ? serviceInstance.service_definition.identifier : 'obas_scenarios'}/${id}`
         );
         break;
     }

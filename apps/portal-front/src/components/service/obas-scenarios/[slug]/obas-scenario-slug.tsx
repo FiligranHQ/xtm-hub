@@ -40,7 +40,8 @@ const ObasScenarioSlug: React.FunctionComponent<ObasScenarioSlugProps> = ({
     },
     {
       label: serviceInstance.name,
-      href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
+      // Temp fix, add service definition identifier when obas new name will be released
+      href: `/${APP_PATH}/service/obas_scenarios/${serviceInstance.id}`,
       original: true,
     },
     {
