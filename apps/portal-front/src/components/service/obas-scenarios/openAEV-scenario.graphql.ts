@@ -1,34 +1,34 @@
 import { graphql } from 'react-relay';
 
-export const ObasScenarioCreateMutation = graphql`
-  mutation obasScenarioCreateMutation(
-    $input: CreateObasScenarioInput!
+export const OpenAEVScenarioCreateMutation = graphql`
+  mutation openAEVScenarioCreateMutation(
+    $input: CreateOpenAEVScenarioInput!
     $document: [Upload!]!
     $serviceInstanceId: String!
     $connections: [ID!]!
   ) {
-    createObasScenario(
+    createOpenAEVScenario(
       input: $input
       document: $document
       serviceInstanceId: $serviceInstanceId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
       name
-      ...obasScenariosItem_fragment
+      ...openAEVScenariosItem_fragment
     }
   }
 `;
 
-export const ObasScenarioUpdateMutation = graphql`
-  mutation obasScenarioUpdateMutation(
+export const OpenAEVScenarioUpdateMutation = graphql`
+  mutation openAEVScenarioUpdateMutation(
     $documentId: ID!
-    $input: UpdateObasScenarioInput!
+    $input: UpdateOpenAEVScenarioInput!
     $document: [Upload!]
     $updateDocument: Boolean!
     $images: [String!]
     $serviceInstanceId: String!
   ) {
-    updateObasScenario(
+    updateOpenAEVScenario(
       documentId: $documentId
       input: $input
       document: $document
@@ -37,25 +37,28 @@ export const ObasScenarioUpdateMutation = graphql`
       serviceInstanceId: $serviceInstanceId
     ) {
       __id
-      ...obasScenariosItem_fragment
+      ...openAEVScenariosItem_fragment
     }
   }
 `;
 
-export const ObasScenarioDeleteMutation = graphql`
-  mutation obasScenarioDeleteMutation(
+export const OpenAEVScenarioDeleteMutation = graphql`
+  mutation openAEVScenarioDeleteMutation(
     $documentId: ID!
     $connections: [ID!]!
     $serviceInstanceId: String!
   ) {
-    deleteObasScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {
+    deleteOpenAEVScenario(
+      id: $documentId
+      serviceInstanceId: $serviceInstanceId
+    ) {
       id @deleteEdge(connections: $connections)
     }
   }
 `;
 
-export const obasScenariosItem = graphql`
-  fragment obasScenariosItem_fragment on ObasScenario @inline {
+export const openAEVScenariosItem = graphql`
+  fragment openAEVScenariosItem_fragment on OpenAEVScenario @inline {
     id
     type
     file_name
@@ -100,10 +103,10 @@ export const obasScenariosItem = graphql`
   }
 `;
 
-export const obasScenariosFragment = graphql`
-  fragment obasScenariosList on Query
+export const openAEVScenariosFragment = graphql`
+  fragment openAEVScenariosList on Query
   @refetchable(queryName: "ObasScenariosPaginationQuery") {
-    obasScenarios(
+    openAEVScenarios(
       first: $count
       after: $cursor
       orderBy: $orderBy
@@ -118,15 +121,15 @@ export const obasScenariosFragment = graphql`
         node {
           id
           active
-          ...obasScenariosItem_fragment
+          ...openAEVScenariosItem_fragment
         }
       }
     }
   }
 `;
 
-export const ObasScenariosListQuery = graphql`
-  query obasScenariosQuery(
+export const OpenAEVScenariosListQuery = graphql`
+  query openAEVScenariosQuery(
     $count: Int!
     $cursor: ID
     $orderBy: DocumentOrdering!
@@ -135,14 +138,14 @@ export const ObasScenariosListQuery = graphql`
     $searchTerm: String
     $serviceInstanceId: String
   ) {
-    ...obasScenariosList
+    ...openAEVScenariosList
   }
 `;
 
-export const ObasScenarioQuery = graphql`
-  query obasScenarioQuery($documentId: ID, $serviceInstanceId: ID) {
-    obasScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {
-      ...obasScenariosItem_fragment
+export const OpenAEVScenarioQuery = graphql`
+  query openAEVScenarioQuery($documentId: ID, $serviceInstanceId: ID) {
+    openAEVScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {
+      ...openAEVScenariosItem_fragment
     }
   }
 `;

@@ -1,9 +1,9 @@
 'use client';
 
 import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
-import ObasScenariosList from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenarios-list';
-import { ObasScenariosListQuery } from '@/components/service/obas-scenarios/obas-scenario.graphql';
-import { obasScenariosQuery } from '@generated/obasScenariosQuery.graphql';
+import OpenAEVScenariosList from '@/components/service/obas-scenarios/[serviceInstanceId]/openAEV-scenarios-list';
+import { OpenAEVScenariosListQuery } from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
+import { openAEVScenariosQuery } from '@generated/openAEVScenariosQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
@@ -14,8 +14,8 @@ interface PageLoaderProps {
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
-  const [queryRef, loadQuery] = useQueryLoader<obasScenariosQuery>(
-    ObasScenariosListQuery
+  const [queryRef, loadQuery] = useQueryLoader<openAEVScenariosQuery>(
+    OpenAEVScenariosListQuery
   );
   const { count, search, labels, setSearch, setLabels } =
     serviceListLocalStorage('ObasScenario');
@@ -39,7 +39,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   return (
     <>
       {queryRef ? (
-        <ObasScenariosList
+        <OpenAEVScenariosList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           search={search}

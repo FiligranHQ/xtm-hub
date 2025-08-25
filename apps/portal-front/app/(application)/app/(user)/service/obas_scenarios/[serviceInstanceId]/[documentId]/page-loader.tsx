@@ -1,10 +1,10 @@
 'use client';
 
 import Loader from '@/components/loader';
-import ObasScenarioSlug from '@/components/service/obas-scenarios/[slug]/obas-scenario-slug';
-import { ObasScenarioQuery } from '@/components/service/obas-scenarios/obas-scenario.graphql';
+import OpenAEVScenarioSlug from '@/components/service/obas-scenarios/[slug]/openAEV-scenario-slug';
+import { OpenAEVScenarioQuery } from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { obasScenarioQuery } from '@generated/obasScenarioQuery.graphql';
+import { openAEVScenarioQuery } from '@generated/openAEVScenarioQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
 
@@ -20,14 +20,14 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   serviceInstance,
 }) => {
   const [queryRef, loadQuery] =
-    useQueryLoader<obasScenarioQuery>(ObasScenarioQuery);
+    useQueryLoader<openAEVScenarioQuery>(OpenAEVScenarioQuery);
   useMountingLoader(loadQuery, {
     documentId,
     serviceInstanceId: serviceInstance?.id,
   });
 
   return queryRef && serviceInstance ? (
-    <ObasScenarioSlug
+    <OpenAEVScenarioSlug
       serviceInstance={serviceInstance}
       queryRef={queryRef}
     />

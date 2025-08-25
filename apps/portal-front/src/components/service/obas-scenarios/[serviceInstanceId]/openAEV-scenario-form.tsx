@@ -37,21 +37,21 @@ const obasScenarioFormSchema = z.object({
   document: z.custom<FileList>(fileListCheck),
   illustration: z.custom<FileList>(fileListCheck),
 });
-export type ObasScenarioFormValues = z.infer<typeof obasScenarioFormSchema>;
+export type OpenAEVScenarioFormValues = z.infer<typeof obasScenarioFormSchema>;
 
-export interface ObasScenarioFormProps {
+export interface OpenAEVScenarioFormProps {
   userCanDelete?: boolean;
-  handleSubmit?: (values: ObasScenarioFormValues) => void;
+  handleSubmit?: (values: OpenAEVScenarioFormValues) => void;
   onDelete?: () => void;
   document?: SubscribableResource;
 }
 
-export const ObasScenarioForm = ({
+export const OpenAEVScenarioForm = ({
   userCanDelete,
   handleSubmit,
   onDelete,
   document,
-}: ObasScenarioFormProps) => {
+}: OpenAEVScenarioFormProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
   const { translationKey } = useServiceContext();
@@ -69,7 +69,7 @@ export const ObasScenarioForm = ({
         })) as unknown as FileList,
         labels: obasScenario?.labels?.map((label) => label.id),
         uploader_id: obasScenario?.uploader?.id ?? me?.id,
-      }) as ObasScenarioFormValues,
+      }) as OpenAEVScenarioFormValues,
     [me, obasScenario]
   );
   const formSchema = useMemo(
@@ -89,7 +89,7 @@ export const ObasScenarioForm = ({
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
-          handleSubmit?.(values as ObasScenarioFormValues);
+          handleSubmit?.(values as OpenAEVScenarioFormValues);
         }}
         onValuesChange={(values, form) => {
           if (values.name) {

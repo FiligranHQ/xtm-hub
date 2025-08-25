@@ -1,34 +1,34 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
 import {
-  ObasScenarioForm,
-  ObasScenarioFormValues,
-} from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-form';
+  OpenAEVScenarioForm,
+  OpenAEVScenarioFormValues,
+} from '@/components/service/obas-scenarios/[serviceInstanceId]/openAEV-scenario-form';
 import {
-  ObasScenarioCreateMutation,
-  ObasScenarioDeleteMutation,
-  ObasScenarioUpdateMutation,
-} from '@/components/service/obas-scenarios/obas-scenario.graphql';
+  OpenAEVScenarioCreateMutation,
+  OpenAEVScenarioDeleteMutation,
+  OpenAEVScenarioUpdateMutation,
+} from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { obasScenarioCreateMutation } from '@generated/obasScenarioCreateMutation.graphql';
-import { obasScenarioDeleteMutation } from '@generated/obasScenarioDeleteMutation.graphql';
-import { obasScenarioUpdateMutation } from '@generated/obasScenarioUpdateMutation.graphql';
+import { openAEVScenarioCreateMutation } from '@generated/openAEVScenarioCreateMutation.graphql';
+import { openAEVScenarioDeleteMutation } from '@generated/openAEVScenarioDeleteMutation.graphql';
+import { openAEVScenarioUpdateMutation } from '@generated/openAEVScenarioUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
-export function useObasScenarioContext(
+export function useOpenAEVScenarioContext(
   serviceInstance: serviceInstance_fragment$data,
   connectionId?: string
 ): ServiceContextProps {
   const t = useTranslations();
 
-  const [createObasScenario] = useMutation<obasScenarioCreateMutation>(
-    ObasScenarioCreateMutation
+  const [createObasScenario] = useMutation<openAEVScenarioCreateMutation>(
+    OpenAEVScenarioCreateMutation
   );
 
   const handleAddSheet = async (
@@ -36,7 +36,7 @@ export function useObasScenarioContext(
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const formValues = values as ObasScenarioFormValues;
+    const formValues = values as OpenAEVScenarioFormValues;
     const input = {
       ...omit(formValues, ['document', 'illustration']),
       uploader_id: formValues?.uploader_id ?? '',
@@ -59,7 +59,7 @@ export function useObasScenarioContext(
       uploadables: fileListToUploadableMap(documents),
 
       onCompleted: (response) => {
-        if (!response.createObasScenario) {
+        if (!response.createOpenAEVScenario) {
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),
@@ -76,9 +76,8 @@ export function useObasScenarioContext(
     });
   };
 
-  const [deleteObasScenarioMutation] = useMutation<obasScenarioDeleteMutation>(
-    ObasScenarioDeleteMutation
-  );
+  const [deleteObasScenarioMutation] =
+    useMutation<openAEVScenarioDeleteMutation>(OpenAEVScenarioDeleteMutation);
 
   const handleDeleteSheet = async (
     document: ShareableResource,
@@ -96,9 +95,8 @@ export function useObasScenarioContext(
     });
   };
 
-  const [updateObasScenarioMutation] = useMutation<obasScenarioUpdateMutation>(
-    ObasScenarioUpdateMutation
-  );
+  const [updateObasScenarioMutation] =
+    useMutation<openAEVScenarioUpdateMutation>(OpenAEVScenarioUpdateMutation);
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
@@ -143,6 +141,6 @@ export function useObasScenarioContext(
     handleAddSheet,
     handleUpdateSheet,
     handleDeleteSheet,
-    ServiceForm: ObasScenarioForm,
+    ServiceForm: OpenAEVScenarioForm,
   };
 }

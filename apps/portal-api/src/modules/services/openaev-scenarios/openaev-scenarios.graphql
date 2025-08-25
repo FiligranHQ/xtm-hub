@@ -1,4 +1,4 @@
-input CreateObasScenarioInput {
+input CreateOpenAEVScenarioInput {
   name: String!
   slug: String!
   short_description: String!
@@ -6,11 +6,11 @@ input CreateObasScenarioInput {
   active: Boolean!
   labels: [String!]
   uploader_id: String!
-  # Specific fields for obas scenarios
+  # Specific fields for OpenAEV scenarios
   product_version: String!
 }
 
-input UpdateObasScenarioInput {
+input UpdateOpenAEVScenarioInput {
   name: String
   slug: String
   short_description: String
@@ -19,11 +19,11 @@ input UpdateObasScenarioInput {
   labels: [String!]
   uploader_organization_id: String
   uploader_id: String
-  # Specific fields for obas scenarios
+  # Specific fields for OpenAEV scenarios
   product_version: String
 }
 
-type ObasScenario implements Node {
+type OpenAEVScenario implements Node {
   id: ID!
   type: String!
   uploader: User
@@ -45,25 +45,25 @@ type ObasScenario implements Node {
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
-  # Specific fields for obas scenarios
+  # Specific fields for OpenAEVScenario scenarios
   product_version: String
 }
 
-type ObasScenarioEdge {
+type OpenAEVScenarioEdge {
   cursor: String!
-  node: ObasScenario!
+  node: OpenAEVScenario!
 }
 
-type ObasScenarioConnection {
+type OpenAEVScenarioConnection {
   totalCount: Int!
-  edges: [ObasScenarioEdge!]!
+  edges: [OpenAEVScenarioEdge!]!
   pageInfo: PageInfo!
 }
 
 type Query {
-  seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
-  seoObasScenarioBySlug(slug: String): ObasScenario
-  obasScenarios(
+  seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
+  seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
+  openAEVScenarios(
     first: Int!
     after: ID
     orderBy: DocumentOrdering!
@@ -71,25 +71,25 @@ type Query {
     searchTerm: String
     filters: [Filter!]
     serviceInstanceId: String
-  ): ObasScenarioConnection! @auth
-  obasScenario(id: ID, serviceInstanceId: ID): ObasScenario @auth
+  ): OpenAEVScenarioConnection! @auth
+  openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario @auth
 }
 
 type Mutation {
-  createObasScenario(
-    input: CreateObasScenarioInput!
+  createOpenAEVScenario(
+    input: CreateOpenAEVScenarioInput!
     document: [Upload!]!
     serviceInstanceId: String
-  ): ObasScenario! @auth @service_capa(requires: [UPLOAD])
-  updateObasScenario(
+  ): OpenAEVScenario! @auth @service_capa(requires: [UPLOAD])
+  updateOpenAEVScenario(
     documentId: ID!
-    input: UpdateObasScenarioInput!
+    input: UpdateOpenAEVScenarioInput!
     document: [Upload!]
     updateDocument: Boolean!
     images: [String!]
     serviceInstanceId: String
-  ): ObasScenario! @auth @service_capa(requires: [UPLOAD])
-  deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
+  ): OpenAEVScenario! @auth @service_capa(requires: [UPLOAD])
+  deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
     @auth
     @service_capa(requires: [DELETE])
 }
