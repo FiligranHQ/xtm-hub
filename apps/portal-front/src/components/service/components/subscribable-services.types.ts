@@ -3,9 +3,9 @@ import {
   CsvFeedFormValues,
 } from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
 import {
-  ObasScenarioForm,
-  ObasScenarioFormValues,
-} from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-form';
+  OpenAEVScenarioForm,
+  OpenAEVScenarioFormValues,
+} from '@/components/service/obas-scenarios/[serviceInstanceId]/openAEV-scenario-form';
 
-export type ServiceFormValues = CsvFeedFormValues | ObasScenarioFormValues;
-export type ServiceForm = typeof CsvFeedForm | typeof ObasScenarioForm;
+export type ServiceFormValues = CsvFeedFormValues | OpenAEVScenarioFormValues;
+export type ServiceForm = typeof CsvFeedForm | typeof OpenAEVScenarioForm;

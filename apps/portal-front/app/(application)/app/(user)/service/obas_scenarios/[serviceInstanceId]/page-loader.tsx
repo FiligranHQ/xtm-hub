@@ -1,7 +1,7 @@
 'use client';
 
 import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
-import ObasScenariosList from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenarios-list';
+import OpenAEVScenariosList from '@/components/service/obas-scenarios/[serviceInstanceId]/openAEV-scenarios-list';
 import { OpenAEVScenariosListQuery } from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
 import { openAEVScenariosQuery } from '@generated/openAEVScenariosQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -39,7 +39,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   return (
     <>
       {queryRef ? (
-        <ObasScenariosList
+        <OpenAEVScenariosList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           search={search}

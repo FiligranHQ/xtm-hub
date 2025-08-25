@@ -2,8 +2,8 @@ import SeoCsvFeedBySlugQuery from '@generated/seoCsvFeedBySlugQuery.graphql';
 import SeoCsvFeedsByServiceSlugQuery from '@generated/seoCsvFeedsByServiceSlugQuery.graphql';
 import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
-import SeoObasScenarioBySlugQuery from '@generated/seoObasScenarioBySlugQuery.graphql';
-import SeoObasScenariosByServiceSlugQuery from '@generated/seoObasScenariosByServiceSlugQuery.graphql';
+import SeoOpenAEVScenarioBySlugQuery from '@generated/seoOpenAEVScenarioBySlugQuery.graphql';
+import SeoOpenAEVScenariosByServiceSlugQuery from '@generated/seoOpenAEVScenariosByServiceSlugQuery.graphql';
 import {
   MakeQueryMapParams,
   QueryMapEntry,
@@ -53,7 +53,7 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
       key: 'seoCustomDashboardsByServiceSlug',
     }),
   [ServiceSlug.OPEN_BAS_SCENARIOS]: makeQueryMapEntry<SeoOpenAEVScenario>({
-    query: SeoObasScenariosByServiceSlugQuery,
+    query: SeoOpenAEVScenariosByServiceSlugQuery,
     key: 'seoOpenAEVScenariosByServiceSlug',
   }),
 };
@@ -72,7 +72,7 @@ export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
     }),
   [ServiceSlug.OPEN_BAS_SCENARIOS]: makeSingleQueryMapEntry<SeoOpenAEVScenario>(
     {
-      query: SeoObasScenarioBySlugQuery,
+      query: SeoOpenAEVScenarioBySlugQuery,
       key: 'seoOpenAEVScenarioBySlug',
     }
   ),

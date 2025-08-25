@@ -7,7 +7,7 @@ import {
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
-import { useObasScenarioContext } from '@/components/service/obas-scenarios/use-obas-scenario-context';
+import { useOpenAEVScenarioContext } from '@/components/service/obas-scenarios/use-openAEV-scenario-context';
 
 import {
   openAEVScenariosItem_fragment$data,
@@ -22,7 +22,7 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 
-interface ObasScenariosListProps {
+interface OpenAEVScenariosListProps {
   queryRef: PreloadedQuery<openAEVScenariosQuery>;
   serviceInstance: serviceInstance_fragment$data;
   labels?: string[];
@@ -31,14 +31,14 @@ interface ObasScenariosListProps {
   onLabelFilterChange: (v: string[]) => void;
 }
 
-const ObasScenariosList = ({
+const OpenAEVScenariosList = ({
   queryRef,
   serviceInstance,
   search,
   onSearchChange,
   onLabelFilterChange,
   labels,
-}: ObasScenariosListProps) => {
+}: OpenAEVScenariosListProps) => {
   const queryData = usePreloadedQuery<openAEVScenariosQuery>(
     OpenAEVScenariosListQuery,
     queryRef
@@ -56,7 +56,7 @@ const ObasScenariosList = ({
 
   const connectionId = data?.openAEVScenarios.__id;
 
-  const context = useObasScenarioContext(serviceInstance, connectionId);
+  const context = useOpenAEVScenarioContext(serviceInstance, connectionId);
 
   return (
     <AppServiceContext {...context}>
@@ -72,4 +72,4 @@ const ObasScenariosList = ({
   );
 };
 
-export default ObasScenariosList;
+export default OpenAEVScenariosList;

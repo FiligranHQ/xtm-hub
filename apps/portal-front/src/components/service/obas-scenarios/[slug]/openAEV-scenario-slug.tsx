@@ -6,24 +6,22 @@ import {
   OpenAEVScenarioQuery,
   openAEVScenariosItem,
 } from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
-import { useObasScenarioContext } from '@/components/service/obas-scenarios/use-obas-scenario-context';
+import { useOpenAEVScenarioContext } from '@/components/service/obas-scenarios/use-openAEV-scenario-context';
 import { APP_PATH } from '@/utils/path/constant';
 import { openAEVScenarioQuery } from '@generated/openAEVScenarioQuery.graphql';
 import { openAEVScenariosItem_fragment$key } from '@generated/openAEVScenariosItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
-// Component interface
-interface ObasScenarioSlugProps {
+interface OpenAEVScenarioSlugProps {
   queryRef: PreloadedQuery<openAEVScenarioQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
-// Component
-const ObasScenarioSlug: React.FunctionComponent<ObasScenarioSlugProps> = ({
+const OpenAEVScenarioSlug = ({
   queryRef,
   serviceInstance,
-}) => {
+}: OpenAEVScenarioSlugProps) => {
   const data = usePreloadedQuery<openAEVScenarioQuery>(
     OpenAEVScenarioQuery,
     queryRef
@@ -51,7 +49,7 @@ const ObasScenarioSlug: React.FunctionComponent<ObasScenarioSlugProps> = ({
     },
   ];
 
-  const context = useObasScenarioContext(serviceInstance);
+  const context = useOpenAEVScenarioContext(serviceInstance);
   return (
     documentData && (
       <AppServiceContext {...context}>
@@ -71,4 +69,4 @@ const ObasScenarioSlug: React.FunctionComponent<ObasScenarioSlugProps> = ({
 };
 
 // Component export
-export default ObasScenarioSlug;
+export default OpenAEVScenarioSlug;
