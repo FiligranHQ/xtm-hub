@@ -1,9 +1,9 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
 import {
-  ObasScenarioForm,
-  ObasScenarioFormValues,
-} from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-form';
+  OpenAEVScenarioForm,
+  OpenAEVScenarioFormValues,
+} from '@/components/service/obas-scenarios/[serviceInstanceId]/openAEV-scenario-form';
 import {
   OpenAEVScenarioCreateMutation,
   OpenAEVScenarioDeleteMutation,
@@ -21,7 +21,7 @@ import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
-export function useObasScenarioContext(
+export function useOpenAEVScenarioContext(
   serviceInstance: serviceInstance_fragment$data,
   connectionId?: string
 ): ServiceContextProps {
@@ -36,7 +36,7 @@ export function useObasScenarioContext(
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const formValues = values as ObasScenarioFormValues;
+    const formValues = values as OpenAEVScenarioFormValues;
     const input = {
       ...omit(formValues, ['document', 'illustration']),
       uploader_id: formValues?.uploader_id ?? '',
@@ -141,6 +141,6 @@ export function useObasScenarioContext(
     handleAddSheet,
     handleUpdateSheet,
     handleDeleteSheet,
-    ServiceForm: ObasScenarioForm,
+    ServiceForm: OpenAEVScenarioForm,
   };
 }

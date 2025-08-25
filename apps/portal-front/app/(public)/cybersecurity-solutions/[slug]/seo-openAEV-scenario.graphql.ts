@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
-export const SeoObasScenarioFragment = graphql`
-  fragment seoObasScenarioFragment on OpenAEVScenario {
+export const SeoOpenAEVScenarioFragment = graphql`
+  fragment seoOpenAEVScenarioFragment on OpenAEVScenario {
     id
     name
     description
@@ -29,18 +29,18 @@ export const SeoObasScenarioFragment = graphql`
   }
 `;
 
-export const SeoObasScenariosByServiceSlugQuery = graphql`
-  query seoObasScenariosByServiceSlugQuery($serviceSlug: String!) {
+export const SeoOpenAEVScenariosByServiceSlugQuery = graphql`
+  query seoOpenAEVScenariosByServiceSlugQuery($serviceSlug: String!) {
     seoOpenAEVScenariosByServiceSlug(serviceSlug: $serviceSlug) {
-      ...seoObasScenarioFragment
+      ...seoOpenAEVScenarioFragment
     }
   }
 `;
 
-export const SeoObasScenarioBySlugQuery = graphql`
-  query seoObasScenarioBySlugQuery($slug: String!) {
+export const SeoOpenAEVScenarioBySlugQuery = graphql`
+  query seoOpenAEVScenarioBySlugQuery($slug: String!) {
     seoOpenAEVScenarioBySlug(slug: $slug) {
-      ...seoObasScenarioFragment
+      ...seoOpenAEVScenarioFragment
     }
   }
 `;
