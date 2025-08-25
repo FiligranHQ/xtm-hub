@@ -132,3 +132,9 @@ elasticsearch:
     enabled: false
     host: localhost
     annotations: {}
+kibana:
+  enabled: true
+  priorityClassName: ""
+  image:
+    repository: kibana
+    tag: 8.17.3

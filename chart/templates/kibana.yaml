@@ -1,0 +1,35 @@
+{{ if .Values.kibana.enabled }}
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  annotations:
+    eck.k8s.elastic.co/disable-downgrade-validation: "true"
+spec:
+  version: {{ .Values.kibana.image.tag }}
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+  config:
+    elasticsearch.requestTimeout: 1800000
+    server.socketTimeout: 1800000
+    telemetry.optIn: False
+    telemetry.allowChangingOptInStatus: false
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  podTemplate:
+    spec:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+        {{- if .Values.kibana.priorityClassName }}
+        priorityClassName: {{ .Values.kibana.priorityClassName }}
+        {{- end }}
+      {{- with .Values.xtmhub.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
