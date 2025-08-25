@@ -5,17 +5,17 @@ import {
   ObasScenarioFormValues,
 } from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-form';
 import {
-  ObasScenarioCreateMutation,
-  ObasScenarioDeleteMutation,
-  ObasScenarioUpdateMutation,
-} from '@/components/service/obas-scenarios/obas-scenario.graphql';
+  OpenAEVScenarioCreateMutation,
+  OpenAEVScenarioDeleteMutation,
+  OpenAEVScenarioUpdateMutation,
+} from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { obasScenarioCreateMutation } from '@generated/obasScenarioCreateMutation.graphql';
-import { obasScenarioDeleteMutation } from '@generated/obasScenarioDeleteMutation.graphql';
-import { obasScenarioUpdateMutation } from '@generated/obasScenarioUpdateMutation.graphql';
+import { openAEVScenarioCreateMutation } from '@generated/openAEVScenarioCreateMutation.graphql';
+import { openAEVScenarioDeleteMutation } from '@generated/openAEVScenarioDeleteMutation.graphql';
+import { openAEVScenarioUpdateMutation } from '@generated/openAEVScenarioUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -27,8 +27,8 @@ export function useObasScenarioContext(
 ): ServiceContextProps {
   const t = useTranslations();
 
-  const [createObasScenario] = useMutation<obasScenarioCreateMutation>(
-    ObasScenarioCreateMutation
+  const [createObasScenario] = useMutation<openAEVScenarioCreateMutation>(
+    OpenAEVScenarioCreateMutation
   );
 
   const handleAddSheet = async (
@@ -76,9 +76,8 @@ export function useObasScenarioContext(
     });
   };
 
-  const [deleteObasScenarioMutation] = useMutation<obasScenarioDeleteMutation>(
-    ObasScenarioDeleteMutation
-  );
+  const [deleteObasScenarioMutation] =
+    useMutation<openAEVScenarioDeleteMutation>(OpenAEVScenarioDeleteMutation);
 
   const handleDeleteSheet = async (
     document: ShareableResource,
@@ -96,9 +95,8 @@ export function useObasScenarioContext(
     });
   };
 
-  const [updateObasScenarioMutation] = useMutation<obasScenarioUpdateMutation>(
-    ObasScenarioUpdateMutation
-  );
+  const [updateObasScenarioMutation] =
+    useMutation<openAEVScenarioUpdateMutation>(OpenAEVScenarioUpdateMutation);
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
