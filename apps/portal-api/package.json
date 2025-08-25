@@ -9,7 +9,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "copy": "copyfiles ./src/**/*.graphql dist/ && copyfiles ./src/migrations/*.js dist/ && copyfiles src/es-migrations/*.js dist/",
+    "copy": "copyfiles ./src/**/*.graphql dist/ && copyfiles ./src/migrations/*.js dist/",
     "check-ts": "tsc --noEmit",
     "generate:ts": "graphql-codegen-esm --config codegen.yml",
     "knex:run": "NODE_OPTIONS='--import tsx' knex --knexfile knexfile.ts",
