@@ -23,9 +23,9 @@ import {
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
-  OBAS_SCENARIO_DOCUMENT_TYPE,
   OBAS_SCENARIO_METADATA,
   ObasScenario,
+  OPENAEV_SCENARIO_DOCUMENT_TYPE,
 } from './obas-scenarios.domain';
 
 const resolvers: Resolvers = {
@@ -55,21 +55,21 @@ const resolvers: Resolvers = {
   Query: {
     seoObasScenariosByServiceSlug: async (_, { serviceSlug }) => {
       return await loadSeoDocumentsByServiceSlug(
-        OBAS_SCENARIO_DOCUMENT_TYPE,
+        OPENAEV_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
         OBAS_SCENARIO_METADATA
       );
     },
     seoObasScenarioBySlug: async (_, { slug }) => {
       return loadSeoDocumentBySlug(
-        OBAS_SCENARIO_DOCUMENT_TYPE,
+        OPENAEV_SCENARIO_DOCUMENT_TYPE,
         slug,
         OBAS_SCENARIO_METADATA
       );
     },
     obasScenarios: async (_, input, context) => {
       return loadParentDocumentsByServiceInstance<ObasScenarioConnection>(
-        OBAS_SCENARIO_DOCUMENT_TYPE,
+        OPENAEV_SCENARIO_DOCUMENT_TYPE,
         context,
         input,
         OBAS_SCENARIO_METADATA
@@ -87,7 +87,7 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const doc = await createDocumentWithChildren<ObasScenario>(
-          OBAS_SCENARIO_DOCUMENT_TYPE,
+          OPENAEV_SCENARIO_DOCUMENT_TYPE,
           input,
           document,
           OBAS_SCENARIO_METADATA,
@@ -112,7 +112,7 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<ObasScenario>(
-          OBAS_SCENARIO_DOCUMENT_TYPE,
+          OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
           OBAS_SCENARIO_METADATA,

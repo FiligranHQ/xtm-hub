@@ -93,7 +93,7 @@ export interface SeoCsvFeed {
 export interface SeoObasScenario {
   description: string;
   id: string;
-  type: 'obas_scenario';
+  type: 'openaev_scenario';
   children_documents: {
     id: string;
   }[];

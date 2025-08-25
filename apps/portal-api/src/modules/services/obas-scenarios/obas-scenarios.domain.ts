@@ -1,7 +1,7 @@
 import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
 import Document from '../../../model/kanel/public/Document';
 
-export const OBAS_SCENARIO_DOCUMENT_TYPE = 'obas_scenario';
+export const OPENAEV_SCENARIO_DOCUMENT_TYPE = 'openaev_scenario';
 
 export type ObasScenario = Document & {
   product_version: string;
