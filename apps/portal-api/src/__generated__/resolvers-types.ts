@@ -1210,7 +1210,7 @@ export enum ServiceDefinitionIdentifier {
   CsvFeeds = 'csv_feeds',
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
-  ObasScenarios = 'obas_scenarios',
+  OpenaevScenarios = 'openaev_scenarios',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault'
 }
