@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
 export const SeoObasScenarioFragment = graphql`
-  fragment seoObasScenarioFragment on ObasScenario {
+  fragment seoObasScenarioFragment on OpenAEVScenario {
     id
     name
     description
@@ -31,7 +31,7 @@ export const SeoObasScenarioFragment = graphql`
 
 export const SeoObasScenariosByServiceSlugQuery = graphql`
   query seoObasScenariosByServiceSlugQuery($serviceSlug: String!) {
-    seoObasScenariosByServiceSlug(serviceSlug: $serviceSlug) {
+    seoOpenAEVScenariosByServiceSlug(serviceSlug: $serviceSlug) {
       ...seoObasScenarioFragment
     }
   }
@@ -39,7 +39,7 @@ export const SeoObasScenariosByServiceSlugQuery = graphql`
 
 export const SeoObasScenarioBySlugQuery = graphql`
   query seoObasScenarioBySlugQuery($slug: String!) {
-    seoObasScenarioBySlug(slug: $slug) {
+    seoOpenAEVScenarioBySlug(slug: $slug) {
       ...seoObasScenarioFragment
     }
   }

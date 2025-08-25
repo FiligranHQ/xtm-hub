@@ -1,6 +1,6 @@
 import { dbTx } from '../../../../knexfile';
 import {
-  ObasScenarioConnection,
+  OpenAevScenarioConnection,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -23,13 +23,13 @@ import {
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import {
-  OBAS_SCENARIO_METADATA,
-  ObasScenario,
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
-} from './obas-scenarios.domain';
+  OPENAEV_SCENARIO_METADATA,
+  OpenAEVScenario,
+} from './openaev-scenarios.domain';
 
 const resolvers: Resolvers = {
-  SeoObasScenario: {
+  SeoOpenAEVScenario: {
     children_documents: ({ id }) => loadImagesByDocumentId(id),
     uploader: ({ id }, _, context) =>
       getUploader(context, id, {
@@ -40,7 +40,7 @@ const resolvers: Resolvers = {
         unsecured: true,
       }),
   },
-  ObasScenario: {
+  OpenAEVScenario: {
     labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByDocumentId(id),
     uploader: ({ id }, _, context) =>
@@ -53,44 +53,44 @@ const resolvers: Resolvers = {
       loadSubscription(context, service_instance_id),
   },
   Query: {
-    seoObasScenariosByServiceSlug: async (_, { serviceSlug }) => {
+    seoOpenAEVScenariosByServiceSlug: async (_, { serviceSlug }) => {
       return await loadSeoDocumentsByServiceSlug(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
-        OBAS_SCENARIO_METADATA
+        OPENAEV_SCENARIO_METADATA
       );
     },
-    seoObasScenarioBySlug: async (_, { slug }) => {
+    seoOpenAEVScenarioBySlug: async (_, { slug }) => {
       return loadSeoDocumentBySlug(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         slug,
-        OBAS_SCENARIO_METADATA
+        OPENAEV_SCENARIO_METADATA
       );
     },
-    obasScenarios: async (_, input, context) => {
-      return loadParentDocumentsByServiceInstance<ObasScenarioConnection>(
+    openAEVScenarios: async (_, input, context) => {
+      return loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         context,
         input,
-        OBAS_SCENARIO_METADATA
+        OPENAEV_SCENARIO_METADATA
       );
     },
-    obasScenario: async (_, { id }, context) =>
+    openAEVScenario: async (_, { id }, context) =>
       loadDocumentById(
         context,
         extractId<DocumentId>(id),
-        OBAS_SCENARIO_METADATA
+        OPENAEV_SCENARIO_METADATA
       ),
   },
   Mutation: {
-    createObasScenario: async (_, { input, document }, context) => {
+    createOpenAEVScenario: async (_, { input, document }, context) => {
       const trx = await dbTx();
       try {
-        const doc = await createDocumentWithChildren<ObasScenario>(
+        const doc = await createDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           input,
           document,
-          OBAS_SCENARIO_METADATA,
+          OPENAEV_SCENARIO_METADATA,
           context,
           trx
         );
@@ -108,14 +108,14 @@ const resolvers: Resolvers = {
         });
       }
     },
-    updateObasScenario: async (_, input, context) => {
+    updateOpenAEVScenario: async (_, input, context) => {
       const trx = await dbTx();
       try {
-        const doc = await updateDocumentWithChildren<ObasScenario>(
+        const doc = await updateDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
-          OBAS_SCENARIO_METADATA,
+          OPENAEV_SCENARIO_METADATA,
           context,
           trx
         );
@@ -133,10 +133,10 @@ const resolvers: Resolvers = {
         });
       }
     },
-    deleteObasScenario: async (_, { id }, context) => {
+    deleteOpenAEVScenario: async (_, { id }, context) => {
       const trx = await dbTx();
       try {
-        const doc = await deleteDocument<ObasScenario>(
+        const doc = await deleteDocument<OpenAEVScenario>(
           context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,

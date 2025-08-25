@@ -51,9 +51,9 @@ const ObasScenariosList = ({
   const [active, draft] = useActiveAndDraftSplit<
     obasScenariosItem_fragment$data,
     obasScenariosItem_fragment$key
-  >(data?.obasScenarios.edges, obasScenariosItem);
+  >(data?.openAEVScenarios.edges, obasScenariosItem);
 
-  const connectionId = data?.obasScenarios.__id;
+  const connectionId = data?.openAEVScenarios.__id;
 
   const context = useObasScenarioContext(serviceInstance, connectionId);
 

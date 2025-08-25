@@ -59,7 +59,7 @@ export function useObasScenarioContext(
       uploadables: fileListToUploadableMap(documents),
 
       onCompleted: (response) => {
-        if (!response.createObasScenario) {
+        if (!response.createOpenAEVScenario) {
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),

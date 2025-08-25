@@ -9,7 +9,7 @@ import csvFeedsResolver from '../modules/services/csv-feeds/csv-feeds.resolver';
 import customDashboardsResolver from '../modules/services/custom-dashboards/custom-dashboards.resolver';
 import ServiceDefinitionResolver from '../modules/services/definition/service-definition.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
-import obasScenariosResolver from '../modules/services/obas-scenarios/obas-scenarios.resolver';
+import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
 import labelsResolver from '../modules/settings/labels/labels.resolver';
@@ -47,7 +47,7 @@ const resolvers = mergeResolvers([
   labelsResolver,
   customDashboardsResolver,
   csvFeedsResolver,
-  obasScenariosResolver,
+  openAEVScenariosResolver,
   registrationResolver,
 ]);
 

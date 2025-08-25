@@ -106,7 +106,7 @@ export type CreateCustomDashboardInput = {
   uploader_id: Scalars['String']['input'];
 };
 
-export type CreateObasScenarioInput = {
+export type CreateOpenAevScenarioInput = {
   active: Scalars['Boolean']['input'];
   description: Scalars['String']['input'];
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -365,12 +365,12 @@ export type Mutation = {
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed: CsvFeed;
   createCustomDashboard: CustomDashboard;
-  createObasScenario: ObasScenario;
+  createOpenAEVScenario: OpenAevScenario;
   deleteCsvFeed: CsvFeed;
   deleteCustomDashboard: CustomDashboard;
   deleteDocument: Document;
   deleteLabel: Label;
-  deleteObasScenario: ObasScenario;
+  deleteOpenAEVScenario: OpenAevScenario;
   deleteOrganization?: Maybe<Organization>;
   deleteServiceInstance?: Maybe<ServiceInstance>;
   deleteSubscription?: Maybe<ServiceInstance>;
@@ -395,7 +395,7 @@ export type Mutation = {
   unregisterOpenCTIPlatform: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
-  updateObasScenario: ObasScenario;
+  updateOpenAEVScenario: OpenAevScenario;
 };
 
 
@@ -488,9 +488,9 @@ export type MutationCreateCustomDashboardArgs = {
 };
 
 
-export type MutationCreateObasScenarioArgs = {
+export type MutationCreateOpenAevScenarioArgs = {
   document: Array<Scalars['Upload']['input']>;
-  input: CreateObasScenarioInput;
+  input: CreateOpenAevScenarioInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -519,7 +519,7 @@ export type MutationDeleteLabelArgs = {
 };
 
 
-export type MutationDeleteObasScenarioArgs = {
+export type MutationDeleteOpenAevScenarioArgs = {
   id: Scalars['ID']['input'];
   serviceInstanceId: Scalars['String']['input'];
 };
@@ -653,11 +653,11 @@ export type MutationUpdateCustomDashboardArgs = {
 };
 
 
-export type MutationUpdateObasScenarioArgs = {
+export type MutationUpdateOpenAevScenarioArgs = {
   document?: InputMaybe<Array<Scalars['Upload']['input']>>;
   documentId: Scalars['ID']['input'];
   images?: InputMaybe<Array<Scalars['String']['input']>>;
-  input: UpdateObasScenarioInput;
+  input: UpdateOpenAevScenarioInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   updateDocument: Scalars['Boolean']['input'];
 };
@@ -666,8 +666,8 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
-export type ObasScenario = Node & {
-  __typename?: 'ObasScenario';
+export type OpenAevScenario = Node & {
+  __typename?: 'OpenAEVScenario';
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResourceImage>>;
   created_at: Scalars['Date']['output'];
@@ -692,17 +692,17 @@ export type ObasScenario = Node & {
   uploader_organization?: Maybe<Organization>;
 };
 
-export type ObasScenarioConnection = {
-  __typename?: 'ObasScenarioConnection';
-  edges: Array<ObasScenarioEdge>;
+export type OpenAevScenarioConnection = {
+  __typename?: 'OpenAEVScenarioConnection';
+  edges: Array<OpenAevScenarioEdge>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int']['output'];
 };
 
-export type ObasScenarioEdge = {
-  __typename?: 'ObasScenarioEdge';
+export type OpenAevScenarioEdge = {
+  __typename?: 'OpenAEVScenarioEdge';
   cursor: Scalars['String']['output'];
-  node: ObasScenario;
+  node: OpenAevScenario;
 };
 
 export type OpenCtiPlatform = Node & {
@@ -832,8 +832,8 @@ export type Query = {
   labels?: Maybe<LabelConnection>;
   me?: Maybe<User>;
   node?: Maybe<Node>;
-  obasScenario?: Maybe<ObasScenario>;
-  obasScenarios: ObasScenarioConnection;
+  openAEVScenario?: Maybe<OpenAevScenario>;
+  openAEVScenarios: OpenAevScenarioConnection;
   openCTIPlatformAssociatedOrganization: Organization;
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   openCTIPlatforms: Array<OpenCtiPlatform>;
@@ -848,8 +848,8 @@ export type Query = {
   seoCsvFeedsByServiceSlug?: Maybe<Array<Maybe<CsvFeed>>>;
   seoCustomDashboardBySlug?: Maybe<CustomDashboard>;
   seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<CustomDashboard>>>;
-  seoObasScenarioBySlug?: Maybe<ObasScenario>;
-  seoObasScenariosByServiceSlug?: Maybe<Array<Maybe<ObasScenario>>>;
+  seoOpenAEVScenarioBySlug?: Maybe<OpenAevScenario>;
+  seoOpenAEVScenariosByServiceSlug?: Maybe<Array<Maybe<OpenAevScenario>>>;
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceInstanceById?: Maybe<ServiceInstance>;
@@ -955,13 +955,13 @@ export type QueryNodeArgs = {
 };
 
 
-export type QueryObasScenarioArgs = {
+export type QueryOpenAevScenarioArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
-export type QueryObasScenariosArgs = {
+export type QueryOpenAevScenariosArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
@@ -1044,12 +1044,12 @@ export type QuerySeoCustomDashboardsByServiceSlugArgs = {
 };
 
 
-export type QuerySeoObasScenarioBySlugArgs = {
+export type QuerySeoOpenAevScenarioBySlugArgs = {
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
-export type QuerySeoObasScenariosByServiceSlugArgs = {
+export type QuerySeoOpenAevScenariosByServiceSlugArgs = {
   serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1402,7 +1402,7 @@ export type UpdateCustomDashboardInput = {
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateObasScenarioInput = {
+export type UpdateOpenAevScenarioInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -1597,7 +1597,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( IsOpenCtiPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( ObasScenario ) | ( OpenCtiPlatform ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( IsOpenCtiPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( OpenAevScenario ) | ( OpenCtiPlatform ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -1614,7 +1614,7 @@ export type ResolversTypes = ResolversObject<{
   Capability: ResolverTypeWrapper<Capability>;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
-  CreateObasScenarioInput: CreateObasScenarioInput;
+  CreateOpenAEVScenarioInput: CreateOpenAevScenarioInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CsvFeedConnection: ResolverTypeWrapper<CsvFeedConnection>;
   CsvFeedEdge: ResolverTypeWrapper<CsvFeedEdge>;
@@ -1649,9 +1649,9 @@ export type ResolversTypes = ResolversObject<{
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
-  ObasScenario: ResolverTypeWrapper<ObasScenario>;
-  ObasScenarioConnection: ResolverTypeWrapper<ObasScenarioConnection>;
-  ObasScenarioEdge: ResolverTypeWrapper<ObasScenarioEdge>;
+  OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
+  OpenAEVScenarioConnection: ResolverTypeWrapper<OpenAevScenarioConnection>;
+  OpenAEVScenarioEdge: ResolverTypeWrapper<OpenAevScenarioEdge>;
   OpenCTIPlatform: ResolverTypeWrapper<OpenCtiPlatform>;
   OpenCTIPlatformContract: OpenCtiPlatformContract;
   OpenCTIPlatformInput: OpenCtiPlatformInput;
@@ -1705,7 +1705,7 @@ export type ResolversTypes = ResolversObject<{
   UnregisterOpenCTIPlatformInput: UnregisterOpenCtiPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
-  UpdateObasScenarioInput: UpdateObasScenarioInput;
+  UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
@@ -1737,7 +1737,7 @@ export type ResolversParentTypes = ResolversObject<{
   Capability: Capability;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
-  CreateObasScenarioInput: CreateObasScenarioInput;
+  CreateOpenAEVScenarioInput: CreateOpenAevScenarioInput;
   CsvFeed: CsvFeed;
   CsvFeedConnection: CsvFeedConnection;
   CsvFeedEdge: CsvFeedEdge;
@@ -1769,9 +1769,9 @@ export type ResolversParentTypes = ResolversObject<{
   MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
-  ObasScenario: ObasScenario;
-  ObasScenarioConnection: ObasScenarioConnection;
-  ObasScenarioEdge: ObasScenarioEdge;
+  OpenAEVScenario: OpenAevScenario;
+  OpenAEVScenarioConnection: OpenAevScenarioConnection;
+  OpenAEVScenarioEdge: OpenAevScenarioEdge;
   OpenCTIPlatform: OpenCtiPlatform;
   OpenCTIPlatformInput: OpenCtiPlatformInput;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
@@ -1811,7 +1811,7 @@ export type ResolversParentTypes = ResolversObject<{
   UnregisterOpenCTIPlatformInput: UnregisterOpenCtiPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
-  UpdateObasScenarioInput: UpdateObasScenarioInput;
+  UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   Upload: Scalars['Upload']['output'];
   User: User;
   UserConnection: UserConnection;
@@ -2062,12 +2062,12 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
-  createObasScenario?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType, RequireFields<MutationCreateObasScenarioArgs, 'document' | 'input'>>;
+  createOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationCreateOpenAevScenarioArgs, 'document' | 'input'>>;
   deleteCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'id' | 'serviceInstanceId'>>;
   deleteCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationDeleteCustomDashboardArgs, 'id' | 'serviceInstanceId'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
-  deleteObasScenario?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType, RequireFields<MutationDeleteObasScenarioArgs, 'id' | 'serviceInstanceId'>>;
+  deleteOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationDeleteOpenAevScenarioArgs, 'id' | 'serviceInstanceId'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
@@ -2092,15 +2092,15 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   unregisterOpenCTIPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterOpenCtiPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
-  updateObasScenario?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType, RequireFields<MutationUpdateObasScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
+  updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'IsOpenCTIPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'ObasScenario' | 'OpenCTIPlatform' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'IsOpenCTIPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'OpenAEVScenario' | 'OpenCTIPlatform' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
-export type ObasScenarioResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenario'] = ResolversParentTypes['ObasScenario']> = ResolversObject<{
+export type OpenAevScenarioResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenAEVScenario'] = ResolversParentTypes['OpenAEVScenario']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -2126,16 +2126,16 @@ export type ObasScenarioResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type ObasScenarioConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenarioConnection'] = ResolversParentTypes['ObasScenarioConnection']> = ResolversObject<{
-  edges?: Resolver<Array<ResolversTypes['ObasScenarioEdge']>, ParentType, ContextType>;
+export type OpenAevScenarioConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenAEVScenarioConnection'] = ResolversParentTypes['OpenAEVScenarioConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['OpenAEVScenarioEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type ObasScenarioEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ObasScenarioEdge'] = ResolversParentTypes['ObasScenarioEdge']> = ResolversObject<{
+export type OpenAevScenarioEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenAEVScenarioEdge'] = ResolversParentTypes['OpenAEVScenarioEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<ResolversTypes['ObasScenario'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2211,8 +2211,8 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   labels?: Resolver<Maybe<ResolversTypes['LabelConnection']>, ParentType, ContextType, RequireFields<QueryLabelsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
-  obasScenario?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QueryObasScenarioArgs>>;
-  obasScenarios?: Resolver<ResolversTypes['ObasScenarioConnection'], ParentType, ContextType, RequireFields<QueryObasScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  openAEVScenario?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QueryOpenAevScenarioArgs>>;
+  openAEVScenarios?: Resolver<ResolversTypes['OpenAEVScenarioConnection'], ParentType, ContextType, RequireFields<QueryOpenAevScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
   openCTIPlatformAssociatedOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformAssociatedOrganizationArgs, 'platformId'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   openCTIPlatforms?: Resolver<Array<ResolversTypes['OpenCTIPlatform']>, ParentType, ContextType>;
@@ -2227,8 +2227,8 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   seoCsvFeedsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CsvFeed']>>>, ParentType, ContextType, Partial<QuerySeoCsvFeedsByServiceSlugArgs>>;
   seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
   seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
-  seoObasScenarioBySlug?: Resolver<Maybe<ResolversTypes['ObasScenario']>, ParentType, ContextType, Partial<QuerySeoObasScenarioBySlugArgs>>;
-  seoObasScenariosByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['ObasScenario']>>>, ParentType, ContextType, Partial<QuerySeoObasScenariosByServiceSlugArgs>>;
+  seoOpenAEVScenarioBySlug?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QuerySeoOpenAevScenarioBySlugArgs>>;
+  seoOpenAEVScenariosByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['OpenAEVScenario']>>>, ParentType, ContextType, Partial<QuerySeoOpenAevScenariosByServiceSlugArgs>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
@@ -2535,9 +2535,9 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   MessageTracking?: MessageTrackingResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
-  ObasScenario?: ObasScenarioResolvers<ContextType>;
-  ObasScenarioConnection?: ObasScenarioConnectionResolvers<ContextType>;
-  ObasScenarioEdge?: ObasScenarioEdgeResolvers<ContextType>;
+  OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
+  OpenAEVScenarioConnection?: OpenAevScenarioConnectionResolvers<ContextType>;
+  OpenAEVScenarioEdge?: OpenAevScenarioEdgeResolvers<ContextType>;
   OpenCTIPlatform?: OpenCtiPlatformResolvers<ContextType>;
   OpenCTIPlatformRegistrationStatusResponse?: OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;

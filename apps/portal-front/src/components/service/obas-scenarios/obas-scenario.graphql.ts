@@ -2,12 +2,12 @@ import { graphql } from 'react-relay';
 
 export const ObasScenarioCreateMutation = graphql`
   mutation obasScenarioCreateMutation(
-    $input: CreateObasScenarioInput!
+    $input: CreateOpenAEVScenarioInput!
     $document: [Upload!]!
     $serviceInstanceId: String!
     $connections: [ID!]!
   ) {
-    createObasScenario(
+    createOpenAEVScenario(
       input: $input
       document: $document
       serviceInstanceId: $serviceInstanceId
@@ -22,13 +22,13 @@ export const ObasScenarioCreateMutation = graphql`
 export const ObasScenarioUpdateMutation = graphql`
   mutation obasScenarioUpdateMutation(
     $documentId: ID!
-    $input: UpdateObasScenarioInput!
+    $input: UpdateOpenAEVScenarioInput!
     $document: [Upload!]
     $updateDocument: Boolean!
     $images: [String!]
     $serviceInstanceId: String!
   ) {
-    updateObasScenario(
+    updateOpenAEVScenario(
       documentId: $documentId
       input: $input
       document: $document
@@ -48,14 +48,17 @@ export const ObasScenarioDeleteMutation = graphql`
     $connections: [ID!]!
     $serviceInstanceId: String!
   ) {
-    deleteObasScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {
+    deleteOpenAEVScenario(
+      id: $documentId
+      serviceInstanceId: $serviceInstanceId
+    ) {
       id @deleteEdge(connections: $connections)
     }
   }
 `;
 
 export const obasScenariosItem = graphql`
-  fragment obasScenariosItem_fragment on ObasScenario @inline {
+  fragment obasScenariosItem_fragment on OpenAEVScenario @inline {
     id
     type
     file_name
@@ -103,7 +106,7 @@ export const obasScenariosItem = graphql`
 export const obasScenariosFragment = graphql`
   fragment obasScenariosList on Query
   @refetchable(queryName: "ObasScenariosPaginationQuery") {
-    obasScenarios(
+    openAEVScenarios(
       first: $count
       after: $cursor
       orderBy: $orderBy
@@ -141,7 +144,7 @@ export const ObasScenariosListQuery = graphql`
 
 export const ObasScenarioQuery = graphql`
   query obasScenarioQuery($documentId: ID, $serviceInstanceId: ID) {
-    obasScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {
+    openAEVScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {
       ...obasScenariosItem_fragment
     }
   }

@@ -30,7 +30,7 @@ const ObasScenarioSlug: React.FunctionComponent<ObasScenarioSlugProps> = ({
 
   const documentData = readInlineData<obasScenariosItem_fragment$key>(
     obasScenariosItem,
-    data.obasScenario
+    data.openAEVScenario
   );
 
   const breadcrumbValue = [

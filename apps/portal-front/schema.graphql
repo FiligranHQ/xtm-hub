@@ -38,9 +38,9 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
-  createObasScenario(input: CreateObasScenarioInput!, document: [Upload!]!, serviceInstanceId: String): ObasScenario!
-  updateObasScenario(documentId: ID!, input: UpdateObasScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): ObasScenario!
-  deleteObasScenario(id: ID!, serviceInstanceId: String!): ObasScenario!
+  createOpenAEVScenario(input: CreateOpenAEVScenarioInput!, document: [Upload!]!, serviceInstanceId: String): OpenAEVScenario!
+  updateOpenAEVScenario(documentId: ID!, input: UpdateOpenAEVScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): OpenAEVScenario!
+  deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
   registerOpenCTIPlatform(input: RegisterOpenCTIPlatformInput!): RegistrationResponse!
   unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
@@ -111,10 +111,10 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  seoObasScenariosByServiceSlug(serviceSlug: String): [ObasScenario]
-  seoObasScenarioBySlug(slug: String): ObasScenario
-  obasScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): ObasScenarioConnection!
-  obasScenario(id: ID, serviceInstanceId: ID): ObasScenario
+  seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
+  seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
+  openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
+  openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
   isOpenCTIPlatformRegistered(input: IsOpenCTIPlatformRegisteredInput!): IsOpenCTIPlatformRegisteredResponse!
   canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
   openCTIPlatforms: [OpenCTIPlatform!]!
@@ -354,7 +354,7 @@ type ServiceLink implements Node {
   name: String
 }
 
-input CreateObasScenarioInput {
+input CreateOpenAEVScenarioInput {
   name: String!
   slug: String!
   short_description: String!
@@ -365,7 +365,7 @@ input CreateObasScenarioInput {
   product_version: String!
 }
 
-input UpdateObasScenarioInput {
+input UpdateOpenAEVScenarioInput {
   name: String
   slug: String
   short_description: String
@@ -377,7 +377,7 @@ input UpdateObasScenarioInput {
   product_version: String
 }
 
-type ObasScenario implements Node {
+type OpenAEVScenario implements Node {
   id: ID!
   type: String!
   uploader: User
@@ -402,14 +402,14 @@ type ObasScenario implements Node {
   product_version: String
 }
 
-type ObasScenarioEdge {
+type OpenAEVScenarioEdge {
   cursor: String!
-  node: ObasScenario!
+  node: OpenAEVScenario!
 }
 
-type ObasScenarioConnection {
+type OpenAEVScenarioConnection {
   totalCount: Int!
-  edges: [ObasScenarioEdge!]!
+  edges: [OpenAEVScenarioEdge!]!
   pageInfo: PageInfo!
 }
 

@@ -9,13 +9,13 @@ export type ShareableResource =
   | obasScenariosItem_fragment$data
   | SeoCsvFeed
   | SeoCustomDashboard
-  | SeoObasScenario;
+  | SeoOpenAEVScenario;
 
 export type SubscribableResource =
   | csvFeedsItem_fragment$data
   | obasScenariosItem_fragment$data;
 
-export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoObasScenario;
+export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
 
 export interface SeoCustomDashboard {
   description: string;
@@ -90,7 +90,7 @@ export interface SeoCsvFeed {
   };
 }
 
-export interface SeoObasScenario {
+export interface SeoOpenAEVScenario {
   description: string;
   id: string;
   type: 'openaev_scenario';

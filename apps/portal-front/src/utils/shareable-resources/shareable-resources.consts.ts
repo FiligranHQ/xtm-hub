@@ -9,7 +9,7 @@ import {
   QueryMapEntry,
   SeoCsvFeed,
   SeoCustomDashboard,
-  SeoObasScenario,
+  SeoOpenAEVScenario,
   SeoResource,
   ServiceSlug,
 } from './shareable-resources.types';
@@ -52,9 +52,9 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
       query: SeoCustomDashboardsByServiceSlugQuery,
       key: 'seoCustomDashboardsByServiceSlug',
     }),
-  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeQueryMapEntry<SeoObasScenario>({
+  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeQueryMapEntry<SeoOpenAEVScenario>({
     query: SeoObasScenariosByServiceSlugQuery,
-    key: 'seoObasScenariosByServiceSlug',
+    key: 'seoOpenAEVScenariosByServiceSlug',
   }),
 };
 
@@ -70,8 +70,10 @@ export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
       query: SeoCustomDashboardBySlugQuery,
       key: 'seoCustomDashboardBySlug',
     }),
-  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeSingleQueryMapEntry<SeoObasScenario>({
-    query: SeoObasScenarioBySlugQuery,
-    key: 'seoObasScenarioBySlug',
-  }),
+  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeSingleQueryMapEntry<SeoOpenAEVScenario>(
+    {
+      query: SeoObasScenarioBySlugQuery,
+      key: 'seoOpenAEVScenarioBySlug',
+    }
+  ),
 };
