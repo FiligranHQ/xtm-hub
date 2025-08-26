@@ -1,9 +1,12 @@
 import Loader from '@/components/loader';
-import { RegisterNeverRegistered } from '@/components/register/never-registered';
+import { RegisterOrganizationForm } from '@/components/register/form/organization';
 import { RegisterOpenCTIPlatform } from '@/components/register/register.graphql';
 import { RegisterStateLayout } from '@/components/register/state/layout';
 import { RegisterStateMissingCapability } from '@/components/register/state/missing-capability';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
+import OrganizationListUserOrganizationsQueryGraphql, {
+  organizationListUserOrganizationsQuery,
+} from '@generated/organizationListUserOrganizationsQuery.graphql';
 import registerIsOpenCTIPlatformRegisteredFragmentGraphql, {
   registerIsOpenCTIPlatformRegisteredFragment$key,
 } from '@generated/registerIsOpenCTIPlatformRegisteredFragment.graphql';
@@ -23,6 +26,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   PreloadedQuery,
   useFragment,
+  useLazyLoadQuery,
   useMutation,
   usePreloadedQuery,
 } from 'react-relay';
@@ -51,6 +55,12 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     usePreloadedQuery<registerIsOpenCTIPlatformRegisteredQuery>(
       RegisterIsOpenCTIPlatformRegisteredQueryGraphql,
       queryRef
+    );
+
+  const userOrganizationsQueryData =
+    useLazyLoadQuery<organizationListUserOrganizationsQuery>(
+      OrganizationListUserOrganizationsQueryGraphql,
+      {}
     );
 
   const isPlatformRegistered =
@@ -170,7 +180,8 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     PlatformRegistrationStatusEnum.NEVER_REGISTERED
   ) {
     return (
-      <RegisterNeverRegistered
+      <RegisterOrganizationForm
+        userOrganizationsQueryData={userOrganizationsQueryData}
         cancel={cancel}
         confirm={register}
       />
