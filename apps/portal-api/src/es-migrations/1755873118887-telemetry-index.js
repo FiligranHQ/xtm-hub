@@ -30,9 +30,6 @@ export const up = async function (next) {
             source: {
               type: 'keyword',
             },
-            subscribed_service: {
-              type: 'keyword',
-            },
             service: {
               type: 'keyword',
             },
