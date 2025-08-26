@@ -157,6 +157,11 @@
         "Title": "L'inscription a échoué",
         "Description": "Une erreur s'est produite lors de l'inscription de la plateforme."
       },
+      "TooMuchOrganization": {
+        "Title": "Avis de réenregistrement de la plate-forme",
+        "Description1": "Votre plateforme OpenCTI {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+        "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation."
+      },
       "SameOrganization": {
         "Registered": {
           "Title": "Plateforme déjà inscrite",

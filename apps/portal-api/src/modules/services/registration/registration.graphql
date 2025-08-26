@@ -47,6 +47,7 @@ type IsOpenCTIPlatformRegisteredOrganization implements Node {
 
 type IsOpenCTIPlatformRegisteredResponse {
   status: PlatformRegistrationStatus!
+  platformTitle: String
   organization: IsOpenCTIPlatformRegisteredOrganization
 }
 

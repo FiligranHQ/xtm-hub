@@ -264,12 +264,14 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
+    const parsedConfig = JSON.parse(serviceConfiguration.config as string);
     return {
       status:
         serviceConfiguration.status === ServiceConfigurationStatus.Active
           ? PlatformRegistrationStatus.Registered
           : PlatformRegistrationStatus.Unregistered,
       organization: { id: subscription.organization_id },
+      platformTitle: parsedConfig.platform_title,
     };
   },
 
