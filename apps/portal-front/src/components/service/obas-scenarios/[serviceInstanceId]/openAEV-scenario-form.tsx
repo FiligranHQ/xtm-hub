@@ -23,7 +23,7 @@ import { z } from 'zod';
 
 const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
-const obasScenarioFormSchema = z.object({
+const openAEVScenarioFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
   uploader_id: z.string().optional(),
@@ -37,7 +37,9 @@ const obasScenarioFormSchema = z.object({
   document: z.custom<FileList>(fileListCheck),
   illustration: z.custom<FileList>(fileListCheck),
 });
-export type OpenAEVScenarioFormValues = z.infer<typeof obasScenarioFormSchema>;
+export type OpenAEVScenarioFormValues = z.infer<
+  typeof openAEVScenarioFormSchema
+>;
 
 export interface OpenAEVScenarioFormProps {
   userCanDelete?: boolean;
@@ -56,33 +58,33 @@ export const OpenAEVScenarioForm = ({
   const { me } = useContext(PortalContext);
   const { translationKey } = useServiceContext();
 
-  const obasScenario = document;
+  const openAEVScenario = document;
   const { handleCloseSheet } = useDialogContext();
 
   const values = useMemo(
     () =>
       ({
-        ...obasScenario,
-        illustration: obasScenario?.children_documents?.map((doc) => ({
+        ...openAEVScenario,
+        illustration: openAEVScenario?.children_documents?.map((doc) => ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: obasScenario?.labels?.map((label) => label.id),
-        uploader_id: obasScenario?.uploader?.id ?? me?.id,
+        labels: openAEVScenario?.labels?.map((label) => label.id),
+        uploader_id: openAEVScenario?.uploader?.id ?? me?.id,
       }) as OpenAEVScenarioFormValues,
-    [me, obasScenario]
+    [me, openAEVScenario]
   );
   const formSchema = useMemo(
     () =>
-      obasScenario
-        ? obasScenarioFormSchema.merge(
+      openAEVScenario
+        ? openAEVScenarioFormSchema.merge(
             z.object({
               document: z.custom<FileList>(fileListCheck).optional(),
               illustration: z.custom<FileList>(fileListCheck).optional(),
             })
           )
-        : obasScenarioFormSchema,
-    [obasScenario]
+        : openAEVScenarioFormSchema,
+    [openAEVScenario]
   );
 
   return (
@@ -155,7 +157,7 @@ export const OpenAEVScenarioForm = ({
                 <FormLabel>{t('Service.ObasScenario.Form.Author')}</FormLabel>
                 <FormControl>
                   <SelectUsersFormField
-                    defaultValue={obasScenario?.uploader?.email ?? me!.email}
+                    defaultValue={openAEVScenario?.uploader?.email ?? me!.email}
                     value={field.value}
                     onValueChange={field.onChange}
                   />
@@ -164,9 +166,9 @@ export const OpenAEVScenarioForm = ({
             ),
           },
           document: {
-            label: obasScenario
+            label: openAEVScenario
               ? t('Service.ObasScenario.Form.ExistingObasScenarioFile', {
-                  file_name: obasScenario.file_name,
+                  file_name: openAEVScenario.file_name,
                 })
               : t('Service.ObasScenario.Form.ObasScenarioFile'),
             fieldType: 'file',
@@ -199,11 +201,11 @@ export const OpenAEVScenarioForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {obasScenario && (
+          {openAEVScenario && (
             <ServiceDelete
               userCanDelete={userCanDelete}
               onDelete={onDelete}
-              serviceName={obasScenario.name}
+              serviceName={openAEVScenario.name}
               translationKey={translationKey}
             />
           )}

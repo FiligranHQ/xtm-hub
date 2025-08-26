@@ -27,7 +27,7 @@ export function useOpenAEVScenarioContext(
 ): ServiceContextProps {
   const t = useTranslations();
 
-  const [createObasScenario] = useMutation<openAEVScenarioCreateMutation>(
+  const [createOpenAEVScenario] = useMutation<openAEVScenarioCreateMutation>(
     OpenAEVScenarioCreateMutation
   );
 
@@ -46,7 +46,7 @@ export function useOpenAEVScenarioContext(
       ...Array.from(formValues.illustration),
     ];
 
-    createObasScenario({
+    createOpenAEVScenario({
       variables: {
         input: {
           ...input,
@@ -76,14 +76,14 @@ export function useOpenAEVScenarioContext(
     });
   };
 
-  const [deleteObasScenarioMutation] =
+  const [deleteOpenAEVScenarioMutation] =
     useMutation<openAEVScenarioDeleteMutation>(OpenAEVScenarioDeleteMutation);
 
   const handleDeleteSheet = async (
     document: ShareableResource,
     onCompleted: () => void
   ) => {
-    deleteObasScenarioMutation({
+    deleteOpenAEVScenarioMutation({
       variables: {
         documentId: document.id,
         serviceInstanceId: serviceInstance.id,
@@ -95,7 +95,7 @@ export function useOpenAEVScenarioContext(
     });
   };
 
-  const [updateObasScenarioMutation] =
+  const [updateOpenAEVScenarioMutation] =
     useMutation<openAEVScenarioUpdateMutation>(OpenAEVScenarioUpdateMutation);
 
   const handleUpdateSheet = async (
@@ -116,7 +116,7 @@ export function useOpenAEVScenarioContext(
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
-    updateObasScenarioMutation({
+    updateOpenAEVScenarioMutation({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,

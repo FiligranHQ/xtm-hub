@@ -105,7 +105,7 @@ export const openAEVScenariosItem = graphql`
 
 export const openAEVScenariosFragment = graphql`
   fragment openAEVScenariosList on Query
-  @refetchable(queryName: "ObasScenariosPaginationQuery") {
+  @refetchable(queryName: "OpenAEVScenariosPaginationQuery") {
     openAEVScenarios(
       first: $count
       after: $cursor
