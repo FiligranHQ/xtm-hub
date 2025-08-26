@@ -132,3 +132,6 @@ elasticsearch:
     enabled: false
     host: localhost
     annotations: {}
+kibana:
+  enabled: true
+  priorityClassName: ""

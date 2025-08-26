@@ -1,0 +1,33 @@
+{{- if .Values.kibana.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Namespace}}-{{ .Release.Name }}-ingress-kibana
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.tls_issuer }}
+    external-dns.alpha.kubernetes.io/hostname: kibana.{{ .Values.xtmhub.host }}
+    prometheus.io/probe: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-stream-timeout: "1800"
+    nginx.ingress.kubernetes.io/send_timeout: "1800"
+spec:
+  ingressClassName: {{ .Values.ingressClass }} 
+  rules:
+  - host: kibana.{{ .Values.xtmhub.host }}
+    http:
+      paths:
+        - backend:
+            service:
+              name: kibana-kb-http
+              port:
+                number: 5601
+          path: /
+          pathType: Prefix
+  tls:
+  - hosts:
+    - kibana.{{ .Values.xtmhub.host }}
+    secretName: xtmhub-cert-kibana
+{{- end }}
