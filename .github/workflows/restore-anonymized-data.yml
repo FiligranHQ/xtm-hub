@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  restore-anonymized data:
+  restore-anonymized-data:
     runs-on: ubuntu-latest
     steps:
       - name: Install AWX cli
