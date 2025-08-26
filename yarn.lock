@@ -82,14 +82,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/server@npm:4.11.0":
-  version: 4.11.0
-  resolution: "@apollo/server@npm:4.11.0"
+"@apollo/server@npm:4.12.2":
+  version: 4.12.2
+  resolution: "@apollo/server@npm:4.12.2"
   dependencies:
     "@apollo/cache-control-types": ^1.0.3
     "@apollo/server-gateway-interface": ^1.1.1
     "@apollo/usage-reporting-protobuf": ^4.1.1
-    "@apollo/utils.createhash": ^2.0.0
+    "@apollo/utils.createhash": ^2.0.2
     "@apollo/utils.fetcher": ^2.0.0
     "@apollo/utils.isnodelike": ^2.0.0
     "@apollo/utils.keyvaluecache": ^2.1.0
@@ -102,7 +102,7 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     async-retry: ^1.2.1
     cors: ^2.8.5
-    express: ^4.17.1
+    express: ^4.21.1
     loglevel: ^1.6.8
     lru-cache: ^7.10.1
     negotiator: ^0.6.3
@@ -112,7 +112,7 @@ __metadata:
     whatwg-mimetype: ^3.0.0
   peerDependencies:
     graphql: ^16.6.0
-  checksum: 3f9888c3baf448e51b90986b67fa1c3cba48c6e60d3c67f1ccbe1b015c671fe5e11dcb1e9586c4d0b461759502bb48f01a8b00a7f3533b5181bddbff5ee3b188
+  checksum: c42c2f2c7a919d65e40b43ccc1acd95bcd2970500b132170166fc707e97c1502067634ad570c35ebc98a90e4cebf9af7dae1ef0e2ab0ffe6596cf0449cdbda45
   languageName: node
   linkType: hard
 
@@ -125,7 +125,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/utils.createhash@npm:^2.0.0":
+"@apollo/utils.createhash@npm:^2.0.2":
   version: 2.0.2
   resolution: "@apollo/utils.createhash@npm:2.0.2"
   dependencies:
@@ -9977,7 +9977,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/portal-api@workspace:apps/portal-api"
   dependencies:
-    "@apollo/server": 4.11.0
+    "@apollo/server": 4.12.2
     "@aws-sdk/client-s3": 3.670.0
     "@aws-sdk/lib-storage": 3.670.0
     "@dmitryrechkin/json-schema-to-zod": 1.0.1
@@ -14301,7 +14301,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.17.1, express@npm:^4.21.2":
+"express@npm:^4.21.1, express@npm:^4.21.2":
   version: 4.21.2
   resolution: "express@npm:4.21.2"
   dependencies:

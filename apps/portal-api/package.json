@@ -43,7 +43,7 @@
     "watch:graphql": "node builder/dev/watch-graphql.js"
   },
   "dependencies": {
-    "@apollo/server": "4.11.0",
+    "@apollo/server": "4.12.2",
     "@aws-sdk/client-s3": "3.670.0",
     "@aws-sdk/lib-storage": "3.670.0",
     "@dmitryrechkin/json-schema-to-zod": "1.0.1",
