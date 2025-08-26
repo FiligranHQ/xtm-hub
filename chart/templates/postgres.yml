@@ -16,4 +16,4 @@ spec:
   bootstrap:
     initdb:
       database: xtmhub
-      owner: xtmhub
+      owner: {{ .Values.postgres.username }}
