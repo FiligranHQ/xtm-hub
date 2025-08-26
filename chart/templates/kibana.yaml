@@ -6,7 +6,8 @@ metadata:
   annotations:
     eck.k8s.elastic.co/disable-downgrade-validation: "true"
 spec:
-  version: {{ .Values.kibana.image.tag }}
+  # We use elasticsearch image tag to ensure Kibana correspond to current elasticsearch version
+  version: {{ .Values.elasticsearch.image.tag }}
   count: 1
   elasticsearchRef:
     name: elasticsearch
