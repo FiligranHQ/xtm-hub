@@ -73,10 +73,7 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const hasRun = useRef(false);
   useEffect(() => {
     const shouldRefreshToken =
-      isPlatformRegistered.status ===
-        PlatformRegistrationStatusEnum.REGISTERED ||
-      isPlatformRegistered.status ===
-        PlatformRegistrationStatusEnum.UNREGISTERED;
+      isPlatformRegistered.status === PlatformRegistrationStatusEnum.REGISTERED;
 
     if (
       shouldRefreshToken &&
@@ -175,9 +172,31 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     );
   }
 
+  const shouldRegisterOnSameOrganization =
+    isPlatformRegistered.status ===
+      PlatformRegistrationStatusEnum.UNREGISTERED &&
+    userOrganizationsQueryData.userOrganizations.length > 2;
+  if (shouldRegisterOnSameOrganization) {
+    return (
+      <RegisterStateLayout
+        cancel={cancel}
+        confirm={() => register(isPlatformRegistered.organization?.id ?? '')}>
+        <h1>{t('Register.OpenCTI.TooMuchOrganization.Title')}</h1>
+        <p>
+          {t('Register.OpenCTI.TooMuchOrganization.Description1', {
+            platformTitle: isPlatformRegistered.platformTitle ?? '',
+          })}
+          <br />
+          {t('Register.OpenCTI.TooMuchOrganization.Description2')}
+        </p>
+      </RegisterStateLayout>
+    );
+  }
+
   if (
     isPlatformRegistered.status ===
-    PlatformRegistrationStatusEnum.NEVER_REGISTERED
+      PlatformRegistrationStatusEnum.NEVER_REGISTERED ||
+    isPlatformRegistered.status === PlatformRegistrationStatusEnum.UNREGISTERED
   ) {
     return (
       <RegisterOrganizationForm

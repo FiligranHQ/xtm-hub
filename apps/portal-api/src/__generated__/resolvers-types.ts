@@ -298,6 +298,7 @@ export type IsOpenCtiPlatformRegisteredOrganization = Node & {
 export type IsOpenCtiPlatformRegisteredResponse = {
   __typename?: 'IsOpenCTIPlatformRegisteredResponse';
   organization?: Maybe<IsOpenCtiPlatformRegisteredOrganization>;
+  platformTitle?: Maybe<Scalars['String']['output']>;
   status: PlatformRegistrationStatus;
 };
 
@@ -1996,6 +1997,7 @@ export type IsOpenCtiPlatformRegisteredOrganizationResolvers<ContextType = Porta
 
 export type IsOpenCtiPlatformRegisteredResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IsOpenCTIPlatformRegisteredResponse'] = ResolversParentTypes['IsOpenCTIPlatformRegisteredResponse']> = ResolversObject<{
   organization?: Resolver<Maybe<ResolversTypes['IsOpenCTIPlatformRegisteredOrganization']>, ParentType, ContextType>;
+  platformTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['PlatformRegistrationStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
