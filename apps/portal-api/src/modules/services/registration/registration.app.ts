@@ -19,6 +19,7 @@ import Organization, {
 } from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
+import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { ErrorCode } from '../../common/error-code';
@@ -131,21 +132,6 @@ export const registrationApp = {
       throw new Error(ErrorCode.InvalidServiceConfiguration);
     }
 
-    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context,
-      {
-        organizationId,
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
-      }
-    );
-
-    if (!isAllowed) {
-      const errorCode = isInOrganization
-        ? ErrorCode.MissingCapabilityOnOrganization
-        : ErrorCode.UserIsNotInOrganization;
-      throw new Error(errorCode);
-    }
-
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
@@ -155,7 +141,7 @@ export const registrationApp = {
     if (serviceConfiguration) {
       await registrationDomain.refreshExistingPlatform(context, {
         serviceInstanceId: serviceConfiguration.service_instance_id,
-        targetOrganizationId: organizationId,
+        targetOrganizationId: organizationId as OrganizationId,
         configuration,
       });
     } else {
@@ -167,7 +153,6 @@ export const registrationApp = {
     }
 
     const users = await loadOrganizationAdministrators(context, organizationId);
-
     await Promise.all(
       users.map((user) =>
         sendMail({
@@ -204,21 +189,10 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context,
-      {
-        organizationId: subscription.organization_id,
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
-      }
-    );
-
-    if (!isAllowed) {
-      if (isInOrganization) {
-        throw new Error(ErrorCode.MissingCapabilityOnOrganization);
-      } else {
-        throw new Error(ErrorCode.UserIsNotInOrganization);
-      }
-    }
+    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      organizationId: subscription.organization_id,
+      requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+    });
 
     await serviceContractDomain.updateConfiguration(
       context,
@@ -264,7 +238,9 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const parsedConfig = JSON.parse(serviceConfiguration.config as string);
+    const parsedConfig = JSON.parse(
+      JSON.stringify(serviceConfiguration.config)
+    );
     return {
       status:
         serviceConfiguration.status === ServiceConfigurationStatus.Active
