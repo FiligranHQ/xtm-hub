@@ -130,6 +130,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
@@ -139,13 +149,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Install docker
         uses: docker/setup-docker-action@v4
-      - run: corepack enable && corepack prepare yarn@3.8.7
-      - uses: actions/setup-node@v4
-        with:
-         node-version: 23
-         cache: 'yarn'
-      - run: yarn install --immutable
-      - run: npx nx --no-cloud build portal-api portal-front
       - name: Copy migrations
         run: |
           cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
@@ -237,6 +240,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
@@ -244,13 +257,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: corepack enable && corepack prepare yarn@3.8.7
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - run: npx nx --no-cloud build portal-front
       - name: Install docker
         uses: docker/setup-docker-action@v4
       - name: Launch docker compose
@@ -275,6 +281,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
@@ -282,13 +298,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: corepack enable && corepack prepare yarn@3.8.7
-      - uses: actions/setup-node@v4
-        with:
-         node-version: 23
-         cache: 'yarn'
-      - run: yarn install --immutable
-      - run: npx nx --no-cloud build portal-api
       - name: Install docker
         uses: docker/setup-docker-action@v4
       - name: Launch docker compose
@@ -372,6 +381,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
@@ -390,13 +409,6 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             ${{ contains(github.ref, 'refs/tags/') && 'latest' }} # Add `latest` only for tags (production)
-      - run: corepack enable && corepack prepare yarn@3.8.7
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - run: npx nx --no-cloud build portal-api portal-front
       - name: Determine version
         id: version
         run: |
