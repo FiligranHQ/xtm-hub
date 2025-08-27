@@ -55,7 +55,7 @@ jobs:
           node-version: 23
           cache: 'yarn'
       - run: yarn install --immutable
-      - if: ${{ matrix.image }} != 'portal-e2e-tests'
+      - if: ${{ matrix.image != 'portal-e2e-tests' }}
         run: npx nx --no-cloud build ${{ matrix.image }}
       - name: Login to DockerHub
         uses: docker/login-action@v3
