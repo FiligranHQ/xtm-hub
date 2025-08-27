@@ -1,3 +1,4 @@
+import { ForbiddenAccess } from '@xtm-hub/error';
 import { dbUnsecure } from '../../../../knexfile';
 import {
   Restriction,
@@ -6,7 +7,6 @@ import {
 import { ServiceCapabilityMutator } from '../../../model/kanel/public/ServiceCapability';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { PortalContext } from '../../../model/portal-context';
-import { ForbiddenAccess } from '../../../utils/error.util';
 import { loadUserServiceById } from '../user_service.domain';
 import { getManageAccessLeft } from './service-capability.domain';
 

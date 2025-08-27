@@ -1,10 +1,10 @@
+import { logApp } from '@xtm-hub/logger';
 import { type PageInfo } from 'graphql-relay/connection/connection';
 import pkg, { type Knex } from 'knex';
 import { Filter, FilterKey } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
 import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
-import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 
 export interface SecuryQueryOpts {

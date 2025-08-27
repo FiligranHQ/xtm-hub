@@ -1,3 +1,4 @@
+import { logApp } from '@xtm-hub/logger';
 import config from 'config';
 import {
   ClientMetadata,
@@ -5,7 +6,6 @@ import {
   Issuer as OpenIDIssuer,
   Strategy as OpenIDStrategy,
 } from 'openid-client';
-import { logApp } from '../../utils/app-logger.util';
 import { providerLoginHandler } from '../login-handle';
 import { extractRole } from '../mapping-roles';
 

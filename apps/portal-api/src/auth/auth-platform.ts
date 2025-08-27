@@ -1,6 +1,6 @@
+import { AppLogsCategory, logApp } from '@xtm-hub/logger';
 import bodyParser from 'body-parser';
 import { UserInfo } from '../model/user';
-import { AppLogsCategory, logApp } from '../utils/app-logger.util';
 import { setCookieError } from '../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
 import { initProviders } from './providers/providers';

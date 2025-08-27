@@ -1,3 +1,4 @@
+import { AlreadyExistsError, UnknownError } from '@xtm-hub/error';
 import { dbTx } from '../../../../knexfile';
 import {
   CsvFeedConnection,
@@ -5,7 +6,6 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {

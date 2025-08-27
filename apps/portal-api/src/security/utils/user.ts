@@ -1,7 +1,7 @@
+import { ForbiddenAccess } from '@xtm-hub/error';
 import { dbUnsecure } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
-import { ForbiddenAccess } from '../../utils/error.util';
 
 export const checkUserCapabilities = async (
   context: PortalContext,

@@ -7,6 +7,7 @@ import cors from 'cors';
 import express from 'express';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 
+import { logApp } from '@xtm-hub/logger';
 import promBundle from 'express-prom-bundle';
 import expressSession, { SessionData } from 'express-session';
 import { createHandler } from 'graphql-sse/lib/use/express';
@@ -27,7 +28,6 @@ import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
 import { getSessionStoreInstance } from './sessionStoreManager';
-import { logApp } from './utils/app-logger.util';
 import { extractId } from './utils/utils';
 const { json } = pkg;
 
