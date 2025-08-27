@@ -34,8 +34,7 @@ export class ElasticSearchService {
   getIndices(): IndicesApi {
     return this.elasticsearchClient.indices;
   }
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  async search<T = any>(params: SearchRequest): Promise<SearchResponse<T>> {
+  async search<T = unknown>(params: SearchRequest): Promise<SearchResponse<T>> {
     try {
       return this.elasticsearchClient.search<T>(params);
     } catch (error) {
@@ -44,8 +43,7 @@ export class ElasticSearchService {
     }
   }
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  async simpleSearch<T = any>({
+  async simpleSearch<T = unknown>({
     index,
     query,
     sort,
@@ -66,8 +64,7 @@ export class ElasticSearchService {
     return result.hits.hits.map((hit) => hit._source);
   }
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  async create<T = any>(params: CreateRequest): Promise<CreateResponse> {
+  async create<T = unknown>(params: CreateRequest): Promise<CreateResponse> {
     try {
       return this.elasticsearchClient.create<T>(params);
     } catch (error) {
@@ -76,8 +73,7 @@ export class ElasticSearchService {
     }
   }
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  async index<T = any>(params: IndexRequest): Promise<IndexResponse> {
+  async index<T = unknown>(params: IndexRequest): Promise<IndexResponse> {
     try {
       return this.elasticsearchClient.index<T>(params);
     } catch (error) {
