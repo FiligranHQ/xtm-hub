@@ -24,8 +24,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: yarn generate:ts
+      - run: npx nx --no-cloud run-many -t build -p portal-api portal-front portal-e2e-tests
 
   build-images-tests:
+    needs: build-source
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -45,20 +63,8 @@ jobs:
       docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
       docker-labels: ${{ steps.meta.outputs.labels }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - run: corepack enable && corepack prepare yarn@3.8.7
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - if: ${{ matrix.image == 'portal-api' }}
-        run: yarn generate:ts
-      - if: ${{ matrix.image != 'portal-e2e-tests' }}
-        run: npx nx --no-cloud build ${{ matrix.image }}
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
