@@ -14,6 +14,15 @@
         "command": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\""
       }
     },
+    "startold": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "portal-api/dist",
+        "cwd": "apps/portal-api",
+        "command": "concurrently \"yarn dev:tsc\" \"yarn start-tsx\" \"yarn watch:graphql\""
+      }
+    },
     "dev": {
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],
