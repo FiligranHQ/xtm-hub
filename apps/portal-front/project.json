@@ -13,9 +13,10 @@
       }
     },
     "build": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/dist"],
-        "options": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "{projectRoot}/dist",
         "cwd": "apps/portal-front",
         "command": "relay-compiler && tsx scripts/generate-enum.ts && next build"
       }
