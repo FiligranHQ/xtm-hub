@@ -7,11 +7,8 @@ WORKDIR /app
 # Copy monorepo configuration files
 COPY .yarnrc.yml package.json yarn.lock ./
 COPY apps/portal-api/package.json ./apps/portal-api/package.json
-COPY apps/portal-api/project.json ./apps/portal-api/project.json
 COPY apps/portal-e2e-tests/package.json ./apps/portal-e2e-tests/package.json
-COPY apps/portal-e2e-tests/project.json ./apps/portal-e2e-tests/project.json
 COPY apps/portal-front/package.json ./apps/portal-front/package.json
-COPY apps/portal-front/project.json ./apps/portal-front/project.json
 
 # Install all dependencies at the workspace level
 RUN corepack enable && \
@@ -22,11 +19,11 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/portal-api/node_modules ./apps/portal-api/node_modules
-COPY .yarnrc.yml package.json project.json yarn.lock ./
+COPY .yarnrc.yml package.json yarn.lock ./
 COPY apps/portal-api/. ./apps/portal-api/
 
 # Build the backend
-WORKDIR /app
+WORKDIR /app/apps/portal-api
 RUN corepack enable && \
     yarn build
 
