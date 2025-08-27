@@ -33,6 +33,9 @@ export const up = async function (next) {
             service: {
               type: 'keyword',
             },
+            service_type: {
+              type: 'keyword',
+            },
             resource_id: {
               type: 'keyword',
             },
