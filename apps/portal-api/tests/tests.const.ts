@@ -1,5 +1,6 @@
 import { Restriction } from '../src/__generated__/resolvers-types';
 
+import { OrganizationId } from '../src/model/kanel/public/Organization';
 import { PortalContext } from '../src/model/portal-context';
 import {
   ADMIN_UUID,
@@ -13,7 +14,8 @@ export const DEFAULT_ADMIN_PASSWORD = 'admin';
 export const SIMPLE_USER_FILIGRAN_ID = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
 export const DEFAULT_ORG = 'Filigran';
 
-export const THALES_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6c';
+export const THALES_ORGA_ID =
+  '681fb117-e2c3-46d3-945a-0e921b5d4b6c' as OrganizationId;
 export const THALES_ADMIN_ORGA_ID = '015c0488-848d-4c89-95e3-8a243971f594';
 export const THALES_ADMIN_ORGA_EMAIL = 'admin@thales.com';
 export const SERVICE_MALWARE_ID = '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4';
