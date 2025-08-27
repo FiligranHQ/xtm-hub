@@ -1,9 +1,9 @@
 'use strict';
 
-module.exports.up = function (next) {
+export const up = async function (next) {
   next();
 };
 
-module.exports.down = function (next) {
+export const down = async function (next) {
   next();
 };
