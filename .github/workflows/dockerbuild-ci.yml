@@ -55,6 +55,7 @@ jobs:
           node-version: 23
           cache: 'yarn'
       - run: yarn install --immutable
+      - run: npx nx run portal-front:graphql-codegen
       - if: ${{ matrix.image != 'portal-e2e-tests' }}
         run: npx nx --no-cloud build ${{ matrix.image }}
       - name: Login to DockerHub
