@@ -160,6 +160,13 @@ export async function seed(knex) {
         public: true,
         identifier: 'vault',
       },
+      {
+        id: '2634d52b-f061-4ebc-bed2-c6cc94297ad2',
+        name: 'csv feeds',
+        description: 'csv description',
+        public: true,
+        identifier: 'csv_feeds',
+      },
     ])
     .onConflict('id')
     .ignore();
@@ -197,6 +204,16 @@ export async function seed(knex) {
         join_type: 'JOIN_INVITE',
         tags: '{others}',
         service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+      },
+      {
+        id: 'ad003d3f-c406-4be8-a650-880d72f952e9',
+        name: 'csv feeds',
+        description: 'short description for csv feeds',
+        creation_status: 'READY',
+        public: false,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad2',
       },
     ])
     .onConflict('id')
