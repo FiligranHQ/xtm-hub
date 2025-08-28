@@ -8,3 +8,6 @@ Allow: /cybersecurity-solutions
 Allow: /cybersecurity-solutions/
 Allow: /cybersecurity-solutions/*
 Allow: /document/images/*
+Allow: /favicon.ico
+Allow: /apple-icon.png
+Allow: /favicon-*.png
