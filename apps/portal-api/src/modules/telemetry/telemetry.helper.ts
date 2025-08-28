@@ -7,6 +7,7 @@ import {
   TelemetryEventServiceType,
 } from './telemetry.const';
 import {
+  DownloadEvent,
   LoginEvent,
   SubscribeEvent,
   TelemetryEventType,
@@ -99,4 +100,30 @@ export function buildSubscribeEvent(
     service: ServiceIdentifierToEventService.get(service),
     service_type: ServiceIdentifierToEventServiceType.get(service),
   } as SubscribeEvent;
+}
+
+export function buildDownloadEvent(
+  organization_id: OrganizationId,
+  organization_name: string,
+  user_id: UserId,
+  service: ServiceDefinitionIdentifierEnum,
+  resource_id: string,
+  resource_title: string,
+  timestamp?: Date
+): DownloadEvent {
+  const baseEvent = buildBaseEvent(
+    TelemetryEventType.DOWNLOAD,
+    organization_id,
+    organization_name,
+    user_id,
+    timestamp
+  );
+
+  return {
+    ...baseEvent,
+    service: ServiceIdentifierToEventService.get(service),
+    service_type: ServiceIdentifierToEventServiceType.get(service),
+    resource_id: resource_id,
+    resource_title: resource_title,
+  } as DownloadEvent;
 }
