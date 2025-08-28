@@ -1,5 +1,7 @@
+import { TELEMETRY_SOURCE } from './telemetry.const';
+
 export enum TelemetryEventType {
-  LOGIN = 'login,',
+  LOGIN = 'login',
   SUBSCRIBE = 'subscribe',
   SHARE = 'share',
   DOWNLOAD = 'download',
@@ -14,7 +16,7 @@ export interface BaseTelemetryEvent {
   organization_name: string;
   user_id: string;
   '@timestamp': string;
-  source: 'xtm-hub';
+  source: typeof TELEMETRY_SOURCE;
 }
 
 export interface LoginEvent extends BaseTelemetryEvent {

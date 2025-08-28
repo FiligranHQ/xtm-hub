@@ -17,11 +17,15 @@ import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
+import { logApp } from '../../utils/app-logger.util';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { isEmpty } from '../../utils/utils';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { isAdmin } from '../role-portal/role-portal.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { buildLoginEvent } from '../telemetry/telemetry.helper';
 
 export const loadUsersByOrganization = async (
   organizationId: string,
@@ -523,6 +527,23 @@ export const updateUserAtLogin = async (
     .update(fields)
     .returning('*');
 
+  try {
+    const selectedOrga = await loadOrganizationBy(
+      context,
+      'id',
+      updatedUser.selected_organization_id
+    );
+    const loginEvent = buildLoginEvent(
+      updatedUser.selected_organization_id,
+      selectedOrga.name,
+      user.id
+    );
+    telemetryApp.sendTelemetryEvent(loginEvent);
+  } catch (error) {
+    logApp.error('Unable to send telemetry event for login', {
+      error,
+    });
+  }
   return {
     ...user,
     selected_organization_id: updatedUser.selected_organization_id,
