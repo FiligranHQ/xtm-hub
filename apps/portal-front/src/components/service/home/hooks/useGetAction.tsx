@@ -35,7 +35,6 @@ export default function useGetAction(
                 input: {
                   email: me?.email,
                   serviceInstanceId: service.id,
-                  organizationId: me?.selected_organization_id,
                 },
               },
             });

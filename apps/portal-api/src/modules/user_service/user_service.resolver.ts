@@ -1,6 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
@@ -77,13 +78,21 @@ const resolvers: Resolvers = {
         if (input.email.some((email) => email === context.user.email)) {
           throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
         }
-        const [subscription] =
+        let subscription;
+        [subscription] =
           await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
             'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
           } as SubscriptionMutator);
 
         if (!subscription) {
-          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
+          [subscription] =
+            await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+              'Subscription.organization_id':
+                context.user.selected_organization_id,
+              'Subscription.service_instance_id': extractId<ServiceInstanceId>(
+                input.serviceInstanceId
+              ),
+            } as SubscriptionMutator)[0];
         }
         const userServices = [];
         for (const email of input.email) {

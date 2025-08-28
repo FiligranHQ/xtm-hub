@@ -13,7 +13,8 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
-  subscriptionId: ID!
+  subscriptionId: ID
+  serviceInstanceId: ID
 }
 
 input UserServiceDeleteInput {

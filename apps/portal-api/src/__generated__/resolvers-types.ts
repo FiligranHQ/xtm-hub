@@ -1473,7 +1473,8 @@ export type UserService = Node & {
 export type UserServiceAddInput = {
   capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Array<Scalars['String']['input']>;
-  subscriptionId: Scalars['ID']['input'];
+  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
+  subscriptionId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UserServiceCapability = Node & {
