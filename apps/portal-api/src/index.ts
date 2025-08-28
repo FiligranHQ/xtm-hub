@@ -27,6 +27,7 @@ import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
 import { getSessionStoreInstance } from './sessionStoreManager';
+import { runESMigrations } from './thirdparty/elasticsearch/migrate';
 import { logApp } from './utils/app-logger.util';
 import { extractId } from './utils/utils';
 const { json } = pkg;
@@ -183,6 +184,9 @@ healthEndpoint(app);
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema
   await dbMigration.migrate();
+
+  await runESMigrations();
+
   if (process.env.DATA_SEEDING) {
     await dbMigration.seed();
   }

@@ -61,7 +61,9 @@
       "provider": "oidc"
     }
   ],
-
+  "init_services": [],
+  "init_service_capabilities": [],
+  "init_service_definitions": [],
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,
@@ -79,6 +81,13 @@
   "app_logs": {
     "logs_level": "info",
     "extended_error_message": true
+  },
+  "elasticsearch": {
+    "protocol": "http",
+    "host": "localhost",
+    "port": 9202,
+    "username": null,
+    "password": null
   },
   "hubspot_webhook_url": "changeMe"
 }

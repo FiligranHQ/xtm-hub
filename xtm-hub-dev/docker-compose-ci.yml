@@ -102,6 +102,8 @@ services:
         condition: service_healthy
       portal-minio:
         condition: service_healthy
+      portal-elasticsearch:
+        condition: service_healthy
     environment:
       - DATABASE_HOST=portal-postgres
       - DATABASE_PORT=5432
@@ -120,6 +122,8 @@ services:
       - NODE_ENV=development
       - VITEST_MODE=true
       - START_DEV_SERVER=true
+      - ELASTIC_HOST=portal-elasticsearch
+      - ELASTIC_PORT=9200
 
   portal-postgres:
     container_name: portal-postgres
@@ -139,6 +143,26 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  portal-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
+    container_name: portal-elasticsearch
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - discovery.type=single-node
+      - xpack.ml.enabled=false
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 
   portal-minio:
     container_name: portal-minio
