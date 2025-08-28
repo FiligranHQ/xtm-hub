@@ -3,32 +3,32 @@ import { ServiceManageSheet } from '@/components/service/components/service-mana
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 
 import {
-  OpenAEVScenarioQuery,
-  openAEVScenariosItem,
-} from '@/components/service/obas-scenarios/openAEV-scenario.graphql';
-import { useOpenAEVScenarioContext } from '@/components/service/obas-scenarios/use-openAEV-scenario-context';
+  OpenaevScenarioQuery,
+  openaevScenariosItem,
+} from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
+import { useOpenaevScenarioContext } from '@/components/service/openaev-scenarios/use-openaev-scenario-context';
 import { APP_PATH } from '@/utils/path/constant';
-import { openAEVScenarioQuery } from '@generated/openAEVScenarioQuery.graphql';
-import { openAEVScenariosItem_fragment$key } from '@generated/openAEVScenariosItem_fragment.graphql';
+import { openaevScenarioQuery } from '@generated/openaevScenarioQuery.graphql';
+import { openaevScenariosItem_fragment$key } from '@generated/openaevScenariosItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 interface OpenAEVScenarioSlugProps {
-  queryRef: PreloadedQuery<openAEVScenarioQuery>;
+  queryRef: PreloadedQuery<openaevScenarioQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
-const OpenAEVScenarioSlug = ({
+const OpenaevScenarioSlug = ({
   queryRef,
   serviceInstance,
 }: OpenAEVScenarioSlugProps) => {
-  const data = usePreloadedQuery<openAEVScenarioQuery>(
-    OpenAEVScenarioQuery,
+  const data = usePreloadedQuery<openaevScenarioQuery>(
+    OpenaevScenarioQuery,
     queryRef
   );
 
-  const documentData = readInlineData<openAEVScenariosItem_fragment$key>(
-    openAEVScenariosItem,
+  const documentData = readInlineData<openaevScenariosItem_fragment$key>(
+    openaevScenariosItem,
     data.openAEVScenario
   );
 
@@ -49,7 +49,7 @@ const OpenAEVScenarioSlug = ({
     },
   ];
 
-  const context = useOpenAEVScenarioContext(serviceInstance);
+  const context = useOpenaevScenarioContext(serviceInstance);
   return (
     documentData && (
       <AppServiceContext {...context}>
@@ -69,4 +69,4 @@ const OpenAEVScenarioSlug = ({
 };
 
 // Component export
-export default OpenAEVScenarioSlug;
+export default OpenaevScenarioSlug;

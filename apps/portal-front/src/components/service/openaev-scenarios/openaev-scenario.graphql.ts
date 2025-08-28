@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
-export const OpenAEVScenarioCreateMutation = graphql`
-  mutation openAEVScenarioCreateMutation(
+export const OpenaevScenarioCreateMutation = graphql`
+  mutation openaevScenarioCreateMutation(
     $input: CreateOpenAEVScenarioInput!
     $document: [Upload!]!
     $serviceInstanceId: String!
@@ -14,13 +14,13 @@ export const OpenAEVScenarioCreateMutation = graphql`
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
       name
-      ...openAEVScenariosItem_fragment
+      ...openaevScenariosItem_fragment
     }
   }
 `;
 
-export const OpenAEVScenarioUpdateMutation = graphql`
-  mutation openAEVScenarioUpdateMutation(
+export const OpenaevScenarioUpdateMutation = graphql`
+  mutation openaevScenarioUpdateMutation(
     $documentId: ID!
     $input: UpdateOpenAEVScenarioInput!
     $document: [Upload!]
@@ -37,13 +37,13 @@ export const OpenAEVScenarioUpdateMutation = graphql`
       serviceInstanceId: $serviceInstanceId
     ) {
       __id
-      ...openAEVScenariosItem_fragment
+      ...openaevScenariosItem_fragment
     }
   }
 `;
 
-export const OpenAEVScenarioDeleteMutation = graphql`
-  mutation openAEVScenarioDeleteMutation(
+export const OpenaevScenarioDeleteMutation = graphql`
+  mutation openaevScenarioDeleteMutation(
     $documentId: ID!
     $connections: [ID!]!
     $serviceInstanceId: String!
@@ -57,8 +57,8 @@ export const OpenAEVScenarioDeleteMutation = graphql`
   }
 `;
 
-export const openAEVScenariosItem = graphql`
-  fragment openAEVScenariosItem_fragment on OpenAEVScenario @inline {
+export const openaevScenariosItem = graphql`
+  fragment openaevScenariosItem_fragment on OpenAEVScenario @inline {
     id
     type
     file_name
@@ -103,8 +103,8 @@ export const openAEVScenariosItem = graphql`
   }
 `;
 
-export const openAEVScenariosFragment = graphql`
-  fragment openAEVScenariosList on Query
+export const openaevScenariosFragment = graphql`
+  fragment openaevScenariosList on Query
   @refetchable(queryName: "OpenAEVScenariosPaginationQuery") {
     openAEVScenarios(
       first: $count
@@ -121,15 +121,15 @@ export const openAEVScenariosFragment = graphql`
         node {
           id
           active
-          ...openAEVScenariosItem_fragment
+          ...openaevScenariosItem_fragment
         }
       }
     }
   }
 `;
 
-export const OpenAEVScenariosListQuery = graphql`
-  query openAEVScenariosQuery(
+export const OpenaevScenariosListQuery = graphql`
+  query openaevScenariosQuery(
     $count: Int!
     $cursor: ID
     $orderBy: DocumentOrdering!
@@ -138,14 +138,14 @@ export const OpenAEVScenariosListQuery = graphql`
     $searchTerm: String
     $serviceInstanceId: String
   ) {
-    ...openAEVScenariosList
+    ...openaevScenariosList
   }
 `;
 
-export const OpenAEVScenarioQuery = graphql`
-  query openAEVScenarioQuery($documentId: ID, $serviceInstanceId: ID) {
+export const OpenaevScenarioQuery = graphql`
+  query openaevScenarioQuery($documentId: ID, $serviceInstanceId: ID) {
     openAEVScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {
-      ...openAEVScenariosItem_fragment
+      ...openaevScenariosItem_fragment
     }
   }
 `;

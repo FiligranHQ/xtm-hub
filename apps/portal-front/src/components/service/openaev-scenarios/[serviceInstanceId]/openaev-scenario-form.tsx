@@ -48,7 +48,7 @@ export interface OpenAEVScenarioFormProps {
   document?: SubscribableResource;
 }
 
-export const OpenAEVScenarioForm = ({
+export const OpenaevScenarioForm = ({
   userCanDelete,
   handleSubmit,
   onDelete,
