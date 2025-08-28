@@ -2,7 +2,10 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../knexfile';
-import { contextAdminUser } from '../../../../tests/tests.const';
+import {
+  contextAdminUser,
+  SERVICE_CSV_FEEDS_ID,
+} from '../../../../tests/tests.const';
 import {
   DocumentId,
   DocumentMutator,
@@ -10,6 +13,14 @@ import {
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
+import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import {
+  TELEMETRY_SOURCE,
+  TelemetryEventService,
+  TelemetryEventServiceType,
+} from '../../telemetry/telemetry.const';
+import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import * as FileStorage from './document-storage';
 import {
   createDocument,
@@ -335,6 +346,58 @@ describe('Documents loading', () => {
     expect(response?.totalCount).toStrictEqual('1');
     expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
   });
+
+  it('should send a share telemetry event when incrementing shared counter', async () => {
+    vi.useFakeTimers();
+    const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+    vi.setSystemTime(date);
+    const telemetrySpy = vi
+      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .mockResolvedValue();
+    const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
+
+    const trx = await dbTx();
+    await createDocument(
+      {
+        ...contextAdminUser,
+        serviceInstanceId: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+      },
+      {
+        id: documentId as DocumentId,
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        description: 'xdescription',
+        minio_name: 'xminioName',
+        file_name: 'csvfilename',
+        service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+        type: 'csv_feed',
+      },
+      [],
+      trx
+    );
+    await trx.commit();
+
+    await documentResolver.Mutation.incrementShareNumberDocument(
+      {},
+      {
+        documentId: toGlobalId('DocumentId', documentId),
+      },
+      contextAdminUser
+    );
+    expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+      '@timestamp': '2025-02-03T13:12:15.000Z',
+      event_type: TelemetryEventType.SHARE,
+      organization_id: PLATFORM_ORGANIZATION_UUID,
+      organization_name: 'Filigran',
+      source: TELEMETRY_SOURCE,
+      user_id: ADMIN_UUID,
+      service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+      service_type: TelemetryEventServiceType.CSV_FEEDS,
+      resource_id: documentId,
+      resource_title: 'csvfilename',
+    });
+    vi.useRealTimers();
+  });
+
   afterAll(async () => {
     await deleteDocuments();
   });
