@@ -48,8 +48,8 @@
   },
   "dependencies": {
     "@apollo/server": "4.11.0",
-    "@aws-sdk/client-s3": "3.670.0",
-    "@aws-sdk/lib-storage": "3.670.0",
+    "@aws-sdk/client-s3": "3.878.0",
+    "@aws-sdk/lib-storage": "3.878.0",
     "@dmitryrechkin/json-schema-to-zod": "1.0.1",
     "@elastic/elasticsearch": "8.11.0",
     "@graphql-codegen/plugin-helpers": "5.1.0",
