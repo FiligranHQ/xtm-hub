@@ -360,6 +360,7 @@ export type Mutation = {
   addSubscriptionInService?: Maybe<ServiceInstance>;
   addUser?: Maybe<User>;
   addUserService?: Maybe<Array<Maybe<UserService>>>;
+  addYourselfInUserService?: Maybe<Array<Maybe<UserService>>>;
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
   changeSelectedOrganization?: Maybe<User>;
@@ -455,6 +456,11 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
+};
+
+
+export type MutationAddYourselfInUserServiceArgs = {
+  input: UserServiceAddYourselfInput;
 };
 
 
@@ -1473,8 +1479,12 @@ export type UserService = Node & {
 export type UserServiceAddInput = {
   capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Array<Scalars['String']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
   subscriptionId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type UserServiceAddYourselfInput = {
+  email: Array<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UserServiceCapability = Node & {
@@ -1715,6 +1725,7 @@ export type ResolversTypes = ResolversObject<{
   UserPendingSubscription: ResolverTypeWrapper<UserPendingSubscription>;
   UserService: ResolverTypeWrapper<UserService>;
   UserServiceAddInput: UserServiceAddInput;
+  UserServiceAddYourselfInput: UserServiceAddYourselfInput;
   UserServiceCapability: ResolverTypeWrapper<UserServiceCapability>;
   UserServiceConnection: ResolverTypeWrapper<UserServiceConnection>;
   UserServiceDeleteInput: UserServiceDeleteInput;
@@ -1820,6 +1831,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserPendingSubscription: UserPendingSubscription;
   UserService: UserService;
   UserServiceAddInput: UserServiceAddInput;
+  UserServiceAddYourselfInput: UserServiceAddYourselfInput;
   UserServiceCapability: UserServiceCapability;
   UserServiceConnection: UserServiceConnection;
   UserServiceDeleteInput: UserServiceDeleteInput;
@@ -2058,6 +2070,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addSubscriptionInService?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionInServiceArgs>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
+  addYourselfInUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddYourselfInUserServiceArgs, 'input'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;

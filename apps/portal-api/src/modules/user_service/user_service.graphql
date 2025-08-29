@@ -14,6 +14,10 @@ input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
   subscriptionId: ID
+}
+
+input UserServiceAddYourselfInput {
+  email: [String!]!
   serviceInstanceId: ID
 }
 
@@ -25,6 +29,7 @@ input UserServiceDeleteInput {
 
 type Mutation {
   addUserService(input: UserServiceAddInput!): [UserService] @auth
+  addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService] @auth
   deleteUserService(input: UserServiceDeleteInput!): UserService @auth
 }
 type Query {

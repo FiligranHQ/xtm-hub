@@ -22,15 +22,8 @@ import {
 import { extractId } from '../../utils/utils';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserDetails } from '../users/users.domain';
-import {
-  getOrCreateUser,
-  insertUserIntoOrganization,
-} from '../users/users.helper';
-import {
-  createUserServiceAccess,
-  isUserServiceExist,
-  loadUnsecureUserServiceBy,
-} from './user-service.helper';
+import { loadUnsecureUserServiceBy } from './user-service.helper';
+import { userServiceApp } from './user_service.app';
 import {
   getSubscription,
   getUserServiceCapabilities,
@@ -72,57 +65,59 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
+    addYourselfInUserService: async (_, { input }, context) => {
+      const trx = await dbTx();
+      try {
+        const [subscription] =
+          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+            'Subscription.organization_id':
+              context.user.selected_organization_id,
+            'Subscription.service_instance_id': extractId<ServiceInstanceId>(
+              input.serviceInstanceId
+            ),
+          } as SubscriptionMutator);
+
+        if (!subscription) {
+          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
+        }
+        return userServiceApp.addUserService(
+          context,
+          trx,
+          subscription,
+          input.email,
+          []
+        );
+      } catch (error) {
+        await trx.rollback();
+        if (error.name.includes(ALREADY_EXISTS)) {
+          throw AlreadyExistsError('USER_ALREADY_EXISTS_ERROR');
+        }
+        if (error.name.includes(NOT_FOUND)) {
+          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
+        }
+        throw UnknownError('ADD_USER_SERVICE_ERROR', { detail: error });
+      }
+    },
     addUserService: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
         if (input.email.some((email) => email === context.user.email)) {
           throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
         }
-        let subscription;
-        [subscription] =
+        const [subscription] =
           await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
             'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
           } as SubscriptionMutator);
-
         if (!subscription) {
-          [subscription] =
-            await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
-              'Subscription.organization_id':
-                context.user.selected_organization_id,
-              'Subscription.service_instance_id': extractId<ServiceInstanceId>(
-                input.serviceInstanceId
-              ),
-            } as SubscriptionMutator)[0];
+          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
         }
-        const userServices = [];
-        for (const email of input.email) {
-          const user = await getOrCreateUser({
-            email: email,
-          });
-
-          await insertUserIntoOrganization(context, user, subscription.id);
-          const userServiceAlreadyExist = await isUserServiceExist(
-            user.id as UserId,
-            subscription.id
-          );
-
-          if (!userServiceAlreadyExist) {
-            const createdUserService = await createUserServiceAccess(
-              context,
-              trx,
-              {
-                subscription_id: subscription.id,
-                user_id: user.id as UserId,
-                capabilities: input.capabilities,
-              }
-            );
-            userServices.push(createdUserService);
-          }
-        }
-
-        await trx.commit();
-
-        return userServices;
+        return userServiceApp.addUserService(
+          context,
+          trx,
+          subscription,
+          input.email,
+          input.capabilities
+        );
       } catch (error) {
         await trx.rollback();
         if (error.name.includes(ALREADY_EXISTS)) {
