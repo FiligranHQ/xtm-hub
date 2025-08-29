@@ -180,6 +180,38 @@ export const UserServiceCreateMutation = graphql`
     }
   }
 `;
+export const UserServiceAddYourselfMutation = graphql`
+  mutation userServiceAddYourselfMutation(
+    $input: UserServiceAddYourselfInput!
+    $connections: [ID!]!
+  ) {
+    addYourselfInUserService(input: $input)
+      @prependNode(connections: $connections, edgeTypeName: "UserServiceEdge") {
+      id
+      user {
+        id
+        first_name
+        last_name
+        email
+      }
+      user_service_capability {
+        id
+        generic_service_capability {
+          id
+          name
+        }
+        subscription_capability {
+          id
+          service_capability {
+            id
+            description
+            name
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const UserServiceDeleteMutation = graphql`
   mutation userServiceDeleteMutation(

@@ -1,6 +1,6 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
+import { UserServiceAddYourselfMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
@@ -16,7 +16,7 @@ export default function useGetAction(
   const t = useTranslations();
   const { me } = useContext(PortalContext);
 
-  const [userServiceJoin] = useMutation(UserServiceCreateMutation);
+  const [userServiceJoin] = useMutation(UserServiceAddYourselfMutation);
 
   const getAction = (service: serviceList_fragment$data) => {
     if (
@@ -35,7 +35,6 @@ export default function useGetAction(
                 input: {
                   email: me?.email,
                   serviceInstanceId: service.id,
-                  organizationId: me?.selected_organization_id,
                 },
               },
             });
