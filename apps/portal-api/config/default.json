@@ -85,7 +85,7 @@
   "elasticsearch": {
     "protocol": "http",
     "host": "localhost",
-    "port": 9202,
+    "port": 9204,
     "username": null,
     "password": null
   },

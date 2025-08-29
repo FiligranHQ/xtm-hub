@@ -52,8 +52,8 @@ services:
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
     ports:
-      - "9202:9200"
-      - "9302:9300"
+      - "9204:9200"
+      - "9304:9300"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     restart: unless-stopped
@@ -65,7 +65,7 @@ services:
       - ELASTICSEARCH_HOSTS=http://portal-elasticsearch:9200
     restart: unless-stopped
     ports:
-      - 5601:5601
+      - 5603:5601
     depends_on:
       - portal-elasticsearch
 
