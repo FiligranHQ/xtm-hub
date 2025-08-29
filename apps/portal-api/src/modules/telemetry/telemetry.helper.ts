@@ -1,19 +1,25 @@
-import { ServiceDefinitionIdentifier } from '../../__generated__/resolvers-types';
+import {
+  OpenCtiPlatformContract,
+  ServiceDefinitionIdentifier,
+} from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadServiceDefinition } from '../services/service-instance.domain';
+
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetryTargetProduct,
 } from './telemetry.const';
 import {
   CreateEvent,
   DownloadEvent,
   LoginEvent,
+  RegisterPlatformEvent,
   ShareEvent,
   SubscribeEvent,
   TelemetryEventType,
@@ -189,4 +195,33 @@ export async function buildCreateEvent(
     resource_title: document.name,
     status: document.active ? 'published' : 'draft',
   } as CreateEvent;
+}
+
+export function buildRegisterEvent(
+  organization_id: OrganizationId,
+  organization_name: string,
+  organization_personal_space: boolean,
+  user_id: UserId,
+  target_product: TelemetryTargetProduct,
+  platform_id: string,
+  platform_contract: OpenCtiPlatformContract,
+  timestamp?: Date
+): RegisterPlatformEvent {
+  const baseEvent = buildBaseEvent(
+    TelemetryEventType.REGISTER,
+    organization_id,
+    organization_name,
+    user_id,
+    timestamp
+  );
+
+  return {
+    ...baseEvent,
+    organization_type: organization_personal_space
+      ? 'Personal'
+      : 'Professional',
+    target_product,
+    platform_id,
+    platform_contract,
+  } as RegisterPlatformEvent;
 }

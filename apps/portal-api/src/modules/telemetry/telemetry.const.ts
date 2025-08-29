@@ -9,3 +9,7 @@ export enum TelemetryEventService {
 export enum TelemetryEventServiceType {
   CSV_FEEDS = 'csv-feeds',
 }
+
+export enum TelemetryTargetProduct {
+  OPEN_CTI = 'open-cti',
+}
