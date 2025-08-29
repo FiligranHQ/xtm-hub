@@ -95,7 +95,7 @@ jobs:
 #      - run: npx nx --no-cloud run-many -t build -p portal-api portal-front
       - name: Build affected projects
         run: |
-          npx nx affected:build \
+          npx nx --no-cloud affected:build \
             --base=${{ needs.determine-changes.outputs.base-sha }} \
             --head=${{ needs.determine-changes.outputs.head-sha }}
       - name: Upload build artifacts
