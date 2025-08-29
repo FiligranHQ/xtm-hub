@@ -9,7 +9,6 @@ import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
-  createDocumentWithChildren,
   deleteDocument,
   getLabels,
   getUploader,
@@ -22,6 +21,7 @@ import {
   updateDocumentWithChildren,
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
+import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
   CUSTOM_DASHBOARD_DOCUMENT_TYPE,
   CUSTOM_DASHBOARD_METADATA,
@@ -87,16 +87,11 @@ const resolvers: Resolvers = {
     createCustomDashboard: async (_, { input, document }, context) => {
       const trx = await dbTx();
       try {
-        const doc = await createDocumentWithChildren<CustomDashboard>(
-          CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-          input,
-          document,
-          CUSTOM_DASHBOARD_METADATA,
+        return await CustomDashboardsApp.createCustomDashboard(
           context,
-          trx
+          input,
+          document
         );
-        await trx.commit();
-        return doc;
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {

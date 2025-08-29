@@ -1,12 +1,17 @@
-import { ServiceDefinitionIdentifierEnum } from '@xtm-hub/portal-front/__generated__/models/ServiceDefinitionIdentifier.enum';
+import { ServiceDefinitionIdentifier } from '../../__generated__/resolvers-types';
+import Document from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
+import { PortalContext } from '../../model/portal-context';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadServiceDefinition } from '../services/service-instance.domain';
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
 } from './telemetry.const';
 import {
+  CreateEvent,
   DownloadEvent,
   LoginEvent,
   ShareEvent,
@@ -33,37 +38,34 @@ function buildBaseEvent(
 }
 
 const ServiceIdentifierToEventService = new Map<
-  ServiceDefinitionIdentifierEnum,
+  ServiceDefinitionIdentifier,
   TelemetryEventService
 >([
   [
-    ServiceDefinitionIdentifierEnum.OBAS_SCENARIOS,
+    ServiceDefinitionIdentifier.OpenaevScenarios,
     TelemetryEventService.OPENAEV_SCENARIO_LIBRARY,
   ],
   [
-    ServiceDefinitionIdentifierEnum.CSV_FEEDS,
+    ServiceDefinitionIdentifier.CsvFeeds,
     TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
   ],
   [
-    ServiceDefinitionIdentifierEnum.CUSTOM_DASHBOARDS,
+    ServiceDefinitionIdentifier.CustomDashboards,
     TelemetryEventService.CUSTOM_DASHBOARD_LIBRARY,
   ],
 ]);
 
 export function shouldSendEventForService(
-  service: ServiceDefinitionIdentifierEnum
+  service: ServiceDefinitionIdentifier
 ) {
   return ServiceIdentifierToEventService.has(service);
 }
 
 const ServiceIdentifierToEventServiceType = new Map<
-  ServiceDefinitionIdentifierEnum,
+  ServiceDefinitionIdentifier,
   TelemetryEventServiceType
 >([
-  [
-    ServiceDefinitionIdentifierEnum.CSV_FEEDS,
-    TelemetryEventServiceType.CSV_FEEDS,
-  ],
+  [ServiceDefinitionIdentifier.CsvFeeds, TelemetryEventServiceType.CSV_FEEDS],
 ]);
 
 export function buildLoginEvent(
@@ -85,7 +87,7 @@ export function buildSubscribeEvent(
   organization_id: OrganizationId,
   organization_name: string,
   user_id: UserId,
-  service: ServiceDefinitionIdentifierEnum,
+  service: ServiceDefinitionIdentifier,
   timestamp?: Date
 ): SubscribeEvent {
   const baseEvent = buildBaseEvent(
@@ -107,7 +109,7 @@ export function buildDownloadEvent(
   organization_id: OrganizationId,
   organization_name: string,
   user_id: UserId,
-  service: ServiceDefinitionIdentifierEnum,
+  service: ServiceDefinitionIdentifier,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
@@ -133,7 +135,7 @@ export function buildShareEvent(
   organization_id: OrganizationId,
   organization_name: string,
   user_id: UserId,
-  service: ServiceDefinitionIdentifierEnum,
+  service: ServiceDefinitionIdentifier,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
@@ -153,4 +155,38 @@ export function buildShareEvent(
     resource_id: resource_id,
     resource_title: resource_title,
   } as ShareEvent;
+}
+
+export async function buildCreateEvent(
+  context: PortalContext,
+  organization_id: OrganizationId,
+  user_id: UserId,
+  document: Document,
+  timestamp?: Date
+): Promise<CreateEvent> {
+  const selectedOrga = await loadOrganizationBy(context, 'id', organization_id);
+
+  const baseEvent = buildBaseEvent(
+    TelemetryEventType.CREATE,
+    organization_id,
+    selectedOrga.name,
+    user_id,
+    timestamp
+  );
+
+  const serviceDefinition = await loadServiceDefinition(
+    context,
+    document.service_instance_id
+  );
+
+  return {
+    ...baseEvent,
+    service: ServiceIdentifierToEventService.get(serviceDefinition.identifier),
+    service_type: ServiceIdentifierToEventServiceType.get(
+      serviceDefinition.identifier
+    ),
+    resource_id: document.id,
+    resource_title: document.name,
+    status: document.active ? 'published' : 'draft',
+  } as CreateEvent;
 }
