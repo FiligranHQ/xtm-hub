@@ -49,6 +49,7 @@ const ServiceList = ({
     label: name.toUpperCase(),
     value: id,
   }));
+  // This trick on detailUrl is temporary until we officially rename Obas (visible in the UI)
   return (
     <div className="flex flex-col gap-xl">
       <h1>{serviceInstance.name}</h1>
@@ -90,7 +91,7 @@ const ServiceList = ({
               <ServiceCard
                 key={document.id}
                 document={document}
-                detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
+                detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier !== 'openaev_scenarios' ? serviceInstance.service_definition?.identifier : 'obas_scenarios'}/${serviceInstance.id}/${document.id}`}
                 shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
               />
             ))}
@@ -108,7 +109,7 @@ const ServiceList = ({
           <ServiceCard
             key={document.id}
             document={document}
-            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
+            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier !== 'openaev_scenarios' ? serviceInstance.service_definition?.identifier : 'obas_scenarios'}/${serviceInstance.id}/${document.id}`}
             shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
           />
         ))}

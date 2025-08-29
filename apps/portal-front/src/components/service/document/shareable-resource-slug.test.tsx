@@ -79,8 +79,8 @@ describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
     ${false}                    | ${'custom_dashboard'} | ${false}
     ${true}                     | ${'csv_feed'}         | ${true}
     ${false}                    | ${'csv_feed'}         | ${false}
-    ${false}                    | ${'obas_scenario'}    | ${false}
-    ${false}                    | ${'obas_scenario'}    | ${true}
+    ${false}                    | ${'openaev_scenario'} | ${false}
+    ${false}                    | ${'openaev_scenario'} | ${true}
   `(
     'should show OneClickDeploy=$shouldShowOneClickComponent when document is $documentType is $documentActive',
     ({ shouldShowOneClickComponent, documentType, documentActive }) => {

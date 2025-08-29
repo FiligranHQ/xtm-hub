@@ -78,11 +78,12 @@ const ServiceInstanceCard: React.FunctionComponent<
     serviceInstance.creation_status ===
     ServiceInstanceCreationStatusEnum.PENDING;
 
+  // The condition on service_definition_identifier is temporary, will be removed when we will rename OBAS in the UI as well
   const serviceHref =
     isExternalService(serviceInstance.service_definition_identifier) &&
     serviceInstance.url
       ? serviceInstance.url
-      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
+      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier !== 'openaev_scenarios' ? serviceInstance.service_definition_identifier : 'obas_scenarios'}/${serviceInstance.id}`}`;
 
   let backgroundImage =
     serviceInstance.logo_document_id !== null
