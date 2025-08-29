@@ -157,6 +157,11 @@
         "Title": "Registration failed",
         "Description": "An error occurred during the platform registration"
       },
+      "TooMuchOrganization": {
+        "Title": "Platform Re-registration Notice",
+        "Description1": "Your OpenCTI platform {platformTitle} will be re-registered under the same organization due to capability restrictions.",
+        "Description2": "If you wish to request a change, please contact your organization's administrator."
+      },
       "SameOrganization": {
         "Registered": {
           "Title": "Platform already registered",

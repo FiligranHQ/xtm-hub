@@ -1,9 +1,12 @@
 import Loader from '@/components/loader';
-import { RegisterNeverRegistered } from '@/components/register/never-registered';
+import { RegisterOrganizationForm } from '@/components/register/form/organization';
 import { RegisterOpenCTIPlatform } from '@/components/register/register.graphql';
 import { RegisterStateLayout } from '@/components/register/state/layout';
 import { RegisterStateMissingCapability } from '@/components/register/state/missing-capability';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
+import OrganizationListUserOrganizationsQueryGraphql, {
+  organizationListUserOrganizationsQuery,
+} from '@generated/organizationListUserOrganizationsQuery.graphql';
 import registerIsOpenCTIPlatformRegisteredFragmentGraphql, {
   registerIsOpenCTIPlatformRegisteredFragment$key,
 } from '@generated/registerIsOpenCTIPlatformRegisteredFragment.graphql';
@@ -23,6 +26,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   PreloadedQuery,
   useFragment,
+  useLazyLoadQuery,
   useMutation,
   usePreloadedQuery,
 } from 'react-relay';
@@ -53,6 +57,12 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
       queryRef
     );
 
+  const userOrganizationsQueryData =
+    useLazyLoadQuery<organizationListUserOrganizationsQuery>(
+      OrganizationListUserOrganizationsQueryGraphql,
+      {}
+    );
+
   const isPlatformRegistered =
     useFragment<registerIsOpenCTIPlatformRegisteredFragment$key>(
       registerIsOpenCTIPlatformRegisteredFragmentGraphql,
@@ -63,10 +73,7 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const hasRun = useRef(false);
   useEffect(() => {
     const shouldRefreshToken =
-      isPlatformRegistered.status ===
-        PlatformRegistrationStatusEnum.REGISTERED ||
-      isPlatformRegistered.status ===
-        PlatformRegistrationStatusEnum.UNREGISTERED;
+      isPlatformRegistered.status === PlatformRegistrationStatusEnum.REGISTERED;
 
     if (
       shouldRefreshToken &&
@@ -165,12 +172,35 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     );
   }
 
+  const shouldRegisterOnSameOrganization =
+    isPlatformRegistered.status ===
+      PlatformRegistrationStatusEnum.UNREGISTERED &&
+    userOrganizationsQueryData.userOrganizations.length > 2;
+  if (shouldRegisterOnSameOrganization) {
+    return (
+      <RegisterStateLayout
+        cancel={cancel}
+        confirm={() => register(isPlatformRegistered.organization?.id ?? '')}>
+        <h1>{t('Register.OpenCTI.TooMuchOrganization.Title')}</h1>
+        <p>
+          {t('Register.OpenCTI.TooMuchOrganization.Description1', {
+            platformTitle: isPlatformRegistered.platformTitle ?? '',
+          })}
+          <br />
+          {t('Register.OpenCTI.TooMuchOrganization.Description2')}
+        </p>
+      </RegisterStateLayout>
+    );
+  }
+
   if (
     isPlatformRegistered.status ===
-    PlatformRegistrationStatusEnum.NEVER_REGISTERED
+      PlatformRegistrationStatusEnum.NEVER_REGISTERED ||
+    isPlatformRegistered.status === PlatformRegistrationStatusEnum.UNREGISTERED
   ) {
     return (
-      <RegisterNeverRegistered
+      <RegisterOrganizationForm
+        userOrganizationsQueryData={userOrganizationsQueryData}
         cancel={cancel}
         confirm={register}
       />

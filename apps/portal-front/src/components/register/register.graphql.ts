@@ -11,6 +11,7 @@ export const RefreshUserPlatformTokenMutation = graphql`
 export const IsOpenCTIPlatformRegisteredFragment = graphql`
   fragment registerIsOpenCTIPlatformRegisteredFragment on IsOpenCTIPlatformRegisteredResponse {
     status
+    platformTitle
     organization {
       id
     }
