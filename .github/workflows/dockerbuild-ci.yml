@@ -24,8 +24,94 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
+  determine-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has-api-changes: ${{ steps.check-changes.outputs.api }}
+      has-front-changes: ${{ steps.check-changes.outputs.front }}
+      has-e2e-changes: ${{ steps.check-changes.outputs.e2e }}
+      base-sha: ${{ steps.setSHAs.outputs.base }}
+      head-sha: ${{ steps.setSHAs.outputs.head }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Derive appropriate SHAs for base and head
+        id: setSHAs
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'development'
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Check what changed
+        id: check-changes
+        run: |
+          AFFECTED=$(npx nx show projects --affected --base=${{ steps.setSHAs.outputs.base }} --head=${{ steps.setSHAs.outputs.head }})
+          
+          echo "Affected projects:"
+          echo "$AFFECTED"
+          
+          if echo "$AFFECTED" | grep -q "portal-api"; then
+            echo "api=true" >> $GITHUB_OUTPUT
+          else
+            echo "api=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if echo "$AFFECTED" | grep -q "portal-front"; then
+            echo "front=true" >> $GITHUB_OUTPUT
+          else
+            echo "front=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if echo "$AFFECTED" | grep -q "portal-e2e-tests"; then
+            echo "e2e=true" >> $GITHUB_OUTPUT
+          else
+            echo "e2e=false" >> $GITHUB_OUTPUT
+          fi
+  build-source:
+    needs: determine-changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: run generate:ts
+        if: needs.determine-changes.outputs.has-api-changes == 'true'
+        run: yarn generate:ts
+      - name: Build affected projects
+        run: |
+          npx nx --no-cloud affected:build \
+            --base=${{ needs.determine-changes.outputs.base-sha }} \
+            --head=${{ needs.determine-changes.outputs.head-sha }}
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-context
+          path: |
+            ./apps/portal-api/dist/
+            ./apps/portal-front/.next/standalone
+            ./apps/portal-front/.next/static
+          retention-days: 1
+          include-hidden-files: true
+          if-no-files-found: ignore
   build-images-tests:
+    needs: [determine-changes, build-source]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -37,24 +123,51 @@ jobs:
         include:
           - image: portal-front
             dockerfile: apps/portal-front/Dockerfile
+            should-build: ${{ needs.determine-changes.outputs.has-front-changes }}
           - image: portal-api
             dockerfile: apps/portal-api/Dockerfile
+            should-build: ${{ needs.determine-changes.outputs.has-api-changes }}
           - image: portal-e2e-tests
             dockerfile: apps/portal-e2e-tests/Dockerfile
+            should-build: ${{ needs.determine-changes.outputs.has-e2e-changes }}
     outputs:
       docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
       docker-labels: ${{ steps.meta.outputs.labels }}
     steps:
+      - name: Check if should build
+        if: matrix.should-build == 'false'
+        run: |
+          echo "Skipping build for ${{ matrix.image }} - no changes detected"
+          exit 0
       - name: Checkout repository
+        if: matrix.should-build == 'true'
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+        if: matrix.should-build == 'true'
+      - uses: actions/setup-node@v4
+        if: matrix.should-build == 'true'
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+        if: matrix.should-build == 'true'
+      - name: Download build artifacts
+        if: matrix.should-build == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
+          path: ./apps
       - name: Set up Docker Buildx
+        if: matrix.should-build == 'true'
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
+        if: matrix.should-build == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta deps
+        if: matrix.should-build == 'true'
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -65,10 +178,12 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
       - name: Copy migrations
+        if: matrix.should-build == 'true'
         run: |
           cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
           cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
       - name: Build and push portal image
+        if: matrix.should-build == 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -95,6 +210,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
+          path: ./apps
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
@@ -185,16 +311,28 @@ jobs:
           retention-days: 30
 
   run-front-unit-tests:
-    needs: build-images-tests
+    needs: [determine-changes, build-images-tests]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
       packages: write
-    if: contains(github.ref , 'refs/tags/') == false
+    if: contains(github.ref , 'refs/tags/') == false &&
+      needs.determine-changes.outputs.has-front-changes == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
+          path: ./apps
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
@@ -216,16 +354,28 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   run-api-unit-tests:
-    needs: build-images-tests
+    needs: [determine-changes, build-images-tests]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
       packages: write
-    if: contains(github.ref , 'refs/tags/') == false
+    if: contains(github.ref , 'refs/tags/') == false &&
+      needs.determine-changes.outputs.has-api-changes == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
+          path: ./apps
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
@@ -316,6 +466,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-context
+          path: ./apps
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
