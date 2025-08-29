@@ -24,7 +24,57 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  determine-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has-api-changes: ${{ steps.check-changes.outputs.api }}
+      has-front-changes: ${{ steps.check-changes.outputs.front }}
+      has-e2e-changes: ${{ steps.check-changes.outputs.e2e }}
+      base-sha: ${{ steps.setSHAs.outputs.base }}
+      head-sha: ${{ steps.setSHAs.outputs.head }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Derive appropriate SHAs for base and head
+        id: setSHAs
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'development'
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Check what changed
+        id: check-changes
+        run: |
+          AFFECTED=$(npx nx show projects --affected --base=${{ steps.setSHAs.outputs.base }} --head=${{ steps.setSHAs.outputs.head }})
+          
+          echo "Affected projects:"
+          echo "$AFFECTED"
+          
+          if echo "$AFFECTED" | grep -q "portal-api"; then
+            echo "api=true" >> $GITHUB_OUTPUT
+          else
+            echo "api=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if echo "$AFFECTED" | grep -q "portal-front"; then
+            echo "front=true" >> $GITHUB_OUTPUT
+          else
+            echo "front=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if echo "$AFFECTED" | grep -q "portal-e2e-tests"; then
+            echo "e2e=true" >> $GITHUB_OUTPUT
+          else
+            echo "e2e=false" >> $GITHUB_OUTPUT
+          fi
   build-source:
+    needs: determine-changes
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -33,14 +83,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - run: corepack enable && corepack prepare yarn@3.8.7
       - uses: actions/setup-node@v4
         with:
           node-version: 23
           cache: 'yarn'
       - run: yarn install --immutable
-      - run: yarn generate:ts
-      - run: npx nx --no-cloud run-many -t build -p portal-api portal-front
+      - run: yarn generate:ts #TODO run only si portal-api have changed
+#      - run: npx nx --no-cloud run-many -t build -p portal-api portal-front
+      - name: Build affected projects
+        run: |
+          npx nx affected:build \
+            --base=${{ needs.determine-changes.outputs.base-sha }} \
+            --head=${{ needs.determine-changes.outputs.head-sha }}
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -51,6 +108,7 @@ jobs:
             ./apps/portal-front/.next/static
           retention-days: 1
           include-hidden-files: true
+          if-no-files-found: ignore
   build-images-tests:
     needs: build-source
     runs-on: ubuntu-latest
