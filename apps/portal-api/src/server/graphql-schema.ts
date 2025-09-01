@@ -15,6 +15,7 @@ import ServiceInstanceResolver from '../modules/services/services.resolver';
 import labelsResolver from '../modules/settings/labels/labels.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
+import telemetryResolver from '../modules/telemetry/telemetry.resolver';
 import trackingResolver from '../modules/tracking/tracking.resolver';
 import serviceCapabilityResolver from '../modules/user_service/service-capability/service-capability.resolver';
 import userServiceResolver from '../modules/user_service/user_service.resolver';
@@ -49,6 +50,7 @@ const resolvers = mergeResolvers([
   csvFeedsResolver,
   openAEVScenariosResolver,
   registrationResolver,
+  telemetryResolver,
 ]);
 
 const createSchema = () => {

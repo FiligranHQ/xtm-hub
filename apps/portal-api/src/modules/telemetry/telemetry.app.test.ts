@@ -1,8 +1,22 @@
 import { describe, expect, it, vi } from 'vitest';
+import {
+  contextAdminUser,
+  SERVICE_CSV_FEEDS_ID,
+} from '../../../tests/tests.const';
+import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
 import { telemetryApp } from './telemetry.app';
+import {
+  TELEMETRY_SOURCE,
+  TelemetryEventService,
+  TelemetryEventServiceType,
+  TelemetryTargetProduct,
+} from './telemetry.const';
 import { LoginEvent, TelemetryEventType } from './telemetry.types';
+
+import { toGlobalId } from 'graphql-relay/node/node.js';
+import { TargetProduct } from '../../__generated__/resolvers-types';
 
 // Mock the ES Client
 vi.mock('@elastic/elasticsearch', () => ({
@@ -64,6 +78,48 @@ describe('TelemetryApp', () => {
 
       await telemetryApp.sendTelemetryEvent(event);
       expect(logErrorSpy).toHaveBeenCalledOnce();
+    });
+  });
+  describe('sendOneClickDeployEvent', () => {
+    it('should send a OneClickDeployEvent', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+      const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
+      const fakePlatformId = '11b0fe37-0623-4487-af23-0efa6de157a4';
+
+      await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
+        userId: ADMIN_UUID,
+        input: {
+          target_product: TargetProduct.OpenCti,
+          service_instance_id: toGlobalId(
+            'ServiceInstance',
+            SERVICE_CSV_FEEDS_ID
+          ),
+          resource_id: toGlobalId('DocumentId', fakeResourceId),
+          resource_title: 'CsvFeed Title',
+          platform_id: toGlobalId('OpenCTIPlatform', fakePlatformId),
+        },
+      });
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_name: 'Filigran',
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_UUID,
+        service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+        service_type: TelemetryEventServiceType.CSV_FEEDS,
+        resource_id: fakeResourceId,
+        resource_title: 'CsvFeed Title',
+        platform_id: fakePlatformId,
+        target_product: TelemetryTargetProduct.OPEN_CTI,
+      });
+      vi.useRealTimers();
     });
   });
 });

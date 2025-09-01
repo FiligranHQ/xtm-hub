@@ -1,6 +1,7 @@
 import {
   OpenCtiPlatformContract,
   ServiceDefinitionIdentifier,
+  TargetProduct,
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -19,6 +20,7 @@ import {
   CreateEvent,
   DownloadEvent,
   LoginEvent,
+  OneClickDeployEvent,
   RegisterPlatformEvent,
   ShareEvent,
   SubscribeEvent,
@@ -60,6 +62,11 @@ const ServiceIdentifierToEventService = new Map<
     TelemetryEventService.CUSTOM_DASHBOARD_LIBRARY,
   ],
 ]);
+
+const TargetProductToTelemetryTargetProdutct = new Map<
+  TargetProduct,
+  TelemetryTargetProduct
+>([[TargetProduct.OpenCti, TelemetryTargetProduct.OPEN_CTI]]);
 
 export function shouldSendEventForService(
   service: ServiceDefinitionIdentifier
@@ -224,4 +231,34 @@ export function buildRegisterEvent(
     platform_id,
     platform_contract,
   } as RegisterPlatformEvent;
+}
+
+export function buildOneClickDeployEvent(
+  organization_id: OrganizationId,
+  organization_name: string,
+  user_id: UserId,
+  service: ServiceDefinitionIdentifier,
+  target_product: TargetProduct,
+  platform_id: string,
+  resource_id: string,
+  resource_title: string,
+  timestamp?: Date
+): OneClickDeployEvent {
+  const baseEvent = buildBaseEvent(
+    TelemetryEventType.ONE_CLICK_DEPLOY,
+    organization_id,
+    organization_name,
+    user_id,
+    timestamp
+  );
+
+  return {
+    ...baseEvent,
+    target_product: TargetProductToTelemetryTargetProdutct.get(target_product),
+    service: ServiceIdentifierToEventService.get(service),
+    service_type: ServiceIdentifierToEventServiceType.get(service),
+    resource_id,
+    resource_title,
+    platform_id,
+  } as OneClickDeployEvent;
 }
