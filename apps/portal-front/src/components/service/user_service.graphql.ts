@@ -183,10 +183,8 @@ export const UserServiceCreateMutation = graphql`
 export const UserServiceAddYourselfMutation = graphql`
   mutation userServiceAddYourselfMutation(
     $input: UserServiceAddYourselfInput!
-    $connections: [ID!]!
   ) {
-    addYourselfInUserService(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "UserServiceEdge") {
+    addYourselfInUserService(input: $input) {
       id
       user {
         id

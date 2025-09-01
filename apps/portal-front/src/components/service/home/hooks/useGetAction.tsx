@@ -7,6 +7,7 @@ import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJo
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import { useMutation } from 'react-relay';
 
@@ -15,6 +16,7 @@ export default function useGetAction(
 ) {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
+  const router = useRouter();
 
   const [userServiceJoin] = useMutation(UserServiceAddYourselfMutation);
 
@@ -36,6 +38,11 @@ export default function useGetAction(
                   email: me?.email,
                   serviceInstanceId: service.id,
                 },
+              },
+              onCompleted: () => {
+                router.push(
+                  `/app/service/${service.service_definition?.identifier}/${service.id}`
+                );
               },
             });
           }}>
