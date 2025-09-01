@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   CanUnregisterOpenCtiPlatformInput,
-  IsOpenCtiPlatformRegisteredInput,
-  IsOpenCtiPlatformRegisteredResponse,
+  IsPlatformRegisteredInput,
+  IsPlatformRegisteredResponse,
   OpenCtiPlatform,
   OpenCtiPlatformRegistrationStatus,
   OpenCtiPlatformRegistrationStatusInput,
@@ -244,10 +244,10 @@ export const registrationApp = {
     );
   },
 
-  isOpenCTIPlatformRegistered: async (
+  isPlatformRegistered: async (
     context: PortalContext,
-    input: IsOpenCtiPlatformRegisteredInput
-  ): Promise<IsOpenCtiPlatformRegisteredResponse> => {
+    input: IsPlatformRegisteredInput
+  ): Promise<IsPlatformRegisteredResponse> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,

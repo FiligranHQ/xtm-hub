@@ -13,9 +13,9 @@ import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {
   Query: {
-    isOpenCTIPlatformRegistered: async (_, { input }, context) => {
+    isPlatformRegistered: async (_, { input }, context) => {
       try {
-        const response = await registrationApp.isOpenCTIPlatformRegistered(
+        const response = await registrationApp.isPlatformRegistered(
           context,
           input
         );
@@ -26,7 +26,7 @@ const resolvers: Resolvers = {
             throw NotFoundError(error.message);
         }
 
-        throw UnknownError(ErrorCode.IsOpenCTIPlatformRegisteredUnknownError, {
+        throw UnknownError(ErrorCode.IsPlatformRegisteredUnknownError, {
           detail: error.message,
         });
       }

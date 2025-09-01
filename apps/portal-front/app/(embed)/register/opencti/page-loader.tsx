@@ -4,9 +4,9 @@ import Loader from '@/components/loader';
 import { RegisterOpenCTI } from '@/components/register/opencti';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import RegisterIsOpenCTIPlatformRegisteredQueryGraphql, {
-  registerIsOpenCTIPlatformRegisteredQuery,
-} from '@generated/registerIsOpenCTIPlatformRegisteredQuery.graphql';
+import RegisterIsPlatformRegisteredQueryGraphql, {
+  registerIsPlatformRegisteredQuery,
+} from '@generated/registerIsPlatformRegisteredQuery.graphql';
 import { OpenCTIPlatformContract } from '@generated/registerOpenCTIPlatformFragment.graphql';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -23,8 +23,8 @@ export const PageLoader: React.FC = () => {
   }
 
   const [queryRef, loadQuery] =
-    useQueryLoader<registerIsOpenCTIPlatformRegisteredQuery>(
-      RegisterIsOpenCTIPlatformRegisteredQueryGraphql
+    useQueryLoader<registerIsPlatformRegisteredQuery>(
+      RegisterIsPlatformRegisteredQueryGraphql
     );
   useMountingLoader(loadQuery, { input: { platformId: platform_id } });
 

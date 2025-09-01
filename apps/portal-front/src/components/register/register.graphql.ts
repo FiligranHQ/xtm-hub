@@ -8,8 +8,8 @@ export const RefreshUserPlatformTokenMutation = graphql`
   }
 `;
 
-export const IsOpenCTIPlatformRegisteredFragment = graphql`
-  fragment registerIsOpenCTIPlatformRegisteredFragment on IsOpenCTIPlatformRegisteredResponse {
+export const IsPlatformRegisteredFragment = graphql`
+  fragment registerIsPlatformRegisteredFragment on IsPlatformRegisteredResponse {
     status
     organization {
       id
@@ -17,12 +17,10 @@ export const IsOpenCTIPlatformRegisteredFragment = graphql`
   }
 `;
 
-export const IsOpenCTIPlatformRegisteredQuery = graphql`
-  query registerIsOpenCTIPlatformRegisteredQuery(
-    $input: IsOpenCTIPlatformRegisteredInput!
-  ) {
-    isOpenCTIPlatformRegistered(input: $input) {
-      ...registerIsOpenCTIPlatformRegisteredFragment
+export const IsPlatformRegisteredQuery = graphql`
+  query registerIsPlatformRegisteredQuery($input: IsPlatformRegisteredInput!) {
+    isPlatformRegistered(input: $input) {
+      ...registerIsPlatformRegisteredFragment
     }
   }
 `;

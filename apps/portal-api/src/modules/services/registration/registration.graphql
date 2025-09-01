@@ -37,17 +37,17 @@ enum PlatformRegistrationStatus {
   never_registered
 }
 
-input IsOpenCTIPlatformRegisteredInput {
+input IsPlatformRegisteredInput {
   platformId: String!
 }
 
-type IsOpenCTIPlatformRegisteredOrganization implements Node {
+type IsPlatformRegisteredOrganization implements Node {
   id: ID!
 }
 
-type IsOpenCTIPlatformRegisteredResponse {
+type IsPlatformRegisteredResponse {
   status: PlatformRegistrationStatus!
-  organization: IsOpenCTIPlatformRegisteredOrganization
+  organization: IsPlatformRegisteredOrganization
 }
 
 type CanUnregisterResponse {
@@ -80,9 +80,9 @@ type RefreshUserPlatformTokenResponse {
 }
 
 type Query {
-  isOpenCTIPlatformRegistered(
-    input: IsOpenCTIPlatformRegisteredInput!
-  ): IsOpenCTIPlatformRegisteredResponse! @auth
+  isPlatformRegistered(
+    input: IsPlatformRegisteredInput!
+  ): IsPlatformRegisteredResponse! @auth
   canUnregisterOpenCTIPlatform(
     input: CanUnregisterOpenCTIPlatformInput!
   ): CanUnregisterResponse! @auth

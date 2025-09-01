@@ -4,12 +4,12 @@ import { RegisterOpenCTIPlatform } from '@/components/register/register.graphql'
 import { RegisterStateLayout } from '@/components/register/state/layout';
 import { RegisterStateMissingCapability } from '@/components/register/state/missing-capability';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
-import registerIsOpenCTIPlatformRegisteredFragmentGraphql, {
-  registerIsOpenCTIPlatformRegisteredFragment$key,
-} from '@generated/registerIsOpenCTIPlatformRegisteredFragment.graphql';
-import RegisterIsOpenCTIPlatformRegisteredQueryGraphql, {
-  registerIsOpenCTIPlatformRegisteredQuery,
-} from '@generated/registerIsOpenCTIPlatformRegisteredQuery.graphql';
+import registerIsPlatformRegisteredFragmentGraphql, {
+  registerIsPlatformRegisteredFragment$key,
+} from '@generated/registerIsPlatformRegisteredFragment.graphql';
+import RegisterIsPlatformRegisteredQueryGraphql, {
+  registerIsPlatformRegisteredQuery,
+} from '@generated/registerIsPlatformRegisteredQuery.graphql';
 import registerOpenCTIFragmentGraphql, {
   registerOpenCTIFragment$key,
 } from '@generated/registerOpenCTIFragment.graphql';
@@ -34,7 +34,7 @@ interface Props {
     title: string;
     contract: OpenCTIPlatformContract;
   };
-  queryRef: PreloadedQuery<registerIsOpenCTIPlatformRegisteredQuery>;
+  queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
 }
 
 export type RegistrationRequestStatus =
@@ -47,16 +47,16 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
   const [chosenOrganizationId, setChosenOrganizationId] = useState<string>();
 
-  const isOpenCTIPlatformRegisteredPreloadedQuery =
-    usePreloadedQuery<registerIsOpenCTIPlatformRegisteredQuery>(
-      RegisterIsOpenCTIPlatformRegisteredQueryGraphql,
+  const isPlatformRegisteredPreloadedQuery =
+    usePreloadedQuery<registerIsPlatformRegisteredQuery>(
+      RegisterIsPlatformRegisteredQueryGraphql,
       queryRef
     );
 
   const isPlatformRegistered =
-    useFragment<registerIsOpenCTIPlatformRegisteredFragment$key>(
-      registerIsOpenCTIPlatformRegisteredFragmentGraphql,
-      isOpenCTIPlatformRegisteredPreloadedQuery.isOpenCTIPlatformRegistered
+    useFragment<registerIsPlatformRegisteredFragment$key>(
+      registerIsPlatformRegisteredFragmentGraphql,
+      isPlatformRegisteredPreloadedQuery.isPlatformRegistered
     );
 
   // required to prevent React strict mode double registration

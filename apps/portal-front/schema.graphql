@@ -116,7 +116,7 @@ type Query {
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
-  isOpenCTIPlatformRegistered(input: IsOpenCTIPlatformRegisteredInput!): IsOpenCTIPlatformRegisteredResponse!
+  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
   openCTIPlatforms: [OpenCTIPlatform!]!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
@@ -453,17 +453,17 @@ enum PlatformRegistrationStatus {
   never_registered
 }
 
-input IsOpenCTIPlatformRegisteredInput {
+input IsPlatformRegisteredInput {
   platformId: String!
 }
 
-type IsOpenCTIPlatformRegisteredOrganization implements Node {
+type IsPlatformRegisteredOrganization implements Node {
   id: ID!
 }
 
-type IsOpenCTIPlatformRegisteredResponse {
+type IsPlatformRegisteredResponse {
   status: PlatformRegistrationStatus!
-  organization: IsOpenCTIPlatformRegisteredOrganization
+  organization: IsPlatformRegisteredOrganization
 }
 
 type CanUnregisterResponse {

@@ -1,5 +1,5 @@
 export enum ErrorCode {
-  IsOpenCTIPlatformRegisteredUnknownError = 'IS_OPENCTI_PLATFORM_REGISTERED_UNKNOWN_ERROR',
+  IsPlatformRegisteredUnknownError = 'IS_PLATFORM_REGISTERED_UNKNOWN_ERROR',
   CanUnregisterOpenCTIPlatformUnknownError = 'CAN_UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR',
   RegisterOpenCTIPlatformUnknownError = 'REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR',
   PlatformNotRegistered = 'PLATFORM_NOT_REGISTERED',
