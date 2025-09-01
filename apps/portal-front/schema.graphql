@@ -56,6 +56,7 @@ type Mutation {
   deleteSubscription(subscription_id: ID!): ServiceInstance
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
+  addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
   mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
@@ -740,7 +741,12 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
-  subscriptionId: ID!
+  subscriptionId: ID
+}
+
+input UserServiceAddYourselfInput {
+  email: [String!]!
+  serviceInstanceId: ID
 }
 
 input UserServiceDeleteInput {
