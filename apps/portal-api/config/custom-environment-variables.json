@@ -33,6 +33,13 @@
       "pass": "SMTP_PASSWORD"
     }
   },
+  "elasticsearch": {
+    "protocol": "ELASTIC_PROTOCOL",
+    "host": "ELASTIC_HOST",
+    "port": "ELASTIC_PORT",
+    "username": "ELASTIC_USER",
+    "password": "ELASTIC_PASSWORD"
+  },
   "base_url_front": "BASE_URL_FRONT",
   "hubspot_webhook_url": "HUBSPOT_WEBHOOK_URL"
 }

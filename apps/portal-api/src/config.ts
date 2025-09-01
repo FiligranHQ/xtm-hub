@@ -29,6 +29,13 @@ interface PortalConfig {
     database: string;
     seeds: string;
   };
+  elasticsearch: {
+    protocol: string;
+    host: string;
+    port: number;
+    username: string | null;
+    password: string | null;
+  };
   services: Services[];
   serviceCapabilities: ServiceCapability[];
   service_definitions: ServiceDefinitions[];
@@ -56,6 +63,13 @@ const portalConfig: PortalConfig = {
       : process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
         ? config.get<string>('database-test.seeds')
         : 'src/seeds',
+  },
+  elasticsearch: {
+    protocol: config.get<string | null>('elasticsearch.protocol') ?? 'https',
+    host: config.get<string>('elasticsearch.host'),
+    port: config.get<number>('elasticsearch.port'),
+    username: config.get<string | null>('elasticsearch.username'),
+    password: config.get<string | null>('elasticsearch.password'),
   },
   services: config.get('init_services'),
   serviceCapabilities: config.get('init_service_capabilities'),

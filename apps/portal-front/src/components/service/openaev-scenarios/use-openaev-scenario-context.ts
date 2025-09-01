@@ -1,34 +1,34 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
 import {
-  ObasScenarioForm,
-  ObasScenarioFormValues,
-} from '@/components/service/obas-scenarios/[serviceInstanceId]/obas-scenario-form';
+  OpenaevScenarioForm,
+  OpenAEVScenarioFormValues,
+} from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import {
-  ObasScenarioCreateMutation,
-  ObasScenarioDeleteMutation,
-  ObasScenarioUpdateMutation,
-} from '@/components/service/obas-scenarios/obas-scenario.graphql';
+  OpenaevScenarioCreateMutation,
+  OpenaevScenarioDeleteMutation,
+  OpenaevScenarioUpdateMutation,
+} from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { obasScenarioCreateMutation } from '@generated/obasScenarioCreateMutation.graphql';
-import { obasScenarioDeleteMutation } from '@generated/obasScenarioDeleteMutation.graphql';
-import { obasScenarioUpdateMutation } from '@generated/obasScenarioUpdateMutation.graphql';
+import { openaevScenarioCreateMutation } from '@generated/openaevScenarioCreateMutation.graphql';
+import { openaevScenarioDeleteMutation } from '@generated/openaevScenarioDeleteMutation.graphql';
+import { openaevScenarioUpdateMutation } from '@generated/openaevScenarioUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
-export function useObasScenarioContext(
+export function useOpenaevScenarioContext(
   serviceInstance: serviceInstance_fragment$data,
   connectionId?: string
 ): ServiceContextProps {
   const t = useTranslations();
 
-  const [createObasScenario] = useMutation<obasScenarioCreateMutation>(
-    ObasScenarioCreateMutation
+  const [createOpenAEVScenario] = useMutation<openaevScenarioCreateMutation>(
+    OpenaevScenarioCreateMutation
   );
 
   const handleAddSheet = async (
@@ -36,7 +36,7 @@ export function useObasScenarioContext(
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const formValues = values as ObasScenarioFormValues;
+    const formValues = values as OpenAEVScenarioFormValues;
     const input = {
       ...omit(formValues, ['document', 'illustration']),
       uploader_id: formValues?.uploader_id ?? '',
@@ -46,7 +46,7 @@ export function useObasScenarioContext(
       ...Array.from(formValues.illustration),
     ];
 
-    createObasScenario({
+    createOpenAEVScenario({
       variables: {
         input: {
           ...input,
@@ -59,7 +59,7 @@ export function useObasScenarioContext(
       uploadables: fileListToUploadableMap(documents),
 
       onCompleted: (response) => {
-        if (!response.createObasScenario) {
+        if (!response.createOpenAEVScenario) {
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),
@@ -76,15 +76,14 @@ export function useObasScenarioContext(
     });
   };
 
-  const [deleteObasScenarioMutation] = useMutation<obasScenarioDeleteMutation>(
-    ObasScenarioDeleteMutation
-  );
+  const [deleteOpenAEVScenarioMutation] =
+    useMutation<openaevScenarioDeleteMutation>(OpenaevScenarioDeleteMutation);
 
   const handleDeleteSheet = async (
     document: ShareableResource,
     onCompleted: () => void
   ) => {
-    deleteObasScenarioMutation({
+    deleteOpenAEVScenarioMutation({
       variables: {
         documentId: document.id,
         serviceInstanceId: serviceInstance.id,
@@ -96,9 +95,8 @@ export function useObasScenarioContext(
     });
   };
 
-  const [updateObasScenarioMutation] = useMutation<obasScenarioUpdateMutation>(
-    ObasScenarioUpdateMutation
-  );
+  const [updateOpenAEVScenarioMutation] =
+    useMutation<openaevScenarioUpdateMutation>(OpenaevScenarioUpdateMutation);
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
@@ -118,7 +116,7 @@ export function useObasScenarioContext(
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
-    updateObasScenarioMutation({
+    updateOpenAEVScenarioMutation({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
@@ -143,6 +141,6 @@ export function useObasScenarioContext(
     handleAddSheet,
     handleUpdateSheet,
     handleDeleteSheet,
-    ServiceForm: ObasScenarioForm,
+    ServiceForm: OpenaevScenarioForm,
   };
 }

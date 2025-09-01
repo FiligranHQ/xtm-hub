@@ -1,12 +1,13 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
+import { UserServiceAddYourselfMutation } from '@/components/service/user_service.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import { useMutation } from 'react-relay';
 
@@ -15,8 +16,9 @@ export default function useGetAction(
 ) {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
+  const router = useRouter();
 
-  const [userServiceJoin] = useMutation(UserServiceCreateMutation);
+  const [userServiceJoin] = useMutation(UserServiceAddYourselfMutation);
 
   const getAction = (service: serviceList_fragment$data) => {
     if (
@@ -35,8 +37,12 @@ export default function useGetAction(
                 input: {
                   email: me?.email,
                   serviceInstanceId: service.id,
-                  organizationId: me?.selected_organization_id,
                 },
+              },
+              onCompleted: () => {
+                router.push(
+                  `/app/service/${service.service_definition?.identifier}/${service.id}`
+                );
               },
             });
           }}>

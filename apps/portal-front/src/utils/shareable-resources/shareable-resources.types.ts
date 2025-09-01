@@ -1,21 +1,21 @@
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { obasScenariosItem_fragment$data } from '@generated/obasScenariosItem_fragment.graphql';
+import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
   | customDashboardsItem_fragment$data
   | csvFeedsItem_fragment$data
-  | obasScenariosItem_fragment$data
+  | openaevScenariosItem_fragment$data
   | SeoCsvFeed
   | SeoCustomDashboard
-  | SeoObasScenario;
+  | SeoOpenAEVScenario;
 
 export type SubscribableResource =
   | csvFeedsItem_fragment$data
-  | obasScenariosItem_fragment$data;
+  | openaevScenariosItem_fragment$data;
 
-export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoObasScenario;
+export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
 
 export interface SeoCustomDashboard {
   description: string;
@@ -90,10 +90,10 @@ export interface SeoCsvFeed {
   };
 }
 
-export interface SeoObasScenario {
+export interface SeoOpenAEVScenario {
   description: string;
   id: string;
-  type: 'obas_scenario';
+  type: 'openaev_scenario';
   children_documents: {
     id: string;
   }[];

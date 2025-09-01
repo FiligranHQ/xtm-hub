@@ -2,14 +2,14 @@ import SeoCsvFeedBySlugQuery from '@generated/seoCsvFeedBySlugQuery.graphql';
 import SeoCsvFeedsByServiceSlugQuery from '@generated/seoCsvFeedsByServiceSlugQuery.graphql';
 import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
-import SeoObasScenarioBySlugQuery from '@generated/seoObasScenarioBySlugQuery.graphql';
-import SeoObasScenariosByServiceSlugQuery from '@generated/seoObasScenariosByServiceSlugQuery.graphql';
+import SeoOpenaevScenarioBySlugQuery from '@generated/seoOpenaevScenarioBySlugQuery.graphql';
+import SeoOpenaevScenariosByServiceSlugQuery from '@generated/seoOpenaevScenariosByServiceSlugQuery.graphql';
 import {
   MakeQueryMapParams,
   QueryMapEntry,
   SeoCsvFeed,
   SeoCustomDashboard,
-  SeoObasScenario,
+  SeoOpenAEVScenario,
   SeoResource,
   ServiceSlug,
 } from './shareable-resources.types';
@@ -52,9 +52,9 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
       query: SeoCustomDashboardsByServiceSlugQuery,
       key: 'seoCustomDashboardsByServiceSlug',
     }),
-  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeQueryMapEntry<SeoObasScenario>({
-    query: SeoObasScenariosByServiceSlugQuery,
-    key: 'seoObasScenariosByServiceSlug',
+  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeQueryMapEntry<SeoOpenAEVScenario>({
+    query: SeoOpenaevScenariosByServiceSlugQuery,
+    key: 'seoOpenAEVScenariosByServiceSlug',
   }),
 };
 
@@ -70,8 +70,10 @@ export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
       query: SeoCustomDashboardBySlugQuery,
       key: 'seoCustomDashboardBySlug',
     }),
-  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeSingleQueryMapEntry<SeoObasScenario>({
-    query: SeoObasScenarioBySlugQuery,
-    key: 'seoObasScenarioBySlug',
-  }),
+  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeSingleQueryMapEntry<SeoOpenAEVScenario>(
+    {
+      query: SeoOpenaevScenarioBySlugQuery,
+      key: 'seoOpenAEVScenarioBySlug',
+    }
+  ),
 };

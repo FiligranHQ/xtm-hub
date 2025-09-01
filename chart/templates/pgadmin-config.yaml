@@ -10,7 +10,7 @@ data:
           "Name": "{{ .Release.Namespace }}",
           "Group": "XTM Hub",
           "Port": 5432,
-          "Username": "{{ .Release.Name }}",
+          "Username": "{{ .Values.postgres.username }}",
           "Host": "postgresql-rw.{{ .Release.Namespace }}.svc.cluster.local",
           "SSLMode": "prefer",
           "MaintenanceDB": "postgres"

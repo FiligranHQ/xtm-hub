@@ -24,7 +24,7 @@ export type MailTemplates = {
   vault: GenericServiceMailModel;
   custom_dashboards: GenericServiceMailModel;
   csv_feeds: GenericServiceMailModel;
-  obas_scenarios: GenericServiceMailModel;
+  openaev_scenarios: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
   opencti_platform_registered: PlatformRegisteredModel;
   opencti_platform_unregistered: PlatformUnregisteredModel;
@@ -40,7 +40,7 @@ export const templateSubjects: {
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   csv_feeds: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
-  obas_scenarios: (params: GenericServiceMailModel) =>
+  openaev_scenarios: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   new_user_organization: (params: NewUserOrganizationMailModel) =>
     `XTM Hub - You've been added to the ${params.organizationName} organization`,

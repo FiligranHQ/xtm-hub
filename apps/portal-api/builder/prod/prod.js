@@ -10,3 +10,14 @@ await esbuild.build({
   format: 'esm',
   packages: 'external',
 });
+
+await esbuild.build({
+  logLevel: 'info',
+  entryPoints: ['src/es-migrations/**.js'],
+  bundle: true,
+  platform: 'node',
+  sourcemap: 'inline',
+  outdir: 'dist/src/es-migrations',
+  format: 'esm',
+  packages: 'external',
+});
