@@ -23,7 +23,7 @@ input RegisterOpenCTIPlatformInput {
   platform: OpenCTIPlatformInput!
 }
 
-input CanUnregisterOpenCTIPlatformInput {
+input CanUnregisterPlatformInput {
   platformId: String!
 }
 
@@ -83,8 +83,8 @@ type Query {
   isPlatformRegistered(
     input: IsPlatformRegisteredInput!
   ): IsPlatformRegisteredResponse! @auth
-  canUnregisterOpenCTIPlatform(
-    input: CanUnregisterOpenCTIPlatformInput!
+  canUnregisterPlatform(
+    input: CanUnregisterPlatformInput!
   ): CanUnregisterResponse! @auth
   openCTIPlatforms: [OpenCTIPlatform!]! @auth
   openCTIPlatformRegistrationStatus(

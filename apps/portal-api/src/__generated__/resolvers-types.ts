@@ -67,7 +67,7 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
-export type CanUnregisterOpenCtiPlatformInput = {
+export type CanUnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
 };
 
@@ -825,7 +825,7 @@ export enum PlatformRegistrationStatus {
 
 export type Query = {
   __typename?: 'Query';
-  canUnregisterOpenCTIPlatform: CanUnregisterResponse;
+  canUnregisterPlatform: CanUnregisterResponse;
   csvFeed?: Maybe<CsvFeed>;
   csvFeeds: CsvFeedConnection;
   customDashboard?: Maybe<CustomDashboard>;
@@ -874,8 +874,8 @@ export type Query = {
 };
 
 
-export type QueryCanUnregisterOpenCtiPlatformArgs = {
-  input: CanUnregisterOpenCtiPlatformInput;
+export type QueryCanUnregisterPlatformArgs = {
+  input: CanUnregisterPlatformInput;
 };
 
 
@@ -1620,7 +1620,7 @@ export type ResolversTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  CanUnregisterOpenCTIPlatformInput: CanUnregisterOpenCtiPlatformInput;
+  CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
   CreateCsvFeedInput: CreateCsvFeedInput;
@@ -1744,7 +1744,7 @@ export type ResolversParentTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
-  CanUnregisterOpenCTIPlatformInput: CanUnregisterOpenCtiPlatformInput;
+  CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
   CreateCsvFeedInput: CreateCsvFeedInput;
@@ -2212,7 +2212,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  canUnregisterOpenCTIPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterOpenCtiPlatformArgs, 'input'>>;
+  canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
   csvFeeds?: Resolver<ResolversTypes['CsvFeedConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;

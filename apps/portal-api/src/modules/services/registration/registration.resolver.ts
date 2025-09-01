@@ -32,9 +32,9 @@ const resolvers: Resolvers = {
       }
     },
 
-    canUnregisterOpenCTIPlatform: async (_, { input }, context) => {
+    canUnregisterPlatform: async (_, { input }, context) => {
       try {
-        const response = await registrationApp.canUnregisterOpenCTIPlatform(
+        const response = await registrationApp.canUnregisterPlatform(
           context,
           input
         );
@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
               isPlatformRegistered: false,
             };
         }
-        throw UnknownError(ErrorCode.CanUnregisterOpenCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.CanUnregisterPlatformUnknownError, {
           detail: error,
         });
       }

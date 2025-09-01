@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  CanUnregisterOpenCtiPlatformInput,
+  CanUnregisterPlatformInput,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
   OpenCtiPlatform,
@@ -13,6 +13,7 @@ import {
   RegisterOpenCtiPlatformInput,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  UnregisterOpenCtiPlatformInput,
 } from '../../../__generated__/resolvers-types';
 import Organization, {
   OrganizationId,
@@ -185,7 +186,7 @@ export const registrationApp = {
 
   unregisterOpenCTIPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnregisterOpenCtiPlatformInput
+    { platformId }: UnregisterOpenCtiPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -273,9 +274,9 @@ export const registrationApp = {
     };
   },
 
-  canUnregisterOpenCTIPlatform: async (
+  canUnregisterPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnregisterOpenCtiPlatformInput
+    { platformId }: CanUnregisterPlatformInput
   ): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId;

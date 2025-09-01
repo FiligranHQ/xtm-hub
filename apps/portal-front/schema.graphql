@@ -117,7 +117,7 @@ type Query {
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
-  canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
+  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   openCTIPlatforms: [OpenCTIPlatform!]!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
   openCTIPlatformAssociatedOrganization(platformId: String!): Organization!
@@ -439,7 +439,7 @@ input RegisterOpenCTIPlatformInput {
   platform: OpenCTIPlatformInput!
 }
 
-input CanUnregisterOpenCTIPlatformInput {
+input CanUnregisterPlatformInput {
   platformId: String!
 }
 

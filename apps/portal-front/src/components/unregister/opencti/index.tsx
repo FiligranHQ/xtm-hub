@@ -1,16 +1,16 @@
 import Loader from '@/components/loader';
 import {
-  CanUnregisterOpenCTIPlatformFragment,
+  CanUnregisterPlatformFragment,
   UnregisterOpenCTIPlatform,
 } from '@/components/register/register.graphql';
 import { RegisterStateLayout } from '@/components/register/state/layout';
 import { UnregisterOpenCTIConfirm } from '@/components/unregister/opencti/confirm';
 import { UnregisterOpenCTIMissingCapability } from '@/components/unregister/opencti/missing-capability';
 import { UnregisterOpenCTIPlatformNotRegistered } from '@/components/unregister/opencti/platform-not-registered';
-import { registerCanUnregisterOpenCTIPlatformFragment$key } from '@generated/registerCanUnregisterOpenCTIPlatformFragment.graphql';
-import RegisterCanUnregisterOpenCTIPlatformQueryGraphql, {
-  registerCanUnregisterOpenCTIPlatformQuery,
-} from '@generated/registerCanUnregisterOpenCTIPlatformQuery.graphql';
+import { registerCanUnregisterPlatformFragment$key } from '@generated/registerCanUnregisterPlatformFragment.graphql';
+import RegisterCanUnregisterPlatformQueryGraphql, {
+  registerCanUnregisterPlatformQuery,
+} from '@generated/registerCanUnregisterPlatformQuery.graphql';
 import { registerUnregisterOpenCTIPlatformMutation } from '@generated/registerUnregisterOpenCTIPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
@@ -24,7 +24,7 @@ import {
 
 interface Props {
   platformId: string;
-  queryRef: PreloadedQuery<registerCanUnregisterOpenCTIPlatformQuery>;
+  queryRef: PreloadedQuery<registerCanUnregisterPlatformQuery>;
 }
 
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
@@ -35,15 +35,15 @@ export const UnregisterOpenCTI: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   const canUnregisterPreloadedQuery =
-    usePreloadedQuery<registerCanUnregisterOpenCTIPlatformQuery>(
-      RegisterCanUnregisterOpenCTIPlatformQueryGraphql,
+    usePreloadedQuery<registerCanUnregisterPlatformQuery>(
+      RegisterCanUnregisterPlatformQueryGraphql,
       queryRef
     );
 
   const { isAllowed, isPlatformRegistered, isInOrganization, organizationId } =
-    useFragment<registerCanUnregisterOpenCTIPlatformFragment$key>(
-      CanUnregisterOpenCTIPlatformFragment,
-      canUnregisterPreloadedQuery.canUnregisterOpenCTIPlatform
+    useFragment<registerCanUnregisterPlatformFragment$key>(
+      CanUnregisterPlatformFragment,
+      canUnregisterPreloadedQuery.canUnregisterPlatform
     );
 
   const [unregisterPlatform] =

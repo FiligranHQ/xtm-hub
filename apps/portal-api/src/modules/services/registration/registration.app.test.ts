@@ -183,7 +183,7 @@ describe('Registration app', () => {
     });
   });
 
-  describe('canUnregisterOpenCTIPlatform', () => {
+  describe('canUnregisterPlatform', () => {
     const platformId = uuidv4();
 
     let isUserAllowedOnOrganizationSpy: MockInstance;
@@ -212,12 +212,9 @@ describe('Registration app', () => {
     it('should throw an error when configuration for platform does not exist', async () => {
       loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
 
-      const call = registrationApp.canUnregisterOpenCTIPlatform(
-        contextAdminUser,
-        {
-          platformId,
-        }
-      );
+      const call = registrationApp.canUnregisterPlatform(contextAdminUser, {
+        platformId,
+      });
 
       await expect(call).rejects.toThrow(ErrorCode.PlatformNotRegistered);
     });
@@ -228,12 +225,9 @@ describe('Registration app', () => {
       );
       loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
-      const call = registrationApp.canUnregisterOpenCTIPlatform(
-        contextAdminUser,
-        {
-          platformId,
-        }
-      );
+      const call = registrationApp.canUnregisterPlatform(contextAdminUser, {
+        platformId,
+      });
 
       await expect(call).rejects.toThrow(ErrorCode.PlatformNotRegistered);
     });
@@ -250,7 +244,7 @@ describe('Registration app', () => {
         Promise.resolve({ organization_id: organizationId })
       );
 
-      const result = await registrationApp.canUnregisterOpenCTIPlatform(
+      const result = await registrationApp.canUnregisterPlatform(
         contextAdminUser,
         { platformId }
       );
@@ -271,7 +265,7 @@ describe('Registration app', () => {
         Promise.resolve({ isAllowed: false, isInOrganization: false })
       );
 
-      const result = await registrationApp.canUnregisterOpenCTIPlatform(
+      const result = await registrationApp.canUnregisterPlatform(
         contextAdminUser,
         { platformId }
       );

@@ -25,8 +25,8 @@ export const IsPlatformRegisteredQuery = graphql`
   }
 `;
 
-export const CanUnregisterOpenCTIPlatformFragment = graphql`
-  fragment registerCanUnregisterOpenCTIPlatformFragment on CanUnregisterResponse {
+export const CanUnregisterPlatformFragment = graphql`
+  fragment registerCanUnregisterPlatformFragment on CanUnregisterResponse {
     isPlatformRegistered
     isAllowed
     isInOrganization
@@ -34,12 +34,12 @@ export const CanUnregisterOpenCTIPlatformFragment = graphql`
   }
 `;
 
-export const CanUnregisterOpenCTIPlatformQuery = graphql`
-  query registerCanUnregisterOpenCTIPlatformQuery(
-    $input: CanUnregisterOpenCTIPlatformInput!
+export const CanUnregisterPlatformQuery = graphql`
+  query registerCanUnregisterPlatformQuery(
+    $input: CanUnregisterPlatformInput!
   ) {
-    canUnregisterOpenCTIPlatform(input: $input) {
-      ...registerCanUnregisterOpenCTIPlatformFragment
+    canUnregisterPlatform(input: $input) {
+      ...registerCanUnregisterPlatformFragment
     }
   }
 `;
