@@ -6,6 +6,7 @@ enum ServiceDefinitionIdentifier {
   openaev_scenarios
   opencti_registration
 }
+
 type ServiceDefinition implements Node {
   id: ID!
   name: String!

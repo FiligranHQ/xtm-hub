@@ -44,18 +44,16 @@ export const CanUnregisterPlatformQuery = graphql`
   }
 `;
 
-export const RegisterOpenCTIFragment = graphql`
-  fragment registerOpenCTIFragment on RegistrationResponse {
+export const RegisterFragment = graphql`
+  fragment registerFragment on RegistrationResponse {
     token
   }
 `;
 
-export const RegisterOpenCTIPlatform = graphql`
-  mutation registerOpenCTIPlatformMutation(
-    $input: RegisterOpenCTIPlatformInput!
-  ) {
-    registerOpenCTIPlatform(input: $input) {
-      ...registerOpenCTIFragment
+export const RegisterPlatform = graphql`
+  mutation registerPlatformMutation($input: RegisterPlatformInput!) {
+    registerPlatform(input: $input) {
+      ...registerFragment
     }
   }
 `;

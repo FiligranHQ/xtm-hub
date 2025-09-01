@@ -1,4 +1,4 @@
-enum OpenCTIPlatformContract {
+enum PlatformContract {
   CE
   EE
 }
@@ -7,20 +7,25 @@ type OpenCTIPlatform implements Node {
   id: ID!
   url: String!
   title: String!
-  contract: OpenCTIPlatformContract!
+  contract: PlatformContract!
   platform_id: String!
 }
 
-input OpenCTIPlatformInput {
+input PlatformInput {
   id: ID!
   url: String!
   title: String!
-  contract: OpenCTIPlatformContract!
+  contract: PlatformContract!
 }
 
-input RegisterOpenCTIPlatformInput {
+enum PlatformIdentifier {
+  opencti
+}
+
+input RegisterPlatformInput {
   organizationId: ID!
-  platform: OpenCTIPlatformInput!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
 }
 
 input CanUnregisterPlatformInput {
@@ -95,9 +100,7 @@ type Query {
 }
 
 type Mutation {
-  registerOpenCTIPlatform(
-    input: RegisterOpenCTIPlatformInput!
-  ): RegistrationResponse! @auth
+  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse! @auth
   unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
     @auth
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth

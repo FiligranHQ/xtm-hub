@@ -10,9 +10,8 @@ import {
   OrganizationCapability,
   PlatformRegistrationStatus,
   RefreshUserPlatformTokenResponse,
-  RegisterOpenCtiPlatformInput,
+  RegisterPlatformInput,
   ServiceConfigurationStatus,
-  ServiceDefinitionIdentifier,
   UnregisterOpenCtiPlatformInput,
 } from '../../../__generated__/resolvers-types';
 import Organization, {
@@ -33,9 +32,13 @@ import {
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
 import {
-  OpenCTIPlatformConfiguration,
+  PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
+import {
+  mailTemplateMappedByPlatformIdentifier,
+  serviceDefinitionIdentifierMappedByPlatformIdentifier,
+} from './registration.mapping';
 
 export const registrationApp = {
   loadOpenCTIPlatformAssociatedOrganization: async (
@@ -100,12 +103,12 @@ export const registrationApp = {
     };
   },
 
-  registerOpenCTIPlatform: async (
+  registerPlatform: async (
     context: PortalContext,
-    { organizationId, platform }: RegisterOpenCtiPlatformInput
+    { organizationId, platform, identifier }: RegisterPlatformInput
   ): Promise<string> => {
     const token = uuidv4();
-    const configuration: OpenCTIPlatformConfiguration = {
+    const configuration: PlatformConfiguration = {
       registerer_id: context.user.id,
       platform_id: platform.id,
       platform_url: platform.url,
@@ -114,9 +117,12 @@ export const registrationApp = {
       token,
     };
 
+    const serviceDefinitionIdentifier =
+      serviceDefinitionIdentifierMappedByPlatformIdentifier[identifier];
+
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        identifier: serviceDefinitionIdentifier,
       });
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
@@ -169,11 +175,12 @@ export const registrationApp = {
 
     const users = await loadOrganizationAdministrators(context, organizationId);
 
+    const mailTemplate = mailTemplateMappedByPlatformIdentifier[identifier];
     await Promise.all(
       users.map((user) =>
         sendMail({
           to: user.email,
-          template: 'opencti_platform_registered',
+          template: mailTemplate,
           params: {
             adminName: formatName(user.first_name ?? ''),
           },

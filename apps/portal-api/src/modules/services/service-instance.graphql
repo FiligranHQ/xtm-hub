@@ -114,7 +114,7 @@ type SubscribedServiceInstanceConfiguration {
   platform_url: String!
   registerer_id: String!
   platform_title: String!
-  platform_contract: OpenCTIPlatformContract!
+  platform_contract: PlatformContract!
 }
 
 type SubscribedServiceInstance {

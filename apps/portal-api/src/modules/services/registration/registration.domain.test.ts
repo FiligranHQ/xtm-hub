@@ -5,7 +5,7 @@ import {
   contextAdminUser,
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
-import { OpenCtiPlatformContract } from '../../../__generated__/resolvers-types';
+import { PlatformContract } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import Subscription from '../../../model/kanel/public/Subscription';
@@ -13,7 +13,7 @@ import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { ErrorCode } from '../../common/error-code';
 import { serviceContractDomain } from '../contract/domain';
 import {
-  OpenCTIPlatformConfiguration,
+  PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
 
@@ -22,9 +22,9 @@ describe('Registration domain', () => {
   const token = uuidv4();
   const platformTitle = 'My OpenCTI platform';
   const platformUrl = 'http://example.com';
-  const platformContract = OpenCtiPlatformContract.Ee;
+  const platformContract = PlatformContract.Ee;
   const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
-  let configuration: OpenCTIPlatformConfiguration;
+  let configuration: PlatformConfiguration;
 
   beforeEach(() => {
     platformId = uuidv4();
@@ -39,7 +39,7 @@ describe('Registration domain', () => {
     };
   });
 
-  describe('registerNewInstance', () => {
+  describe('registerNewPlatform', () => {
     it('save registration data', async () => {
       await registrationDomain.registerNewPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,

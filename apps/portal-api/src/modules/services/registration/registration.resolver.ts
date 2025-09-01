@@ -78,14 +78,14 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    registerOpenCTIPlatform: async (_, { input }, context) => {
+    registerPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
         const payload = {
           ...input,
           organizationId: fromGlobalId(input.organizationId).id,
         };
-        const token = await registrationApp.registerOpenCTIPlatform(
+        const token = await registrationApp.registerPlatform(
           {
             ...context,
             trx,

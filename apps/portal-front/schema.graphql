@@ -41,7 +41,7 @@ type Mutation {
   createOpenAEVScenario(input: CreateOpenAEVScenarioInput!, document: [Upload!]!, serviceInstanceId: String): OpenAEVScenario!
   updateOpenAEVScenario(documentId: ID!, input: UpdateOpenAEVScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): OpenAEVScenario!
   deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
-  registerOpenCTIPlatform(input: RegisterOpenCTIPlatformInput!): RegistrationResponse!
+  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
@@ -414,7 +414,7 @@ type OpenAEVScenarioConnection {
   pageInfo: PageInfo!
 }
 
-enum OpenCTIPlatformContract {
+enum PlatformContract {
   CE
   EE
 }
@@ -423,20 +423,25 @@ type OpenCTIPlatform implements Node {
   id: ID!
   url: String!
   title: String!
-  contract: OpenCTIPlatformContract!
+  contract: PlatformContract!
   platform_id: String!
 }
 
-input OpenCTIPlatformInput {
+input PlatformInput {
   id: ID!
   url: String!
   title: String!
-  contract: OpenCTIPlatformContract!
+  contract: PlatformContract!
 }
 
-input RegisterOpenCTIPlatformInput {
+enum PlatformIdentifier {
+  opencti
+}
+
+input RegisterPlatformInput {
   organizationId: ID!
-  platform: OpenCTIPlatformInput!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
 }
 
 input CanUnregisterPlatformInput {
@@ -573,7 +578,7 @@ type SubscribedServiceInstanceConfiguration {
   platform_url: String!
   registerer_id: String!
   platform_title: String!
-  platform_contract: OpenCTIPlatformContract!
+  platform_contract: PlatformContract!
 }
 
 type SubscribedServiceInstance {

@@ -7,7 +7,7 @@ import useMountingLoader from '@/hooks/useMountingLoader';
 import RegisterIsPlatformRegisteredQueryGraphql, {
   registerIsPlatformRegisteredQuery,
 } from '@generated/registerIsPlatformRegisteredQuery.graphql';
-import { OpenCTIPlatformContract } from '@generated/registerOpenCTIPlatformFragment.graphql';
+import { PlatformContract } from '@generated/registerPlatformMutation.graphql';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -32,7 +32,7 @@ export const PageLoader: React.FC = () => {
     id: platform_id,
     title: platform_title,
     url: platform_url,
-    contract: platform_contract as OpenCTIPlatformContract,
+    contract: platform_contract as PlatformContract,
   };
 
   return queryRef ? (

@@ -1,22 +1,22 @@
 import Loader from '@/components/loader';
 import { RegisterNeverRegistered } from '@/components/register/never-registered';
-import { RegisterOpenCTIPlatform } from '@/components/register/register.graphql';
+import { RegisterPlatform } from '@/components/register/register.graphql';
 import { RegisterStateLayout } from '@/components/register/state/layout';
 import { RegisterStateMissingCapability } from '@/components/register/state/missing-capability';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
+import registerFragmentGraphql, {
+  registerFragment$key,
+} from '@generated/registerFragment.graphql';
 import registerIsPlatformRegisteredFragmentGraphql, {
   registerIsPlatformRegisteredFragment$key,
 } from '@generated/registerIsPlatformRegisteredFragment.graphql';
 import RegisterIsPlatformRegisteredQueryGraphql, {
   registerIsPlatformRegisteredQuery,
 } from '@generated/registerIsPlatformRegisteredQuery.graphql';
-import registerOpenCTIFragmentGraphql, {
-  registerOpenCTIFragment$key,
-} from '@generated/registerOpenCTIFragment.graphql';
 import {
-  OpenCTIPlatformContract,
-  registerOpenCTIPlatformMutation,
-} from '@generated/registerOpenCTIPlatformMutation.graphql';
+  PlatformContract,
+  registerPlatformMutation,
+} from '@generated/registerPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useRef, useState } from 'react';
@@ -32,7 +32,7 @@ interface Props {
     id: string;
     url: string;
     title: string;
-    contract: OpenCTIPlatformContract;
+    contract: PlatformContract;
   };
   queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
 }
@@ -81,14 +81,13 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const [registrationRequestStatus, setRegistrationRequestStatus] =
     useState<RegistrationRequestStatus>('idle');
 
-  const [registerPlatform] = useMutation<registerOpenCTIPlatformMutation>(
-    RegisterOpenCTIPlatform
-  );
+  const [registerPlatform] =
+    useMutation<registerPlatformMutation>(RegisterPlatform);
 
   const [registerFragmentRef, setRegisterFragmentRef] =
-    useState<registerOpenCTIFragment$key | null>(null);
-  const registerDataResponse = useFragment<registerOpenCTIFragment$key>(
-    registerOpenCTIFragmentGraphql,
+    useState<registerFragment$key | null>(null);
+  const registerDataResponse = useFragment<registerFragment$key>(
+    registerFragmentGraphql,
     registerFragmentRef
   );
 
@@ -115,10 +114,10 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     setChosenOrganizationId(organizationId);
     registerPlatform({
       variables: {
-        input: { organizationId, platform },
+        input: { organizationId, platform, identifier: 'opencti' },
       },
       onCompleted: (response) => {
-        setRegisterFragmentRef(response.registerOpenCTIPlatform);
+        setRegisterFragmentRef(response.registerPlatform);
       },
       onError: (error) => {
         if (error.message === 'MISSING_CAPABILITY_ON_ORGANIZATION') {

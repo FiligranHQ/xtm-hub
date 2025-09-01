@@ -9,9 +9,10 @@ import {
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
 import {
-  OpenCtiPlatformContract,
-  OpenCtiPlatformInput,
   OpenCtiPlatformRegistrationStatus,
+  PlatformContract,
+  PlatformIdentifier,
+  PlatformInput,
   ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
 import Subscription from '../../../model/kanel/public/Subscription';
@@ -24,34 +25,36 @@ import { serviceContractDomain } from '../contract/domain';
 import { registrationApp } from './registration.app';
 
 describe('Registration app', () => {
-  describe('registerOpenCTIPlatform', () => {
-    const platform: OpenCtiPlatformInput = {
+  describe('registerPlatform', () => {
+    const platform: PlatformInput = {
       id: uuidv4(),
       title: 'My OpenCTI platform',
       url: 'http://example.com',
-      contract: OpenCtiPlatformContract.Ee,
+      contract: PlatformContract.Ee,
     };
 
     describe('invalid configuration', async () => {
       it('should throw when platformId is not valid', async () => {
-        const call = registrationApp.registerOpenCTIPlatform(contextAdminUser, {
+        const call = registrationApp.registerPlatform(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             ...platform,
             id: 'hello',
           },
+          identifier: PlatformIdentifier.Opencti,
         });
 
         await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
       });
 
       it('should throw when platformUrl is not valid', async () => {
-        const call = registrationApp.registerOpenCTIPlatform(contextAdminUser, {
+        const call = registrationApp.registerPlatform(contextAdminUser, {
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             ...platform,
             url: 'hello',
           },
+          identifier: PlatformIdentifier.Opencti,
         });
 
         await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
@@ -59,7 +62,7 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not belong to the organization', async () => {
-      const call = registrationApp.registerOpenCTIPlatform(
+      const call = registrationApp.registerPlatform(
         {
           ...contextAdminUser,
           user: {
@@ -67,20 +70,22 @@ describe('Registration app', () => {
             capabilities: [],
           },
         },
-        { organizationId: THALES_ORGA_ID, platform }
+        {
+          organizationId: THALES_ORGA_ID,
+          platform,
+          identifier: PlatformIdentifier.Opencti,
+        }
       );
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
 
     it('should throw when user does not have the required capabilities', async () => {
-      const call = registrationApp.registerOpenCTIPlatform(
-        contextSimpleUserThales,
-        {
-          organizationId: THALES_ORGA_ID,
-          platform,
-        }
-      );
+      const call = registrationApp.registerPlatform(contextSimpleUserThales, {
+        organizationId: THALES_ORGA_ID,
+        platform,
+        identifier: PlatformIdentifier.Opencti,
+      });
 
       await expect(call).rejects.toThrow(
         ErrorCode.MissingCapabilityOnOrganization
@@ -88,13 +93,11 @@ describe('Registration app', () => {
     });
 
     it('return token when platform is registered', async () => {
-      const token = await registrationApp.registerOpenCTIPlatform(
-        contextAdminUser,
-        {
-          organizationId: PLATFORM_ORGANIZATION_UUID,
-          platform,
-        }
-      );
+      const token = await registrationApp.registerPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform,
+        identifier: PlatformIdentifier.Opencti,
+      });
 
       expect(token).toBeDefined();
     });
@@ -102,7 +105,7 @@ describe('Registration app', () => {
 
   describe('unregisterOpenCTIPlatform', () => {
     let platformId: string;
-    let platform: OpenCtiPlatformInput;
+    let platform: PlatformInput;
 
     beforeEach(() => {
       platformId = uuidv4();
@@ -110,14 +113,15 @@ describe('Registration app', () => {
         id: platformId,
         title: 'My OpenCTI platform',
         url: 'http://example.com',
-        contract: OpenCtiPlatformContract.Ee,
+        contract: PlatformContract.Ee,
       };
     });
 
     it('should throw when user does not belong to the organization', async () => {
-      await registrationApp.registerOpenCTIPlatform(contextAdminUser, {
+      await registrationApp.registerPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
+        identifier: PlatformIdentifier.Opencti,
       });
 
       const call = registrationApp.unregisterOpenCTIPlatform(
@@ -131,9 +135,10 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not have the required capabilities', async () => {
-      await registrationApp.registerOpenCTIPlatform(contextAdminOrgaThales, {
+      await registrationApp.registerPlatform(contextAdminOrgaThales, {
         organizationId: THALES_ORGA_ID,
         platform,
+        identifier: PlatformIdentifier.Opencti,
       });
 
       const call = registrationApp.unregisterOpenCTIPlatform(
@@ -149,9 +154,10 @@ describe('Registration app', () => {
     });
 
     it('should unregister platform when the platform is still active', async () => {
-      await registrationApp.registerOpenCTIPlatform(contextAdminUser, {
+      await registrationApp.registerPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
+        identifier: PlatformIdentifier.Opencti,
       });
 
       await registrationApp.unregisterOpenCTIPlatform(contextAdminUser, {
@@ -289,18 +295,16 @@ describe('Registration app', () => {
 
     it('should return active when platform is registered', async () => {
       const platformId = uuidv4();
-      const token = await registrationApp.registerOpenCTIPlatform(
-        contextAdminUser,
-        {
-          organizationId: PLATFORM_ORGANIZATION_UUID,
-          platform: {
-            id: platformId,
-            url: 'http://example.com',
-            contract: OpenCtiPlatformContract.Ee,
-            title: 'Fake title',
-          },
-        }
-      );
+      const token = await registrationApp.registerPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform: {
+          id: platformId,
+          url: 'http://example.com',
+          contract: PlatformContract.Ee,
+          title: 'Fake title',
+        },
+        identifier: PlatformIdentifier.Opencti,
+      });
 
       const result =
         await registrationApp.loadOpenCTIPlatformRegistrationStatus(
@@ -313,18 +317,16 @@ describe('Registration app', () => {
 
     it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
-      const token = await registrationApp.registerOpenCTIPlatform(
-        contextAdminUser,
-        {
-          organizationId: PLATFORM_ORGANIZATION_UUID,
-          platform: {
-            id: platformId,
-            url: 'http://example.com',
-            contract: OpenCtiPlatformContract.Ee,
-            title: 'Fake title',
-          },
-        }
-      );
+      const token = await registrationApp.registerPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform: {
+          id: platformId,
+          url: 'http://example.com',
+          contract: PlatformContract.Ee,
+          title: 'Fake title',
+        },
+        identifier: PlatformIdentifier.Opencti,
+      });
 
       await registrationApp.unregisterOpenCTIPlatform(contextAdminUser, {
         platformId,
