@@ -1,14 +1,26 @@
+import { z } from 'zod';
 import { logApp } from './app-logger.util';
 
-export interface DevUser {
-  email: string;
-  password: string;
-  roles?: string[];
-  organization?: {
-    name: string;
-    domains?: string[];
-  };
-}
+// Zod schema for DevUser organization
+const DevUserOrganizationSchema = z.object({
+  name: z.string().min(1, 'Organization name is required'),
+  domains: z.array(z.string()).optional(),
+});
+
+// Zod schema for DevUser
+const DevUserSchema = z.object({
+  email: z.string().email('Must be a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
+  roles: z.array(z.string()).optional(),
+  organization: DevUserOrganizationSchema.optional(),
+});
+
+// Zod schema for array of DevUsers
+const DevUsersArraySchema = z.array(DevUserSchema);
+
+// TypeScript types inferred from Zod schemas
+export type DevUser = z.infer<typeof DevUserSchema>;
+export type DevUserOrganization = z.infer<typeof DevUserOrganizationSchema>;
 
 export interface DevUserValidationResult {
   isValid: boolean;
@@ -16,75 +28,35 @@ export interface DevUserValidationResult {
 }
 
 /**
- * Validates a single dev user configuration
+ * Validates a single dev user configuration using Zod
  */
 export const validateDevUser = (user: unknown): DevUserValidationResult => {
-  const errors: string[] = [];
-
-  // Type guard to ensure user is an object
-  if (typeof user !== 'object' || user === null) {
-    errors.push('user must be an object');
-    return { isValid: false, errors };
-  }
-
-  const userObj = user as Record<string, unknown>;
-
-  // Check required fields
-  if (!userObj.email || typeof userObj.email !== 'string') {
-    errors.push('email is required and must be a string');
-  } else if (!isValidEmail(userObj.email)) {
-    errors.push('email must be a valid email address');
-  }
-
-  if (!userObj.password || typeof userObj.password !== 'string') {
-    errors.push('password is required and must be a string');
-  } else if (userObj.password.length < 6) {
-    errors.push('password must be at least 6 characters long');
-  }
-
-  // Check optional fields
-  if (userObj.roles !== undefined) {
-    if (!Array.isArray(userObj.roles)) {
-      errors.push('roles must be an array');
-    } else if (
-      userObj.roles.some((role: unknown) => typeof role !== 'string')
-    ) {
-      errors.push('all roles must be strings');
+  try {
+    DevUserSchema.parse(user);
+    return {
+      isValid: true,
+      errors: [],
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors = error.errors.map((err) => {
+        const path = err.path.length > 0 ? `${err.path.join('.')}: ` : '';
+        return `${path}${err.message}`;
+      });
+      return {
+        isValid: false,
+        errors,
+      };
     }
+    return {
+      isValid: false,
+      errors: ['Unknown validation error'],
+    };
   }
-
-  if (userObj.organization !== undefined) {
-    if (
-      typeof userObj.organization !== 'object' ||
-      userObj.organization === null
-    ) {
-      errors.push('organization must be an object');
-    } else {
-      const orgObj = userObj.organization as Record<string, unknown>;
-      if (!orgObj.name || typeof orgObj.name !== 'string') {
-        errors.push('organization.name is required and must be a string');
-      }
-
-      if (orgObj.domains !== undefined) {
-        if (!Array.isArray(orgObj.domains)) {
-          errors.push('organization.domains must be an array');
-        } else if (
-          orgObj.domains.some((domain: unknown) => typeof domain !== 'string')
-        ) {
-          errors.push('all organization.domains must be strings');
-        }
-      }
-    }
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors,
-  };
 };
 
 /**
- * Validates an array of dev users
+ * Validates an array of dev users using Zod
  */
 export const validateDevUsers = (users: unknown[]): DevUser[] => {
   const validUsers: DevUser[] = [];
@@ -93,6 +65,7 @@ export const validateDevUsers = (users: unknown[]): DevUser[] => {
     const validation = validateDevUser(user);
 
     if (validation.isValid) {
+      // We know it's valid because Zod parsed it successfully
       validUsers.push(user as DevUser);
     } else {
       logApp.warn(
@@ -105,25 +78,18 @@ export const validateDevUsers = (users: unknown[]): DevUser[] => {
 };
 
 /**
- * Basic email validation
- */
-const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-/**
- * Parses and validates DEV_USERS environment variable
+ * Parses and validates DEV_USERS environment variable using Zod
  */
 export const parseAndValidateDevUsers = (): DevUser[] | undefined => {
   const devUsersEnv = process.env.DEV_USERS;
-  if (!devUsersEnv) {
+  if (!devUsersEnv || devUsersEnv.trim() === '') {
     return undefined;
   }
 
   try {
     const parsed = JSON.parse(devUsersEnv);
 
+    // First check if it's an array
     if (!Array.isArray(parsed)) {
       logApp.warn('DEV_USERS should be an array, ignoring');
       return undefined;
@@ -133,23 +99,96 @@ export const parseAndValidateDevUsers = (): DevUser[] | undefined => {
       return [];
     }
 
-    const validUsers = validateDevUsers(parsed);
+    // Validate the entire array with Zod
+    try {
+      const validUsers = DevUsersArraySchema.parse(parsed);
+      logApp.info(`Loaded ${validUsers.length} dev users from configuration`);
+      return validUsers;
+    } catch (zodError) {
+      if (zodError instanceof z.ZodError) {
+        // Some users might be invalid, so let's validate them individually
+        const validUsers = validateDevUsers(parsed);
 
-    if (validUsers.length === 0) {
-      logApp.warn('No valid dev users found in DEV_USERS configuration');
+        if (validUsers.length === 0) {
+          logApp.warn('No valid dev users found in DEV_USERS configuration');
+          return undefined;
+        }
+
+        if (validUsers.length < parsed.length) {
+          const invalidCount = parsed.length - validUsers.length;
+          logApp.warn(`${invalidCount} invalid dev users were filtered out`);
+        }
+
+        logApp.info(`Loaded ${validUsers.length} dev users from configuration`);
+        return validUsers;
+      }
+
+      logApp.warn('Failed to validate DEV_USERS structure');
       return undefined;
     }
-
-    if (validUsers.length < parsed.length) {
-      logApp.warn(
-        `${parsed.length - validUsers.length} invalid dev users were filtered out`
-      );
-    }
-
-    logApp.info(`Loaded ${validUsers.length} dev users from configuration`);
-    return validUsers;
   } catch (error) {
-    logApp.warn(`Failed to parse DEV_USERS JSON: ${error.message}`);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    logApp.warn(`Failed to parse DEV_USERS JSON: ${errorMessage}`);
     return undefined;
   }
 };
+
+/**
+ * Type guard to check if a value is a valid DevUser
+ */
+export const isValidDevUser = (value: unknown): value is DevUser => {
+  try {
+    DevUserSchema.parse(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Type guard to check if a value is a valid DevUserOrganization
+ */
+export const isValidDevUserOrganization = (
+  value: unknown
+): value is DevUserOrganization => {
+  try {
+    DevUserOrganizationSchema.parse(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Partial validation - useful for form validation or progressive validation
+ */
+export const validateDevUserPartial = (
+  user: unknown
+): DevUserValidationResult => {
+  try {
+    DevUserSchema.partial().parse(user);
+    return {
+      isValid: true,
+      errors: [],
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors = error.errors.map((err) => {
+        const path = err.path.length > 0 ? `${err.path.join('.')}: ` : '';
+        return `${path}${err.message}`;
+      });
+      return {
+        isValid: false,
+        errors,
+      };
+    }
+    return {
+      isValid: false,
+      errors: ['Unknown validation error'],
+    };
+  }
+};
+
+// Export schemas for potential reuse
+export { DevUserOrganizationSchema, DevUsersArraySchema, DevUserSchema };
