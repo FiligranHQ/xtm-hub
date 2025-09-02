@@ -22,7 +22,6 @@ import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { isEmpty } from '../../utils/utils';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { isAdmin } from '../role-portal/role-portal.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildLoginEvent } from '../telemetry/telemetry.helper';
@@ -528,10 +527,8 @@ export const updateUserAtLogin = async (
     .returning('*');
 
   try {
-    const selectedOrga = await loadOrganizationBy(
-      context,
-      'id',
-      updatedUser.selected_organization_id
+    const selectedOrga = context.user.organizations.find(
+      (org) => org.id === updatedUser.selected_organization_id
     );
     const loginEvent = buildLoginEvent(
       updatedUser.selected_organization_id,

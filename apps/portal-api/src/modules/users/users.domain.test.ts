@@ -1,4 +1,4 @@
-import { describe, expect, vi } from 'vitest';
+import { afterEach, describe, expect, vi } from 'vitest';
 import {
   contextSimpleUserThales,
   DEFAULT_ADMIN_EMAIL,
@@ -59,6 +59,8 @@ describe('Users domain', () => {
       source: TELEMETRY_SOURCE,
       user_id: THALES_SIMPLE_USER_ID,
     });
+  });
+  afterEach(async () => {
     vi.useRealTimers();
   });
 });
