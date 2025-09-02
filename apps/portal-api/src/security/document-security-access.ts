@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 import { dbRaw } from '../../knexfile';
 import { ServiceRestriction } from '../__generated__/resolvers-types';
 import { PortalContext } from '../model/portal-context';
-import { loadServiceDefinition } from '../modules/services/service-instance.domain';
+import { loadServiceDefinitionByServiceInstance } from '../modules/services/service-instance.domain';
 import { loadCapabilities } from '../modules/user_service/user-service-capability/user-service-capability.helper';
 export const setQueryForDocument = <T>(
   context: PortalContext,
@@ -14,16 +14,17 @@ export const setQueryForDocument = <T>(
     context.user.id,
     context.user.selected_organization_id
   ).then((capabilities) => {
-    return loadServiceDefinition(context, context.serviceInstanceId).then(
-      (serviceDef) => {
-        if (
-          !capabilities?.includes(ServiceRestriction.Upload) &&
-          ['custom_dashboards', 'csv_feeds'].includes(serviceDef.identifier)
-        ) {
-          queryContext.where('Document.active', '=', 'true');
-        }
+    return loadServiceDefinitionByServiceInstance(
+      context,
+      context.serviceInstanceId
+    ).then((serviceDef) => {
+      if (
+        !capabilities?.includes(ServiceRestriction.Upload) &&
+        ['custom_dashboards', 'csv_feeds'].includes(serviceDef.identifier)
+      ) {
+        queryContext.where('Document.active', '=', 'true');
       }
-    );
+    });
   });
 
   queryContext

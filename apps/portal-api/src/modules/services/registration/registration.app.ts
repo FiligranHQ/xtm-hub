@@ -7,12 +7,11 @@ import {
   OpenCtiPlatformRegistrationStatus,
   OpenCtiPlatformRegistrationStatusInput,
   OpenCtiPlatformRegistrationStatusResponse,
-  OrganizationCapability,
   PlatformRegistrationStatus,
   RefreshUserPlatformTokenResponse,
   RegisterPlatformInput,
   ServiceConfigurationStatus,
-  UnregisterOpenCtiPlatformInput,
+  UnregisterPlatformInput,
 } from '../../../__generated__/resolvers-types';
 import Organization, {
   OrganizationId,
@@ -31,13 +30,17 @@ import {
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
+import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import {
   PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
 import {
-  mailTemplateMappedByPlatformIdentifier,
+  organizationCapabilityMappedByPlatformIdentifier,
+  platformIdentifierMappedByServiceDefinitionIdentifier,
+  registeredMailTemplateMappedByPlatformIdentifier,
   serviceDefinitionIdentifierMappedByPlatformIdentifier,
+  unregisteredMailTemplateMappedByPlatformIdentifier,
 } from './registration.mapping';
 
 export const registrationApp = {
@@ -138,11 +141,13 @@ export const registrationApp = {
       throw new Error(ErrorCode.InvalidServiceConfiguration);
     }
 
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[identifier];
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
       context,
       {
         organizationId,
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+        requiredCapability,
       }
     );
 
@@ -175,7 +180,8 @@ export const registrationApp = {
 
     const users = await loadOrganizationAdministrators(context, organizationId);
 
-    const mailTemplate = mailTemplateMappedByPlatformIdentifier[identifier];
+    const mailTemplate =
+      registeredMailTemplateMappedByPlatformIdentifier[identifier];
     await Promise.all(
       users.map((user) =>
         sendMail({
@@ -191,9 +197,9 @@ export const registrationApp = {
     return token;
   },
 
-  unregisterOpenCTIPlatform: async (
+  unregisterPlatform: async (
     context: PortalContext,
-    { platformId }: UnregisterOpenCtiPlatformInput
+    { platformId }: UnregisterPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -212,11 +218,26 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
+    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
+      context,
+      subscription.service_instance_id
+    );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const platformIdentifier =
+      platformIdentifierMappedByServiceDefinitionIdentifier[
+        serviceDefinition.identifier
+      ];
+
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
       context,
       {
         organizationId: subscription.organization_id,
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+        requiredCapability,
       }
     );
 
@@ -239,11 +260,14 @@ export const registrationApp = {
       subscription.organization_id
     );
 
+    const template =
+      unregisteredMailTemplateMappedByPlatformIdentifier[platformIdentifier];
+
     await Promise.all(
       users.map((user) =>
         sendMail({
           to: user.email,
-          template: 'opencti_platform_unregistered',
+          template,
           params: {
             adminName: formatName(user.first_name ?? ''),
           },
@@ -306,11 +330,26 @@ export const registrationApp = {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
+    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
+      context,
+      subscription.service_instance_id
+    );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const platformIdentifier =
+      platformIdentifierMappedByServiceDefinitionIdentifier[
+        serviceDefinition.identifier
+      ];
+
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
       context,
       {
         organizationId: subscription.organization_id,
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+        requiredCapability,
       }
     );
 

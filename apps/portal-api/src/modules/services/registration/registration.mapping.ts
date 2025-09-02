@@ -1,4 +1,5 @@
 import {
+  OrganizationCapability,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -8,12 +9,32 @@ export const serviceDefinitionIdentifierMappedByPlatformIdentifier: Record<
   PlatformIdentifier,
   ServiceDefinitionIdentifier
 > = {
-  opencti: ServiceDefinitionIdentifier.OpenctiRegistration,
+  [PlatformIdentifier.Opencti]: ServiceDefinitionIdentifier.OpenctiRegistration,
 };
 
-export const mailTemplateMappedByPlatformIdentifier: Record<
+export const registeredMailTemplateMappedByPlatformIdentifier: Record<
   PlatformIdentifier,
   keyof MailTemplates
 > = {
-  opencti: 'opencti_platform_registered',
+  [PlatformIdentifier.Opencti]: 'opencti_platform_registered',
+};
+
+export const unregisteredMailTemplateMappedByPlatformIdentifier: Record<
+  PlatformIdentifier,
+  keyof MailTemplates
+> = {
+  [PlatformIdentifier.Opencti]: 'opencti_platform_unregistered',
+};
+
+export const platformIdentifierMappedByServiceDefinitionIdentifier: Partial<
+  Record<ServiceDefinitionIdentifier, PlatformIdentifier>
+> = {
+  [ServiceDefinitionIdentifier.OpenctiRegistration]: PlatformIdentifier.Opencti,
+};
+
+export const organizationCapabilityMappedByPlatformIdentifier: Record<
+  PlatformIdentifier,
+  OrganizationCapability
+> = {
+  opencti: OrganizationCapability.ManageOpenctiRegistration,
 };

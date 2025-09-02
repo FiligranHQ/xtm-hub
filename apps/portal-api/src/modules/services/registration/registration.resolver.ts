@@ -118,10 +118,10 @@ const resolvers: Resolvers = {
         });
       }
     },
-    unregisterOpenCTIPlatform: async (_, { input }, context) => {
+    unregisterPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        await registrationApp.unregisterOpenCTIPlatform(
+        await registrationApp.unregisterPlatform(
           {
             ...context,
             trx,
@@ -145,7 +145,7 @@ const resolvers: Resolvers = {
           throw customError(error.message);
         }
 
-        throw UnknownError(ErrorCode.UnregisterOpenCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.UnregisterPlatformUnknownError, {
           detail: error,
         });
       }

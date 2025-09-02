@@ -12,7 +12,7 @@ export enum ErrorCode {
   ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
-  UnregisterOpenCTIPlatformUnknownError = 'UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR',
+  UnregisterPlatformUnknownError = 'UNREGISTER_PLATFORM_UNKNOWN_ERROR',
   UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
   UnknownError = 'UNKNOWN_ERROR',
 }

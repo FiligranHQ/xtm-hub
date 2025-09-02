@@ -9,7 +9,10 @@ import {
   ServiceInstance,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
-import { ServiceInstanceMutator } from '../../model/kanel/public/ServiceInstance';
+import {
+  ServiceInstanceId,
+  ServiceInstanceMutator,
+} from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
@@ -482,7 +485,7 @@ export const grantServiceAccess = async (
       subscription.service_instance_id
     );
 
-    const service_definition = await loadServiceDefinition(
+    const service_definition = await loadServiceDefinitionByServiceInstance(
       context,
       serviceInstance.id
     );
@@ -517,12 +520,15 @@ export const loadLinks = (context, id) => {
     .select('*');
 };
 
-export const loadServiceDefinition = async (context, id) => {
+export const loadServiceDefinitionByServiceInstance = async (
+  context: PortalContext,
+  service_instance_id: ServiceInstanceId
+): Promise<ServiceDefinition> => {
   const serviceDefinition = await db<ServiceDefinition>(
     context,
     'ServiceInstance'
   )
-    .where('ServiceInstance.id', '=', id)
+    .where('ServiceInstance.id', '=', service_instance_id)
     .leftJoin(
       'ServiceDefinition as service_def',
       'service_def.id',

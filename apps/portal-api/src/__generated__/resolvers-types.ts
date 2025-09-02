@@ -393,7 +393,7 @@ export type Mutation = {
   removePendingUserFromOrganization?: Maybe<User>;
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
-  unregisterOpenCTIPlatform: Success;
+  unregisterPlatform: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
   updateOpenAEVScenario: OpenAevScenario;
@@ -634,8 +634,8 @@ export type MutationRemoveUserFromOrganizationArgs = {
 };
 
 
-export type MutationUnregisterOpenCtiPlatformArgs = {
-  input?: InputMaybe<UnregisterOpenCtiPlatformInput>;
+export type MutationUnregisterPlatformArgs = {
+  input?: InputMaybe<UnregisterPlatformInput>;
 };
 
 
@@ -1386,7 +1386,7 @@ export type TrackingSubscription = {
   edit?: Maybe<ActionTracking>;
 };
 
-export type UnregisterOpenCtiPlatformInput = {
+export type UnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
 };
 
@@ -1719,7 +1719,7 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
-  UnregisterOpenCTIPlatformInput: UnregisterOpenCtiPlatformInput;
+  UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
@@ -1826,7 +1826,7 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionModel: SubscriptionModel;
   Success: Success;
   TrackingSubscription: TrackingSubscription;
-  UnregisterOpenCTIPlatformInput: UnregisterOpenCtiPlatformInput;
+  UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
@@ -2109,7 +2109,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
-  unregisterOpenCTIPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterOpenCtiPlatformArgs>>;
+  unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;

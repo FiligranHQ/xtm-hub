@@ -62,7 +62,7 @@ type CanUnregisterResponse {
   organizationId: ID
 }
 
-input UnregisterOpenCTIPlatformInput {
+input UnregisterPlatformInput {
   platformId: String!
 }
 
@@ -101,7 +101,6 @@ type Query {
 
 type Mutation {
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse! @auth
-  unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
-    @auth
+  unregisterPlatform(input: UnregisterPlatformInput): Success! @auth
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth
 }
