@@ -22,7 +22,7 @@ export function getServiceInfo(
         '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
     },
     [ServiceSlug.OPEN_BAS_SCENARIOS]: {
-      link: `/redirect/obas_scenarios?service_instance_id=${serviceInstance.id}&document_id=${documentId}`,
+      link: `/redirect/openaev_scenarios?service_instance_id=${serviceInstance.id}&document_id=${documentId}`,
       description:
         '. Discover more widgets like this in our OpenBAS Scenarios Library, available for download on the XTM Hub.',
     },
