@@ -3,6 +3,7 @@ import {
   CanUnregisterPlatformInput,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
+  OrganizationCapability,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationConnectivityStatusInput,
   PlatformRegistrationStatus,
@@ -25,7 +26,7 @@ import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import {
-  loadOrganizationAdministrators,
+  loadUsersByCapabilitiesInOrganization,
   updateUser,
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
@@ -184,7 +185,14 @@ export const registrationApp = {
       });
     }
 
-    const users = await loadOrganizationAdministrators(context, organizationId);
+    const users = await loadUsersByCapabilitiesInOrganization(
+      context,
+      organizationId,
+      [
+        OrganizationCapability.AdministrateOrganization,
+        OrganizationCapability.ManageOpenctiRegistration,
+      ]
+    );
 
     const mailTemplate =
       registeredMailTemplateMappedByPlatformIdentifier[identifier];
@@ -261,9 +269,13 @@ export const registrationApp = {
       { status: ServiceConfigurationStatus.Inactive }
     );
 
-    const users = await loadOrganizationAdministrators(
+    const users = await loadUsersByCapabilitiesInOrganization(
       context,
-      subscription.organization_id
+      subscription.organization_id,
+      [
+        OrganizationCapability.AdministrateOrganization,
+        OrganizationCapability.ManageOpenctiRegistration,
+      ]
     );
 
     const template =

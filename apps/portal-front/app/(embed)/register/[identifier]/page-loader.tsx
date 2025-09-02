@@ -16,7 +16,7 @@ import { useQueryLoader } from 'react-relay';
 
 export const PageLoader: React.FC = () => {
   const { identifier } = useParams<{ identifier: PlatformIdentifierEnum }>();
-  if (Object.values(PlatformIdentifierEnum).includes(identifier)) {
+  if (!Object.values(PlatformIdentifierEnum).includes(identifier)) {
     return redirect('/');
   }
 

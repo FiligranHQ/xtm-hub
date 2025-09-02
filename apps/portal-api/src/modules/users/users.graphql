@@ -46,10 +46,17 @@ type UserConnection {
   pageInfo: PageInfo!
 }
 
+input UsersWithCapabilitiesInOrganizationInput {
+  organizationId: ID!
+  capabilities: [OrganizationCapability!]!
+}
+
 type Query {
   me: User
   user(id: ID!): User @auth
-  organizationAdministrators(organizationId: ID!): [User!]!
+  usersWithCapabilitiesInOrganization(
+    input: UsersWithCapabilitiesInOrganizationInput!
+  ): [User!]!
   users(
     first: Int!
     after: ID

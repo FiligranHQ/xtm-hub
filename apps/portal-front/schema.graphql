@@ -138,7 +138,7 @@ type Query {
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
   me: User
   user(id: ID!): User
-  organizationAdministrators(organizationId: ID!): [User!]!
+  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
@@ -847,6 +847,11 @@ type UserConnection {
   totalCount: Int!
   edges: [UserEdge!]!
   pageInfo: PageInfo!
+}
+
+input UsersWithCapabilitiesInOrganizationInput {
+  organizationId: ID!
+  capabilities: [OrganizationCapability!]!
 }
 
 input AdminEditUserInput {

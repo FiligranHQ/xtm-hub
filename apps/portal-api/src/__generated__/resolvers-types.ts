@@ -847,7 +847,6 @@ export type Query = {
   openAEVScenarios: OpenAevScenarioConnection;
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   organization?: Maybe<Organization>;
-  organizationAdministrators: Array<User>;
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization: Organization;
@@ -877,6 +876,7 @@ export type Query = {
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
+  usersWithCapabilitiesInOrganization: Array<User>;
 };
 
 
@@ -991,11 +991,6 @@ export type QueryOpenCtiPlatformRegistrationStatusArgs = {
 
 export type QueryOrganizationArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QueryOrganizationAdministratorsArgs = {
-  organizationId: Scalars['ID']['input'];
 };
 
 
@@ -1147,6 +1142,11 @@ export type QueryUsersArgs = {
   orderBy: UserOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryUsersWithCapabilitiesInOrganizationArgs = {
+  input: UsersWithCapabilitiesInOrganizationInput;
 };
 
 export type RefreshUserPlatformTokenResponse = {
@@ -1571,6 +1571,11 @@ export type UserSubscription = {
   merge?: Maybe<MergeEvent>;
 };
 
+export type UsersWithCapabilitiesInOrganizationInput = {
+  capabilities: Array<OrganizationCapability>;
+  organizationId: Scalars['ID']['input'];
+};
+
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
@@ -1767,6 +1772,7 @@ export type ResolversTypes = ResolversObject<{
   UserServiceEdge: ResolverTypeWrapper<UserServiceEdge>;
   UserServiceOrdering: UserServiceOrdering;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
+  UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -1875,6 +1881,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserServiceDeleted: UserServiceDeleted;
   UserServiceEdge: UserServiceEdge;
   UserSubscription: UserSubscription;
+  UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
 }>;
 
 export type AuthDirectiveArgs = {
@@ -2262,7 +2269,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   openAEVScenarios?: Resolver<ResolversTypes['OpenAEVScenarioConnection'], ParentType, ContextType, RequireFields<QueryOpenAevScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
-  organizationAdministrators?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryOrganizationAdministratorsArgs, 'organizationId'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
@@ -2292,6 +2298,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   userServiceOwned?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
 }>;
 
 export type RefreshUserPlatformTokenResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshUserPlatformTokenResponse'] = ResolversParentTypes['RefreshUserPlatformTokenResponse']> = ResolversObject<{

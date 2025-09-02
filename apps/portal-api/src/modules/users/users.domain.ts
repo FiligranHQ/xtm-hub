@@ -245,10 +245,15 @@ export const loadUserBy = async (
   return userQuery;
 };
 
-export const loadOrganizationAdministrators = async (
+export const loadUsersByCapabilitiesInOrganization = async (
   context: PortalContext,
-  organizationId: string
+  organizationId: string,
+  capabilities: OrganizationCapability[]
 ): Promise<User[]> => {
+  if (!capabilities.length) {
+    return [];
+  }
+
   const users: User[] = await db<User>(context, 'User')
     .leftJoin('User_Organization', 'User_Organization.user_id', 'User.id')
     .leftJoin(
@@ -258,15 +263,14 @@ export const loadOrganizationAdministrators = async (
     )
     .where('User_Organization.organization_id', '=', organizationId)
     .andWhere((qb) => {
-      qb.where(
-        'UserOrganization_Capability.name',
-        '=',
-        OrganizationCapability.AdministrateOrganization
-      ).orWhere(
-        'UserOrganization_Capability.name',
-        '=',
-        OrganizationCapability.ManageOpenctiRegistration
-      );
+      qb.where('UserOrganization_Capability.name', '=', capabilities[0]);
+      for (let i = 1; i < capabilities.length; i++) {
+        qb.orWhere(
+          'UserOrganization_Capability.name',
+          '=',
+          OrganizationCapability.ManageOpenctiRegistration
+        );
+      }
     })
     .select('User.*')
     .distinct();

@@ -1,8 +1,9 @@
 import { RegistrationContext } from '@/components/registration/context';
 import { RegistrationLayout } from '@/components/registration/layout';
-import UserListOrganizationAdministratorsQueryGraphql, {
-  userListOrganizationAdministratorsQuery,
-} from '@generated/userListOrganizationAdministratorsQuery.graphql';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import UserWithCapabilitiesInOrganizationQueryGraphql, {
+  userWithCapabilitiesInOrganizationQuery,
+} from '@generated/userWithCapabilitiesInOrganizationQuery.graphql';
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
@@ -18,10 +19,20 @@ export const RegisterStateMissingCapability: React.FC<Props> = ({
 }) => {
   const { capability, translationKey } = useContext(RegistrationContext);
   const t = useTranslations();
-  const { organizationAdministrators } =
-    useLazyLoadQuery<userListOrganizationAdministratorsQuery>(
-      UserListOrganizationAdministratorsQueryGraphql,
-      { organizationId }
+  const capabilities = [OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION];
+  if (capability) {
+    capabilities.push(capability);
+  }
+
+  const { usersWithCapabilitiesInOrganization } =
+    useLazyLoadQuery<userWithCapabilitiesInOrganizationQuery>(
+      UserWithCapabilitiesInOrganizationQueryGraphql,
+      {
+        input: {
+          organizationId,
+          capabilities,
+        },
+      }
     );
 
   return (
@@ -34,7 +45,7 @@ export const RegisterStateMissingCapability: React.FC<Props> = ({
       <p>{t(`Register.${translationKey}.Error.Capability.Description`)}</p>
       <p>{t(`Register.${translationKey}.Error.Capability.AdminListTitle`)}</p>
       <ul className="list-disc ml-l">
-        {organizationAdministrators.map((administrator) => (
+        {usersWithCapabilitiesInOrganization.map((administrator) => (
           <li key={administrator.id}>
             {administrator.first_name} {administrator.last_name} -{' '}
             {administrator.email}
