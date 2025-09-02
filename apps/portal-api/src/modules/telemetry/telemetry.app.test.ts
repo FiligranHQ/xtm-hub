@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
   SERVICE_CSV_FEEDS_ID,
@@ -119,7 +119,9 @@ describe('TelemetryApp', () => {
         platform_id: fakePlatformId,
         target_product: TelemetryTargetProduct.OPEN_CTI,
       });
-      vi.useRealTimers();
     });
+  });
+  afterEach(async () => {
+    vi.useRealTimers();
   });
 });

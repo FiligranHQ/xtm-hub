@@ -1,5 +1,6 @@
 import { OneClickDeployInput } from '../../__generated__/resolvers-types';
 import { DocumentId } from '../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
@@ -37,7 +38,7 @@ export const telemetryApp = {
     );
     const serviceDefinition = await loadServiceDefinition(
       context,
-      extractId<'ServiceInstance'>(input.service_instance_id)
+      extractId<ServiceInstanceId>(input.service_instance_id)
     );
 
     const event = buildOneClickDeployEvent(
