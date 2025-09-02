@@ -202,12 +202,9 @@ export const registrationApp = {
       );
       telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
-      logApp.error(
-        'Unable to send telemetry event for openAEV scenario creation',
-        {
-          error,
-        }
-      );
+      logApp.error('Unable to send telemetry event for registration', {
+        error,
+      });
     }
 
     return token;

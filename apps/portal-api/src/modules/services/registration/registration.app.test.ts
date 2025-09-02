@@ -1,6 +1,14 @@
 import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { dbUnsecure } from '../../../../knexfile';
 import {
   contextAdminOrgaThales,
@@ -130,7 +138,6 @@ describe('Registration app', () => {
         target_product: TelemetryTargetProduct.OPEN_CTI,
         organization_type: 'Professional',
       });
-      vi.useRealTimers();
     });
   });
 
@@ -399,5 +406,9 @@ describe('Registration app', () => {
       expect(anotherToken).toBe(updatedUser.platform_token);
       expect(anotherToken === token).toBeFalsy();
     });
+  });
+
+  afterAll(async () => {
+    vi.useRealTimers();
   });
 });
