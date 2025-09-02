@@ -31,7 +31,6 @@ const resolvers: Resolvers = {
         });
       }
     },
-
     canUnregisterPlatform: async (_, { input }, context) => {
       try {
         const response = await registrationApp.canUnregisterPlatform(
@@ -58,17 +57,15 @@ const resolvers: Resolvers = {
         });
       }
     },
-    openCTIPlatforms: async (_, _z, context) =>
-      registrationApp.loadOpenCTIPlatforms(context),
+    registeredPlatforms: async (_, { input }, context) =>
+      registrationApp.loadRegisteredPlatforms(context, input),
     openCTIPlatformRegistrationStatus: async (_, { input }, context) =>
-      registrationApp.loadOpenCTIPlatformRegistrationStatus(context, input),
-    openCTIPlatformAssociatedOrganization: async (
-      _,
-      { platformId },
-      context
-    ) => {
+      registrationApp.loadPlatformRegistrationStatus(context, input),
+    platformRegistrationConnectivityStatus: async (_, { input }, context) =>
+      registrationApp.loadPlatformRegistrationStatus(context, input),
+    platformAssociatedOrganization: async (_, { platformId }, context) => {
       try {
-        return await registrationApp.loadOpenCTIPlatformAssociatedOrganization(
+        return await registrationApp.loadPlatformAssociatedOrganization(
           context,
           platformId
         );

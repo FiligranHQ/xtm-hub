@@ -3,7 +3,7 @@ enum PlatformContract {
   EE
 }
 
-type OpenCTIPlatform implements Node {
+type RegisteredPlatform implements Node {
   id: ID!
   url: String!
   title: String!
@@ -66,22 +66,35 @@ input UnregisterPlatformInput {
   platformId: String!
 }
 
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
+}
+
 input OpenCTIPlatformRegistrationStatusInput {
   platformId: String!
   token: String!
 }
 
-enum OpenCTIPlatformRegistrationStatus {
-  active
-  inactive
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
 }
 
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: OpenCTIPlatformRegistrationStatus!
+input PlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type PlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
 }
 
 type RefreshUserPlatformTokenResponse {
   token: String!
+}
+
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier!
 }
 
 type Query {
@@ -91,12 +104,17 @@ type Query {
   canUnregisterPlatform(
     input: CanUnregisterPlatformInput!
   ): CanUnregisterResponse! @auth
-  openCTIPlatforms: [OpenCTIPlatform!]! @auth
+  registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
+    @auth
   openCTIPlatformRegistrationStatus(
     input: OpenCTIPlatformRegistrationStatusInput!
   ): OpenCTIPlatformRegistrationStatusResponse!
-  openCTIPlatformAssociatedOrganization(platformId: String!): Organization!
-    @auth
+
+  platformRegistrationConnectivityStatus(
+    input: PlatformRegistrationConnectivityStatusInput!
+  ): PlatformRegistrationConnectivityStatusResponse!
+
+  platformAssociatedOrganization(platformId: String!): Organization! @auth
 }
 
 type Mutation {

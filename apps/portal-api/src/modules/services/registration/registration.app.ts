@@ -3,12 +3,12 @@ import {
   CanUnregisterPlatformInput,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
-  OpenCtiPlatform,
-  OpenCtiPlatformRegistrationStatus,
-  OpenCtiPlatformRegistrationStatusInput,
-  OpenCtiPlatformRegistrationStatusResponse,
+  PlatformRegistrationConnectivityStatus,
+  PlatformRegistrationConnectivityStatusInput,
   PlatformRegistrationStatus,
   RefreshUserPlatformTokenResponse,
+  RegisteredPlatform,
+  RegisteredPlatformsInput,
   RegisterPlatformInput,
   ServiceConfigurationStatus,
   UnregisterPlatformInput,
@@ -44,7 +44,7 @@ import {
 } from './registration.mapping';
 
 export const registrationApp = {
-  loadOpenCTIPlatformAssociatedOrganization: async (
+  loadPlatformAssociatedOrganization: async (
     context: PortalContext,
     platformId: string
   ): Promise<Organization> => {
@@ -76,12 +76,17 @@ export const registrationApp = {
     return loadOrganizationBy(context, 'id', subscription.organization_id);
   },
 
-  loadOpenCTIPlatforms: async (
-    context: PortalContext
-  ): Promise<OpenCtiPlatform[]> => {
-    const platforms = await registrationDomain.loadOpenCTIPlatforms(context);
+  loadRegisteredPlatforms: async (
+    context: PortalContext,
+    input: RegisteredPlatformsInput
+  ): Promise<RegisteredPlatform[]> => {
+    const platforms = await registrationDomain.loadRegisteredPlatforms(
+      context,
+      input.identifier
+    );
+
     return platforms.map((platform) => ({
-      __typename: 'OpenCTIPlatform',
+      __typename: 'RegisteredPlatform',
       id: platform.config.platform_id,
       platform_id: platform.config.platform_id,
       title: platform.config.platform_title,
@@ -90,10 +95,10 @@ export const registrationApp = {
     }));
   },
 
-  loadOpenCTIPlatformRegistrationStatus: async (
+  loadPlatformRegistrationStatus: async (
     context: PortalContext,
-    input: OpenCtiPlatformRegistrationStatusInput
-  ): Promise<OpenCtiPlatformRegistrationStatusResponse> => {
+    input: PlatformRegistrationConnectivityStatusInput
+  ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
         context,
@@ -101,8 +106,8 @@ export const registrationApp = {
       );
     return {
       status: activeServiceConfiguration
-        ? OpenCtiPlatformRegistrationStatus.Active
-        : OpenCtiPlatformRegistrationStatus.Inactive,
+        ? PlatformRegistrationConnectivityStatus.Active
+        : PlatformRegistrationConnectivityStatus.Inactive,
     };
   },
 

@@ -7,7 +7,7 @@ interface Props {
   confirm: () => void;
 }
 
-export const UnregisterOpenCTIPlatformNotRegistered: React.FC<Props> = ({
+export const UnregisterPlatformNotRegistered: React.FC<Props> = ({
   confirm,
 }) => {
   const { translationKey } = useContext(RegistrationContext);

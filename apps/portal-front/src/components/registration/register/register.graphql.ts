@@ -58,24 +58,24 @@ export const RegisterPlatform = graphql`
   }
 `;
 
-export const UnregisterOpenCTIFragment = graphql`
-  fragment registerUnregisterOpenCTIFragment on Success {
+export const UnregisterFragment = graphql`
+  fragment registerUnregisterFragment on Success {
     success
   }
 `;
 
-export const UnregisterOpenCTIPlatform = graphql`
-  mutation registerUnregisterOpenCTIPlatformMutation(
-    $input: UnregisterOpenCTIPlatformInput!
+export const UnregisterPlatform = graphql`
+  mutation registerUnregisterPlatformMutation(
+    $input: UnregisterPlatformInput!
   ) {
-    unregisterOpenCTIPlatform(input: $input) {
-      ...registerUnregisterOpenCTIFragment
+    unregisterPlatform(input: $input) {
+      ...registerUnregisterFragment
     }
   }
 `;
 
-export const registerOpenCTIPlatformFragment = graphql`
-  fragment registerOpenCTIPlatformFragment on OpenCTIPlatform {
+export const registerRegisteredPlatformFragment = graphql`
+  fragment registerRegisteredPlatformFragment on RegisteredPlatform {
     id
     platform_id
     title
@@ -84,17 +84,17 @@ export const registerOpenCTIPlatformFragment = graphql`
   }
 `;
 
-export const registerOpenCTIPlatformListFragment = graphql`
-  fragment registerOpenCTIPlatformListFragment on Query
-  @refetchable(queryName: "RegisterOpenCTIPlatformListQuery") {
-    openCTIPlatforms {
-      ...registerOpenCTIPlatformFragment @relay(mask: false, plural: true)
+export const registerRegisteredPlatformListFragment = graphql`
+  fragment registerRegisteredPlatformListFragment on Query
+  @refetchable(queryName: "RegisterRegisteredPlatformListQuery") {
+    registeredPlatforms(input: $input) {
+      ...registerRegisteredPlatformFragment @relay(mask: false, plural: true)
     }
   }
 `;
 
-export const RegisterOpenCTIPlatformsQuery = graphql`
-  query registerOpenCTIPlatformsQuery {
-    ...registerOpenCTIPlatformListFragment
+export const RegisterRegisteredPlatformsQuery = graphql`
+  query registerRegisteredPlatformsQuery($input: RegisteredPlatformsInput!) {
+    ...registerRegisteredPlatformListFragment
   }
 `;

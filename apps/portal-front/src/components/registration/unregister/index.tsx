@@ -3,16 +3,16 @@ import { RegistrationContext } from '@/components/registration/context';
 import { RegistrationLayout } from '@/components/registration/layout';
 import {
   CanUnregisterPlatformFragment,
-  UnregisterOpenCTIPlatform,
+  UnregisterPlatform,
 } from '@/components/registration/register/register.graphql';
 import { UnregisterOpenCTIConfirm } from '@/components/registration/unregister/confirm';
 import { UnregisterOpenCTIMissingCapability } from '@/components/registration/unregister/missing-capability';
-import { UnregisterOpenCTIPlatformNotRegistered } from '@/components/registration/unregister/platform-not-registered';
+import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/platform-not-registered';
 import { registerCanUnregisterPlatformFragment$key } from '@generated/registerCanUnregisterPlatformFragment.graphql';
 import RegisterCanUnregisterPlatformQueryGraphql, {
   registerCanUnregisterPlatformQuery,
 } from '@generated/registerCanUnregisterPlatformQuery.graphql';
-import { registerUnregisterOpenCTIPlatformMutation } from '@generated/registerUnregisterOpenCTIPlatformMutation.graphql';
+import { registerUnregisterPlatformMutation } from '@generated/registerUnregisterPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useState } from 'react';
@@ -46,9 +46,7 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
     );
 
   const [unregisterPlatform] =
-    useMutation<registerUnregisterOpenCTIPlatformMutation>(
-      UnregisterOpenCTIPlatform
-    );
+    useMutation<registerUnregisterPlatformMutation>(UnregisterPlatform);
 
   const [status, setStatus] = useState<UnregistrationStatus>('idle');
   const cancel = () => {
@@ -96,7 +94,7 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
   }
 
   if (!isPlatformRegistered) {
-    return <UnregisterOpenCTIPlatformNotRegistered confirm={confirm} />;
+    return <UnregisterPlatformNotRegistered confirm={confirm} />;
   }
 
   if (!isAllowed) {

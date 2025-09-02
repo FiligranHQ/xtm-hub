@@ -118,9 +118,10 @@ type Query {
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
-  openCTIPlatforms: [OpenCTIPlatform!]!
+  registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
-  openCTIPlatformAssociatedOrganization(platformId: String!): Organization!
+  platformRegistrationConnectivityStatus(input: PlatformRegistrationConnectivityStatusInput!): PlatformRegistrationConnectivityStatusResponse!
+  platformAssociatedOrganization(platformId: String!): Organization!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
@@ -419,7 +420,7 @@ enum PlatformContract {
   EE
 }
 
-type OpenCTIPlatform implements Node {
+type RegisteredPlatform implements Node {
   id: ID!
   url: String!
   title: String!
@@ -482,22 +483,35 @@ input UnregisterPlatformInput {
   platformId: String!
 }
 
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
+}
+
 input OpenCTIPlatformRegistrationStatusInput {
   platformId: String!
   token: String!
 }
 
-enum OpenCTIPlatformRegistrationStatus {
-  active
-  inactive
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
 }
 
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: OpenCTIPlatformRegistrationStatus!
+input PlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type PlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
 }
 
 type RefreshUserPlatformTokenResponse {
   token: String!
+}
+
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier!
 }
 
 enum ServiceInstanceOrdering {

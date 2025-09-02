@@ -4,7 +4,7 @@ import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { isExternalService } from '@/utils/services';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
-import { registerOpenCTIPlatformsQuery } from '@generated/registerOpenCTIPlatformsQuery.graphql';
+import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -20,7 +20,7 @@ import OwnedServices from './home/owned-services';
 interface ServiceProps {
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>;
   queryRefServiceList: PreloadedQuery<publicServiceQuery>;
-  queryRefOpenCTIPlatforms: PreloadedQuery<registerOpenCTIPlatformsQuery>;
+  queryRefOpenCTIPlatforms: PreloadedQuery<registerRegisteredPlatformsQuery>;
   onUpdate: () => void;
 }
 

@@ -9,11 +9,12 @@ import {
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
 import {
-  OpenCtiPlatformRegistrationStatus,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
+  PlatformRegistrationConnectivityStatus,
   ServiceConfigurationStatus,
+  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import Subscription from '../../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../../model/user';
@@ -22,6 +23,7 @@ import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
+import * as serviceInstanceDomain from '../service-instance.domain';
 import { registrationApp } from './registration.app';
 
 describe('Registration app', () => {
@@ -103,7 +105,7 @@ describe('Registration app', () => {
     });
   });
 
-  describe('unregisterOpenCTIPlatform', () => {
+  describe('unregisterPlatform', () => {
     let platformId: string;
     let platform: PlatformInput;
 
@@ -124,12 +126,9 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const call = registrationApp.unregisterOpenCTIPlatform(
-        contextAdminOrgaThales,
-        {
-          platformId,
-        }
-      );
+      const call = registrationApp.unregisterPlatform(contextAdminOrgaThales, {
+        platformId,
+      });
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
@@ -141,12 +140,9 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const call = registrationApp.unregisterOpenCTIPlatform(
-        contextSimpleUserThales,
-        {
-          platformId,
-        }
-      );
+      const call = registrationApp.unregisterPlatform(contextSimpleUserThales, {
+        platformId,
+      });
 
       await expect(call).rejects.toThrow(
         ErrorCode.MissingCapabilityOnOrganization
@@ -160,7 +156,7 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationApp.unregisterOpenCTIPlatform(contextAdminUser, {
+      await registrationApp.unregisterPlatform(contextAdminUser, {
         platformId,
       });
 
@@ -195,6 +191,7 @@ describe('Registration app', () => {
     let isUserAllowedOnOrganizationSpy: MockInstance;
     let loadConfigurationByPlatformSpy: MockInstance;
     let loadSubscriptionBySpy: MockInstance;
+    let loadServiceDefinitionByServiceInstanceSpy: MockInstance;
 
     beforeEach(() => {
       isUserAllowedOnOrganizationSpy = vi.spyOn(
@@ -209,6 +206,14 @@ describe('Registration app', () => {
         subscriptionDomain,
         'loadSubscriptionBy'
       );
+      loadServiceDefinitionByServiceInstanceSpy = vi.spyOn(
+        serviceInstanceDomain,
+        'loadServiceDefinitionByServiceInstance'
+      );
+
+      loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue({
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+      });
     });
 
     afterEach(() => {
@@ -284,13 +289,14 @@ describe('Registration app', () => {
 
   describe('loadOpenCTIPlatformRegistrationStatus', () => {
     it('should return inactive when platform is not registered', async () => {
-      const result =
-        await registrationApp.loadOpenCTIPlatformRegistrationStatus(
-          contextAdminUser,
-          { platformId: uuidv4(), token: uuidv4() }
-        );
+      const result = await registrationApp.loadPlatformRegistrationStatus(
+        contextAdminUser,
+        { platformId: uuidv4(), token: uuidv4() }
+      );
 
-      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Inactive);
+      expect(result.status).toBe(
+        PlatformRegistrationConnectivityStatus.Inactive
+      );
     });
 
     it('should return active when platform is registered', async () => {
@@ -306,13 +312,12 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const result =
-        await registrationApp.loadOpenCTIPlatformRegistrationStatus(
-          contextAdminUser,
-          { platformId, token }
-        );
+      const result = await registrationApp.loadPlatformRegistrationStatus(
+        contextAdminUser,
+        { platformId, token }
+      );
 
-      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Active);
+      expect(result.status).toBe(PlatformRegistrationConnectivityStatus.Active);
     });
 
     it('should return inactive when platform is unregistered', async () => {
@@ -328,17 +333,18 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationApp.unregisterOpenCTIPlatform(contextAdminUser, {
+      await registrationApp.unregisterPlatform(contextAdminUser, {
         platformId,
       });
 
-      const result =
-        await registrationApp.loadOpenCTIPlatformRegistrationStatus(
-          contextAdminUser,
-          { platformId: platformId, token }
-        );
+      const result = await registrationApp.loadPlatformRegistrationStatus(
+        contextAdminUser,
+        { platformId: platformId, token }
+      );
 
-      expect(result.status).toBe(OpenCtiPlatformRegistrationStatus.Inactive);
+      expect(result.status).toBe(
+        PlatformRegistrationConnectivityStatus.Inactive
+      );
     });
   });
 

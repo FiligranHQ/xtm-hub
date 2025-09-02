@@ -9,10 +9,7 @@ import {
   ServiceInstance,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
-import {
-  ServiceInstanceId,
-  ServiceInstanceMutator,
-} from '../../model/kanel/public/ServiceInstance';
+import { ServiceInstanceMutator } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
@@ -522,7 +519,7 @@ export const loadLinks = (context, id) => {
 
 export const loadServiceDefinitionByServiceInstance = async (
   context: PortalContext,
-  service_instance_id: ServiceInstanceId
+  service_instance_id: string
 ): Promise<ServiceDefinition> => {
   const serviceDefinition = await db<ServiceDefinition>(
     context,

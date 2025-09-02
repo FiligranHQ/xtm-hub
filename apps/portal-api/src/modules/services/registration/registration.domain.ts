@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, QueryOpts } from '../../../../knexfile';
 import {
   PlatformContract,
+  PlatformIdentifier,
   ServiceConfigurationStatus,
-  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance, {
@@ -16,6 +16,7 @@ import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
+import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 
 export type PlatformConfiguration = {
   registerer_id: string;
@@ -94,12 +95,14 @@ export const registrationDomain = {
     );
   },
 
-  loadOpenCTIPlatforms: async (
+  loadRegisteredPlatforms: async (
     context: PortalContext,
+    platformIdentifier: PlatformIdentifier,
     opts: QueryOpts = {}
   ): Promise<{ config: PlatformConfiguration }[]> => {
     const userSelectedOrganization = context.user.selected_organization_id;
-
+    const serviceDefinitionIdentifier =
+      serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
     const query = await db<ServiceInstance>(context, 'ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
@@ -119,11 +122,7 @@ export const registrationDomain = {
         '=',
         'ServiceInstance.id'
       )
-      .where(
-        'ServiceDefinition.identifier',
-        '=',
-        ServiceDefinitionIdentifier.OpenctiRegistration
-      )
+      .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereNot((qb) => {
