@@ -61,7 +61,7 @@ describe('openaev scenarios app', () => {
       organization_name: 'Filigran',
       source: TELEMETRY_SOURCE,
       user_id: ADMIN_UUID,
-      service: TelemetryEventService.OPENAEV_SCENARIO_LIBRARY,
+      service: TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY,
       resource_id: documentId,
       resource_title: 'myOpenAEV scenario',
       status: 'draft',

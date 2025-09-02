@@ -1,8 +1,8 @@
 export const TELEMETRY_SOURCE = 'xtm-hub' as const;
 
 export enum TelemetryEventService {
-  CUSTOM_DASHBOARD_LIBRARY = 'custom-dashboard-library',
-  OPENAEV_SCENARIO_LIBRARY = 'openaev-scenarios-library',
+  CUSTOM_DASHBOARDS_LIBRARY = 'custom-dashboards-library',
+  OPENAEV_SCENARIOS_LIBRARY = 'openaev-scenarios-library',
   INTEGRATION_FEEDS_LIBRARY = 'integration-feeds-library',
 }
 

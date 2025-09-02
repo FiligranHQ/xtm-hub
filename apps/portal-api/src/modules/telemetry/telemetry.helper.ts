@@ -49,7 +49,7 @@ const ServiceIdentifierToEventService = new Map<
 >([
   [
     ServiceDefinitionIdentifier.OpenaevScenarios,
-    TelemetryEventService.OPENAEV_SCENARIO_LIBRARY,
+    TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY,
   ],
   [
     ServiceDefinitionIdentifier.CsvFeeds,
@@ -57,7 +57,7 @@ const ServiceIdentifierToEventService = new Map<
   ],
   [
     ServiceDefinitionIdentifier.CustomDashboards,
-    TelemetryEventService.CUSTOM_DASHBOARD_LIBRARY,
+    TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
   ],
 ]);
 

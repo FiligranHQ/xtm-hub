@@ -61,7 +61,7 @@ describe('custom dashboards app', () => {
       organization_name: 'Filigran',
       source: TELEMETRY_SOURCE,
       user_id: ADMIN_UUID,
-      service: TelemetryEventService.CUSTOM_DASHBOARD_LIBRARY,
+      service: TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
       resource_id: documentId,
       resource_title: 'myCustomDashboard',
       status: 'published',
