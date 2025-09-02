@@ -180,6 +180,7 @@ export const registrationApp = {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,
+        identifier,
       });
     }
 

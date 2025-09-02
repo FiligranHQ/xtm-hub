@@ -34,16 +34,19 @@ export const registrationDomain = {
       serviceDefinitionId,
       organizationId,
       configuration,
+      identifier,
     }: {
       serviceDefinitionId: string;
       organizationId: OrganizationId;
       configuration: PlatformConfiguration;
+      identifier: PlatformIdentifier;
     }
   ) => {
     const serviceInstanceId =
-      await serviceInstanceDomain.createOpenCTIServiceInstance(
+      await serviceInstanceDomain.createPlatformServiceInstance(
         context,
-        serviceDefinitionId
+        serviceDefinitionId,
+        identifier
       );
 
     await createSubscription(context, {

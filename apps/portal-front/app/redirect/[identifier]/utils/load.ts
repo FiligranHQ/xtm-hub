@@ -48,7 +48,7 @@ export const loadBaseUrlFront = async () => {
   return settingsResponse.data.settings.base_url_front;
 };
 
-interface OpenCtiPlatformAssociatedOrganizationResponse {
+interface PlatformAssociatedOrganizationResponse {
   data: platformAssociatedOrganizationQuery$data;
 }
 
@@ -65,7 +65,7 @@ export const loadPlatformOrganizationId = async (
       platformAssociatedOrganizationQuery
     >(PlatformAssociatedOrganizationQueryGraphql, {
       platformId,
-    })) as OpenCtiPlatformAssociatedOrganizationResponse;
+    })) as PlatformAssociatedOrganizationResponse;
 
     return associatedOrganization.data.platformAssociatedOrganization.id;
   } catch (_) {}

@@ -12,7 +12,7 @@ interface Props {
   organizationId: string;
 }
 
-export const UnregisterOpenCTIMissingCapability: React.FC<Props> = ({
+export const UnregisterMissingCapability: React.FC<Props> = ({
   cancel,
   organizationId,
 }) => {

@@ -5,8 +5,8 @@ import {
   CanUnregisterPlatformFragment,
   UnregisterPlatform,
 } from '@/components/registration/register/register.graphql';
-import { UnregisterOpenCTIConfirm } from '@/components/registration/unregister/confirm';
-import { UnregisterOpenCTIMissingCapability } from '@/components/registration/unregister/missing-capability';
+import { UnregisterConfirm } from '@/components/registration/unregister/confirm';
+import { UnregisterMissingCapability } from '@/components/registration/unregister/missing-capability';
 import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/platform-not-registered';
 import { registerCanUnregisterPlatformFragment$key } from '@generated/registerCanUnregisterPlatformFragment.graphql';
 import RegisterCanUnregisterPlatformQueryGraphql, {
@@ -109,7 +109,7 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
     }
 
     return organizationId ? (
-      <UnregisterOpenCTIMissingCapability
+      <UnregisterMissingCapability
         organizationId={organizationId}
         cancel={cancel}
       />
@@ -119,7 +119,7 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
   }
 
   return organizationId ? (
-    <UnregisterOpenCTIConfirm
+    <UnregisterConfirm
       cancel={cancel}
       confirm={confirm}
       organizationId={organizationId}

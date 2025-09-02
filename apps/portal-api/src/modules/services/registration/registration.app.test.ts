@@ -287,7 +287,7 @@ describe('Registration app', () => {
     });
   });
 
-  describe('loadOpenCTIPlatformRegistrationStatus', () => {
+  describe('loadPlatformRegistrationStatus', () => {
     it('should return inactive when platform is not registered', async () => {
       const result = await registrationApp.loadPlatformRegistrationStatus(
         contextAdminUser,

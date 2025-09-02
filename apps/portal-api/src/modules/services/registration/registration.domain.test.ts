@@ -5,7 +5,10 @@ import {
   contextAdminUser,
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
-import { PlatformContract } from '../../../__generated__/resolvers-types';
+import {
+  PlatformContract,
+  PlatformIdentifier,
+} from '../../../__generated__/resolvers-types';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import Subscription from '../../../model/kanel/public/Subscription';
@@ -52,6 +55,7 @@ describe('Registration domain', () => {
           platform_contract: platformContract,
           token,
         },
+        identifier: PlatformIdentifier.Opencti,
       });
 
       const serviceInstance = await dbUnsecure<ServiceInstance>(
@@ -107,6 +111,7 @@ describe('Registration domain', () => {
           platform_contract: platformContract,
           token,
         },
+        identifier: PlatformIdentifier.Opencti,
       });
 
       const existingServiceConfiguration =

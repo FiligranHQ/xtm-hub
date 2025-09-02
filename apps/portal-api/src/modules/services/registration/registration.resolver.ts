@@ -110,7 +110,7 @@ const resolvers: Resolvers = {
           throw ForbiddenAccess(error.message);
         }
 
-        throw UnknownError(ErrorCode.RegisterOpenCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.RegisterPlatformUnknownError, {
           detail: error,
         });
       }

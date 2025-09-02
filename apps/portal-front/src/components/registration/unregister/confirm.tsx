@@ -10,7 +10,7 @@ interface Props {
   organizationId: string;
 }
 
-export const UnregisterOpenCTIConfirm: React.FC<Props> = ({
+export const UnregisterConfirm: React.FC<Props> = ({
   confirm,
   cancel,
   organizationId,
