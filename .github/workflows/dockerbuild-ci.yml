@@ -51,24 +51,24 @@ jobs:
       - name: Check what changed
         id: check-changes
         run: |
-          AFFECTED=$(npx nx show projects --affected --base=${{ steps.setSHAs.outputs.base }} --head=${{ steps.setSHAs.outputs.head }})
+          AFFECTED=$(yarn dlx nx show projects --affected --base=${{ steps.setSHAs.outputs.base }} --head=${{ steps.setSHAs.outputs.head }})
           
           echo "Affected projects:"
           echo "$AFFECTED"
           
-          if echo "$AFFECTED" | grep -q "portal-api"; then
+          if grep -q "portal-api" <<< "$AFFECTED"; then
             echo "api=true" >> $GITHUB_OUTPUT
           else
             echo "api=false" >> $GITHUB_OUTPUT
           fi
           
-          if echo "$AFFECTED" | grep -q "portal-front"; then
+          if grep -q "portal-front" <<< "$AFFECTED"; then
             echo "front=true" >> $GITHUB_OUTPUT
           else
             echo "front=false" >> $GITHUB_OUTPUT
           fi
           
-          if echo "$AFFECTED" | grep -q "portal-e2e-tests"; then
+          if grep -q "portal-e2e-tests" <<< "$AFFECTED"; then
             echo "e2e=true" >> $GITHUB_OUTPUT
           else
             echo "e2e=false" >> $GITHUB_OUTPUT
@@ -96,7 +96,7 @@ jobs:
         run: yarn generate:ts
       - name: Build affected projects
         run: |
-          npx nx --no-cloud affected:build \
+          yarn dlx nx --no-cloud affected:build \
             --base=${{ needs.determine-changes.outputs.base-sha }} \
             --head=${{ needs.determine-changes.outputs.head-sha }}
       - name: Upload build artifacts
