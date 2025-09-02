@@ -68,10 +68,10 @@ describe('csv feeds app', () => {
       resource_title: 'myCsvFeed',
       status: 'draft',
     });
-    vi.useRealTimers();
   });
 
   afterAll(async () => {
     await deleteDocuments();
+    vi.useRealTimers();
   });
 });

@@ -14,7 +14,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import * as DocumentHelper from '../document/document.helper';
 import { deleteDocuments } from '../document/document.helper';
-import { OpenAEVScenarioApp } from './openaev-scenarios.app';
+import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev-scenarios.domain';
 
 describe('openaev scenarios app', () => {
@@ -36,7 +36,7 @@ describe('openaev scenarios app', () => {
       minioFileMock,
     ]);
 
-    await OpenAEVScenarioApp.createOpenAEVScenario(
+    await OpenAEVScenariosApp.createOpenAEVScenario(
       {
         ...contextAdminUser,
         serviceInstanceId: SERVICE_OPENAEV_SCENARIOS_ID as ServiceInstanceId,
@@ -66,10 +66,10 @@ describe('openaev scenarios app', () => {
       resource_title: 'myOpenAEV scenario',
       status: 'draft',
     });
-    vi.useRealTimers();
   });
 
   afterAll(async () => {
     await deleteDocuments();
+    vi.useRealTimers();
   });
 });

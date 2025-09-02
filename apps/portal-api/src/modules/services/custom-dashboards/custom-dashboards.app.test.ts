@@ -66,10 +66,10 @@ describe('custom dashboards app', () => {
       resource_title: 'myCustomDashboard',
       status: 'published',
     });
-    vi.useRealTimers();
   });
 
   afterAll(async () => {
     await deleteDocuments();
+    vi.useRealTimers();
   });
 });

@@ -21,7 +21,7 @@ import {
   updateDocumentWithChildren,
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
-import { OpenAEVScenarioApp } from './openaev-scenarios.app';
+import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
   OPENAEV_SCENARIO_METADATA,
@@ -85,14 +85,14 @@ const resolvers: Resolvers = {
   Mutation: {
     createOpenAEVScenario: async (_, { input, document }, context) => {
       try {
-        return await OpenAEVScenarioApp.createOpenAEVScenario(
+        return await OpenAEVScenariosApp.createOpenAEVScenario(
           context,
           input,
           document
         );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError('OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR', {
+          throw AlreadyExistsError('OBAS_SCENARIO_UNIQUE_SLUG_ERROR', {
             detail: error,
           });
         }

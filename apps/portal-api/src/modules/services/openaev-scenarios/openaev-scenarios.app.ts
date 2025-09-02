@@ -11,7 +11,7 @@ import {
   OpenAEVScenario,
 } from './openaev-scenarios.domain';
 
-export const OpenAEVScenarioApp = {
+export const OpenAEVScenariosApp = {
   createOpenAEVScenario: async (
     context: PortalContext,
     input: Partial<OpenAEVScenario>,
