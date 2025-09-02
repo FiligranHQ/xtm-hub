@@ -395,10 +395,10 @@ describe('Documents loading', () => {
       resource_id: documentId,
       resource_title: 'csvfilename',
     });
-    vi.useRealTimers();
   });
 
   afterAll(async () => {
     await deleteDocuments();
+    vi.useRealTimers();
   });
 });

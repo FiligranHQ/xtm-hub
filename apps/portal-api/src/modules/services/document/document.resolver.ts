@@ -108,16 +108,11 @@ const resolvers: Resolvers = {
     },
     incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
-        const [result] = await incrementShareNumber(
+        const [document] = await incrementShareNumber(
           extractId<DocumentId>(documentId)
         );
 
         try {
-          const document = await loadDocumentById(
-            context,
-            extractId<DocumentId>(documentId)
-          );
-
           const serviceDefinition = await loadServiceDefinition(
             context,
             document.service_instance_id
@@ -146,7 +141,7 @@ const resolvers: Resolvers = {
           });
         }
 
-        return result;
+        return document;
       } catch (error) {
         throw UnknownError('INCREMENT_SHARE_NUMBER', { detail: error });
       }
