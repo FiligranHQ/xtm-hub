@@ -63,10 +63,6 @@ describe('Subscription mutation resolver', () => {
         service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
       });
-      vi.useRealTimers();
-      await deleteSubscriptionUnsecure({
-        service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
-      });
     });
     it('should not send a telemetry event for vault service', async () => {
       const telemetrySpy = vi.spyOn(telemetryApp, 'sendTelemetryEvent');
@@ -86,8 +82,12 @@ describe('Subscription mutation resolver', () => {
     });
 
     afterEach(async () => {
+      vi.useRealTimers();
       await deleteSubscriptionUnsecure({
         service_instance_id: SERVICE_MALWARE_ID as ServiceInstanceId,
+      });
+      await deleteSubscriptionUnsecure({
+        service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
       });
     });
   });
