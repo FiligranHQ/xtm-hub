@@ -28,7 +28,6 @@ import {
 } from './telemetry.types';
 
 function buildBaseEvent(
-  event_type: TelemetryEventType,
   organization_id: OrganizationId,
   organization_name: string,
   user_id: UserId,
@@ -36,7 +35,6 @@ function buildBaseEvent(
 ) {
   const eventTimestamp = timestamp || new Date();
   return {
-    event_type: event_type,
     organization_id: organization_id,
     organization_name: organization_name,
     user_id: user_id,
@@ -87,13 +85,16 @@ export function buildLoginEvent(
   user_id: UserId,
   timestamp?: Date
 ): LoginEvent {
-  return buildBaseEvent(
-    TelemetryEventType.LOGIN,
+  const baseEvent = buildBaseEvent(
     organization_id,
     organization_name,
     user_id,
     timestamp
-  ) as LoginEvent;
+  );
+  return {
+    event_type: TelemetryEventType.LOGIN,
+    ...baseEvent,
+  };
 }
 
 export function buildSubscribeEvent(
@@ -104,7 +105,6 @@ export function buildSubscribeEvent(
   timestamp?: Date
 ): SubscribeEvent {
   const baseEvent = buildBaseEvent(
-    TelemetryEventType.SUBSCRIBE,
     organization_id,
     organization_name,
     user_id,
@@ -112,10 +112,11 @@ export function buildSubscribeEvent(
   );
 
   return {
+    event_type: TelemetryEventType.SUBSCRIBE,
     ...baseEvent,
     service: ServiceIdentifierToEventService.get(service),
     service_type: ServiceIdentifierToEventServiceType.get(service),
-  } as SubscribeEvent;
+  };
 }
 
 export function buildDownloadEvent(
@@ -128,7 +129,6 @@ export function buildDownloadEvent(
   timestamp?: Date
 ): DownloadEvent {
   const baseEvent = buildBaseEvent(
-    TelemetryEventType.DOWNLOAD,
     organization_id,
     organization_name,
     user_id,
@@ -136,12 +136,13 @@ export function buildDownloadEvent(
   );
 
   return {
+    event_type: TelemetryEventType.DOWNLOAD,
     ...baseEvent,
     service: ServiceIdentifierToEventService.get(service),
     service_type: ServiceIdentifierToEventServiceType.get(service),
     resource_id: resource_id,
     resource_title: resource_title,
-  } as DownloadEvent;
+  };
 }
 
 export function buildShareEvent(
@@ -154,7 +155,6 @@ export function buildShareEvent(
   timestamp?: Date
 ): ShareEvent {
   const baseEvent = buildBaseEvent(
-    TelemetryEventType.SHARE,
     organization_id,
     organization_name,
     user_id,
@@ -162,12 +162,13 @@ export function buildShareEvent(
   );
 
   return {
+    event_type: TelemetryEventType.SHARE,
     ...baseEvent,
     service: ServiceIdentifierToEventService.get(service),
     service_type: ServiceIdentifierToEventServiceType.get(service),
     resource_id: resource_id,
     resource_title: resource_title,
-  } as ShareEvent;
+  };
 }
 
 export async function buildCreateEvent(
@@ -180,7 +181,6 @@ export async function buildCreateEvent(
   const selectedOrga = await loadOrganizationBy(context, 'id', organization_id);
 
   const baseEvent = buildBaseEvent(
-    TelemetryEventType.CREATE,
     organization_id,
     selectedOrga.name,
     user_id,
@@ -193,6 +193,7 @@ export async function buildCreateEvent(
   );
 
   return {
+    event_type: TelemetryEventType.CREATE,
     ...baseEvent,
     service: ServiceIdentifierToEventService.get(serviceDefinition.identifier),
     service_type: ServiceIdentifierToEventServiceType.get(
@@ -201,7 +202,7 @@ export async function buildCreateEvent(
     resource_id: document.id,
     resource_title: document.name,
     status: document.active ? 'published' : 'draft',
-  } as CreateEvent;
+  };
 }
 
 export function buildRegisterEvent(
@@ -215,7 +216,6 @@ export function buildRegisterEvent(
   timestamp?: Date
 ): RegisterPlatformEvent {
   const baseEvent = buildBaseEvent(
-    TelemetryEventType.REGISTER,
     organization_id,
     organization_name,
     user_id,
@@ -223,6 +223,7 @@ export function buildRegisterEvent(
   );
 
   return {
+    event_type: TelemetryEventType.REGISTER,
     ...baseEvent,
     organization_type: organization_personal_space
       ? 'Personal'
@@ -230,7 +231,7 @@ export function buildRegisterEvent(
     target_product,
     platform_id,
     platform_contract,
-  } as RegisterPlatformEvent;
+  };
 }
 
 export function buildOneClickDeployEvent(
@@ -245,7 +246,6 @@ export function buildOneClickDeployEvent(
   timestamp?: Date
 ): OneClickDeployEvent {
   const baseEvent = buildBaseEvent(
-    TelemetryEventType.ONE_CLICK_DEPLOY,
     organization_id,
     organization_name,
     user_id,
@@ -253,6 +253,7 @@ export function buildOneClickDeployEvent(
   );
 
   return {
+    event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
     ...baseEvent,
     target_product: TargetProductToTelemetryTargetProdutct.get(target_product),
     service: ServiceIdentifierToEventService.get(service),
@@ -260,5 +261,5 @@ export function buildOneClickDeployEvent(
     resource_id,
     resource_title,
     platform_id,
-  } as OneClickDeployEvent;
+  };
 }
