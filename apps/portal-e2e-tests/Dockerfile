@@ -17,8 +17,8 @@ COPY ./apps/portal-e2e-tests/playwright.config.ts ./apps/portal-e2e-tests/
 COPY ./apps/portal-e2e-tests/tests ./apps/portal-e2e-tests/tests
 
 # Copy migrations and seeds (these are copied by the CI pipeline before the Docker build)
-COPY ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
-COPY ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+COPY ./apps/portal-e2e-tests/migrations ./apps/portal-e2e-tests/migrations
+COPY ./apps/portal-e2e-tests/seeds ./apps/portal-e2e-tests/seeds
 
 WORKDIR /app/apps/portal-e2e-tests
 
