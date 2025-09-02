@@ -1,8 +1,15 @@
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { NextRequest, NextResponse } from 'next/server';
 import { loadBaseUrlFront, loadMeUser } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
 
-export const redirectToOpenCTIRegistration = async (request: NextRequest) => {
+export type RegistrationAction = 'register' | 'unregister';
+
+export const redirectToRegistration = async (
+  request: NextRequest,
+  action: RegistrationAction,
+  identifier: PlatformIdentifierEnum
+) => {
   const baseUrlFront = await loadBaseUrlFront();
   const redirectionUrl = getLoginRedirectionURL(baseUrlFront, request);
   try {
@@ -17,7 +24,7 @@ export const redirectToOpenCTIRegistration = async (request: NextRequest) => {
     }
 
     const registrationUrl = new URL(
-      `/register/opencti?${params[1]}`,
+      `/${action}/${identifier}?${params[1]}`,
       baseUrlFront
     );
     return NextResponse.redirect(registrationUrl);

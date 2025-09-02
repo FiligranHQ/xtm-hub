@@ -1,3 +1,4 @@
+import { RegistrationContext } from '@/components/registration/context';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
@@ -10,7 +11,7 @@ import {
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import React from 'react';
+import React, { useContext } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
 
@@ -29,6 +30,7 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
   confirm,
   queryRef,
 }) => {
+  const { translationKey } = useContext(RegistrationContext);
   const userOrganizationsPreloadedQuery =
     usePreloadedQuery<organizationListUserOrganizationsQuery>(
       OrganizationListUserOrganizationsQueryGraphql,
@@ -41,8 +43,8 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
     <div className="flex items-center justify-center">
       <div className="flex flex-col justify-between gap-m">
         <div className="space-y-m">
-          <h1>{t('Register.OpenCTI.OrganizationForm.Title')}</h1>
-          <p>{t('Register.OpenCTI.OrganizationForm.Description')}</p>
+          <h1>{t(`Register.${translationKey}.OrganizationForm.Title`)}</h1>
+          <p>{t(`Register.${translationKey}.OrganizationForm.Description`)}</p>
         </div>
         <AutoForm
           formSchema={selectOrganizationFormSchema}

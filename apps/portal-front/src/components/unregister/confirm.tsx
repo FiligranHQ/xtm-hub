@@ -1,7 +1,8 @@
 import { getOrganization } from '@/components/organization/organization.service';
-import { RegisterStateLayout } from '@/components/register/state/layout';
+import { RegistrationContext } from '@/components/registration/context';
+import { RegistrationLayout } from '@/components/registration/layout';
 import { useTranslations } from 'next-intl';
-import React from 'react';
+import React, { useContext } from 'react';
 
 interface Props {
   confirm: () => void;
@@ -14,19 +15,20 @@ export const UnregisterOpenCTIConfirm: React.FC<Props> = ({
   cancel,
   organizationId,
 }) => {
+  const { translationKey } = useContext(RegistrationContext);
   const t = useTranslations();
   const organization = getOrganization(organizationId);
 
   return (
-    <RegisterStateLayout
+    <RegistrationLayout
       confirm={confirm}
       cancel={cancel}>
       <h1>
-        {t('Unregister.OpenCTI.Confirm.Title', {
+        {t(`Unregister.${translationKey}.Confirm.Title`, {
           name: organization?.name ?? '',
         })}
       </h1>
-      <p>{t('Unregister.OpenCTI.Confirm.Description')}</p>
-    </RegisterStateLayout>
+      <p>{t(`Unregister.${translationKey}.Confirm.Description`)}</p>
+    </RegistrationLayout>
   );
 };

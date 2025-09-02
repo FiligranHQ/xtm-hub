@@ -1,10 +1,10 @@
-import { RegisterStateLayout } from '@/components/register/state/layout';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { RegistrationContext } from '@/components/registration/context';
+import { RegistrationLayout } from '@/components/registration/layout';
 import UserListOrganizationAdministratorsQueryGraphql, {
   userListOrganizationAdministratorsQuery,
 } from '@generated/userListOrganizationAdministratorsQuery.graphql';
 import { useTranslations } from 'next-intl';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
 
 interface Props {
@@ -16,6 +16,7 @@ export const UnregisterOpenCTIMissingCapability: React.FC<Props> = ({
   cancel,
   organizationId,
 }) => {
+  const { capability, translationKey } = useContext(RegistrationContext);
   const t = useTranslations();
   const { organizationAdministrators } =
     useLazyLoadQuery<userListOrganizationAdministratorsQuery>(
@@ -24,18 +25,14 @@ export const UnregisterOpenCTIMissingCapability: React.FC<Props> = ({
     );
 
   return (
-    <RegisterStateLayout cancel={cancel}>
+    <RegistrationLayout cancel={cancel}>
       <h1>
-        {t('Unregister.OpenCTI.Error.Capability.Title', {
-          capability:
-            OrganizationCapabilityEnum.MANAGE_OPENCTI_REGISTRATION.replaceAll(
-              '_',
-              ' '
-            ),
+        {t(`Unregister.${translationKey}.Error.Capability.Title`, {
+          capability: capability?.replaceAll('_', ' ') ?? '',
         })}
       </h1>
-      <p>{t('Unregister.OpenCTI.Error.Capability.Description')}</p>
-      <p>{t('Unregister.OpenCTI.Error.Capability.AdminListTitle')}</p>
+      <p>{t(`Unregister.${translationKey}.Error.Capability.Description`)}</p>
+      <p>{t(`Unregister.${translationKey}.Error.Capability.AdminListTitle`)}</p>
       <ul className="list-disc ml-l">
         {organizationAdministrators.map((administrator) => (
           <li key={administrator.id}>
@@ -44,6 +41,6 @@ export const UnregisterOpenCTIMissingCapability: React.FC<Props> = ({
           </li>
         ))}
       </ul>
-    </RegisterStateLayout>
+    </RegistrationLayout>
   );
 };

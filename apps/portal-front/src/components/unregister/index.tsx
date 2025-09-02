@@ -3,10 +3,11 @@ import {
   CanUnregisterPlatformFragment,
   UnregisterOpenCTIPlatform,
 } from '@/components/register/register.graphql';
-import { RegisterStateLayout } from '@/components/register/state/layout';
-import { UnregisterOpenCTIConfirm } from '@/components/unregister/opencti/confirm';
-import { UnregisterOpenCTIMissingCapability } from '@/components/unregister/opencti/missing-capability';
-import { UnregisterOpenCTIPlatformNotRegistered } from '@/components/unregister/opencti/platform-not-registered';
+import { RegistrationContext } from '@/components/registration/context';
+import { RegistrationLayout } from '@/components/registration/layout';
+import { UnregisterOpenCTIConfirm } from '@/components/unregister/confirm';
+import { UnregisterOpenCTIMissingCapability } from '@/components/unregister/missing-capability';
+import { UnregisterOpenCTIPlatformNotRegistered } from '@/components/unregister/platform-not-registered';
 import { registerCanUnregisterPlatformFragment$key } from '@generated/registerCanUnregisterPlatformFragment.graphql';
 import RegisterCanUnregisterPlatformQueryGraphql, {
   registerCanUnregisterPlatformQuery,
@@ -14,7 +15,7 @@ import RegisterCanUnregisterPlatformQueryGraphql, {
 import { registerUnregisterOpenCTIPlatformMutation } from '@generated/registerUnregisterOpenCTIPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   PreloadedQuery,
   useFragment,
@@ -29,10 +30,8 @@ interface Props {
 
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
 
-export const UnregisterOpenCTI: React.FC<Props> = ({
-  queryRef,
-  platformId,
-}) => {
+export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
+  const { translationKey } = useContext(RegistrationContext);
   const t = useTranslations();
   const canUnregisterPreloadedQuery =
     usePreloadedQuery<registerCanUnregisterPlatformQuery>(
@@ -80,19 +79,19 @@ export const UnregisterOpenCTI: React.FC<Props> = ({
 
   if (status === 'succeeded') {
     return (
-      <RegisterStateLayout>
-        <h1>{t('Unregister.OpenCTI.Succeeded.Title')}</h1>
-        <p>{t('Unregister.OpenCTI.Succeeded.Description')}</p>
-      </RegisterStateLayout>
+      <RegistrationLayout>
+        <h1>{t(`Unregister.${translationKey}.Succeeded.Title`)}</h1>
+        <p>{t(`Unregister.${translationKey}.Succeeded.Description`)}</p>
+      </RegistrationLayout>
     );
   }
 
   if (status === 'failed') {
     return (
-      <RegisterStateLayout>
-        <h1>{t('Unregister.OpenCTI.Failed.Title')}</h1>
-        <p>{t('Unregister.OpenCTI.Failed.Description')}</p>
-      </RegisterStateLayout>
+      <RegistrationLayout>
+        <h1>{t(`Unregister.${translationKey}.Failed.Title`)}</h1>
+        <p>{t(`Unregister.${translationKey}.Failed.Description`)}</p>
+      </RegistrationLayout>
     );
   }
 
@@ -103,9 +102,11 @@ export const UnregisterOpenCTI: React.FC<Props> = ({
   if (!isAllowed) {
     if (!isInOrganization) {
       return (
-        <RegisterStateLayout cancel={cancel}>
-          <h1>{t('Unregister.OpenCTI.Error.NotInOrganization.Title')}</h1>
-        </RegisterStateLayout>
+        <RegistrationLayout cancel={cancel}>
+          <h1>
+            {t(`Unregister.${translationKey}.Error.NotInOrganization.Title`)}
+          </h1>
+        </RegistrationLayout>
       );
     }
 

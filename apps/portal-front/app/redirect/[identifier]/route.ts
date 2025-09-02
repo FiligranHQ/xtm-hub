@@ -1,7 +1,7 @@
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { NextRequest } from 'next/server';
-import { redirectToOpenCTIRegistration } from './register-opencti';
+import { redirectToRegistration } from './registration';
 import { redirectToResource } from './resource';
-import { redirectToOpenCTIUnregistration } from './unregister-opencti';
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{
@@ -15,11 +15,19 @@ export async function GET(
 ) {
   const awaitedParams = await params;
   if (awaitedParams.identifier === 'register-opencti') {
-    return redirectToOpenCTIRegistration(request);
+    return redirectToRegistration(
+      request,
+      'register',
+      PlatformIdentifierEnum.OPENCTI
+    );
   }
 
   if (awaitedParams.identifier === 'unregister-opencti') {
-    return redirectToOpenCTIUnregistration(request);
+    return redirectToRegistration(
+      request,
+      'unregister',
+      PlatformIdentifierEnum.OPENCTI
+    );
   }
 
   return redirectToResource(awaitedParams, request);

@@ -1,8 +1,9 @@
 import Loader from '@/components/loader';
 import { RegisterNeverRegistered } from '@/components/register/never-registered';
 import { RegisterPlatform } from '@/components/register/register.graphql';
-import { RegisterStateLayout } from '@/components/register/state/layout';
 import { RegisterStateMissingCapability } from '@/components/register/state/missing-capability';
+import { RegistrationContext } from '@/components/registration/context';
+import { RegistrationLayout } from '@/components/registration/layout';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
 import registerFragmentGraphql, {
   registerFragment$key,
@@ -19,7 +20,7 @@ import {
 } from '@generated/registerPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   PreloadedQuery,
   useFragment,
@@ -43,8 +44,10 @@ export type RegistrationRequestStatus =
   | 'failed'
   | 'missed-capability';
 
-export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
+export const Register: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
+  const { translationKey, identifier } = useContext(RegistrationContext);
+
   const [chosenOrganizationId, setChosenOrganizationId] = useState<string>();
 
   const isPlatformRegisteredPreloadedQuery =
@@ -111,10 +114,14 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
   };
 
   const register = (organizationId: string) => {
+    if (!identifier) {
+      return;
+    }
+
     setChosenOrganizationId(organizationId);
     registerPlatform({
       variables: {
-        input: { organizationId, platform, identifier: 'opencti' },
+        input: { organizationId, platform, identifier },
       },
       onCompleted: (response) => {
         setRegisterFragmentRef(response.registerPlatform);
@@ -148,19 +155,19 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
 
   if (registrationRequestStatus === 'succeeded') {
     return (
-      <RegisterStateLayout>
-        <h1>{t('Register.OpenCTI.Succeeded.Title')}</h1>
-        <p>{t('Register.OpenCTI.Succeeded.Description')}</p>
-      </RegisterStateLayout>
+      <RegistrationLayout>
+        <h1>{t(`Register.${translationKey}.Succeeded.Title`)}</h1>
+        <p>{t(`Register.${translationKey}.Succeeded.Description`)}</p>
+      </RegistrationLayout>
     );
   }
 
   if (registrationRequestStatus === 'failed') {
     return (
-      <RegisterStateLayout cancel={cancel}>
-        <h1>{t('Register.OpenCTI.Failed.Title')}</h1>
-        <p>{t('Register.OpenCTI.Failed.Description')}</p>
-      </RegisterStateLayout>
+      <RegistrationLayout cancel={cancel}>
+        <h1>{t(`Register.${translationKey}.Failed.Title`)}</h1>
+        <p>{t(`Register.${translationKey}.Failed.Description`)}</p>
+      </RegistrationLayout>
     );
   }
 
