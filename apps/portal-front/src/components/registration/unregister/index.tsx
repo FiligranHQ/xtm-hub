@@ -1,13 +1,13 @@
 import Loader from '@/components/loader';
+import { RegistrationContext } from '@/components/registration/context';
+import { RegistrationLayout } from '@/components/registration/layout';
 import {
   CanUnregisterPlatformFragment,
   UnregisterOpenCTIPlatform,
-} from '@/components/register/register.graphql';
-import { RegistrationContext } from '@/components/registration/context';
-import { RegistrationLayout } from '@/components/registration/layout';
-import { UnregisterOpenCTIConfirm } from '@/components/unregister/confirm';
-import { UnregisterOpenCTIMissingCapability } from '@/components/unregister/missing-capability';
-import { UnregisterOpenCTIPlatformNotRegistered } from '@/components/unregister/platform-not-registered';
+} from '@/components/registration/register/register.graphql';
+import { UnregisterOpenCTIConfirm } from '@/components/registration/unregister/confirm';
+import { UnregisterOpenCTIMissingCapability } from '@/components/registration/unregister/missing-capability';
+import { UnregisterOpenCTIPlatformNotRegistered } from '@/components/registration/unregister/platform-not-registered';
 import { registerCanUnregisterPlatformFragment$key } from '@generated/registerCanUnregisterPlatformFragment.graphql';
 import RegisterCanUnregisterPlatformQueryGraphql, {
   registerCanUnregisterPlatformQuery,

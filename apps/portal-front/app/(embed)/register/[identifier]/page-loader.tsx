@@ -1,8 +1,8 @@
 'use client';
 
 import Loader from '@/components/loader';
-import { Register } from '@/components/register';
 import { RegistrationContextProvider } from '@/components/registration/context';
+import { Register } from '@/components/registration/register';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';

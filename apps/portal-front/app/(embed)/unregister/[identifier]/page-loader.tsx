@@ -2,7 +2,7 @@
 
 import Loader from '@/components/loader';
 import { RegistrationContextProvider } from '@/components/registration/context';
-import { Unregister } from '@/components/unregister';
+import { Unregister } from '@/components/registration/unregister';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';

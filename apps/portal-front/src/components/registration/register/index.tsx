@@ -1,9 +1,9 @@
 import Loader from '@/components/loader';
-import { RegisterNeverRegistered } from '@/components/register/never-registered';
-import { RegisterPlatform } from '@/components/register/register.graphql';
-import { RegisterStateMissingCapability } from '@/components/register/state/missing-capability';
 import { RegistrationContext } from '@/components/registration/context';
 import { RegistrationLayout } from '@/components/registration/layout';
+import { RegisterStateMissingCapability } from '@/components/registration/register/missing-capability';
+import { RegisterNeverRegistered } from '@/components/registration/register/never-registered';
+import { RegisterPlatform } from '@/components/registration/register/register.graphql';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
 import registerFragmentGraphql, {
   registerFragment$key,
