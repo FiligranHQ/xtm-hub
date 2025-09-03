@@ -23,6 +23,7 @@ import {
   ADMIN_UUID,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
+  ROLE_USER,
 } from '../portal.const';
 import { logApp } from '../utils/app-logger.util';
 import { DevUser } from '../utils/config-validation.util';
@@ -107,12 +108,20 @@ export const ensureCapabilityExists = async (capability, trx) => {
   }
 };
 
-export const ensureUserRoleExist = async (user_id, role_portal_id) => {
+export const ensureUserRoleExist = async (user_id, role_portal_id, trx?) => {
   const userRole = await dbUnsecure('User_RolePortal')
     .where({ user_id, role_portal_id })
     .first();
   if (!userRole) {
-    await dbUnsecure('User_RolePortal').insert({ user_id, role_portal_id });
+    const query = dbUnsecure('User_RolePortal').insert({
+      user_id,
+      role_portal_id,
+    });
+    if (trx) {
+      await query.transacting(trx);
+    } else {
+      await query;
+    }
   }
 };
 
@@ -213,46 +222,58 @@ export const ensureUserOrganizationExist = async (
 
 export const ensurePersonalSpaceExist = async (
   user_id: UserId,
-  mail: string
+  mail: string,
+  trx?
 ) => {
   const orgId = user_id as unknown as OrganizationId;
 
-  await ensureOrganizationExists(orgId, mail);
-  const userOrg = await ensureUserOrganizationExists(user_id, orgId);
-  await ensureCapabilitiesExist(userOrg.id, [
-    OrganizationCapability.AdministrateOrganization,
-  ]);
+  await ensureOrganizationExists(orgId, mail, trx);
+  const userOrg = await ensureUserOrganizationExists(user_id, orgId, trx);
+  await ensureCapabilitiesExist(
+    userOrg.id,
+    [OrganizationCapability.AdministrateOrganization],
+    trx
+  );
 };
 
 const ensureOrganizationExists = async (
   orgId: OrganizationId,
-  mail: string
+  mail: string,
+  trx?
 ) => {
   const personalSpace = await dbUnsecure<Organization>('Organization')
     .where({ id: orgId })
     .first();
 
   if (!personalSpace) {
-    await dbUnsecure('Organization').insert({
+    const query = dbUnsecure('Organization').insert({
       id: orgId,
       name: mail,
       personal_space: true,
     });
+    if (trx) {
+      await query.transacting(trx);
+    } else {
+      await query;
+    }
   }
 };
 
 const ensureUserOrganizationExists = async (
   user_id: UserId,
-  orgId: OrganizationId
+  orgId: OrganizationId,
+  trx?
 ) => {
   const userOrg = await dbUnsecure<UserOrganization>('User_Organization')
     .where({ user_id, organization_id: orgId })
     .first();
 
   if (!userOrg) {
-    const [insertedId] = await dbUnsecure<UserOrganization>('User_Organization')
+    const query = dbUnsecure<UserOrganization>('User_Organization')
       .insert({ user_id, organization_id: orgId })
       .returning('id');
+
+    const [insertedId] = trx ? await query.transacting(trx) : await query;
     return { id: insertedId };
   }
   return userOrg;
@@ -260,7 +281,8 @@ const ensureUserOrganizationExists = async (
 
 const ensureCapabilitiesExist = async (
   userOrgId: UserOrganizationId,
-  capabilities: string[]
+  capabilities: string[],
+  trx?
 ) => {
   for (const capability of capabilities) {
     const existingCapability = await dbUnsecure<UserOrganizationCapability>(
@@ -270,9 +292,15 @@ const ensureCapabilitiesExist = async (
       .first();
 
     if (!existingCapability) {
-      await dbUnsecure<UserOrganizationCapability>(
+      const query = dbUnsecure<UserOrganizationCapability>(
         'UserOrganization_Capability'
       ).insert({ user_organization_id: userOrgId, name: capability });
+
+      if (trx) {
+        await query.transacting(trx);
+      } else {
+        await query;
+      }
     }
   }
 };
@@ -396,23 +424,27 @@ export const ensureDevUserExists = async (
     await ensureUserOrganizationExist(userId, PLATFORM_ORGANIZATION_UUID, trx);
 
     // Handle roles
+    const roleMapping: { [key: string]: string } = {
+      ADMIN: ROLE_ADMIN.id,
+      USER: ROLE_USER.id,
+      ADMIN_ORGA: '40cfe630-c272-42f9-8fcf-f219e2f4278c', // ROLE_ADMIN_ORGA.id
+    };
+
     const roles = userConfig.roles || ['USER'];
     for (const roleName of roles) {
-      let roleId: string;
-
-      if (roleName === 'ADMIN') {
-        roleId = ROLE_ADMIN.id;
-      } else {
-        // For other roles, we'll use a simple approach for now
-        // In a real implementation, you might want to create a mapping or lookup
-        continue; // Skip unknown roles for now
+      const roleId = roleMapping[roleName];
+      if (!roleId) {
+        logApp.warn(
+          `Role '${roleName}' is not recognized and will be skipped for user ${userConfig.email}`
+        );
+        continue;
       }
 
-      await ensureUserRoleExist(userId, roleId);
+      await ensureUserRoleExist(userId, roleId, trx);
     }
 
     // Always create personal space
-    await ensurePersonalSpaceExist(userId, userConfig.email);
+    await ensurePersonalSpaceExist(userId, userConfig.email, trx);
 
     await trx.commit();
   } catch (error) {
