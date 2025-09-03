@@ -126,7 +126,7 @@ describe('Service Capability domain', () => {
       });
 
       expect(capabilities).toHaveLength(0);
-      expect(capabilities).toEqual([]);
+      expect(capabilities).toEqual(['E']);
     });
 
     it('should handle multiple criteria', async () => {
