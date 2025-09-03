@@ -19,7 +19,6 @@ COPY ./apps/portal-e2e-tests/tests ./apps/portal-e2e-tests/tests
 RUN mkdir -p ./apps/portal-e2e-tests/migrations ./apps/portal-e2e-tests/seeds
 
 # Copy migrations and seeds if they exist (using wildcard trick)
-# Le * à la fin permet d'ignorer si le fichier n'existe pas
 COPY ./apps/portal-api/src/migrations* ./apps/portal-e2e-tests/migrations/
 COPY ./apps/portal-api/tests/seeds* ./apps/portal-e2e-tests/seeds/
 

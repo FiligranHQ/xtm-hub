@@ -48,7 +48,7 @@ test.describe('Document Management', () => {
       await documentPage.deleteDocument(TEST_FILE.name);
       await expect(
         page.getByRole('cell', { name: TEST_FILE.name })
-      ).toBeVisible();
+      ).not.toBeVisible();
     });
   });
 });

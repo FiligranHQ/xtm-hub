@@ -41,12 +41,12 @@ jobs:
         uses: nrwl/nx-set-shas@v4
         with:
           main-branch-name: 'development'
-      - run: corepack enable && corepack prepare yarn@3.8.7 #Needed ?
-      - uses: actions/setup-node@v4 # Needed ?
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
         with:
           node-version: 23
           cache: 'yarn'
-      - run: yarn install --immutable #Needed ?
+      - run: yarn install --immutable
       - name: Check what changed
         id: check-changes
         run: |
@@ -341,7 +341,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            ${{ contains(github.ref, 'refs/tags/') && 'latest' }} # Add `latest` only for tags (production)
+            ${{ contains(github.ref, 'refs/tags/') && 'latest' }}
       - name: Determine version
         id: version
         run: |
