@@ -138,12 +138,8 @@ export const parseAndValidateDevUsers = (): DevUser[] | undefined => {
  * Type guard to check if a value is a valid DevUser
  */
 export const isValidDevUser = (value: unknown): value is DevUser => {
-  try {
-    DevUserSchema.parse(value);
-    return true;
-  } catch {
-    return false;
-  }
+    const { success } = DevUserSchema.safeParse(value);
+    return success
 };
 
 /**
