@@ -1,5 +1,4 @@
 FROM mcr.microsoft.com/playwright:v1.54.2-noble
-
 WORKDIR /app
 
 # Copy monorepo configuration files
@@ -16,10 +15,13 @@ RUN corepack enable && \
 COPY ./apps/portal-e2e-tests/playwright.config.ts ./apps/portal-e2e-tests/
 COPY ./apps/portal-e2e-tests/tests ./apps/portal-e2e-tests/tests
 
-# Copy migrations and seeds (these are copied by the CI pipeline before the Docker build)
-COPY ./apps/portal-e2e-tests/migrations ./apps/portal-e2e-tests/migrations
-COPY ./apps/portal-e2e-tests/seeds ./apps/portal-e2e-tests/seeds
+# Create directories first
+RUN mkdir -p ./apps/portal-e2e-tests/migrations ./apps/portal-e2e-tests/seeds
+
+# Copy migrations and seeds if they exist (using wildcard trick)
+# Le * à la fin permet d'ignorer si le fichier n'existe pas
+COPY ./apps/portal-api/src/migrations* ./apps/portal-e2e-tests/migrations/
+COPY ./apps/portal-api/tests/seeds* ./apps/portal-e2e-tests/seeds/
 
 WORKDIR /app/apps/portal-e2e-tests
-
 CMD ["yarn", "test:e2e"]

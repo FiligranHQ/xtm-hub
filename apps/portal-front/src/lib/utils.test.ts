@@ -11,7 +11,7 @@ describe('isEmpty', () => {
     expect(isEmpty(nestedObject)).toBe(false);
   });
   it('should return true when value is an empty string', () => {
-    expect(isEmpty('EE')).toBe(true);
+    expect(isEmpty('')).toBe(true);
   });
   it('should return true when value is an empty array', () => {
     expect(isEmpty([])).toBe(true);
