@@ -28,6 +28,9 @@ export class ElasticSearchService {
       password: portalConfig.elasticsearch.password,
     };
 
+    config.tls = {
+      rejectUnauthorized: portalConfig.elasticsearch.tls.reject_unauthorized,
+    };
     this.elasticsearchClient = new Client(config);
   }
 

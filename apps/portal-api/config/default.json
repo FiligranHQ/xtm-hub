@@ -87,7 +87,10 @@
     "host": "localhost",
     "port": 9204,
     "username": null,
-    "password": null
+    "password": null,
+    "tls": {
+      "reject_unauthorized": true
+    }
   },
   "hubspot_webhook_url": "changeMe"
 }

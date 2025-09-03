@@ -38,7 +38,10 @@
     "host": "ELASTIC_HOST",
     "port": "ELASTIC_PORT",
     "username": "ELASTIC_USER",
-    "password": "ELASTIC_PASSWORD"
+    "password": "ELASTIC_PASSWORD",
+    "tls": {
+      "reject_unauthorized": "ELASTIC__TLS__REJECT_UNAUTHORIZED"
+    }
   },
   "base_url_front": "BASE_URL_FRONT",
   "hubspot_webhook_url": "HUBSPOT_WEBHOOK_URL"
