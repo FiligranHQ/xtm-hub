@@ -273,8 +273,8 @@ const ensureUserOrganizationExists = async (
       .insert({ user_id, organization_id: orgId })
       .returning('id');
 
-    const [insertedId] = trx ? await query.transacting(trx) : await query;
-    return { id: insertedId };
+    const [insertedRecord] = trx ? await query.transacting(trx) : await query;
+    return { id: insertedRecord.id };
   }
   return userOrg;
 };
