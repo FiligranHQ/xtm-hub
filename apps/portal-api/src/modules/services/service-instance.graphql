@@ -82,6 +82,12 @@ type Mutation {
     isLogo: Boolean
   ): ServiceInstance
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+  updatePlatformServiceMetadata(
+    serviceInstanceId: ID!
+    document: Upload
+    title: String
+  ): ServiceInstance
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_OPENCTI_REGISTRATION])
 }
 
 type Query {

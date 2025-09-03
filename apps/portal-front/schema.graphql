@@ -48,6 +48,7 @@ type Mutation {
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
+  updatePlatformServiceMetadata(serviceInstanceId: ID!, document: Upload, title: String): ServiceInstance
   addLabel(input: AddLabelInput!): Label!
   editLabel(id: ID!, input: EditLabelInput!): Label!
   deleteLabel(id: ID!): Label!
