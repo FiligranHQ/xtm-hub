@@ -397,6 +397,7 @@ export type Mutation = {
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
   updateOpenAEVScenario: OpenAevScenario;
+  updatePlatformServiceMetadata?: Maybe<ServiceInstance>;
 };
 
 
@@ -666,6 +667,13 @@ export type MutationUpdateOpenAevScenarioArgs = {
   input: UpdateOpenAevScenarioInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   updateDocument: Scalars['Boolean']['input'];
+};
+
+
+export type MutationUpdatePlatformServiceMetadataArgs = {
+  document?: InputMaybe<Scalars['Upload']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId: Scalars['ID']['input'];
 };
 
 export type Node = {
@@ -2107,6 +2115,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
+  updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'serviceInstanceId'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
