@@ -120,7 +120,6 @@ type Query {
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
-  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
   platformRegistrationConnectivityStatus(input: PlatformRegistrationConnectivityStatusInput!): PlatformRegistrationConnectivityStatusResponse!
   platformAssociatedOrganization(platformId: String!): Organization!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
@@ -488,15 +487,6 @@ input UnregisterPlatformInput {
 enum PlatformRegistrationConnectivityStatus {
   active
   inactive
-}
-
-input OpenCTIPlatformRegistrationStatusInput {
-  platformId: String!
-  token: String!
-}
-
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
 }
 
 input PlatformRegistrationConnectivityStatusInput {

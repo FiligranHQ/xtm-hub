@@ -59,8 +59,6 @@ const resolvers: Resolvers = {
     },
     registeredPlatforms: async (_, { input }, context) =>
       registrationApp.loadRegisteredPlatforms(context, input),
-    openCTIPlatformRegistrationStatus: async (_, { input }, context) =>
-      registrationApp.loadPlatformRegistrationStatus(context, input),
     platformRegistrationConnectivityStatus: async (_, { input }, context) =>
       registrationApp.loadPlatformRegistrationStatus(context, input),
     platformAssociatedOrganization: async (_, { platformId }, context) => {

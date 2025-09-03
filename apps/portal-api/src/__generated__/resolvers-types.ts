@@ -721,16 +721,6 @@ export type OpenAevScenarioEdge = {
   node: OpenAevScenario;
 };
 
-export type OpenCtiPlatformRegistrationStatusInput = {
-  platformId: Scalars['String']['input'];
-  token: Scalars['String']['input'];
-};
-
-export type OpenCtiPlatformRegistrationStatusResponse = {
-  __typename?: 'OpenCTIPlatformRegistrationStatusResponse';
-  status: PlatformRegistrationConnectivityStatus;
-};
-
 export enum OrderingMode {
   Asc = 'asc',
   Desc = 'desc'
@@ -856,7 +846,6 @@ export type Query = {
   node?: Maybe<Node>;
   openAEVScenario?: Maybe<OpenAevScenario>;
   openAEVScenarios: OpenAevScenarioConnection;
-  openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   organization?: Maybe<Organization>;
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
@@ -992,11 +981,6 @@ export type QueryOpenAevScenariosArgs = {
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryOpenCtiPlatformRegistrationStatusArgs = {
-  input: OpenCtiPlatformRegistrationStatusInput;
 };
 
 
@@ -1727,8 +1711,6 @@ export type ResolversTypes = ResolversObject<{
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
   OpenAEVScenarioConnection: ResolverTypeWrapper<OpenAevScenarioConnection>;
   OpenAEVScenarioEdge: ResolverTypeWrapper<OpenAevScenarioEdge>;
-  OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
-  OpenCTIPlatformRegistrationStatusResponse: ResolverTypeWrapper<OpenCtiPlatformRegistrationStatusResponse>;
   OrderingMode: OrderingMode;
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationCapabilities: ResolverTypeWrapper<OrganizationCapabilities>;
@@ -1856,8 +1838,6 @@ export type ResolversParentTypes = ResolversObject<{
   OpenAEVScenario: OpenAevScenario;
   OpenAEVScenarioConnection: OpenAevScenarioConnection;
   OpenAEVScenarioEdge: OpenAevScenarioEdge;
-  OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
-  OpenCTIPlatformRegistrationStatusResponse: OpenCtiPlatformRegistrationStatusResponse;
   Organization: Organization;
   OrganizationCapabilities: OrganizationCapabilities;
   OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
@@ -2233,11 +2213,6 @@ export type OpenAevScenarioEdgeResolvers<ContextType = PortalContext, ParentType
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenCTIPlatformRegistrationStatusResponse'] = ResolversParentTypes['OpenCTIPlatformRegistrationStatusResponse']> = ResolversObject<{
-  status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type OrganizationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = ResolversObject<{
   capabilityUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['Capability']>>>, ParentType, ContextType>;
   domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
@@ -2303,7 +2278,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   openAEVScenario?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QueryOpenAevScenarioArgs>>;
   openAEVScenarios?: Resolver<ResolversTypes['OpenAEVScenarioConnection'], ParentType, ContextType, RequireFields<QueryOpenAevScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2649,7 +2623,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
   OpenAEVScenarioConnection?: OpenAevScenarioConnectionResolvers<ContextType>;
   OpenAEVScenarioEdge?: OpenAevScenarioEdgeResolvers<ContextType>;
-  OpenCTIPlatformRegistrationStatusResponse?: OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;

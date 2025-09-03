@@ -72,15 +72,6 @@ enum PlatformRegistrationConnectivityStatus {
   inactive
 }
 
-input OpenCTIPlatformRegistrationStatusInput {
-  platformId: String!
-  token: String!
-}
-
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
 input PlatformRegistrationConnectivityStatusInput {
   platformId: String!
   token: String!
@@ -107,9 +98,6 @@ type Query {
   ): CanUnregisterResponse! @auth
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
     @auth
-  openCTIPlatformRegistrationStatus(
-    input: OpenCTIPlatformRegistrationStatusInput!
-  ): OpenCTIPlatformRegistrationStatusResponse!
 
   platformRegistrationConnectivityStatus(
     input: PlatformRegistrationConnectivityStatusInput!
