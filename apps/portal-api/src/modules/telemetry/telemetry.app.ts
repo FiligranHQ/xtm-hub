@@ -46,7 +46,7 @@ export const telemetryApp = {
       selectedOrga.name,
       userId,
       serviceDefinition.identifier,
-      input.target_product,
+      input.platform_identifier,
       extractId<'OpenCTIPlatform'>(input.platform_id),
       extractId<DocumentId>(input.resource_id),
       input.resource_title

@@ -1,14 +1,10 @@
-enum TargetProduct {
-  open_cti
-}
-
 type TelemetryResponse {
   result: Boolean!
   message: String
 }
 
 input OneClickDeployInput {
-  target_product: TargetProduct!
+  platform_identifier: PlatformIdentifier!
   service_instance_id: ID!
   resource_id: ID!
   resource_title: String!

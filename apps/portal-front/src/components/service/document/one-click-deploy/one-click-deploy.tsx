@@ -83,7 +83,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
       sendOneClickDeployEvent({
         variables: {
           input: {
-            target_product: PlatformIdentifierEnum.OPENCTI,
+            platform_identifier: PlatformIdentifierEnum.OPENCTI,
             service_instance_id: documentData.service_instance!.id,
             resource_id: documentData.id,
             resource_title: documentData.name,

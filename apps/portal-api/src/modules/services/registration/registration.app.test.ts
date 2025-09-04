@@ -126,9 +126,10 @@ describe('Registration app', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await registrationApp.registerOpenCTIPlatform(contextAdminUser, {
+      await registrationApp.registerPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
+        identifier: PlatformIdentifier.Opencti,
       });
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
@@ -208,7 +209,7 @@ describe('Registration app', () => {
         );
 
       expect(serviceConfiguration).toBeDefined();
-      expect(serviceConfiguration.status).toBe(
+      expect(serviceConfiguration?.status).toBe(
         ServiceConfigurationStatus.Inactive
       );
 
@@ -216,13 +217,13 @@ describe('Registration app', () => {
         .where(
           'service_instance_id',
           '=',
-          serviceConfiguration.service_instance_id
+          serviceConfiguration?.service_instance_id ?? ''
         )
         .select('*')
         .first();
 
       expect(subscription).toBeDefined();
-      expect(subscription.end_date).toBeDefined();
+      expect(subscription?.end_date).toBeDefined();
     });
   });
 

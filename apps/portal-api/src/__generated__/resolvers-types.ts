@@ -676,10 +676,10 @@ export type Node = {
 
 export type OneClickDeployInput = {
   platform_id: Scalars['ID']['input'];
+  platform_identifier: PlatformIdentifier;
   resource_id: Scalars['ID']['input'];
   resource_title: Scalars['String']['input'];
   service_instance_id: Scalars['ID']['input'];
-  target_product: TargetProduct;
 };
 
 export type OpenAevScenario = Node & {
@@ -1424,10 +1424,6 @@ export type Success = {
   success: Scalars['Boolean']['output'];
 };
 
-export enum TargetProduct {
-  OpenCti = 'open_cti'
-}
-
 export type TelemetryResponse = {
   __typename?: 'TelemetryResponse';
   message?: Maybe<Scalars['String']['output']>;
@@ -1783,7 +1779,6 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionModel: ResolverTypeWrapper<SubscriptionModel>;
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
-  TargetProduct: TargetProduct;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
   UnregisterPlatformInput: UnregisterPlatformInput;

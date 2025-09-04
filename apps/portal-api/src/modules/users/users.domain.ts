@@ -268,11 +268,7 @@ export const loadUsersByCapabilitiesInOrganization = async (
     .andWhere((qb) => {
       qb.where('UserOrganization_Capability.name', '=', capabilities[0]);
       for (let i = 1; i < capabilities.length; i++) {
-        qb.orWhere(
-          'UserOrganization_Capability.name',
-          '=',
-          OrganizationCapability.ManageOpenctiRegistration
-        );
+        qb.orWhere('UserOrganization_Capability.name', '=', capabilities[i]);
       }
     })
     .select('User.*')
