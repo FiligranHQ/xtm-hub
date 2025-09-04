@@ -138,13 +138,12 @@ jobs:
         run: |
           cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
           cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
-
-      - name: Build and push ${{ matrix.image }}
+      - name: Build and load ${{ matrix.image }}
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ matrix.dockerfile }}
-          push: true
+          load: true
           tags: |
             filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.docker-tag }}
             filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }}
@@ -154,7 +153,38 @@ jobs:
             type=registry,ref=filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.cache-tag }}
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:development
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.cache-tag }},mode=max
+
+      - name: Push to registry
+        run: |
+          docker push filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.docker-tag }}
+          docker push filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }}
+
+      - name: Save Docker image as artifact
+        run: |
+          echo "Saving filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }}"
+          
+          # Vérifier que l'image existe localement
+          docker images | grep "filigran/${{ matrix.image }}"
+          
+          # Sauvegarder l'image
+          docker save filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} | gzip > ${{ matrix.image }}.tar.gz
+          
+          # Vérifier la taille
+          ls -lh ${{ matrix.image }}.tar.gz
+          
+          # S'assurer que le fichier n'est pas vide
+          if [ ! -s "${{ matrix.image }}.tar.gz" ]; then
+            echo "ERROR: Saved file is empty!"
+            exit 1
+          fi
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-${{ matrix.image }}
+          path: ${{ matrix.image }}.tar.gz
+          retention-days: 1
+          compression-level: 0
 
   run-e2e-tests:
     needs: [ build-test-images, prepare-build ]
@@ -168,23 +198,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Login to DockerHub
+      - name: Login to DockerHub # No need that ?
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Pull pre-built images
+      - name: Download Docker images
+        uses: actions/download-artifact@v4
+        with:
+          pattern: docker-*
+          merge-multiple: true
+
+      - name: Load Docker images
         run: |
-          docker pull filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} &
-          docker pull filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} &
-          docker pull filigran/portal-e2e-tests:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} &
-          wait
-
-          docker tag filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}
-          docker tag filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}
-          docker tag filigran/portal-e2e-tests:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} filigran/portal-e2e-tests:${{ needs.prepare-build.outputs.docker-tag }}
-
+          for image in portal-front portal-api portal-e2e-tests; do
+            if [ -f "${image}.tar.gz" ]; then
+            echo "Loading ${image}.tar.gz..."
+            gunzip -c ${image}.tar.gz | docker load
+            
+            docker tag filigran/${image}:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} filigran/${image}:${{ needs.prepare-build.outputs.docker-tag }}
+            fi
+          done
       - name: Launch docker compose
         run: |
           mkdir -p ctrf
@@ -235,7 +270,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   run-front-unit-tests:
-    needs: build-test-images
+    needs: [build-test-images, prepare-build]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
