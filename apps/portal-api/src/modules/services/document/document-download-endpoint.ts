@@ -11,7 +11,14 @@ import { UserLoadUserBy } from '../../../model/user';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
+import { loadOrganizationBy } from '../../organizations/organizations.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import {
+  buildDownloadEvent,
+  shouldSendEventForService,
+} from '../../telemetry/telemetry.helper';
 import { loadUserBy } from '../../users/users.domain';
+import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
 
@@ -81,6 +88,37 @@ export const documentDownloadEndpoint = (app) => {
           }
           await incrementDocumentsDownloads(context, document, trx);
           await trx.commit();
+
+          const serviceDefinition =
+            await loadServiceDefinitionByServiceInstance(
+              context,
+              document.service_instance_id
+            );
+
+          try {
+            if (shouldSendEventForService(serviceDefinition.identifier)) {
+              const selectedOrga = await loadOrganizationBy(
+                context,
+                'id',
+                context.user.selected_organization_id
+              );
+
+              const downloadEvent = buildDownloadEvent(
+                context.user.selected_organization_id,
+                selectedOrga.name,
+                context.user.id,
+                serviceDefinition.identifier,
+                document.id,
+                document.file_name
+              );
+              telemetryApp.sendTelemetryEvent(downloadEvent);
+            }
+          } catch (error) {
+            logApp.error('Unable to send telemetry event for download', {
+              error,
+            });
+          }
+
           stream.pipe(res);
         } catch (error) {
           await trx.rollback();

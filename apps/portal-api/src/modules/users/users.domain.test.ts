@@ -1,13 +1,17 @@
-import { describe, expect } from 'vitest';
+import { afterEach, describe, expect, vi } from 'vitest';
 import {
   contextSimpleUserThales,
   DEFAULT_ADMIN_EMAIL,
   THALES_ADMIN_ORGA_EMAIL,
   THALES_ADMIN_ORGA_ID,
+  THALES_ORGA_ID,
+  THALES_SIMPLE_USER_ID,
 } from '../../../tests/tests.const';
 import { UserId } from '../../model/kanel/public/User';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { loadUserBy, updateUser } from './users.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
+import { loadUserBy, updateUser, updateUserAtLogin } from './users.domain';
 
 //Issue with test
 describe('Users domain', () => {
@@ -34,5 +38,29 @@ describe('Users domain', () => {
     } catch (error) {
       expect(error.name).toBe('FORBIDDEN_ACCESS');
     }
+  });
+  it('should send a login event', async () => {
+    vi.useFakeTimers();
+    const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+    vi.setSystemTime(date);
+    const telemetrySpy = vi
+      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .mockResolvedValue();
+
+    await updateUserAtLogin(
+      contextSimpleUserThales,
+      contextSimpleUserThales.user
+    );
+    expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+      '@timestamp': '2025-02-03T13:12:15.000Z',
+      event_type: 'login',
+      organization_id: THALES_ORGA_ID,
+      organization_name: 'Thales',
+      source: TELEMETRY_SOURCE,
+      user_id: THALES_SIMPLE_USER_ID,
+    });
+  });
+  afterEach(async () => {
+    vi.useRealTimers();
   });
 });

@@ -124,6 +124,7 @@ services:
       - START_DEV_SERVER=true
       - ELASTIC_HOST=portal-elasticsearch
       - ELASTIC_PORT=9200
+      - BASE_URL_FRONT=http://portal-front:3000
 
   portal-postgres:
     container_name: portal-postgres

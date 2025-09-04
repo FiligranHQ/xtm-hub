@@ -4,6 +4,7 @@ import OnePlatformDisplay from '@/components/service/document/one-click-deploy/o
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { oneClickDeployMutation } from '@generated/oneClickDeployMutation.graphql';
 import { oneClickDeployOctiPlatformFragment$key } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
 import { oneClickDeployOctiPlatformsQuery } from '@generated/oneClickDeployOctiPlatformsQuery.graphql';
 import {
@@ -14,7 +15,12 @@ import {
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
-import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
+import {
+  graphql,
+  useFragment,
+  useLazyLoadQuery,
+  useMutation,
+} from 'react-relay';
 
 export const OneClickDeployOctiPlatformFragment = graphql`
   fragment oneClickDeployOctiPlatformFragment on RegisteredPlatform {
@@ -49,12 +55,44 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
     )
   );
 
+  const SendOneClickDeployTelemetryMutation = graphql`
+    mutation oneClickDeployMutation($input: OneClickDeployInput!) {
+      sendTelemetryEvent {
+        oneClickDeploy(input: $input) {
+          result
+          message
+        }
+      }
+    }
+  `;
+
+  const [sendOneClickDeployEvent] = useMutation<oneClickDeployMutation>(
+    SendOneClickDeployTelemetryMutation
+  );
+
   const [isOpen, setIsOpen] = useState(false);
   const [openCTIBasePath, setOpenCTIBasePath] = useState('');
   const [shouldOpenTab, setShouldOpenTab] = useState(false);
   const { openTab } = useOneClickDeployTab({ openCTIBasePath, documentData });
 
   const onOneClickDeploy = (basePath: string) => {
+    const [platform] = platformsOcti.filter(
+      (platform) => platform.url === basePath
+    );
+    if (platform) {
+      sendOneClickDeployEvent({
+        variables: {
+          input: {
+            target_product: PlatformIdentifierEnum.OPENCTI,
+            service_instance_id: documentData.service_instance!.id,
+            resource_id: documentData.id,
+            resource_title: documentData.name,
+            platform_id: platform!.id,
+          },
+        },
+      });
+    }
+
     setOpenCTIBasePath(basePath);
     setShouldOpenTab(true);
   };

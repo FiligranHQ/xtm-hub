@@ -9,7 +9,6 @@ import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
-  createDocumentWithChildren,
   deleteDocument,
   getLabels,
   getUploader,
@@ -22,6 +21,7 @@ import {
   updateDocumentWithChildren,
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
+import { csvFeedsApp } from './csv-feeds.app';
 import {
   CSV_FEED_DOCUMENT_TYPE,
   CSV_FEED_METADATA,
@@ -31,20 +31,9 @@ import {
 const resolvers: Resolvers = {
   Mutation: {
     createCsvFeed: async (_, { input, document }, context) => {
-      const trx = await dbTx();
       try {
-        const doc = await createDocumentWithChildren<CsvFeed>(
-          'csv_feed',
-          input,
-          document,
-          CSV_FEED_METADATA,
-          context,
-          trx
-        );
-        await trx.commit();
-        return doc;
+        return await csvFeedsApp.createCsvFeed(context, input, document);
       } catch (error) {
-        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
             detail: error,
