@@ -11,12 +11,20 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
+import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../common/error-code';
-import { loadSubscriptionBy } from '../../subcription/subscription.domain';
+import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
+import {
+  loadSubscriptionBy,
+  transferSubscriptionToOrganization,
+} from '../../subcription/subscription.domain';
 import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
-import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
+import {
+  organizationCapabilityMappedByPlatformIdentifier,
+  serviceDefinitionIdentifierMappedByPlatformIdentifier,
+} from './registration.mapping';
 
 export type PlatformConfiguration = {
   registerer_id: string;
@@ -34,19 +42,26 @@ export const registrationDomain = {
       serviceDefinitionId,
       organizationId,
       configuration,
-      identifier,
+      platformIdentifier,
     }: {
       serviceDefinitionId: string;
       organizationId: OrganizationId;
       configuration: PlatformConfiguration;
-      identifier: PlatformIdentifier;
+      platformIdentifier: PlatformIdentifier;
     }
   ) => {
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
+    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      organizationId,
+      requiredCapability,
+    });
+
     const serviceInstanceId =
       await serviceInstanceDomain.createPlatformServiceInstance(
         context,
         serviceDefinitionId,
-        identifier
+        platformIdentifier
       );
 
     await createSubscription(context, {
@@ -74,12 +89,20 @@ export const registrationDomain = {
       configuration,
       serviceInstanceId,
       targetOrganizationId,
+      platformIdentifier,
     }: {
       configuration: PlatformConfiguration;
       serviceInstanceId: ServiceInstanceId;
-      targetOrganizationId: string;
+      targetOrganizationId: OrganizationId;
+      platformIdentifier: PlatformIdentifier;
     }
   ) => {
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
+    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      organizationId: targetOrganizationId,
+      requiredCapability,
+    });
     const subscription = await loadSubscriptionBy(context, {
       service_instance_id: serviceInstanceId,
     });
@@ -88,7 +111,23 @@ export const registrationDomain = {
     }
 
     if (subscription.organization_id !== targetOrganizationId) {
-      throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
+      const userOrganizations = await loadOrganizationsByUser(
+        context,
+        context.user.id
+      );
+      if (userOrganizations.length > 2) {
+        throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
+      }
+
+      await securityGuard.assertUserIsAllowedOnOrganization(context, {
+        organizationId: subscription.organization_id,
+        requiredCapability,
+      });
+
+      await transferSubscriptionToOrganization(context, {
+        subscriptionId: subscription.id,
+        organizationId: targetOrganizationId,
+      });
     }
 
     await serviceContractDomain.updateConfiguration(

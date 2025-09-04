@@ -38,3 +38,17 @@ export const organizationCapabilityMappedByPlatformIdentifier: Record<
 > = {
   opencti: OrganizationCapability.ManageOpenctiRegistration,
 };
+
+export const serviceInstanceNameMappedByPlatformIdentifier: Record<
+  PlatformIdentifier,
+  string
+> = {
+  [PlatformIdentifier.Opencti]: 'OpenCTI Platform',
+};
+
+export const serviceInstanceTagMappedByPlatformIdentifier: Record<
+  PlatformIdentifier,
+  string
+> = {
+  [PlatformIdentifier.Opencti]: 'openCTI',
+};

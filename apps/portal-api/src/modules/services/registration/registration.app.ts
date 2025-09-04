@@ -19,6 +19,7 @@ import Organization, {
 } from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
+import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { ErrorCode } from '../../common/error-code';
@@ -147,23 +148,6 @@ export const registrationApp = {
       throw new Error(ErrorCode.InvalidServiceConfiguration);
     }
 
-    const requiredCapability =
-      organizationCapabilityMappedByPlatformIdentifier[identifier];
-    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context,
-      {
-        organizationId,
-        requiredCapability,
-      }
-    );
-
-    if (!isAllowed) {
-      const errorCode = isInOrganization
-        ? ErrorCode.MissingCapabilityOnOrganization
-        : ErrorCode.UserIsNotInOrganization;
-      throw new Error(errorCode);
-    }
-
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
@@ -173,25 +157,25 @@ export const registrationApp = {
     if (serviceConfiguration) {
       await registrationDomain.refreshExistingPlatform(context, {
         serviceInstanceId: serviceConfiguration.service_instance_id,
-        targetOrganizationId: organizationId,
+        targetOrganizationId: organizationId as OrganizationId,
         configuration,
+        platformIdentifier: identifier,
       });
     } else {
       await registrationDomain.registerNewPlatform(context, {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,
-        identifier,
+        platformIdentifier: identifier,
       });
     }
 
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[identifier];
     const users = await loadUsersByCapabilitiesInOrganization(
       context,
       organizationId,
-      [
-        OrganizationCapability.AdministrateOrganization,
-        OrganizationCapability.ManageOpenctiRegistration,
-      ]
+      [OrganizationCapability.AdministrateOrganization, requiredCapability]
     );
 
     const mailTemplate =
@@ -234,7 +218,7 @@ export const registrationApp = {
 
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       context,
-      subscription.service_instance_id
+      activeServiceConfiguration.service_instance_id
     );
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
@@ -244,24 +228,12 @@ export const registrationApp = {
       platformIdentifierMappedByServiceDefinitionIdentifier[
         serviceDefinition.identifier
       ];
-
     const requiredCapability =
       organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
-    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context,
-      {
-        organizationId: subscription.organization_id,
-        requiredCapability,
-      }
-    );
-
-    if (!isAllowed) {
-      if (isInOrganization) {
-        throw new Error(ErrorCode.MissingCapabilityOnOrganization);
-      } else {
-        throw new Error(ErrorCode.UserIsNotInOrganization);
-      }
-    }
+    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      organizationId: subscription.organization_id,
+      requiredCapability,
+    });
 
     await serviceContractDomain.updateConfiguration(
       context,
@@ -272,10 +244,7 @@ export const registrationApp = {
     const users = await loadUsersByCapabilitiesInOrganization(
       context,
       subscription.organization_id,
-      [
-        OrganizationCapability.AdministrateOrganization,
-        OrganizationCapability.ManageOpenctiRegistration,
-      ]
+      [OrganizationCapability.AdministrateOrganization, requiredCapability]
     );
 
     const template =
@@ -314,12 +283,16 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
+    const parsedConfig = JSON.parse(
+      JSON.stringify(serviceConfiguration.config)
+    );
     return {
       status:
         serviceConfiguration.status === ServiceConfigurationStatus.Active
           ? PlatformRegistrationStatus.Registered
           : PlatformRegistrationStatus.Unregistered,
       organization: { id: subscription.organization_id },
+      platformTitle: parsedConfig.platform_title,
     };
   },
 

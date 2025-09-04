@@ -1,6 +1,10 @@
 // https://github.com/node-config/node-config
 import config from 'config';
 import ServiceCapability from './model/kanel/public/ServiceCapability';
+import {
+  DevUser,
+  parseAndValidateDevUsers,
+} from './utils/config-validation.util';
 
 interface Services {
   name: string;
@@ -41,6 +45,7 @@ interface PortalConfig {
   service_definitions: ServiceDefinitions[];
   environment: string;
   enabled_features: string[];
+  dev_users?: DevUser[];
 }
 
 const portalConfig: PortalConfig = {
@@ -76,5 +81,6 @@ const portalConfig: PortalConfig = {
   service_definitions: config.get('init_service_definitions'),
   environment: config.get<string>('environment'),
   enabled_features: config.get<string[]>('enabled_features') ?? [],
+  dev_users: parseAndValidateDevUsers(),
 };
 export default portalConfig;

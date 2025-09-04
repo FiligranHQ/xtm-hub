@@ -1,7 +1,5 @@
 import { RegistrationContext } from '@/components/registration/context';
-import OrganizationListUserOrganizationsQueryGraphql, {
-  organizationListUserOrganizationsQuery,
-} from '@generated/organizationListUserOrganizationsQuery.graphql';
+import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { AutoForm } from 'filigran-ui';
 import {
   FormControl,
@@ -12,11 +10,10 @@ import {
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
-import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
 
 interface Props {
-  queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
+  userOrganizationsQueryData: organizationListUserOrganizationsQuery$data;
   cancel: () => void;
   confirm: (organizationId: string) => void;
 }
@@ -28,15 +25,10 @@ export const selectOrganizationFormSchema = z.object({
 export const RegisterOrganizationForm: React.FC<Props> = ({
   cancel,
   confirm,
-  queryRef,
+  userOrganizationsQueryData,
 }) => {
+  const organizations = userOrganizationsQueryData.userOrganizations;
   const { translationKey } = useContext(RegistrationContext);
-  const userOrganizationsPreloadedQuery =
-    usePreloadedQuery<organizationListUserOrganizationsQuery>(
-      OrganizationListUserOrganizationsQueryGraphql,
-      queryRef
-    );
-  const organizations = userOrganizationsPreloadedQuery.userOrganizations;
   const t = useTranslations();
 
   return (

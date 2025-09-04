@@ -11,6 +11,7 @@ export const RefreshUserPlatformTokenMutation = graphql`
 export const IsPlatformRegisteredFragment = graphql`
   fragment registerIsPlatformRegisteredFragment on IsPlatformRegisteredResponse {
     status
+    platformTitle
     organization {
       id
     }

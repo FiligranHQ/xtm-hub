@@ -298,6 +298,7 @@ export type IsPlatformRegisteredOrganization = Node & {
 export type IsPlatformRegisteredResponse = {
   __typename?: 'IsPlatformRegisteredResponse';
   organization?: Maybe<IsPlatformRegisteredOrganization>;
+  platformTitle?: Maybe<Scalars['String']['output']>;
   status: PlatformRegistrationStatus;
 };
 
@@ -2053,6 +2054,7 @@ export type IsPlatformRegisteredOrganizationResolvers<ContextType = PortalContex
 
 export type IsPlatformRegisteredResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IsPlatformRegisteredResponse'] = ResolversParentTypes['IsPlatformRegisteredResponse']> = ResolversObject<{
   organization?: Resolver<Maybe<ResolversTypes['IsPlatformRegisteredOrganization']>, ParentType, ContextType>;
+  platformTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['PlatformRegistrationStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

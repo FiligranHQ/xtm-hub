@@ -52,6 +52,7 @@ type IsPlatformRegisteredOrganization implements Node {
 
 type IsPlatformRegisteredResponse {
   status: PlatformRegistrationStatus!
+  platformTitle: String
   organization: IsPlatformRegisteredOrganization
 }
 

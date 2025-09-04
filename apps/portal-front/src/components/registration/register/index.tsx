@@ -2,9 +2,12 @@ import Loader from '@/components/loader';
 import { RegistrationContext } from '@/components/registration/context';
 import { RegistrationLayout } from '@/components/registration/layout';
 import { RegisterStateMissingCapability } from '@/components/registration/register/missing-capability';
-import { RegisterNeverRegistered } from '@/components/registration/register/never-registered';
+import { RegisterOrganizationForm } from '@/components/registration/register/organization-form';
 import { RegisterPlatform } from '@/components/registration/register/register.graphql';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
+import OrganizationListUserOrganizationsQueryGraphql, {
+  organizationListUserOrganizationsQuery,
+} from '@generated/organizationListUserOrganizationsQuery.graphql';
 import registerFragmentGraphql, {
   registerFragment$key,
 } from '@generated/registerFragment.graphql';
@@ -24,6 +27,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   PreloadedQuery,
   useFragment,
+  useLazyLoadQuery,
   useMutation,
   usePreloadedQuery,
 } from 'react-relay';
@@ -56,6 +60,12 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
       queryRef
     );
 
+  const userOrganizationsQueryData =
+    useLazyLoadQuery<organizationListUserOrganizationsQuery>(
+      OrganizationListUserOrganizationsQueryGraphql,
+      {}
+    );
+
   const isPlatformRegistered =
     useFragment<registerIsPlatformRegisteredFragment$key>(
       registerIsPlatformRegisteredFragmentGraphql,
@@ -66,10 +76,7 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
   const hasRun = useRef(false);
   useEffect(() => {
     const shouldRefreshToken =
-      isPlatformRegistered.status ===
-        PlatformRegistrationStatusEnum.REGISTERED ||
-      isPlatformRegistered.status ===
-        PlatformRegistrationStatusEnum.UNREGISTERED;
+      isPlatformRegistered.status === PlatformRegistrationStatusEnum.REGISTERED;
 
     if (
       shouldRefreshToken &&
@@ -171,12 +178,35 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
     );
   }
 
+  const shouldRegisterOnSameOrganization =
+    isPlatformRegistered.status ===
+      PlatformRegistrationStatusEnum.UNREGISTERED &&
+    userOrganizationsQueryData.userOrganizations.length > 2;
+  if (shouldRegisterOnSameOrganization) {
+    return (
+      <RegistrationLayout
+        cancel={cancel}
+        confirm={() => register(isPlatformRegistered.organization?.id ?? '')}>
+        <h1>{t(`Register.${translationKey}.TooMuchOrganization.Title`)}</h1>
+        <p>
+          {t(`Register.${translationKey}.TooMuchOrganization.Description1`, {
+            platformTitle: isPlatformRegistered.platformTitle ?? '',
+          })}
+          <br />
+          {t(`Register.${translationKey}.TooMuchOrganization.Description2`)}
+        </p>
+      </RegistrationLayout>
+    );
+  }
+
   if (
     isPlatformRegistered.status ===
-    PlatformRegistrationStatusEnum.NEVER_REGISTERED
+      PlatformRegistrationStatusEnum.NEVER_REGISTERED ||
+    isPlatformRegistered.status === PlatformRegistrationStatusEnum.UNREGISTERED
   ) {
     return (
-      <RegisterNeverRegistered
+      <RegisterOrganizationForm
+        userOrganizationsQueryData={userOrganizationsQueryData}
         cancel={cancel}
         confirm={register}
       />
