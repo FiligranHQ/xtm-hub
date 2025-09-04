@@ -160,6 +160,27 @@ export async function seed(knex) {
         public: true,
         identifier: 'vault',
       },
+      {
+        id: '2634d52b-f061-4ebc-bed2-c6cc94297ad2',
+        name: 'csv feeds',
+        description: 'csv description',
+        public: true,
+        identifier: 'csv_feeds',
+      },
+      {
+        id: '97280ba3-8587-4a3e-87ad-ed279b0e768f',
+        name: 'openaev scenarios',
+        description: 'openaev scenario description',
+        public: true,
+        identifier: 'openaev_scenarios',
+      },
+      {
+        id: 'e974c9c3-f3c5-4b48-b183-a73ff218dec1',
+        name: 'custom dashboards',
+        description: 'custom dashboards description',
+        public: true,
+        identifier: 'custom_dashboards',
+      },
     ])
     .onConflict('id')
     .ignore();
@@ -197,6 +218,36 @@ export async function seed(knex) {
         join_type: 'JOIN_INVITE',
         tags: '{others}',
         service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+      },
+      {
+        id: 'ad003d3f-c406-4be8-a650-880d72f952e9',
+        name: 'csv feeds',
+        description: 'short description for csv feeds',
+        creation_status: 'READY',
+        public: false,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad2',
+      },
+      {
+        id: 'f61ee5ca-4b4f-4f94-9cb7-69b1b1c885a2',
+        name: 'open aev scenarios',
+        description: 'short description for open aev scenarios',
+        creation_status: 'READY',
+        public: false,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: '97280ba3-8587-4a3e-87ad-ed279b0e768f',
+      },
+      {
+        id: 'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4',
+        name: 'custom dashboards',
+        description: 'short description for custom dashboards',
+        creation_status: 'READY',
+        public: false,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: 'e974c9c3-f3c5-4b48-b183-a73ff218dec1',
       },
     ])
     .onConflict('id')

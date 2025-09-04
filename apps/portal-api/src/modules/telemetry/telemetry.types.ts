@@ -1,5 +1,11 @@
+import {
+  TELEMETRY_SOURCE,
+  TelemetryEventService,
+  TelemetryEventServiceType,
+} from './telemetry.const';
+
 export enum TelemetryEventType {
-  LOGIN = 'login,',
+  LOGIN = 'login',
   SUBSCRIBE = 'subscribe',
   SHARE = 'share',
   DOWNLOAD = 'download',
@@ -14,7 +20,7 @@ export interface BaseTelemetryEvent {
   organization_name: string;
   user_id: string;
   '@timestamp': string;
-  source: 'xtm-hub';
+  source: typeof TELEMETRY_SOURCE;
 }
 
 export interface LoginEvent extends BaseTelemetryEvent {
@@ -23,30 +29,30 @@ export interface LoginEvent extends BaseTelemetryEvent {
 
 export interface SubscribeEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.SUBSCRIBE;
-  service: string;
-  service_type?: string;
+  service: TelemetryEventService;
+  service_type?: TelemetryEventServiceType;
 }
 
 export interface ShareEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.SHARE;
-  service: string;
-  service_type?: string;
+  service: TelemetryEventService;
+  service_type?: TelemetryEventServiceType;
   resource_id: string;
   resource_title: string;
 }
 
 export interface DownloadEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.DOWNLOAD;
-  service: string;
-  service_type?: string;
+  service: TelemetryEventService;
+  service_type?: TelemetryEventServiceType;
   resource_id: string;
   resource_title: string;
 }
 
 export interface CreateEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.CREATE;
-  service: string;
-  service_type?: string;
+  service: TelemetryEventService;
+  service_type?: TelemetryEventServiceType;
   resource_id: string;
   resource_title: string;
   status: string;
@@ -57,13 +63,14 @@ export interface RegisterPlatformEvent extends BaseTelemetryEvent {
   target_product: string;
   platform_id: string;
   organization_type: string;
+  platform_contract: string;
 }
 
 export interface OneClickDeployEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.ONE_CLICK_DEPLOY;
   target_product: string;
-  service: string;
-  service_type?: string;
+  service: TelemetryEventService;
+  service_type?: TelemetryEventServiceType;
   resource_id: string;
   platform_id: string;
   resource_title: string;

@@ -21,11 +21,15 @@ import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
+import { logApp } from '../../../utils/app-logger.util';
 import { formatName } from '../../../utils/format';
 import { ErrorCode } from '../../common/error-code';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryTargetProduct } from '../../telemetry/telemetry.const';
+import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
 import {
   loadOrganizationAdministrators,
   updateUser,
@@ -164,6 +168,29 @@ export const registrationApp = {
         })
       )
     );
+
+    try {
+      const selectedOrga = await loadOrganizationBy(
+        context,
+        'id',
+        organizationId
+      );
+
+      const registerEvent = buildRegisterEvent(
+        organizationId as OrganizationId,
+        selectedOrga.name,
+        selectedOrga.personal_space,
+        context.user.id,
+        TelemetryTargetProduct.OPEN_CTI,
+        platform.id,
+        platform.contract
+      );
+      telemetryApp.sendTelemetryEvent(registerEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event for registration', {
+        error,
+      });
+    }
 
     return token;
   },

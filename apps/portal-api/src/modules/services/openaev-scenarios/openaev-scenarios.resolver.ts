@@ -9,7 +9,6 @@ import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
-  createDocumentWithChildren,
   deleteDocument,
   getLabels,
   getUploader,
@@ -22,6 +21,7 @@ import {
   updateDocumentWithChildren,
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
+import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
   OPENAEV_SCENARIO_METADATA,
@@ -84,20 +84,13 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     createOpenAEVScenario: async (_, { input, document }, context) => {
-      const trx = await dbTx();
       try {
-        const doc = await createDocumentWithChildren<OpenAEVScenario>(
-          OPENAEV_SCENARIO_DOCUMENT_TYPE,
-          input,
-          document,
-          OPENAEV_SCENARIO_METADATA,
+        return await OpenAEVScenariosApp.createOpenAEVScenario(
           context,
-          trx
+          input,
+          document
         );
-        await trx.commit();
-        return doc;
       } catch (error) {
-        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError('OBAS_SCENARIO_UNIQUE_SLUG_ERROR', {
             detail: error,
@@ -124,11 +117,11 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError('OBAS_SCENARIO_UNIQUE_SLUG_ERROR', {
+          throw AlreadyExistsError('OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR', {
             detail: error,
           });
         }
-        throw UnknownError('OBAS_SCENARIO_UPDATE_ERROR', {
+        throw UnknownError('OPENAEV_SCENARIO_UPDATE_ERROR', {
           detail: error,
         });
       }
@@ -148,7 +141,7 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
 
-        throw UnknownError('OBAS_SCENARIO_DELETE_ERROR', { detail: error });
+        throw UnknownError('OPENAEV_SCENARIO_DELETE_ERROR', { detail: error });
       }
     },
   },

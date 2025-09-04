@@ -394,6 +394,7 @@ export type Mutation = {
   removePendingUserFromOrganization?: Maybe<User>;
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
+  sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
   unregisterOpenCTIPlatform: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
@@ -671,6 +672,14 @@ export type MutationUpdateOpenAevScenarioArgs = {
 
 export type Node = {
   id: Scalars['ID']['output'];
+};
+
+export type OneClickDeployInput = {
+  platform_id: Scalars['ID']['input'];
+  resource_id: Scalars['ID']['input'];
+  resource_title: Scalars['String']['input'];
+  service_instance_id: Scalars['ID']['input'];
+  target_product: TargetProduct;
 };
 
 export type OpenAevScenario = Node & {
@@ -1170,6 +1179,16 @@ export type RolePortal = Node & {
   name: Scalars['String']['output'];
 };
 
+export type SendTelemetryMutation = {
+  __typename?: 'SendTelemetryMutation';
+  oneClickDeploy?: Maybe<TelemetryResponse>;
+};
+
+
+export type SendTelemetryMutationOneClickDeployArgs = {
+  input: OneClickDeployInput;
+};
+
 export type SeoServiceInstance = Node & {
   __typename?: 'SeoServiceInstance';
   description?: Maybe<Scalars['String']['output']>;
@@ -1373,6 +1392,16 @@ export enum SubscriptionOrdering {
 export type Success = {
   __typename?: 'Success';
   success: Scalars['Boolean']['output'];
+};
+
+export enum TargetProduct {
+  OpenCti = 'open_cti'
+}
+
+export type TelemetryResponse = {
+  __typename?: 'TelemetryResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  result: Scalars['Boolean']['output'];
 };
 
 export type TrackingSubscription = {
@@ -1661,6 +1690,7 @@ export type ResolversTypes = ResolversObject<{
   MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
+  OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
   OpenAEVScenarioConnection: ResolverTypeWrapper<OpenAevScenarioConnection>;
   OpenAEVScenarioEdge: ResolverTypeWrapper<OpenAevScenarioEdge>;
@@ -1688,6 +1718,7 @@ export type ResolversTypes = ResolversObject<{
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
+  SendTelemetryMutation: ResolverTypeWrapper<SendTelemetryMutation>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceConfigurationStatus: ServiceConfigurationStatus;
@@ -1713,6 +1744,8 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionModel: ResolverTypeWrapper<SubscriptionModel>;
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
+  TargetProduct: TargetProduct;
+  TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
   UnregisterOpenCTIPlatformInput: UnregisterOpenCtiPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
@@ -1782,6 +1815,7 @@ export type ResolversParentTypes = ResolversObject<{
   MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
+  OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: OpenAevScenario;
   OpenAEVScenarioConnection: OpenAevScenarioConnection;
   OpenAEVScenarioEdge: OpenAevScenarioEdge;
@@ -1802,6 +1836,7 @@ export type ResolversParentTypes = ResolversObject<{
   RegisterOpenCTIPlatformInput: RegisterOpenCtiPlatformInput;
   RegistrationResponse: RegistrationResponse;
   RolePortal: RolePortal;
+  SendTelemetryMutation: SendTelemetryMutation;
   SeoServiceInstance: SeoServiceInstance;
   ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
@@ -1820,6 +1855,7 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionEdge: SubscriptionEdge;
   SubscriptionModel: SubscriptionModel;
   Success: Success;
+  TelemetryResponse: TelemetryResponse;
   TrackingSubscription: TrackingSubscription;
   UnregisterOpenCTIPlatformInput: UnregisterOpenCtiPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
@@ -2105,6 +2141,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
+  sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
   unregisterOpenCTIPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterOpenCtiPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
@@ -2278,6 +2315,11 @@ export type RolePortalResolvers<ContextType = PortalContext, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SendTelemetryMutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SendTelemetryMutation'] = ResolversParentTypes['SendTelemetryMutation']> = ResolversObject<{
+  oneClickDeploy?: Resolver<Maybe<ResolversTypes['TelemetryResponse']>, ParentType, ContextType, RequireFields<SendTelemetryMutationOneClickDeployArgs, 'input'>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoServiceInstance'] = ResolversParentTypes['SeoServiceInstance']> = ResolversObject<{
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -2431,6 +2473,12 @@ export type SuccessResolvers<ContextType = PortalContext, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type TelemetryResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TelemetryResponse'] = ResolversParentTypes['TelemetryResponse']> = ResolversObject<{
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  result?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TrackingSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TrackingSubscription'] = ResolversParentTypes['TrackingSubscription']> = ResolversObject<{
   add?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
   delete?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
@@ -2566,6 +2614,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   RefreshUserPlatformTokenResponse?: RefreshUserPlatformTokenResponseResolvers<ContextType>;
   RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
+  SendTelemetryMutation?: SendTelemetryMutationResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
@@ -2583,6 +2632,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
   SubscriptionModel?: SubscriptionModelResolvers<ContextType>;
   Success?: SuccessResolvers<ContextType>;
+  TelemetryResponse?: TelemetryResponseResolvers<ContextType>;
   TrackingSubscription?: TrackingSubscriptionResolvers<ContextType>;
   Upload?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;

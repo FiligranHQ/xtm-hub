@@ -1,6 +1,14 @@
 import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { dbUnsecure } from '../../../../knexfile';
 import {
   contextAdminOrgaThales,
@@ -16,10 +24,16 @@ import {
 } from '../../../__generated__/resolvers-types';
 import Subscription from '../../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../../model/user';
-import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../common/error-code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import {
+  TELEMETRY_SOURCE,
+  TelemetryTargetProduct,
+} from '../../telemetry/telemetry.const';
+import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { serviceContractDomain } from '../contract/domain';
 import { registrationApp } from './registration.app';
 
@@ -97,6 +111,33 @@ describe('Registration app', () => {
       );
 
       expect(token).toBeDefined();
+    });
+
+    it('should send a telemetry event when platform is registered', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+
+      await registrationApp.registerOpenCTIPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform,
+      });
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.REGISTER,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_name: 'Filigran',
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_UUID,
+        platform_contract: 'EE',
+        platform_id: platform.id,
+        target_product: TelemetryTargetProduct.OPEN_CTI,
+        organization_type: 'Professional',
+      });
     });
   });
 
@@ -365,5 +406,9 @@ describe('Registration app', () => {
       expect(anotherToken).toBe(updatedUser.platform_token);
       expect(anotherToken === token).toBeFalsy();
     });
+  });
+
+  afterAll(async () => {
+    vi.useRealTimers();
   });
 });
