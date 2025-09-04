@@ -23,11 +23,19 @@ import {
   ADMIN_UUID,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
+  ROLE_ADMIN_ORGA,
   ROLE_USER,
 } from '../portal.const';
 import { logApp } from '../utils/app-logger.util';
 import { DevUser } from '../utils/config-validation.util';
 import { hashPassword } from '../utils/hash-password.util';
+
+// Role mapping for dev user initialization
+const ROLE_MAPPING: { [key: string]: string } = {
+  ADMIN: ROLE_ADMIN.id,
+  USER: ROLE_USER.id,
+  ADMIN_ORGA: ROLE_ADMIN_ORGA.id,
+};
 
 export const ensureServiceDefinitionExists = async (service) => {
   const serviceDefinitions = await dbUnsecure('ServiceDefinition');
@@ -424,15 +432,9 @@ export const ensureDevUserExists = async (
     await ensureUserOrganizationExist(userId, PLATFORM_ORGANIZATION_UUID, trx);
 
     // Handle roles
-    const roleMapping: { [key: string]: string } = {
-      ADMIN: ROLE_ADMIN.id,
-      USER: ROLE_USER.id,
-      ADMIN_ORGA: '40cfe630-c272-42f9-8fcf-f219e2f4278c', // ROLE_ADMIN_ORGA.id
-    };
-
     const roles = userConfig.roles || ['USER'];
     for (const roleName of roles) {
-      const roleId = roleMapping[roleName];
+      const roleId = ROLE_MAPPING[roleName];
       if (!roleId) {
         logApp.warn(
           `Role '${roleName}' is not recognized and will be skipped for user ${userConfig.email}`
