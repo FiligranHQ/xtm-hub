@@ -277,7 +277,8 @@ export type Filter = {
 export enum FilterKey {
   Label = 'label',
   OrganizationId = 'organization_id',
-  PersonalSpace = 'personal_space'
+  PersonalSpace = 'personal_space',
+  ServiceDefinitionIdentifier = 'serviceDefinition_identifier'
 }
 
 export type GenericServiceCapability = Node & {
@@ -1078,9 +1079,11 @@ export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
 
 export type QueryServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
+  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1253,7 +1256,7 @@ export enum ServiceInstanceCreationStatus {
 export type ServiceInstanceEdge = {
   __typename?: 'ServiceInstanceEdge';
   cursor: Scalars['String']['output'];
-  node: ServiceInstance;
+  node?: Maybe<ServiceInstance>;
 };
 
 export enum ServiceInstanceJoinType {
@@ -2340,7 +2343,7 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
 
 export type ServiceInstanceEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstanceEdge'] = ResolversParentTypes['ServiceInstanceEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<ResolversTypes['ServiceInstance'], ParentType, ContextType>;
+  node?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -25,15 +25,15 @@ import { loadCapabilities } from '../user_service/user-service-capability/user-s
 import { uploadNewFile } from './document/document.helper';
 import { serviceInstanceApp } from './service-instance.app';
 import {
-  getIsSubscribed,
-  getServiceInstanceSubscriptions,
   getUserJoined,
+  loadIsSubscribed,
   loadLinks,
   loadPublicServiceInstances,
   loadSeoServiceInstanceBySlug,
   loadSeoServiceInstances,
   loadServiceDefinition,
   loadServiceInstances,
+  loadServiceInstanceSubscriptions,
   loadServiceWithSubscriptions,
   loadSubscribedServiceInstancesByIdentifier,
 } from './service-instance.domain';
@@ -54,7 +54,7 @@ const resolvers: Resolvers = {
     service_definition: ({ id }, _, context) =>
       loadServiceDefinition(context, id),
     organization_subscribed: ({ id }, _, context) =>
-      getIsSubscribed(context, id),
+      loadIsSubscribed(context, id),
     capabilities: ({ id }, _, context) =>
       loadCapabilities(
         context,
@@ -64,7 +64,7 @@ const resolvers: Resolvers = {
       ),
     user_joined: ({ id }, _, context) => getUserJoined(context, id),
     subscriptions: ({ id }, _, context) =>
-      getServiceInstanceSubscriptions(context, id),
+      loadServiceInstanceSubscriptions(context, id),
   },
   Query: {
     serviceInstances: async (_, opt, context) => {

@@ -40,7 +40,7 @@ type ServiceInstance implements Node {
 
 type ServiceInstanceEdge {
   cursor: String!
-  node: ServiceInstance!
+  node: ServiceInstance
 }
 
 type ServiceConnection {
@@ -96,6 +96,8 @@ type Query {
     after: ID
     orderBy: ServiceInstanceOrdering!
     orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
   ): ServiceConnection! @auth(requires: [BYPASS])
   serviceInstanceById(service_instance_id: ID): ServiceInstance @auth
   serviceInstanceByIdWithSubscriptions(

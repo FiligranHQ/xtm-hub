@@ -109,6 +109,8 @@ export const servicesListFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
+      searchTerm: $searchTerm
+      filters: $filters
     ) {
       __id
       totalCount
@@ -128,6 +130,8 @@ export const ServiceListQuery = graphql`
     $cursor: ID
     $orderBy: ServiceInstanceOrdering!
     $orderMode: OrderingMode!
+    $filters: [Filter!]
+    $searchTerm: String
   ) {
     ...servicesList_services
   }

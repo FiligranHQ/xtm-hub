@@ -131,9 +131,9 @@ export const loadPublicServiceInstances = (context: PortalContext, opts) => {
   );
 };
 
-export const getIsSubscribed = async (context, id) => {
+export const loadIsSubscribed = async (context, id) => {
   const organizationId = context.user.selected_organization_id;
-  const { organization_subscribed } = await db<{
+  const serviceInstance = await db<{
     organization_subscribed: boolean;
   }>(context, 'ServiceInstance')
     .where('ServiceInstance.id', '=', id)
@@ -153,17 +153,24 @@ export const getIsSubscribed = async (context, id) => {
         `)
     )
     .first();
-  return organization_subscribed;
+  return serviceInstance?.organization_subscribed ?? false;
 };
 
-export const loadServiceInstances = async (context: PortalContext, opts) =>
-  paginate<ServiceInstance, ServiceConnection>(
+export const loadServiceInstances = async (context: PortalContext, opts) => {
+  const { filters, searchTerm, orderBy } = opts;
+  return paginate<ServiceInstance, ServiceConnection>(
     context,
     'ServiceInstance',
-    opts
+    {
+      ...opts,
+      orderBy: `ServiceInstance.${orderBy}`,
+      filters,
+      searchTerm,
+    }
   );
+};
 
-export const getServiceInstanceSubscriptions = async (context, id) => {
+export const loadServiceInstanceSubscriptions = async (context, id) => {
   const subscription = await db<Subscription>(context, 'Subscription')
     .where('Subscription.service_instance_id', '=', id)
     .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
