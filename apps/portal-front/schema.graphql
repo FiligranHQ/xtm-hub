@@ -45,6 +45,7 @@ type Mutation {
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
+  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -118,10 +119,10 @@ type Query {
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
+  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
-  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
   platformRegistrationConnectivityStatus(input: PlatformRegistrationConnectivityStatusInput!): PlatformRegistrationConnectivityStatusResponse!
   platformAssociatedOrganization(platformId: String!): Organization!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
@@ -417,6 +418,15 @@ type OpenAEVScenarioConnection {
   pageInfo: PageInfo!
 }
 
+input OpenCTIPlatformRegistrationStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
 enum PlatformContract {
   CE
   EE
@@ -428,6 +438,7 @@ type RegisteredPlatform implements Node {
   title: String!
   contract: PlatformContract!
   platform_id: String!
+  version: String
 }
 
 input PlatformInput {
@@ -435,6 +446,7 @@ input PlatformInput {
   url: String!
   title: String!
   contract: PlatformContract!
+  version: String
 }
 
 enum PlatformIdentifier {
@@ -491,21 +503,22 @@ enum PlatformRegistrationConnectivityStatus {
   inactive
 }
 
-input OpenCTIPlatformRegistrationStatusInput {
-  platformId: String!
-  token: String!
-}
-
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
 input PlatformRegistrationConnectivityStatusInput {
   platformId: String!
   token: String!
 }
 
+input RefreshPlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+}
+
 type PlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshPlatformRegistrationConnectivityStatusResponse {
   status: PlatformRegistrationConnectivityStatus!
 }
 

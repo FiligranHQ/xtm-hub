@@ -9,7 +9,10 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import RegisterIsPlatformRegisteredQueryGraphql, {
   registerIsPlatformRegisteredQuery,
 } from '@generated/registerIsPlatformRegisteredQuery.graphql';
-import { PlatformContract } from '@generated/registerPlatformMutation.graphql';
+import {
+  PlatformContract,
+  PlatformInput,
+} from '@generated/registerPlatformMutation.graphql';
 import { redirect, useParams } from 'next/navigation';
 import React from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -20,8 +23,13 @@ export const PageLoader: React.FC = () => {
     return redirect('/');
   }
 
-  const { platform_id, platform_title, platform_url, platform_contract } =
-    useDecodedQuery();
+  const {
+    platform_id,
+    platform_title,
+    platform_url,
+    platform_contract,
+    platform_version,
+  } = useDecodedQuery();
 
   const areParametersValid =
     platform_id && platform_title && platform_url && platform_contract;
@@ -35,11 +43,12 @@ export const PageLoader: React.FC = () => {
     );
   useMountingLoader(loadQuery, { input: { platformId: platform_id } });
 
-  const platform = {
+  const platform: PlatformInput = {
     id: platform_id,
     title: platform_title,
     url: platform_url,
     contract: platform_contract as PlatformContract,
+    version: platform_version,
   };
 
   return queryRef ? (
