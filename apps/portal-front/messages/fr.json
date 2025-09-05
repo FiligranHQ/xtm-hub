@@ -13,9 +13,10 @@
   },
   "CapabilityDescription": {
     "Capabilities": {
-      "ADMINISTRATE_ORGANIZATION": "Contournement à l'intérieur d'une organisation",
+      "ADMINISTRATE_ORGANIZATION": "Possibilités de toutes les capacités au sein d'une organisation",
       "MANAGE_ACCESS": "Possibilité d'inviter d'autres utilisateurs dans cette organisation",
       "MANAGE_OPENCTI_REGISTRATION": "Possibilité d'inscrire et de désinscrire des plateformes OpenCTI",
+      "MANAGE_OPENAEV_REGISTRATION": "Possibilité d'inscrire et de désinscrire les plateformes OpenAEV",
       "MANAGE_SUBSCRIPTION": "Possibilité de gérer et d'abonner l'organisation à des services"
     },
     "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
