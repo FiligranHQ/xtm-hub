@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { dbTx, dbUnsecure } from '../../knexfile';
 import Organization from '../model/kanel/public/Organization';
 import { UserInitializer } from '../model/kanel/public/User';
@@ -20,8 +20,8 @@ import {
 } from './initialize.helper';
 
 describe('Dev users seeding', () => {
-  // Set up required roles before all tests
-  beforeAll(async () => {
+  // Set up required roles before each test
+  beforeEach(async () => {
     const trx = await dbTx();
     try {
       // Ensure required capabilities and roles exist
@@ -36,8 +36,8 @@ describe('Dev users seeding', () => {
     }
   });
 
-  // Clean up test data after all tests
-  afterAll(async () => {
+  // Clean up test data after each test
+  afterEach(async () => {
     // Clean up test users and their data
     const testUsers = await dbUnsecure<UserInitializer>('User').where(
       'email',
