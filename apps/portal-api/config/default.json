@@ -89,6 +89,7 @@
     "username": null,
     "password": null,
     "tls": {
+      "ca_path": null,
       "reject_unauthorized": true
     }
   },

@@ -40,6 +40,7 @@ interface PortalConfig {
     username: string | null;
     password: string | null;
     tls: {
+      ca_path: string | null;
       reject_unauthorized: boolean;
     };
   };
@@ -79,6 +80,7 @@ const portalConfig: PortalConfig = {
     username: config.get<string | null>('elasticsearch.username'),
     password: config.get<string | null>('elasticsearch.password'),
     tls: {
+      ca_path: config.get<string | null>('elasticsearch.tls.ca_path'),
       reject_unauthorized: config.get<boolean>(
         'elasticsearch.tls.reject_unauthorized'
       ),

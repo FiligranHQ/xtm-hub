@@ -40,6 +40,7 @@
     "username": "ELASTIC_USER",
     "password": "ELASTIC_PASSWORD",
     "tls": {
+      "ca_path": "ELASTIC__TLS__CA_PATH",
       "reject_unauthorized": "ELASTIC__TLS__REJECT_UNAUTHORIZED"
     }
   },

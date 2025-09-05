@@ -12,6 +12,7 @@ import {
   SearchResponse,
   Sort,
 } from '@elastic/elasticsearch/lib/api/types.js';
+import fs from 'fs';
 import portalConfig from '../../config';
 import { logApp } from '../../utils/app-logger.util';
 
@@ -27,8 +28,9 @@ export class ElasticSearchService {
       username: portalConfig.elasticsearch.username,
       password: portalConfig.elasticsearch.password,
     };
-
+    const ca_path = portalConfig.elasticsearch.tls.ca_path;
     config.tls = {
+      ca: ca_path ? fs.readFileSync(ca_path) : undefined,
       rejectUnauthorized: portalConfig.elasticsearch.tls.reject_unauthorized,
     };
     this.elasticsearchClient = new Client(config);
