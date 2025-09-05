@@ -7,7 +7,7 @@ import { APP_PATH } from '@/utils/path/constant';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { DataTable } from 'filigran-ui';
+import { Badge, DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
 interface AdminServiceTabProps {
@@ -32,6 +32,32 @@ const AdminServiceTab = ({ serviceData }: AdminServiceTabProps) => {
       accessorKey: 'creation_status',
       id: 'creation_status',
       header: t('Service.CreationStatus'),
+    },
+    {
+      accessorKey: 'organizations',
+      id: 'organizations',
+      header: t('Service.Organizations'),
+      cell: ({ row }) => {
+        return (
+          <>
+            {row.original.service_definition?.identifier ===
+              'opencti_registration' && (
+              <Badge>
+                {row.original.subscriptions?.[0]?.organization.name.toUpperCase()}
+              </Badge>
+            )}
+
+            {row.original.service_definition?.identifier !==
+              'opencti_registration' &&
+              row.original.service_definition?.identifier !== 'link' && (
+                <>
+                  {row.original.subscriptions?.length}{' '}
+                  {t('Service.Organizations')}
+                </>
+              )}
+          </>
+        );
+      },
     },
     {
       id: 'actions',

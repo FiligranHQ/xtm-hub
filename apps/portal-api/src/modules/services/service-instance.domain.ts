@@ -163,6 +163,24 @@ export const loadServiceInstances = async (context: PortalContext, opts) =>
     opts
   );
 
+export const getServiceInstanceSubscriptions = async (context, id) => {
+  const subscription = await db<Subscription>(context, 'Subscription')
+    .where('Subscription.service_instance_id', '=', id)
+    .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
+    .select([
+      'Subscription.*',
+      dbRaw(
+        formatRawObject({
+          columnName: 'Organization',
+          typename: 'Organization',
+          as: 'organization',
+        })
+      ),
+    ]);
+
+  return subscription;
+};
+
 export const getUserJoined = async (context, id) => {
   const result = await db<{ user_joined: boolean }>(context, 'ServiceInstance')
     .where('ServiceInstance.id', '=', id)

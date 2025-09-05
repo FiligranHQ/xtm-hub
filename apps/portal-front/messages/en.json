@@ -365,6 +365,7 @@
     },
     "ComingSoon": "Coming soon",
     "CreationStatus": "Creation status",
+    "Organizations": "Organizations",
     "CsvFeed": {
       "Actions": {
         "Added": "The CSV {name} has been added successfully",

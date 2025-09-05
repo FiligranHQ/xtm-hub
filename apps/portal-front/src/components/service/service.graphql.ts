@@ -60,6 +60,11 @@ export const serviceListFragment = graphql`
     public
     join_type
     tags
+    subscriptions {
+      organization {
+        name
+      }
+    }
     links {
       name
       url

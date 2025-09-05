@@ -26,6 +26,7 @@ import { uploadNewFile } from './document/document.helper';
 import { serviceInstanceApp } from './service-instance.app';
 import {
   getIsSubscribed,
+  getServiceInstanceSubscriptions,
   getUserJoined,
   loadLinks,
   loadPublicServiceInstances,
@@ -62,6 +63,8 @@ const resolvers: Resolvers = {
         context.user.selected_organization_id
       ),
     user_joined: ({ id }, _, context) => getUserJoined(context, id),
+    subscriptions: ({ id }, _, context) =>
+      getServiceInstanceSubscriptions(context, id),
   },
   Query: {
     serviceInstances: async (_, opt, context) => {

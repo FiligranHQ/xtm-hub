@@ -365,6 +365,7 @@
     },
     "ComingSoon": "Bientôt disponible",
     "CreationStatus": "Statut de la création",
+    "Organizations": "Organizations",
     "CsvFeed": {
       "Actions": {
         "Added": "{name} a été ajouté",
