@@ -403,12 +403,13 @@
         "Share": "Partager le tableau de bord",
         "Updated": "Le custom dashboard {name} a été modifié avec succès"
       },
-      "AddDashboard": "Nouveau tableau de bord",
-      "DeleteDashboard": "Supprimer le tableau de bord {name}",
+      "Active": "Published",
+      "AddService": "Nouveau tableau de bord",
+      "DeleteService": "Supprimer le tableau de bord {name}",
       "Form": {
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Description du tableau de bord",
-        "ExistingJSONFile": "Fichier JSON existant: ",
+        "ExistingJSONFile": "Fichier JSON existant : {file_name}",
         "ImageLabel": "Images",
         "JSONFile": "Fichier JSON",
         "LabelsLabel": "Étiquettes",
@@ -434,8 +435,9 @@
         "Author": "Auteur",
         "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image"
       },
-      "SureDeleteDashboard": "Etes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
-      "UpdateDashboard": "Tableau de bord des mises à jour"
+      "NonActive": "Draft",
+      "SureDeleteService": "Etes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
+      "UpdateService": "Tableau de bord des mises à jour"
     },
     "ObasScenario": {
       "Actions": {

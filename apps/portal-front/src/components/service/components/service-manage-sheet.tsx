@@ -156,6 +156,8 @@ export const ServiceManageSheet = ({
                 handleAddSheet(values, onCreateSuccess, onError)
               }
               document={undefined}
+              onDelete={() => {}}
+              userCanDelete={userCanDelete}
             />
           }
         </SheetWithPreventingDialog>
