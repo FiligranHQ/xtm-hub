@@ -159,6 +159,9 @@ jobs:
       - name: Run postgres
         run: |
           docker run --env=POSTGRES_USER=portal --env=POSTGRES_PASSWORD=portal-password --env=POSTGRES_DB=cloud-portal --env=PGDATA=/data/postgres postgres:17.2
+      - name: Run minio
+        run: |
+          docker run --env=MINIO_ROOT_USER=portal --env=MINIO_ROOT_PASSWORD=changeme minio/minio:RELEASE.2024-08-03T04-33-23Z server /data --console-address ":9001"
 
   build-test-images:
     needs: [determine-changes, prepare-build]
