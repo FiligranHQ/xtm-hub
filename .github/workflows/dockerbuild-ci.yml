@@ -113,8 +113,7 @@ jobs:
           echo "Starting parallel pull of external service images..."
         
           docker pull postgres:17.2 &
-          POSTGRES_PID=$!
-          
+          POSTGRES_PID=$! &
           docker pull minio/minio:RELEASE.2024-08-03T04-33-23Z &
           MINIO_PID=$!
           
@@ -139,28 +138,26 @@ jobs:
           echo "All external images pulled successfully"
           docker images | grep -E "postgres|minio"
 
-      - name: Save images as artifacts
+#      - name: Save images as artifacts
+#        run: |
+#          echo "Saving images as artifacts..."
+#
+#          docker save \
+#            postgres:17.2 \
+#            minio/minio:RELEASE.2024-08-03T04-33-23Z \
+#            | gzip > external-images.tar.gz
+#
+#
+#      - name: Upload external images
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: external-docker-images
+#          path: external-images.tar.gz
+#          retention-days: 1
+#          compression-level: 0
+      - name: Run postgres and minio
         run: |
-          echo "Saving images as artifacts..."
-          
-          docker save \
-            postgres:17.2 \
-            minio/minio:RELEASE.2024-08-03T04-33-23Z \
-            | gzip > external-images.tar.gz
-                
-
-      - name: Upload external images
-        uses: actions/upload-artifact@v4
-        with:
-          name: external-docker-images
-          path: external-images.tar.gz
-          retention-days: 1
-          compression-level: 0
-      - name: Run postgres
-        run: |
-          docker run --env=POSTGRES_USER=portal --env=POSTGRES_PASSWORD=portal-password --env=POSTGRES_DB=cloud-portal --env=PGDATA=/data/postgres postgres:17.2
-      - name: Run minio
-        run: |
+          docker run --env=POSTGRES_USER=portal --env=POSTGRES_PASSWORD=portal-password --env=POSTGRES_DB=cloud-portal --env=PGDATA=/data/postgres postgres:17.2 & 
           docker run --env=MINIO_ROOT_USER=portal --env=MINIO_ROOT_PASSWORD=changeme minio/minio:RELEASE.2024-08-03T04-33-23Z server /data --console-address ":9001"
 
   build-test-images:
