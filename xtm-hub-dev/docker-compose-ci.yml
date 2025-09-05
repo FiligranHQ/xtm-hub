@@ -56,11 +56,6 @@ services:
         - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
         - type=registry,ref=filigran/portal-api:main
         - type=registry,ref=filigran/portal-api:development
-    depends_on:
-      portal-postgres:
-        condition: service_healthy
-      portal-minio:
-        condition: service_healthy
     environment:
       - DATABASE_HOST=portal-postgres
       - DATABASE_PORT=5432
@@ -98,8 +93,6 @@ services:
       timeout: 5s
       retries: 10
     depends_on:
-      portal-minio:
-        condition: service_healthy
       portal-elasticsearch:
         condition: service_healthy
     environment:
@@ -141,8 +134,6 @@ services:
       portal-front:
         condition: service_healthy
       portal-api:
-        condition: service_healthy
-      portal-minio:
         condition: service_healthy
     environment:
       - E2E_BASE_URL=http://portal-front:3000
