@@ -156,6 +156,9 @@ jobs:
           path: external-images.tar.gz
           retention-days: 1
           compression-level: 0
+      - name: Run postgres
+        run: |
+          docker run --env=POSTGRES_USER=portal --env=POSTGRES_PASSWORD=portal-password --env=POSTGRES_DB=cloud-portal --env=PGDATA=/data/postgres postgres:17.2
 
   build-test-images:
     needs: [determine-changes, prepare-build]
@@ -288,7 +291,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   run-front-unit-tests:
-    needs: build-test-images
+    needs:  [build-test-images, prepare-build, pull-external-images]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

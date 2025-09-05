@@ -98,8 +98,6 @@ services:
       timeout: 5s
       retries: 10
     depends_on:
-      portal-postgres:
-        condition: service_healthy
       portal-minio:
         condition: service_healthy
       portal-elasticsearch:
