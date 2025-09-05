@@ -1,29 +1,34 @@
-enum OpenCTIPlatformContract {
+enum PlatformContract {
   CE
   EE
 }
 
-type OpenCTIPlatform implements Node {
+type RegisteredPlatform implements Node {
   id: ID!
   url: String!
   title: String!
-  contract: OpenCTIPlatformContract!
+  contract: PlatformContract!
   platform_id: String!
 }
 
-input OpenCTIPlatformInput {
+input PlatformInput {
   id: ID!
   url: String!
   title: String!
-  contract: OpenCTIPlatformContract!
+  contract: PlatformContract!
 }
 
-input RegisterOpenCTIPlatformInput {
+enum PlatformIdentifier {
+  opencti
+}
+
+input RegisterPlatformInput {
   organizationId: ID!
-  platform: OpenCTIPlatformInput!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
 }
 
-input CanUnregisterOpenCTIPlatformInput {
+input CanUnregisterPlatformInput {
   platformId: String!
 }
 
@@ -37,18 +42,18 @@ enum PlatformRegistrationStatus {
   never_registered
 }
 
-input IsOpenCTIPlatformRegisteredInput {
+input IsPlatformRegisteredInput {
   platformId: String!
 }
 
-type IsOpenCTIPlatformRegisteredOrganization implements Node {
+type IsPlatformRegisteredOrganization implements Node {
   id: ID!
 }
 
-type IsOpenCTIPlatformRegisteredResponse {
+type IsPlatformRegisteredResponse {
   status: PlatformRegistrationStatus!
   platformTitle: String
-  organization: IsOpenCTIPlatformRegisteredOrganization
+  organization: IsPlatformRegisteredOrganization
 }
 
 type CanUnregisterResponse {
@@ -58,8 +63,13 @@ type CanUnregisterResponse {
   organizationId: ID
 }
 
-input UnregisterOpenCTIPlatformInput {
+input UnregisterPlatformInput {
   platformId: String!
+}
+
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
 }
 
 input OpenCTIPlatformRegistrationStatusInput {
@@ -67,39 +77,49 @@ input OpenCTIPlatformRegistrationStatusInput {
   token: String!
 }
 
-enum OpenCTIPlatformRegistrationStatus {
-  active
-  inactive
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
 }
 
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: OpenCTIPlatformRegistrationStatus!
+input PlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type PlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
 }
 
 type RefreshUserPlatformTokenResponse {
   token: String!
 }
 
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier!
+}
+
 type Query {
-  isOpenCTIPlatformRegistered(
-    input: IsOpenCTIPlatformRegisteredInput!
-  ): IsOpenCTIPlatformRegisteredResponse! @auth
-  canUnregisterOpenCTIPlatform(
-    input: CanUnregisterOpenCTIPlatformInput!
+  isPlatformRegistered(
+    input: IsPlatformRegisteredInput!
+  ): IsPlatformRegisteredResponse! @auth
+  canUnregisterPlatform(
+    input: CanUnregisterPlatformInput!
   ): CanUnregisterResponse! @auth
-  openCTIPlatforms: [OpenCTIPlatform!]! @auth
+  registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
+    @auth
   openCTIPlatformRegistrationStatus(
     input: OpenCTIPlatformRegistrationStatusInput!
   ): OpenCTIPlatformRegistrationStatusResponse!
-  openCTIPlatformAssociatedOrganization(platformId: String!): Organization!
-    @auth
+
+  platformRegistrationConnectivityStatus(
+    input: PlatformRegistrationConnectivityStatusInput!
+  ): PlatformRegistrationConnectivityStatusResponse!
+
+  platformAssociatedOrganization(platformId: String!): Organization! @auth
 }
 
 type Mutation {
-  registerOpenCTIPlatform(
-    input: RegisterOpenCTIPlatformInput!
-  ): RegistrationResponse! @auth
-  unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
-    @auth
+  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse! @auth
+  unregisterPlatform(input: UnregisterPlatformInput): Success! @auth
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth
 }

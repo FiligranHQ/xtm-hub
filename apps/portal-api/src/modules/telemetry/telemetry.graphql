@@ -1,24 +1,20 @@
-enum TargetProduct {
-    open_cti
-}
-
 type TelemetryResponse {
-    result: Boolean!
-    message: String
+  result: Boolean!
+  message: String
 }
 
 input OneClickDeployInput {
-    target_product: TargetProduct!
-    service_instance_id: ID!
-    resource_id: ID!
-    resource_title: String!
-    platform_id: ID!
+  platform_identifier: PlatformIdentifier!
+  service_instance_id: ID!
+  resource_id: ID!
+  resource_title: String!
+  platform_id: ID!
 }
 
 type SendTelemetryMutation {
-    oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
+  oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
 }
 
 extend type Mutation {
-    sendTelemetryEvent: SendTelemetryMutation @auth
+  sendTelemetryEvent: SendTelemetryMutation @auth
 }

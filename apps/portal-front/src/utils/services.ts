@@ -1,7 +1,7 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
-import { registerOpenCTIPlatformListFragment$data } from '@generated/registerOpenCTIPlatformListFragment.graphql';
+import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -22,7 +22,7 @@ export const isRegistrationService = (
   );
 
 export const openCTIPlatformToServiceInstanceCardData = (
-  platform: registerOpenCTIPlatformListFragment$data['openCTIPlatforms'][number]
+  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ): ServiceInstanceCardData => {
   return {
     id: platform.id,

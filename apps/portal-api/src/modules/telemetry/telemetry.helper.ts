@@ -1,15 +1,15 @@
 import {
-  OpenCtiPlatformContract,
+  PlatformContract,
+  PlatformIdentifier,
   ServiceDefinitionIdentifier,
-  TargetProduct,
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
-import { loadServiceDefinition } from '../services/service-instance.domain';
 
+import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
@@ -61,10 +61,10 @@ const ServiceIdentifierToEventService = new Map<
   ],
 ]);
 
-const TargetProductToTelemetryTargetProdutct = new Map<
-  TargetProduct,
+const TelemetryTargetProductMappedByPlatformIdentifier = new Map<
+  PlatformIdentifier,
   TelemetryTargetProduct
->([[TargetProduct.OpenCti, TelemetryTargetProduct.OPEN_CTI]]);
+>([[PlatformIdentifier.Opencti, TelemetryTargetProduct.OPEN_CTI]]);
 
 export function shouldSendEventForService(
   service: ServiceDefinitionIdentifier
@@ -187,7 +187,7 @@ export async function buildCreateEvent(
     timestamp
   );
 
-  const serviceDefinition = await loadServiceDefinition(
+  const serviceDefinition = await loadServiceDefinitionByServiceInstance(
     context,
     document.service_instance_id
   );
@@ -212,7 +212,7 @@ export function buildRegisterEvent(
   user_id: UserId,
   target_product: TelemetryTargetProduct,
   platform_id: string,
-  platform_contract: OpenCtiPlatformContract,
+  platform_contract: PlatformContract,
   timestamp?: Date
 ): RegisterPlatformEvent {
   const baseEvent = buildBaseEvent(
@@ -239,7 +239,7 @@ export function buildOneClickDeployEvent(
   organization_name: string,
   user_id: UserId,
   service: ServiceDefinitionIdentifier,
-  target_product: TargetProduct,
+  platform_identifier: PlatformIdentifier,
   platform_id: string,
   resource_id: string,
   resource_title: string,
@@ -255,7 +255,8 @@ export function buildOneClickDeployEvent(
   return {
     event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
     ...baseEvent,
-    target_product: TargetProductToTelemetryTargetProdutct.get(target_product),
+    target_product:
+      TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
     service: ServiceIdentifierToEventService.get(service),
     service_type: ServiceIdentifierToEventServiceType.get(service),
     resource_id,

@@ -3,7 +3,7 @@ import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { TargetProductEnum } from '@generated/models/TargetProduct.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { oneClickDeployMutation } from '@generated/oneClickDeployMutation.graphql';
 import { oneClickDeployOctiPlatformFragment$key } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
 import { oneClickDeployOctiPlatformsQuery } from '@generated/oneClickDeployOctiPlatformsQuery.graphql';
@@ -23,7 +23,7 @@ import {
 } from 'react-relay';
 
 export const OneClickDeployOctiPlatformFragment = graphql`
-  fragment oneClickDeployOctiPlatformFragment on OpenCTIPlatform {
+  fragment oneClickDeployOctiPlatformFragment on RegisteredPlatform {
     id
     title
     url
@@ -31,8 +31,8 @@ export const OneClickDeployOctiPlatformFragment = graphql`
 `;
 
 export const OneClickDeployOctiPlatformsQuery = graphql`
-  query oneClickDeployOctiPlatformsQuery {
-    openCTIPlatforms {
+  query oneClickDeployOctiPlatformsQuery($input: RegisteredPlatformsInput!) {
+    registeredPlatforms(input: $input) {
       ...oneClickDeployOctiPlatformFragment
     }
   }
@@ -46,9 +46,9 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   const t = useTranslations();
   const queryData = useLazyLoadQuery<oneClickDeployOctiPlatformsQuery>(
     OneClickDeployOctiPlatformsQuery,
-    {}
+    { input: { identifier: PlatformIdentifierEnum.OPENCTI } }
   );
-  const platformsOcti = queryData.openCTIPlatforms.map((instanceRef) =>
+  const platformsOcti = queryData.registeredPlatforms.map((instanceRef) =>
     useFragment<oneClickDeployOctiPlatformFragment$key>(
       OneClickDeployOctiPlatformFragment,
       instanceRef
@@ -83,7 +83,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
       sendOneClickDeployEvent({
         variables: {
           input: {
-            target_product: TargetProductEnum.OPEN_CTI,
+            platform_identifier: PlatformIdentifierEnum.OPENCTI,
             service_instance_id: documentData.service_instance!.id,
             resource_id: documentData.id,
             resource_title: documentData.name,

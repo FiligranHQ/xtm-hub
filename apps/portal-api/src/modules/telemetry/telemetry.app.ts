@@ -7,7 +7,7 @@ import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
-import { loadServiceDefinition } from '../services/service-instance.domain';
+import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
 import { buildOneClickDeployEvent } from './telemetry.helper';
 import { TelemetryEvent } from './telemetry.types';
 
@@ -36,7 +36,7 @@ export const telemetryApp = {
       'id',
       selected_organization_id
     );
-    const serviceDefinition = await loadServiceDefinition(
+    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       context,
       extractId<ServiceInstanceId>(input.service_instance_id)
     );
@@ -46,7 +46,7 @@ export const telemetryApp = {
       selectedOrga.name,
       userId,
       serviceDefinition.identifier,
-      input.target_product,
+      input.platform_identifier,
       extractId<'OpenCTIPlatform'>(input.platform_id),
       extractId<DocumentId>(input.resource_id),
       input.resource_title

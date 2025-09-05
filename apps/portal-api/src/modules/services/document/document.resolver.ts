@@ -15,7 +15,7 @@ import {
 } from '../../telemetry/telemetry.helper';
 import {
   getServiceInstance,
-  loadServiceDefinition,
+  loadServiceDefinitionByServiceInstance,
 } from '../service-instance.domain';
 import {
   createDocument,
@@ -113,10 +113,11 @@ const resolvers: Resolvers = {
         );
 
         try {
-          const serviceDefinition = await loadServiceDefinition(
-            context,
-            document.service_instance_id
-          );
+          const serviceDefinition =
+            await loadServiceDefinitionByServiceInstance(
+              context,
+              document.service_instance_id
+            );
 
           if (shouldSendEventForService(serviceDefinition.identifier)) {
             const selectedOrga = await loadOrganizationBy(

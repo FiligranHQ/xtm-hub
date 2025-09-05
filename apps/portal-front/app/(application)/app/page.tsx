@@ -10,14 +10,15 @@ import { useCallback } from 'react';
 import { useQueryLoader } from 'react-relay';
 import { useLocalStorage } from 'usehooks-ts';
 
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   OrderingMode,
   publicServiceQuery,
   ServiceInstanceOrdering,
 } from '@generated/publicServiceQuery.graphql';
-import RegisterOpenCTIPlatformsQueryGraphql, {
-  registerOpenCTIPlatformsQuery,
-} from '@generated/registerOpenCTIPlatformsQuery.graphql';
+import RegisterRegisteredPlatformsQueryGraphql, {
+  registerRegisteredPlatformsQuery,
+} from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 
 export const dynamic = 'force-dynamic';
@@ -53,10 +54,12 @@ const Page: React.FunctionComponent = () => {
 
   // OpenCTI Platforms
   const [queryRefOpenCTIPlatforms, loadQueryOpenCTIPlatforms] =
-    useQueryLoader<registerOpenCTIPlatformsQuery>(
-      RegisterOpenCTIPlatformsQueryGraphql
+    useQueryLoader<registerRegisteredPlatformsQuery>(
+      RegisterRegisteredPlatformsQueryGraphql
     );
-  useMountingLoader(loadQueryOpenCTIPlatforms, {});
+  useMountingLoader(loadQueryOpenCTIPlatforms, {
+    input: { identifier: PlatformIdentifierEnum.OPENCTI },
+  });
 
   const handleUpdate = useCallback(() => {
     loadQueryUserServiceOwned(
@@ -75,7 +78,10 @@ const Page: React.FunctionComponent = () => {
       },
       { fetchPolicy: 'network-only' }
     );
-    loadQueryOpenCTIPlatforms({}, { fetchPolicy: 'network-only' });
+    loadQueryOpenCTIPlatforms(
+      { input: { identifier: PlatformIdentifierEnum.OPENCTI } },
+      { fetchPolicy: 'network-only' }
+    );
   }, []);
 
   if (

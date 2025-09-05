@@ -67,7 +67,7 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
-export type CanUnregisterOpenCtiPlatformInput = {
+export type CanUnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
 };
 
@@ -286,18 +286,18 @@ export type GenericServiceCapability = Node & {
   name?: Maybe<Scalars['String']['output']>;
 };
 
-export type IsOpenCtiPlatformRegisteredInput = {
+export type IsPlatformRegisteredInput = {
   platformId: Scalars['String']['input'];
 };
 
-export type IsOpenCtiPlatformRegisteredOrganization = Node & {
-  __typename?: 'IsOpenCTIPlatformRegisteredOrganization';
+export type IsPlatformRegisteredOrganization = Node & {
+  __typename?: 'IsPlatformRegisteredOrganization';
   id: Scalars['ID']['output'];
 };
 
-export type IsOpenCtiPlatformRegisteredResponse = {
-  __typename?: 'IsOpenCTIPlatformRegisteredResponse';
-  organization?: Maybe<IsOpenCtiPlatformRegisteredOrganization>;
+export type IsPlatformRegisteredResponse = {
+  __typename?: 'IsPlatformRegisteredResponse';
+  organization?: Maybe<IsPlatformRegisteredOrganization>;
   platformTitle?: Maybe<Scalars['String']['output']>;
   status: PlatformRegistrationStatus;
 };
@@ -390,12 +390,12 @@ export type Mutation = {
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse;
-  registerOpenCTIPlatform: RegistrationResponse;
+  registerPlatform: RegistrationResponse;
   removePendingUserFromOrganization?: Maybe<User>;
   removeUserFromOrganization?: Maybe<User>;
   resetPassword: Success;
   sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
-  unregisterOpenCTIPlatform: Success;
+  unregisterPlatform: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
   updateOpenAEVScenario: OpenAevScenario;
@@ -619,8 +619,8 @@ export type MutationMergeTestArgs = {
 };
 
 
-export type MutationRegisterOpenCtiPlatformArgs = {
-  input: RegisterOpenCtiPlatformInput;
+export type MutationRegisterPlatformArgs = {
+  input: RegisterPlatformInput;
 };
 
 
@@ -636,8 +636,8 @@ export type MutationRemoveUserFromOrganizationArgs = {
 };
 
 
-export type MutationUnregisterOpenCtiPlatformArgs = {
-  input?: InputMaybe<UnregisterOpenCtiPlatformInput>;
+export type MutationUnregisterPlatformArgs = {
+  input?: InputMaybe<UnregisterPlatformInput>;
 };
 
 
@@ -676,10 +676,10 @@ export type Node = {
 
 export type OneClickDeployInput = {
   platform_id: Scalars['ID']['input'];
+  platform_identifier: PlatformIdentifier;
   resource_id: Scalars['ID']['input'];
   resource_title: Scalars['String']['input'];
   service_instance_id: Scalars['ID']['input'];
-  target_product: TargetProduct;
 };
 
 export type OpenAevScenario = Node & {
@@ -721,32 +721,6 @@ export type OpenAevScenarioEdge = {
   node: OpenAevScenario;
 };
 
-export type OpenCtiPlatform = Node & {
-  __typename?: 'OpenCTIPlatform';
-  contract: OpenCtiPlatformContract;
-  id: Scalars['ID']['output'];
-  platform_id: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  url: Scalars['String']['output'];
-};
-
-export enum OpenCtiPlatformContract {
-  Ce = 'CE',
-  Ee = 'EE'
-}
-
-export type OpenCtiPlatformInput = {
-  contract: OpenCtiPlatformContract;
-  id: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
-  url: Scalars['String']['input'];
-};
-
-export enum OpenCtiPlatformRegistrationStatus {
-  Active = 'active',
-  Inactive = 'inactive'
-}
-
 export type OpenCtiPlatformRegistrationStatusInput = {
   platformId: Scalars['String']['input'];
   token: Scalars['String']['input'];
@@ -754,7 +728,7 @@ export type OpenCtiPlatformRegistrationStatusInput = {
 
 export type OpenCtiPlatformRegistrationStatusResponse = {
   __typename?: 'OpenCTIPlatformRegistrationStatusResponse';
-  status: OpenCtiPlatformRegistrationStatus;
+  status: PlatformRegistrationConnectivityStatus;
 };
 
 export enum OrderingMode {
@@ -821,11 +795,42 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export enum PlatformContract {
+  Ce = 'CE',
+  Ee = 'EE'
+}
+
+export enum PlatformIdentifier {
+  Opencti = 'opencti'
+}
+
+export type PlatformInput = {
+  contract: PlatformContract;
+  id: Scalars['ID']['input'];
+  title: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+};
+
 export type PlatformProvider = {
   __typename?: 'PlatformProvider';
   name: Scalars['String']['output'];
   provider: Scalars['String']['output'];
   type: Scalars['String']['output'];
+};
+
+export enum PlatformRegistrationConnectivityStatus {
+  Active = 'active',
+  Inactive = 'inactive'
+}
+
+export type PlatformRegistrationConnectivityStatusInput = {
+  platformId: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
+export type PlatformRegistrationConnectivityStatusResponse = {
+  __typename?: 'PlatformRegistrationConnectivityStatusResponse';
+  status: PlatformRegistrationConnectivityStatus;
 };
 
 export enum PlatformRegistrationStatus {
@@ -836,7 +841,7 @@ export enum PlatformRegistrationStatus {
 
 export type Query = {
   __typename?: 'Query';
-  canUnregisterOpenCTIPlatform: CanUnregisterResponse;
+  canUnregisterPlatform: CanUnregisterResponse;
   csvFeed?: Maybe<CsvFeed>;
   csvFeeds: CsvFeedConnection;
   customDashboard?: Maybe<CustomDashboard>;
@@ -844,21 +849,21 @@ export type Query = {
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
-  isOpenCTIPlatformRegistered: IsOpenCtiPlatformRegisteredResponse;
+  isPlatformRegistered: IsPlatformRegisteredResponse;
   label?: Maybe<Label>;
   labels?: Maybe<LabelConnection>;
   me?: Maybe<User>;
   node?: Maybe<Node>;
   openAEVScenario?: Maybe<OpenAevScenario>;
   openAEVScenarios: OpenAevScenarioConnection;
-  openCTIPlatformAssociatedOrganization: Organization;
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
-  openCTIPlatforms: Array<OpenCtiPlatform>;
   organization?: Maybe<Organization>;
-  organizationAdministrators: Array<User>;
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
+  platformAssociatedOrganization: Organization;
+  platformRegistrationConnectivityStatus: PlatformRegistrationConnectivityStatusResponse;
   publicServiceInstances: ServiceConnection;
+  registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
   seoCsvFeedBySlug?: Maybe<CsvFeed>;
@@ -882,11 +887,12 @@ export type Query = {
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   userServiceOwned?: Maybe<UserServiceConnection>;
   users: UserConnection;
+  usersWithCapabilitiesInOrganization: Array<User>;
 };
 
 
-export type QueryCanUnregisterOpenCtiPlatformArgs = {
-  input: CanUnregisterOpenCtiPlatformInput;
+export type QueryCanUnregisterPlatformArgs = {
+  input: CanUnregisterPlatformInput;
 };
 
 
@@ -948,8 +954,8 @@ export type QueryDocumentsArgs = {
 };
 
 
-export type QueryIsOpenCtiPlatformRegisteredArgs = {
-  input: IsOpenCtiPlatformRegisteredInput;
+export type QueryIsPlatformRegisteredArgs = {
+  input: IsPlatformRegisteredInput;
 };
 
 
@@ -989,11 +995,6 @@ export type QueryOpenAevScenariosArgs = {
 };
 
 
-export type QueryOpenCtiPlatformAssociatedOrganizationArgs = {
-  platformId: Scalars['String']['input'];
-};
-
-
 export type QueryOpenCtiPlatformRegistrationStatusArgs = {
   input: OpenCtiPlatformRegistrationStatusInput;
 };
@@ -1001,11 +1002,6 @@ export type QueryOpenCtiPlatformRegistrationStatusArgs = {
 
 export type QueryOrganizationArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QueryOrganizationAdministratorsArgs = {
-  organizationId: Scalars['ID']['input'];
 };
 
 
@@ -1028,11 +1024,26 @@ export type QueryPendingUsersArgs = {
 };
 
 
+export type QueryPlatformAssociatedOrganizationArgs = {
+  platformId: Scalars['String']['input'];
+};
+
+
+export type QueryPlatformRegistrationConnectivityStatusArgs = {
+  input: PlatformRegistrationConnectivityStatusInput;
+};
+
+
 export type QueryPublicServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryRegisteredPlatformsArgs = {
+  input: RegisteredPlatformsInput;
 };
 
 
@@ -1144,14 +1155,33 @@ export type QueryUsersArgs = {
   searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type QueryUsersWithCapabilitiesInOrganizationArgs = {
+  input: UsersWithCapabilitiesInOrganizationInput;
+};
+
 export type RefreshUserPlatformTokenResponse = {
   __typename?: 'RefreshUserPlatformTokenResponse';
   token: Scalars['String']['output'];
 };
 
-export type RegisterOpenCtiPlatformInput = {
+export type RegisterPlatformInput = {
+  identifier: PlatformIdentifier;
   organizationId: Scalars['ID']['input'];
-  platform: OpenCtiPlatformInput;
+  platform: PlatformInput;
+};
+
+export type RegisteredPlatform = Node & {
+  __typename?: 'RegisteredPlatform';
+  contract: PlatformContract;
+  id: Scalars['ID']['output'];
+  platform_id: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+};
+
+export type RegisteredPlatformsInput = {
+  identifier: PlatformIdentifier;
 };
 
 export type RegistrationResponse = {
@@ -1336,7 +1366,7 @@ export type SubscribedServiceInstance = {
 
 export type SubscribedServiceInstanceConfiguration = {
   __typename?: 'SubscribedServiceInstanceConfiguration';
-  platform_contract: OpenCtiPlatformContract;
+  platform_contract: PlatformContract;
   platform_id: Scalars['String']['output'];
   platform_title: Scalars['String']['output'];
   platform_url: Scalars['String']['output'];
@@ -1396,10 +1426,6 @@ export type Success = {
   success: Scalars['Boolean']['output'];
 };
 
-export enum TargetProduct {
-  OpenCti = 'open_cti'
-}
-
 export type TelemetryResponse = {
   __typename?: 'TelemetryResponse';
   message?: Maybe<Scalars['String']['output']>;
@@ -1413,7 +1439,7 @@ export type TrackingSubscription = {
   edit?: Maybe<ActionTracking>;
 };
 
-export type UnregisterOpenCtiPlatformInput = {
+export type UnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
 };
 
@@ -1573,6 +1599,11 @@ export type UserSubscription = {
   merge?: Maybe<MergeEvent>;
 };
 
+export type UsersWithCapabilitiesInOrganizationInput = {
+  capabilities: Array<OrganizationCapability>;
+  organizationId: Scalars['ID']['input'];
+};
+
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
@@ -1640,7 +1671,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( IsOpenCtiPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( OpenAevScenario ) | ( OpenCtiPlatform ) | ( Organization ) | ( OrganizationCapabilities ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -1652,7 +1683,7 @@ export type ResolversTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  CanUnregisterOpenCTIPlatformInput: CanUnregisterOpenCtiPlatformInput;
+  CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
   CreateCsvFeedInput: CreateCsvFeedInput;
@@ -1679,9 +1710,9 @@ export type ResolversTypes = ResolversObject<{
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
-  IsOpenCTIPlatformRegisteredInput: IsOpenCtiPlatformRegisteredInput;
-  IsOpenCTIPlatformRegisteredOrganization: ResolverTypeWrapper<IsOpenCtiPlatformRegisteredOrganization>;
-  IsOpenCTIPlatformRegisteredResponse: ResolverTypeWrapper<IsOpenCtiPlatformRegisteredResponse>;
+  IsPlatformRegisteredInput: IsPlatformRegisteredInput;
+  IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
+  IsPlatformRegisteredResponse: ResolverTypeWrapper<IsPlatformRegisteredResponse>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   Label: ResolverTypeWrapper<Label>;
   LabelConnection: ResolverTypeWrapper<LabelConnection>;
@@ -1696,10 +1727,6 @@ export type ResolversTypes = ResolversObject<{
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
   OpenAEVScenarioConnection: ResolverTypeWrapper<OpenAevScenarioConnection>;
   OpenAEVScenarioEdge: ResolverTypeWrapper<OpenAevScenarioEdge>;
-  OpenCTIPlatform: ResolverTypeWrapper<OpenCtiPlatform>;
-  OpenCTIPlatformContract: OpenCtiPlatformContract;
-  OpenCTIPlatformInput: OpenCtiPlatformInput;
-  OpenCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatus;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
   OpenCTIPlatformRegistrationStatusResponse: ResolverTypeWrapper<OpenCtiPlatformRegistrationStatusResponse>;
   OrderingMode: OrderingMode;
@@ -1712,11 +1739,19 @@ export type ResolversTypes = ResolversObject<{
   OrganizationInput: OrganizationInput;
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
+  PlatformContract: PlatformContract;
+  PlatformIdentifier: PlatformIdentifier;
+  PlatformInput: PlatformInput;
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
+  PlatformRegistrationConnectivityStatus: PlatformRegistrationConnectivityStatus;
+  PlatformRegistrationConnectivityStatusInput: PlatformRegistrationConnectivityStatusInput;
+  PlatformRegistrationConnectivityStatusResponse: ResolverTypeWrapper<PlatformRegistrationConnectivityStatusResponse>;
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   Query: ResolverTypeWrapper<{}>;
   RefreshUserPlatformTokenResponse: ResolverTypeWrapper<RefreshUserPlatformTokenResponse>;
-  RegisterOpenCTIPlatformInput: RegisterOpenCtiPlatformInput;
+  RegisterPlatformInput: RegisterPlatformInput;
+  RegisteredPlatform: ResolverTypeWrapper<RegisteredPlatform>;
+  RegisteredPlatformsInput: RegisteredPlatformsInput;
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
@@ -1746,10 +1781,9 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionModel: ResolverTypeWrapper<SubscriptionModel>;
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
-  TargetProduct: TargetProduct;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
-  UnregisterOpenCTIPlatformInput: UnregisterOpenCtiPlatformInput;
+  UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
@@ -1769,6 +1803,7 @@ export type ResolversTypes = ResolversObject<{
   UserServiceEdge: ResolverTypeWrapper<UserServiceEdge>;
   UserServiceOrdering: UserServiceOrdering;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
+  UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -1780,7 +1815,7 @@ export type ResolversParentTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
-  CanUnregisterOpenCTIPlatformInput: CanUnregisterOpenCtiPlatformInput;
+  CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
   CreateCsvFeedInput: CreateCsvFeedInput;
@@ -1805,9 +1840,9 @@ export type ResolversParentTypes = ResolversObject<{
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
-  IsOpenCTIPlatformRegisteredInput: IsOpenCtiPlatformRegisteredInput;
-  IsOpenCTIPlatformRegisteredOrganization: IsOpenCtiPlatformRegisteredOrganization;
-  IsOpenCTIPlatformRegisteredResponse: IsOpenCtiPlatformRegisteredResponse;
+  IsPlatformRegisteredInput: IsPlatformRegisteredInput;
+  IsPlatformRegisteredOrganization: IsPlatformRegisteredOrganization;
+  IsPlatformRegisteredResponse: IsPlatformRegisteredResponse;
   JSON: Scalars['JSON']['output'];
   Label: Label;
   LabelConnection: LabelConnection;
@@ -1821,8 +1856,6 @@ export type ResolversParentTypes = ResolversObject<{
   OpenAEVScenario: OpenAevScenario;
   OpenAEVScenarioConnection: OpenAevScenarioConnection;
   OpenAEVScenarioEdge: OpenAevScenarioEdge;
-  OpenCTIPlatform: OpenCtiPlatform;
-  OpenCTIPlatformInput: OpenCtiPlatformInput;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
   OpenCTIPlatformRegistrationStatusResponse: OpenCtiPlatformRegistrationStatusResponse;
   Organization: Organization;
@@ -1832,10 +1865,15 @@ export type ResolversParentTypes = ResolversObject<{
   OrganizationEdge: OrganizationEdge;
   OrganizationInput: OrganizationInput;
   PageInfo: PageInfo;
+  PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
+  PlatformRegistrationConnectivityStatusInput: PlatformRegistrationConnectivityStatusInput;
+  PlatformRegistrationConnectivityStatusResponse: PlatformRegistrationConnectivityStatusResponse;
   Query: {};
   RefreshUserPlatformTokenResponse: RefreshUserPlatformTokenResponse;
-  RegisterOpenCTIPlatformInput: RegisterOpenCtiPlatformInput;
+  RegisterPlatformInput: RegisterPlatformInput;
+  RegisteredPlatform: RegisteredPlatform;
+  RegisteredPlatformsInput: RegisteredPlatformsInput;
   RegistrationResponse: RegistrationResponse;
   RolePortal: RolePortal;
   SendTelemetryMutation: SendTelemetryMutation;
@@ -1859,7 +1897,7 @@ export type ResolversParentTypes = ResolversObject<{
   Success: Success;
   TelemetryResponse: TelemetryResponse;
   TrackingSubscription: TrackingSubscription;
-  UnregisterOpenCTIPlatformInput: UnregisterOpenCtiPlatformInput;
+  UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
@@ -1877,6 +1915,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserServiceDeleted: UserServiceDeleted;
   UserServiceEdge: UserServiceEdge;
   UserSubscription: UserSubscription;
+  UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
 }>;
 
 export type AuthDirectiveArgs = {
@@ -2041,13 +2080,13 @@ export type GenericServiceCapabilityResolvers<ContextType = PortalContext, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type IsOpenCtiPlatformRegisteredOrganizationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IsOpenCTIPlatformRegisteredOrganization'] = ResolversParentTypes['IsOpenCTIPlatformRegisteredOrganization']> = ResolversObject<{
+export type IsPlatformRegisteredOrganizationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IsPlatformRegisteredOrganization'] = ResolversParentTypes['IsPlatformRegisteredOrganization']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type IsOpenCtiPlatformRegisteredResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IsOpenCTIPlatformRegisteredResponse'] = ResolversParentTypes['IsOpenCTIPlatformRegisteredResponse']> = ResolversObject<{
-  organization?: Resolver<Maybe<ResolversTypes['IsOpenCTIPlatformRegisteredOrganization']>, ParentType, ContextType>;
+export type IsPlatformRegisteredResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IsPlatformRegisteredResponse'] = ResolversParentTypes['IsPlatformRegisteredResponse']> = ResolversObject<{
+  organization?: Resolver<Maybe<ResolversTypes['IsPlatformRegisteredOrganization']>, ParentType, ContextType>;
   platformTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['PlatformRegistrationStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2139,19 +2178,19 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
   refreshUserPlatformToken?: Resolver<ResolversTypes['RefreshUserPlatformTokenResponse'], ParentType, ContextType>;
-  registerOpenCTIPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterOpenCtiPlatformArgs, 'input'>>;
+  registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
-  unregisterOpenCTIPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterOpenCtiPlatformArgs>>;
+  unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'IsOpenCTIPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'OpenAEVScenario' | 'OpenCTIPlatform' | 'Organization' | 'OrganizationCapabilities' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'Document' | 'GenericServiceCapability' | 'IsPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -2194,17 +2233,8 @@ export type OpenAevScenarioEdgeResolvers<ContextType = PortalContext, ParentType
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OpenCtiPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenCTIPlatform'] = ResolversParentTypes['OpenCTIPlatform']> = ResolversObject<{
-  contract?: Resolver<ResolversTypes['OpenCTIPlatformContract'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenCTIPlatformRegistrationStatusResponse'] = ResolversParentTypes['OpenCTIPlatformRegistrationStatusResponse']> = ResolversObject<{
-  status?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatus'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2252,8 +2282,13 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PlatformRegistrationConnectivityStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformRegistrationConnectivityStatusResponse'] = ResolversParentTypes['PlatformRegistrationConnectivityStatusResponse']> = ResolversObject<{
+  status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  canUnregisterOpenCTIPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterOpenCtiPlatformArgs, 'input'>>;
+  canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
   csvFeeds?: Resolver<ResolversTypes['CsvFeedConnection'], ParentType, ContextType, RequireFields<QueryCsvFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
@@ -2261,21 +2296,21 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  isOpenCTIPlatformRegistered?: Resolver<ResolversTypes['IsOpenCTIPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsOpenCtiPlatformRegisteredArgs, 'input'>>;
+  isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   label?: Resolver<Maybe<ResolversTypes['Label']>, ParentType, ContextType, RequireFields<QueryLabelArgs, 'id'>>;
   labels?: Resolver<Maybe<ResolversTypes['LabelConnection']>, ParentType, ContextType, RequireFields<QueryLabelsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   openAEVScenario?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QueryOpenAevScenarioArgs>>;
   openAEVScenarios?: Resolver<ResolversTypes['OpenAEVScenarioConnection'], ParentType, ContextType, RequireFields<QueryOpenAevScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  openCTIPlatformAssociatedOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformAssociatedOrganizationArgs, 'platformId'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
-  openCTIPlatforms?: Resolver<Array<ResolversTypes['OpenCTIPlatform']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
-  organizationAdministrators?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryOrganizationAdministratorsArgs, 'organizationId'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  platformAssociatedOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
+  platformRegistrationConnectivityStatus?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<QueryPlatformRegistrationConnectivityStatusArgs, 'input'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
   seoCsvFeedBySlug?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QuerySeoCsvFeedBySlugArgs>>;
@@ -2299,10 +2334,20 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   userServiceOwned?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
 }>;
 
 export type RefreshUserPlatformTokenResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshUserPlatformTokenResponse'] = ResolversParentTypes['RefreshUserPlatformTokenResponse']> = ResolversObject<{
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegisteredPlatform'] = ResolversParentTypes['RegisteredPlatform']> = ResolversObject<{
+  contract?: Resolver<ResolversTypes['PlatformContract'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2426,7 +2471,7 @@ export type SubscribedServiceInstanceResolvers<ContextType = PortalContext, Pare
 }>;
 
 export type SubscribedServiceInstanceConfigurationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscribedServiceInstanceConfiguration'] = ResolversParentTypes['SubscribedServiceInstanceConfiguration']> = ResolversObject<{
-  platform_contract?: Resolver<ResolversTypes['OpenCTIPlatformContract'], ParentType, ContextType>;
+  platform_contract?: Resolver<ResolversTypes['PlatformContract'], ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2590,8 +2635,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
-  IsOpenCTIPlatformRegisteredOrganization?: IsOpenCtiPlatformRegisteredOrganizationResolvers<ContextType>;
-  IsOpenCTIPlatformRegisteredResponse?: IsOpenCtiPlatformRegisteredResponseResolvers<ContextType>;
+  IsPlatformRegisteredOrganization?: IsPlatformRegisteredOrganizationResolvers<ContextType>;
+  IsPlatformRegisteredResponse?: IsPlatformRegisteredResponseResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Label?: LabelResolvers<ContextType>;
   LabelConnection?: LabelConnectionResolvers<ContextType>;
@@ -2604,7 +2649,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
   OpenAEVScenarioConnection?: OpenAevScenarioConnectionResolvers<ContextType>;
   OpenAEVScenarioEdge?: OpenAevScenarioEdgeResolvers<ContextType>;
-  OpenCTIPlatform?: OpenCtiPlatformResolvers<ContextType>;
   OpenCTIPlatformRegistrationStatusResponse?: OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
@@ -2612,8 +2656,10 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
+  PlatformRegistrationConnectivityStatusResponse?: PlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RefreshUserPlatformTokenResponse?: RefreshUserPlatformTokenResponseResolvers<ContextType>;
+  RegisteredPlatform?: RegisteredPlatformResolvers<ContextType>;
   RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
   SendTelemetryMutation?: SendTelemetryMutationResolvers<ContextType>;

@@ -33,12 +33,12 @@ import {
   getCapabilities,
   getOrganizations,
   getRolesPortal,
-  loadOrganizationAdministrators,
   loadPendingUsers,
   loadUnsecureUser,
   loadUserBy,
   loadUserDetails,
   loadUsers,
+  loadUsersByCapabilitiesInOrganization,
   resetPassword,
   updateUser,
   updateUserAtLogin,
@@ -76,10 +76,11 @@ const resolvers: Resolvers = {
         'User.id': id as UserId,
       });
     },
-    organizationAdministrators: async (_, { organizationId }, context) => {
-      return loadOrganizationAdministrators(
+    usersWithCapabilitiesInOrganization: async (_, { input }, context) => {
+      return loadUsersByCapabilitiesInOrganization(
         context,
-        fromGlobalId(organizationId).id
+        fromGlobalId(input.organizationId).id,
+        input.capabilities
       );
     },
     users: async (

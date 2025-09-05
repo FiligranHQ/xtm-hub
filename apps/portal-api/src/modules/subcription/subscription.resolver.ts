@@ -22,7 +22,7 @@ import {
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import {
-  loadServiceDefinition,
+  loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
@@ -107,7 +107,7 @@ const resolvers: Resolvers = {
           selectedOrga.personal_space
         );
 
-        const serviceDefinition = await loadServiceDefinition(
+        const serviceDefinition = await loadServiceDefinitionByServiceInstance(
           context,
           filledSubscription.service_instance_id
         );

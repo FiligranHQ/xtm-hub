@@ -1,14 +1,13 @@
+import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
 import { AddSubscriptionMutation } from '@/components/subcription/subscription.graphql';
 import { getServiceInstanceUrl } from '@/lib/utils';
 import { ServiceInstanceJoinTypeEnum } from '@generated/models/ServiceInstanceJoinType.enum';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
-import registerOpenCTIPlatformListFragmentGraphql, {
-  registerOpenCTIPlatformListFragment$key,
-} from '@generated/registerOpenCTIPlatformListFragment.graphql';
-import RegisterOpenCTIPlatformsQueryGraphql, {
-  registerOpenCTIPlatformsQuery,
-} from '@generated/registerOpenCTIPlatformsQuery.graphql';
+import registerRegisteredPlatformListFragmentGraphql, {
+  registerRegisteredPlatformListFragment$key,
+} from '@generated/registerRegisteredPlatformListFragment.graphql';
+import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { subscriptionCreateMutation } from '@generated/subscriptionCreateMutation.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
@@ -53,19 +52,19 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
 };
 
 const getOpenCTIInstances = (
-  queryRef: PreloadedQuery<registerOpenCTIPlatformsQuery>
+  queryRef: PreloadedQuery<registerRegisteredPlatformsQuery>
 ) => {
-  const queryData = usePreloadedQuery<registerOpenCTIPlatformsQuery>(
-    RegisterOpenCTIPlatformsQueryGraphql,
+  const queryData = usePreloadedQuery<registerRegisteredPlatformsQuery>(
+    RegisterRegisteredPlatformsQuery,
     queryRef
   );
 
   const [data] = useRefetchableFragment<
-    registerOpenCTIPlatformsQuery,
-    registerOpenCTIPlatformListFragment$key
-  >(registerOpenCTIPlatformListFragmentGraphql, queryData);
+    registerRegisteredPlatformsQuery,
+    registerRegisteredPlatformListFragment$key
+  >(registerRegisteredPlatformListFragmentGraphql, queryData);
 
-  return data.openCTIPlatforms ?? [];
+  return data.registeredPlatforms ?? [];
 };
 
 const getPublicServices = (
@@ -151,7 +150,7 @@ const getPublicServices = (
 export const useServiceQueries = (
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>,
   queryRefPublicService: PreloadedQuery<publicServiceQuery>,
-  queryRefOpenCTIPlatforms: PreloadedQuery<registerOpenCTIPlatformsQuery>,
+  queryRefOpenCTIPlatforms: PreloadedQuery<registerRegisteredPlatformsQuery>,
   onUpdate: () => void,
   handleSuccess: (message: string) => void,
   handleError: (error: Error) => void

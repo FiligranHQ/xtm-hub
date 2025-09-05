@@ -4,7 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dbUnsecure } from '../../../../knexfile';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import {
-  OpenCtiPlatformContract,
+  PlatformContract,
+  PlatformIdentifier,
   ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
@@ -23,7 +24,7 @@ import * as organizationDomain from '../../organizations/organizations.domain';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
 import {
-  OpenCTIPlatformConfiguration,
+  PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
 
@@ -32,14 +33,14 @@ describe('Registration domain', () => {
   const token = uuidv4();
   const platformTitle = 'My OpenCTI platform';
   const platformUrl = 'http://example.com';
-  const platformContract = OpenCtiPlatformContract.Ee;
+  const platformContract = PlatformContract.Ee;
   const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
 
   beforeEach(() => {
     platformId = uuidv4();
   });
 
-  describe('registerNewInstance', () => {
+  describe('registerNewPlatform', () => {
     it('save registration data', async () => {
       await registrationDomain.registerNewPlatform(contextAdminUser, {
         organizationId: PLATFORM_ORGANIZATION_UUID,
@@ -52,6 +53,7 @@ describe('Registration domain', () => {
           platform_contract: platformContract,
           token,
         },
+        platformIdentifier: PlatformIdentifier.Opencti,
       });
 
       const serviceInstance = await dbUnsecure<ServiceInstance>(
@@ -93,10 +95,10 @@ describe('Registration domain', () => {
   });
 
   describe('refreshExistingPlatform', () => {
-    const configuration: OpenCTIPlatformConfiguration = {
+    const configuration: PlatformConfiguration = {
       registerer_id: contextAdminUser.user.id,
       platform_id: uuidv4(),
-      platform_contract: OpenCtiPlatformContract.Ce,
+      platform_contract: PlatformContract.Ce,
       platform_title: 'Title',
       platform_url: 'https://example.com',
       token: 'hello',
@@ -152,6 +154,7 @@ describe('Registration domain', () => {
           configuration,
           serviceInstanceId,
           targetOrganizationId,
+          platformIdentifier: PlatformIdentifier.Opencti,
         }
       );
 
@@ -168,6 +171,7 @@ describe('Registration domain', () => {
           configuration,
           serviceInstanceId,
           targetOrganizationId,
+          platformIdentifier: PlatformIdentifier.Opencti,
         }
       );
 
@@ -188,6 +192,7 @@ describe('Registration domain', () => {
           configuration,
           serviceInstanceId,
           targetOrganizationId,
+          platformIdentifier: PlatformIdentifier.Opencti,
         });
 
         expect(updateConfigurationSpy).toHaveBeenCalledWith(
@@ -218,6 +223,7 @@ describe('Registration domain', () => {
             configuration,
             serviceInstanceId,
             targetOrganizationId,
+            platformIdentifier: PlatformIdentifier.Opencti,
           }
         );
 
@@ -246,6 +252,7 @@ describe('Registration domain', () => {
             configuration,
             serviceInstanceId,
             targetOrganizationId,
+            platformIdentifier: PlatformIdentifier.Opencti,
           }
         );
 
@@ -261,6 +268,7 @@ describe('Registration domain', () => {
           configuration,
           serviceInstanceId,
           targetOrganizationId,
+          platformIdentifier: PlatformIdentifier.Opencti,
         });
 
         expect(transferSubscriptionToOrganizationSpy).toHaveBeenCalledWith(

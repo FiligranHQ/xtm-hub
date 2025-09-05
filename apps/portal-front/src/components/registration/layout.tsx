@@ -1,6 +1,7 @@
+import { RegistrationContext } from '@/components/registration/context';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import React from 'react';
+import React, { useContext } from 'react';
 
 interface Props {
   children: React.ReactNode;
@@ -8,11 +9,12 @@ interface Props {
   confirm?: () => void;
 }
 
-export const RegisterStateLayout: React.FC<Props> = ({
+export const RegistrationLayout: React.FC<Props> = ({
   children,
   cancel,
   confirm,
 }) => {
+  const { translationKey } = useContext(RegistrationContext);
   const t = useTranslations();
   return (
     <div className="h-full flex flex-col justify-between gap-xl">
@@ -22,7 +24,7 @@ export const RegisterStateLayout: React.FC<Props> = ({
           <Button
             variant="outline"
             onClick={cancel}>
-            {t('Register.OpenCTI.Back')}
+            {t(`Register.${translationKey}.Back`)}
           </Button>
         )}
         {Boolean(confirm) && (

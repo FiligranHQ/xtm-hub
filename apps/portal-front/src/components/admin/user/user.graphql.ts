@@ -78,9 +78,11 @@ export const UserSlugQuery = graphql`
   }
 `;
 
-export const ListOrganizationAdministratorsQuery = graphql`
-  query userListOrganizationAdministratorsQuery($organizationId: ID!) {
-    organizationAdministrators(organizationId: $organizationId) {
+export const ListUsersWithCapabilitiesInOrganizationQuery = graphql`
+  query userWithCapabilitiesInOrganizationQuery(
+    $input: UsersWithCapabilitiesInOrganizationInput!
+  ) {
+    usersWithCapabilitiesInOrganization(input: $input) {
       id
       email
       first_name

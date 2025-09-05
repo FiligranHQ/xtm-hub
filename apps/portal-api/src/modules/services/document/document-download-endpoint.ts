@@ -18,7 +18,7 @@ import {
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
 import { loadUserBy } from '../../users/users.domain';
-import { loadServiceDefinition } from '../service-instance.domain';
+import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
 
@@ -89,10 +89,11 @@ export const documentDownloadEndpoint = (app) => {
           await incrementDocumentsDownloads(context, document, trx);
           await trx.commit();
 
-          const serviceDefinition = await loadServiceDefinition(
-            context,
-            document.service_instance_id
-          );
+          const serviceDefinition =
+            await loadServiceDefinitionByServiceInstance(
+              context,
+              document.service_instance_id
+            );
 
           try {
             if (shouldSendEventForService(serviceDefinition.identifier)) {

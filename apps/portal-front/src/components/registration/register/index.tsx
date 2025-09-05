@@ -1,28 +1,29 @@
 import Loader from '@/components/loader';
-import { RegisterOrganizationForm } from '@/components/register/form/organization';
-import { RegisterOpenCTIPlatform } from '@/components/register/register.graphql';
-import { RegisterStateLayout } from '@/components/register/state/layout';
-import { RegisterStateMissingCapability } from '@/components/register/state/missing-capability';
+import { RegistrationContext } from '@/components/registration/context';
+import { RegistrationLayout } from '@/components/registration/layout';
+import { RegisterStateMissingCapability } from '@/components/registration/register/missing-capability';
+import { RegisterOrganizationForm } from '@/components/registration/register/organization-form';
+import { RegisterPlatform } from '@/components/registration/register/register.graphql';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
-import registerIsOpenCTIPlatformRegisteredFragmentGraphql, {
-  registerIsOpenCTIPlatformRegisteredFragment$key,
-} from '@generated/registerIsOpenCTIPlatformRegisteredFragment.graphql';
-import RegisterIsOpenCTIPlatformRegisteredQueryGraphql, {
-  registerIsOpenCTIPlatformRegisteredQuery,
-} from '@generated/registerIsOpenCTIPlatformRegisteredQuery.graphql';
-import registerOpenCTIFragmentGraphql, {
-  registerOpenCTIFragment$key,
-} from '@generated/registerOpenCTIFragment.graphql';
+import registerFragmentGraphql, {
+  registerFragment$key,
+} from '@generated/registerFragment.graphql';
+import registerIsPlatformRegisteredFragmentGraphql, {
+  registerIsPlatformRegisteredFragment$key,
+} from '@generated/registerIsPlatformRegisteredFragment.graphql';
+import RegisterIsPlatformRegisteredQueryGraphql, {
+  registerIsPlatformRegisteredQuery,
+} from '@generated/registerIsPlatformRegisteredQuery.graphql';
 import {
-  OpenCTIPlatformContract,
-  registerOpenCTIPlatformMutation,
-} from '@generated/registerOpenCTIPlatformMutation.graphql';
+  PlatformContract,
+  registerPlatformMutation,
+} from '@generated/registerPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   PreloadedQuery,
   useFragment,
@@ -36,9 +37,9 @@ interface Props {
     id: string;
     url: string;
     title: string;
-    contract: OpenCTIPlatformContract;
+    contract: PlatformContract;
   };
-  queryRef: PreloadedQuery<registerIsOpenCTIPlatformRegisteredQuery>;
+  queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
 }
 
 export type RegistrationRequestStatus =
@@ -47,13 +48,15 @@ export type RegistrationRequestStatus =
   | 'failed'
   | 'missed-capability';
 
-export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
+export const Register: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
+  const { translationKey, identifier } = useContext(RegistrationContext);
+
   const [chosenOrganizationId, setChosenOrganizationId] = useState<string>();
 
-  const isOpenCTIPlatformRegisteredPreloadedQuery =
-    usePreloadedQuery<registerIsOpenCTIPlatformRegisteredQuery>(
-      RegisterIsOpenCTIPlatformRegisteredQueryGraphql,
+  const isPlatformRegisteredPreloadedQuery =
+    usePreloadedQuery<registerIsPlatformRegisteredQuery>(
+      RegisterIsPlatformRegisteredQueryGraphql,
       queryRef
     );
 
@@ -64,9 +67,9 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     );
 
   const isPlatformRegistered =
-    useFragment<registerIsOpenCTIPlatformRegisteredFragment$key>(
-      registerIsOpenCTIPlatformRegisteredFragmentGraphql,
-      isOpenCTIPlatformRegisteredPreloadedQuery.isOpenCTIPlatformRegistered
+    useFragment<registerIsPlatformRegisteredFragment$key>(
+      registerIsPlatformRegisteredFragmentGraphql,
+      isPlatformRegisteredPreloadedQuery.isPlatformRegistered
     );
 
   // required to prevent React strict mode double registration
@@ -88,14 +91,13 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
   const [registrationRequestStatus, setRegistrationRequestStatus] =
     useState<RegistrationRequestStatus>('idle');
 
-  const [registerPlatform] = useMutation<registerOpenCTIPlatformMutation>(
-    RegisterOpenCTIPlatform
-  );
+  const [registerPlatform] =
+    useMutation<registerPlatformMutation>(RegisterPlatform);
 
   const [registerFragmentRef, setRegisterFragmentRef] =
-    useState<registerOpenCTIFragment$key | null>(null);
-  const registerDataResponse = useFragment<registerOpenCTIFragment$key>(
-    registerOpenCTIFragmentGraphql,
+    useState<registerFragment$key | null>(null);
+  const registerDataResponse = useFragment<registerFragment$key>(
+    registerFragmentGraphql,
     registerFragmentRef
   );
 
@@ -119,13 +121,17 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
   };
 
   const register = (organizationId: string) => {
+    if (!identifier) {
+      return;
+    }
+
     setChosenOrganizationId(organizationId);
     registerPlatform({
       variables: {
-        input: { organizationId, platform },
+        input: { organizationId, platform, identifier },
       },
       onCompleted: (response) => {
-        setRegisterFragmentRef(response.registerOpenCTIPlatform);
+        setRegisterFragmentRef(response.registerPlatform);
       },
       onError: (error) => {
         if (error.message === 'MISSING_CAPABILITY_ON_ORGANIZATION') {
@@ -156,19 +162,19 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
 
   if (registrationRequestStatus === 'succeeded') {
     return (
-      <RegisterStateLayout>
-        <h1>{t('Register.OpenCTI.Succeeded.Title')}</h1>
-        <p>{t('Register.OpenCTI.Succeeded.Description')}</p>
-      </RegisterStateLayout>
+      <RegistrationLayout>
+        <h1>{t(`Register.${translationKey}.Succeeded.Title`)}</h1>
+        <p>{t(`Register.${translationKey}.Succeeded.Description`)}</p>
+      </RegistrationLayout>
     );
   }
 
   if (registrationRequestStatus === 'failed') {
     return (
-      <RegisterStateLayout cancel={cancel}>
-        <h1>{t('Register.OpenCTI.Failed.Title')}</h1>
-        <p>{t('Register.OpenCTI.Failed.Description')}</p>
-      </RegisterStateLayout>
+      <RegistrationLayout cancel={cancel}>
+        <h1>{t(`Register.${translationKey}.Failed.Title`)}</h1>
+        <p>{t(`Register.${translationKey}.Failed.Description`)}</p>
+      </RegistrationLayout>
     );
   }
 
@@ -178,18 +184,18 @@ export const RegisterOpenCTI: React.FC<Props> = ({ queryRef, platform }) => {
     userOrganizationsQueryData.userOrganizations.length > 2;
   if (shouldRegisterOnSameOrganization) {
     return (
-      <RegisterStateLayout
+      <RegistrationLayout
         cancel={cancel}
         confirm={() => register(isPlatformRegistered.organization?.id ?? '')}>
-        <h1>{t('Register.OpenCTI.TooMuchOrganization.Title')}</h1>
+        <h1>{t(`Register.${translationKey}.TooMuchOrganization.Title`)}</h1>
         <p>
-          {t('Register.OpenCTI.TooMuchOrganization.Description1', {
+          {t(`Register.${translationKey}.TooMuchOrganization.Description1`, {
             platformTitle: isPlatformRegistered.platformTitle ?? '',
           })}
           <br />
-          {t('Register.OpenCTI.TooMuchOrganization.Description2')}
+          {t(`Register.${translationKey}.TooMuchOrganization.Description2`)}
         </p>
-      </RegisterStateLayout>
+      </RegistrationLayout>
     );
   }
 

@@ -16,7 +16,7 @@ import {
 import { LoginEvent, TelemetryEventType } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { TargetProduct } from '../../__generated__/resolvers-types';
+import { PlatformIdentifier } from '../../__generated__/resolvers-types';
 
 // Mock the ES Client
 vi.mock('@elastic/elasticsearch', () => ({
@@ -94,7 +94,7 @@ describe('TelemetryApp', () => {
       await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
         userId: ADMIN_UUID,
         input: {
-          target_product: TargetProduct.OpenCti,
+          platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: toGlobalId(
             'ServiceInstance',
             SERVICE_CSV_FEEDS_ID

@@ -31,7 +31,7 @@ import {
   loadPublicServiceInstances,
   loadSeoServiceInstanceBySlug,
   loadSeoServiceInstances,
-  loadServiceDefinition,
+  loadServiceDefinitionByServiceInstance,
   loadServiceInstances,
   loadServiceWithSubscriptions,
   loadSubscribedServiceInstancesByIdentifier,
@@ -51,7 +51,7 @@ const resolvers: Resolvers = {
     },
     links: ({ id }, _, context) => loadLinks(context, id),
     service_definition: ({ id }, _, context) =>
-      loadServiceDefinition(context, id),
+      loadServiceDefinitionByServiceInstance(context, id),
     organization_subscribed: ({ id }, _, context) =>
       getIsSubscribed(context, id),
     capabilities: ({ id }, _, context) =>
