@@ -130,13 +130,15 @@ spec:
           - mountPath: /etc/ssl/certs/elasticsearch-certs
             name: elasticsearch-certs
             readOnly: true
-        volumes:
-          - name: elasticsearch-certs
-            secret:
-              defaultMode: 420
-              optional: false
-              secretName: {{ .Values.elasticsearch.ingress.ca_from_secret.ca_secret_name }}
-              items:
-                - key: tls.crt
-                  path: tls.crt
         {{- end }}
+      {{ if .Values.elasticsearch.ingress.ca_from_secret.enabled }}
+      volumes:
+        - name: elasticsearch-certs
+          secret:
+            defaultMode: 420
+            optional: false
+            secretName: {{ .Values.elasticsearch.ingress.ca_from_secret.ca_secret_name }}
+            items:
+              - key: tls.crt
+                path: tls.crt
+    {{- end }}
