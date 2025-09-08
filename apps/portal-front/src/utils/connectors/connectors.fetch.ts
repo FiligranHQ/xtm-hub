@@ -1,5 +1,6 @@
 import { Connector } from '@/utils/connectors/connector.model';
-import { GithubRelease } from '../../../app/(public)/connectors/[version]/page';
+import semver from 'semver/preload';
+import { GithubRelease } from '../../../app/(public)/cybersecurity-solutions/opencti-connectors/[version]/page';
 
 export const getConnectorVersion = async () => {
   const releases: GithubRelease[] = await fetch(

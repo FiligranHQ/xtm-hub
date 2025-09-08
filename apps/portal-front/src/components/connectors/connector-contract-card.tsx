@@ -1,68 +1,105 @@
+'use client';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import { Contract } from '@/utils/connectors/connector.model';
-import { Badge, Button } from 'filigran-ui/servers';
-import Link from 'next/link';
+import { VerifiedIcon } from 'filigran-icon';
+import { Badge } from 'filigran-ui';
 import { FunctionComponent } from 'react';
 
 interface ConnectorContractCardProps {
   contract: Contract;
   version?: string;
 }
+export type IngestionConnectorType =
+  | 'INTERNAL_ENRICHMENT'
+  | 'EXTERNAL_IMPORT'
+  | 'INTERNAL_EXPORT_FILE'
+  | 'INTERNAL_IMPORT_FILE';
+
+export const ingestionConnectorTypeMetadata: Record<
+  IngestionConnectorType,
+  { label: string; color: string }
+> = {
+  EXTERNAL_IMPORT: {
+    label: 'External import',
+    color: '#0099cc',
+  },
+  INTERNAL_ENRICHMENT: {
+    label: 'Internal enrichment',
+    color: '#00f0bc',
+  },
+  INTERNAL_EXPORT_FILE: {
+    label: 'Internal export file',
+    color: '#b8180a',
+  },
+  INTERNAL_IMPORT_FILE: {
+    label: 'Internal import file',
+    color: '#20cb28',
+  },
+};
 
 const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
   contract,
   version = 'master',
 }) => {
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-lg p-6 hover:border-slate-600 transition-colors">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex gap-4">
-          <div className="w-16 h-16 flex-shrink-0">
+    <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">
+      <a
+        className="flex flex-col h-full"
+        href={`/cybersecurity-solutions/opencti-connectors/${version}/${contract.slug}`}>
+        <div className="flex items-stretch gap-l p-l">
+          <div className="w-24 self-stretch flex">
             <img
               src={contract.logo}
               alt={`${contract.title} logo`}
-              className="w-full h-full object-contain"
+              className="rounded w-full h-full object-contain"
             />
           </div>
-          <h3 className="txt-title font-bold ">
-            <a href={`/connectors/master/${contract.slug}`}>{contract.title}</a>
-          </h3>
-        </div>
-        {contract.verified && (
-          <div className="flex-shrink-0">
-            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-              <svg
-                className="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0">
+                {contract.title}
+              </h2>
+              {contract.verified && (
+                <VerifiedIcon className="h-6 w-6 shrink-0 text-green-500" />
+              )}
+            </div>
+
+            <div className="mt-s flex flex-wrap gap-s mb-xs">
+              <BadgeOverflowCounter
+                badges={getBadgesValues(contract)}
+                className="z-[2]"
+              />
             </div>
           </div>
-        )}
-      </div>
-
-      <div className="flex flex-wrap gap-2 mb-4">
-        {contract.use_cases.map((useCase) => (
-          <Badge key={useCase}>{useCase}</Badge>
-        ))}
-      </div>
-
-      <p className="text-gray-300 text-sm leading-relaxed mb-6">
-        {contract.short_description}
-      </p>
-
-      <div className="flex gap-3">
-        <Button asChild>
-          <Link href={`/connectors/${version}/${contract.slug}`}>Details</Link>
-        </Button>
-      </div>
-    </div>
+        </div>
+        <p className="p-l text-gray-300 text-sm">
+          {contract.short_description}
+        </p>
+        <div className="flex items-center justify-end mt-auto p-l">
+          {ingestionConnectorTypeMetadata[
+            contract.container_type as IngestionConnectorType
+          ] && (
+            <Badge
+              className="mr-auto"
+              variant="outline"
+              color={
+                ingestionConnectorTypeMetadata[
+                  contract.container_type as IngestionConnectorType
+                ]?.color
+              }>
+              {
+                ingestionConnectorTypeMetadata[
+                  contract.container_type as IngestionConnectorType
+                ]?.label
+              }
+            </Badge>
+          )}
+        </div>
+      </a>
+    </li>
   );
 };
 
