@@ -1,43 +1,56 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  CanUnregisterOpenCtiPlatformInput,
-  IsOpenCtiPlatformRegisteredInput,
-  IsOpenCtiPlatformRegisteredResponse,
-  OpenCtiPlatform,
-  OpenCtiPlatformRegistrationStatus,
-  OpenCtiPlatformRegistrationStatusInput,
-  OpenCtiPlatformRegistrationStatusResponse,
+  CanUnregisterPlatformInput,
+  IsPlatformRegisteredInput,
+  IsPlatformRegisteredResponse,
   OrganizationCapability,
+  PlatformRegistrationConnectivityStatus,
+  PlatformRegistrationConnectivityStatusInput,
   PlatformRegistrationStatus,
   RefreshUserPlatformTokenResponse,
-  RegisterOpenCtiPlatformInput,
+  RegisteredPlatform,
+  RegisteredPlatformsInput,
+  RegisterPlatformInput,
   ServiceConfigurationStatus,
-  ServiceDefinitionIdentifier,
+  UnregisterPlatformInput,
 } from '../../../__generated__/resolvers-types';
 import Organization, {
   OrganizationId,
 } from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
+import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
+import { logApp } from '../../../utils/app-logger.util';
 import { formatName } from '../../../utils/format';
 import { ErrorCode } from '../../common/error-code';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryTargetProduct } from '../../telemetry/telemetry.const';
+import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
 import {
-  loadOrganizationAdministrators,
+  loadUsersByCapabilitiesInOrganization,
   updateUser,
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/domain';
+import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import {
-  OpenCTIPlatformConfiguration,
+  PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
+import {
+  organizationCapabilityMappedByPlatformIdentifier,
+  platformIdentifierMappedByServiceDefinitionIdentifier,
+  registeredMailTemplateMappedByPlatformIdentifier,
+  serviceDefinitionIdentifierMappedByPlatformIdentifier,
+  unregisteredMailTemplateMappedByPlatformIdentifier,
+} from './registration.mapping';
 
 export const registrationApp = {
-  loadOpenCTIPlatformAssociatedOrganization: async (
+  loadPlatformAssociatedOrganization: async (
     context: PortalContext,
     platformId: string
   ): Promise<Organization> => {
@@ -69,12 +82,17 @@ export const registrationApp = {
     return loadOrganizationBy(context, 'id', subscription.organization_id);
   },
 
-  loadOpenCTIPlatforms: async (
-    context: PortalContext
-  ): Promise<OpenCtiPlatform[]> => {
-    const platforms = await registrationDomain.loadOpenCTIPlatforms(context);
+  loadRegisteredPlatforms: async (
+    context: PortalContext,
+    input: RegisteredPlatformsInput
+  ): Promise<RegisteredPlatform[]> => {
+    const platforms = await registrationDomain.loadRegisteredPlatforms(
+      context,
+      input.identifier
+    );
+
     return platforms.map((platform) => ({
-      __typename: 'OpenCTIPlatform',
+      __typename: 'RegisteredPlatform',
       id: platform.config.platform_id,
       platform_id: platform.config.platform_id,
       title: platform.config.platform_title,
@@ -83,10 +101,10 @@ export const registrationApp = {
     }));
   },
 
-  loadOpenCTIPlatformRegistrationStatus: async (
+  loadPlatformRegistrationStatus: async (
     context: PortalContext,
-    input: OpenCtiPlatformRegistrationStatusInput
-  ): Promise<OpenCtiPlatformRegistrationStatusResponse> => {
+    input: PlatformRegistrationConnectivityStatusInput
+  ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
         context,
@@ -94,17 +112,17 @@ export const registrationApp = {
       );
     return {
       status: activeServiceConfiguration
-        ? OpenCtiPlatformRegistrationStatus.Active
-        : OpenCtiPlatformRegistrationStatus.Inactive,
+        ? PlatformRegistrationConnectivityStatus.Active
+        : PlatformRegistrationConnectivityStatus.Inactive,
     };
   },
 
-  registerOpenCTIPlatform: async (
+  registerPlatform: async (
     context: PortalContext,
-    { organizationId, platform }: RegisterOpenCtiPlatformInput
+    { organizationId, platform, identifier }: RegisterPlatformInput
   ): Promise<string> => {
     const token = uuidv4();
-    const configuration: OpenCTIPlatformConfiguration = {
+    const configuration: PlatformConfiguration = {
       registerer_id: context.user.id,
       platform_id: platform.id,
       platform_url: platform.url,
@@ -113,9 +131,12 @@ export const registrationApp = {
       token,
     };
 
+    const serviceDefinitionIdentifier =
+      serviceDefinitionIdentifierMappedByPlatformIdentifier[identifier];
+
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        identifier: serviceDefinitionIdentifier,
       });
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
@@ -131,21 +152,6 @@ export const registrationApp = {
       throw new Error(ErrorCode.InvalidServiceConfiguration);
     }
 
-    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context,
-      {
-        organizationId,
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
-      }
-    );
-
-    if (!isAllowed) {
-      const errorCode = isInOrganization
-        ? ErrorCode.MissingCapabilityOnOrganization
-        : ErrorCode.UserIsNotInOrganization;
-      throw new Error(errorCode);
-    }
-
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
@@ -155,24 +161,34 @@ export const registrationApp = {
     if (serviceConfiguration) {
       await registrationDomain.refreshExistingPlatform(context, {
         serviceInstanceId: serviceConfiguration.service_instance_id,
-        targetOrganizationId: organizationId,
+        targetOrganizationId: organizationId as OrganizationId,
         configuration,
+        platformIdentifier: identifier,
       });
     } else {
       await registrationDomain.registerNewPlatform(context, {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,
+        platformIdentifier: identifier,
       });
     }
 
-    const users = await loadOrganizationAdministrators(context, organizationId);
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[identifier];
+    const users = await loadUsersByCapabilitiesInOrganization(
+      context,
+      organizationId,
+      [OrganizationCapability.AdministrateOrganization, requiredCapability]
+    );
 
+    const mailTemplate =
+      registeredMailTemplateMappedByPlatformIdentifier[identifier];
     await Promise.all(
       users.map((user) =>
         sendMail({
           to: user.email,
-          template: 'opencti_platform_registered',
+          template: mailTemplate,
           params: {
             adminName: formatName(user.first_name ?? ''),
           },
@@ -180,12 +196,35 @@ export const registrationApp = {
       )
     );
 
+    try {
+      const selectedOrga = await loadOrganizationBy(
+        context,
+        'id',
+        organizationId
+      );
+
+      const registerEvent = buildRegisterEvent(
+        organizationId as OrganizationId,
+        selectedOrga.name,
+        selectedOrga.personal_space,
+        context.user.id,
+        TelemetryTargetProduct.OPEN_CTI,
+        platform.id,
+        platform.contract
+      );
+      telemetryApp.sendTelemetryEvent(registerEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event for registration', {
+        error,
+      });
+    }
+
     return token;
   },
 
-  unregisterOpenCTIPlatform: async (
+  unregisterPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnregisterOpenCtiPlatformInput
+    { platformId }: UnregisterPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -204,21 +243,24 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
+    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       context,
-      {
-        organizationId: subscription.organization_id,
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
-      }
+      activeServiceConfiguration.service_instance_id
     );
-
-    if (!isAllowed) {
-      if (isInOrganization) {
-        throw new Error(ErrorCode.MissingCapabilityOnOrganization);
-      } else {
-        throw new Error(ErrorCode.UserIsNotInOrganization);
-      }
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
+
+    const platformIdentifier =
+      platformIdentifierMappedByServiceDefinitionIdentifier[
+        serviceDefinition.identifier
+      ];
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
+    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      organizationId: subscription.organization_id,
+      requiredCapability,
+    });
 
     await serviceContractDomain.updateConfiguration(
       context,
@@ -226,16 +268,20 @@ export const registrationApp = {
       { status: ServiceConfigurationStatus.Inactive }
     );
 
-    const users = await loadOrganizationAdministrators(
+    const users = await loadUsersByCapabilitiesInOrganization(
       context,
-      subscription.organization_id
+      subscription.organization_id,
+      [OrganizationCapability.AdministrateOrganization, requiredCapability]
     );
+
+    const template =
+      unregisteredMailTemplateMappedByPlatformIdentifier[platformIdentifier];
 
     await Promise.all(
       users.map((user) =>
         sendMail({
           to: user.email,
-          template: 'opencti_platform_unregistered',
+          template,
           params: {
             adminName: formatName(user.first_name ?? ''),
           },
@@ -244,10 +290,10 @@ export const registrationApp = {
     );
   },
 
-  isOpenCTIPlatformRegistered: async (
+  isPlatformRegistered: async (
     context: PortalContext,
-    input: IsOpenCtiPlatformRegisteredInput
-  ): Promise<IsOpenCtiPlatformRegisteredResponse> => {
+    input: IsPlatformRegisteredInput
+  ): Promise<IsPlatformRegisteredResponse> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
@@ -264,18 +310,22 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
+    const parsedConfig = JSON.parse(
+      JSON.stringify(serviceConfiguration.config)
+    );
     return {
       status:
         serviceConfiguration.status === ServiceConfigurationStatus.Active
           ? PlatformRegistrationStatus.Registered
           : PlatformRegistrationStatus.Unregistered,
       organization: { id: subscription.organization_id },
+      platformTitle: parsedConfig.platform_title,
     };
   },
 
-  canUnregisterOpenCTIPlatform: async (
+  canUnregisterPlatform: async (
     context: PortalContext,
-    { platformId }: CanUnregisterOpenCtiPlatformInput
+    { platformId }: CanUnregisterPlatformInput
   ): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId;
@@ -298,11 +348,26 @@ export const registrationApp = {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
+    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
+      context,
+      subscription.service_instance_id
+    );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const platformIdentifier =
+      platformIdentifierMappedByServiceDefinitionIdentifier[
+        serviceDefinition.identifier
+      ];
+
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
       context,
       {
         organizationId: subscription.organization_id,
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+        requiredCapability,
       }
     );
 

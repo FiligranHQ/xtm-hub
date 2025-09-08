@@ -6,6 +6,7 @@ enum FilterKey {
   label
   organization_id
   personal_space
+  serviceDefinition_identifier
 }
 
 input Filter {

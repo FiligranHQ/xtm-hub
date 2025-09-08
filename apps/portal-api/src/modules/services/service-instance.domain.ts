@@ -131,9 +131,9 @@ export const loadPublicServiceInstances = (context: PortalContext, opts) => {
   );
 };
 
-export const getIsSubscribed = async (context, id) => {
+export const loadIsSubscribed = async (context, id) => {
   const organizationId = context.user.selected_organization_id;
-  const { organization_subscribed } = await db<{
+  const serviceInstance = await db<{
     organization_subscribed: boolean;
   }>(context, 'ServiceInstance')
     .where('ServiceInstance.id', '=', id)
@@ -153,15 +153,40 @@ export const getIsSubscribed = async (context, id) => {
         `)
     )
     .first();
-  return organization_subscribed;
+  return serviceInstance?.organization_subscribed ?? false;
 };
 
-export const loadServiceInstances = async (context: PortalContext, opts) =>
-  paginate<ServiceInstance, ServiceConnection>(
+export const loadServiceInstances = async (context: PortalContext, opts) => {
+  const { filters, searchTerm, orderBy } = opts;
+  return paginate<ServiceInstance, ServiceConnection>(
     context,
     'ServiceInstance',
-    opts
+    {
+      ...opts,
+      orderBy: `ServiceInstance.${orderBy}`,
+      filters,
+      searchTerm,
+    }
   );
+};
+
+export const loadServiceInstanceSubscriptions = async (context, id) => {
+  const subscription = await db<Subscription>(context, 'Subscription')
+    .where('Subscription.service_instance_id', '=', id)
+    .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
+    .select([
+      'Subscription.*',
+      dbRaw(
+        formatRawObject({
+          columnName: 'Organization',
+          typename: 'Organization',
+          as: 'organization',
+        })
+      ),
+    ]);
+
+  return subscription;
+};
 
 export const getUserJoined = async (context, id) => {
   const result = await db<{ user_joined: boolean }>(context, 'ServiceInstance')
@@ -482,7 +507,7 @@ export const grantServiceAccess = async (
       subscription.service_instance_id
     );
 
-    const service_definition = await loadServiceDefinition(
+    const service_definition = await loadServiceDefinitionByServiceInstance(
       context,
       serviceInstance.id
     );
@@ -517,12 +542,15 @@ export const loadLinks = (context, id) => {
     .select('*');
 };
 
-export const loadServiceDefinition = async (context, id) => {
+export const loadServiceDefinitionByServiceInstance = async (
+  context: PortalContext,
+  service_instance_id: string
+): Promise<ServiceDefinition> => {
   const serviceDefinition = await db<ServiceDefinition>(
     context,
     'ServiceInstance'
   )
-    .where('ServiceInstance.id', '=', id)
+    .where('ServiceInstance.id', '=', service_instance_id)
     .leftJoin(
       'ServiceDefinition as service_def',
       'service_def.id',

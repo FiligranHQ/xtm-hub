@@ -98,19 +98,14 @@ spec:
               key: secretKey
               optional: false
         {{ if .Values.elasticsearch.enabled }}
-        {{ if .Values.elasticsearch.ingress.enabled }}
-        - name: ELASTIC_HOST
-          value: "{{ .Values.elasticsearch.ingress.host }}"
-        - name: ELASTIC_PORT
-          value: "443"
-        {{ else }}
         - name: ELASTIC_HOST
           value: "elasticsearch-es-http"
         - name: ELASTIC_PORT
           value: "9200"
-        {{ end }}
         - name: ELASTIC_PROTOCOL
           value: "https"
+        - name: ELASTIC__TLS__REJECT_UNAUTHORIZED
+          value: "false"
         - name: ELASTIC_USER
           value: "elastic"
         - name: ELASTIC_PASSWORD
@@ -119,6 +114,10 @@ spec:
               name: elasticsearch-es-elastic-user
               key: elastic
               optional: false
+        {{ if .Values.elasticsearch.ingress.ca_from_secret.enabled }}
+        - name: ELASTIC__TLS__CA_PATH
+          value: "/etc/ssl/certs/elasticsearch-certs/tls.crt"
+        {{ end }}
         {{ end }}
         {{- with .Values.xtmhub.api.env }}
         {{- range $key, $value := . }}
@@ -126,3 +125,20 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- end }}
+        {{ if .Values.elasticsearch.ingress.ca_from_secret.enabled }}
+        volumeMounts:
+          - mountPath: /etc/ssl/certs/elasticsearch-certs
+            name: elasticsearch-certs
+            readOnly: true
+        {{- end }}
+      {{ if .Values.elasticsearch.ingress.ca_from_secret.enabled }}
+      volumes:
+        - name: elasticsearch-certs
+          secret:
+            defaultMode: 420
+            optional: false
+            secretName: {{ .Values.elasticsearch.ingress.ca_from_secret.ca_secret_name }}
+            items:
+              - key: tls.crt
+                path: tls.crt
+    {{- end }}

@@ -1,6 +1,5 @@
-import OrganizationListUserOrganizationsQueryGraphql, {
-  organizationListUserOrganizationsQuery,
-} from '@generated/organizationListUserOrganizationsQuery.graphql';
+import { RegistrationContext } from '@/components/registration/context';
+import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { AutoForm } from 'filigran-ui';
 import {
   FormControl,
@@ -10,12 +9,11 @@ import {
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import React from 'react';
-import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
+import React, { useContext } from 'react';
 import { z } from 'zod';
 
 interface Props {
-  queryRef: PreloadedQuery<organizationListUserOrganizationsQuery>;
+  userOrganizationsQueryData: organizationListUserOrganizationsQuery$data;
   cancel: () => void;
   confirm: (organizationId: string) => void;
 }
@@ -27,22 +25,18 @@ export const selectOrganizationFormSchema = z.object({
 export const RegisterOrganizationForm: React.FC<Props> = ({
   cancel,
   confirm,
-  queryRef,
+  userOrganizationsQueryData,
 }) => {
-  const userOrganizationsPreloadedQuery =
-    usePreloadedQuery<organizationListUserOrganizationsQuery>(
-      OrganizationListUserOrganizationsQueryGraphql,
-      queryRef
-    );
-  const organizations = userOrganizationsPreloadedQuery.userOrganizations;
+  const organizations = userOrganizationsQueryData.userOrganizations;
+  const { translationKey } = useContext(RegistrationContext);
   const t = useTranslations();
 
   return (
     <div className="flex items-center justify-center">
       <div className="flex flex-col justify-between gap-m">
         <div className="space-y-m">
-          <h1>{t('Register.OpenCTI.OrganizationForm.Title')}</h1>
-          <p>{t('Register.OpenCTI.OrganizationForm.Description')}</p>
+          <h1>{t(`Register.${translationKey}.OrganizationForm.Title`)}</h1>
+          <p>{t(`Register.${translationKey}.OrganizationForm.Description`)}</p>
         </div>
         <AutoForm
           formSchema={selectOrganizationFormSchema}

@@ -22,10 +22,15 @@ import {
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import {
-  loadServiceDefinition,
+  loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import {
+  buildSubscribeEvent,
+  shouldSendEventForService,
+} from '../telemetry/telemetry.helper';
 import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import {
@@ -102,7 +107,7 @@ const resolvers: Resolvers = {
           selectedOrga.personal_space
         );
 
-        const serviceDefinition = await loadServiceDefinition(
+        const serviceDefinition = await loadServiceDefinitionByServiceInstance(
           context,
           filledSubscription.service_instance_id
         );
@@ -126,6 +131,23 @@ const resolvers: Resolvers = {
         // );
 
         await trx.commit();
+
+        try {
+          if (shouldSendEventForService(serviceDefinition.identifier)) {
+            const subscribeEvent = buildSubscribeEvent(
+              context.user.selected_organization_id,
+              selectedOrga.name,
+              context.user.id,
+              serviceDefinition.identifier
+            );
+            telemetryApp.sendTelemetryEvent(subscribeEvent);
+          }
+        } catch (error) {
+          logApp.error('Unable to send telemetry event for subscription', {
+            error,
+          });
+        }
+
         return {
           ...filledSubscription.service_instance,
           subscribed: true,

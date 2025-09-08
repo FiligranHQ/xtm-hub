@@ -13,9 +13,9 @@ import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {
   Query: {
-    isOpenCTIPlatformRegistered: async (_, { input }, context) => {
+    isPlatformRegistered: async (_, { input }, context) => {
       try {
-        const response = await registrationApp.isOpenCTIPlatformRegistered(
+        const response = await registrationApp.isPlatformRegistered(
           context,
           input
         );
@@ -26,15 +26,14 @@ const resolvers: Resolvers = {
             throw NotFoundError(error.message);
         }
 
-        throw UnknownError(ErrorCode.IsOpenCTIPlatformRegisteredUnknownError, {
+        throw UnknownError(ErrorCode.IsPlatformRegisteredUnknownError, {
           detail: error.message,
         });
       }
     },
-
-    canUnregisterOpenCTIPlatform: async (_, { input }, context) => {
+    canUnregisterPlatform: async (_, { input }, context) => {
       try {
-        const response = await registrationApp.canUnregisterOpenCTIPlatform(
+        const response = await registrationApp.canUnregisterPlatform(
           context,
           input
         );
@@ -53,22 +52,20 @@ const resolvers: Resolvers = {
               isPlatformRegistered: false,
             };
         }
-        throw UnknownError(ErrorCode.CanUnregisterOpenCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.CanUnregisterPlatformUnknownError, {
           detail: error,
         });
       }
     },
-    openCTIPlatforms: async (_, _z, context) =>
-      registrationApp.loadOpenCTIPlatforms(context),
+    registeredPlatforms: async (_, { input }, context) =>
+      registrationApp.loadRegisteredPlatforms(context, input),
     openCTIPlatformRegistrationStatus: async (_, { input }, context) =>
-      registrationApp.loadOpenCTIPlatformRegistrationStatus(context, input),
-    openCTIPlatformAssociatedOrganization: async (
-      _,
-      { platformId },
-      context
-    ) => {
+      registrationApp.loadPlatformRegistrationStatus(context, input),
+    platformRegistrationConnectivityStatus: async (_, { input }, context) =>
+      registrationApp.loadPlatformRegistrationStatus(context, input),
+    platformAssociatedOrganization: async (_, { platformId }, context) => {
       try {
-        return await registrationApp.loadOpenCTIPlatformAssociatedOrganization(
+        return await registrationApp.loadPlatformAssociatedOrganization(
           context,
           platformId
         );
@@ -78,14 +75,14 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    registerOpenCTIPlatform: async (_, { input }, context) => {
+    registerPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
         const payload = {
           ...input,
           organizationId: fromGlobalId(input.organizationId).id,
         };
-        const token = await registrationApp.registerOpenCTIPlatform(
+        const token = await registrationApp.registerPlatform(
           {
             ...context,
             trx,
@@ -113,15 +110,15 @@ const resolvers: Resolvers = {
           throw ForbiddenAccess(error.message);
         }
 
-        throw UnknownError(ErrorCode.RegisterOpenCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.RegisterPlatformUnknownError, {
           detail: error,
         });
       }
     },
-    unregisterOpenCTIPlatform: async (_, { input }, context) => {
+    unregisterPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
-        await registrationApp.unregisterOpenCTIPlatform(
+        await registrationApp.unregisterPlatform(
           {
             ...context,
             trx,
@@ -145,7 +142,7 @@ const resolvers: Resolvers = {
           throw customError(error.message);
         }
 
-        throw UnknownError(ErrorCode.UnregisterOpenCTIPlatformUnknownError, {
+        throw UnknownError(ErrorCode.UnregisterPlatformUnknownError, {
           detail: error,
         });
       }

@@ -1,0 +1,20 @@
+type TelemetryResponse {
+  result: Boolean!
+  message: String
+}
+
+input OneClickDeployInput {
+  platform_identifier: PlatformIdentifier!
+  service_instance_id: ID!
+  resource_id: ID!
+  resource_title: String!
+  platform_id: ID!
+}
+
+type SendTelemetryMutation {
+  oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
+}
+
+extend type Mutation {
+  sendTelemetryEvent: SendTelemetryMutation @auth
+}

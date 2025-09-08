@@ -17,11 +17,14 @@ import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
+import { logApp } from '../../utils/app-logger.util';
 import { ForbiddenAccess } from '../../utils/error.util';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { isEmpty } from '../../utils/utils';
 import { isAdmin } from '../role-portal/role-portal.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { buildLoginEvent } from '../telemetry/telemetry.helper';
 
 export const loadUsersByOrganization = async (
   organizationId: string,
@@ -245,10 +248,15 @@ export const loadUserBy = async (
   return userQuery;
 };
 
-export const loadOrganizationAdministrators = async (
+export const loadUsersByCapabilitiesInOrganization = async (
   context: PortalContext,
-  organizationId: string
+  organizationId: string,
+  capabilities: OrganizationCapability[]
 ): Promise<User[]> => {
+  if (!capabilities.length) {
+    return [];
+  }
+
   const users: User[] = await db<User>(context, 'User')
     .leftJoin('User_Organization', 'User_Organization.user_id', 'User.id')
     .leftJoin(
@@ -258,15 +266,10 @@ export const loadOrganizationAdministrators = async (
     )
     .where('User_Organization.organization_id', '=', organizationId)
     .andWhere((qb) => {
-      qb.where(
-        'UserOrganization_Capability.name',
-        '=',
-        OrganizationCapability.AdministrateOrganization
-      ).orWhere(
-        'UserOrganization_Capability.name',
-        '=',
-        OrganizationCapability.ManageOpenctiRegistration
-      );
+      qb.where('UserOrganization_Capability.name', '=', capabilities[0]);
+      for (let i = 1; i < capabilities.length; i++) {
+        qb.orWhere('UserOrganization_Capability.name', '=', capabilities[i]);
+      }
     })
     .select('User.*')
     .distinct();
@@ -523,6 +526,21 @@ export const updateUserAtLogin = async (
     .update(fields)
     .returning('*');
 
+  try {
+    const selectedOrga = context.user.organizations.find(
+      (org) => org.id === updatedUser.selected_organization_id
+    );
+    const loginEvent = buildLoginEvent(
+      updatedUser.selected_organization_id,
+      selectedOrga.name,
+      user.id
+    );
+    telemetryApp.sendTelemetryEvent(loginEvent);
+  } catch (error) {
+    logApp.error('Unable to send telemetry event for login', {
+      error,
+    });
+  }
   return {
     ...user,
     selected_organization_id: updatedUser.selected_organization_id,

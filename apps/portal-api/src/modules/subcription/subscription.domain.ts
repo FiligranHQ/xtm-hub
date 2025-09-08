@@ -130,6 +130,18 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
   return userServicesData;
 };
 
+export const transferSubscriptionToOrganization = async (
+  context: PortalContext,
+  {
+    subscriptionId,
+    organizationId,
+  }: { subscriptionId: SubscriptionId; organizationId: OrganizationId }
+) => {
+  return db<Subscription>(context, 'Subscription')
+    .update({ organization_id: organizationId })
+    .where({ id: subscriptionId });
+};
+
 export const loadSubscriptionBy = async (
   context: PortalContext,
   field: SubscriptionMutator

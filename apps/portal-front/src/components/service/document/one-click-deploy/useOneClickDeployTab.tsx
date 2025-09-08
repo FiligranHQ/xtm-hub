@@ -1,4 +1,4 @@
-import { RefreshUserPlatformTokenMutation } from '@/components/register/register.graphql';
+import { RefreshUserPlatformTokenMutation } from '@/components/registration/register/register.graphql';
 import useExternalTab from '@/hooks/useExternalTab';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {

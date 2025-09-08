@@ -1,10 +1,10 @@
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import OpenCtiPlatformAssociatedOrganizationQueryGraphql, {
-  openCtiPlatformAssociatedOrganizationQuery,
-  openCtiPlatformAssociatedOrganizationQuery$data,
-} from '@generated/openCtiPlatformAssociatedOrganizationQuery.graphql';
+import PlatformAssociatedOrganizationQueryGraphql, {
+  platformAssociatedOrganizationQuery,
+  platformAssociatedOrganizationQuery$data,
+} from '@generated/platformAssociatedOrganizationQuery.graphql';
 import ServiceInstancesSubscribedByIdentifierQuery, {
   serviceInstancesSubscribedByIdentifierQuery,
   serviceInstancesSubscribedByIdentifierQuery$data,
@@ -48,8 +48,8 @@ export const loadBaseUrlFront = async () => {
   return settingsResponse.data.settings.base_url_front;
 };
 
-interface OpenCtiPlatformAssociatedOrganizationResponse {
-  data: openCtiPlatformAssociatedOrganizationQuery$data;
+interface PlatformAssociatedOrganizationResponse {
+  data: platformAssociatedOrganizationQuery$data;
 }
 
 export const loadPlatformOrganizationId = async (
@@ -61,13 +61,13 @@ export const loadPlatformOrganizationId = async (
 
   try {
     const associatedOrganization = (await serverPortalApiFetch<
-      typeof OpenCtiPlatformAssociatedOrganizationQueryGraphql,
-      openCtiPlatformAssociatedOrganizationQuery
-    >(OpenCtiPlatformAssociatedOrganizationQueryGraphql, {
+      typeof PlatformAssociatedOrganizationQueryGraphql,
+      platformAssociatedOrganizationQuery
+    >(PlatformAssociatedOrganizationQueryGraphql, {
       platformId,
-    })) as OpenCtiPlatformAssociatedOrganizationResponse;
+    })) as PlatformAssociatedOrganizationResponse;
 
-    return associatedOrganization.data.openCTIPlatformAssociatedOrganization.id;
+    return associatedOrganization.data.platformAssociatedOrganization.id;
   } catch (_) {}
 };
 

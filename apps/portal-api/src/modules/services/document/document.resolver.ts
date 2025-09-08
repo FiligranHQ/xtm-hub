@@ -6,8 +6,17 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownError } from '../../../utils/error.util';
 import { extractId, omit } from '../../../utils/utils';
+import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscription } from '../../subcription/subscription.domain';
-import { getServiceInstance } from '../service-instance.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import {
+  buildShareEvent,
+  shouldSendEventForService,
+} from '../../telemetry/telemetry.helper';
+import {
+  getServiceInstance,
+  loadServiceDefinitionByServiceInstance,
+} from '../service-instance.domain';
 import {
   createDocument,
   deleteDocument,
@@ -97,12 +106,43 @@ const resolvers: Resolvers = {
         throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
       }
     },
-    incrementShareNumberDocument: async (_, { documentId }) => {
+    incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
-        const [result] = await incrementShareNumber(
+        const [document] = await incrementShareNumber(
           extractId<DocumentId>(documentId)
         );
-        return result;
+
+        try {
+          const serviceDefinition =
+            await loadServiceDefinitionByServiceInstance(
+              context,
+              document.service_instance_id
+            );
+
+          if (shouldSendEventForService(serviceDefinition.identifier)) {
+            const selectedOrga = await loadOrganizationBy(
+              context,
+              'id',
+              context.user.selected_organization_id
+            );
+
+            const shareEvent = buildShareEvent(
+              context.user.selected_organization_id,
+              selectedOrga.name,
+              context.user.id,
+              serviceDefinition.identifier,
+              document.id,
+              document.file_name
+            );
+            telemetryApp.sendTelemetryEvent(shareEvent);
+          }
+        } catch (error) {
+          logApp.error('Unable to send telemetry event', {
+            error,
+          });
+        }
+
+        return document;
       } catch (error) {
         throw UnknownError('INCREMENT_SHARE_NUMBER', { detail: error });
       }

@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, QueryOpts } from '../../../../knexfile';
 import {
-  OpenCtiPlatformContract,
+  PlatformContract,
+  PlatformIdentifier,
   ServiceConfigurationStatus,
-  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance, {
@@ -11,18 +11,27 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
+import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../common/error-code';
-import { loadSubscriptionBy } from '../../subcription/subscription.domain';
+import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
+import {
+  loadSubscriptionBy,
+  transferSubscriptionToOrganization,
+} from '../../subcription/subscription.domain';
 import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
+import {
+  organizationCapabilityMappedByPlatformIdentifier,
+  serviceDefinitionIdentifierMappedByPlatformIdentifier,
+} from './registration.mapping';
 
-export type OpenCTIPlatformConfiguration = {
+export type PlatformConfiguration = {
   registerer_id: string;
   platform_id: string;
   platform_url: string;
   platform_title: string;
-  platform_contract: OpenCtiPlatformContract;
+  platform_contract: PlatformContract;
   token: string;
 };
 
@@ -33,16 +42,26 @@ export const registrationDomain = {
       serviceDefinitionId,
       organizationId,
       configuration,
+      platformIdentifier,
     }: {
       serviceDefinitionId: string;
       organizationId: OrganizationId;
-      configuration: OpenCTIPlatformConfiguration;
+      configuration: PlatformConfiguration;
+      platformIdentifier: PlatformIdentifier;
     }
   ) => {
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
+    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      organizationId,
+      requiredCapability,
+    });
+
     const serviceInstanceId =
-      await serviceInstanceDomain.createOpenCTIServiceInstance(
+      await serviceInstanceDomain.createPlatformServiceInstance(
         context,
-        serviceDefinitionId
+        serviceDefinitionId,
+        platformIdentifier
       );
 
     await createSubscription(context, {
@@ -70,12 +89,20 @@ export const registrationDomain = {
       configuration,
       serviceInstanceId,
       targetOrganizationId,
+      platformIdentifier,
     }: {
-      configuration: OpenCTIPlatformConfiguration;
+      configuration: PlatformConfiguration;
       serviceInstanceId: ServiceInstanceId;
-      targetOrganizationId: string;
+      targetOrganizationId: OrganizationId;
+      platformIdentifier: PlatformIdentifier;
     }
   ) => {
+    const requiredCapability =
+      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
+    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      organizationId: targetOrganizationId,
+      requiredCapability,
+    });
     const subscription = await loadSubscriptionBy(context, {
       service_instance_id: serviceInstanceId,
     });
@@ -84,7 +111,23 @@ export const registrationDomain = {
     }
 
     if (subscription.organization_id !== targetOrganizationId) {
-      throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
+      const userOrganizations = await loadOrganizationsByUser(
+        context,
+        context.user.id
+      );
+      if (userOrganizations.length > 2) {
+        throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
+      }
+
+      await securityGuard.assertUserIsAllowedOnOrganization(context, {
+        organizationId: subscription.organization_id,
+        requiredCapability,
+      });
+
+      await transferSubscriptionToOrganization(context, {
+        subscriptionId: subscription.id,
+        organizationId: targetOrganizationId,
+      });
     }
 
     await serviceContractDomain.updateConfiguration(
@@ -94,12 +137,14 @@ export const registrationDomain = {
     );
   },
 
-  loadOpenCTIPlatforms: async (
+  loadRegisteredPlatforms: async (
     context: PortalContext,
+    platformIdentifier: PlatformIdentifier,
     opts: QueryOpts = {}
-  ): Promise<{ config: OpenCTIPlatformConfiguration }[]> => {
+  ): Promise<{ config: PlatformConfiguration }[]> => {
     const userSelectedOrganization = context.user.selected_organization_id;
-
+    const serviceDefinitionIdentifier =
+      serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
     const query = await db<ServiceInstance>(context, 'ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
@@ -119,11 +164,7 @@ export const registrationDomain = {
         '=',
         'ServiceInstance.id'
       )
-      .where(
-        'ServiceDefinition.identifier',
-        '=',
-        ServiceDefinitionIdentifier.OpenctiRegistration
-      )
+      .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereNot((qb) => {

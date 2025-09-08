@@ -27,19 +27,24 @@ const Page = () => {
     count: 50,
     orderBy: 'name',
     orderMode: 'asc',
+    searchTerm: '',
+    filters: [],
   });
-  const [data] = useRefetchableFragment<
+  const [data, refetch] = useRefetchableFragment<
     serviceQuery,
     servicesList_services$key
   >(servicesListFragment, queryData);
   const serviceData = data?.serviceInstances?.edges.map(
-    (service) => service.node as serviceList_fragment$data
+    (service) => service?.node as serviceList_fragment$data
   );
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <h1 className="sr-only">{t('MenuLinks.Services')}</h1>
-      <AdminServiceTab serviceData={serviceData} />
+      <AdminServiceTab
+        serviceData={serviceData}
+        refetch={refetch}
+      />
     </>
   );
 };

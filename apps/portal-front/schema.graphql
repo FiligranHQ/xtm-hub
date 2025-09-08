@@ -12,6 +12,7 @@ enum FilterKey {
   label
   organization_id
   personal_space
+  serviceDefinition_identifier
 }
 
 input Filter {
@@ -41,8 +42,8 @@ type Mutation {
   createOpenAEVScenario(input: CreateOpenAEVScenarioInput!, document: [Upload!]!, serviceInstanceId: String): OpenAEVScenario!
   updateOpenAEVScenario(documentId: ID!, input: UpdateOpenAEVScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): OpenAEVScenario!
   deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
-  registerOpenCTIPlatform(input: RegisterOpenCTIPlatformInput!): RegistrationResponse!
-  unregisterOpenCTIPlatform(input: UnregisterOpenCTIPlatformInput): Success!
+  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
+  unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
@@ -54,6 +55,7 @@ type Mutation {
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
+  sendTelemetryEvent: SendTelemetryMutation
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
   addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
@@ -116,13 +118,14 @@ type Query {
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
-  isOpenCTIPlatformRegistered(input: IsOpenCTIPlatformRegisteredInput!): IsOpenCTIPlatformRegisteredResponse!
-  canUnregisterOpenCTIPlatform(input: CanUnregisterOpenCTIPlatformInput!): CanUnregisterResponse!
-  openCTIPlatforms: [OpenCTIPlatform!]!
+  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
+  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
+  registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
-  openCTIPlatformAssociatedOrganization(platformId: String!): Organization!
+  platformRegistrationConnectivityStatus(input: PlatformRegistrationConnectivityStatusInput!): PlatformRegistrationConnectivityStatusResponse!
+  platformAssociatedOrganization(platformId: String!): Organization!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
@@ -137,7 +140,7 @@ type Query {
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
   me: User
   user(id: ID!): User
-  organizationAdministrators(organizationId: ID!): [User!]!
+  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
@@ -414,32 +417,37 @@ type OpenAEVScenarioConnection {
   pageInfo: PageInfo!
 }
 
-enum OpenCTIPlatformContract {
+enum PlatformContract {
   CE
   EE
 }
 
-type OpenCTIPlatform implements Node {
+type RegisteredPlatform implements Node {
   id: ID!
   url: String!
   title: String!
-  contract: OpenCTIPlatformContract!
+  contract: PlatformContract!
   platform_id: String!
 }
 
-input OpenCTIPlatformInput {
+input PlatformInput {
   id: ID!
   url: String!
   title: String!
-  contract: OpenCTIPlatformContract!
+  contract: PlatformContract!
 }
 
-input RegisterOpenCTIPlatformInput {
+enum PlatformIdentifier {
+  opencti
+}
+
+input RegisterPlatformInput {
   organizationId: ID!
-  platform: OpenCTIPlatformInput!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
 }
 
-input CanUnregisterOpenCTIPlatformInput {
+input CanUnregisterPlatformInput {
   platformId: String!
 }
 
@@ -453,17 +461,18 @@ enum PlatformRegistrationStatus {
   never_registered
 }
 
-input IsOpenCTIPlatformRegisteredInput {
+input IsPlatformRegisteredInput {
   platformId: String!
 }
 
-type IsOpenCTIPlatformRegisteredOrganization implements Node {
+type IsPlatformRegisteredOrganization implements Node {
   id: ID!
 }
 
-type IsOpenCTIPlatformRegisteredResponse {
+type IsPlatformRegisteredResponse {
   status: PlatformRegistrationStatus!
-  organization: IsOpenCTIPlatformRegisteredOrganization
+  platformTitle: String
+  organization: IsPlatformRegisteredOrganization
 }
 
 type CanUnregisterResponse {
@@ -473,8 +482,13 @@ type CanUnregisterResponse {
   organizationId: ID
 }
 
-input UnregisterOpenCTIPlatformInput {
+input UnregisterPlatformInput {
   platformId: String!
+}
+
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
 }
 
 input OpenCTIPlatformRegistrationStatusInput {
@@ -482,17 +496,25 @@ input OpenCTIPlatformRegistrationStatusInput {
   token: String!
 }
 
-enum OpenCTIPlatformRegistrationStatus {
-  active
-  inactive
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
 }
 
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: OpenCTIPlatformRegistrationStatus!
+input PlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type PlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
 }
 
 type RefreshUserPlatformTokenResponse {
   token: String!
+}
+
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier!
 }
 
 enum ServiceInstanceOrdering {
@@ -537,7 +559,7 @@ type ServiceInstance implements Node {
 
 type ServiceInstanceEdge {
   cursor: String!
-  node: ServiceInstance!
+  node: ServiceInstance
 }
 
 type ServiceConnection {
@@ -573,7 +595,7 @@ type SubscribedServiceInstanceConfiguration {
   platform_url: String!
   registerer_id: String!
   platform_title: String!
-  platform_contract: OpenCTIPlatformContract!
+  platform_contract: PlatformContract!
 }
 
 type SubscribedServiceInstance {
@@ -670,6 +692,23 @@ type SubscriptionModel implements Node {
 type SubscriptionEdge {
   cursor: String!
   node: SubscriptionModel!
+}
+
+type TelemetryResponse {
+  result: Boolean!
+  message: String
+}
+
+input OneClickDeployInput {
+  platform_identifier: PlatformIdentifier!
+  service_instance_id: ID!
+  resource_id: ID!
+  resource_title: String!
+  platform_id: ID!
+}
+
+type SendTelemetryMutation {
+  oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
 }
 
 type ActionTracking implements Node {
@@ -830,6 +869,11 @@ type UserConnection {
   pageInfo: PageInfo!
 }
 
+input UsersWithCapabilitiesInOrganizationInput {
+  organizationId: ID!
+  capabilities: [OrganizationCapability!]!
+}
+
 input AdminEditUserInput {
   disabled: Boolean
   first_name: String
@@ -897,6 +941,7 @@ enum Restriction {
   FRT_MANAGE_USER
   FRT_ACCESS_SERVICES
   MANAGE_OPENCTI_REGISTRATION
+  MANAGE_OPENAEV_REGISTRATION
 }
 
 enum OrganizationCapability {
@@ -904,6 +949,7 @@ enum OrganizationCapability {
   MANAGE_ACCESS
   MANAGE_SUBSCRIPTION
   MANAGE_OPENCTI_REGISTRATION
+  MANAGE_OPENAEV_REGISTRATION
 }
 
 enum ServiceRestriction {
