@@ -365,6 +365,7 @@
     },
     "ComingSoon": "Bientôt disponible",
     "CreationStatus": "Statut de la création",
+    "Organizations": "Organizations",
     "CsvFeed": {
       "Actions": {
         "Added": "{name} a été ajouté",
@@ -470,6 +471,7 @@
     "Description": "Description",
     "GoTo": "Aller au service",
     "GoToAdminLabel": "Administrer",
+    "SearchServices": "Recherche un service...",
     "GoToLabel": "Consulter",
     "GoToManagement": "Aller à la gestion des services",
     "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",

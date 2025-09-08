@@ -228,6 +228,17 @@ export const paginate = async <T, U>(
               value.map((id) => extractId(id))
             );
         }
+      } else if (key === FilterKey.ServiceDefinitionIdentifier) {
+        if (value.length > 0) {
+          queryContext
+            .leftJoin(
+              'ServiceDefinition',
+              'ServiceDefinition.id',
+              '=',
+              `${type}.service_definition_id`
+            )
+            .whereIn('ServiceDefinition.identifier', value);
+        }
       } else if (key.includes('id')) {
         queryContext.whereIn(
           key,
@@ -269,6 +280,7 @@ export const paginate = async <T, U>(
     .orderBy([{ column: orderBy, order: orderMode }])
     .offset(currentOffset)
     .limit(first)
+    .select(`${type}.*`)
     .secureQuery({ ...opts });
 
   const [query, { totalCount }] = await Promise.all([
