@@ -268,27 +268,18 @@ jobs:
   delete-feature-branch:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: |
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/development'
+    if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
     steps:
       - name: Install AWX cli
         run: pip install awxkit
 
       - name: Delete
         run: |
-          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
-          PR_NUMBER=$(echo "$COMMIT_MESSAGE" | grep -oE '#[0-9]+' | tail -1 | sed 's/#//')
-          if [ -n "$PR_NUMBER" ]; then
-            awx --conf.host https://awx.filigran.io \
-              --conf.token ${{ secrets.AWX_TOKEN }} \
-              -f human job_templates launch 'Delete XTM Hub feature branch for testing' \
-              --inventory eu-west-staging \
-              --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-$PR_NUMBER\"}"
-          else
-            echo "No PR number found in commit message"
-          fi
-
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Delete XTM Hub feature branch for testing' \
+            --inventory eu-west-staging \
+            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.pull_request.number }}\"}"
   build-images-prod:
     needs:
       - run-e2e-tests
