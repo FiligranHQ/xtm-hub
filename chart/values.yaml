@@ -139,3 +139,6 @@ elasticsearch:
 kibana:
   enabled: true
   priorityClassName: ""
+  ingress:
+    enabled: true
+    annotations: {}
