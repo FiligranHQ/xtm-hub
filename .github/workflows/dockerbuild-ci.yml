@@ -113,9 +113,11 @@ jobs:
           echo "Starting parallel pull of external service images..."
         
           docker pull postgres:17.2 &
-          POSTGRES_PID=$! &
+          POSTGRES_PID=$!
           docker pull minio/minio:RELEASE.2024-08-03T04-33-23Z &
           MINIO_PID=$!
+          docker pull docker.elastic.co/elasticsearch/elasticsearch:8.18.3 &
+          ELASTIC_PID=$!
           
           # Attendre que TOUS les pulls soient terminés
           wait $POSTGRES_PID
@@ -123,6 +125,9 @@ jobs:
           
           wait $MINIO_PID
           MINIO_EXIT=$?
+          
+          wait $ELASTIC_PID
+          ELASTIC_EXIT=$?
           
           # Vérifier les codes de sortie
           if [ $POSTGRES_EXIT -ne 0 ]; then
@@ -134,14 +139,20 @@ jobs:
           echo "Failed to pull minio/minio:RELEASE.2024-08-03T04-33-23Z"
           exit 1
           fi
+          if [ $ELASTIC_EXIT -ne 0 ]; then
+          echo "Failed to pull docker.elastic.co/elasticsearch/elasticsearch:8.18.3"
+          exit 1
+          fi
           
           echo "All external images pulled successfully"
-          docker images | grep -E "postgres|minio"
+          docker images | grep -E "postgres|minio|elasticsearch"
 
-      - name: Run postgres and minio
+      - name: Run postgres and minio and elastic
         run: |
-          docker run --env=POSTGRES_USER=portal --env=POSTGRES_PASSWORD=portal-password --env=POSTGRES_DB=cloud-portal --env=PGDATA=/data/postgres -d postgres:17.2 
-          docker run --env=MINIO_ROOT_USER=portal --env=MINIO_ROOT_PASSWORD=changeme -d minio/minio:RELEASE.2024-08-03T04-33-23Z server /data --console-address ":9001"
+          docker network create ci_network || true
+          docker run --name portal-postgres --network ci_network --env=POSTGRES_USER=portal --env=POSTGRES_PASSWORD=portal-password --env=POSTGRES_DB=cloud-portal --env=PGDATA=/data/postgres -d postgres:17.2 
+          docker run --name portal-minio --network ci_network --env=MINIO_ROOT_USER=portal --env=MINIO_ROOT_PASSWORD=changeme -d minio/minio:RELEASE.2024-08-03T04-33-23Z server /data --console-address ":9001"
+          docker run --name portal-elastic --network ci_network --user=1000:0 --env=xpack.ml.enabled=false --env=xpack.security.enabled=false --env=ELASTIC_CONTAINER=true --env=SHELL=/bin/bash --runtime=runc -d docker.elastic.co/elasticsearch/elasticsearch:8.18.3
 
   build-test-images:
     needs: [determine-changes, prepare-build]
@@ -232,7 +243,7 @@ jobs:
            GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
            GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
            GITHUB_RUN_ID="${{ github.run_id }}"
-
+          docker network create ci_network || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests || TEST_EXIT_CODE=$?
           CONTAINER_ID=$(docker ps -a --filter "name=portal-e2e-tests-run" --format "{{.ID}}" | head -1)
           docker cp $CONTAINER_ID:/app/apps/portal-e2e-tests/ctrf/. ./ctrf/
@@ -265,6 +276,7 @@ jobs:
         run: |
           mkdir -p coverage
           export IMAGE_TAGS=${{ needs.prepare-build.outputs.docker-tag }}
+          docker network create ci_network || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
 
       - name: Upload coverage to Codecov
@@ -297,6 +309,7 @@ jobs:
         run: |
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           mkdir -p coverage
+          docker network create ci_network || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-front-test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

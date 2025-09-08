@@ -92,9 +92,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-    depends_on:
-      portal-elasticsearch:
-        condition: service_healthy
     environment:
       - DATABASE_HOST=portal-postgres
       - DATABASE_PORT=5432
@@ -149,3 +146,7 @@ services:
       - GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}
       - GITHUB_PR_TITLE=${GITHUB_PR_TITLE}
       - GITHUB_RUN_ID=${GITHUB_RUN_ID}
+networks:
+  default:
+    external: true
+    name: ci_network
