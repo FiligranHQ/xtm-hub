@@ -29,20 +29,9 @@ export const ingestionConnectorTypeMetadata: Record<
   },
 };
 export const getBadgesValues = (contract: Contract): BadgeOverflow[] => {
-  const metadata =
-    ingestionConnectorTypeMetadata[
-      contract.container_type as IngestionConnectorType
-    ];
-  return [
-    {
-      id: contract.container_type,
-      name: metadata?.label ?? '',
-      color: metadata?.color ?? '',
-    },
-    ...contract.use_cases.map((use_case) => ({
-      id: use_case,
-      name: use_case,
-      color: '#0099cc',
-    })),
-  ];
+  return contract.use_cases.map((use_case) => ({
+    id: use_case,
+    name: use_case,
+    color: '#0099cc',
+  }));
 };

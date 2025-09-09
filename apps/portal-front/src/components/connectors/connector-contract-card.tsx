@@ -1,5 +1,9 @@
 'use client';
-import { getBadgesValues } from '@/components/connectors/connector.utils';
+import {
+  getBadgesValues,
+  IngestionConnectorType,
+  ingestionConnectorTypeMetadata,
+} from '@/components/connectors/connector.utils';
 import BadgeOverflowCounter from '@/components/ui/badge-overflow-counter';
 import { Contract } from '@/utils/connectors/connector.model';
 import { VerifiedIcon } from 'filigran-icon';
