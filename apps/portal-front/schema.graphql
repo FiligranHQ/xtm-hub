@@ -497,6 +497,7 @@ type CanUnregisterResponse {
 
 input UnregisterPlatformInput {
   platformId: String!
+  identifier: PlatformIdentifier!
 }
 
 enum PlatformRegistrationConnectivityStatus {

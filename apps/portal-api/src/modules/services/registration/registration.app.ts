@@ -261,7 +261,7 @@ export const registrationApp = {
 
   unregisterPlatform: async (
     context: PortalContext,
-    { platformId }: UnregisterPlatformInput
+    { platformId, identifier }: UnregisterPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -284,14 +284,15 @@ export const registrationApp = {
       context,
       activeServiceConfiguration.service_instance_id
     );
-    if (!serviceDefinition) {
-      throw new Error(ErrorCode.ServiceDefinitionNotFound);
-    }
-
     const platformIdentifier =
       platformIdentifierMappedByServiceDefinitionIdentifier[
         serviceDefinition.identifier
       ];
+
+    if (!serviceDefinition || identifier !== platformIdentifier) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
     const requiredCapability =
       organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     await securityGuard.assertUserIsAllowedOnOrganization(context, {

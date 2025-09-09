@@ -31,7 +31,7 @@ interface Props {
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
 
 export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
-  const { displayedIdentifier } = useContext(RegistrationContext);
+  const { displayedIdentifier, identifier } = useContext(RegistrationContext);
   const t = useTranslations();
   const canUnregisterPreloadedQuery =
     usePreloadedQuery<registerCanUnregisterPlatformQuery>(
@@ -54,10 +54,15 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
   };
 
   const confirm = () => {
+    if (!identifier) {
+      return;
+    }
+
     unregisterPlatform({
       variables: {
         input: {
           platformId,
+          identifier,
         },
       },
       onCompleted: () => {

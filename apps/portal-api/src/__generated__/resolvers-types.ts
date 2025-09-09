@@ -1449,6 +1449,7 @@ export type TrackingSubscription = {
 };
 
 export type UnregisterPlatformInput = {
+  identifier: PlatformIdentifier;
   platformId: Scalars['String']['input'];
 };
 

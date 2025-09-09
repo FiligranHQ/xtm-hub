@@ -199,6 +199,7 @@ describe('Registration app', () => {
 
       const call = registrationApp.unregisterPlatform(contextAdminOrgaThales, {
         platformId,
+        identifier: PlatformIdentifier.Opencti,
       });
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
@@ -213,11 +214,27 @@ describe('Registration app', () => {
 
       const call = registrationApp.unregisterPlatform(contextSimpleUserThales, {
         platformId,
+        identifier: PlatformIdentifier.Opencti,
       });
 
       await expect(call).rejects.toThrow(
         ErrorCode.MissingCapabilityOnOrganization
       );
+    });
+
+    it('should throw when identifier is not the right type', async () => {
+      await registrationApp.registerPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform,
+        identifier: PlatformIdentifier.Opencti,
+      });
+
+      const call = registrationApp.unregisterPlatform(contextAdminUser, {
+        platformId,
+        identifier: PlatformIdentifier.Openaev,
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
 
     it('should unregister platform when the platform is still active', async () => {
@@ -229,6 +246,7 @@ describe('Registration app', () => {
 
       await registrationApp.unregisterPlatform(contextAdminUser, {
         platformId,
+        identifier: PlatformIdentifier.Opencti,
       });
 
       const serviceConfiguration =
@@ -455,6 +473,7 @@ describe('Registration app', () => {
 
       await registrationApp.unregisterPlatform(contextAdminUser, {
         platformId,
+        identifier: PlatformIdentifier.Opencti,
       });
 
       const result = await registrationApp.loadPlatformRegistrationStatus(
