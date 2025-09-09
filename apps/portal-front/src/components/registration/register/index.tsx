@@ -45,7 +45,7 @@ export type RegistrationRequestStatus =
 
 export const Register: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
-  const { translationKey, identifier } = useContext(RegistrationContext);
+  const { displayedIdentifier, identifier } = useContext(RegistrationContext);
 
   const [chosenOrganizationId, setChosenOrganizationId] = useState<string>();
 
@@ -158,8 +158,12 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
   if (registrationRequestStatus === 'succeeded') {
     return (
       <RegistrationLayout>
-        <h1>{t(`Register.${translationKey}.Succeeded.Title`)}</h1>
-        <p>{t(`Register.${translationKey}.Succeeded.Description`)}</p>
+        <h1>
+          {t(`Register.Succeeded.Title`, {
+            platformIdentifier: displayedIdentifier ?? '',
+          })}
+        </h1>
+        <p>{t(`Register.Succeeded.Description`)}</p>
       </RegistrationLayout>
     );
   }
@@ -167,8 +171,8 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
   if (registrationRequestStatus === 'failed') {
     return (
       <RegistrationLayout cancel={cancel}>
-        <h1>{t(`Register.${translationKey}.Failed.Title`)}</h1>
-        <p>{t(`Register.${translationKey}.Failed.Description`)}</p>
+        <h1>{t(`Register.Failed.Title`)}</h1>
+        <p>{t(`Register.Failed.Description`)}</p>
       </RegistrationLayout>
     );
   }
@@ -182,13 +186,14 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
       <RegistrationLayout
         cancel={cancel}
         confirm={() => register(isPlatformRegistered.organization?.id ?? '')}>
-        <h1>{t(`Register.${translationKey}.TooMuchOrganization.Title`)}</h1>
+        <h1>{t(`Register.TooMuchOrganization.Title`)}</h1>
         <p>
-          {t(`Register.${translationKey}.TooMuchOrganization.Description1`, {
+          {t(`Register.TooMuchOrganization.Description1`, {
+            platformIdentifier: displayedIdentifier ?? '',
             platformTitle: isPlatformRegistered.platformTitle ?? '',
           })}
           <br />
-          {t(`Register.${translationKey}.TooMuchOrganization.Description2`)}
+          {t(`Register.TooMuchOrganization.Description2`)}
         </p>
       </RegistrationLayout>
     );

@@ -17,7 +17,7 @@ export const RegisterStateMissingCapability: React.FC<Props> = ({
   organizationId,
   cancel,
 }) => {
-  const { capability, translationKey } = useContext(RegistrationContext);
+  const { capability, displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
   const capabilities = [OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION];
   if (capability) {
@@ -38,12 +38,16 @@ export const RegisterStateMissingCapability: React.FC<Props> = ({
   return (
     <RegistrationLayout cancel={cancel}>
       <h1>
-        {t(`Register.${translationKey}.Error.Capability.Title`, {
+        {t(`Register.Error.Capability.Title`, {
           capability: capability?.replaceAll('_', ' ') ?? '',
         })}
       </h1>
-      <p>{t(`Register.${translationKey}.Error.Capability.Description`)}</p>
-      <p>{t(`Register.${translationKey}.Error.Capability.AdminListTitle`)}</p>
+      <p>
+        {t(`Register.Error.Capability.Description`, {
+          platformIdentifier: displayedIdentifier ?? '',
+        })}
+      </p>
+      <p>{t(`Register.Error.Capability.AdminListTitle`)}</p>
       <ul className="list-disc ml-l">
         {usersWithCapabilitiesInOrganization.map((administrator) => (
           <li key={administrator.id}>

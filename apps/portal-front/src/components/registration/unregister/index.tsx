@@ -31,7 +31,7 @@ interface Props {
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
 
 export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
-  const { translationKey } = useContext(RegistrationContext);
+  const { displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
   const canUnregisterPreloadedQuery =
     usePreloadedQuery<registerCanUnregisterPlatformQuery>(
@@ -78,8 +78,12 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
   if (status === 'succeeded') {
     return (
       <RegistrationLayout>
-        <h1>{t(`Unregister.${translationKey}.Succeeded.Title`)}</h1>
-        <p>{t(`Unregister.${translationKey}.Succeeded.Description`)}</p>
+        <h1>
+          {t(`Unregister.Succeeded.Title`, {
+            platformIdentifier: displayedIdentifier ?? '',
+          })}
+        </h1>
+        <p>{t(`Unregister.Succeeded.Description`)}</p>
       </RegistrationLayout>
     );
   }
@@ -87,8 +91,8 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
   if (status === 'failed') {
     return (
       <RegistrationLayout>
-        <h1>{t(`Unregister.${translationKey}.Failed.Title`)}</h1>
-        <p>{t(`Unregister.${translationKey}.Failed.Description`)}</p>
+        <h1>{t(`Unregister.Failed.Title`)}</h1>
+        <p>{t(`Unregister.Failed.Description`)}</p>
       </RegistrationLayout>
     );
   }
@@ -101,9 +105,7 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
     if (!isInOrganization) {
       return (
         <RegistrationLayout cancel={cancel}>
-          <h1>
-            {t(`Unregister.${translationKey}.Error.NotInOrganization.Title`)}
-          </h1>
+          <h1>{t(`Unregister.Error.NotInOrganization.Title`)}</h1>
         </RegistrationLayout>
       );
     }

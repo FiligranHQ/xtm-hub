@@ -15,7 +15,7 @@ export const UnregisterConfirm: React.FC<Props> = ({
   cancel,
   organizationId,
 }) => {
-  const { translationKey } = useContext(RegistrationContext);
+  const { displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
   const organization = getOrganization(organizationId);
 
@@ -24,11 +24,12 @@ export const UnregisterConfirm: React.FC<Props> = ({
       confirm={confirm}
       cancel={cancel}>
       <h1>
-        {t(`Unregister.${translationKey}.Confirm.Title`, {
+        {t(`Unregister.Confirm.Title`, {
+          platformIdentifier: displayedIdentifier ?? '',
           name: organization?.name ?? '',
         })}
       </h1>
-      <p>{t(`Unregister.${translationKey}.Confirm.Description`)}</p>
+      <p>{t(`Unregister.Confirm.Description`)}</p>
     </RegistrationLayout>
   );
 };

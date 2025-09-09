@@ -14,7 +14,7 @@ export const RegistrationLayout: React.FC<Props> = ({
   cancel,
   confirm,
 }) => {
-  const { translationKey } = useContext(RegistrationContext);
+  const { displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
   return (
     <div className="h-full flex flex-col justify-between gap-xl">
@@ -24,7 +24,9 @@ export const RegistrationLayout: React.FC<Props> = ({
           <Button
             variant="outline"
             onClick={cancel}>
-            {t(`Register.${translationKey}.Back`)}
+            {t(`Register.Back`, {
+              platformIdentifier: displayedIdentifier ?? '',
+            })}
           </Button>
         )}
         {Boolean(confirm) && (
