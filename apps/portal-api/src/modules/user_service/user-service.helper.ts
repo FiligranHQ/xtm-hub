@@ -16,6 +16,7 @@ import {
   UserServiceCapabilityInitializer,
 } from '../../model/kanel/public/UserServiceCapability';
 import { sendMail } from '../../server/mail-service';
+import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { loadUserOrganization } from '../common/user-organization.domain';
 import {
   loadServiceDefinitionByServiceInstance,
@@ -197,7 +198,9 @@ export const createUserServiceAccess = async (
   );
   await sendMail({
     to: user.email,
-    template: service_definition.identifier,
+    template: ServiceIdentifierToMailTemplate.get(
+      service_definition.identifier
+    ),
     params: {
       name: user.email,
       serviceLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', service.id)}`,
