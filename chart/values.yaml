@@ -25,6 +25,9 @@ xtmhub:
     secret:
       OIDC_CLIENT_SECRET: ""
     livenessProbe: {}
+    elasticsearchCAFromSecret:
+      enabled: true
+      CASecretName: "elasticsearch-es-http-ca-internal"
   front:
     repository: "portal-front-prod"
     replicas: 1
@@ -133,9 +136,6 @@ elasticsearch:
     enabled: false
     host: localhost
     annotations: {}
-    ca_from_secret:
-      enabled: true
-      ca_secret_name: "elasticsearch-es-http-ca-internal"
 kibana:
   enabled: true
   priorityClassName: ""
