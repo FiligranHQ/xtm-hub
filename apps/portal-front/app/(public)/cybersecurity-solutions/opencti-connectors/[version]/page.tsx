@@ -28,7 +28,7 @@ export default async function Page({
     },
     {
       label: 'Connectors',
-      href: `/opencti-connectors`,
+      href: `/cybersecurity-solutions/opencti-connectors`,
       original: true,
     },
   ];

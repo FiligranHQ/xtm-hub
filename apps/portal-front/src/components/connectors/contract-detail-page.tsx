@@ -23,7 +23,7 @@ const ContractDetailPage: React.FC<ContractDetailPageProps> = ({
     },
     {
       label: t('MenuLinks.Connectors'),
-      href: `/opencti-connectors`,
+      href: `/cybersecurity-solutions/opencti-connectors`,
       original: true,
     },
     {

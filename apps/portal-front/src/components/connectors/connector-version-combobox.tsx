@@ -26,7 +26,9 @@ export function ConnectorVersionCombobox({ dataTab }: Props) {
       onValueChange={(item) => {
         if (item) {
           setSelectedValue(item);
-          router.push(`/opencti-connectors/${item.value}`);
+          router.push(
+            `/cybersecurity-solutions/opencti-connectors/${item.value}`
+          );
         }
       }}
     />
