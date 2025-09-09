@@ -14,7 +14,7 @@ export default async function Page() {
       <p>{connectorManifest.description}</p>
       {connectorManifest.contracts.map((contract) => (
         <div key={contract.slug}>
-          <Link href={`/connectors/master/${contract.slug}`}>
+          <Link href={`/opencti-connectors/master/${contract.slug}`}>
             {contract.title}
           </Link>
         </div>

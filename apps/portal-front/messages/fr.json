@@ -15,8 +15,8 @@
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Possibilités de toutes les capacités au sein d'une organisation",
       "MANAGE_ACCESS": "Possibilité d'inviter d'autres utilisateurs dans cette organisation",
-      "MANAGE_OPENCTI_REGISTRATION": "Possibilité d'inscrire et de désinscrire des plateformes OpenCTI",
       "MANAGE_OPENAEV_REGISTRATION": "Possibilité d'inscrire et de désinscrire les plateformes OpenAEV",
+      "MANAGE_OPENCTI_REGISTRATION": "Possibilité d'inscrire et de désinscrire des plateformes OpenCTI",
       "MANAGE_SUBSCRIPTION": "Possibilité de gérer et d'abonner l'organisation à des services"
     },
     "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
@@ -49,10 +49,6 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
-  "UnexpectedErrorDialog": {
-    "Title": "Un événement inattendu s'est produit.",
-    "Description": "Veuillez essayer de vous connecter à nouveau. Si le problème persiste, contactez-nous pour obtenir de l'aide."
-  },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
     "Login": {
@@ -70,6 +66,7 @@
       "CANT_REMOVE_LAST_ADMINISTRATOR": "Vous ne pouvez pas supprimer le dernier administrateur d'une organisation",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
+      "CAN_UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
       "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
       "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
       "CSV_FEED_UPDATE_ERROR": "Erreur lors de la mise à jour du CSV Feed.",
@@ -91,10 +88,16 @@
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
-      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
+      "IS_OPENCTI_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'inscription de la plateforme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
-      "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
+      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
+      "OBAS_SCENARIO_INSERTION_ERROR": "Erreur lors de la création du scénario.",
+      "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "Le slug du scénario est déjà utilisé.",
+      "OBAS_SCENARIO_UPDATE_ERROR": "Erreur lors de la mise à jour du scénario.",
+      "REGISTER_OPENCTI_PLATFORM_INVALID_DATA": "Les données envoyées pour l'inscription de la plateforme OpenCTI ne sont pas valides",
+      "REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'inscription de la plateforme",
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",
+      "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
       "SERVICE_CONTRACT_NOT_FOUND": "Le contrat de service n'a pas été trouvé",
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
       "SERVICE_NOT_FOUND_ERROR": "Le service n'existe pas",
@@ -105,11 +108,8 @@
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "USER_ALREADY_EXISTS_ERROR": "L'utilisateur a déjà accès",
-      "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord.",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
-      "OBAS_SCENARIO_INSERTION_ERROR": "Erreur lors de la création du scénario.",
-      "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "Le slug du scénario est déjà utilisé.",
-      "OBAS_SCENARIO_UPDATE_ERROR": "Erreur lors de la mise à jour du scénario."
+      "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord."
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -267,6 +267,7 @@
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",
+    "Connectors": "Connecteurs",
     "Home": "Accueil",
     "Labels": "Étiquettes",
     "Organizations": "Organisations",
@@ -285,8 +286,8 @@
   "Notifications": {
     "Title": "Notifications ({count})",
     "UserNotification": {
-      "Title": "Requête Utilisateur",
-      "Text": "<nameFormat>{name}</nameFormat> veut rejoindre votre organisation"
+      "Text": "<nameFormat>{name}</nameFormat> veut rejoindre votre organisation",
+      "Title": "Requête Utilisateur"
     }
   },
   "OrganizationActions": {
@@ -332,6 +333,14 @@
   "Parameters": {
     "Version": "Version"
   },
+  "PendingUserListPage": {
+    "TabTitle": "Requêtes utilisateurs ({usersCount})",
+    "WarningUserRejection": {
+      "Confirm": "Confirmer",
+      "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
+      "Title": "Êtes-vous sûr?"
+    }
+  },
   "ProfilePage": {
     "PlateformsEditionDialog": {
       "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OBAS."
@@ -342,6 +351,73 @@
   "RedirectPage": {
     "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus.",
     "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !"
+  },
+  "Register": {
+    "Confirm": "Inscrire",
+    "Details": {
+      "Contract": "Contrat",
+      "Contracts": {
+        "CE": "Edition Communautaire",
+        "EE": "Edition Entreprise"
+      },
+      "Description": "Cliquez ici pour accéder à votre plateforme privée",
+      "PlatformID": "ID de la plateforme",
+      "PlatformURL": "URL de la plateforme",
+      "PrivatePlatform": "Plateforme privée"
+    },
+    "OpenCTI": {
+      "AnotherOrganization": {
+        "Allowed": {
+          "Registered": {
+            "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation. Voulez-vous transférer votre plateforme ?",
+            "Title": "Plateforme déjà inscrite"
+          },
+          "Unregistered": {
+            "Description": "Votre plateforme OpenCTI a déjà été inscrite dans une autre organisation. Souhaitez-vous inscrire votre plateforme à nouveau ?",
+            "Title": "La plateforme était inscrite"
+          }
+        },
+        "NotAllowed": {
+          "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer.",
+          "Title": "La plateforme est inscrite dans une autre organisation"
+        }
+      },
+      "Back": "Retour à OpenCTI",
+      "Error": {
+        "Capability": {
+          "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
+          "Description": "Si vous souhaitez procéder à l'inscription de votre plateforme OpenCTI dans le XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
+          "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub."
+        }
+      },
+      "Failed": {
+        "Description": "Une erreur s'est produite lors de l'inscription de la plateforme.",
+        "Title": "L'inscription a échoué"
+      },
+      "OrganizationForm": {
+        "Description": "Dans quel espace souhaitez-vous inscrire votre plateforme OpenCTI ?",
+        "Title": "Vous êtes sur le point d'inscrire votre plateforme OpenCTI dans XTM Hub"
+      },
+      "SameOrganization": {
+        "Registered": {
+          "Description": "Votre plateforme OpenCTI est déjà inscrite. Voulez-vous inscrire votre plateforme à nouveau ?",
+          "Title": "Plateforme déjà inscrite"
+        },
+        "Unregistered": {
+          "Description": "Votre plateforme OpenCTI a déjà été inscrite. Voulez-vous inscrire votre plateforme à nouveau  ?",
+          "Title": "La plateforme était inscrite"
+        }
+      },
+      "Succeeded": {
+        "Description": "Cet onglet sera bientôt fermé.",
+        "Title": "La plateforme OpenCTI a été inscrite avec succès"
+      },
+      "TooMuchOrganization": {
+        "Description1": "Votre plateforme OpenCTI {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+        "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
+        "Title": "Avis de réenregistrement de la plate-forme"
+      }
+    }
   },
   "RemoveUserOrgDialog": {
     "TextRemoveThisUser": "Êtes-vous sûr de vouloir retirer cet utilisateur {email} de votre organisation ?"
@@ -378,21 +454,21 @@
       "AddService": "Ajouter un CSV Feed",
       "DeleteService": "Supprimer le CSV Feed {name}",
       "Form": {
+        "Author": "Auteur",
         "CsvFeedFile": "Fichier Csv Feed",
         "CsvFeedIllustration": "Illustration",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le CSV Feed.",
-        "ExistingCsvFeedFile": "Fichier Csv Feed existant: {file_name}",
-        "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "DescriptionUpdateJSONFile": "Vous allez mettre un nouveau fichier JSON. L'ancien sera écrasé, voulez-vous continuer ?",
+        "ExistingCsvFeedFile": "Fichier Csv Feed existant: {file_name}",
         "ExistingCsvFeedIllustration": "Illustration Csv Feed existante: {file_name}",
         "LabelsLabel": "Étiquettes",
         "LabelsPlaceholder": "Ajouter des étiquettes",
         "NameLabel": "Nom",
         "PublishedPlaceholder": "Le CSV Feed est-il publié?",
         "ShortDescriptionLabel": "Courte Description",
-        "Author": "Auteur",
-        "SlugLabel": "Slug"
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Mettre à jour le fichier JSON"
       },
       "NonActive": "Brouillon",
       "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
@@ -409,6 +485,8 @@
       "AddService": "Nouveau tableau de bord",
       "DeleteService": "Supprimer le tableau de bord {name}",
       "Form": {
+        "Author": "Auteur",
+        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Description du tableau de bord",
         "ExistingJSONFile": "Fichier JSON existant : {file_name}",
@@ -422,54 +500,21 @@
         "NoJSONFile": "Pas de fichier JSON sélectionné",
         "PublishedLabel": "Publier",
         "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
+        "Restore": "Restore",
         "SelectImage": "Selectionnez une/des image(s)",
         "SelectJSONFile": "Selectionnez un fichier JSON",
-        "UpdateJSONFile": "Mettre à jour le fichier JSON",
-        "DescriptionUpdateJSONFile": "Vous allez envoyer un nouveau fichier JSON. L'ancien sera supprimé. Voulez-vous continuer ?",
         "ShortDescriptionLabel": "Brève description",
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",
         "SlugPlaceholder": "dashboard-slug",
+        "UpdateJSONFile": "Mettre à jour le fichier JSON",
         "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
         "productVersion": "OpenCTI version",
-        "productVersionPlaceholder": "1.0.0",
-        "Restore": "Restore",
-        "Author": "Auteur",
-        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image"
+        "productVersionPlaceholder": "1.0.0"
       },
       "NonActive": "Draft",
       "SureDeleteService": "Etes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
       "UpdateService": "Tableau de bord des mises à jour"
-    },
-    "ObasScenario": {
-      "Actions": {
-        "Added": "Le scénario {name} a été ajouté avec succès",
-        "Deleted": "Le scénario {name} a été supprimé avec succès",
-        "Updated": "Le scénario {name} a été modifié avec succès",
-        "Share": "Partager le scénario"
-      },
-      "Form": {
-        "NameLabel": "Nom",
-        "ShortDescriptionLabel": "Description courte",
-        "SlugLabel": "Slug",
-        "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le scénario.",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
-        "ObasScenarioFile": "Fichier de scénario",
-        "ExistingObasScenarioFile": "Fichier de scénario existant : {file_name}",
-        "ObasScenarioIllustration": "Illustration",
-        "ExistingObasScenarioIllustration": "Illustration de scénario existante : {file_name}",
-        "PublishedPlaceholder": "Le scénario est-il publié?",
-        "Author": "Auteur",
-        "ProductVersionLabel": "Version OpenBAS"
-      },
-      "AddService": "Ajouter un nouveau scénario",
-      "UpdateService": "Mettre à jour le scénario {name}",
-      "DeleteService": "Supprimer le scénario {name}",
-      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
-      "NonActive": "Brouillon",
-      "Active": "Publié"
     },
     "Description": "Description",
     "GoTo": "Aller au service",
@@ -501,29 +546,59 @@
     "Name": "Nom",
     "NoOwnedService": "Vous n'avez pas encore de service.",
     "NoService": "Il n'y a pas encore de service...",
+    "ObasScenario": {
+      "Actions": {
+        "Added": "Le scénario {name} a été ajouté avec succès",
+        "Deleted": "Le scénario {name} a été supprimé avec succès",
+        "Share": "Partager le scénario",
+        "Updated": "Le scénario {name} a été modifié avec succès"
+      },
+      "Active": "Publié",
+      "AddService": "Ajouter un nouveau scénario",
+      "DeleteService": "Supprimer le scénario {name}",
+      "Form": {
+        "Author": "Auteur",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le scénario.",
+        "ExistingObasScenarioFile": "Fichier de scénario existant : {file_name}",
+        "ExistingObasScenarioIllustration": "Illustration de scénario existante : {file_name}",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "ObasScenarioFile": "Fichier de scénario",
+        "ObasScenarioIllustration": "Illustration",
+        "ProductVersionLabel": "Version OpenBAS",
+        "PublishedPlaceholder": "Le scénario est-il publié?",
+        "ShortDescriptionLabel": "Description courte",
+        "SlugLabel": "Slug"
+      },
+      "NonActive": "Brouillon",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
+      "UpdateService": "Mettre à jour le scénario {name}"
+    },
     "ServiceName": "Nom du service",
     "ShareableResources": {
-      "Share": "Partager",
-      "Download": "Télécharger",
-      "Deploy": {
-        "DeployOcti": "Déployer dans OpenCTI",
-        "DeployDashboardOctiDescription": "Vous êtes sur le point de déployer le custom dashboard {dashboardName}.",
-        "DeployOctiQuestionTag": "Sur quelle plateforme OpenCTI voulez-vous le déployer ?",
-        "DeployOctiDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
-        "DeployOctiDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme OpenCTI.",
-        "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait sur la page Filigran Experience dans la section suivante :"
-      },
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
-      "FromVersion": "Depuis la version",
+      "Deploy": {
+        "DeployDashboardOctiDescription": "Vous êtes sur le point de déployer le custom dashboard {dashboardName}.",
+        "DeployOcti": "Déployer dans OpenCTI",
+        "DeployOctiDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme OpenCTI.",
+        "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait sur la page Filigran Experience dans la section suivante :",
+        "DeployOctiDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
+        "DeployOctiQuestionTag": "Sur quelle plateforme OpenCTI voulez-vous le déployer ?"
+      },
       "Details": {
         "Author": "Auteur",
         "BasicInformation": "Informations de base",
         "Downloads": "Téléchargements",
         "LastUpdatedAt": "Dernière mise à jour le",
-        "ProductVersion": "Version minimale du produit",
         "Overview": "Vue d'ensemble",
+        "ProductVersion": "Version minimale du produit",
         "Shares": "Actions"
-      }
+      },
+      "Download": "Télécharger",
+      "FromVersion": "Depuis la version",
+      "Share": "Partager"
     },
     "Subscribe": "Souscrire",
     "SubscribeOrganization": "Souscrire une organisation",
@@ -593,6 +668,40 @@
     "SetTheme": "Appliquer le thème",
     "ToggleTheme": "Ouvrir menu thème"
   },
+  "UnexpectedErrorDialog": {
+    "Description": "Veuillez essayer de vous connecter à nouveau. Si le problème persiste, contactez-nous pour obtenir de l'aide.",
+    "Title": "Un événement inattendu s'est produit."
+  },
+  "Unregister": {
+    "OpenCTI": {
+      "Confirm": {
+        "Description": "Voulez-vous procéder à la désinscription ?",
+        "Title": "Vous'êtes sur le point de désenregistrer votre plateforme OpenCTI"
+      },
+      "Error": {
+        "Capability": {
+          "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
+          "Description": "Si vous voulez procéder à la désinscription de votre plateforme OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
+          "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub."
+        },
+        "NotInOrganization": {
+          "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+        },
+        "PlatformNotRegistered": {
+          "Description": "Cet onglet sera bientôt fermé.",
+          "Title": "La plateforme que vous essayez de désinscrire n'est pas inscrite"
+        }
+      },
+      "Failed": {
+        "Description": "Une erreur s'est produite lors de la désinscription de la plateforme.",
+        "Title": "La désinscription a échoué"
+      },
+      "Succeeded": {
+        "Description": "Cet onglet sera bientôt fermé.",
+        "Title": "La plateforme OpenCTI a été désinscrite avec succès"
+      }
+    }
+  },
   "UpdateUserDialog": {
     "TextUpdatedUser": "Votre compte a été modifié par un administrateur. Le comportement de l'application peut donc évoluer.",
     "TextUpdatedUserTitle": "Compte modifié !"
@@ -645,8 +754,8 @@
     "Organizations": "Organisations",
     "Roles": "Rôles",
     "Status": "Statut",
-    "Title": "Liste des utilisateurs",
     "TabTitle": "Utilisateurs",
+    "Title": "Liste des utilisateurs",
     "UserForm": {
       "Email": "Email",
       "Password": "Mot de passe",
@@ -654,24 +763,17 @@
       "SelectRoles": "Sélectionner rôles"
     }
   },
-  "PendingUserListPage": {
-    "TabTitle": "Requêtes utilisateurs ({usersCount})",
-    "WarningUserRejection": {
-      "Title": "Êtes-vous sûr?",
-      "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
-      "Confirm": "Confirmer"
-    }
-  },
   "Utils": {
     "Cancel": "Annuler",
-    "Close": "Fermer",
     "Clear": "Effacer",
+    "Close": "Fermer",
     "Confirm": "Confirmer",
     "Continue": "Continuer",
     "Copied": "Copié",
     "Create": "Créer",
     "Delete": "Supprimer",
     "Deleted": "a été supprimé",
+    "Details": "Details",
     "Download": "Télécharger",
     "Error": "Erreur",
     "FailedToCopy": "Échec de la copie",
@@ -684,11 +786,11 @@
     "NotFound": "Non trouvé",
     "OpenMenu": "Ouvrir le menu",
     "Reset": "Effacer",
-    "Details": "Details",
     "Success": "Succès",
     "Update": "Editer",
     "Validate": "Valider",
     "ValidateForm": "Valider le formulaire",
+    "Verified": "Vérifié",
     "Visualize": "Visualiser"
   },
   "VaultActions": {

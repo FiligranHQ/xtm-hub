@@ -9,8 +9,23 @@ export const metadata = {
 
 export default async function Page() {
   const connectorManifest = await getConnectorManifest('master');
+
+  const breadcrumbValue = [
+    {
+      label: 'MenuLinks.Home',
+      href: '/',
+    },
+    {
+      label: 'Connectors',
+      href: `/opencti-connectors`,
+      original: true,
+    },
+  ];
+
   return (
     <main>
+      <BreadcrumbNav value={breadcrumbValue} />
+
       <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
         {connectorManifest.name}
       </h1>
