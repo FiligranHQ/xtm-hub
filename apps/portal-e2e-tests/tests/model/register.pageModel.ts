@@ -4,22 +4,25 @@ export default class RegisterPage {
   constructor(private page: Page) {}
 
   async navigateTo(
+    redirection_key: string,
     platformUrl: string,
     platformTitle: string,
     platformId: string,
     platformContract: string
   ) {
-    const url = `/redirect/register-opencti?platform_url=${platformUrl}&platform_title=${platformTitle}&platform_id=${platformId}&platform_contract=${platformContract}`;
+    const url = `/redirect/${redirection_key}?platform_url=${platformUrl}&platform_title=${platformTitle}&platform_id=${platformId}&platform_contract=${platformContract}`;
     await this.page.goto(encodeURI(url));
   }
 
   async navigateToAndRegister(
+    redirection_key: string,
     platformUrl: string,
     platformTitle: string,
     platformId: string,
     platformContract: string
   ) {
     await this.navigateTo(
+      redirection_key,
       platformUrl,
       platformTitle,
       platformId,

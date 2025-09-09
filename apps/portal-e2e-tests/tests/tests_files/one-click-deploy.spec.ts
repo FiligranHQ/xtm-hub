@@ -34,6 +34,7 @@ test.describe('One Click Deploy', () => {
 
     registerPage = new RegisterPage(page);
     await registerPage.navigateToAndRegister(
+      'register-opencti',
       OPENCTI_PLATFORM_URL.url,
       OPENCTI_PLATFORM_URL.title,
       OPENCTI_PLATFORM_URL.id,
