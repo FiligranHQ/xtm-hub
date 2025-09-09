@@ -29,7 +29,6 @@ import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
-import { TelemetryTargetProduct } from '../../telemetry/telemetry.const';
 import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
 import {
   loadUsersByCapabilitiesInOrganization,
@@ -246,7 +245,7 @@ export const registrationApp = {
         selectedOrga.name,
         selectedOrga.personal_space,
         context.user.id,
-        TelemetryTargetProduct.OPEN_CTI,
+        identifier,
         platform.id,
         platform.contract
       );

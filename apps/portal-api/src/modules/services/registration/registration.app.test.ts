@@ -119,7 +119,7 @@ describe('Registration app', () => {
       expect(token).toBeDefined();
     });
 
-    it('should send a telemetry event when platform is registered', async () => {
+    it('should send a telemetry event when opencti platform is registered', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -143,6 +143,33 @@ describe('Registration app', () => {
         platform_contract: 'EE',
         platform_id: platform.id,
         target_product: TelemetryTargetProduct.OPEN_CTI,
+        organization_type: 'Professional',
+      });
+    });
+    it('should send a telemetry event when openaev platform is registered', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+
+      await registrationApp.registerPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platform,
+        identifier: PlatformIdentifier.Openaev,
+      });
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.REGISTER,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_name: 'Filigran',
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_UUID,
+        platform_contract: 'EE',
+        platform_id: platform.id,
+        target_product: TelemetryTargetProduct.OPEN_AEV,
         organization_type: 'Professional',
       });
     });

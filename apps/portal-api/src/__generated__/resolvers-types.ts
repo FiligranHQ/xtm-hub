@@ -808,6 +808,7 @@ export enum PlatformContract {
 }
 
 export enum PlatformIdentifier {
+  Openaev = 'openaev',
   Opencti = 'opencti'
 }
 
@@ -1275,6 +1276,7 @@ export enum ServiceDefinitionIdentifier {
   CsvFeeds = 'csv_feeds',
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
+  OpenaevRegistration = 'openaev_registration',
   OpenaevScenarios = 'openaev_scenarios',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault'

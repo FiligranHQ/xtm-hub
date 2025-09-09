@@ -28,6 +28,8 @@ export type MailTemplates = {
   new_user_organization: NewUserOrganizationMailModel;
   opencti_platform_registered: PlatformRegisteredModel;
   opencti_platform_unregistered: PlatformUnregisteredModel;
+  openaev_platform_registered: PlatformRegisteredModel;
+  openaev_platform_unregistered: PlatformUnregisteredModel;
 };
 
 export const templateSubjects: {
@@ -48,4 +50,8 @@ export const templateSubjects: {
     `OpenCTI Platform Successfully Registered to XTM Hub – Integration Now Active`,
   opencti_platform_unregistered: () =>
     `OpenCTI Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
+  openaev_platform_registered: () =>
+    `OpenAEV Platform Successfully Registered to XTM Hub – Integration Now Active`,
+  openaev_platform_unregistered: () =>
+    `OpenAEV Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
 };
