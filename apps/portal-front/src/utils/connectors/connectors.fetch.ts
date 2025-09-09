@@ -15,7 +15,10 @@ export const getConnectorVersion = async () => {
     .map((release) => ({
       version: String(release.tag_name),
     }))
-    .slice(0, 3); // Need to use semver to compare version
+    .filter(
+      (release) =>
+        release.version !== null && semver.gte(release.version, '6.7.16')
+    );
   return [{ version: 'master' }, ...versions];
 };
 
