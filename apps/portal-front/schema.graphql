@@ -119,11 +119,10 @@ type Query {
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
-  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse!
+  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
-  platformRegistrationConnectivityStatus(input: PlatformRegistrationConnectivityStatusInput!): PlatformRegistrationConnectivityStatusResponse!
   platformAssociatedOrganization(platformId: String!): Organization!
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): ServiceConnection!
@@ -503,19 +502,10 @@ enum PlatformRegistrationConnectivityStatus {
   inactive
 }
 
-input PlatformRegistrationConnectivityStatusInput {
-  platformId: String!
-  token: String!
-}
-
 input RefreshPlatformRegistrationConnectivityStatusInput {
   platformId: String!
   token: String!
   platformVersion: String!
-}
-
-type PlatformRegistrationConnectivityStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
 }
 
 type RefreshPlatformRegistrationConnectivityStatusResponse {

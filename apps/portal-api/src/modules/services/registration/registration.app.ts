@@ -3,9 +3,9 @@ import {
   CanUnregisterPlatformInput,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
+  OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformRegistrationConnectivityStatus,
-  PlatformRegistrationConnectivityStatusInput,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
   RefreshUserPlatformTokenResponse,
@@ -103,9 +103,13 @@ export const registrationApp = {
     }));
   },
 
+  /**
+   * @deprecated This function is only used by openCTIPlatformRegistrationStatus, which is deprecated.
+   * Be careful when using it.
+   */
   loadPlatformRegistrationStatus: async (
     context: PortalContext,
-    input: PlatformRegistrationConnectivityStatusInput
+    input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(

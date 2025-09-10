@@ -831,16 +831,6 @@ export enum PlatformRegistrationConnectivityStatus {
   Inactive = 'inactive'
 }
 
-export type PlatformRegistrationConnectivityStatusInput = {
-  platformId: Scalars['String']['input'];
-  token: Scalars['String']['input'];
-};
-
-export type PlatformRegistrationConnectivityStatusResponse = {
-  __typename?: 'PlatformRegistrationConnectivityStatusResponse';
-  status: PlatformRegistrationConnectivityStatus;
-};
-
 export enum PlatformRegistrationStatus {
   NeverRegistered = 'never_registered',
   Registered = 'registered',
@@ -864,12 +854,12 @@ export type Query = {
   node?: Maybe<Node>;
   openAEVScenario?: Maybe<OpenAevScenario>;
   openAEVScenarios: OpenAevScenarioConnection;
+  /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   organization?: Maybe<Organization>;
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization: Organization;
-  platformRegistrationConnectivityStatus: PlatformRegistrationConnectivityStatusResponse;
   publicServiceInstances: ServiceConnection;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
@@ -1034,11 +1024,6 @@ export type QueryPendingUsersArgs = {
 
 export type QueryPlatformAssociatedOrganizationArgs = {
   platformId: Scalars['String']['input'];
-};
-
-
-export type QueryPlatformRegistrationConnectivityStatusArgs = {
-  input: PlatformRegistrationConnectivityStatusInput;
 };
 
 
@@ -1766,8 +1751,6 @@ export type ResolversTypes = ResolversObject<{
   PlatformInput: PlatformInput;
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
   PlatformRegistrationConnectivityStatus: PlatformRegistrationConnectivityStatus;
-  PlatformRegistrationConnectivityStatusInput: PlatformRegistrationConnectivityStatusInput;
-  PlatformRegistrationConnectivityStatusResponse: ResolverTypeWrapper<PlatformRegistrationConnectivityStatusResponse>;
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   Query: ResolverTypeWrapper<{}>;
   RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
@@ -1891,8 +1874,6 @@ export type ResolversParentTypes = ResolversObject<{
   PageInfo: PageInfo;
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
-  PlatformRegistrationConnectivityStatusInput: PlatformRegistrationConnectivityStatusInput;
-  PlatformRegistrationConnectivityStatusResponse: PlatformRegistrationConnectivityStatusResponse;
   Query: {};
   RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
   RefreshPlatformRegistrationConnectivityStatusResponse: RefreshPlatformRegistrationConnectivityStatusResponse;
@@ -2309,11 +2290,6 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PlatformRegistrationConnectivityStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformRegistrationConnectivityStatusResponse'] = ResolversParentTypes['PlatformRegistrationConnectivityStatusResponse']> = ResolversObject<{
-  status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
@@ -2335,7 +2311,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
-  platformRegistrationConnectivityStatus?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<QueryPlatformRegistrationConnectivityStatusArgs, 'input'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
@@ -2689,7 +2664,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
-  PlatformRegistrationConnectivityStatusResponse?: PlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
   RefreshUserPlatformTokenResponse?: RefreshUserPlatformTokenResponseResolvers<ContextType>;

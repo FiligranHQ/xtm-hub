@@ -74,19 +74,12 @@ enum PlatformRegistrationConnectivityStatus {
   inactive
 }
 
-input PlatformRegistrationConnectivityStatusInput {
-  platformId: String!
-  token: String!
-}
-
 input RefreshPlatformRegistrationConnectivityStatusInput {
   platformId: String!
   token: String!
   platformVersion: String!
 }
-type PlatformRegistrationConnectivityStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
+
 type RefreshPlatformRegistrationConnectivityStatusResponse {
   status: PlatformRegistrationConnectivityStatus!
 }
@@ -108,10 +101,6 @@ type Query {
   ): CanUnregisterResponse! @auth
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
     @auth
-  platformRegistrationConnectivityStatus(
-    input: PlatformRegistrationConnectivityStatusInput!
-  ): PlatformRegistrationConnectivityStatusResponse!
-
   platformAssociatedOrganization(platformId: String!): Organization! @auth
 }
 
@@ -119,5 +108,8 @@ type Mutation {
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse! @auth
   unregisterPlatform(input: UnregisterPlatformInput): Success! @auth
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth
-  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  # Attention ! Use by OpenCTI
+  refreshPlatformRegistrationConnectivityStatus(
+    input: RefreshPlatformRegistrationConnectivityStatusInput!
+  ): RefreshPlatformRegistrationConnectivityStatusResponse!
 }
