@@ -1,34 +1,34 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
 import {
-  CsvFeedForm,
-  CsvFeedFormValues,
-} from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
+  CustomDashboardForm,
+  CustomDashboardFormValues,
+} from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import {
-  CsvFeedCreateMutation,
-  CsvFeedDeleteMutation,
-  CsvFeedUpdateMutation,
-} from '@/components/service/csv-feeds/csv-feed.graphql';
+  CustomDashboardDeleteMutation,
+  CustomDashboardsCreateMutation,
+  CustomDashboardsUpdateMutation,
+} from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
-import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
-import { csvFeedUpdateMutation } from '@generated/csvFeedUpdateMutation.graphql';
-import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
+import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
+import { customDashboardsCreateMutation } from '@generated/customDashboardsCreateMutation.graphql';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
-export function useCsvFeedContext(
+export function useCustomDashboardsContext(
   serviceInstance: serviceInstance_fragment$data,
   connectionId?: string
 ): ServiceContextProps {
   const t = useTranslations();
-  const [createCsvFeed] = useMutation<csvFeedCreateMutation>(
-    CsvFeedCreateMutation
+  const [createCustomDashboards] = useMutation<customDashboardsCreateMutation>(
+    CustomDashboardsCreateMutation
   );
 
   const handleAddSheet = async (
@@ -36,30 +36,30 @@ export function useCsvFeedContext(
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const formValues = values as CsvFeedFormValues;
+    const formValues = values as CustomDashboardFormValues;
     const input = {
-      ...omit(formValues, ['document', 'illustration']),
+      ...omit(formValues, ['document', 'images', 'uploader_organization_id']),
       uploader_id: formValues?.uploader_id ?? '',
     };
     const documents = [
       ...Array.from(formValues.document),
-      ...Array.from(formValues.illustration),
+      ...Array.from(formValues.images),
     ];
 
-    createCsvFeed({
+    createCustomDashboards({
       variables: {
         input: {
           ...input,
           active: input.active ?? false,
         },
         serviceInstanceId: serviceInstance.id,
-        connections: [connectionId ?? ''],
+        connections: connectionId ? [connectionId] : [],
         document: documents,
       },
       uploadables: fileListToUploadableMap(documents),
 
       onCompleted: (response) => {
-        if (!response.createCsvFeed) {
+        if (!response.createCustomDashboard) {
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),
@@ -76,15 +76,14 @@ export function useCsvFeedContext(
     });
   };
 
-  const [deleteCsvFeedMutation] = useMutation<csvFeedDeleteMutation>(
-    CsvFeedDeleteMutation
-  );
+  const [deleteCustomDashboardMutation] =
+    useMutation<customDashboardDeleteMutation>(CustomDashboardDeleteMutation);
 
   const handleDeleteSheet = async (
     document: ShareableResource,
     onCompleted: () => void
   ) => {
-    deleteCsvFeedMutation({
+    deleteCustomDashboardMutation({
       variables: {
         documentId: document.id,
         serviceInstanceId: serviceInstance.id,
@@ -96,9 +95,8 @@ export function useCsvFeedContext(
     });
   };
 
-  const [updateCsvFeedMutation] = useMutation<csvFeedUpdateMutation>(
-    CsvFeedUpdateMutation
-  );
+  const [updateCustomDashboardMutation] =
+    useMutation<customDashboardsUpdateMutation>(CustomDashboardsUpdateMutation);
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
@@ -106,28 +104,26 @@ export function useCsvFeedContext(
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const formValues = values as CsvFeedFormValues;
-    const csvFeed = resource as csvFeedsItem_fragment$data;
+    const customDashboard = resource as customDashboardsItem_fragment$data;
+    const formValues = values as CustomDashboardFormValues;
     const input = {
-      ...omit(formValues, ['document', 'illustration']),
+      ...omit(formValues, ['document', 'images']),
       uploader_id: formValues?.uploader_id ?? '',
     };
 
     // Split images between existing and new ones
-    const images = Array.from(
-      formValues.illustration ?? []
-    ) as FormImagesValues;
+    const images = Array.from(formValues.images ?? []) as FormImagesValues;
     const [existingImages, newImages] = splitExistingAndNewImages(images);
     const documentsToUpload = [
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
-    updateCsvFeedMutation({
+    updateCustomDashboardMutation({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
         document: documentsToUpload,
-        documentId: csvFeed.id,
+        documentId: customDashboard.id,
         updateDocument: formValues.document !== undefined,
         images: existingImages,
       },
@@ -143,10 +139,10 @@ export function useCsvFeedContext(
 
   return {
     serviceInstance,
-    translationKey: 'Service.CsvFeed',
+    translationKey: 'Service.CustomDashboards',
     handleAddSheet,
     handleUpdateSheet,
     handleDeleteSheet,
-    ServiceForm: CsvFeedForm,
+    ServiceForm: CustomDashboardForm,
   };
 }

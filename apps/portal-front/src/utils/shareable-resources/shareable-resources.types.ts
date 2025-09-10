@@ -13,7 +13,8 @@ export type ShareableResource =
 
 export type SubscribableResource =
   | csvFeedsItem_fragment$data
-  | openaevScenariosItem_fragment$data;
+  | openaevScenariosItem_fragment$data
+  | customDashboardsItem_fragment$data;
 
 export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
 

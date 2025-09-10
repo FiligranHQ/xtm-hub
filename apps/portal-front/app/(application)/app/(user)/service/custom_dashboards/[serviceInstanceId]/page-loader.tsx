@@ -1,6 +1,6 @@
 'use client';
 
-import { customDashboardListLocalStorage } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-list-localstorage';
+import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
 import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
 import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
@@ -18,7 +18,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     CustomDashboardsListQuery
   );
   const { count, search, setSearch, labels, setLabels } =
-    customDashboardListLocalStorage();
+    serviceListLocalStorage('CustomDashboards');
 
   useEffect(() => {
     loadQuery(
