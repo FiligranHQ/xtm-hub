@@ -1,4 +1,5 @@
 import ConnectorsList from '@/components/connectors/connectors-list';
+import { SelectConnectorVersion } from '@/components/connectors/select-version';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import {
   getConnectorManifest,
@@ -40,6 +41,9 @@ export default async function Page({
       <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
         {connectorManifest.name}
       </h1>
+      <div className="grid grid-cols-1 pr-xl mb-l">
+        <SelectConnectorVersion />
+      </div>
       <ConnectorsList contracts={connectorManifest.contracts} />
     </main>
   );

@@ -267,7 +267,7 @@
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",
-    "Connectors": "Connectors",
+    "Connectors": "OpenCTI Connectors contracts",
     "Home": "Home",
     "Labels": "Labels",
     "Organizations": "Organizations",
