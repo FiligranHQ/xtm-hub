@@ -64,6 +64,7 @@ export interface RegisterPlatformEvent extends BaseTelemetryEvent {
   platform_id: string;
   organization_type: string;
   platform_contract: string;
+  platform_version: string;
 }
 
 export interface OneClickDeployEvent extends BaseTelemetryEvent {
