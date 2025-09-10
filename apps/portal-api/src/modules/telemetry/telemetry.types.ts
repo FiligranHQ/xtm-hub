@@ -2,6 +2,7 @@ import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetryOrganizationType,
 } from './telemetry.const';
 
 export enum TelemetryEventType {
@@ -18,7 +19,7 @@ export interface BaseTelemetryEvent {
   event_type: string;
   organization_id: string;
   organization_name: string;
-  organization_type: string;
+  organization_type: TelemetryOrganizationType;
   user_id: string;
   '@timestamp': string;
   source: typeof TELEMETRY_SOURCE;

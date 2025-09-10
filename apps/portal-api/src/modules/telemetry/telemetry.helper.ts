@@ -15,6 +15,7 @@ import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetryOrganizationType,
   TelemetryTargetProduct,
 } from './telemetry.const';
 import {
@@ -38,8 +39,8 @@ function buildBaseEvent(
     organization_id: organization.id,
     organization_name: organization.name,
     organization_type: organization.personal_space
-      ? 'Personal'
-      : 'Professional',
+      ? TelemetryOrganizationType.PERSONAL
+      : TelemetryOrganizationType.PROFESSIONAL,
     user_id,
     '@timestamp': eventTimestamp.toISOString(),
     source: TELEMETRY_SOURCE,
