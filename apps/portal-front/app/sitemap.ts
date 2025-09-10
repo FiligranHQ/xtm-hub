@@ -1,4 +1,5 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { getConnectorManifest } from '@/utils/connectors/connectors.fetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
@@ -47,6 +48,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       sitemap.push({
         url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${service.slug}/${resource.slug}`,
         lastModified: resource.updated_at ?? resource.created_at,
+        changeFrequency: 'monthly',
+        priority: 0.8,
+      });
+    }
+
+    const connectorsFromOpenCTI = await getConnectorManifest('master');
+    for (const contract of connectorsFromOpenCTI.contracts) {
+      sitemap.push({
+        url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/opencti-connectors/master/${contract.title}`,
+        lastModified: contract.last_verified_date,
         changeFrequency: 'monthly',
         priority: 0.8,
       });
