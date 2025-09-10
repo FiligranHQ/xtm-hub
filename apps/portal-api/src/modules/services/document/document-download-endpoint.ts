@@ -18,6 +18,7 @@ import {
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
 import { loadUserBy } from '../../users/users.domain';
+import { serviceContractDomain } from '../contract/domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { downloadFile } from './document-storage';
 import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
@@ -29,17 +30,29 @@ const documentDownloadRateLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-const loadUser = async (req: Request): Promise<UserLoadUserBy | null> => {
-  const user: UserLoadUserBy | null = req.session.user;
-  if (user) {
-    return user;
-  }
-  const platform_token = req.header('XTM-Hub-User-Platform-Token');
-  if (!platform_token) {
-    return null;
+const loadUser = async (
+  req: Request
+): Promise<{
+  user: UserLoadUserBy | null;
+  isLoadedFromUserPlatformToken?: boolean;
+}> => {
+  const userLoadFromCookie: UserLoadUserBy | null = req.session.user;
+  if (userLoadFromCookie) {
+    return { user: userLoadFromCookie };
   }
 
-  return loadUserBy({ 'User.platform_token': platform_token });
+  const user_platform_token = req.header('XTM-Hub-User-Platform-Token');
+  if (!user_platform_token) {
+    return { user: null };
+  }
+
+  const userLoadFromUserPlatformToken = await loadUserBy({
+    'User.platform_token': user_platform_token,
+  });
+  return {
+    user: userLoadFromUserPlatformToken,
+    isLoadedFromUserPlatformToken: true,
+  };
 };
 
 export const documentDownloadEndpoint = (app) => {
@@ -51,25 +64,47 @@ export const documentDownloadEndpoint = (app) => {
       documentDownloadRateLimiter,
       async (req: Request, res) => {
         const { attach } = req.query;
-        const user = await loadUser(req);
+        const { user, isLoadedFromUserPlatformToken } = await loadUser(req);
         if (!user) {
           res.status(401).json({ message: 'You must be logged in' });
           return;
+        }
+
+        const context: PortalContext = {
+          user: user,
+          serviceInstanceId: extractId<ServiceInstanceId>(
+            req.params.serviceInstanceId
+          ),
+          req,
+          res,
+        };
+
+        const token = req.header('XTM-Hub-Platform-Token');
+        // check only if token is present to keep old OpenCTI versions compatibility
+        if (isLoadedFromUserPlatformToken && token) {
+          const platformId = req.header('XTM-Hub-Platform-Id');
+          if (!token) {
+            return res
+              .status(403)
+              .json({ message: 'missing platform id in headers' });
+          }
+
+          const isPlatformTokenValid =
+            await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
+              context,
+              { platformId, token }
+            );
+          if (!isPlatformTokenValid) {
+            return res
+              .status(403)
+              .json({ message: 'platform registration is not valid' });
+          }
         }
 
         logApp.info('Downloading file:', { filename: req.params.filename });
 
         const trx = await dbTx();
         try {
-          const context: PortalContext = {
-            user: user,
-            serviceInstanceId: extractId<ServiceInstanceId>(
-              req.params.serviceInstanceId
-            ),
-            req,
-            res,
-          };
-
           const [document] = await loadDocumentBy(context, {
             'Document.id': fromGlobalId(req.params.filename).id as DocumentId,
           });

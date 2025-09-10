@@ -1,13 +1,7 @@
-import { getLabels } from '@/components/admin/label/label.utils';
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import { SettingsContext } from '@/components/settings/env-portal-context';
-import { SearchInput } from '@/components/ui/search-input';
-import useServiceCapability from '@/hooks/useServiceCapability';
-import { debounceHandleInput } from '@/utils/debounce';
-import {
-  APP_PATH,
-  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
-} from '@/utils/path/constant';
+import { AppServiceContext } from '@/components/service/components/service-context';
+import ServiceList from '@/components/service/components/service-list';
+import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
+import { useCustomDashboardsContext } from '@/components/service/custom-dashboards/use-custom-dashboards-context';
 import {
   customDashboardsItem_fragment$data,
   customDashboardsItem_fragment$key,
@@ -15,12 +9,8 @@ import {
 import { customDashboardsList$key } from '@generated/customDashboardsList.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { MultiSelectFormField } from 'filigran-ui';
-import { useTranslations } from 'next-intl';
-import { useContext, useMemo } from 'react';
 import {
   PreloadedQuery,
-  readInlineData,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
@@ -29,8 +19,6 @@ import {
   customDashboardsItem,
   CustomDashboardsListQuery,
 } from '../custom-dashboard.graphql';
-import CustomDashboardCard from './custom-dashboard-card';
-import CustomDashboardsListButtons from './custom-dashboards-list-buttons';
 
 interface CustomDashboardsListProps {
   queryRef: PreloadedQuery<customDashboardsQuery>;
@@ -49,9 +37,6 @@ const CustomDashboardsList = ({
   onLabelFilterChange,
   labels,
 }: CustomDashboardsListProps) => {
-  const t = useTranslations();
-  const { settings } = useContext(SettingsContext);
-
   const queryData = usePreloadedQuery<customDashboardsQuery>(
     CustomDashboardsListQuery,
     queryRef
@@ -61,107 +46,27 @@ const CustomDashboardsList = ({
     customDashboardsQuery,
     customDashboardsList$key
   >(customDashboardsFragment, queryData);
-  const userCanUpdate = useServiceCapability(
-    ServiceCapabilityName.Upload,
-    serviceInstance
-  );
 
-  const [active, nonActive] = useMemo(() => {
-    return data?.customDashboards.edges.reduce(
-      ([activeItems, nonActiveItems], { node }) => {
-        const customDashboard =
-          readInlineData<customDashboardsItem_fragment$key>(
-            customDashboardsItem,
-            node
-          );
+  const [active, draft] = useActiveAndDraftSplit<
+    customDashboardsItem_fragment$data,
+    customDashboardsItem_fragment$key
+  >(data?.customDashboards.edges, customDashboardsItem);
 
-        if (customDashboard.active) {
-          return [[...activeItems, customDashboard], nonActiveItems];
-        } else {
-          return [activeItems, [...nonActiveItems, customDashboard]];
-        }
-      },
-      [
-        [] as customDashboardsItem_fragment$data[],
-        [] as customDashboardsItem_fragment$data[],
-      ]
-    );
-  }, [data]);
+  const connectionId = data?.customDashboards.__id;
 
-  const firstCustomDashboard = nonActive.length > 0 ? nonActive[0] : active[0];
-
-  const labelOptions = getLabels().map(({ name, id }) => ({
-    label: name.toUpperCase(),
-    value: id,
-  }));
+  const context = useCustomDashboardsContext(serviceInstance, connectionId);
 
   return (
-    <div className="flex flex-col gap-xl">
-      <h1>{serviceInstance.name}</h1>
-      <div className="flex justify-between gap-s flex-wrap">
-        <div className="flex gap-s flex-wrap">
-          <SearchInput
-            containerClass="w-[20rem] flex-1 max-w-[50%]"
-            placeholder={t('GenericActions.Search')}
-            defaultValue={search}
-            onChange={debounceHandleInput(onSearchChange)}
-          />
-          <div className="w-[20rem] flex-1 max-w-[50%]">
-            <MultiSelectFormField
-              options={labelOptions}
-              defaultValue={labels}
-              placeholder={t('GenericActions.FilterLabels')}
-              noResultString={t('Utils.NotFound')}
-              onValueChange={onLabelFilterChange}
-              variant="inverted"
-            />
-          </div>
-        </div>
-        <div className="flex gap-s">
-          <CustomDashboardsListButtons
-            serviceInstance={serviceInstance}
-            subscriptionId={firstCustomDashboard?.subscription?.id ?? ''}
-            connectionId={data!.customDashboards!.__id}
-          />
-        </div>
-      </div>
-      {userCanUpdate && nonActive.length > 0 && (
-        <>
-          <div className="txt-category">{t('Service.CsvFeed.NonActive')}:</div>
-          <ul
-            className={
-              'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
-            }>
-            {nonActive.map((doc) => (
-              <CustomDashboardCard
-                connectionId={data.customDashboards!.__id}
-                key={doc.id}
-                customDashboard={doc}
-                serviceInstance={serviceInstance}
-                detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${doc.id}`}
-                shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
-              />
-            ))}
-          </ul>
-          {active.length > 0 && (
-            <div className="txt-category">{t('Service.CsvFeed.Active')}:</div>
-          )}
-        </>
-      )}
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l">
-        {active.map((doc) => (
-          <CustomDashboardCard
-            connectionId={data.customDashboards!.__id}
-            key={doc.id}
-            customDashboard={doc}
-            serviceInstance={serviceInstance}
-            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}/${doc.id}`}
-            shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${doc.slug}`}
-          />
-        ))}
-      </ul>
-    </div>
+    <AppServiceContext {...context}>
+      <ServiceList
+        active={active}
+        draft={draft}
+        search={search}
+        onSearchChange={onSearchChange}
+        labels={labels}
+        onLabelFilterChange={onLabelFilterChange}
+      />
+    </AppServiceContext>
   );
 };
-
 export default CustomDashboardsList;

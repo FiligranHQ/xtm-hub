@@ -1,0 +1,17 @@
+input OpenCTIPlatformRegistrationStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type Query {
+  openCTIPlatformRegistrationStatus(
+    input: OpenCTIPlatformRegistrationStatusInput!
+  ): OpenCTIPlatformRegistrationStatusResponse!
+    @deprecated(
+      reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint."
+    )
+}

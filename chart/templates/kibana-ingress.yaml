@@ -1,4 +1,4 @@
-{{- if .Values.kibana.enabled }}
+{{- if and (.Values.kibana.enabled) (.Values.kibana.ingress.enabled) }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -13,6 +13,9 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-stream-timeout: "1800"
     nginx.ingress.kubernetes.io/send_timeout: "1800"
+    {{- with .Values.kibana.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   ingressClassName: {{ .Values.ingressClass }} 
   rules:

@@ -104,16 +104,19 @@ export function useOpenaevScenarioContext(
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
+    const formValues = values as OpenAEVScenarioFormValues;
     const input = {
-      ...omit(values, ['document', 'illustration']),
-      uploader_id: values?.uploader_id ?? '',
+      ...omit(formValues, ['document', 'illustration']),
+      uploader_id: formValues?.uploader_id ?? '',
     };
 
     // Split images between existing and new ones
-    const images = Array.from(values.illustration ?? []) as FormImagesValues;
+    const images = Array.from(
+      formValues.illustration ?? []
+    ) as FormImagesValues;
     const [existingImages, newImages] = splitExistingAndNewImages(images);
     const documentsToUpload = [
-      ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
+      ...Array.from(formValues.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
     updateOpenAEVScenarioMutation({
@@ -122,12 +125,12 @@ export function useOpenaevScenarioContext(
         serviceInstanceId: serviceInstance.id,
         document: documentsToUpload,
         documentId: resource.id,
-        updateDocument: values.document !== undefined,
+        updateDocument: formValues.document !== undefined,
         images: existingImages,
       },
       uploadables: fileListToUploadableMap(documentsToUpload),
       onCompleted: () => {
-        onSuccess(values.name);
+        onSuccess(formValues.name);
       },
       onError: (error) => {
         onError(error);

@@ -47,6 +47,7 @@ describe('Registration app', () => {
       title: 'My OpenCTI platform',
       url: 'http://example.com',
       contract: PlatformContract.Ee,
+      version: 'X.Y.Z',
     };
 
     describe('invalid configuration', async () => {
@@ -158,6 +159,7 @@ describe('Registration app', () => {
         title: 'My OpenCTI platform',
         url: 'http://example.com',
         contract: PlatformContract.Ee,
+        version: 'X.Y.Z',
       };
     });
 
@@ -350,6 +352,7 @@ describe('Registration app', () => {
           url: 'http://example.com',
           contract: PlatformContract.Ee,
           title: 'Fake title',
+          version: 'X.Y.Z',
         },
         identifier: PlatformIdentifier.Opencti,
       });
@@ -362,6 +365,53 @@ describe('Registration app', () => {
       expect(result.status).toBe(PlatformRegistrationConnectivityStatus.Active);
     });
 
+    describe('refreshPlatformRegistrationConnectivityStatus', () => {
+      it('should return inactive when platform is not registered', async () => {
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatus(
+            contextAdminUser,
+            { platformId: uuidv4(), token: uuidv4(), platformVersion: 'X.Y.Z' }
+          );
+
+        expect(result.status).toBe(
+          PlatformRegistrationConnectivityStatus.Inactive
+        );
+      });
+
+      it('should return active when platform is registered and update version', async () => {
+        const platformId = uuidv4();
+        const token = await registrationApp.registerPlatform(contextAdminUser, {
+          organizationId: PLATFORM_ORGANIZATION_UUID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: 'X.Y.Z',
+          },
+          identifier: PlatformIdentifier.Opencti,
+        });
+
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatus(
+            contextAdminUser,
+            { platformId, token, platformVersion: '6.7.18' }
+          );
+
+        const getPlatforms = await registrationApp.loadRegisteredPlatforms(
+          contextAdminUser,
+          { identifier: PlatformIdentifier.Opencti }
+        );
+        const currentPlatform = getPlatforms.find(
+          (registeredPlatform) => platformId === registeredPlatform.platform_id
+        );
+        expect(currentPlatform?.version).toBe('6.7.18');
+        expect(result.status).toBe(
+          PlatformRegistrationConnectivityStatus.Active
+        );
+      });
+    });
+
     it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
       const token = await registrationApp.registerPlatform(contextAdminUser, {
@@ -371,6 +421,7 @@ describe('Registration app', () => {
           url: 'http://example.com',
           contract: PlatformContract.Ee,
           title: 'Fake title',
+          version: 'X.Y.Z',
         },
         identifier: PlatformIdentifier.Opencti,
       });

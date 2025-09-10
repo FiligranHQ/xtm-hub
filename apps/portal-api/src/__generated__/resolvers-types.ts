@@ -390,6 +390,7 @@ export type Mutation = {
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   mergeTest: Scalars['ID']['output'];
+  refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse;
   registerPlatform: RegistrationResponse;
   removePendingUserFromOrganization?: Maybe<User>;
@@ -620,6 +621,11 @@ export type MutationMergeTestArgs = {
 };
 
 
+export type MutationRefreshPlatformRegistrationConnectivityStatusArgs = {
+  input: RefreshPlatformRegistrationConnectivityStatusInput;
+};
+
+
 export type MutationRegisterPlatformArgs = {
   input: RegisterPlatformInput;
 };
@@ -810,6 +816,7 @@ export type PlatformInput = {
   id: Scalars['ID']['input'];
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PlatformProvider = {
@@ -823,16 +830,6 @@ export enum PlatformRegistrationConnectivityStatus {
   Active = 'active',
   Inactive = 'inactive'
 }
-
-export type PlatformRegistrationConnectivityStatusInput = {
-  platformId: Scalars['String']['input'];
-  token: Scalars['String']['input'];
-};
-
-export type PlatformRegistrationConnectivityStatusResponse = {
-  __typename?: 'PlatformRegistrationConnectivityStatusResponse';
-  status: PlatformRegistrationConnectivityStatus;
-};
 
 export enum PlatformRegistrationStatus {
   NeverRegistered = 'never_registered',
@@ -857,12 +854,12 @@ export type Query = {
   node?: Maybe<Node>;
   openAEVScenario?: Maybe<OpenAevScenario>;
   openAEVScenarios: OpenAevScenarioConnection;
+  /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   organization?: Maybe<Organization>;
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization: Organization;
-  platformRegistrationConnectivityStatus: PlatformRegistrationConnectivityStatusResponse;
   publicServiceInstances: ServiceConnection;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
@@ -1030,11 +1027,6 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 };
 
 
-export type QueryPlatformRegistrationConnectivityStatusArgs = {
-  input: PlatformRegistrationConnectivityStatusInput;
-};
-
-
 export type QueryPublicServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -1163,6 +1155,17 @@ export type QueryUsersWithCapabilitiesInOrganizationArgs = {
   input: UsersWithCapabilitiesInOrganizationInput;
 };
 
+export type RefreshPlatformRegistrationConnectivityStatusInput = {
+  platformId: Scalars['String']['input'];
+  platformVersion: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
+export type RefreshPlatformRegistrationConnectivityStatusResponse = {
+  __typename?: 'RefreshPlatformRegistrationConnectivityStatusResponse';
+  status: PlatformRegistrationConnectivityStatus;
+};
+
 export type RefreshUserPlatformTokenResponse = {
   __typename?: 'RefreshUserPlatformTokenResponse';
   token: Scalars['String']['output'];
@@ -1181,6 +1184,7 @@ export type RegisteredPlatform = Node & {
   platform_id: Scalars['String']['output'];
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
+  version?: Maybe<Scalars['String']['output']>;
 };
 
 export type RegisteredPlatformsInput = {
@@ -1747,10 +1751,10 @@ export type ResolversTypes = ResolversObject<{
   PlatformInput: PlatformInput;
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
   PlatformRegistrationConnectivityStatus: PlatformRegistrationConnectivityStatus;
-  PlatformRegistrationConnectivityStatusInput: PlatformRegistrationConnectivityStatusInput;
-  PlatformRegistrationConnectivityStatusResponse: ResolverTypeWrapper<PlatformRegistrationConnectivityStatusResponse>;
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   Query: ResolverTypeWrapper<{}>;
+  RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
+  RefreshPlatformRegistrationConnectivityStatusResponse: ResolverTypeWrapper<RefreshPlatformRegistrationConnectivityStatusResponse>;
   RefreshUserPlatformTokenResponse: ResolverTypeWrapper<RefreshUserPlatformTokenResponse>;
   RegisterPlatformInput: RegisterPlatformInput;
   RegisteredPlatform: ResolverTypeWrapper<RegisteredPlatform>;
@@ -1870,9 +1874,9 @@ export type ResolversParentTypes = ResolversObject<{
   PageInfo: PageInfo;
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
-  PlatformRegistrationConnectivityStatusInput: PlatformRegistrationConnectivityStatusInput;
-  PlatformRegistrationConnectivityStatusResponse: PlatformRegistrationConnectivityStatusResponse;
   Query: {};
+  RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
+  RefreshPlatformRegistrationConnectivityStatusResponse: RefreshPlatformRegistrationConnectivityStatusResponse;
   RefreshUserPlatformTokenResponse: RefreshUserPlatformTokenResponse;
   RegisterPlatformInput: RegisterPlatformInput;
   RegisteredPlatform: RegisteredPlatform;
@@ -2180,6 +2184,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
+  refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;
   refreshUserPlatformToken?: Resolver<ResolversTypes['RefreshUserPlatformTokenResponse'], ParentType, ContextType>;
   registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
@@ -2285,11 +2290,6 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PlatformRegistrationConnectivityStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformRegistrationConnectivityStatusResponse'] = ResolversParentTypes['PlatformRegistrationConnectivityStatusResponse']> = ResolversObject<{
-  status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   csvFeed?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QueryCsvFeedArgs>>;
@@ -2311,7 +2311,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
-  platformRegistrationConnectivityStatus?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<QueryPlatformRegistrationConnectivityStatusArgs, 'input'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
@@ -2340,6 +2339,11 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
 }>;
 
+export type RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusResponse'] = ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusResponse']> = ResolversObject<{
+  status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type RefreshUserPlatformTokenResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshUserPlatformTokenResponse'] = ResolversParentTypes['RefreshUserPlatformTokenResponse']> = ResolversObject<{
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2351,6 +2355,7 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2659,8 +2664,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
-  PlatformRegistrationConnectivityStatusResponse?: PlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
   RefreshUserPlatformTokenResponse?: RefreshUserPlatformTokenResponseResolvers<ContextType>;
   RegisteredPlatform?: RegisteredPlatformResolvers<ContextType>;
   RegistrationResponse?: RegistrationResponseResolvers<ContextType>;

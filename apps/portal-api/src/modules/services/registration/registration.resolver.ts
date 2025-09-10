@@ -59,9 +59,11 @@ const resolvers: Resolvers = {
     },
     registeredPlatforms: async (_, { input }, context) =>
       registrationApp.loadRegisteredPlatforms(context, input),
+    /**
+     * @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead.
+     * This function is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the new endpoint.
+     */
     openCTIPlatformRegistrationStatus: async (_, { input }, context) =>
-      registrationApp.loadPlatformRegistrationStatus(context, input),
-    platformRegistrationConnectivityStatus: async (_, { input }, context) =>
       registrationApp.loadPlatformRegistrationStatus(context, input),
     platformAssociatedOrganization: async (_, { platformId }, context) => {
       try {
@@ -156,6 +158,15 @@ const resolvers: Resolvers = {
         });
       }
     },
+    refreshPlatformRegistrationConnectivityStatus: async (
+      _,
+      { input },
+      context
+    ) =>
+      registrationApp.refreshPlatformRegistrationConnectivityStatus(
+        context,
+        input
+      ),
   },
 };
 

@@ -21,6 +21,7 @@ import {
   ensureServiceExists,
   ensureUserOrganizationExist,
   ensureUserRoleExist,
+  initializeDevUsers,
   insertAdminUser,
   insertPlatformOrganization,
   insertUserAdminOrganization,
@@ -119,6 +120,7 @@ const platformInit = async () => {
   logEnabledFeatureFlags();
   await initializeDefaultServices();
   await initializeBuiltInAdministrator();
+  await initializeDevUsers();
 };
 
 export const minioInit = async () => {

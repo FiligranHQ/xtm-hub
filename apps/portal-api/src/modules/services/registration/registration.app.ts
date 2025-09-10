@@ -3,10 +3,11 @@ import {
   CanUnregisterPlatformInput,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
+  OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformRegistrationConnectivityStatus,
-  PlatformRegistrationConnectivityStatusInput,
   PlatformRegistrationStatus,
+  RefreshPlatformRegistrationConnectivityStatusInput,
   RefreshUserPlatformTokenResponse,
   RegisteredPlatform,
   RegisteredPlatformsInput,
@@ -98,18 +99,54 @@ export const registrationApp = {
       title: platform.config.platform_title,
       url: platform.config.platform_url,
       contract: platform.config.platform_contract,
+      version: platform.config.platform_version,
     }));
   },
 
+  /**
+   * @deprecated This function is only used by openCTIPlatformRegistrationStatus, which is deprecated.
+   * Be careful when using it.
+   */
   loadPlatformRegistrationStatus: async (
     context: PortalContext,
-    input: PlatformRegistrationConnectivityStatusInput
+    input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
         context,
         input
       );
+    return {
+      status: activeServiceConfiguration
+        ? PlatformRegistrationConnectivityStatus.Active
+        : PlatformRegistrationConnectivityStatus.Inactive,
+    };
+  },
+
+  refreshPlatformRegistrationConnectivityStatus: async (
+    context: PortalContext,
+    input: RefreshPlatformRegistrationConnectivityStatusInput
+  ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
+    const activeServiceConfiguration =
+      await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
+        context,
+        input
+      );
+    if (
+      activeServiceConfiguration &&
+      activeServiceConfiguration.config['version'] !== input.platformVersion
+    ) {
+      await serviceContractDomain.updateConfiguration(
+        context,
+        activeServiceConfiguration.service_instance_id,
+        {
+          config: {
+            ...(activeServiceConfiguration.config as object),
+            platform_version: input.platformVersion,
+          },
+        }
+      );
+    }
     return {
       status: activeServiceConfiguration
         ? PlatformRegistrationConnectivityStatus.Active
@@ -128,6 +165,7 @@ export const registrationApp = {
       platform_url: platform.url,
       platform_title: platform.title,
       platform_contract: platform.contract,
+      platform_version: platform.version,
       token,
     };
 

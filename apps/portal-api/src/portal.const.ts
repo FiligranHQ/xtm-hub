@@ -30,6 +30,10 @@ export const ROLE_ADMIN_ORGA: RolePortal = {
   id: '40cfe630-c272-42f9-8fcf-f219e2f4278c' as RolePortalId,
   name: 'ADMIN_ORGA',
 };
+export const ROLE_USER: RolePortal = {
+  id: '7a234567-8901-4def-9012-3456789abcde' as RolePortalId,
+  name: 'USER',
+};
 
 export const JOIN_TYPE = {
   JOIN_INVITE: 'JOIN_INVITE',

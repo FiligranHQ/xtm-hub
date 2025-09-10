@@ -404,12 +404,13 @@
         "Share": "Share Custom Dashboard",
         "Updated": "The custom dashboard {name} has been modified successfully"
       },
-      "AddDashboard": "Add new dashboard",
-      "DeleteDashboard": "Delete the custom dashboard {name}",
+      "Active": "Published",
+      "AddService": "Add new dashboard",
+      "DeleteService": "Delete the custom dashboard {name}",
       "Form": {
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the document.",
-        "ExistingJSONFile": "Existing JSON file: ",
+        "ExistingJSONFile": "Existing JSON file: {file_name}",
         "ImageLabel": "Images",
         "JSONFile": "JSON file",
         "LabelsLabel": "Labels",
@@ -435,8 +436,9 @@
         "Author": "Author",
         "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image."
       },
-      "SureDeleteDashboard": "Are you sure you want to delete the {name} dashboard?",
-      "UpdateDashboard": "Update dashboard"
+      "NonActive": "Draft",
+      "SureDeleteService": "Are you sure you want to delete the {name} dashboard?",
+      "UpdateService": "Update dashboard"
     },
     "ObasScenario": {
       "Actions": {

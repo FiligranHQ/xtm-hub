@@ -9,6 +9,7 @@ type RegisteredPlatform implements Node {
   title: String!
   contract: PlatformContract!
   platform_id: String!
+  version: String
 }
 
 input PlatformInput {
@@ -16,6 +17,7 @@ input PlatformInput {
   url: String!
   title: String!
   contract: PlatformContract!
+  version: String
 }
 
 enum PlatformIdentifier {
@@ -72,21 +74,13 @@ enum PlatformRegistrationConnectivityStatus {
   inactive
 }
 
-input OpenCTIPlatformRegistrationStatusInput {
+input RefreshPlatformRegistrationConnectivityStatusInput {
   platformId: String!
   token: String!
+  platformVersion: String!
 }
 
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
-input PlatformRegistrationConnectivityStatusInput {
-  platformId: String!
-  token: String!
-}
-
-type PlatformRegistrationConnectivityStatusResponse {
+type RefreshPlatformRegistrationConnectivityStatusResponse {
   status: PlatformRegistrationConnectivityStatus!
 }
 
@@ -107,14 +101,6 @@ type Query {
   ): CanUnregisterResponse! @auth
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
     @auth
-  openCTIPlatformRegistrationStatus(
-    input: OpenCTIPlatformRegistrationStatusInput!
-  ): OpenCTIPlatformRegistrationStatusResponse!
-
-  platformRegistrationConnectivityStatus(
-    input: PlatformRegistrationConnectivityStatusInput!
-  ): PlatformRegistrationConnectivityStatusResponse!
-
   platformAssociatedOrganization(platformId: String!): Organization! @auth
 }
 
@@ -122,4 +108,8 @@ type Mutation {
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse! @auth
   unregisterPlatform(input: UnregisterPlatformInput): Success! @auth
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth
+  # Warning ! Used by OpenCTI
+  refreshPlatformRegistrationConnectivityStatus(
+    input: RefreshPlatformRegistrationConnectivityStatusInput!
+  ): RefreshPlatformRegistrationConnectivityStatusResponse!
 }

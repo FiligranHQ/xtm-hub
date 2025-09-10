@@ -114,7 +114,7 @@ spec:
               name: elasticsearch-es-elastic-user
               key: elastic
               optional: false
-        {{ if .Values.elasticsearch.ingress.ca_from_secret.enabled }}
+        {{ if .Values.xtmhub.api.elasticsearchCAFromSecret.enabled }}
         - name: ELASTIC__TLS__CA_PATH
           value: "/etc/ssl/certs/elasticsearch-certs/tls.crt"
         {{ end }}
@@ -125,19 +125,19 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- end }}
-        {{ if .Values.elasticsearch.ingress.ca_from_secret.enabled }}
+        {{ if .Values.xtmhub.api.elasticsearchCAFromSecret.enabled }}
         volumeMounts:
           - mountPath: /etc/ssl/certs/elasticsearch-certs
             name: elasticsearch-certs
             readOnly: true
         {{- end }}
-      {{ if .Values.elasticsearch.ingress.ca_from_secret.enabled }}
+      {{ if .Values.xtmhub.api.elasticsearchCAFromSecret.enabled }}
       volumes:
         - name: elasticsearch-certs
           secret:
             defaultMode: 420
             optional: false
-            secretName: {{ .Values.elasticsearch.ingress.ca_from_secret.ca_secret_name }}
+            secretName: {{ .Values.xtmhub.api.elasticsearchCAFromSecret.CASecretName }}
             items:
               - key: tls.crt
                 path: tls.crt
