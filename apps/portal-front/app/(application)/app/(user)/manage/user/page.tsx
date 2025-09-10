@@ -10,6 +10,7 @@ const Page: React.FunctionComponent = async () => {
   return (
     <GuardCapacityComponent
       displayError
+      shouldNotBePersonalSpace
       capacityRestriction={[
         OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
         OrganizationCapabilityEnum.MANAGE_ACCESS,
