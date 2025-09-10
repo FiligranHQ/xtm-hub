@@ -268,7 +268,7 @@ jobs:
   delete-feature-branch:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
     steps:
       - name: Install AWX cli
         run: pip install awxkit
