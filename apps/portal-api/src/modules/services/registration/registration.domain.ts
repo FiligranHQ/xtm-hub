@@ -31,6 +31,7 @@ export type PlatformConfiguration = {
   platform_id: string;
   platform_url: string;
   platform_title: string;
+  platform_version: string;
   platform_contract: PlatformContract;
   token: string;
 };
@@ -145,7 +146,8 @@ export const registrationDomain = {
     const userSelectedOrganization = context.user.selected_organization_id;
     const serviceDefinitionIdentifier =
       serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
-    const query = await db<ServiceInstance>(context, 'ServiceInstance', opts)
+
+    return await db<ServiceInstance>(context, 'ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
         'Service_Configuration.service_instance_id',
@@ -177,7 +179,5 @@ export const registrationDomain = {
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .select(['Service_Configuration.config'])
       .secureQuery();
-
-    return query;
   },
 };

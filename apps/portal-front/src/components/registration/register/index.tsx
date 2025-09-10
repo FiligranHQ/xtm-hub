@@ -18,7 +18,7 @@ import RegisterIsPlatformRegisteredQueryGraphql, {
   registerIsPlatformRegisteredQuery,
 } from '@generated/registerIsPlatformRegisteredQuery.graphql';
 import {
-  PlatformContract,
+  PlatformInput,
   registerPlatformMutation,
 } from '@generated/registerPlatformMutation.graphql';
 import { toast } from 'filigran-ui/clients';
@@ -33,12 +33,7 @@ import {
 } from 'react-relay';
 
 interface Props {
-  platform: {
-    id: string;
-    url: string;
-    title: string;
-    contract: PlatformContract;
-  };
+  platform: PlatformInput;
   queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
 }
 

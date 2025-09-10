@@ -35,6 +35,7 @@ describe('Registration domain', () => {
   const platformUrl = 'http://example.com';
   const platformContract = PlatformContract.Ee;
   const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
+  const platformOpenCTI = '6.7.17';
 
   beforeEach(() => {
     platformId = uuidv4();
@@ -51,6 +52,7 @@ describe('Registration domain', () => {
           platform_url: platformUrl,
           platform_title: platformTitle,
           platform_contract: platformContract,
+          platform_version: platformOpenCTI,
           token,
         },
         platformIdentifier: PlatformIdentifier.Opencti,
@@ -82,7 +84,7 @@ describe('Registration domain', () => {
 
       expect(serviceConfiguration).toBeDefined();
       const configuration = JSON.parse(
-        JSON.stringify(serviceConfiguration.config)
+        JSON.stringify(serviceConfiguration?.config)
       );
 
       expect(configuration.token).toBe(token);
@@ -101,6 +103,7 @@ describe('Registration domain', () => {
       platform_contract: PlatformContract.Ce,
       platform_title: 'Title',
       platform_url: 'https://example.com',
+      platform_version: '6',
       token: 'hello',
     };
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
