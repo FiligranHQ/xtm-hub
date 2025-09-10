@@ -108,7 +108,7 @@ type Mutation {
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse! @auth
   unregisterPlatform(input: UnregisterPlatformInput): Success! @auth
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth
-  # Attention ! Use by OpenCTI
+  # Warning ! Used by OpenCTI
   refreshPlatformRegistrationConnectivityStatus(
     input: RefreshPlatformRegistrationConnectivityStatusInput!
   ): RefreshPlatformRegistrationConnectivityStatusResponse!
