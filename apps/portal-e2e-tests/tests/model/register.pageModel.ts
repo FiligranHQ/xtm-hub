@@ -8,9 +8,10 @@ export default class RegisterPage {
     platformUrl: string,
     platformTitle: string,
     platformId: string,
-    platformContract: string
+    platformContract: string,
+    platformVersion?: string
   ) {
-    const url = `/redirect/${redirection_key}?platform_url=${platformUrl}&platform_title=${platformTitle}&platform_id=${platformId}&platform_contract=${platformContract}`;
+    const url = `/redirect/${redirection_key}?platform_url=${platformUrl}&platform_title=${platformTitle}&platform_id=${platformId}&platform_contract=${platformContract}&platform_version=${platformVersion}`;
     await this.page.goto(encodeURI(url));
   }
 
@@ -19,14 +20,16 @@ export default class RegisterPage {
     platformUrl: string,
     platformTitle: string,
     platformId: string,
-    platformContract: string
+    platformContract: string,
+    platformVersion?: string
   ) {
     await this.navigateTo(
       redirection_key,
       platformUrl,
       platformTitle,
       platformId,
-      platformContract
+      platformContract,
+      platformVersion
     );
     await this.page.getByRole('button', { name: 'Register' }).click();
   }

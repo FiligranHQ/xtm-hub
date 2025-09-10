@@ -10,6 +10,7 @@ const OPENAEV_PLATFORM_URL = {
   title: 'Open%20AEV%20Instance',
   id: '916121bf-d246-4a43-8522-24be19537b91',
   contract: 'EE',
+  version: '1.0.0',
 };
 
 const OPENCTI_PLATFORM_URL = {
@@ -37,7 +38,8 @@ test.describe('Registration', () => {
         OPENAEV_PLATFORM_URL.url,
         OPENAEV_PLATFORM_URL.title,
         OPENAEV_PLATFORM_URL.id,
-        OPENAEV_PLATFORM_URL.contract
+        OPENAEV_PLATFORM_URL.contract,
+        OPENAEV_PLATFORM_URL.version
       );
       await expect(
         page.getByRole('heading', {
