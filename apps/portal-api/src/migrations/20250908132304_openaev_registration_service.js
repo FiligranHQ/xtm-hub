@@ -30,6 +30,7 @@ const jsonSchema = {
     'platform_id',
     'platform_url',
     'platform_title',
+    'platform_version',
     'token',
   ],
   additionalProperties: false,
