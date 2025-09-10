@@ -388,6 +388,7 @@ describe('Documents loading', () => {
       event_type: TelemetryEventType.SHARE,
       organization_id: PLATFORM_ORGANIZATION_UUID,
       organization_name: 'Filigran',
+      organization_type: 'Professional',
       source: TELEMETRY_SOURCE,
       user_id: ADMIN_UUID,
       service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,

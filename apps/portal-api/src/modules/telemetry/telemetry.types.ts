@@ -18,6 +18,7 @@ export interface BaseTelemetryEvent {
   event_type: string;
   organization_id: string;
   organization_name: string;
+  organization_type: string;
   user_id: string;
   '@timestamp': string;
   source: typeof TELEMETRY_SOURCE;
@@ -62,7 +63,6 @@ export interface RegisterPlatformEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.REGISTER;
   target_product: string;
   platform_id: string;
-  organization_type: string;
   platform_contract: string;
   platform_version: string;
 }
