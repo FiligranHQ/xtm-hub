@@ -37,7 +37,7 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
         <div className="space-y-m">
           <h1>
             {t(`Register.OrganizationForm.Title`, {
-              platformIdentifier: displayedIdentifier ?? '',
+              platformIdentifier: displayedIdentifier,
             })}
           </h1>
           <p>{t(`Register.OrganizationForm.Description`)}</p>

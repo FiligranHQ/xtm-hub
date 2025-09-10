@@ -25,7 +25,7 @@ export const RegistrationLayout: React.FC<Props> = ({
             variant="outline"
             onClick={cancel}>
             {t(`Register.Back`, {
-              platformIdentifier: displayedIdentifier ?? '',
+              platformIdentifier: displayedIdentifier,
             })}
           </Button>
         )}

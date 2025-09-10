@@ -25,7 +25,7 @@ export const UnregisterConfirm: React.FC<Props> = ({
       cancel={cancel}>
       <h1>
         {t(`Unregister.Confirm.Title`, {
-          platformIdentifier: displayedIdentifier ?? '',
+          platformIdentifier: displayedIdentifier,
           name: organization?.name ?? '',
         })}
       </h1>

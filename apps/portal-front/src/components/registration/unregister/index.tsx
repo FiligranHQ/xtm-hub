@@ -85,7 +85,7 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
       <RegistrationLayout>
         <h1>
           {t(`Unregister.Succeeded.Title`, {
-            platformIdentifier: displayedIdentifier ?? '',
+            platformIdentifier: displayedIdentifier,
           })}
         </h1>
         <p>{t(`Unregister.Succeeded.Description`)}</p>

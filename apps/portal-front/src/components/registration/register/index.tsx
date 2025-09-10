@@ -160,7 +160,7 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
       <RegistrationLayout>
         <h1>
           {t(`Register.Succeeded.Title`, {
-            platformIdentifier: displayedIdentifier ?? '',
+            platformIdentifier: displayedIdentifier,
           })}
         </h1>
         <p>{t(`Register.Succeeded.Description`)}</p>
@@ -189,7 +189,7 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
         <h1>{t(`Register.TooMuchOrganization.Title`)}</h1>
         <p>
           {t(`Register.TooMuchOrganization.Description1`, {
-            platformIdentifier: displayedIdentifier ?? '',
+            platformIdentifier: displayedIdentifier,
             platformTitle: isPlatformRegistered.platformTitle ?? '',
           })}
           <br />

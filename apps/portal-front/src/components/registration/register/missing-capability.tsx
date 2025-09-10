@@ -44,7 +44,7 @@ export const RegisterStateMissingCapability: React.FC<Props> = ({
       </h1>
       <p>
         {t(`Register.Error.Capability.Description`, {
-          platformIdentifier: displayedIdentifier ?? '',
+          platformIdentifier: displayedIdentifier,
         })}
       </p>
       <p>{t(`Register.Error.Capability.AdminListTitle`)}</p>

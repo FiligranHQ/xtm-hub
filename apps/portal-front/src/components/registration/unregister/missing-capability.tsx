@@ -39,7 +39,7 @@ export const UnregisterMissingCapability: React.FC<Props> = ({
       </h1>
       <p>
         {t(`Unregister.Error.Capability.Description`, {
-          platformIdentifier: displayedIdentifier ?? '',
+          platformIdentifier: displayedIdentifier,
         })}
       </p>
       <p>{t(`Unregister.Error.Capability.AdminListTitle`)}</p>
